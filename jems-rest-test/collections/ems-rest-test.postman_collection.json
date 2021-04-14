@@ -4250,7 +4250,7 @@
 									"});\r",
 									"\r",
 									"pm.test('correct translation key returned for this error', function() {\r",
-									"    pm.expect(pm.response.json().i18nMessage.i18nKey).to.eql('common.error.date.required')\r",
+									"    pm.expect(pm.response.json().formErrors['decisionDate'].i18nKey).to.eql('common.error.field.required')\r",
 									"});\r",
 									""
 								],
@@ -4320,12 +4320,12 @@
 							"script": {
 								"exec": [
 									"pm.test('program user should not be able to change status to ELIGIBLE with date in future', function() {\r",
-									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.have.status(422);\r",
 									"});\r",
 									"\r",
 									"pm.test('correct translation key returned for this error', function() {\r",
-									"    pm.expect(pm.response.json().formErrors.date.i18nKey)\r",
-									"        .to.eql('project.status.date.should.be.in.past.or.present')\r",
+									"    pm.expect(pm.response.json().formErrors.decisionDate.i18nKey)\r",
+									"        .to.eql('common.error.date.is.in.future')\r",
 									"});\r",
 									""
 								],
@@ -6097,7 +6097,10 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											""
+                                          "var date = new Date();\r",
+                                          "date.setDate(date.getDate() - 5);\r",
+                                          "pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
+                                          ""
 										],
 										"type": "text/javascript"
 									}
@@ -6132,7 +6135,22 @@
 									]
 								},
 								"method": "PUT",
-								"header": [],
+								"header": [
+                                  {
+                                    "key": "Content-Type",
+                                    "type": "text",
+                                    "value": "application/json"
+                                  }
+                                ],
+                              "body": {
+                                "mode": "raw",
+                                "raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
+                                "options": {
+                                  "raw": {
+                                    "language": "json"
+                                  }
+                                }
+                              },
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}/approve",
 									"host": [
@@ -6433,7 +6451,10 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											""
+                                          "var date = new Date();\r",
+                                          "date.setDate(date.getDate() - 5);\r",
+                                          "pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
+                                          ""
 										],
 										"type": "text/javascript"
 									}
@@ -6468,7 +6489,22 @@
 									]
 								},
 								"method": "PUT",
-								"header": [],
+								"header": [
+                                  {
+                                    "key": "Content-Type",
+                                    "type": "text",
+                                    "value": "application/json"
+                                  }
+                                ],
+                                "body": {
+                                  "mode": "raw",
+                                  "raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
+                                  "options": {
+                                    "raw": {
+                                      "language": "json"
+                                    }
+                                  }
+                                },
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}/approve",
 									"host": [

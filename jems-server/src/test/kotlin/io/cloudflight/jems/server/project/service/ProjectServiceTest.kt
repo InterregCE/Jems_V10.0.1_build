@@ -207,7 +207,7 @@ class ProjectServiceTest {
         verify {
             projectRepository.findAllByCurrentStatusStatusNot(
                 withArg {
-                    assertThat(it).isEqualTo(ApplicationStatusDTO.DRAFT)
+                    assertThat(it).isEqualTo(ApplicationStatus.DRAFT)
                 }, UNPAGED
             )
         }

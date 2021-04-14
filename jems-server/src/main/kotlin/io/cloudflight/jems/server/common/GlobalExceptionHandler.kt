@@ -19,6 +19,7 @@ import org.springframework.expression.ExpressionInvocationTargetException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -161,6 +162,8 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         while (cause != null) {
             if (cause is ApplicationException) {
                 httpStatus = cause.httpStatus
+            }else if (cause is AccessDeniedException){
+                httpStatus= HttpStatus.FORBIDDEN
             }
             cause = cause.cause
         }

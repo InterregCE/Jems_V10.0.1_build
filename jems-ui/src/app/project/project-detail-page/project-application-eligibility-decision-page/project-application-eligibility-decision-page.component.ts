@@ -29,7 +29,7 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
 
   today = new Date();
   dateErrors = {
-    required: 'common.error.date.required',
+    required: 'common.error.field.required',
     matDatepickerMax: 'project.decision.date.must.be.in.the.past',
     matDatepickerParse: 'common.date.should.be.valid'
   };

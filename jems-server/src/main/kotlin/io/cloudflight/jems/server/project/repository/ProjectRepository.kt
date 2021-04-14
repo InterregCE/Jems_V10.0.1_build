@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository
 
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.project.entity.ProjectEntity
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
@@ -18,6 +19,6 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
     fun findAllByApplicantId(applicantId: Long, pageable: Pageable): Page<ProjectEntity>
 
     @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
-    fun findAllByCurrentStatusStatusNot(status: ApplicationStatusDTO, pageable: Pageable): Page<ProjectEntity>
+    fun findAllByCurrentStatusStatusNot(status: ApplicationStatus, pageable: Pageable): Page<ProjectEntity>
 
 }

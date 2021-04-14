@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.regex.Pattern
 
@@ -56,6 +57,12 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                 this[fieldName] = I18nMessage("common.error.field.blank")
         }
 
+    override fun notNull(input: Any?, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (input == null)
+                this[fieldName] = I18nMessage("common.error.field.required")
+        }
+
     override fun notNullOrZero(input: Long?, fieldName: String) =
         mutableMapOf<String, I18nMessage>().apply {
             if (input == null || input == 0L)
@@ -103,6 +110,13 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
             if (end.isBefore(start)) {
                 this[startDateFieldName] = I18nMessage(i18nKey = "common.error.start.before.end")
                 this[endDateFieldName] = I18nMessage(i18nKey = "common.error.end.after.start")
+            }
+        }
+
+    override fun dateNotInFuture(date: LocalDate, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (date.isAfter(LocalDate.now())) {
+                this[fieldName] = I18nMessage(i18nKey = "common.error.date.is.in.future")
             }
         }
 

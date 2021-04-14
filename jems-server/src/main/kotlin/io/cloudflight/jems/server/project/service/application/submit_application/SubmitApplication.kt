@@ -27,7 +27,7 @@ class SubmitApplication(
     override fun submit(projectId: Long): ApplicationStatus =
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             applicationStateFactory.getInstance(projectSummary).submit().also {
-                auditPublisher.publishEvent(projectStatusChanged(this, projectSummary = projectSummary, newStatus = it))
+                auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
                 createNewProjectVersion.create(
                     projectId = projectSummary.id,
                     status = projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
