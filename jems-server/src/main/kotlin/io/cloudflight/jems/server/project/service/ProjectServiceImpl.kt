@@ -6,7 +6,6 @@ import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
@@ -24,14 +23,17 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.repository.UserRepository
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import kotlin.math.ceil
 
@@ -42,6 +44,7 @@ class ProjectServiceImpl(
     private val callRepository: CallRepository,
     private val userRepository: UserRepository,
     private val auditService: AuditService,
+    private val auditPublisher: ApplicationEventPublisher,
     private val securityService: SecurityService
 ) : ProjectService {
 
@@ -93,6 +96,12 @@ class ProjectServiceImpl(
         projectStatusHistoryRepo.save(projectStatus.copy(project = createdProject))
 
         projectApplicationCreated(createdProject.id, createdProject.acronym, createdProject.currentStatus.status).logWith(auditService)
+        auditPublisher.publishEvent(projectVersionRecorded(this,
+            projectSummary = ProjectSummary(createdProject.id,createdProject.acronym,createdProject.currentStatus.status),
+            userEmail = applicant.email,
+            version = 1,
+            createdAt = ZonedDateTime.now(ZoneOffset.UTC)
+        ))
 
         return createdProject.toOutputProject()
     }
