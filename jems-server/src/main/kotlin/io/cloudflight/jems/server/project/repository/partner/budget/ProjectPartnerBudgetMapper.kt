@@ -38,7 +38,6 @@ fun List<ProjectPartnerBudgetStaffCostRow>.toBudgetStaffCostEntryList() =
             unitType = groupedRows.value.extractField { it.unitType },
             budgetPeriods = groupedRows.value.filter { it.periodNumber != null }.mapTo(HashSet()) { BudgetPeriod(it.periodNumber!!, it.amount) },
             unitCostId = groupedRows.value.first().unitCostId,
-            type = groupedRows.value.first().type,
             numberOfUnits = groupedRows.value.first().numberOfUnits,
             pricePerUnit = groupedRows.value.first().pricePerUnit,
             rowSum = groupedRows.value.first().rowSum
@@ -61,7 +60,6 @@ fun ProjectPartnerBudgetStaffCostEntity.toBudgetStaffCostEntry() = BudgetStaffCo
     budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
         .toMutableSet(),
     unitCostId = unitCostId,
-    type = type,
     numberOfUnits = baseProperties.numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = baseProperties.rowSum
@@ -80,7 +78,6 @@ fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(
         baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
         pricePerUnit = pricePerUnit,
         unitCostId = unitCostId,
-        type = type,
         translatedValues = mutableSetOf(),
         budgetPeriodEntities = mutableSetOf(),
         id = id ?: 0L

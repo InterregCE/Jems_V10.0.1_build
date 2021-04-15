@@ -22,8 +22,6 @@ fun ProjectPartnerBudgetOptionsDto.toProjectPartnerBudgetOptions(partnerId: Long
     otherCostsOnStaffCostsFlatRate = this.otherCostsOnStaffCostsFlatRate
 )
 
-fun StaffCostType.toStaffCostTypeDTO() = StaffCostTypeDTO.valueOf(this.key)
-fun StaffCostTypeDTO.toStaffCostType() = StaffCostType.valueOf(this.key)
 fun BudgetPeriod.toBudgetPeriodDTO() = BudgetPeriodDTO(this.number, this.amount)
 fun Set<BudgetPeriod>.toBudgetPeriodDTOs() = this.map { it.toBudgetPeriodDTO() }.toMutableSet()
 fun BudgetPeriodDTO.toBudgetPeriod() = BudgetPeriod(this.number, this.amount ?: BigDecimal.ZERO)
@@ -39,7 +37,6 @@ fun BudgetStaffCostEntry.toBudgetStaffCostEntryDTO() = BudgetStaffCostEntryDTO(
     budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
     unitCostId = unitCostId,
     unitType = unitType,
-    type = type?.toStaffCostTypeDTO(),
     description = description,
     comment = comment
 )
@@ -54,7 +51,6 @@ fun BudgetStaffCostEntryDTO.toBudgetStaffCostEntry() = BudgetStaffCostEntry(
     budgetPeriods = budgetPeriods.toBudgetPeriods(),
     unitCostId = unitCostId,
     unitType = unitType,
-    type = type?.toStaffCostType(),
     description = description,
     comment = comment
 )

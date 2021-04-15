@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost
 
 import io.cloudflight.jems.server.common.entity.TranslationView
-import io.cloudflight.jems.server.project.service.partner.model.StaffCostType
 import java.math.BigDecimal
 
 interface ProjectPartnerBudgetStaffCostRow: TranslationView {
@@ -9,7 +8,6 @@ interface ProjectPartnerBudgetStaffCostRow: TranslationView {
     val partnerId: Long
     val periodNumber: Int?
     val amount: BigDecimal
-    val type: StaffCostType?
     val numberOfUnits: BigDecimal
     val pricePerUnit: BigDecimal
     val rowSum: BigDecimal

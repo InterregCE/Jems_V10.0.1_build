@@ -210,7 +210,6 @@ export class ProjectPartnerDetailPageStore {
     return table.entries.map(entry => ({
       id: entry.id as any,
       description: entry.description as any,
-      type: entry.type,
       unitType: entry.unitType as any,
       unitCostId: entry.unitCostId,
       comment: entry.comment,
