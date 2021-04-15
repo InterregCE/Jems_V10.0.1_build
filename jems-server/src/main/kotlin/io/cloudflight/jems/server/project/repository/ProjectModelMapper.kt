@@ -18,7 +18,6 @@ fun Collection<ProjectPeriodEntity>.toProjectPeriods() = map { it.toProjectPerio
 fun ProjectPeriodEntity.toProjectPeriod() = ProjectPeriod(number = id.number, start = start, end = end)
 
 fun ProjectVersionEntity.toProjectVersion() = ProjectVersion(version= id.version, projectId = id.projectId, createdAt = createdAt, user = user, status = status)
-fun List<ProjectVersionEntity>.toProjectVersions() = map { it.toProjectVersion() }
 
 fun CallEntity.toSettingsModel() = ProjectCallSettings(
     callId = id,

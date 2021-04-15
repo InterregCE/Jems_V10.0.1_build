@@ -52,6 +52,7 @@ import org.junit.jupiter.api.Assertions.assertIterableEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -137,6 +138,9 @@ class ProjectServiceTest {
     @RelaxedMockK
     lateinit var auditService: AuditService
 
+    @RelaxedMockK
+    lateinit var auditPublisher: ApplicationEventPublisher
+
     @MockK
     lateinit var securityService: SecurityService
 
@@ -154,6 +158,7 @@ class ProjectServiceTest {
             callRepository,
             userRepository,
             auditService,
+            auditPublisher,
             securityService
         )
     }

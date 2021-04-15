@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
-import io.cloudflight.jems.server.project.service.projectVersionCreated
+import io.cloudflight.jems.server.project.service.projectVersionSnapshotCreated
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -27,7 +27,7 @@ class CreateNewProjectVersion(
                 userId = securityService.getUserIdOrThrow()
             ).also {
                 auditPublisher.publishEvent(
-                    projectVersionCreated(context = this, projectPersistence.getProjectSummary(projectId), projectVersion = it)
+                    projectVersionSnapshotCreated(context = this, projectPersistence.getProjectSummary(projectId), projectVersion = it)
                 )
             }
         }

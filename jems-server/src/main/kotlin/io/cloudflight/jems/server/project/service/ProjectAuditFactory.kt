@@ -8,6 +8,8 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 fun projectApplicationCreated(
     projectId: Long,
@@ -31,15 +33,30 @@ fun projectStatusChanged(
     )
 
 
-fun projectVersionCreated(
+fun projectVersionSnapshotCreated(
     context: Any, projectSummary: ProjectSummary, projectVersion: ProjectVersion
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
-        auditCandidate = AuditBuilder(AuditAction.APPLICATION_VERSION_CREATED)
+        auditCandidate = AuditBuilder(AuditAction.APPLICATION_VERSION_SNAPSHOT_CREATED)
             .project(id = projectSummary.id, name = projectSummary.acronym)
-            .description("New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on ${projectVersion.createdAt.toLocalDateTime()}")
-            .build()
+            .description(
+                "New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on " +
+                    "${projectVersion.createdAt.toLocalDateTime().withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}"
+            ).build()
+    )
+
+fun projectVersionRecorded(
+    context: Any, projectSummary: ProjectSummary, userEmail: String, version: Int, createdAt: ZonedDateTime
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.APPLICATION_VERSION_RECORDED)
+            .project(id = projectSummary.id, name = projectSummary.acronym)
+            .description(
+                "New project version \"V.$version\" is recorded by user: $userEmail on " +
+                    "${createdAt.withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}"
+            ).build()
     )
 
 
