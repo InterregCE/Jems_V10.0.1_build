@@ -7,6 +7,7 @@ import {AbstractForm} from '@common/components/forms/abstract-form';
 import {InputProjectQualityAssessment, ProjectDetailDTO} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
 import {ProjectApplicationFormSidenavService} from '../../../containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project-application-quality-check',
@@ -105,13 +106,17 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     this.notesForm.controls.assessment.setValue(this.NOT_RECOMMEND);
   }
 
-  getQualityCheckMesage(): string {
+  getQualityCheckConfirmation(): ConfirmDialogData {
+    let message = 'project.assessment.qualityCheck.dialog.message.not.recommended';
     if (this.selectedAssessment === this.RECOMMEND) {
-      return 'project.assessment.qualityCheck.dialog.message.recommended';
+      message = 'project.assessment.qualityCheck.dialog.message.recommended';
     }
     if (this.selectedAssessment === this.RECOMMEND_WITH_CONDITIONS) {
-      return 'project.assessment.qualityCheck.dialog.message.recommended.conditions';
+      message = 'project.assessment.qualityCheck.dialog.message.recommended.conditions';
     }
-    return 'project.assessment.qualityCheck.dialog.message.not.recommended';
+    return {
+      title: 'project.assessment.qualityCheck.dialog.title',
+      message
+    };
   }
 }

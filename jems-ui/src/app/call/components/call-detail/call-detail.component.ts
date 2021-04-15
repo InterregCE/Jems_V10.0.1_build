@@ -12,6 +12,7 @@ import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
 import {ProgrammeEditableStateStore} from '../../../programme/programme-page/services/programme-editable-state-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @UntilDestroy()
 @Component({
@@ -207,5 +208,12 @@ export class CallDetailComponent implements OnInit {
     return this.funds
       .filter(fund => fund.selected)
       .map(fund => fund.id);
+  }
+
+  confirmData(): ConfirmDialogData {
+    return {
+      title: 'call.dialog.title',
+      message: this.isFirstCall ? 'call.dialog.message.and.additional.message' : 'call.dialog.message'
+    };
   }
 }

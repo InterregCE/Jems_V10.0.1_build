@@ -7,8 +7,7 @@
     <form appFormLayout [formGroup]="callForm">
         <app-pending-button
                 *ngIf="call?.id && editable"
-                confirmTitle="call.dialog.title"
-                [confirmMessage]="isFirstCall ? 'call.dialog.message.and.additional.message' : 'call.dialog.message'"
+                [confirm]="confirmData()"
                 [disabled]="publishingRequirementsNotAchieved()"
                 [pending]="publishPending"
                 (clicked)="publishCall()">

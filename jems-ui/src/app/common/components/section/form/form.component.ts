@@ -1,8 +1,9 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-form',
@@ -22,6 +23,9 @@ import {map} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormComponent {
+
+  @Input()
+  confirmSave: ConfirmDialogData;
 
   @Output()
   save = new EventEmitter<void>();

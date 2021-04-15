@@ -6,6 +6,7 @@ import {Permission} from '../../../security/permissions/permission';
 import {TranslateService} from '@ngx-translate/core';
 import * as moment from 'moment';
 import {ProjectDetailPageStore} from '../project-detail-page-store.service';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project-application-actions',
@@ -86,10 +87,14 @@ export class ProjectApplicationActionsComponent {
     },         4000);
   }
 
-  getRevertArgs(): { [key: string]: string } {
+  getRevertConfirmation(): ConfirmDialogData {
     return {
-      from: this.translate.instant('common.label.projectapplicationstatus.' + this.projectStatus),
-      to: this.translate.instant('common.label.projectapplicationstatus.' + this.revertToStatus)
+      title: 'project.application.revert.status.dialog.title',
+      message: 'project.application.revert.status.dialog.message',
+      arguments: {
+        from: this.translate.instant('common.label.projectapplicationstatus.' + this.projectStatus),
+        to: this.translate.instant('common.label.projectapplicationstatus.' + this.revertToStatus)
+      }
     };
   }
 }

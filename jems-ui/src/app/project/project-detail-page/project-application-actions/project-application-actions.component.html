@@ -33,9 +33,7 @@
         <ng-container *ngxPermissionsOnly="Permission.ADMINISTRATOR">
             <app-pending-button
                     *ngIf="revertToStatus; else revertNotPossible"
-                    confirmTitle="project.application.revert.status.dialog.title"
-                    confirmMessage="project.application.revert.status.dialog.message"
-                    [confirmArgs]="getRevertArgs()"
+                    [confirm]="getRevertConfirmation()"
                     [pending]="actionPending"
                     (clicked)="revertProjectStatus()">
                 {{ 'project.application.revert.decision.button.label' | translate}}

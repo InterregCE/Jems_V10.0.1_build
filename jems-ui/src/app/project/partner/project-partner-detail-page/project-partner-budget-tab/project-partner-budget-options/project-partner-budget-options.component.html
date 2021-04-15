@@ -1,5 +1,6 @@
 <ng-container *ngIf="(data$ | async) as data">
-    <app-form (save)="updateBudgetOptions(formToBudgetOptions(data.callFlatRateSettings))">
+    <app-form [confirmSave]="realCostsConfirmationConfig(formToBudgetOptions(data.callFlatRateSettings), data.budgets)"
+              (save)="updateBudgetOptions(formToBudgetOptions(data.callFlatRateSettings))">
         <form appFormLayout *ngIf="data.isAnyOptionAvailable else noOptionIsAvailable" [formGroup]="budgetOptionForm">
             <h3>{{'project.partner.budget.options.header' | translate}}</h3>
             <mat-list>
@@ -22,7 +23,8 @@
                                [readonly]="!data.callFlatRateSettings.staffCostFlatRateSetup.isAdjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
-                        <span matSuffix class="pl-1">{{'project.partner.budget.options.staff.costs.on.direct.cost.flat.rate.percent' | translate}}</span>
+                        <span matSuffix
+                              class="pl-1">{{'project.partner.budget.options.staff.costs.on.direct.cost.flat.rate.percent' | translate}}</span>
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="staffCostsFlatRate?.errors"
@@ -52,8 +54,10 @@
                                [readonly]="!data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.isAdjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
-                        <span matSuffix class="pl-1">{{'project.partner.budget.options.office.on.staff.cost.flat.rate.percent' | translate}}</span>
-                        <app-context-info matSuffix *ngIf="officeOnStaffCostsFlatRate.enabled && data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup"
+                        <span matSuffix
+                              class="pl-1">{{'project.partner.budget.options.office.on.staff.cost.flat.rate.percent' | translate}}</span>
+                        <app-context-info matSuffix
+                                          *ngIf="officeOnStaffCostsFlatRate.enabled && data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup"
                                           infoText="{{'project.partner.budget.options.office.on.staff.cost.flat.rate.info' | translate}}">
                         </app-context-info>
                         <mat-error>
@@ -84,8 +88,10 @@
                                [readonly]="!data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.isAdjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
-                        <span matSuffix class="pl-1">{{'project.partner.budget.options.office.on.direct.cost.flat.rate.percent' | translate}}</span>
-                        <app-context-info matSuffix *ngIf="officeOnDirectCostsFlatRate.enabled && data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup"
+                        <span matSuffix
+                              class="pl-1">{{'project.partner.budget.options.office.on.direct.cost.flat.rate.percent' | translate}}</span>
+                        <app-context-info matSuffix
+                                          *ngIf="officeOnDirectCostsFlatRate.enabled && data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup"
                                           infoText="{{'project.partner.budget.options.office.on.direct.cost.flat.rate.info' | translate}}">
                         </app-context-info>
                         <mat-error>
@@ -117,7 +123,8 @@
                                [readonly]="!data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.isAdjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
-                        <span matSuffix class="pl-1">{{'project.partner.budget.options.travel.based.on.staff.cost.flat.rate.percent' | translate}}</span>
+                        <span matSuffix
+                              class="pl-1">{{'project.partner.budget.options.travel.based.on.staff.cost.flat.rate.percent' | translate}}</span>
                         <mat-error>
                             <app-form-field-errors
                                     [errors]="travelOnStaffCostsFlatRate?.errors"
@@ -148,7 +155,8 @@
                                [readonly]="!data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.isAdjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
-                        <span matSuffix class="pl-1">{{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.percent' | translate}}</span>
+                        <span matSuffix
+                              class="pl-1">{{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.percent' | translate}}</span>
                         <app-context-info matSuffix *ngIf="otherCostsOnStaffCostsFlatRate.enabled"
                                           infoText="{{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.info' | translate}}">
                         </app-context-info>
