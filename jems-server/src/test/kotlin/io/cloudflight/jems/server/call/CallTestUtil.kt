@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser

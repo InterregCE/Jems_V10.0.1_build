@@ -31,7 +31,6 @@ class DraftApplicationState(
             if (ZonedDateTime.now().isBefore(projectCallSettings.startDate) ||
                 ZonedDateTime.now().isAfter(projectCallSettings.endDate)
             ) {
-                // todo do we need this audit log
                 auditService.logEvent(callAlreadyEnded(projectCallSettings.callId))
 
                 throw CallIsNotOpenException()
