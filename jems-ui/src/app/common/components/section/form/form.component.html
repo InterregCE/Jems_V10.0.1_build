@@ -27,6 +27,7 @@
         </button>
         <app-pending-button
                 icon="save"
+                [confirm]="confirmSave"
                 [disabled]="(formService.valid$ | async) === false"
                 [pending]="(formService.pending$ | async) === true"
                 (clicked)="submit()">

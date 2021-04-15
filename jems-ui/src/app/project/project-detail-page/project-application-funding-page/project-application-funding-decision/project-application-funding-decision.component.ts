@@ -7,6 +7,7 @@ import {RoutingService} from '../../../../common/services/routing.service';
 import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/internal/operators';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project-application-funding-decision',
@@ -81,5 +82,12 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
       return this.fundingDecisionStore.approveApplicationWithCondition(this.project.id, statusInfo);
     }
     return this.fundingDecisionStore.refuseApplication(this.project.id, statusInfo);
+  }
+
+  getFundingConfirmation(): ConfirmDialogData {
+    return {
+      title: 'project.assessment.fundingDecision.dialog.title',
+      message: 'project.assessment.fundingDecision.dialog.message.' + this.decisionForm?.controls?.status?.value
+    };
   }
 }

@@ -6,6 +6,7 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import {tap} from 'rxjs/operators';
 import {ProjectEligibilityDecisionStore} from './project-eligibility-decision-store.service';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project-application-eligibility-decision-page',
@@ -92,11 +93,15 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
     }
   }
 
-  getEligibilityDecisionMessage(): string {
+  getEligibilityDecisionConfirmation(): ConfirmDialogData {
+    let message = 'project.assessment.eligibilityDecision.dialog.message.ineligible';
     if (this.selectedAssessment === this.ELIGIBLE) {
-      return 'project.assessment.eligibilityDecision.dialog.message.eligible';
+      message = 'project.assessment.eligibilityDecision.dialog.message.eligible';
     }
-    return 'project.assessment.eligibilityDecision.dialog.message.ineligible';
+    return {
+      title: 'project.assessment.eligibilityDecision.dialog.title',
+      message
+    };
   }
 
 }

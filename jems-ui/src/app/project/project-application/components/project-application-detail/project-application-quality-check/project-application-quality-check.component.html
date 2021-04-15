@@ -36,8 +36,7 @@
             </button>
 
             <app-pending-button
-                    confirmTitle="project.assessment.qualityCheck.dialog.title"
-                    [confirmMessage]="getQualityCheckMesage()"
+                    [confirm]="getQualityCheckConfirmation()"
                     [pending]="actionPending"
                     [disabled]="notesForm.invalid || submitted"
                     (clicked)="onSubmit()">

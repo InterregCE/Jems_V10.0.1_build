@@ -8,6 +8,7 @@ import {InputProjectEligibilityAssessment, ProjectDetailDTO} from '@cat/api';
 import {Observable} from 'rxjs';
 import {TranslateService} from '@ngx-translate/core';
 import {ProjectApplicationFormSidenavService} from '../../../containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project-application-eligibility-check',
@@ -94,9 +95,12 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
   }
 
-  getEligibilityCheckMesage(): string {
-    return this.selectedAssessment === this.ELIGIBLE
-      ? 'project.assessment.eligibilityCheck.dialog.message.eligible'
-      : 'project.assessment.eligibilityCheck.dialog.message.ineligible';
+  getEligibilityCheckConfirmation(): ConfirmDialogData {
+    return {
+      title: 'project.assessment.eligibilityCheck.dialog.title',
+      message: this.selectedAssessment === this.ELIGIBLE
+        ? 'project.assessment.eligibilityCheck.dialog.message.eligible'
+        : 'project.assessment.eligibilityCheck.dialog.message.ineligible'
+    };
   }
 }

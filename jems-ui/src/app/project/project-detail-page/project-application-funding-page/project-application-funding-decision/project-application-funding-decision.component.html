@@ -41,8 +41,7 @@
         </button>
 
         <app-pending-button
-                confirmTitle="project.assessment.fundingDecision.dialog.title"
-                [confirmMessage]="'project.assessment.fundingDecision.dialog.message.' + decisionForm?.controls?.status?.value"
+                [confirm]="getFundingConfirmation()"
                 [pending]="actionPending"
                 [disabled]="decisionForm.invalid"
                 (clicked)="onSubmit()">

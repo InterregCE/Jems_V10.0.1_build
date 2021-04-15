@@ -3,6 +3,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../utils/forms';
 import {take} from 'rxjs/internal/operators';
 import {tap} from 'rxjs/operators';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-pending-button',
@@ -19,11 +20,7 @@ export class PendingButtonComponent {
   @Input()
   disabled = false;
   @Input()
-  confirmTitle: string;
-  @Input()
-  confirmMessage: string;
-  @Input()
-  confirmArgs: string;
+  confirm: ConfirmDialogData;
 
   @Output()
   clicked = new EventEmitter<void>();
@@ -34,13 +31,13 @@ export class PendingButtonComponent {
 
   click(): void {
     this.disabled = true;
-    if (!this.confirmTitle) {
+    if (!this.confirm) {
       this.clicked.emit();
       this.pending = true;
       this.changeDetectorRef.markForCheck();
       return;
     }
-    Forms.confirmDialog(this.dialog, this.confirmTitle, this.confirmMessage, this.confirmArgs)
+    Forms.confirmDialog(this.dialog, this.confirm.title, this.confirm.message, this.confirm.arguments)
       .pipe(
         take(1),
         tap(confirmed => {

@@ -34,8 +34,7 @@
             </button>
 
             <app-pending-button
-                    confirmTitle="project.assessment.eligibilityCheck.dialog.title"
-                    [confirmMessage]="getEligibilityCheckMesage()"
+                    [confirm]="getEligibilityCheckConfirmation()"
                     [pending]="actionPending"
                     [disabled]="notesForm.invalid || submitted"
                     (clicked)="confirmEligibilityAssessment()">
