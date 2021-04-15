@@ -28,7 +28,6 @@ class ProjectWorkflowPersistenceProvider(
         getPreviousHistoryStatusOrThrow(projectId).status
 
     @Transactional(readOnly = true)
-
     override fun getLatestApplicationStatusNotEqualTo(
         projectId: Long, statusToIgnore: ApplicationStatus
     ): ApplicationStatus =

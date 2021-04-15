@@ -21,12 +21,10 @@ class CallValidator(private val validator: GeneralValidatorService) {
 
     fun validateEndDateStep1(call: Call): Map<String, I18nMessage> {
         return mutableMapOf<String, I18nMessage>().apply {
-            if (call.is2StepProcedureEnabled()) {
-                if (call.endDateStep1 == null
+            if (call.is2StepProcedureEnabled() && (call.endDateStep1 == null
                     || call.endDateStep1.isBefore(call.startDate)
                     || call.endDateStep1.isAfter(call.endDate))
-                    this["endDateTimeStep1"] = I18nMessage(i18nKey = "endDateTimeStep1.is.invalid")
-            }
+            ) this["endDateTimeStep1"] = I18nMessage(i18nKey = "endDateTimeStep1.is.invalid")
         }
     }
 
