@@ -4,7 +4,7 @@ import {
   InputWorkPackageUpdate,
   InvestmentSummaryDTO,
   OutputIndicatorSummaryDTO,
-  OutputProject,
+  ProjectDetailDTO,
   OutputWorkPackage,
   ProgrammeIndicatorService,
   WorkPackageActivityDTO,
@@ -32,7 +32,7 @@ export class ProjectWorkPackagePageStore {
   workPackage$ = new ReplaySubject<OutputWorkPackage | any>(1);
   projectInvestmentSummaries$: Observable<InvestmentSummary[]>;
   isProjectEditable$: Observable<boolean>;
-  project$: Observable<OutputProject>;
+  project$: Observable<ProjectDetailDTO>;
   activities$: Observable<WorkPackageActivityDTO[]>;
   outputs$: Observable<WorkPackageOutputDTO[]>;
   outputIndicators$: Observable<OutputIndicatorSummaryDTO[]>;

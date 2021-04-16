@@ -1,35 +1,19 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {
   InputProjectData,
   InputProjectEligibilityAssessment,
   InputProjectQualityAssessment,
-  InputProjectStatus,
-  InputRevertProjectStatus,
-  OutputProject,
-  OutputProjectStatus,
-  OutputRevertProjectStatus,
+  ProjectDetailDTO,
+  ProjectPartnerBudgetCoFinancingDTO,
   ProjectService,
-  ProjectStatusService,
-  ProjectPartnerBudgetCoFinancingDTO
+  ProjectStatusDTO,
+  ProjectStatusService
 } from '@cat/api';
-import {
-  catchError,
-  distinctUntilChanged,
-  filter,
-  map,
-  mergeMap,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-  withLatestFrom
-} from 'rxjs/operators';
+import {distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';
-import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectCallSettings} from '../../../../model/projectCallSettings';
 import {CallFlatRateSetting} from '../../../../model/call-flat-rate-setting';
 import {ProgrammeLumpSum} from '../../../../model/lump-sums/programmeLumpSum';
@@ -46,35 +30,19 @@ export class ProjectStore {
   public static PROJECT_DETAIL_PATH = '/app/project/detail/';
 
   projectId$ = new ReplaySubject<number>(1);
+  projectStatusChanged$ = new Subject();
+
+  projectStatus$: Observable<ProjectStatusDTO.StatusEnum>;
+  project$: Observable<ProjectDetailDTO>;
+  projectEditable$: Observable<boolean>;
+
+  // move to page store
+  projectCall$: Observable<ProjectCallSettings>;
+
   private projectAcronym$ = new ReplaySubject<string>(1);
-  private newStatus$ = new Subject<InputProjectStatus>();
   private newEligibilityAssessment$ = new Subject<InputProjectEligibilityAssessment>();
   private newQualityAssessment$ = new Subject<InputProjectQualityAssessment>();
-  private newRevertProjectStatus$ = new Subject<InputRevertProjectStatus>();
-  private revertStatusChanged$ = new Subject<void>();
-  private changeStatusError$ = new Subject<I18nValidationError | null>();
-
-  private projectById$ = this.projectId$
-    .pipe(
-      distinctUntilChanged(),
-      filter(id => !!id),
-      mergeMap(id => this.projectService.getProjectById(id)),
-      tap(project => Log.info('Fetched project:', this, project))
-    );
-
-  private changedStatus$ = this.newStatus$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      mergeMap(([newStatus, id]) =>
-        this.projectStatusService.setProjectStatus(id, newStatus)),
-      tap(saved => this.projectStatus$.next(saved.projectStatus.status)),
-      tap(saved => Log.info('Updated project status status:', this, saved)),
-      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id])),
-      catchError((error: HttpErrorResponse) => {
-        this.changeStatusError$.next(error.error);
-        throw error;
-      })
-    );
+  private updatedProjectData$ = new Subject<ProjectDetailDTO>();
 
   private changedEligibilityAssessment$ = this.newEligibilityAssessment$
     .pipe(
@@ -92,108 +60,31 @@ export class ProjectStore {
       tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
     );
 
-  private revertedProjectStatus$ = this.newRevertProjectStatus$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      mergeMap(([status, id]) => this.projectStatusService.revertLastDecision(id, status)),
-      tap(() => this.revertStatusChanged$.next()),
-      tap(saved => Log.info('Reverted project status:', this, saved))
-    );
-
-  private updatedProjectData$ = new Subject<OutputProject>();
-
-  private revertStatus$ = combineLatest([
-    this.permissionService.permissionsChanged(),
-    this.projectId$,
-    this.revertStatusChanged$.pipe(startWith(null))
-  ])
-    .pipe(
-      mergeMap(([permissions, id]) => id && permissions[0] === Permission.ADMINISTRATOR
-        ? this.projectStatusService.findPossibleDecisionRevertStatus(id)
-        : of(null)
-      ),
-      tap(revertStatus => Log.info('Fetched the project revert status', revertStatus))
-    );
-
-  private projectStatus$ = new ReplaySubject<OutputProjectStatus.StatusEnum>(1);
-  private project$ =
-    merge(
-      this.projectById$,
-      this.changedStatus$,
-      this.changedEligibilityAssessment$,
-      this.changedQualityAssessment$,
-      this.revertedProjectStatus$,
-      this.updatedProjectData$
-    )
-      .pipe(
-        tap(project => this.projectAcronym$.next(project?.acronym)),
-        shareReplay(1)
-      );
-
-
-  projectEditable$ = combineLatest([this.getProject(), this.permissionService.permissionsChanged()])
-    .pipe(
-      map(([project, permissions]) => {
-          if (permissions.some(perm => perm === Permission.PROGRAMME_USER)) {
-            // programme users cannot edit projects
-            return false;
-          }
-          return project.projectStatus.status === OutputProjectStatus.StatusEnum.DRAFT
-            || project.projectStatus.status === OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
-        }
-      ),
-      shareReplay(1)
-    );
-
-  projectCall$: Observable<ProjectCallSettings> = this.getProject()
-    .pipe(
-      map(project => project.callSettings),
-      map(callSetting => new ProjectCallSettings(
-        callSetting.callId,
-        callSetting.callName,
-        callSetting.startDate,
-        callSetting.endDate,
-        callSetting.lengthOfPeriod,
-        new CallFlatRateSetting(callSetting.flatRates.staffCostFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup),
-        callSetting.lumpSums.map(lumpSum =>
-          new ProgrammeLumpSum(lumpSum.id, lumpSum.name, lumpSum.description, lumpSum.cost, lumpSum.splittingAllowed, LumpSumPhaseEnumUtils.toLumpSumPhaseEnum(lumpSum.phase), BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(lumpSum.categories))),
-        callSetting.unitCosts
-            .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.isOneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories))),
-        callSetting.isAdditionalFundAllowed
-      )),
-      shareReplay(1)
-    );
 
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
               private router: RoutingService,
               private permissionService: PermissionService) {
-
     this.router.routeParameterChanges(ProjectStore.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
         tap(id => this.projectId$.next(Number(id)))
-      )
-      .subscribe();
+      ).subscribe();
+
+    this.project$ = this.project();
+    this.projectEditable$ = this.projectEditable();
+    this.projectStatus$ = this.projectStatus();
+    this.projectCall$ = this.projectCallSettings();
   }
 
-  getProject(): Observable<OutputProject> {
+  /**
+   * TODO: remove and use project$
+   */
+  getProject(): Observable<ProjectDetailDTO> {
     return this.project$;
   }
 
-  getStatus(): Observable<OutputProjectStatus.StatusEnum> {
-    return this.projectStatus$.asObservable();
-  }
-
-  changeStatus(newStatus: InputProjectStatus): void {
-    this.newStatus$.next(newStatus);
-  }
-
-  getChangeStatusError(): Observable<I18nValidationError | null> {
-    return this.changeStatusError$.asObservable();
-  }
-
-  updateProjectData(data: InputProjectData): Observable<OutputProject> {
+  updateProjectData(data: InputProjectData): Observable<ProjectDetailDTO> {
     return this.projectId$
       .pipe(
         switchMap(id => this.projectService.updateProjectData(id, data)),
@@ -219,15 +110,80 @@ export class ProjectStore {
     this.newQualityAssessment$.next(assessment);
   }
 
-  getRevertStatus(): Observable<OutputRevertProjectStatus | null> {
-    return this.revertStatus$;
-  }
-
-  revertStatus(status: InputRevertProjectStatus): void {
-    this.newRevertProjectStatus$.next(status);
-  }
-
   getAcronym(): Observable<string> {
     return this.projectAcronym$.asObservable();
+  }
+
+  private projectStatus(): Observable<ProjectStatusDTO.StatusEnum> {
+    return this.project$
+      .pipe(
+        map(project => project.projectStatus.status),
+        shareReplay(1)
+      );
+  }
+
+  private project(): Observable<ProjectDetailDTO> {
+    const byId$ = this.projectId$
+      .pipe(
+        filter(id => !!id),
+        switchMap(id => this.projectService.getProjectById(id)),
+        tap(project => Log.info('Fetched project:', this, project))
+      );
+
+    const byStatusChanged$ = this.projectStatusChanged$
+      .pipe(
+        withLatestFrom(this.projectId$),
+        switchMap(([, id]) => this.projectService.getProjectById(id)),
+        tap(project => Log.info('Fetched project:', this, project))
+      );
+
+    return merge(
+      byId$,
+      byStatusChanged$,
+      this.changedEligibilityAssessment$,
+      this.changedQualityAssessment$,
+      this.updatedProjectData$
+    )
+      .pipe(
+        tap(project => this.projectAcronym$.next(project?.acronym)),
+        shareReplay(1)
+      );
+  }
+
+  private projectEditable(): Observable<boolean> {
+    return combineLatest([this.project$, this.permissionService.permissionsChanged()])
+      .pipe(
+        map(([project, permissions]) => {
+            if (permissions.some(perm => perm === Permission.PROGRAMME_USER)) {
+              // programme users cannot edit projects
+              return false;
+            }
+            return project.projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT
+              || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
+          }
+        ),
+        shareReplay(1)
+      );
+  }
+
+  private projectCallSettings(): Observable<ProjectCallSettings> {
+    return this.project$
+      .pipe(
+        map(project => project.callSettings),
+        map(callSetting => new ProjectCallSettings(
+          callSetting.callId,
+          callSetting.callName,
+          callSetting.startDate,
+          callSetting.endDate,
+          callSetting.lengthOfPeriod,
+          new CallFlatRateSetting(callSetting.flatRates.staffCostFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup),
+          callSetting.lumpSums.map(lumpSum =>
+            new ProgrammeLumpSum(lumpSum.id, lumpSum.name, lumpSum.description, lumpSum.cost, lumpSum.splittingAllowed, LumpSumPhaseEnumUtils.toLumpSumPhaseEnum(lumpSum.phase), BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(lumpSum.categories))),
+          callSetting.unitCosts
+            .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.isOneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories))),
+          callSetting.isAdditionalFundAllowed
+        )),
+        shareReplay(1)
+      );
   }
 }

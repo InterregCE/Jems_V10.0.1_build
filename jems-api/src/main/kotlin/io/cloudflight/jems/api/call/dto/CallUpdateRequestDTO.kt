@@ -9,6 +9,7 @@ data class CallUpdateRequestDTO (
     val id: Long? = null,
     val name: String,
     val startDateTime: ZonedDateTime,
+    val endDateTimeStep1: ZonedDateTime? = null,
     val endDateTime: ZonedDateTime,
     val isAdditionalFundAllowed: Boolean,
     val lengthOfPeriod: Int,

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {FormGroup} from '@angular/forms';
 import {I18nLabel} from '../../../i18n/i18n-label';
 import {Log} from '../../../utils/log';
@@ -21,6 +21,7 @@ export class FormService {
   valid$ = new ReplaySubject<boolean>(1);
   dirty$ = new ReplaySubject<boolean>(1);
   success$ = new Subject<I18nLabel | string | null>();
+  pending$ = new BehaviorSubject<boolean>(false);
   error$ = new Subject<APIError | null>();
   reset$ = this.resetSubject.asObservable();
 
@@ -56,6 +57,7 @@ export class FormService {
 
     const apiError = httpError.error;
     this.error$.next(apiError);
+    this.pending$.next(false);
     if (apiError) {
       this.success$.next(null);
       if (!apiError.i18nMessage && !apiError.message) {
@@ -70,6 +72,7 @@ export class FormService {
   setSuccess(message: I18nLabel | string | null): void {
     this.success$.next(message);
     this.error$.next(null);
+    this.pending$.next(false);
     if (message) {
       setTimeout(() => this.success$.next(null), 3000);
     }

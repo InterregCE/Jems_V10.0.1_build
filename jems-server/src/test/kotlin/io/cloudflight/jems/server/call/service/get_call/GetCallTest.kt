@@ -29,12 +29,10 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime
-import java.util.Optional
 
 class GetCallTest: UnitTest() {
 
@@ -46,6 +44,7 @@ class GetCallTest: UnitTest() {
             name = "existing call",
             status = CallStatus.PUBLISHED,
             startDate = ZonedDateTime.now().minusDays(1),
+            endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
             lengthOfPeriod = 9,

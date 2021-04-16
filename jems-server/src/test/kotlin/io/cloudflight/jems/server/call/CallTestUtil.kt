@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
@@ -15,8 +14,9 @@ import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import java.time.ZonedDateTime
@@ -36,6 +36,7 @@ private fun testCall(id: Long = 0) = CallEntity(
     name = "Test call name",
     status = CallStatus.DRAFT,
     startDate = ZonedDateTime.now(),
+    endDateStep1 = null,
     endDate = ZonedDateTime.now().plusDays(5L),
     lengthOfPeriod = 1,
     isAdditionalFundAllowed = false,
@@ -60,7 +61,7 @@ private val dummyProject = ProjectEntity(
     call = testCall(),
     acronym = "Test Project",
     applicant = account,
-    projectStatus = ProjectStatus(id = 1, status = ProjectApplicationStatus.DRAFT, user = account)
+    currentStatus = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = account)
 )
 
 fun partnerWithId(id: Long) = ProjectPartnerEntity(

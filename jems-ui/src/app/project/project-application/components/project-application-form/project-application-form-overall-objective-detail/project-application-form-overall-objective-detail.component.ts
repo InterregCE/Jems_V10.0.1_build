@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {InputProjectOverallObjective, OutputProgrammePriorityPolicySimple} from '@cat/api';
+import {InputProjectOverallObjective, OutputProgrammePriorityPolicySimpleDTO} from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {BaseComponent} from '@common/components/base-component';
@@ -29,7 +29,7 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
   @Input()
   project: InputProjectOverallObjective;
   @Input()
-  specificObjective: OutputProgrammePriorityPolicySimple;
+  specificObjective: OutputProgrammePriorityPolicySimpleDTO;
   @Output()
   updateData = new EventEmitter<InputProjectOverallObjective>();
 

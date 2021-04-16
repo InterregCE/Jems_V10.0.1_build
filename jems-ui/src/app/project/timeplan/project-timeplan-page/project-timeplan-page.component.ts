@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild} from 
 import {ActivatedRoute, Router} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
 import {TranslateService} from '@ngx-translate/core';
-import {OutputProjectPeriod} from '@cat/api';
+import {ProjectPeriodDTO} from '@cat/api';
 import {Timeline} from 'vis-timeline';
 import {DataSet} from 'vis-data/peer';
 import {map, tap} from 'rxjs/operators';
@@ -89,7 +89,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
       );
   }
 
-  private createVisualizationOrUpdateJustTranslations(periods: OutputProjectPeriod[], newItems: DataSet<any>, groups: DataSet<any>): void {
+  private createVisualizationOrUpdateJustTranslations(periods: ProjectPeriodDTO[], newItems: DataSet<any>, groups: DataSet<any>): void {
     if (!periods.length) {
       return;
     }

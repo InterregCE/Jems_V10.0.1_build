@@ -15,7 +15,7 @@ import {map, startWith} from 'rxjs/operators';
 import {NumberService} from '../../../../../../common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
+import {BudgetPeriodDTO, ProjectPeriodDTO} from '@cat/api';
 import {UnitCostsBudgetTable} from '../../../../../model/budget/unit-costs-budget-table';
 import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
 import {Alert} from '@common/components/forms/alert';
@@ -40,7 +40,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   @Input()
   availableUnitCosts: ProgrammeUnitCost[];
   @Input()
-  projectPeriods: OutputProjectPeriod[];
+  projectPeriods: ProjectPeriodDTO[];
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;

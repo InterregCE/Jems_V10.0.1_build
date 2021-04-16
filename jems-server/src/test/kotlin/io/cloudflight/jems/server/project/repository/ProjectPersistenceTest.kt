@@ -5,13 +5,11 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
-import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
@@ -19,16 +17,13 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostB
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
-import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
-import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.service.model.Project
-import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
-import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -55,7 +50,13 @@ internal class ProjectPersistenceTest : UnitTest() {
             call.endDate = endDate
             call.lengthOfPeriod = 9
             call.flatRates.clear()
-            call.flatRates.add(ProjectCallFlatRateEntity(setupId = FlatRateSetupId(call, FlatRateType.STAFF_COSTS), rate = 15, isAdjustable = true))
+            call.flatRates.add(
+                ProjectCallFlatRateEntity(
+                    setupId = FlatRateSetupId(call, FlatRateType.STAFF_COSTS),
+                    rate = 15,
+                    isAdjustable = true
+                )
+            )
             call.lumpSums.clear()
             call.lumpSums.add(
                 ProgrammeLumpSumEntity(
@@ -69,8 +70,14 @@ internal class ProjectPersistenceTest : UnitTest() {
                     splittingAllowed = false,
                     phase = ProgrammeLumpSumPhase.Preparation,
                     categories = mutableSetOf(
-                        ProgrammeLumpSumBudgetCategoryEntity(programmeLumpSumId = 12, category = BudgetCategory.EquipmentCosts),
-                        ProgrammeLumpSumBudgetCategoryEntity(programmeLumpSumId = 13, category = BudgetCategory.TravelAndAccommodationCosts),
+                        ProgrammeLumpSumBudgetCategoryEntity(
+                            programmeLumpSumId = 12,
+                            category = BudgetCategory.EquipmentCosts
+                        ),
+                        ProgrammeLumpSumBudgetCategoryEntity(
+                            programmeLumpSumId = 13,
+                            category = BudgetCategory.TravelAndAccommodationCosts
+                        ),
                     ),
                 )
             )
@@ -87,8 +94,14 @@ internal class ProjectPersistenceTest : UnitTest() {
                     costPerUnit = BigDecimal.ONE,
                     isOneCostCategory = false,
                     categories = mutableSetOf(
-                        ProgrammeUnitCostBudgetCategoryEntity(programmeUnitCostId = 14, category = BudgetCategory.ExternalCosts),
-                        ProgrammeUnitCostBudgetCategoryEntity(programmeUnitCostId = 15, category = BudgetCategory.OfficeAndAdministrationCosts),
+                        ProgrammeUnitCostBudgetCategoryEntity(
+                            programmeUnitCostId = 14,
+                            category = BudgetCategory.ExternalCosts
+                        ),
+                        ProgrammeUnitCostBudgetCategoryEntity(
+                            programmeUnitCostId = 15,
+                            category = BudgetCategory.OfficeAndAdministrationCosts
+                        ),
                     ),
                 )
             )
@@ -102,7 +115,11 @@ internal class ProjectPersistenceTest : UnitTest() {
                 call = dummyCall(),
                 acronym = "Test Project",
                 applicant = call.creator,
-                projectStatus = ProjectStatus(id = 1, status = ProjectApplicationStatus.DRAFT, user = call.creator),
+                currentStatus = ProjectStatusHistoryEntity(
+                    id = 1,
+                    status = ApplicationStatus.DRAFT,
+                    user = call.creator
+                ),
                 periods = listOf(
                     ProjectPeriodEntity(
                         id = ProjectPeriodId(projectId = PROJECT_ID, number = 1),
@@ -124,70 +141,62 @@ internal class ProjectPersistenceTest : UnitTest() {
     private lateinit var persistence: ProjectPersistenceProvider
 
     @Test
-    fun `getProject - not existing`() {
+    fun `getProjectSummary - not existing`() {
         every { projectRepository.findById(-1) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getProject(-1) }
+        val ex = assertThrows<ResourceNotFoundException> { persistence.getProjectSummary(-1) }
         assertThat(ex.entity).isEqualTo("project")
     }
 
     @Test
-    fun `getProject - everything OK`() {
-        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(dummyProject())
-        assertThat(persistence.getProject(PROJECT_ID)).isEqualTo(
-            Project(
+    fun `getProjectSummary - everything OK`() {
+        val project = dummyProject()
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        assertThat(persistence.getProjectSummary(PROJECT_ID)).isEqualTo(
+            ProjectSummary(
                 id = PROJECT_ID,
-                periods = listOf(
-                    ProjectPeriod(number = 1, start = 1, end = 2),
-                ),
+                acronym = project.acronym,
+                status = project.currentStatus.status
             )
         )
     }
 
     @Test
-    fun `getProjectCallSettingsForProject - not existing`() {
-        every { projectRepository.findById(-1) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getProjectCallSettings(-1) }
-        assertThat(ex.entity).isEqualTo("project")
-    }
-
-    @Test
-    fun `getProjectCallSettingsForProject - everything OK`() {
-        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(dummyProject())
+    fun `get Project Call Settings`() {
+        val project = dummyProject()
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
         assertThat(persistence.getProjectCallSettings(PROJECT_ID)).isEqualTo(
-            ProjectCallSettings(
-                callId = CALL_ID,
-                callName = "call name",
-                startDate = startDate,
-                endDate = endDate,
-                lengthOfPeriod = 9,
-                isAdditionalFundAllowed = false,
-                flatRates = setOf(
-                    ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, isAdjustable = true),
-                ),
-                lumpSums = listOf(
-                    ProgrammeLumpSum(
-                        id = 32,
-                        name = setOf(InputTranslation(SystemLanguage.EN, "LumpSum")),
-                        description = setOf(InputTranslation(SystemLanguage.EN, "pls 32")),
-                        cost = BigDecimal.TEN,
-                        splittingAllowed = false,
-                        phase = ProgrammeLumpSumPhase.Preparation,
-                        categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
-                    ),
-                ),
-                unitCosts = listOf(
-                    ProgrammeUnitCost(
-                        id = 4,
-                        name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
-                        description = setOf(InputTranslation(SystemLanguage.EN, "plus 4")),
-                        type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
-                        costPerUnit = BigDecimal.ONE,
-                        isOneCostCategory = false,
-                        categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
-                    ),
-                ),
-            ),
+            project.call.toSettingsModel()
         )
     }
 
+    @Test
+    fun `get Project UnitCosts`() {
+        val project = dummyProject()
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        assertThat(persistence.getProjectUnitCosts(PROJECT_ID)).isEqualTo(
+            project.call.unitCosts.toModel()
+        )
+    }
+
+    @Test
+    fun `get ProjectId for Partner`() {
+        every { projectPartnerRepository.getProjectIdForPartner(1) } returns PROJECT_ID
+        assertThat(persistence.getProjectIdForPartner(PROJECT_ID)).isEqualTo(PROJECT_ID)
+    }
+
+    @Test
+    fun `get ProjectId for Partner - not existing`() {
+        every { projectPartnerRepository.getProjectIdForPartner(1) } returns null
+        val ex = assertThrows<ResourceNotFoundException> { persistence.getProjectIdForPartner(1) }
+        assertThat(ex.entity).isEqualTo("ProjectPartner")
+    }
+
+    @Test
+    fun `get Project Periods`() {
+        val project = dummyProject()
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        assertThat(persistence.getProjectPeriods(PROJECT_ID)).isEqualTo(
+            project.periods.toProjectPeriods()
+        )
+    }
 }

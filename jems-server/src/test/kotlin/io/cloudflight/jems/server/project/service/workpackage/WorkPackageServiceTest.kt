@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.workpackage
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.user.entity.User
@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -59,15 +60,16 @@ class WorkPackageServiceTest {
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
         startDate = ZonedDateTime.now(),
+        endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
         translatedValues = mutableSetOf(),
         lengthOfPeriod = 1
     ).apply { translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call")) }
 
-    private val statusDraft = ProjectStatus(
+    private val statusDraft = ProjectStatusHistoryEntity(
         id = 10,
-        status = ProjectApplicationStatus.DRAFT,
+        status = ApplicationStatus.DRAFT,
         user = account,
         updated = TEST_DATE_TIME
     )
@@ -77,7 +79,7 @@ class WorkPackageServiceTest {
         call = call,
         acronym = "test",
         applicant = account,
-        projectStatus = statusDraft
+        currentStatus = statusDraft
     )
 
     private val translatedNameInEntity = WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test")

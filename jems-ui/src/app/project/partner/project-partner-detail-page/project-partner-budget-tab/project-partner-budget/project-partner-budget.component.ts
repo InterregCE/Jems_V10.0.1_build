@@ -16,7 +16,7 @@ import {PartnerBudgetTables} from '../../../../model/budget/partner-budget-table
 import {GeneralBudgetTable} from '../../../../model/budget/general-budget-table';
 import {TravelAndAccommodationCostsBudgetTable} from '../../../../model/budget/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../model/budget/travel-and-accommodation-costs-budget-table-entry';
-import {OutputProjectPeriod} from '@cat/api';
+import {ProjectPeriodDTO} from '@cat/api';
 import {UnitCostsBudgetTable} from '../../../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../../../model/budget/unit-costs-budget-table-entry';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
@@ -46,7 +46,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     officeAndAdministrationFlatRateTotal: number,
     travelAndAccommodationTotal: number,
     otherCostsFlatRateTotal: number,
-    periods: OutputProjectPeriod[],
+    periods: ProjectPeriodDTO[],
     isStaffCostFlatRateActive: boolean,
     isOfficeOnStaffFlatRateActive: boolean,
     isOfficeOnDirectFlatRateActive: boolean,

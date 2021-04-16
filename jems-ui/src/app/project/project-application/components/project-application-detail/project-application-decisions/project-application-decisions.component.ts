@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {OutputProject, OutputProjectStatus} from '@cat/api';
+import {ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import {Tables} from '../../../../../common/utils/tables';
 
 @Component({
@@ -9,16 +9,16 @@ import {Tables} from '../../../../../common/utils/tables';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationDecisionsComponent {
-  OutputProjectStatus = OutputProjectStatus;
+  STATUS = ProjectStatusDTO.StatusEnum;
   Tables = Tables;
 
   @Input()
-  project: OutputProject;
+  project: ProjectDetailDTO;
   @Input()
-  projectStatus: OutputProjectStatus.StatusEnum;
+  projectStatus: ProjectStatusDTO.StatusEnum;
 
   updateOrViewFundingLabel(): string {
-    return this.projectStatus === OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS
+    return this.projectStatus === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS
       ? 'project.assessment.fundingDecision.assessment.update'
       : 'project.assessment.fundingDecision.assessment.view';
   }

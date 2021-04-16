@@ -35,11 +35,13 @@
                     (click)="onCancel()">{{'project.assessment.qualityCheck.dialog.button.cancel' | translate}}
             </button>
 
-            <button mat-raised-button color="primary"
-                    type="submit"
+            <app-pending-button
+                    [confirm]="getQualityCheckConfirmation()"
+                    [pending]="actionPending"
                     [disabled]="notesForm.invalid || submitted"
-                    (click)="onSubmit()">{{'project.assessment.qualityCheck.dialog.button.submit' | translate}}
-            </button>
+                    (clicked)="onSubmit()">
+                {{'project.assessment.qualityCheck.dialog.button.submit' | translate}}
+            </app-pending-button>
         </div>
     </form>
 </app-main-page-template>

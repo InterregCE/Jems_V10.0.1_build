@@ -1,33 +1,29 @@
 package io.cloudflight.jems.server.project.service
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.DisadvantagedGroups
-import io.cloudflight.jems.api.project.dto.InputProjectStatus
-import io.cloudflight.jems.api.project.dto.InputRevertProjectStatus
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.InputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
-import io.cloudflight.jems.api.project.dto.status.OutputRevertProjectStatus
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
-import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.user.dto.OutputUserRole
 import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
-import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.project.entity.ProjectEligibilityAssessment
-import io.cloudflight.jems.server.project.entity.ProjectStatus
-import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
+import io.cloudflight.jems.server.project.entity.ProjectEntity
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
+import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.user.repository.UserRepository
@@ -41,15 +37,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.fail
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Optional
-import java.util.stream.Collectors
 
 internal class ProjectStatusServiceTest {
 
@@ -73,26 +66,19 @@ internal class ProjectStatusServiceTest {
     lateinit var securityService: SecurityService
 
     @MockK
-    lateinit var projectStatusRepository: ProjectStatusRepository
+    lateinit var projectStatusHistoryRepository: ProjectStatusHistoryRepository
 
     lateinit var projectStatusService: ProjectStatusService
 
     private val user = User(
-            id = 1,
-            email = "applicant@programme.dev",
-            name = "applicant",
-            surname = "",
-            userRole = UserRole(id = 3, name = "applicant user"),
-            password = "hash_pass"
+        id = 1,
+        email = "applicant@programme.dev",
+        name = "applicant",
+        surname = "",
+        userRole = UserRole(id = 3, name = "applicant user"),
+        password = "hash_pass"
     )
 
-    private val userApplicant = OutputUserWithRole(
-        user.id,
-        user.email,
-        user.name,
-        user.surname,
-        OutputUserRole(user.userRole.id, user.userRole.name)
-    )
     private val userProgramme = OutputUserWithRole(16, "programme@email", "", "", OutputUserRole(7, "programme"))
 
     private val dummyCall = CallEntity(
@@ -104,238 +90,29 @@ internal class ProjectStatusServiceTest {
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
         startDate = ZonedDateTime.now().minusDays(2),
+        endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(2),
         status = CallStatus.PUBLISHED,
         lengthOfPeriod = 1
     )
 
-    private val projectDraft = createProject(ProjectApplicationStatus.DRAFT)
-    private val projectSubmitted = createProject(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED)
-    private val projectReturned = createProject(ProjectApplicationStatus.RETURNED_TO_APPLICANT)
-    private val projectEligible = createProject(ProjectApplicationStatus.ELIGIBLE)
-    private val projectApprovedWithConditions =
-        createAlreadyApprovedProject(ProjectApplicationStatus.APPROVED_WITH_CONDITIONS)
+    private val projectSubmitted = createProject(ApplicationStatus.SUBMITTED, NOTE_DENIED)
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
         projectStatusService = ProjectStatusServiceImpl(
-            projectRepository, projectStatusRepository, userRepository, auditService, securityService
+            projectRepository, userRepository, auditService, securityService
         )
     }
 
-    @Test
-    fun `project status submitted`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findById(1) } returns Optional.of(projectDraft)
-        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
-
-        val result = projectStatusService.setProjectStatus(
-            1,
-            InputProjectStatus(ProjectApplicationStatus.SUBMITTED, NOTE_DENIED, null)
-        )
-
-        assertThat(result.id).isEqualTo(1)
-        assertThat(result.firstSubmission).isNotNull()
-        assertThat(result.lastResubmission).isNull()
-        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
-        assertThat(result.projectStatus.note).isEqualTo(NOTE_DENIED)
-    }
-
-    @Test
-    fun `project status re-submitted to SUBMITTED`() {
-        val ignoreStatuses = setOf(ProjectApplicationStatus.DRAFT, ProjectApplicationStatus.RETURNED_TO_APPLICANT)
-        val previousState = ProjectStatus(status = ProjectApplicationStatus.SUBMITTED, user = user)
-
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findById(1) } returns Optional.of(projectReturned)
-        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every {
-            projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(
-                eq(1),
-                eq(ignoreStatuses)
-            )
-        } returns previousState
-        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
-
-        val result =
-            projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
-
-        assertThat(result.id).isEqualTo(1)
-        assertThat(result.firstSubmission).isNotNull()
-        assertThat(result.lastResubmission).isNotNull()
-        assertThat(result.firstSubmission?.updated).isNotEqualTo(result.lastResubmission?.updated)
-        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
-        assertThat(result.projectStatus.note).isNull()
-    }
-
-    @Test
-    fun `project status re-submitted to ELIGIBLE`() {
-        val ignoreStatuses = setOf(ProjectApplicationStatus.RETURNED_TO_APPLICANT, ProjectApplicationStatus.DRAFT)
-        val previousState = ProjectStatus(status = ProjectApplicationStatus.ELIGIBLE, user = user)
-
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findById(1) } returns Optional.of(projectReturned)
-        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every {
-            projectStatusRepository.findFirstByProjectIdAndStatusNotInOrderByUpdatedDesc(
-                eq(1),
-                eq(ignoreStatuses)
-            )
-        } returns previousState
-        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
-
-        val result =
-            projectStatusService.setProjectStatus(1, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
-
-        assertThat(result.id).isEqualTo(1)
-        assertThat(result.firstSubmission).isNotNull()
-        assertThat(result.lastResubmission).isNotNull()
-        assertThat(result.firstSubmission?.updated).isNotEqualTo(result.lastResubmission?.updated)
-        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.ELIGIBLE)
-        assertThat(result.projectStatus.note).isNull()
-    }
-
-    @Test
-    fun `project status SUBMITTED to ELIGIBLE`() {
-        val eligibilityAssessment = ProjectEligibilityAssessment(
-            id = 10,
-            project = projectSubmitted,
-            result = ProjectEligibilityAssessmentResult.PASSED,
-            user = user
-        )
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findById(1) } returns Optional.of(projectSubmitted.copy(eligibilityAssessment = eligibilityAssessment))
-        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
-
-        val result = projectStatusService.setProjectStatus(
-            projectId = 1,
-            statusChange = InputProjectStatus(
-                ProjectApplicationStatus.ELIGIBLE,
-                "some note",
-                LocalDate.now().plusDays(1)
-            )
-        )
-
-        assertThat(result.id).isEqualTo(1)
-        assertThat(result.eligibilityDecision).isNotNull()
-        assertThat(result.eligibilityDecision?.status).isEqualTo(ProjectApplicationStatus.ELIGIBLE)
-        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.ELIGIBLE)
-        assertThat(result.projectStatus.note).isEqualTo("some note")
-        assertThat(result.projectStatus).isEqualTo(result.eligibilityDecision)
-    }
-
-    @Test
-    fun `project status SUBMITTED to ELIGIBLE missing date`() {
-        val eligibilityAssessment = ProjectEligibilityAssessment(
-            id = 10,
-            project = projectSubmitted,
-            result = ProjectEligibilityAssessmentResult.PASSED,
-            user = user
-        )
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findById(1) } returns Optional.of(projectSubmitted.copy(eligibilityAssessment = eligibilityAssessment))
-        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
-
-        val exception = assertThrows<I18nValidationException> {
-            projectStatusService.setProjectStatus(
-                projectId = 1,
-                statusChange = InputProjectStatus(ProjectApplicationStatus.ELIGIBLE, "some note", null)
-            )
-        }
-
-        assertThat(exception.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
-        assertThat(exception.i18nKey).isEqualTo("project.decision.date.unknown")
-    }
-
-    @Test
-    fun `test allowed funding transitions`() {
-        val projectEligibleWithDate = projectEligible
-            .copy(eligibilityDecision = ProjectStatus(
-                status = ProjectApplicationStatus.ELIGIBLE,
-                decisionDate = LocalDate.now().minusDays(1),
-                user = user
-            ))
-        val allowedTransitions = setOf(
-            projectEligibleWithDate to ProjectApplicationStatus.APPROVED,
-            projectEligibleWithDate to ProjectApplicationStatus.NOT_APPROVED,
-            projectEligibleWithDate to ProjectApplicationStatus.APPROVED_WITH_CONDITIONS
-        )
-
-        allowedTransitions.forEach { testAllowedFundingTransitions(it) }
-    }
-
-    private fun testAllowedFundingTransitions(pair: Pair<ProjectEntity, ProjectApplicationStatus>): Unit {
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findById(1) } returns Optional.of(pair.first)
-        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
-
-        val result = projectStatusService.setProjectStatus(
-            projectId = 1,
-            statusChange = InputProjectStatus(pair.second, "some note", LocalDate.now().plusDays(1))
-        )
-
-        assertThat(result.id).isEqualTo(1)
-        assertThat(result.projectStatus.status).isEqualTo(pair.second)
-        assertThat(result.projectStatus.note).isEqualTo("some note")
-        assertThat(result.projectStatus).isEqualTo(result.fundingDecision)
-    }
-
-    @Test
-    fun `funding decision before eligibility decision`() {
-        val projectEligibleWithDate = projectEligible
-            .copy(eligibilityDecision = ProjectStatus(
-                status = ProjectApplicationStatus.ELIGIBLE,
-                decisionDate = LocalDate.now().minusDays(1),
-                user = user
-            ))
-
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findById(1) } returns Optional.of(projectEligibleWithDate)
-        every { projectStatusRepository.save(any<ProjectStatus>()) } returnsArgument 0
-        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
-
-        val exception = assertThrows<I18nValidationException> {
-            projectStatusService.setProjectStatus(
-                projectId = 1,
-                statusChange = InputProjectStatus(
-                    ProjectApplicationStatus.APPROVED,
-                    "some note",
-                    LocalDate.now().minusDays(2))
-            )
-        }
-        assertThat(exception.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
-        assertThat(exception.i18nKey).isEqualTo("project.funding.decision.is.before.eligibility.decision")
-    }
-
-    @Test
-    fun `project status setting failed successfully`() {
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(1) } returns user
-        every { projectRepository.findById(2) } returns Optional.empty()
-        assertThrows<ResourceNotFoundException> {
-            projectStatusService.setProjectStatus(2, InputProjectStatus(ProjectApplicationStatus.SUBMITTED, null, null))
-        }
-    }
-
-    private fun createProject(status: ProjectApplicationStatus, note: String? = null): ProjectEntity {
-        var submitTime: ZonedDateTime?
-        var statusTime: ZonedDateTime
-        if (status == ProjectApplicationStatus.DRAFT) {
+    private fun createProject(status: ApplicationStatus, note: String? = null): ProjectEntity {
+        val submitTime: ZonedDateTime?
+        val statusTime: ZonedDateTime
+        if (status == ApplicationStatus.DRAFT) {
             submitTime = null
             statusTime = DRAFT_TIME
-        } else if (status == ProjectApplicationStatus.SUBMITTED) {
+        } else if (status == ApplicationStatus.SUBMITTED) {
             submitTime = SUBMIT_TIME
             statusTime = SUBMIT_TIME
         } else { // status RETURNED_TO_APPLICANT
@@ -347,36 +124,16 @@ internal class ProjectStatusServiceTest {
             call = dummyCall,
             acronym = "acronym",
             applicant = user,
-            projectStatus = ProjectStatus(1, null, status, user, statusTime, null, note),
-            firstSubmission = if (submitTime != null) ProjectStatus(
+            currentStatus = ProjectStatusHistoryEntity(1, null, status, user, statusTime, null, note),
+            firstSubmission = if (submitTime != null) ProjectStatusHistoryEntity(
                 2,
                 null,
-                ProjectApplicationStatus.SUBMITTED,
+                ApplicationStatus.SUBMITTED,
                 user,
                 submitTime,
                 null,
                 note
             ) else null
-        )
-    }
-
-    private fun createAlreadyApprovedProject(appStatus: ProjectApplicationStatus): ProjectEntity {
-        val alreadyApprovedStatuses = setOf(
-            ProjectApplicationStatus.APPROVED,
-            ProjectApplicationStatus.APPROVED_WITH_CONDITIONS,
-            ProjectApplicationStatus.NOT_APPROVED
-        )
-        if (!alreadyApprovedStatuses.contains(appStatus))
-            throw IllegalStateException()
-
-        val status = ProjectStatus(1, null, appStatus, user, ZonedDateTime.now(), null, null)
-        return ProjectEntity(
-            id = 1,
-            call = dummyCall,
-            acronym = "acronym",
-            applicant = user,
-            projectStatus = status,
-            fundingDecision = status
         )
     }
 
@@ -401,7 +158,7 @@ internal class ProjectStatusServiceTest {
 
         val result = projectStatusService.setQualityAssessment(16, inputData)
         assertThat(result.qualityAssessment!!.result).isEqualTo(ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING)
-        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
+        assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.SUBMITTED)
 
         val event = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(event)) }
@@ -424,12 +181,12 @@ internal class ProjectStatusServiceTest {
     fun `set QA no project`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(any()) } returns User(
-                1,
-                "programme@email",
-                "",
-                "",
+            1,
+            "programme@email",
+            "",
+            "",
             UserRole(7, "programme"),
-                "hash_pass"
+            "hash_pass"
         )
         every { projectRepository.findById(-51) } returns Optional.empty()
 
@@ -441,12 +198,12 @@ internal class ProjectStatusServiceTest {
     fun `set eligibility assessment`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(any()) } returns User(
-                1,
-                "programme@email",
-                "",
-                "",
+            1,
+            "programme@email",
+            "",
+            "",
             UserRole(7, "programme"),
-                "hash_pass"
+            "hash_pass"
         )
         every { projectRepository.findById(79) } returns Optional.of(projectSubmitted.copy(id = 79))
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
@@ -458,7 +215,7 @@ internal class ProjectStatusServiceTest {
 
         val result = projectStatusService.setEligibilityAssessment(79, inputData)
         assertThat(result.eligibilityAssessment!!.result).isEqualTo(ProjectEligibilityAssessmentResult.PASSED)
-        assertThat(result.projectStatus.status).isEqualTo(ProjectApplicationStatus.SUBMITTED)
+        assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.SUBMITTED)
 
         val event = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(event)) }
@@ -491,188 +248,6 @@ internal class ProjectStatusServiceTest {
 
         val data = InputProjectEligibilityAssessment(ProjectEligibilityAssessmentResult.FAILED)
         assertThrows<ResourceNotFoundException> { projectStatusService.setEligibilityAssessment(-22, data) }
-    }
-
-    private val statusSubmitted = ProjectStatus(status = ProjectApplicationStatus.SUBMITTED, id = 10, user = user)
-    private val statusEligible = ProjectStatus(status = ProjectApplicationStatus.ELIGIBLE, id = 20, user = user)
-    private val statusIneligible = ProjectStatus(status = ProjectApplicationStatus.INELIGIBLE, id = 21, user = user)
-    private val statusApproved = ProjectStatus(status = ProjectApplicationStatus.APPROVED, id = 30, user = user)
-    private val statusApprovedWithConditions = ProjectStatus(status = ProjectApplicationStatus.APPROVED_WITH_CONDITIONS, id = 31, user = user)
-    private val statusNotApproved = ProjectStatus(status = ProjectApplicationStatus.NOT_APPROVED, id = 32, user = user)
-
-    @Test
-    fun `can find funding reversion if possible`() {
-        val projectId = 15L
-        listOf(
-            // deletion of ELIGIBILITY decision:
-            listOf(statusEligible, statusSubmitted),
-            listOf(statusIneligible, statusSubmitted),
-            // deletion of FUNDING decision:
-            listOf(statusApproved, statusApprovedWithConditions),
-            listOf(statusNotApproved, statusApprovedWithConditions),
-            listOf(statusApproved, statusEligible),
-            listOf(statusNotApproved, statusEligible),
-            listOf(statusApprovedWithConditions, statusEligible)
-        ).forEach {
-            every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns it
-            val message = "Decision-Reversion from ${it[0].status} back to ${it[1].status} should be possible"
-
-            val result: OutputRevertProjectStatus?
-            try {
-                result = projectStatusService.findPossibleDecisionRevertStatusOutput(projectId)
-            } catch (e: Exception) {
-                fail(message, e)
-            }
-
-            assertThat(result).isNotNull
-            assertThat(listOf(result!!.from.status, result.to.status))
-                .overridingErrorMessage(message)
-                .containsExactlyElementsOf(it.stream().map { outputStatus -> outputStatus.status }.collect(Collectors.toList()))
-        }
-    }
-
-    @Test
-    fun `cannot find funding reversion statuses`() {
-        val projectId = 15L
-
-        every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns listOf(statusEligible)
-        assertThat(projectStatusService.findPossibleDecisionRevertStatusOutput(projectId))
-            .overridingErrorMessage("When statuses cannot be found, there should be no possibility to revert")
-            .isNull()
-    }
-
-    @Test
-    fun `cannot find funding reversion for wrong statuses`() {
-        val projectId = 15L
-
-        every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns listOf(statusEligible, statusIneligible)
-        assertThat(projectStatusService.findPossibleDecisionRevertStatusOutput(projectId))
-            .overridingErrorMessage("When statuses are not allowed to be reverted, there should be no possibility returned")
-            .isNull()
-    }
-
-    @Test
-    fun `cannot revert when wrong statuses specified in request, although possible`() {
-        val projectId = 16L
-        every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns
-            listOf(statusApproved, statusEligible)
-
-        val revertRequest = InputRevertProjectStatus(
-            projectStatusFromId = statusApproved.id,
-            projectStatusToId = statusIneligible.id
-        )
-        val exception = assertThrows<I18nValidationException>(
-            "Statuses provided differ from those possible, so it should throw an exception"
-        ) { projectStatusService.revertLastDecision(projectId, revertRequest) }
-        assertThat(exception.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
-        assertThat(exception.i18nKey).isEqualTo("project.decision.revert.not.possible")
-    }
-
-    @Test
-    fun `cannot revert when project not exists`() {
-        val projectId = 17L
-        every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns
-            listOf(statusApproved, statusEligible)
-        every { projectRepository.findById(eq(projectId)) } returns Optional.empty()
-
-        val revertRequest = InputRevertProjectStatus(
-            projectStatusFromId = statusApproved.id,
-            projectStatusToId = statusEligible.id
-        )
-        val exception = assertThrows<ResourceNotFoundException> {
-            projectStatusService.revertLastDecision(projectId, revertRequest)
-        }
-        assertThat(exception.entity).isEqualTo("project")
-    }
-
-    @Test
-    fun `can revert Eligibility decision`() {
-        val projectId = 18L
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        val projectCapture = slot<ProjectEntity>()
-        every { projectRepository.save(capture(projectCapture)) } returnsArgument 0
-        every { projectStatusRepository.delete(any<ProjectStatus>()) } answers { }
-
-        listOf(
-            listOf(statusEligible, statusSubmitted),
-            listOf(statusIneligible, statusSubmitted)
-        ).forEach {
-            every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns it
-            every { projectRepository.findById(eq(projectId)) } returns Optional.of(
-                projectEligible.copy(
-                    eligibilityDecision = it[0]
-                ))
-
-            val revertRequest = InputRevertProjectStatus(projectStatusFromId = it[0].id, projectStatusToId = it[1].id)
-            projectStatusService.revertLastDecision(projectId, revertRequest)
-
-            verify {
-                projectStatusRepository.delete(it[0])
-            }
-            with (projectCapture.captured) {
-                assertThat(eligibilityDecision).isNull()
-                assertThat(projectStatus).isEqualTo(it[1])
-            }
-        }
-    }
-
-    @Test
-    fun `can revert funding to APPROVED_WITH_CONDITIONS decision`() {
-        val projectId = 19L
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        val projectCapture = slot<ProjectEntity>()
-        every { projectRepository.save(capture(projectCapture)) } returnsArgument 0
-        every { projectStatusRepository.delete(any<ProjectStatus>()) } answers { }
-
-        listOf(
-            listOf(statusApproved, statusApprovedWithConditions),
-            listOf(statusNotApproved, statusApprovedWithConditions)
-        ).forEach {
-            every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns it
-            every { projectRepository.findById(eq(projectId)) } returns
-                Optional.of(createAlreadyApprovedProject(it[0].status))
-
-            val revertRequest = InputRevertProjectStatus(projectStatusFromId = it[0].id, projectStatusToId = it[1].id)
-            projectStatusService.revertLastDecision(projectId, revertRequest)
-
-            verify {
-                projectStatusRepository.delete(it[0])
-            }
-            with (projectCapture.captured) {
-                assertThat(fundingDecision).isEqualTo(it[1])
-                assertThat(projectStatus).isEqualTo(it[1])
-            }
-        }
-    }
-
-    @Test
-    fun `can revert funding to ELIGIBLE decision`() {
-        val projectId = 20L
-        every { securityService.currentUser } returns LocalCurrentUser(userApplicant, "hash_pass", emptyList())
-        val projectCapture = slot<ProjectEntity>()
-        every { projectRepository.save(capture(projectCapture)) } returnsArgument 0
-        every { projectStatusRepository.delete(any<ProjectStatus>()) } answers { }
-
-        listOf(
-            listOf(statusApproved, statusEligible),
-            listOf(statusNotApproved, statusEligible),
-            listOf(statusApprovedWithConditions, statusEligible)
-        ).forEach {
-            every { projectStatusRepository.findTop2ByProjectIdOrderByUpdatedDesc(eq(projectId)) } returns it
-            every { projectRepository.findById(eq(projectId)) } returns
-                Optional.of(createAlreadyApprovedProject(it[0].status))
-
-            val revertRequest = InputRevertProjectStatus(projectStatusFromId = it[0].id, projectStatusToId = it[1].id)
-            projectStatusService.revertLastDecision(projectId, revertRequest)
-
-            verify {
-                projectStatusRepository.delete(it[0])
-            }
-            with (projectCapture.captured) {
-                assertThat(fundingDecision).isNull()
-                assertThat(projectStatus).isEqualTo(it[1])
-            }
-        }
     }
 
 }

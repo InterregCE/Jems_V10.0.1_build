@@ -1,15 +1,14 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import {Forms} from '../../../../../common/utils/forms';
-import {filter, take, takeUntil} from 'rxjs/internal/operators';
+import {takeUntil} from 'rxjs/internal/operators';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {InputProjectEligibilityAssessment, OutputProject} from '@cat/api';
+import {InputProjectEligibilityAssessment, ProjectDetailDTO} from '@cat/api';
 import {Observable} from 'rxjs';
 import {TranslateService} from '@ngx-translate/core';
 import {ProjectApplicationFormSidenavService} from '../../../containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project-application-eligibility-check',
@@ -23,8 +22,9 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
   // TODO move id to a container
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.ELIGIBLE, this.INELIGIBLE];
-  project$: Observable<OutputProject>;
+  project$: Observable<ProjectDetailDTO>;
   selectedAssessment: string;
+  actionPending = false;
 
   notesForm = this.formBuilder.group({
     assessment: ['', Validators.required],
@@ -35,8 +35,8 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     maxlength: 'eligibility.check.notes.size.too.long',
   };
 
+
   constructor(
-    private dialog: MatDialog,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
@@ -65,10 +65,6 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     return null;
   }
 
-  onSubmit(): void {
-    this.confirmEligibilityAssessment();
-  }
-
   onCancel(): void {
     this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
@@ -77,21 +73,12 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     this.selectedAssessment = event.value;
   }
 
-  private confirmEligibilityAssessment(): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'project.assessment.eligibilityCheck.dialog.title',
-      this.getEligibilityCheckMesage()
-    ).pipe(
-      take(1),
-      takeUntil(this.destroyed$),
-      filter(selectEligibility => !!selectEligibility)
-    ).subscribe(() =>
-      this.projectStore.setEligibilityAssessment({
-        result: this.getEligibilityCheckValue(),
-        note: this.notesForm?.controls?.notes?.value,
-      })
-    );
+  confirmEligibilityAssessment(): void {
+    this.projectStore.setEligibilityAssessment({
+      result: this.getEligibilityCheckValue(),
+      note: this.notesForm?.controls?.notes?.value,
+    });
+    this.actionPending = false;
   }
 
   private getEligibilityCheckValue(): InputProjectEligibilityAssessment.ResultEnum {
@@ -100,7 +87,7 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
       : InputProjectEligibilityAssessment.ResultEnum.PASSED;
   }
 
-  private setEligibilityCheckValue(project: OutputProject): void {
+  private setEligibilityCheckValue(project: ProjectDetailDTO): void {
     if (project.eligibilityAssessment.result === InputProjectEligibilityAssessment.ResultEnum.FAILED) {
       this.notesForm.controls.assessment.setValue(this.INELIGIBLE);
       return;
@@ -108,9 +95,12 @@ export class ProjectApplicationEligibilityCheckComponent extends AbstractForm im
     this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
   }
 
-  private getEligibilityCheckMesage(): string {
-    return this.selectedAssessment === this.ELIGIBLE
-      ? 'project.assessment.eligibilityCheck.dialog.message.eligible'
-      : 'project.assessment.eligibilityCheck.dialog.message.ineligible';
+  getEligibilityCheckConfirmation(): ConfirmDialogData {
+    return {
+      title: 'project.assessment.eligibilityCheck.dialog.title',
+      message: this.selectedAssessment === this.ELIGIBLE
+        ? 'project.assessment.eligibilityCheck.dialog.message.eligible'
+        : 'project.assessment.eligibilityCheck.dialog.message.ineligible'
+    };
   }
 }

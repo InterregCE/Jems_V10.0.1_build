@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,8 +16,10 @@ class ProjectPersistenceProvider(
 ) : ProjectPersistence {
 
     @Transactional(readOnly = true)
-    override fun getProject(projectId: Long): Project =
-        getProjectOrThrow(projectId).toModel()
+    override fun getProjectSummary(projectId: Long): ProjectSummary =
+        getProjectOrThrow(projectId)!!.let {
+            ProjectSummary(it.id, it.acronym, it.currentStatus.status)
+        }
 
     @Transactional(readOnly = true)
     override fun getProjectCallSettings(projectId: Long): ProjectCallSettings =
@@ -31,6 +33,7 @@ class ProjectPersistenceProvider(
     override fun getProjectIdForPartner(partnerId: Long) =
         projectPartnerRepository.getProjectIdForPartner(partnerId) ?: throw ResourceNotFoundException("ProjectPartner")
 
+    @Transactional(readOnly = true)
     override fun getProjectPeriods(projectId: Long) =
         getProjectOrThrow(projectId).periods.toProjectPeriods()
 

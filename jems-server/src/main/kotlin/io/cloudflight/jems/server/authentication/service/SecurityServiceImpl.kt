@@ -20,4 +20,8 @@ class SecurityServiceImpl : SecurityService {
     override fun assertAdminAccess() {
         if (!currentUser!!.isAdmin) throw AccessDeniedException("User does not have admin access")
     }
+
+    override fun getUserIdOrThrow(): Long =
+        currentUser?.user?.id ?: throw CurrentUseIdIsNullException()
+
 }

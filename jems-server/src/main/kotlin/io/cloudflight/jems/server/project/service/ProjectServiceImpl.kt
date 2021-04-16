@@ -4,9 +4,8 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
-import io.cloudflight.jems.api.project.dto.OutputProject
+import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
@@ -20,32 +19,37 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEnt
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.ProjectStatusRepository
+import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.repository.UserRepository
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import kotlin.math.ceil
 
 @Service
 class ProjectServiceImpl(
     private val projectRepo: ProjectRepository,
-    private val projectStatusRepo: ProjectStatusRepository,
+    private val projectStatusHistoryRepo: ProjectStatusHistoryRepository,
     private val callRepository: CallRepository,
     private val userRepository: UserRepository,
     private val auditService: AuditService,
+    private val auditPublisher: ApplicationEventPublisher,
     private val securityService: SecurityService
 ) : ProjectService {
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): OutputProject {
+    override fun getById(id: Long): ProjectDetailDTO {
         return projectRepo.findById(id).map { it.toOutputProject() }
             .orElseThrow { ResourceNotFoundException("project") }
     }
@@ -63,7 +67,7 @@ class ProjectServiceImpl(
             return projectRepo.findAll(page).map { it.toOutputProjectSimple() }
         }
         if (currentUser.hasRole(PROGRAMME_USER)) {
-            return projectRepo.findAllByProjectStatusStatusNot(ProjectApplicationStatus.DRAFT, page)
+            return projectRepo.findAllByCurrentStatusStatusNot(ApplicationStatus.DRAFT, page)
                 .map { it.toOutputProjectSimple() }
         }
         if (currentUser.hasRole(APPLICANT_USER)) {
@@ -74,13 +78,13 @@ class ProjectServiceImpl(
 
 
     @Transactional
-    override fun createProject(project: InputProject): OutputProject {
+    override fun createProject(project: InputProject): ProjectDetailDTO {
         val applicant = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
 
         val call = getCallIfOpen(project.projectCallId!!)
 
-        val projectStatus = projectStatusRepo.save(projectStatusDraft(applicant))
+        val projectStatus = projectStatusHistoryRepo.save(projectStatusDraft(applicant))
 
         val createdProject = projectRepo.save(
             project.toEntity(
@@ -89,16 +93,22 @@ class ProjectServiceImpl(
                 projectStatus
             )
         )
-        projectStatusRepo.save(projectStatus.copy(project = createdProject))
+        projectStatusHistoryRepo.save(projectStatus.copy(project = createdProject))
 
-        projectStatusChanged(project = createdProject).logWith(auditService)
+        projectApplicationCreated(createdProject.id, createdProject.acronym, createdProject.currentStatus.status).logWith(auditService)
+        auditPublisher.publishEvent(projectVersionRecorded(this,
+            projectSummary = ProjectSummary(createdProject.id,createdProject.acronym,createdProject.currentStatus.status),
+            userEmail = applicant.email,
+            version = 1,
+            createdAt = ZonedDateTime.now(ZoneOffset.UTC)
+        ))
 
         return createdProject.toOutputProject()
     }
 
-    fun projectStatusDraft(user: User): ProjectStatus {
-        return ProjectStatus(
-            status = ProjectApplicationStatus.DRAFT,
+    fun projectStatusDraft(user: User): ProjectStatusHistoryEntity {
+        return ProjectStatusHistoryEntity(
+            status = ApplicationStatus.DRAFT,
             user = user,
             updated = ZonedDateTime.now()
         )
@@ -122,7 +132,7 @@ class ProjectServiceImpl(
     }
 
     @Transactional
-    override fun update(id: Long, projectData: InputProjectData): OutputProject {
+    override fun update(id: Long, projectData: InputProjectData): ProjectDetailDTO {
         val project = projectRepo.findById(id).orElseThrow { ResourceNotFoundException("project") }
         val periods =
             if (project.projectData?.duration == projectData.duration) project.periods

@@ -3,5 +3,5 @@ package io.cloudflight.jems.server.project.service.partner.budget.get_budget_cos
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 
 interface GetBudgetCostsInteractor {
-    fun getBudgetCosts(partnerId: Long): BudgetCosts
+    fun getBudgetCosts(partnerId: Long, version: Int? = null): BudgetCosts
 }

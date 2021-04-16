@@ -5,13 +5,14 @@
         <p>{{'call.detail.edit.published.warning' | translate}}</p>
     </app-alert>
     <form appFormLayout [formGroup]="callForm">
-        <button *ngIf="call?.id && editable"
-                appFormFieldWidth="medium"
-                mat-raised-button color="primary"
+        <app-pending-button
+                *ngIf="call?.id && editable"
+                [confirm]="confirmData()"
                 [disabled]="publishingRequirementsNotAchieved()"
-                (click)="publishCall()">
+                [pending]="publishPending"
+                (clicked)="publishCall()">
             {{'call.detail.button.publish' | translate}}
-        </button>
+        </app-pending-button>
         <h3>{{'call.identification.title' | translate}}</h3>
         <mat-form-field>
             <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
@@ -23,11 +24,17 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
+        <mat-checkbox
+                name="is2Step"
+                formControlName="is2Step"
+                (change)="callForm?.controls?.is2Step.patchValue($event.checked)">
+            {{'call.is2Step' | translate}}
+        </mat-checkbox>
         <div appMultiColumnRow stretch>
             <mat-form-field>
                 <mat-label>{{'call.detail.field.start' | translate | dateFormatInfo : true}}</mat-label>
                 <input required formControlName="startDateTime" matInput name="startDateTime"
-                       [max]="callForm?.controls?.endDate?.value"
+                       [max]="callForm?.controls?.endDateTime?.value"
                        [disabled]="published"
                        [ngxMatDatetimePicker]="start">
                 <mat-datepicker-toggle matSuffix [for]="start" [disabled]="published">
@@ -40,10 +47,29 @@
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
+
+            <mat-form-field [class.hide]="!callForm?.controls?.is2Step.value">
+                <mat-label>{{'call.detail.field.end.step1' | translate | dateFormatInfo : true}}</mat-label>
+                <input formControlName="endDateTimeStep1" matInput name="endDateTimeStep1"
+                       [required]="callForm?.controls?.is2Step.value"
+                       [min]="callForm?.controls?.startDateTime?.value"
+                       [max]="callForm?.controls?.endDateTime?.value"
+                       [ngxMatDatetimePicker]="endStep1">
+                <mat-datepicker-toggle matSuffix [for]="endStep1">
+                </mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #endStep1></ngx-mat-datetime-picker>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="callForm?.controls?.endDateTimeStep1?.errors"
+                            [messages]="inputErrorMessagesForEndDateStep1">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
             <mat-form-field>
                 <mat-label>{{'call.detail.field.end' | translate | dateFormatInfo : true}}</mat-label>
                 <input required formControlName="endDateTime" matInput name="endDateTime"
-                       [min]="callForm?.controls?.startDate?.value"
+                       [min]="callForm?.controls?.startDateTime?.value"
                        [ngxMatDatetimePicker]="end">
                 <mat-datepicker-toggle matSuffix [for]="end">
                 </mat-datepicker-toggle>

@@ -1,6 +1,9 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {animate, style, transition, trigger} from '@angular/animations';
+import {combineLatest} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-form',
@@ -21,11 +24,25 @@ import {animate, style, transition, trigger} from '@angular/animations';
 })
 export class FormComponent {
 
+  @Input()
+  confirmSave: ConfirmDialogData;
+
   @Output()
   save = new EventEmitter<void>();
   @Output()
   discard = new EventEmitter<void>();
 
+  showSaveDiscard$ = combineLatest([this.formService.dirty$, this.formService.pending$])
+    .pipe(
+      map(([dirty, pending]) => dirty || pending)
+    );
+
   constructor(public formService: FormService) {
+  }
+
+  submit(): void {
+    this.formService.pending$.next(true);
+    this.formService.setDirty(false);
+    this.save.emit();
   }
 }

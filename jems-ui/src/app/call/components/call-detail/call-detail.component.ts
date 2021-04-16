@@ -11,7 +11,8 @@ import {CallStore} from '../../services/call-store.service';
 import {CallPageSidenavService} from '../../services/call-page-sidenav.service';
 import {ProgrammeEditableStateStore} from '../../../programme/programme-page/services/programme-editable-state-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import { Alert } from '@common/components/forms/alert';
+import {Alert} from '@common/components/forms/alert';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @UntilDestroy()
 @Component({
@@ -31,6 +32,7 @@ export class CallDetailComponent implements OnInit {
 
   tools = Tools;
   isFirstCall: boolean;
+  publishPending = false;
 
   @Input()
   call: CallDetailDTO;
@@ -59,6 +61,12 @@ export class CallDetailComponent implements OnInit {
     matDatetimePickerMax: 'common.error.end.after.start'
   };
 
+  inputErrorMessagesForEndDateStep1 = {
+    ...this.inputErrorMessages,
+    matDatetimePickerMin: 'call.endDateTimeStep1.needs.to.be.between.start.and.end',
+    matDatetimePickerMax: 'call.endDateTimeStep1.needs.to.be.between.start.and.end'
+  };
+
   editable = false;
   published = false;
 
@@ -67,7 +75,9 @@ export class CallDetailComponent implements OnInit {
       Validators.required,
       Validators.maxLength(250)
     ])],
+    is2Step: [false, Validators.required],
     startDateTime: ['', Validators.required],
+    endDateTimeStep1: [''],
     endDateTime: ['', Validators.required],
     description: [[], Validators.maxLength(1000)],
     lengthOfPeriod: ['', Validators.compose(
@@ -76,15 +86,14 @@ export class CallDetailComponent implements OnInit {
   });
 
   constructor(private formBuilder: FormBuilder,
-              private dialog: MatDialog,
               private callStore: CallStore,
               private formService: FormService,
               private callNavService: CallPageSidenavService,
               private programmeEditableStateStore: ProgrammeEditableStateStore) {
     this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
-        tap(isProgrammeEditingLimited => this.isFirstCall = !isProgrammeEditingLimited),
-        untilDestroyed(this)
+      tap(isProgrammeEditingLimited => this.isFirstCall = !isProgrammeEditingLimited),
+      untilDestroyed(this)
     ).subscribe();
   }
 
@@ -99,6 +108,9 @@ export class CallDetailComponent implements OnInit {
     if (this.call && this.call.status === CallDetailDTO.StatusEnum.PUBLISHED && !this.isApplicant) {
       this.callForm.controls.name.enable();
       this.callForm.controls.description.enable();
+      if (this.callForm.controls.is2Step) {
+        this.callForm.controls.endDateTimeStep1.enable();
+      }
       this.callForm.controls.endDateTime.enable();
       if (!this.call.isAdditionalFundAllowed) {
         this.callForm.controls.multipleFundsAllowed.enable();
@@ -113,6 +125,10 @@ export class CallDetailComponent implements OnInit {
     call.strategies = this.buildUpdateEntityStrategies();
     call.fundIds = this.buildUpdateEntityFunds();
     call.isAdditionalFundAllowed = this.callForm.controls.multipleFundsAllowed.value;
+    if (!this.callForm.controls.is2Step.value) {
+      call.endDateTimeStep1 = null;
+      call.is2Step = null;
+    }
 
     if (!this.call.id) {
       this.callStore.createCall(call)
@@ -150,26 +166,18 @@ export class CallDetailComponent implements OnInit {
   }
 
   publishCall(): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'call.dialog.title',
-      this.isFirstCall ? 'call.dialog.message.and.additional.message' : 'call.dialog.message'
-    ).pipe(
-      take(1),
-      filter(yes => !!yes)
-    ).subscribe(() => {
-      this.callStore.publishCall(this.call?.id)
-        .pipe(
-          take(1),
-          tap(published => this.callNavService.redirectToCallOverview(
-            {
-              i18nKey: 'call.detail.publish.success',
-              i18nArguments: {name: published.name}
-            })
-          ),
-          catchError(err => this.formService.setError(err))
-        ).subscribe();
-    });
+    this.callStore.publishCall(this.call?.id)
+      .pipe(
+        take(1),
+        tap(() => this.publishPending = false),
+        tap(published => this.callNavService.redirectToCallOverview(
+          {
+            i18nKey: 'call.detail.publish.success',
+            i18nArguments: {name: published.name}
+          })
+        ),
+        catchError(err => this.formService.setError(err))
+      ).subscribe();
   }
 
   publishingRequirementsNotAchieved(): boolean {
@@ -185,6 +193,9 @@ export class CallDetailComponent implements OnInit {
 
   resetForm(): void {
     this.callForm.patchValue(this.call);
+    if (this.call.endDateTimeStep1) {
+      this.callForm.get('is2Step')?.setValue(true);
+    }
   }
 
   private buildUpdateEntityStrategies(): OutputProgrammeStrategy.StrategyEnum[] {
@@ -197,5 +208,12 @@ export class CallDetailComponent implements OnInit {
     return this.funds
       .filter(fund => fund.selected)
       .map(fund => fund.id);
+  }
+
+  confirmData(): ConfirmDialogData {
+    return {
+      title: 'call.dialog.title',
+      message: this.isFirstCall ? 'call.dialog.message.and.additional.message' : 'call.dialog.message'
+    };
   }
 }

@@ -11,6 +11,7 @@ data class Call (
     val name: String,
     var status: CallStatus? = null,
     val startDate: ZonedDateTime,
+    val endDateStep1: ZonedDateTime? = null,
     val endDate: ZonedDateTime,
     val isAdditionalFundAllowed: Boolean,
     val lengthOfPeriod: Int,
@@ -18,4 +19,6 @@ data class Call (
     val priorityPolicies: Set<ProgrammeObjectivePolicy> = emptySet(),
     val strategies: Set<ProgrammeStrategy> = emptySet(),
     val fundIds: Set<Long> = emptySet(),
-)
+) {
+    fun is2StepProcedureEnabled() = endDateStep1 != null
+}

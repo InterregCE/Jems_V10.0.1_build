@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {Observable} from 'rxjs';
-import {OutputProjectPeriod, ProjectResultDTO, ProjectResultService, WorkPackageService} from '@cat/api';
+import {ProjectPeriodDTO, ProjectResultDTO, ProjectResultService, WorkPackageService} from '@cat/api';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {filter} from 'rxjs/internal/operators';
 import {Log} from '../../../common/utils/log';
@@ -11,7 +11,7 @@ export class ProjectTimeplanPageStore {
 
   projectAcronym$: Observable<string>;
   workPackages$: Observable<any>;
-  periods$: Observable<OutputProjectPeriod[]>;
+  periods$: Observable<ProjectPeriodDTO[]>;
   projectResults$: Observable<ProjectResultDTO[]>;
 
   constructor(private projectStore: ProjectStore,
@@ -33,7 +33,7 @@ export class ProjectTimeplanPageStore {
       );
   }
 
-  private periods(): Observable<OutputProjectPeriod[]> {
+  private periods(): Observable<ProjectPeriodDTO[]> {
     return this.projectStore.getProject()
       .pipe(
         map(project => project?.periods)

@@ -46,6 +46,8 @@ class CallEntity(
     @field:NotNull
     var startDate: ZonedDateTime,
 
+    var endDateStep1: ZonedDateTime?,
+
     @field:NotNull
     var endDate: ZonedDateTime,
 

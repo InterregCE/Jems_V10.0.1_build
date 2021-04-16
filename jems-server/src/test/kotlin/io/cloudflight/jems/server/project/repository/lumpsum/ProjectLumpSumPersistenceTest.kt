@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEn
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEntity
@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.mockk.every
@@ -43,7 +44,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
             call = dummyCall,
             acronym = "Test Project",
             applicant = dummyCall.creator,
-            projectStatus = ProjectStatus(id = 1, status = ProjectApplicationStatus.DRAFT, user = dummyCall.creator)
+            currentStatus = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = dummyCall.creator)
         )
 
         private fun partner(sortNumber: Int, id: Long) = ProjectPartnerEntity(

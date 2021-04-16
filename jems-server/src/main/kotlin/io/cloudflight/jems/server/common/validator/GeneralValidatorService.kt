@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.common.validator
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 interface GeneralValidatorService {
@@ -15,6 +16,8 @@ interface GeneralValidatorService {
 
     fun notBlank(input: String?, fieldName: String): Map<String, I18nMessage>
 
+    fun notNull(input: Any?, fieldName: String): Map<String, I18nMessage>
+
     fun notNullOrZero(input: Long?, fieldName: String): Map<String, I18nMessage>
 
     fun nullOrZero(input: Long?, fieldName: String): Map<String, I18nMessage>
@@ -24,6 +27,8 @@ interface GeneralValidatorService {
     fun digits(input: BigDecimal?, maxIntegerLength: Int, maxFractionLength: Int, fieldName: String): Map<String, I18nMessage>
 
     fun startDateBeforeEndDate(start: ZonedDateTime, end: ZonedDateTime, startDateFieldName: String, endDateFieldName: String): Map<String, I18nMessage>
+
+    fun dateNotInFuture(date: LocalDate, fieldName: String): Map<String, I18nMessage>
 
     fun matches(input: String?, regex: String, fieldName: String, errorKey: String?): Map<String, I18nMessage>
 

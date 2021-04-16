@@ -5,7 +5,7 @@
         <ng-content></ng-content>
     </mat-card-content>
 
-    <ng-container *ngIf="formService.dirty$ | async"
+    <ng-container *ngIf="showSaveDiscard$ | async"
                   [ngTemplateOutlet]="saveDiscard">
     </ng-container>
     <ng-container *ngIf="formService.success$ | async as success"
@@ -20,15 +20,19 @@
 
 <ng-template #saveDiscard>
     <mat-card-footer [@slideInOut] class="footer">
-        <button mat-stroked-button class="action-button discard" type="button"
+        <button [disabled]="(formService.pending$ | async) === true"
+                mat-stroked-button class="action-button discard" type="button"
                 (click)="formService.setDirty(false); this.discard.emit(); formService.reset()">
             <mat-icon>cancel</mat-icon>&nbsp;{{'common.cancel.label' | translate}}
         </button>
-        <button [disabled]="(formService.valid$ | async) === false"
-                mat-raised-button class="action-button" color="primary" type="button"
-                (click)="formService.setDirty(false); save.emit()">
-            <mat-icon>save</mat-icon>&nbsp;{{formService.saveLabel | translate}}
-        </button>
+        <app-pending-button
+                icon="save"
+                [confirm]="confirmSave"
+                [disabled]="(formService.valid$ | async) === false"
+                [pending]="(formService.pending$ | async) === true"
+                (clicked)="submit()">
+            {{formService.saveLabel | translate}}
+        </app-pending-button>
     </mat-card-footer>
 </ng-template>
 
@@ -36,7 +40,7 @@
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
             <div class="message app-alert-success">
-                <em class="far fa-check-circle"></em>
+                <em class="far fa-check-circle mr-1"></em>
                 <span *ngIf="message.i18nKey">{{message.i18nKey | translate : message.i18nArguments}}</span>
                 <span *ngIf="!message.i18nKey">{{message | translate}}</span>
             </div>

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.BaseBudgetProperties
 import io.cloudflight.jems.server.project.entity.partner.budget.BudgetPeriodId
@@ -17,6 +18,7 @@ import io.cloudflight.jems.server.project.entity.partner.budget.general.infrastr
 import io.cloudflight.jems.server.project.entity.partner.budget.general.infrastructure.ProjectPartnerBudgetInfrastructureTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostPeriodEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostRow
 import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.travel.ProjectPartnerBudgetTravelEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.travel.ProjectPartnerBudgetTravelPeriodEntity
@@ -25,6 +27,22 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCos
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
+
+
+fun List<ProjectPartnerBudgetStaffCostRow>.toBudgetStaffCostEntryList() =
+    this.groupBy { it.id }.map { groupedRows ->
+        BudgetStaffCostEntry(
+            id = groupedRows.key,
+            description = groupedRows.value.extractField { it.description },
+            comment = groupedRows.value.extractField { it.comment },
+            unitType = groupedRows.value.extractField { it.unitType },
+            budgetPeriods = groupedRows.value.filter { it.periodNumber != null }.mapTo(HashSet()) { BudgetPeriod(it.periodNumber!!, it.amount) },
+            unitCostId = groupedRows.value.first().unitCostId,
+            numberOfUnits = groupedRows.value.first().numberOfUnits,
+            pricePerUnit = groupedRows.value.first().pricePerUnit,
+            rowSum = groupedRows.value.first().rowSum
+        )
+    }
 
 
 fun List<ProjectPartnerBudgetStaffCostEntity>.toBudgetStaffCostEntries() = this.map { it.toBudgetStaffCostEntry() }
@@ -42,7 +60,6 @@ fun ProjectPartnerBudgetStaffCostEntity.toBudgetStaffCostEntry() = BudgetStaffCo
     budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
         .toMutableSet(),
     unitCostId = unitCostId,
-    type = type,
     numberOfUnits = baseProperties.numberOfUnits,
     pricePerUnit = pricePerUnit,
     rowSum = baseProperties.rowSum
@@ -61,7 +78,6 @@ fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(
         baseProperties = BaseBudgetProperties(partnerId, numberOfUnits, rowSum!!),
         pricePerUnit = pricePerUnit,
         unitCostId = unitCostId,
-        type = type,
         translatedValues = mutableSetOf(),
         budgetPeriodEntities = mutableSetOf(),
         id = id ?: 0L

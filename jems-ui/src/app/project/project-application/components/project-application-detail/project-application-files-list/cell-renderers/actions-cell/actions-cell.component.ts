@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {OutputProject, OutputProjectFile} from '@cat/api';
+import {OutputProjectFile, ProjectDetailDTO} from '@cat/api';
 import {Permission} from '../../../../../../../security/permissions/permission';
 
 @Component({
@@ -12,7 +12,7 @@ export class ActionsCellComponent {
   @Input()
   file: OutputProjectFile;
   @Input()
-  project: OutputProject;
+  project: ProjectDetailDTO;
   @Input()
   permission: Permission;
 

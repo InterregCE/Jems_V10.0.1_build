@@ -12,7 +12,7 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectA
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -21,12 +21,13 @@ import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContact
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationServiceImpl
 import io.cloudflight.jems.server.user.entity.User
@@ -73,6 +74,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         name = "call",
         status = CallStatus.DRAFT,
         startDate = ZonedDateTime.now(),
+        endDateStep1 = null,
         endDate = ZonedDateTime.now(),
         prioritySpecificObjectives = mutableSetOf(),
         strategies = mutableSetOf(),
@@ -80,8 +82,8 @@ internal class ProjectAssociatedOrganizationServiceTest {
         funds = mutableSetOf(),
         lengthOfPeriod = 1
     )
-    private val projectStatus = ProjectStatus(
-        status = ProjectApplicationStatus.APPROVED,
+    private val projectStatus = ProjectStatusHistoryEntity(
+        status = ApplicationStatus.APPROVED,
         user = user,
         updated = ZonedDateTime.now())
     private val project = ProjectEntity(
@@ -89,7 +91,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         acronym = "acronym",
         call = call,
         applicant = user,
-        projectStatus = projectStatus)
+        currentStatus = projectStatus)
 
     private val projectPartner = ProjectPartnerEntity(
         id = 1,

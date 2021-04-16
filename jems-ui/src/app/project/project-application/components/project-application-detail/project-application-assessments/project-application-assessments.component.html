@@ -1,11 +1,11 @@
 <mat-expansion-panel
-        *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT
-            && projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT"
+        *ngIf="projectStatus !== STATUS.DRAFT
+            && projectStatus !== STATUS.RETURNEDTOAPPLICANT"
         [expanded]="true">
     <mat-expansion-panel-header>
         <mat-panel-title>{{'project.assessment.check.header' | translate}}</mat-panel-title>
     </mat-expansion-panel-header>
-    <div *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT">
+    <div *ngIf="projectStatus !== STATUS.DRAFT">
         <div appMultiColumnRow stretch class="mb-4">
             <div>{{'project.assessment.eligibilityCheck.title' | translate}}</div>
             <div>
@@ -33,7 +33,7 @@
             </div>
             <button *ngIf="!project.qualityAssessment"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [disabled]="project.projectStatus.status === OutputProjectStatus.StatusEnum.INELIGIBLE"
+                    [disabled]="project.projectStatus.status === STATUS.INELIGIBLE"
                     [routerLink]="'./assessment/qualityCheck'">
                 {{'project.assessment.qualityCheck.assessment' | translate}}
             </button>

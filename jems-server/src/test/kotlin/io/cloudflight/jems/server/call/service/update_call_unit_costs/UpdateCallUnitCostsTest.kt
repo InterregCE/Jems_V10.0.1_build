@@ -31,6 +31,7 @@ class UpdateCallUnitCostsTest {
             name = "",
             status = status,
             startDate = ZonedDateTime.now().minusDays(1),
+            endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
             lengthOfPeriod = 7,

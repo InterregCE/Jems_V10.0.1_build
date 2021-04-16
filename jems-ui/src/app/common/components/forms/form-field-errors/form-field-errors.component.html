@@ -2,7 +2,13 @@
     {{Log.debug('Validation error', this, error)}}
     <ng-container [ngSwitch]="error?.key">
         <ng-container *ngSwitchCase="'maxlength'">
-            {{messages[error.key] | translate : error.value}}
+            {{messages && messages[error.key] || 'common.error.field.max.length' | translate : error.value}}
+        </ng-container>
+        <ng-container *ngSwitchCase="'minlength'">
+            {{messages && messages[error.key] || 'common.error.field.min.length' | translate : error.value}}
+        </ng-container>
+        <ng-container *ngSwitchCase="'required'">
+            {{messages && messages[error.key] || 'common.error.field.blank' | translate}}
         </ng-container>
         <ng-container *ngSwitchDefault>
             {{messages && messages[error.key] || error.value || error.key | translate : args ? args[error.key] : ''}}

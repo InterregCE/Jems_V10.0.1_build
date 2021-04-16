@@ -21,6 +21,7 @@ interface AuditApi {
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun getAudits(pageable: Pageable, @RequestBody(required = false) searchRequest: AuditSearchRequestDTO? = null): Page<AuditDTO>

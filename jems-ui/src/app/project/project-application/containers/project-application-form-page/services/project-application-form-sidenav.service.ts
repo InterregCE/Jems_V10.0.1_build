@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
 import {mergeMap, map, tap, switchMap} from 'rxjs/operators';
-import {OutputProjectStatus, ProjectPartnerService, WorkPackageService} from '@cat/api';
+import {ProjectPartnerService, ProjectStatusDTO, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '../../../../../common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
@@ -92,8 +92,8 @@ export class ProjectApplicationFormSidenavService {
             return;
           }
           const status = project.projectStatus.status;
-          const isNotOpen = status !== OutputProjectStatus.StatusEnum.DRAFT
-            && status !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT;
+          const isNotOpen = status !== ProjectStatusDTO.StatusEnum.DRAFT
+            && status !== ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
           this.setHeadlines(isNotApplicant && isNotOpen, project.id, partners, packages);
         })
       );

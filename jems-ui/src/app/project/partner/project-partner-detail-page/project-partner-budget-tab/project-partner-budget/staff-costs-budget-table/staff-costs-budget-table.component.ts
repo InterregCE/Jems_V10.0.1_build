@@ -16,9 +16,7 @@ import {NumberService} from '../../../../../../common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {StaffCostsBudgetTable} from '../../../../../model/budget/staff-costs-budget-table';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {StaffCostTypeEnum} from '../../../../../model/budget/staff-cost-type.enum';
-import {StaffCostUnitTypeEnum} from '../../../../../model/budget/staff-cost-unit-type.enum';
-import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
+import {BudgetPeriodDTO, ProjectPeriodDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
 import {ProgrammeUnitCost} from '../../../../../model/programmeUnitCost';
@@ -35,14 +33,13 @@ import {MatSelectChange} from '@angular/material/select/select';
 export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDestroy {
   Alert = Alert;
   constants = ProjectPartnerBudgetConstants;
-  staffCostType = StaffCostTypeEnum;
 
   @Input()
   editable: boolean;
   @Input()
   staffCostTable: StaffCostsBudgetTable;
   @Input()
-  projectPeriods: OutputProjectPeriod[];
+  projectPeriods: ProjectPeriodDTO[];
   @Input()
   availableUnitCosts: ProgrammeUnitCost[];
 
@@ -62,7 +59,6 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
     control.patchValue(
       {
         description: [],
-        type: selectedUnitCost ? this.staffCostType.UNIT_COST : null,
         unitType: selectedUnitCost?.type || [],
         comment: [],
         numberOfUnits: 1,
@@ -97,14 +93,14 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
     const periodColumns = this.projectPeriods?.length
       ? [...this.projectPeriods?.map(period => 'period' + period.number), 'openForPeriods'] : [];
     this.columnsToDisplay = [
-      'description', 'type', 'comment', 'unitType', 'numberOfUnits',
+      'description', 'comment', 'unitType', 'numberOfUnits',
       'pricePerUnit', 'total', ...periodColumns, 'action',
     ];
 
     const periodWidths = this.projectPeriods?.length
       ? [...this.projectPeriods?.map(() => ({minInRem: 8})), {minInRem: 8}] : [];
     this.tableConfig = [
-      {minInRem: 12}, {minInRem: 10}, {minInRem: 12}, {minInRem: 6},
+      {minInRem: 12}, {minInRem: 12}, {minInRem: 6},
       {minInRem: 5}, {minInRem: 8}, {minInRem: 8}, ...periodWidths, {minInRem: 3, maxInRem: 3}
     ];
 
@@ -133,7 +129,6 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
     this.items.push(this.formBuilder.group({
       id: null,
       description: [[]],
-      type: [null],
       unitType: [[]],
       unitCost: [null],
       comment: [[]],
@@ -155,7 +150,6 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
       this.items.push(this.formBuilder.group({
         id: [item.id],
         description: [item.description],
-        type: [item.type],
         unitType: [item.unitType],
         unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId) || null],
         comment: [item.comment],

@@ -1,0 +1,91 @@
+<app-main-page-template [needsCard]="true" *ngIf="details$ | async as details"
+                        titleKey="user.breadcrumb.create">
+    <form appFormLayout [formGroup]="userForm">
+        <div appMultiColumnRow>
+            <h2 class="inline-block">{{'user.detail.page.title' | translate}}</h2>
+            <button color="primary" *ngIf="details.user?.id && formState === FormState.VIEW" mat-raised-button
+                    [disabled]="passwordIsInEditMode"
+                    (click)="changeFormState$.next(FormState.EDIT)">
+                {{'common.edit.label' | translate}}
+            </button>
+        </div>
+
+        <mat-form-field>
+            <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
+            <input name="name" formControlName="name" matInput required>
+            <mat-error>
+                <app-form-field-errors [errors]="userForm?.controls?.name?.errors"></app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>{{'user.detail.field.surname' | translate}}</mat-label>
+            <input name="surname" formControlName="surname" matInput required>
+            <mat-error>
+                <app-form-field-errors [errors]="userForm?.controls?.surname?.errors"></app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
+            <input name="email" formControlName="email" matInput required>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="userForm?.controls?.email?.errors"
+                        [messages]="emailErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <div *ngxPermissionsOnly="[Permission.ADMINISTRATOR]">
+            <mat-form-field class="w-100">
+                <mat-label>{{'user.detail.field.role' | translate}}</mat-label>
+                <mat-select required formControlName="userRoleId">
+                    <mat-option *ngFor="let role of details.roles" [value]="role.id">{{role.name}}</mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-form-field-errors [errors]="userRoleId.errors"></app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+            <button mat-stroked-button
+                    type="button"
+                    (click)="discard(details.user)">
+                {{'common.cancel.label' | translate}}
+            </button>
+            <button mat-raised-button
+                    color="primary"
+                    type="button"
+                    [disabled]="userForm.invalid || submitted"
+                    (click)="onSubmit(details.user)">
+                {{details.user?.id && 'common.save.label' || 'common.create.label' | translate}}
+            </button>
+        </div>
+        <div>
+            <app-alert
+                    [show]="!submitted && (showSuccessMessage$ | async)"
+                    [type]="Alert.SUCCESS">
+                <p>{{'user.detail.save.success' | translate}}</p>
+            </app-alert>
+            <app-alert *ngIf="error$ | async as error"
+                       [show]="!submitted && !!error.i18nMessage?.i18nKey"
+                       [type]="Alert.ERROR">
+                <app-api-error-content [error]="error"></app-api-error-content>
+            </app-alert>
+        </div>
+    </form>
+
+    <app-user-password
+            *ngIf="details.user?.id"
+            class="mt-3 block"
+            [error$]="userStore.passwordSaveError$"
+            [success$]="userStore.passwordSaveSuccess$"
+            [ownUser]="details.currentUser?.id === details.user?.id"
+            [disabled]="formState === FormState.EDIT"
+            [userId]="details.user?.id"
+            (switchedFormState)="passwordIsInEditMode = FormState.EDIT === $event">
+    </app-user-password>
+</app-main-page-template>
+

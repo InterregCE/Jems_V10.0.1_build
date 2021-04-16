@@ -1,15 +1,13 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import {Forms} from '../../../../../common/utils/forms';
-import {filter, take, takeUntil} from 'rxjs/internal/operators';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {InputProjectQualityAssessment, OutputProject} from '@cat/api';
+import {InputProjectQualityAssessment, ProjectDetailDTO} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
 import {ProjectApplicationFormSidenavService} from '../../../containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project-application-quality-check',
@@ -24,7 +22,7 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
   // TODO move to container, use as Input()
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.RECOMMEND, this.RECOMMEND_WITH_CONDITIONS, this.NOT_RECOMMEND];
-  project$: Observable<OutputProject>;
+  project$: Observable<ProjectDetailDTO>;
   selectedAssessment: string;
 
   notesForm = this.formBuilder.group({
@@ -36,8 +34,9 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     maxlength: 'quality.check.notes.size.too.long',
   };
 
+  actionPending = false;
+
   constructor(
-    private dialog: MatDialog,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
@@ -78,20 +77,11 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
   }
 
   private confirmQualityAssessment(): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'project.assessment.qualityCheck.dialog.title',
-      this.getQualityCheckMesage()
-    ).pipe(
-      take(1),
-      takeUntil(this.destroyed$),
-      filter(selectQuality => !!selectQuality)
-    ).subscribe(() =>
-      this.projectStore.setQualityAssessment({
-        result: this.getQualityCheckValue(),
-        note: this.notesForm?.controls?.notes?.value,
-      })
-    );
+    this.projectStore.setQualityAssessment({
+      result: this.getQualityCheckValue(),
+      note: this.notesForm?.controls?.notes?.value,
+    });
+    this.actionPending = false;
   }
 
   private getQualityCheckValue(): InputProjectQualityAssessment.ResultEnum {
@@ -104,7 +94,7 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     return InputProjectQualityAssessment.ResultEnum.NOTRECOMMENDED;
   }
 
-  private setQualityCheckValue(project: OutputProject): void {
+  private setQualityCheckValue(project: ProjectDetailDTO): void {
     if (project.qualityAssessment.result === InputProjectQualityAssessment.ResultEnum.RECOMMENDEDFORFUNDING) {
       this.notesForm.controls.assessment.setValue(this.RECOMMEND);
       return;
@@ -116,13 +106,17 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     this.notesForm.controls.assessment.setValue(this.NOT_RECOMMEND);
   }
 
-  private getQualityCheckMesage(): string {
+  getQualityCheckConfirmation(): ConfirmDialogData {
+    let message = 'project.assessment.qualityCheck.dialog.message.not.recommended';
     if (this.selectedAssessment === this.RECOMMEND) {
-      return 'project.assessment.qualityCheck.dialog.message.recommended';
+      message = 'project.assessment.qualityCheck.dialog.message.recommended';
     }
     if (this.selectedAssessment === this.RECOMMEND_WITH_CONDITIONS) {
-      return 'project.assessment.qualityCheck.dialog.message.recommended.conditions';
+      message = 'project.assessment.qualityCheck.dialog.message.recommended.conditions';
     }
-    return 'project.assessment.qualityCheck.dialog.message.not.recommended';
+    return {
+      title: 'project.assessment.qualityCheck.dialog.title',
+      message
+    };
   }
 }

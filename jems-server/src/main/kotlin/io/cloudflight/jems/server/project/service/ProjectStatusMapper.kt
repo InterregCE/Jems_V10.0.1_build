@@ -1,16 +1,19 @@
 package io.cloudflight.jems.server.project.service
 
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
-import io.cloudflight.jems.api.project.dto.status.OutputProjectStatus
+import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
+import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.entity.ProjectEligibilityAssessment
 import io.cloudflight.jems.server.project.entity.ProjectQualityAssessment
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.service.toOutputUser
 
-fun ProjectStatus.toOutputProjectStatus() = OutputProjectStatus(
+fun ProjectStatusHistoryEntity.toOutputProjectStatus() = ProjectStatusDTO(
         id = id,
-        status = status,
+        status = ApplicationStatusDTO.valueOf(status.name),
         user = user.toOutputUser(),
         updated = updated,
         decisionDate = decisionDate,

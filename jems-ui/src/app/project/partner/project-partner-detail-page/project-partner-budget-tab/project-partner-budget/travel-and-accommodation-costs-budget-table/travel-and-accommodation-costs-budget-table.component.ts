@@ -16,7 +16,7 @@ import {map, startWith} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {NumberService} from '../../../../../../common/services/number.service';
 import {TravelAndAccommodationCostsBudgetTable} from '../../../../../model/budget/travel-and-accommodation-costs-budget-table';
-import {BudgetPeriodDTO, OutputProjectPeriod} from '@cat/api';
+import {BudgetPeriodDTO, ProjectPeriodDTO} from '@cat/api';
 import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
 import {Alert} from '@common/components/forms/alert';
 import {ProgrammeUnitCost} from '../../../../../model/programmeUnitCost';
@@ -37,7 +37,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
   @Input()
   travelAndAccommodationTable: TravelAndAccommodationCostsBudgetTable;
   @Input()
-  projectPeriods: OutputProjectPeriod[];
+  projectPeriods: ProjectPeriodDTO[];
   @Input()
   availableUnitCosts: ProgrammeUnitCost[];
 

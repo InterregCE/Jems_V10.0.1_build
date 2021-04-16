@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.file.OutputProjectFile
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.OutputUserRole
@@ -16,7 +16,7 @@ import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.file.ProjectFile
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import io.cloudflight.jems.server.common.exception.DuplicateFileException
@@ -32,6 +32,7 @@ import io.cloudflight.jems.server.project.service.file.FileStorageService
 import io.cloudflight.jems.server.project.service.file.FileStorageServiceImpl
 import io.cloudflight.jems.server.project.service.file.PROJECT_FILES_BUCKET
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -93,12 +94,13 @@ class FileStorageServiceTest {
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
         startDate = ZonedDateTime.now(),
+        endDateStep1 = null,
         endDate = ZonedDateTime.now(),
         status = CallStatus.PUBLISHED,
         lengthOfPeriod = 1
     )
     private val testProject = ProjectEntity(id = PROJECT_ID, call = dummyCall, applicant = account, acronym = "test project",
-        projectStatus = ProjectStatus(status = ProjectApplicationStatus.DRAFT, user = account, updated = ZonedDateTime.now())
+        currentStatus = ProjectStatusHistoryEntity(status = ApplicationStatus.DRAFT, user = account, updated = ZonedDateTime.now())
     )
 
     @RelaxedMockK

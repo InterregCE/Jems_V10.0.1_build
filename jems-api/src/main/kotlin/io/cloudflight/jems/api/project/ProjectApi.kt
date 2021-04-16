@@ -3,7 +3,7 @@ package io.cloudflight.jems.api.project
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
-import io.cloudflight.jems.api.project.dto.OutputProject
+import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
@@ -37,7 +37,7 @@ interface ProjectApi {
 
     @ApiOperation("Returns a project application by id")
     @GetMapping("/{projectId}")
-    fun getProjectById(@PathVariable projectId: Long): OutputProject
+    fun getProjectById(@PathVariable projectId: Long): ProjectDetailDTO
 
     @ApiOperation("Returns call setting of a call related to this application")
     @GetMapping("/{projectId}/callSettings")
@@ -45,11 +45,11 @@ interface ProjectApi {
 
     @ApiOperation("Creates new project application")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createProject(@Valid @RequestBody project: InputProject): OutputProject
+    fun createProject(@Valid @RequestBody project: InputProject): ProjectDetailDTO
 
     @ApiOperation("Update project-related data")
     @PutMapping("/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectData(@PathVariable projectId: Long, @Valid @RequestBody project: InputProjectData): OutputProject
+    fun updateProjectData(@PathVariable projectId: Long, @Valid @RequestBody project: InputProjectData): ProjectDetailDTO
 
     @ApiOperation("Returns project budget for all partners")
     @GetMapping("/{projectId}/budget")

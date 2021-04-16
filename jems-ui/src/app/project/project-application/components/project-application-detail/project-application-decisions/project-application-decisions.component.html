@@ -1,5 +1,5 @@
-<div id="applicationFormLifecycleAssessment" *ngIf="projectStatus !== OutputProjectStatus.StatusEnum.DRAFT
-            && projectStatus !== OutputProjectStatus.StatusEnum.RETURNEDTOAPPLICANT">
+<div id="applicationFormLifecycleAssessment" *ngIf="projectStatus !== STATUS.DRAFT
+            && projectStatus !== STATUS.RETURNEDTOAPPLICANT">
     <h3>{{'project.assessment.header' | translate}}</h3>
     <mat-expansion-panel
             [expanded]="true">
@@ -47,14 +47,14 @@
             <button
                     *ngIf="!project.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [disabled]="project?.eligibilityDecision?.status !== OutputProjectStatus.StatusEnum.ELIGIBLE  || !project.qualityAssessment"
+                    [disabled]="project?.eligibilityDecision?.status !== STATUS.ELIGIBLE  || !project.qualityAssessment"
                     [routerLink]="'./assessment/fundingDecision'">
                 {{'project.assessment.fundingDecision.assessment' | translate}}
             </button>
             <button
                     *ngIf="!!project.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [color]="projectStatus === OutputProjectStatus.StatusEnum.APPROVEDWITHCONDITIONS ? 'primary' : null"
+                    [color]="projectStatus === STATUS.APPROVEDWITHCONDITIONS ? 'primary' : null"
                     [routerLink]="'./assessment/fundingDecision'">
                 {{updateOrViewFundingLabel() | translate}}
             </button>

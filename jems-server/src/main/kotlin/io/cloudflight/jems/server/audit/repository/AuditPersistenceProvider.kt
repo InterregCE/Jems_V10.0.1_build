@@ -16,6 +16,8 @@ import org.elasticsearch.search.sort.SortOrder
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Repository
 import java.util.stream.Stream
+import org.elasticsearch.index.query.RangeQueryBuilder
+import org.springframework.data.domain.Sort
 
 @Repository
 class AuditPersistenceProvider(
@@ -34,12 +36,20 @@ class AuditPersistenceProvider(
 
     override fun getAudit(searchRequest: AuditSearchRequest): Page<Audit> =
         client.search(
-            searchRequest.getQuery(AUDIT_INDEX),
+            searchRequest.getQuery(AUDIT_INDEX, searchRequest.pageable.sort),
             RequestOptions.DEFAULT,
         ).hits.toModel(searchRequest.pageable)
 
-    private fun AuditSearchRequest.getQuery(index: String): SearchRequest {
+    private fun AuditSearchRequest.getQuery(index: String, sort: Sort): SearchRequest {
         val filterQuery = BoolQueryBuilder()
+
+        val timestampQuery = RangeQueryBuilder(FIELD_TIMESTAMP)
+        if (timeFrom != null)
+            timestampQuery.from(timeFrom)
+        if (timeTo != null)
+            timestampQuery.to(timeTo)
+
+        val order = if(sort.getOrderFor("timestamp")?.direction?.isAscending == true)  SortOrder.ASC else SortOrder.DESC
 
         Stream.of<Pair<String, AuditFilter<*>>>(
             Pair("$FIELD_USER.$FIELD_USER_ID", userId),
@@ -55,13 +65,15 @@ class AuditPersistenceProvider(
                     filterQuery.must(TermsQueryBuilder(it.first, it.second.values))
             }
 
+        filterQuery.must(timestampQuery)
+
         return SearchRequest(index)
             .source(
                 SearchSourceBuilder()
                     .query(filterQuery)
                     .from(pageable.offset.toInt())
                     .size(pageable.pageSize)
-                    .sort(FieldSortBuilder(FIELD_TIMESTAMP).order(SortOrder.DESC))
+                    .sort(FieldSortBuilder(FIELD_TIMESTAMP).order(order))
             )
     }
 

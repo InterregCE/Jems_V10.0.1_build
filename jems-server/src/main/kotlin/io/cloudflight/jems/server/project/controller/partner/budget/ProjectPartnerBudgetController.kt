@@ -51,8 +51,8 @@ class ProjectPartnerBudgetController(
     override fun updateBudgetOptions(partnerId: Long, budgetOptionsDto: ProjectPartnerBudgetOptionsDto) =
         updateBudgetOptions.updateBudgetOptions(partnerId, budgetOptionsDto.toProjectPartnerBudgetOptions(partnerId))
 
-    override fun getBudgetCosts(partnerId: Long) =
-        getBudgetCosts.getBudgetCosts(partnerId).toBudgetCostsDTO()
+    override fun getBudgetCosts(partnerId: Long, version: Int?) =
+        getBudgetCosts.getBudgetCosts(partnerId, version).toBudgetCostsDTO()
 
     override fun updateBudgetTravel(partnerId: Long, travelAndAccommodationCosts: List<BudgetTravelAndAccommodationCostEntryDTO>) =
         updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(partnerId, travelAndAccommodationCosts.toBudgetTravelAndAccommodationCostEntryList()).toBudgetTravelAndAccommodationCostsEntryDTOList()

@@ -1,10 +1,11 @@
 package io.cloudflight.jems.server.project.service.partner
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.project.dto.status.ProjectApplicationStatus
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.project.entity.ProjectStatus
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.entity.UserRole
 import java.time.ZonedDateTime
@@ -28,6 +29,7 @@ class ProjectPartnerTestUtil {
             name = "call",
             status = CallStatus.DRAFT,
             startDate = ZonedDateTime.now(),
+            endDateStep1 = null,
             endDate = ZonedDateTime.now(),
             prioritySpecificObjectives = mutableSetOf(),
             strategies = mutableSetOf(),
@@ -35,8 +37,8 @@ class ProjectPartnerTestUtil {
             funds = mutableSetOf(),
             lengthOfPeriod = 1
         )
-        val projectStatus = ProjectStatus(
-            status = ProjectApplicationStatus.APPROVED,
+        val projectStatus = ProjectStatusHistoryEntity(
+            status = ApplicationStatus.APPROVED,
             user = user,
             updated = ZonedDateTime.now())
         val project = ProjectEntity(
@@ -44,7 +46,7 @@ class ProjectPartnerTestUtil {
             acronym = "acronym",
             call = call,
             applicant = user,
-            projectStatus = projectStatus)
+            currentStatus = projectStatus)
     }
 
 }
