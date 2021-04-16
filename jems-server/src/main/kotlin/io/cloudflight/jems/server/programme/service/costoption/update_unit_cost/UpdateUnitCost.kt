@@ -48,8 +48,7 @@ class UpdateUnitCost(
     }
 
     private fun unitCostUpdateRestrictions(existingUnitCost: ProgrammeUnitCost, updatedUnitCost: ProgrammeUnitCost) {
-        if (!updatedUnitCost.type.containsAll(existingUnitCost.type) ||
-            existingUnitCost.costPerUnit?.compareTo( updatedUnitCost.costPerUnit) != 0 ||
+        if (existingUnitCost.costPerUnit?.compareTo( updatedUnitCost.costPerUnit) != 0 ||
             existingUnitCost.isOneCostCategory != updatedUnitCost.isOneCostCategory ||
             !updatedUnitCost.categories.containsAll(existingUnitCost.categories )
         )
@@ -59,6 +58,9 @@ class UpdateUnitCost(
     private fun validateInput(programmeUnitCost: ProgrammeUnitCost) =
         generalValidator.throwIfAnyIsInvalid(
             generalValidator.notNullOrZero(programmeUnitCost.id, "id"),
+            generalValidator.maxLength(programmeUnitCost.name, 50, "name"),
+            generalValidator.maxLength(programmeUnitCost.description, 255, "description"),
+            generalValidator.maxLength(programmeUnitCost.type, 25, "type"),
     )
 
 }

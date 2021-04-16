@@ -6,23 +6,32 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase.Im
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.common.validator.AppInputValidationException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
-import io.mockk.MockKAnnotations
+import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 
-class CreateLumpSumInteractorTest {
+class CreateLumpSumInteractorTest : UnitTest() {
+
+    private val inputErrorMap = mapOf("error" to I18nMessage("error.key"))
 
     @MockK
     lateinit var persistence: ProgrammeLumpSumPersistence
@@ -30,12 +39,19 @@ class CreateLumpSumInteractorTest {
     @MockK
     lateinit var auditService: AuditService
 
-    private lateinit var createLumpSumInteractor: CreateLumpSumInteractor
+    @RelaxedMockK
+    lateinit var generalValidator: GeneralValidatorService
+
+    @InjectMockKs
+    lateinit var createLumpSum: CreateLumpSum
 
     @BeforeEach
-    fun setup() {
-        MockKAnnotations.init(this)
-        createLumpSumInteractor = CreateLumpSum(persistence, auditService)
+    fun reset() {
+        clearMocks(generalValidator)
+        every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
+        every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws AppInputValidationException(
+            inputErrorMap
+        )
     }
 
     @Test
@@ -50,17 +66,16 @@ class CreateLumpSumInteractorTest {
             phase = null,
             categories = setOf(OfficeAndAdministrationCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createLumpSumInteractor.createLumpSum(wrongLumpSum) }
+        val ex = assertThrows<I18nValidationException> { createLumpSum.createLumpSum(wrongLumpSum) }
         assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
             "cost" to I18nFieldError(i18nKey = "lump.sum.out.of.range"),
-            "phase" to I18nFieldError(i18nKey = "lump.sum.phase.should.not.be.empty"),
             "categories" to I18nFieldError(i18nKey = "programme.lumpSum.categories.min.2"),
         ))
     }
 
     @Test
     fun `create lump sum - reached max allowed amount`() {
-        every { persistence.getCount() } returns 25
+        every { persistence.getCount() } returns 100
         val lumpSum = ProgrammeLumpSum(
             id = 0L,
             name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
@@ -70,7 +85,7 @@ class CreateLumpSumInteractorTest {
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createLumpSumInteractor.createLumpSum(lumpSum) }
+        val ex = assertThrows<I18nValidationException> { createLumpSum.createLumpSum(lumpSum) }
         assertThat(ex.i18nKey).isEqualTo("programme.lumpSum.max.allowed.reached")
     }
 
@@ -90,7 +105,7 @@ class CreateLumpSumInteractorTest {
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
 
-        assertThat(createLumpSumInteractor.createLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
+        assertThat(createLumpSum.createLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_LUMP_SUM_ADDED,
             description = "Programme lump sum (id=0) '[InputTranslation(language=EN, translation=LS1)]' has been added" // null will be real ID from DB sequence
@@ -109,7 +124,65 @@ class CreateLumpSumInteractorTest {
         )
 
         assertThrows<I18nValidationException>("when creating id cannot be filled in") {
-            createLumpSumInteractor.createLumpSum(lumpSum) }
+            createLumpSum.createLumpSum(lumpSum) }
+    }
+
+    @Test
+    fun `create lump sum - check if name length is validated`() {
+        val lumpSum = ProgrammeLumpSum(
+            id = 1L,
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
+            cost = BigDecimal.ONE,
+            splittingAllowed = true,
+            phase = Implementation,
+        )
+        val name = setOf(InputTranslation(SystemLanguage.SK, getStringOfLength(51)))
+        every {
+            generalValidator.maxLength(name, 50, "name")
+        } returns inputErrorMap
+        assertThrows<AppInputValidationException> {
+            createLumpSum.createLumpSum(lumpSum.copy(name = name))
+        }
+        verify(exactly = 1) { generalValidator.maxLength(name, 50, "name") }
+    }
+
+    @Test
+    fun `create lump sum - check if description length is validated`() {
+        val lumpSum = ProgrammeLumpSum(
+            id = 1L,
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
+            cost = BigDecimal.ONE,
+            splittingAllowed = true,
+            phase = Implementation,
+        )
+        val description = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(256)))
+        every {
+            generalValidator.maxLength(description, 255, "description")
+        } returns inputErrorMap
+        assertThrows<AppInputValidationException> {
+            createLumpSum.createLumpSum(lumpSum.copy(description = description))
+        }
+        verify(exactly = 1) { generalValidator.maxLength(description, 255, "description") }
+
+    }
+
+    @Test
+    fun `create lump sum - check if phase is validated`() {
+        val lumpSum = ProgrammeLumpSum(
+            id = 1L,
+            name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
+            cost = BigDecimal.ONE,
+            splittingAllowed = true,
+            phase = Implementation,
+        )
+        val phase = null
+        every {
+            generalValidator.notNull(phase, "phase")
+        } returns inputErrorMap
+        assertThrows<AppInputValidationException> {
+            createLumpSum.createLumpSum(lumpSum.copy(phase = phase))
+        }
+        verify(exactly = 1) { generalValidator.notNull(phase, "phase") }
     }
 
 }

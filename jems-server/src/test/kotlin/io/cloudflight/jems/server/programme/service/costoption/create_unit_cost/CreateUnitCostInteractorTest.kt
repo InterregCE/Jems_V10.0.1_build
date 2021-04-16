@@ -6,23 +6,32 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.TravelAnd
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.common.validator.AppInputValidationException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.mockk.MockKAnnotations
+import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 
-class CreateUnitCostInteractorTest {
+class CreateUnitCostInteractorTest : UnitTest() {
+
+    private val inputErrorMap = mapOf("error" to I18nMessage("error.key"))
 
     @MockK
     lateinit var persistence: ProgrammeUnitCostPersistence
@@ -30,12 +39,19 @@ class CreateUnitCostInteractorTest {
     @MockK
     lateinit var auditService: AuditService
 
-    private lateinit var createUnitCostInteractor: CreateUnitCostInteractor
+    @RelaxedMockK
+    lateinit var generalValidator: GeneralValidatorService
+
+    @InjectMockKs
+    private lateinit var createUnitCost: CreateUnitCost
 
     @BeforeEach
-    fun setup() {
-        MockKAnnotations.init(this)
-        createUnitCostInteractor = CreateUnitCost(persistence, auditService)
+    fun reset() {
+        clearMocks(generalValidator)
+        every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
+        every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws AppInputValidationException(
+            inputErrorMap
+        )
     }
 
     @Test
@@ -50,10 +66,9 @@ class CreateUnitCostInteractorTest {
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(wrongUnitCost) }
+        val ex = assertThrows<I18nValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
         assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
             "costPerUnit" to I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"),
-            "type" to I18nFieldError(i18nKey = "programme.unitCost.type.too.long"),
             "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.min.2"),
         ))
     }
@@ -70,10 +85,9 @@ class CreateUnitCostInteractorTest {
             isOneCostCategory = true,
             categories = setOf(StaffCosts, TravelAndAccommodationCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(wrongUnitCost) }
+        val ex = assertThrows<I18nValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
         assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
             "costPerUnit" to I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"),
-            "type" to I18nFieldError(i18nKey = "programme.unitCost.type.too.long"),
             "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.exactly.1"),
         ))
     }
@@ -90,7 +104,7 @@ class CreateUnitCostInteractorTest {
             isOneCostCategory = true,
             categories = setOf(OfficeAndAdministrationCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(wrongUnitCost) }
+        val ex = assertThrows<I18nValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
         assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
             "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.restricted"),
         ))
@@ -98,7 +112,7 @@ class CreateUnitCostInteractorTest {
 
     @Test
     fun `create unit cost - reached max allowed amount`() {
-        every { persistence.getCount() } returns 25
+        every { persistence.getCount() } returns 100
         val unitCost = ProgrammeUnitCost(
             id = 0,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
@@ -108,7 +122,7 @@ class CreateUnitCostInteractorTest {
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createUnitCostInteractor.createUnitCost(unitCost) }
+        val ex = assertThrows<I18nValidationException> { createUnitCost.createUnitCost(unitCost) }
         assertThat(ex.i18nKey).isEqualTo("programme.unitCost.max.allowed.reached")
     }
 
@@ -128,7 +142,7 @@ class CreateUnitCostInteractorTest {
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
 
-        assertThat(createUnitCostInteractor.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
+        assertThat(createUnitCost.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_ADDED,
             description = "Programme unit cost (id=0) '[InputTranslation(language=EN, translation=UC1)]' has been added" // null will be real ID from DB sequence
@@ -151,7 +165,7 @@ class CreateUnitCostInteractorTest {
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
 
-        assertThat(createUnitCostInteractor.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
+        assertThat(createUnitCost.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_ADDED,
             description = "Programme unit cost (id=0) '[InputTranslation(language=EN, translation=UC1)]' has been added" // null will be real ID from DB sequence
@@ -170,7 +184,70 @@ class CreateUnitCostInteractorTest {
         )
 
         assertThrows<I18nValidationException>("when creating id cannot be filled in") {
-            createUnitCostInteractor.createUnitCost(unitCost) }
+            createUnitCost.createUnitCost(unitCost) }
+    }
+
+    @Test
+    fun `create unit cost - check if description length is validated`() {
+        val unitCost = ProgrammeUnitCost(
+            id = 0,
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
+            costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = true,
+            categories = setOf(StaffCosts),
+        )
+        val description = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(256)))
+        every {
+            generalValidator.maxLength(description, 255, "description")
+        } returns inputErrorMap
+        assertThrows<AppInputValidationException> {
+            createUnitCost.createUnitCost(unitCost.copy(description = description))
+        }
+        verify(exactly = 1) { generalValidator.maxLength(description, 255, "description") }
+    }
+
+    @Test
+    fun `create unit cost - check if name length is validated`() {
+        val unitCost = ProgrammeUnitCost(
+            id = 0,
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
+            costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = true,
+            categories = setOf(StaffCosts),
+        )
+        val name = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(51)))
+        every {
+            generalValidator.maxLength(name, 50, "name")
+        } returns inputErrorMap
+        assertThrows<AppInputValidationException> {
+            createUnitCost.createUnitCost(unitCost.copy(name = name))
+        }
+        verify(exactly = 1) { generalValidator.maxLength(name, 50, "name") }
+    }
+
+    @Test
+    fun `create unit cost - check if type length is validated`() {
+        val unitCost = ProgrammeUnitCost(
+            id = 0,
+            name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
+            type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
+            costPerUnit = BigDecimal.ONE,
+            isOneCostCategory = true,
+            categories = setOf(StaffCosts),
+        )
+        val type = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(51)))
+        every {
+            generalValidator.maxLength(type, 25, "type")
+        } returns inputErrorMap
+        assertThrows<AppInputValidationException> {
+            createUnitCost.createUnitCost(unitCost.copy(type = type))
+        }
+        verify(exactly = 1) { generalValidator.maxLength(type, 25, "type") }
     }
 
 }
