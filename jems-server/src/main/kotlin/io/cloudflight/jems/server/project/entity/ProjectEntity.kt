@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import javax.persistence.CascadeType
 import javax.persistence.Embedded
 import javax.persistence.Entity
@@ -39,7 +39,7 @@ data class ProjectEntity(
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @field:NotNull
-    val applicant: User,
+    val applicant: UserEntity,
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "project_status_id")

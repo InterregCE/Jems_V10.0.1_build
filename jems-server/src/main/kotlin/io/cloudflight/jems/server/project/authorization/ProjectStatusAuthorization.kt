@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component
 
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.canChangeStatusTo(#projectId, T(io.cloudflight.jems.server.project.service.application.ApplicationStatus).SUBMITTED)")
+@PreAuthorize("hasAuthority('ProjectSubmission') || @projectStatusAuthorization.isOwner(#projectId)")
 annotation class CanSubmitApplication
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -53,6 +53,9 @@ class ProjectStatusAuthorization(
     val projectAuthorization: ProjectAuthorization,
     val projectService: ProjectService
 ) : Authorization(securityService) {
+
+    fun isOwner(projectId: Long): Boolean =
+        projectService.getById(projectId).applicant.id!! == securityService.currentUser?.user?.id
 
     fun canChangeStatusTo(projectId: Long, newStatus: ApplicationStatus): Boolean {
         return projectAuthorization.canReadProject(projectId)

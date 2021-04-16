@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {PageOutputUserWithRole, UserService} from '@cat/api';
+import {PageUserSummaryDTO, UserService} from '@cat/api';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {map, startWith, switchMap, tap} from 'rxjs/operators';
@@ -9,7 +9,7 @@ import {Tables} from '../../common/utils/tables';
 @Injectable()
 export class UserPageStore {
 
-  page$: Observable<PageOutputUserWithRole>;
+  page$: Observable<PageUserSummaryDTO>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -19,7 +19,7 @@ export class UserPageStore {
     this.page$ = this.page();
   }
 
-  private page(): Observable<PageOutputUserWithRole> {
+  private page(): Observable<PageUserSummaryDTO> {
     return combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),

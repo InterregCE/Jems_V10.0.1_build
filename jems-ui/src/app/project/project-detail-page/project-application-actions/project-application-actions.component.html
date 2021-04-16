@@ -1,4 +1,4 @@
-<ng-container *ngxPermissionsExcept="[Permission.PROGRAMME_USER]">
+<ng-container *ngxPermissionsOnly="Permissions.ProjectSubmission">
     <div *ngIf="projectStatus === STATUS.DRAFT" class="row">
         <app-pending-button
                 confirmTitle="project.detail.submit.dialog.title"
@@ -20,7 +20,7 @@
     </div>
 </ng-container>
 
-<ng-container *ngxPermissionsOnly="[Permission.ADMINISTRATOR, Permission.PROGRAMME_USER]">
+<ng-container *ngxPermissionsOnly="[UserRole.ADMINISTRATOR, UserRole.PROGRAMME_USER]">
     <div class="row">
         <app-pending-button
                 *ngIf="returnableStatuses.includes(projectStatus)"
@@ -30,7 +30,7 @@
                 (clicked)="returnToApplicant()">
             {{'project.detail.button.return.applicant' | translate}}
         </app-pending-button>
-        <ng-container *ngxPermissionsOnly="Permission.ADMINISTRATOR">
+        <ng-container *ngxPermissionsOnly="UserRole.ADMINISTRATOR">
             <app-pending-button
                     *ngIf="revertToStatus; else revertNotPossible"
                     [confirm]="getRevertConfirmation()"
@@ -44,7 +44,7 @@
 </ng-container>
 
 <ng-template #revertNotPossible>
-    <button *ngxPermissionsOnly="Permission.ADMINISTRATOR"
+    <button *ngxPermissionsOnly="UserRole.ADMINISTRATOR"
             mat-raised-button disabled
             (click)="revertProjectStatus()">
         {{ 'project.application.revert.decision.impossible.button.label' | translate }}

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {mergeMap, map, shareReplay, tap} from 'rxjs/operators';
-import {OutputUserRole, UserRoleService} from '@cat/api';
+import {UserRoleService, UserRoleSummaryDTO} from '@cat/api';
 import {Observable, of} from 'rxjs';
 import {Log} from '../../common/utils/log';
 import {Permission} from '../../security/permissions/permission';
@@ -34,7 +34,7 @@ export class RolePageService {
    * The list is refreshed when:
    * - the permissions change
    */
-  userRoles(): Observable<OutputUserRole[]> {
+  userRoles(): Observable<UserRoleSummaryDTO[]> {
     return this.userRoles$;
   }
 }

@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.project.entity.ProjectVersionId
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 

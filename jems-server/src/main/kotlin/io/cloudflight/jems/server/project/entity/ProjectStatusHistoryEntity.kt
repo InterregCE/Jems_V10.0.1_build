@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.Objects
@@ -34,7 +34,7 @@ data class ProjectStatusHistoryEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     @field:NotNull
-    val user: User,
+    val user: UserEntity,
 
     @field:NotNull
     val updated: ZonedDateTime = ZonedDateTime.now(),

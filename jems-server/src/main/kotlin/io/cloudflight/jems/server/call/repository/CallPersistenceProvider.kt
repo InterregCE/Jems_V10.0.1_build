@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpS
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository

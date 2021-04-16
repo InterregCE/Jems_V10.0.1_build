@@ -16,9 +16,6 @@ import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
-import io.cloudflight.jems.api.user.dto.OutputUser
-import io.cloudflight.jems.api.user.dto.OutputUserRole
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -37,9 +34,11 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.user.service.model.UserRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -70,27 +69,20 @@ class ProjectServiceTest {
 
     private val UNPAGED = Pageable.unpaged()
 
-    private val user = OutputUserWithRole(
+    private val user = User(
         id = 1,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
-        userRole = OutputUserRole(id = 1, name = "ADMIN")
+        userRole = UserRole(id = 1, name = "ADMIN", permissions = emptySet())
     )
 
-    private val userWithoutRole = OutputUser(
-        id = user.id,
-        email = user.email,
-        name = user.name,
-        surname = user.surname
-    )
-
-    private val account = User(
+    private val account = UserEntity(
         id = 1,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
-        userRole = UserRole(id = 1, name = "ADMIN"),
+        userRole = UserRoleEntity(id = 1, name = "ADMIN"),
         password = "hash_pass"
     )
 

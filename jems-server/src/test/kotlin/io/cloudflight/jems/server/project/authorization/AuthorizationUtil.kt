@@ -1,35 +1,36 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.user.dto.OutputUserRole
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
+import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 internal class AuthorizationUtil {
     companion object {
 
-        val userAdmin = OutputUserWithRole(
+        val userAdmin = User(
             id = 1,
             email = "admin@admin.dev",
             name = "Name",
             surname = "Surname",
-            userRole = OutputUserRole(id = 1, name = "administrator")
+            userRole = UserRole(id = 1, name = "administrator", permissions = UserRolePermission.values().toSet())
         )
 
-        val userProgramme = OutputUserWithRole(
+        val userProgramme = User(
             id = 2,
             email = "user@programme.dev",
             name = "",
             surname = "",
-            userRole = OutputUserRole(id = 2, name = "programme user")
+            userRole = UserRole(id = 2, name = "programme user", permissions = emptySet())
         )
 
-        val userApplicant = OutputUserWithRole(
+        val userApplicant = User(
             id = 3,
             email = "user@applicant.dev",
             name = "applicant",
             surname = "",
-            userRole = OutputUserRole(id = 3, name = "applicant user")
+            userRole = UserRole(id = 3, name = "applicant user", permissions = emptySet())
         )
 
         internal val programmeUser = LocalCurrentUser(

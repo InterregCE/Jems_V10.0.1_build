@@ -41,9 +41,9 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUn
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -72,12 +72,12 @@ internal class CallPersistenceProviderTest {
         private val START = ZonedDateTime.now()
         private val END = ZonedDateTime.now().plusDays(5)
 
-        private val user = User(
+        private val user = UserEntity(
             id = USER_ID,
             email = "admin@admin.dev",
             name = "Name",
             surname = "Surname",
-            userRole = UserRole(id = 1, name = "ADMIN"),
+            userRole = UserRoleEntity(id = 1, name = "ADMIN"),
             password = "hash_pass"
         )
 

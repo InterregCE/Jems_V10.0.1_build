@@ -1,21 +1,20 @@
 package io.cloudflight.jems.server.project.service.partner
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import java.time.ZonedDateTime
 
 class ProjectPartnerTestUtil {
 
     companion object {
 
-        val userRole = UserRole(1, "ADMIN")
-        val user = User(
+        val userRole = UserRoleEntity(1, "ADMIN")
+        val user = UserEntity(
             id = 1,
             name = "Name",
             password = "hash",

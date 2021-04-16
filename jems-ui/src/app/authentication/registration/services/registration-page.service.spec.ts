@@ -1,5 +1,5 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {InputUserRegistration} from '@cat/api';
+import {UserRegistrationDTO} from '@cat/api';
 import {RegistrationPageService} from './registration-page.service';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {AuthenticationModule} from '../../authentication.module';
@@ -26,7 +26,7 @@ describe('RegistrationPageService', () => {
       surname: 'test',
       email: 'test@test.com',
       password: 'test' // NOSONAR (hardcoded credentials)
-    } as InputUserRegistration;
+    } as UserRegistrationDTO;
     service.registerApplicant(applicant);
     spyOn((service as any).userSaveSuccess$, 'next').and.callThrough();
     httpTestingController.expectOne({

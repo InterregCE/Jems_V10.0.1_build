@@ -21,7 +21,7 @@ export class DefaultPageGuard implements CanActivate {
       .pipe(
         filter(user => !!user),
         tap(user => {
-          if (user?.role === Permission.ADMINISTRATOR || user?.role === Permission.PROGRAMME_USER) {
+          if (user?.role?.name === Permission.ADMINISTRATOR || user?.role?.name === Permission.PROGRAMME_USER) {
             this.router.navigate(['app', 'project']);
           }
         }),

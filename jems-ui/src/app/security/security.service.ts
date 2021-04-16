@@ -1,5 +1,11 @@
 import {Injectable} from '@angular/core';
-import {AuthenticationService, LoginRequest, OutputCurrentUser, OutputUserWithRole, UserService} from '@cat/api';
+import {
+  AuthenticationService,
+  LoginRequest,
+  OutputCurrentUser,
+  UserDTO,
+  UserService
+} from '@cat/api';
 import {Observable, of, ReplaySubject} from 'rxjs';
 import {catchError, mergeMap, map, shareReplay, take, tap} from 'rxjs/operators';
 import {Log} from '../common/utils/log';
@@ -31,7 +37,7 @@ export class SecurityService {
       );
   }
 
-  get currentUserDetails(): Observable<OutputUserWithRole | null> {
+  get currentUserDetails(): Observable<UserDTO | null> {
     return this.currentUserDetails$;
   }
 

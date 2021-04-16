@@ -30,8 +30,8 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationServiceImpl
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -59,8 +59,8 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
     private val UNPAGED = Pageable.unpaged()
 
-    private val userRole = UserRole(1, "ADMIN")
-    private val user = User(
+    private val userRole = UserRoleEntity(1, "ADMIN")
+    private val user = UserEntity(
         id = 1,
         name = "Name",
         password = "hash",

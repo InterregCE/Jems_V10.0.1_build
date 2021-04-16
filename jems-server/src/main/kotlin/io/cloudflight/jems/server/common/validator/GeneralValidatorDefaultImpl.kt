@@ -10,6 +10,7 @@ import java.util.regex.Pattern
 
 // password should have: at least 10 characters, one upper case letter, one lower case letter and one digit
 const val PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,}).+\$"
+const val EMAIL_REGEX = "^(.+)@(.+)\$"
 
 @Service
 class GeneralValidatorDefaultImpl : GeneralValidatorService {
