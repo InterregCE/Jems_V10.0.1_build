@@ -26,6 +26,9 @@ class ApprovedApplicationWithConditionsState(
     override fun returnToApplicant(): ApplicationStatus =
         returnToApplicantDefaultImpl()
 
+    override fun returnToDraft(): ApplicationStatus =
+        returnToDraftDefaultImpl()
+
     override fun revertDecision(): ApplicationStatus =
         revertCurrentStatusToPreviousStatus(validRevertStatuses = canBeRevertTo).also {
             projectWorkflowPersistence.clearProjectFundingDecision(projectSummary.id)

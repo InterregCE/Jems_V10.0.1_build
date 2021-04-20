@@ -54,19 +54,31 @@ data class ProjectEntity(
     @JoinColumn(name = "last_resubmission_id")
     var lastResubmission: ProjectStatusHistoryEntity? = null,
 
-    @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
-    val qualityAssessment: ProjectQualityAssessment? = null,
+    var step2Active: Boolean,
 
-    @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
-    val eligibilityAssessment: ProjectEligibilityAssessment? = null,
+    //initialize in service
+    @ManyToOne
+    @JoinColumn(name="first_step_decision_id")
+    var firstStepDecision: ProjectDecisionEntity?,
 
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "eligibility_decision_id")
-    var eligibilityDecision: ProjectStatusHistoryEntity? = null,
+    @ManyToOne(optional = true)
+    @JoinColumn(name="second_step_decision_id")
+    var secondStepDecision: ProjectDecisionEntity? = null,
 
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "funding_decision_id")
-    var fundingDecision: ProjectStatusHistoryEntity? = null,
+    //new entity ProjectDecisionEntity (step1? + normal)
+//    @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
+//    val qualityAssessment: ProjectQualityAssessment? = null,
+//
+//    @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
+//    val eligibilityAssessment: ProjectEligibilityAssessment? = null,
+//
+//    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+//    @JoinColumn(name = "eligibility_decision_id")
+//    var eligibilityDecision: ProjectStatusHistoryEntity? = null,
+//
+//    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+//    @JoinColumn(name = "funding_decision_id")
+//    var fundingDecision: ProjectStatusHistoryEntity? = null,
 
     @Embedded
     val projectData: ProjectData? = null,

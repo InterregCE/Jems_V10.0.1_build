@@ -67,11 +67,11 @@ fun callAlreadyEnded(callId: Long): AuditCandidate =
 fun qualityAssessmentConcluded(projectDetailDTO: ProjectDetailDTO): AuditCandidate =
     AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
         .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
-        .description("Project application quality assessment concluded as ${projectDetailDTO.qualityAssessment?.result}")
+        .description("Project application quality assessment concluded as ${projectDetailDTO.firstStepDecision?.qualityAssessment?.result}")
         .build()
 
 fun eligibilityAssessmentConcluded(projectDetailDTO: ProjectDetailDTO): AuditCandidate =
     AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
         .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
-        .description("Project application eligibility assessment concluded as ${projectDetailDTO.eligibilityAssessment?.result}")
+        .description("Project application eligibility assessment concluded as ${projectDetailDTO.firstStepDecision?.eligibilityAssessment?.result}")
         .build()

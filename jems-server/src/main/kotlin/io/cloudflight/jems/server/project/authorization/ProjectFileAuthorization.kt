@@ -73,10 +73,10 @@ class ProjectFileAuthorization(
                     wasSubmittedAtLeastOnce(status)
 
                 status == APPROVED || status == NOT_APPROVED ->
-                    file.updated.isAfter(projectDetailDTO.fundingDecision!!.updated)
+                    file.updated.isAfter(projectDetailDTO.firstStepDecision?.fundingDecision!!.updated)
 
                 status == INELIGIBLE ->
-                    file.updated.isAfter(projectDetailDTO.eligibilityDecision!!.updated)
+                    file.updated.isAfter(projectDetailDTO.firstStepDecision?.eligibilityDecision!!.updated)
 
                 else -> false
             }

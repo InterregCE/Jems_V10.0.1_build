@@ -63,6 +63,10 @@ interface ProjectStatusApi {
     @PutMapping("return-to-applicant")
     fun returnApplicationToApplicant(@PathVariable id: Long): ApplicationStatusDTO
 
+    @ApiOperation("Return project application to draft")
+    @PutMapping("return-to-draft")
+    fun returnApplicationToDraft(@PathVariable id: Long): ApplicationStatusDTO
+
     @ApiOperation("Set quality assessment result to project application")
     @PostMapping("assessment/quality", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setQualityAssessment(

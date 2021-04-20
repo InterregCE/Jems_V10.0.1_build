@@ -96,7 +96,7 @@ class ProjectStatusAuthorization(
 
         return oldStatus == ELIGIBLE
             && newPossibilities.contains(newStatus)
-            && projectDetailDTO.qualityAssessment != null
+            && projectDetailDTO.firstStepDecision?.qualityAssessment != null
     }
 
     private fun fundingChanged(projectDetailDTO: ProjectDetailDTO, newStatus: ApplicationStatusDTO): Boolean {
@@ -113,14 +113,14 @@ class ProjectStatusAuthorization(
 
         return oldStatus == SUBMITTED
             && newPossibilities.contains(newStatus)
-            && projectDetailDTO.eligibilityAssessment != null
+            && projectDetailDTO.firstStepDecision?.eligibilityAssessment != null
     }
 
     fun canSetQualityAssessment(projectId: Long): Boolean {
         val project = projectService.getById(projectId)
         val allowedStatuses = listOf(SUBMITTED, ELIGIBLE)
 
-        return project.qualityAssessment == null
+        return project.firstStepDecision?.qualityAssessment == null
             && (isProgrammeUser() || isAdmin())
             && allowedStatuses.contains(project.projectStatus.status)
     }
@@ -128,7 +128,7 @@ class ProjectStatusAuthorization(
     fun canSetEligibilityAssessment(projectId: Long): Boolean {
         val project = projectService.getById(projectId)
 
-        return project.eligibilityAssessment == null
+        return project.firstStepDecision?.eligibilityAssessment == null
             && (isProgrammeUser() || isAdmin())
             && project.projectStatus.status == SUBMITTED
     }

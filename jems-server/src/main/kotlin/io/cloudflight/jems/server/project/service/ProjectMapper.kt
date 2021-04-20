@@ -32,7 +32,9 @@ fun InputProject.toEntity(
     call = call,
     acronym = this.acronym!!,
     applicant = applicant,
-    currentStatus = statusHistoryEntity
+    currentStatus = statusHistoryEntity,
+    step2Active = false,
+    firstStepDecision = null
 )
 
 fun ProjectEntity.toOutputProject() = ProjectDetailDTO(
@@ -43,10 +45,9 @@ fun ProjectEntity.toOutputProject() = ProjectDetailDTO(
     projectStatus = currentStatus.toOutputProjectStatus(),
     firstSubmission = firstSubmission?.toOutputProjectStatus(),
     lastResubmission = lastResubmission?.toOutputProjectStatus(),
-    qualityAssessment = qualityAssessment?.toOutputProjectQualityAssessment(),
-    eligibilityAssessment = eligibilityAssessment?.toOutputProjectEligibilityAssessment(),
-    eligibilityDecision = eligibilityDecision?.toOutputProjectStatus(),
-    fundingDecision = fundingDecision?.toOutputProjectStatus(),
+    step2Active = step2Active,
+    firstStepDecision = firstStepDecision?.toProjectDecisionDTO(),
+    secondStepDecision = secondStepDecision?.toProjectDecisionDTO(),
     projectData = projectData?.toOutputProjectData(priorityPolicy),
     periods = periods.map { it.toOutputPeriod() }
 )

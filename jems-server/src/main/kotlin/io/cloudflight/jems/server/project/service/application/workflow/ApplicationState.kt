@@ -45,6 +45,11 @@ abstract class ApplicationState(
             projectSummary.status
         )
 
+    open fun returnToDraft(): ApplicationStatus =
+        throw ReturnToApplicantIsNotAllowedException(
+            projectSummary.status
+        )
+
     open fun revertDecision(): ApplicationStatus =
         throw RevertLastActionOnApplicationIsNotAllowedException(
             projectSummary.status
@@ -69,6 +74,13 @@ abstract class ApplicationState(
             projectId = projectSummary.id,
             userId = securityService.getUserIdOrThrow(),
             status = ApplicationStatus.RETURNED_TO_APPLICANT
+        )
+
+    protected fun returnToDraftDefaultImpl(): ApplicationStatus =
+        projectWorkflowPersistence.updateProjectCurrentStatus(
+            projectId = projectSummary.id,
+            userId = securityService.getUserIdOrThrow(),
+            status = ApplicationStatus.DRAFT
         )
 
     protected fun revertCurrentStatusToPreviousStatus(validRevertStatuses: Set<ApplicationStatus>): ApplicationStatus =
