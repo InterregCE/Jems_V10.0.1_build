@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import {ProjectDecisionDTO, ProjectStatusDTO} from '@cat/api';
 
 @Component({
   selector: 'app-project-application-assessments',
@@ -11,7 +11,7 @@ export class ProjectApplicationAssessmentsComponent {
   STATUS = ProjectStatusDTO.StatusEnum;
 
   @Input()
-  project: ProjectDetailDTO;
+  decisions: ProjectDecisionDTO;
   @Input()
-  projectStatus: ProjectStatusDTO.StatusEnum;
+  projectStatus: ProjectStatusDTO;
 }

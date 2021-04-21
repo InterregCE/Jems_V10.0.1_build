@@ -4,6 +4,7 @@ import {
   InputProjectData,
   InputProjectEligibilityAssessment,
   InputProjectQualityAssessment,
+  ProjectDecisionDTO,
   ProjectDetailDTO,
   ProjectPartnerBudgetCoFinancingDTO,
   ProjectService,
@@ -36,6 +37,9 @@ export class ProjectStore {
   project$: Observable<ProjectDetailDTO>;
   projectEditable$: Observable<boolean>;
   projectTitle$: Observable<string>;
+  callHasTwoSteps$: Observable<boolean>;
+  projectInSecondStep$: Observable<boolean>;
+  projectDecisions$: Observable<ProjectDecisionDTO>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -80,6 +84,9 @@ export class ProjectStore {
       .pipe(
         map(project => `${project.id} – ${project.acronym}`)
       );
+    this.callHasTwoSteps$ = this.callHasTwoSteps();
+    this.projectInSecondStep$ = this.projectInSecondStep();
+    this.projectDecisions$ = this.decisions();
   }
 
   /**
@@ -176,6 +183,7 @@ export class ProjectStore {
           callSetting.callName,
           callSetting.startDate,
           callSetting.endDate,
+          callSetting.endDateStep1,
           callSetting.lengthOfPeriod,
           new CallFlatRateSetting(callSetting.flatRates.staffCostFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup),
           callSetting.lumpSums.map(lumpSum =>
@@ -184,6 +192,30 @@ export class ProjectStore {
             .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.isOneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories))),
           callSetting.isAdditionalFundAllowed
         )),
+        shareReplay(1)
+      );
+  }
+
+  private callHasTwoSteps(): Observable<boolean> {
+    return this.projectCall$
+      .pipe(
+        map(call => !!call.endDateStep1),
+        shareReplay(1)
+      );
+  }
+
+  private projectInSecondStep(): Observable<boolean> {
+    return this.project$
+      .pipe(
+        map(project => project.step2Active),
+        shareReplay(1)
+      );
+  }
+
+  private decisions(): Observable<ProjectDecisionDTO> {
+    return this.project$
+      .pipe(
+        map(project => project.step2Active ? project.secondStepDecision : project.firstStepDecision),
         shareReplay(1)
       );
   }

@@ -11,6 +11,7 @@
             [filePage]="details.page"
             [pageIndex]="newPageIndex$ | async"
             [project]="details.project"
+            [fundingDecisionDefined]="details.fundingDecisionDefined"
             [permission]="details.permission"
             (deleteFile)="deleteFile($event)"
             (downloadFile)="downloadFile($event)"

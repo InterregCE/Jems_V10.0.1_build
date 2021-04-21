@@ -39,6 +39,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             callName = "call 7",
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),
+            endDateStep1 = null,
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
             flatRates = emptySet(),

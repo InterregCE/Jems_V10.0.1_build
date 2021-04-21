@@ -4,9 +4,10 @@ import {Permission} from '../../../security/permissions/permission';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {ProjectEligibilityDecisionStore} from './project-eligibility-decision-store.service';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {combineLatest} from 'rxjs';
 
 @Component({
   selector: 'app-project-application-eligibility-decision-page',
@@ -19,9 +20,10 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
   Permission = Permission;
 
   projectId = this.activatedRoute.snapshot.params.projectId;
-  project$ = this.eligibilityPageStore.project$
+  data$ = combineLatest([this.eligibilityPageStore.project$, this.eligibilityPageStore.eligibilityDecision$])
     .pipe(
-      tap(project => this.resetForm(project))
+      tap(([project, eligibilityDecision]) => this.resetForm(project, eligibilityDecision)),
+      map(([project, eligibilityDecision]) => ({project, eligibilityDecision}))
     );
 
   ELIGIBLE = 'ELIGIBLE';
@@ -55,10 +57,10 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
               private sidenavService: ProjectApplicationFormSidenavService) {
   }
 
-  private resetForm(project: ProjectDetailDTO): void {
-    this.setEligibilityDecisionValue(project);
-    this.notesForm.controls.notes.setValue(project.eligibilityDecision?.note);
-    this.notesForm.controls.decisionDate.setValue(project.eligibilityDecision?.decisionDate);
+  private resetForm(project: ProjectDetailDTO, eligibilityDecision: ProjectStatusDTO): void {
+    this.setEligibilityDecisionValue(project, eligibilityDecision);
+    this.notesForm.controls.notes.setValue(eligibilityDecision?.note);
+    this.notesForm.controls.decisionDate.setValue(eligibilityDecision?.decisionDate);
   }
 
   redirectToProjectDetail(): void {
@@ -83,9 +85,9 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
       ).subscribe();
   }
 
-  private setEligibilityDecisionValue(project: ProjectDetailDTO): void {
-    if (project?.eligibilityDecision) {
-      if (project?.eligibilityDecision?.status === ProjectStatusDTO.StatusEnum.INELIGIBLE) {
+  private setEligibilityDecisionValue(project: ProjectDetailDTO, eligibilityDecision: ProjectStatusDTO): void {
+    if (eligibilityDecision) {
+      if (eligibilityDecision?.status === ProjectStatusDTO.StatusEnum.INELIGIBLE) {
         this.notesForm.controls.assessment.setValue(this.INELIGIBLE);
       } else {
         this.notesForm.controls.assessment.setValue(this.ELIGIBLE);

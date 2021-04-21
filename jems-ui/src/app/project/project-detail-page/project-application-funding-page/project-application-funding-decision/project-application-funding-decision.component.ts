@@ -22,6 +22,10 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   @Input()
   status: ProjectStatusDTO;
   @Input()
+  fundingDecision: ProjectStatusDTO;
+  @Input()
+  eligibilityDecisionDate: string;
+  @Input()
   options: ProjectStatusDTO.StatusEnum[];
   @Input()
   submitLabel: string;

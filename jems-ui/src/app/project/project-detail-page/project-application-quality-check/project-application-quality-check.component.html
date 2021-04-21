@@ -1,11 +1,9 @@
-<app-main-page-template [needsCard]="true" *ngIf="project$ | async as project"
+<app-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
                         titleKey="project.application.form.lifecycle.title">
 
     <div page-sub-title appNoWidthLimit appFormLayout>
-        <h2>{{project.id}} – {{project.acronym}}</h2>
-        <app-project-application-information
-                appNoWidthLimit
-                [project]="project">
+        <h2>{{data.project.id}} – {{data.project.acronym}}</h2>
+        <app-project-application-information appNoWidthLimit [project]="data.project">
         </app-project-application-information>
     </div>
 
@@ -15,7 +13,7 @@
                 required
                 name="assessment"
                 formControlName="assessment"
-                [disabled]="project.qualityAssessment !== null"
+                [disabled]="data.qualityAssessment !== null"
                 (change)="assessmentChangeHandler($event)">
             <mat-radio-button
                     *ngFor="let option of options" [value]="option">
@@ -27,10 +25,10 @@
                                  [messages]="notesErrors"
                                  [characterLimit]="1000"
                                  [label]="'project.assessment.qualityCheck.dialog.field.note'"
-                                 [disabled]="project.qualityAssessment !== null"
+                                 [disabled]="data.qualityAssessment !== null"
                                  [customStyle]="'outline'">
         </app-expandable-textarea>
-        <div appMultiColumnRow *ngIf="project.qualityAssessment === null">
+        <div appMultiColumnRow *ngIf="data.qualityAssessment === null">
             <button mat-stroked-button
                     (click)="onCancel()">{{'project.assessment.qualityCheck.dialog.button.cancel' | translate}}
             </button>
@@ -38,7 +36,7 @@
             <app-pending-button
                     [confirm]="getQualityCheckConfirmation()"
                     [pending]="actionPending"
-                    [disabled]="notesForm.invalid || submitted"
+                    [disabled]="notesForm.invalid"
                     (clicked)="onSubmit()">
                 {{'project.assessment.qualityCheck.dialog.button.submit' | translate}}
             </app-pending-button>

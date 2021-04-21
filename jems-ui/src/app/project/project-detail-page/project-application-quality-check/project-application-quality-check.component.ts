@@ -1,28 +1,34 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {combineLatest, Observable} from 'rxjs';
+import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import {AbstractForm} from '@common/components/forms/abstract-form';
-import {InputProjectQualityAssessment, ProjectDetailDTO} from '@cat/api';
-import {TranslateService} from '@ngx-translate/core';
-import {ProjectApplicationFormSidenavService} from '../../../containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {InputProjectQualityAssessment, OutputProjectQualityAssessment, ProjectDetailDTO} from '@cat/api';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {ProjectQualityCheckPageStore} from './project-quality-check-page-store.service';
+import {map, tap} from 'rxjs/operators';
+import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-quality-check',
   templateUrl: './project-application-quality-check.component.html',
   styleUrls: ['./project-application-quality-check.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [ProjectQualityCheckPageStore]
 })
-export class ProjectApplicationQualityCheckComponent extends AbstractForm implements OnInit {
+export class ProjectApplicationQualityCheckComponent {
   RECOMMEND = 'RECOMMEND';
   RECOMMEND_WITH_CONDITIONS = 'RECOMMEND_WITH_CONDITIONS';
   NOT_RECOMMEND = 'NOT_RECOMMENDED';
-  // TODO move to container, use as Input()
+
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.RECOMMEND, this.RECOMMEND_WITH_CONDITIONS, this.NOT_RECOMMEND];
-  project$: Observable<ProjectDetailDTO>;
+
+  data$: Observable<{
+    project: ProjectDetailDTO,
+    qualityAssessment: OutputProjectQualityAssessment
+  }>;
+
   selectedAssessment: string;
 
   notesForm = this.formBuilder.group({
@@ -36,31 +42,22 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
 
   actionPending = false;
 
-  constructor(
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private formBuilder: FormBuilder,
-    private projectStore: ProjectStore,
-    protected changeDetectorRef: ChangeDetectorRef,
-    protected translationService: TranslateService,
-    private sidenavService: ProjectApplicationFormSidenavService) {
-    super(changeDetectorRef, translationService);
-  }
-
-  ngOnInit(): void {
-    super.ngOnInit();
-    // TODO move to container, use as Input()
-    this.project$ = this.projectStore.getProject();
-    this.project$.subscribe((project) => {
-      if (project.qualityAssessment) {
-        this.setQualityCheckValue(project);
-        this.notesForm.controls.notes.setValue(project.qualityAssessment.note);
-      }
-    });
-  }
-
-  getForm(): FormGroup | null {
-    return null;
+  constructor(private router: Router,
+              private activatedRoute: ActivatedRoute,
+              private formBuilder: FormBuilder,
+              private pageStore: ProjectQualityCheckPageStore,
+              private projectStore: ProjectStore,
+              private sidenavService: ProjectApplicationFormSidenavService) {
+    this.data$ = combineLatest([this.pageStore.project$, this.pageStore.qualityAssessment$])
+      .pipe(
+        tap(([project, qualityAssessment]) => {
+          if (qualityAssessment) {
+            this.setQualityCheckValue(qualityAssessment);
+            this.notesForm.controls.notes.setValue(qualityAssessment.note);
+          }
+        }),
+        map(([project, qualityAssessment]) => ({project, qualityAssessment}))
+      );
   }
 
   onSubmit(): void {
@@ -68,7 +65,6 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
   }
 
   onCancel(): void {
-    // TODO move to container, use as Input()
     this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
@@ -94,12 +90,12 @@ export class ProjectApplicationQualityCheckComponent extends AbstractForm implem
     return InputProjectQualityAssessment.ResultEnum.NOTRECOMMENDED;
   }
 
-  private setQualityCheckValue(project: ProjectDetailDTO): void {
-    if (project.qualityAssessment.result === InputProjectQualityAssessment.ResultEnum.RECOMMENDEDFORFUNDING) {
+  private setQualityCheckValue(qualityAssessment: OutputProjectQualityAssessment): void {
+    if (qualityAssessment.result === InputProjectQualityAssessment.ResultEnum.RECOMMENDEDFORFUNDING) {
       this.notesForm.controls.assessment.setValue(this.RECOMMEND);
       return;
     }
-    if (project.qualityAssessment.result === InputProjectQualityAssessment.ResultEnum.RECOMMENDEDWITHCONDITIONS) {
+    if (qualityAssessment.result === InputProjectQualityAssessment.ResultEnum.RECOMMENDEDWITHCONDITIONS) {
       this.notesForm.controls.assessment.setValue(this.RECOMMEND_WITH_CONDITIONS);
       return;
     }

@@ -1,9 +1,9 @@
-<app-main-page-template [needsCard]="true" *ngIf="project$ | async as project"
+<app-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
                         titleKey="project.application.form.lifecycle.title">
     <ng-container page-sub-title *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
         <div appFormLayout appNoWidthLimit>
-            <h2>{{project.id}} – {{project.acronym}}</h2>
-            <app-project-application-information appNoWidthLimit [project]="project">
+            <h2>{{data.project.id}} – {{data.project.acronym}}</h2>
+            <app-project-application-information appNoWidthLimit [project]="data.project">
             </app-project-application-information>
         </div>
     </ng-container>
@@ -14,7 +14,7 @@
                 required
                 name="assessment"
                 formControlName="assessment"
-                [disabled]="!!project.eligibilityDecision"
+                [disabled]="!!data.eligibilityDecision"
                 (change)="assessmentChangeHandler($event)">
             <mat-radio-button *ngFor="let option of options" [value]="option">
                 <div>{{'project.assessment.eligibilityDecision.dialog.select.' + option | translate}}</div>
@@ -26,7 +26,7 @@
                 [messages]="notesErrors"
                 [characterLimit]="1000"
                 [label]="'project.assessment.eligibilityDecision.dialog.field.note'"
-                [disabled]="!!project.eligibilityDecision"
+                [disabled]="!!data.eligibilityDecision"
                 [customStyle]="'outline'">
         </app-expandable-textarea>
         <mat-form-field appFormFieldWidth="x-large">
@@ -35,9 +35,9 @@
             </mat-label>
             <input name="decisionDate" formControlName="decisionDate" matInput required
                    [matDatepicker]="picker"
-                   [readonly]="!!project.eligibilityDecision"
+                   [readonly]="!!data.eligibilityDecision"
                    [max]="today">
-            <mat-datepicker-toggle [disabled]="!!project.eligibilityDecision" matSuffix
+            <mat-datepicker-toggle [disabled]="!!data.eligibilityDecision" matSuffix
                                    [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
             <mat-error>
@@ -47,7 +47,7 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <div appMultiColumnRow *ngIf="!project.eligibilityDecision">
+        <div appMultiColumnRow *ngIf="!data.eligibilityDecision">
             <button mat-stroked-button
                     (click)="redirectToProjectDetail()">
                 {{'project.assessment.eligibilityDecision.dialog.button.cancel' | translate}}

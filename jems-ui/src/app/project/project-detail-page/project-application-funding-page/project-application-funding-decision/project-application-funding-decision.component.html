@@ -18,10 +18,10 @@
         <mat-label>{{'project.assessment.fundingDecision.dialog.field.date' | translate | dateFormatInfo}}</mat-label>
         <input required formControlName="decisionDate" matInput
                name="decisionDate-{{status?.status}}"
-               [readonly]="!!project.fundingDecision"
+               [readonly]="!!fundingDecision"
                [matDatepicker]="picker"
                [max]="today"
-               [min]="project?.eligibilityDecision?.decisionDate">
+               [min]="eligibilityDecisionDate">
         <mat-datepicker-toggle
                 matSuffix
                 [disabled]="!!status"

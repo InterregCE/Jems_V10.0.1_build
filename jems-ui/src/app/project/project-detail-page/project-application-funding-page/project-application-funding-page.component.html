@@ -16,13 +16,17 @@
                 *ngIf="details.showWithConditions"
                 [project]="details.project"
                 [status]="details.withConditionsStatus"
+                [fundingDecision]="details.fundingDecision"
+                [eligibilityDecisionDate]="details.eligibilityDecisionDate"
                 [options]="details.withConditionsStatusOptions"
                 [submitLabel]="details.withConditionsSubmitLabel">
         </app-project-application-funding-decision>
         <app-project-application-funding-decision
                 appNoWidthLimit
                 [project]="details.project"
-                [status]="details.status"
+                [status]="details.fundingDecision"
+                [fundingDecision]="details.fundingDecision"
+                [eligibilityDecisionDate]="details.eligibilityDecisionDate"
                 [options]="details.statusOptions"
                 [submitLabel]="details.submitLabel">
         </app-project-application-funding-decision>

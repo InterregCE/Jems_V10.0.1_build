@@ -368,6 +368,7 @@ internal class ProjectStatusAuthorizationTest {
                 callName = "call",
                 startDate = ZonedDateTime.now(),
                 endDate = ZonedDateTime.now(),
+                endDateStep1 = null,
                 lengthOfPeriod = 12,
                 isAdditionalFundAllowed = false,
                 flatRates = FlatRateSetupDTO(),

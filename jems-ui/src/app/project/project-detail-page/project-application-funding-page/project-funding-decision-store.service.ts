@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusService} from '@cat/api';
-import {tap} from 'rxjs/operators';
+import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO, ProjectStatusService} from '@cat/api';
+import {map, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {Log} from '../../../common/utils/log';
 
@@ -9,10 +9,20 @@ import {Log} from '../../../common/utils/log';
 export class ProjectFundingDecisionStore {
 
   project$: Observable<ProjectDetailDTO>;
+  fundingDecision$: Observable<ProjectStatusDTO>;
+  eligibilityDecisionDate$: Observable<string>
 
   constructor(private projectStore: ProjectStore,
               private projectStatusService: ProjectStatusService) {
     this.project$ = this.projectStore.project$;
+    this.fundingDecision$ = this.projectStore.projectDecisions$
+      .pipe(
+        map(decisions => decisions.fundingDecision)
+      );
+    this.eligibilityDecisionDate$ = this.projectStore.projectDecisions$
+      .pipe(
+        map(decisions => decisions.eligibilityDecision.decisionDate)
+      );
   }
 
   approveApplication(projectId: number, info: ApplicationActionInfoDTO): Observable<string> {

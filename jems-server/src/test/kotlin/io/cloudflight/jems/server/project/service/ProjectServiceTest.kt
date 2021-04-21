@@ -232,17 +232,20 @@ class ProjectServiceTest {
 
         val result = projectService.createProject(InputProject("test", dummyCall.id))
 
-        assertEquals(ProjectCallSettingsDTO(
-            callId = dummyCall.id,
-            callName = dummyCall.name,
-            startDate = dummyCall.startDate,
-            endDate = dummyCall.endDate,
-            lengthOfPeriod = 1,
-            isAdditionalFundAllowed = false,
-            flatRates = FlatRateSetupDTO(),
-            lumpSums = emptyList(),
-            unitCosts = emptyList(),
-        ), result.callSettings)
+        assertEquals(
+            ProjectCallSettingsDTO(
+                callId = dummyCall.id,
+                callName = dummyCall.name,
+                startDate = dummyCall.startDate,
+                endDate = dummyCall.endDate,
+                endDateStep1 = dummyCall.endDateStep1,
+                lengthOfPeriod = 1,
+                isAdditionalFundAllowed = false,
+                flatRates = FlatRateSetupDTO(),
+                lumpSums = emptyList(),
+                unitCosts = emptyList(),
+            ), result.callSettings
+        )
         assertEquals(result.acronym, "test")
         assertEquals(result.firstSubmission, null)
         assertEquals(result.lastResubmission, null)
@@ -262,7 +265,16 @@ class ProjectServiceTest {
     @Test
     fun projectGet_OK() {
         every { projectRepository.findById(eq(1)) } returns
-            Optional.of(ProjectEntity(id = 1, call = dummyCall, acronym = "test", applicant = account, currentStatus = statusSubmitted, firstSubmission = statusSubmitted))
+            Optional.of(
+                ProjectEntity(
+                    id = 1,
+                    call = dummyCall,
+                    acronym = "test",
+                    applicant = account,
+                    currentStatus = statusSubmitted,
+                    firstSubmission = statusSubmitted
+                )
+            )
 
         val result = projectService.getById(1)
 
@@ -324,7 +336,10 @@ class ProjectServiceTest {
             title = projectData.title,
             duration = projectData.duration,
             intro = projectData.intro,
-            specificObjective = OutputProgrammePriorityPolicySimpleDTO(programmeObjectivePolicy = HealthyAgeing, code = "HAB"),
+            specificObjective = OutputProgrammePriorityPolicySimpleDTO(
+                programmeObjectivePolicy = HealthyAgeing,
+                code = "HAB"
+            ),
             programmePriority = null
         )
         assertThat(result.projectData).isEqualTo(expectedData)

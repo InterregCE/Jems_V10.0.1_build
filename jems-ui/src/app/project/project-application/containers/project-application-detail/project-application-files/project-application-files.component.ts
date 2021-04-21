@@ -52,13 +52,15 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
 
   details$ = combineLatest([
     this.currentPage$,
-    this.projectStore.getProject(),
+    this.projectStore.project$,
+    this.projectStore.projectDecisions$,
     this.permissionService.permissionsChanged()
   ])
     .pipe(
-      map(([page, project, permissions]) => ({
+      map(([page, project, decisions, permissions]) => ({
         page,
         project,
+        fundingDecisionDefined: !!decisions.fundingDecision,
         permission: permissions[0],
         uploadPossible: this.canUploadFiles(project, permissions[0])
       }))

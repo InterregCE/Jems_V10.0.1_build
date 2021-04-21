@@ -1,32 +1,31 @@
-<div id="applicationFormLifecycleAssessment" *ngIf="projectStatus !== STATUS.DRAFT
-            && projectStatus !== STATUS.RETURNEDTOAPPLICANT">
+<div id="applicationFormLifecycleAssessment"
+     *ngIf="projectStatus.status !== STATUS.DRAFT && projectStatus.status !== STATUS.RETURNEDTOAPPLICANT">
     <h3>{{'project.assessment.header' | translate}}</h3>
-    <mat-expansion-panel
-            [expanded]="true">
+    <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>
             <mat-panel-title>{{'project.assessment.decision.header' | translate}}</mat-panel-title>
         </mat-expansion-panel-header>
         <div appMultiColumnRow stretch class="mb-4">
             <div>{{'project.assessment.eligibilityDecision.title' | translate}}</div>
             <div>
-                <span *ngIf="project.eligibilityDecision">
-                    {{'common.label.projectapplicationstatus.' + project.eligibilityDecision.status | translate}}
+                <span *ngIf="decisions.eligibilityDecision">
+                    {{'common.label.projectapplicationstatus.' + decisions.eligibilityDecision.status | translate}}
                 </span>
             </div>
             <div>
-                <span *ngIf="project.eligibilityDecision">
-                    {{project.eligibilityDecision.decisionDate | localeDate}}
+                <span *ngIf="decisions.eligibilityDecision">
+                    {{decisions.eligibilityDecision.decisionDate | localeDate}}
                 </span>
             </div>
             <button
-                    *ngIf="!project.eligibilityDecision"
+                    *ngIf="!decisions.eligibilityDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [disabled]="!project.eligibilityAssessment"
+                    [disabled]="!decisions.eligibilityAssessment"
                     [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment' | translate}}
             </button>
             <button
-                    *ngIf="project.eligibilityDecision"
+                    *ngIf="decisions.eligibilityDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
@@ -35,26 +34,26 @@
         <div appMultiColumnRow stretch>
             <div>{{'project.assessment.fundingDecision.title' | translate}}</div>
             <div>
-                <span *ngIf="project.fundingDecision">
-                    {{'common.label.projectapplicationstatus.' + project.projectStatus.status | translate}}
+                <span *ngIf="decisions.fundingDecision">
+                    {{'common.label.projectapplicationstatus.' + decisions.fundingDecision.status | translate}}
                 </span>
             </div>
             <div>
-                <span *ngIf="project.fundingDecision">
-                    {{project.projectStatus.decisionDate | localeDate }}
+                <span *ngIf="decisions.fundingDecision">
+                    {{projectStatus.decisionDate | localeDate }}
                 </span>
             </div>
             <button
-                    *ngIf="!project.fundingDecision"
+                    *ngIf="!decisions.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [disabled]="project?.eligibilityDecision?.status !== STATUS.ELIGIBLE  || !project.qualityAssessment"
+                    [disabled]="decisions?.eligibilityDecision?.status !== STATUS.ELIGIBLE  || !decisions.qualityAssessment"
                     [routerLink]="'./assessment/fundingDecision'">
                 {{'project.assessment.fundingDecision.assessment' | translate}}
             </button>
             <button
-                    *ngIf="!!project.fundingDecision"
+                    *ngIf="!!decisions.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [color]="projectStatus === STATUS.APPROVEDWITHCONDITIONS ? 'primary' : null"
+                    [color]="projectStatus.status === STATUS.APPROVEDWITHCONDITIONS ? 'primary' : null"
                     [routerLink]="'./assessment/fundingDecision'">
                 {{updateOrViewFundingLabel() | translate}}
             </button>
