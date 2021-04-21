@@ -1,5 +1,5 @@
 <app-main-page-template
-        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.c">
     <app-project-application-form-project-relevance-and-context-detail
             *ngIf="details$ | async as details"

@@ -18,7 +18,8 @@ export class ProjectResultsPageStore {
   results$: Observable<ProjectResultDTO[]>;
   resultIndicators$: Observable<ResultIndicatorSummaryDTO[]>;
   periods$: Observable<ProjectPeriodDTO[]>;
-  projectAcronym$: Observable<string>;
+  projectId$: Observable<number>;
+  projectTitle$: Observable<string>;
 
   private savedResults$ = new Subject<ProjectResultDTO[]>();
 
@@ -29,7 +30,8 @@ export class ProjectResultsPageStore {
     this.results$ = this.results();
     this.resultIndicators$ = this.resultIndicators();
     this.periods$ = this.periods();
-    this.projectAcronym$ = this.projectStore.getAcronym();
+    this.projectTitle$ = this.projectStore.projectTitle$;
+    this.projectId$ = this.projectStore.projectId$;
   }
 
   saveResults(results: ProjectResultDTO[]): Observable<ProjectResultDTO[]> {

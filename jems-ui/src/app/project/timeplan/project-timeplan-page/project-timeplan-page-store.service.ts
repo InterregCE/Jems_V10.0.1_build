@@ -9,7 +9,8 @@ import {Log} from '../../../common/utils/log';
 @Injectable()
 export class ProjectTimeplanPageStore {
 
-  projectAcronym$: Observable<string>;
+  projectId$: Observable<number>;
+  projectTitle$: Observable<string>;
   workPackages$: Observable<any>;
   periods$: Observable<ProjectPeriodDTO[]>;
   projectResults$: Observable<ProjectResultDTO[]>;
@@ -17,14 +18,15 @@ export class ProjectTimeplanPageStore {
   constructor(private projectStore: ProjectStore,
               private workPackageService: WorkPackageService,
               private projectResultService: ProjectResultService) {
-    this.projectAcronym$ = this.projectStore.getAcronym();
+    this.projectId$ = this.projectStore.projectId$;
+    this.projectTitle$ = this.projectStore.projectTitle$;
     this.workPackages$ = this.workPackages();
     this.periods$ = this.periods();
     this.projectResults$ = this.projectResults();
   }
 
   private workPackages(): Observable<any> {
-    return this.projectStore.projectId$
+    return this.projectId$
       .pipe(
         filter(id => !!id),
         switchMap(id => this.workPackageService.getFullWorkPackagesByProjectId(id)),
@@ -41,7 +43,7 @@ export class ProjectTimeplanPageStore {
   }
 
   private projectResults(): Observable<any> {
-    return this.projectStore.projectId$
+    return this.projectId$
       .pipe(
         filter(id => !!id),
         switchMap(id => this.projectResultService.getProjectResults(id)),
