@@ -1,5 +1,5 @@
 <app-main-page-template *ngIf="data$ | async as data"
-                        [titleText]="'project.application.form.acronym' | translate : {acronym: data.projectAcronym}"
+                        [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle}"
                         subTitleKey="project.application.form.section.part.c">
     <app-form (save)="updateResults()">
         <form appFormLayout [formGroup]="form">

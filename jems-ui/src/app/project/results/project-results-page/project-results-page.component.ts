@@ -31,7 +31,8 @@ export class ProjectResultsPageComponent implements OnInit {
     results: ProjectResultDTO[],
     resultIndicators: ResultIndicatorSummaryDTO[],
     periods: ProjectPeriodDTO[],
-    projectAcronym: string
+    projectId: number,
+    projectTitle: string
   }>;
 
   constructor(public formService: FormService,
@@ -56,11 +57,12 @@ export class ProjectResultsPageComponent implements OnInit {
       this.projectResultsPageStore.results$,
       this.projectResultsPageStore.resultIndicators$,
       this.projectResultsPageStore.periods$,
-      this.projectResultsPageStore.projectAcronym$
+      this.projectResultsPageStore.projectId$,
+      this.projectResultsPageStore.projectTitle$
     ])
       .pipe(
-        map(([results, resultIndicators, periods, projectAcronym]) => (
-          {results, resultIndicators, periods, projectAcronym})
+        map(([results, resultIndicators, periods, projectId, projectTitle]) => (
+          {results, resultIndicators, periods, projectId, projectTitle})
         )
       );
   }

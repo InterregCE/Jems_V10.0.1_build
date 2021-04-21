@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   InputProjectData,
   InputProjectEligibilityAssessment,
@@ -10,7 +10,17 @@ import {
   ProjectStatusDTO,
   ProjectStatusService
 } from '@cat/api';
-import {distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  combineAll,
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMap,
+  shareReplay,
+  switchMap,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';
@@ -35,6 +45,7 @@ export class ProjectStore {
   projectStatus$: Observable<ProjectStatusDTO.StatusEnum>;
   project$: Observable<ProjectDetailDTO>;
   projectEditable$: Observable<boolean>;
+  projectTitle$: Observable<string>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -75,6 +86,10 @@ export class ProjectStore {
     this.projectEditable$ = this.projectEditable();
     this.projectStatus$ = this.projectStatus();
     this.projectCall$ = this.projectCallSettings();
+    this.projectTitle$ = this.project$
+      .pipe(
+        map(project => `${project.id} – ${project.acronym}`)
+      );
   }
 
   /**
@@ -108,10 +123,6 @@ export class ProjectStore {
 
   setQualityAssessment(assessment: InputProjectQualityAssessment): void {
     this.newQualityAssessment$.next(assessment);
-  }
-
-  getAcronym(): Observable<string> {
-    return this.projectAcronym$.asObservable();
   }
 
   private projectStatus(): Observable<ProjectStatusDTO.StatusEnum> {

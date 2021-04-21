@@ -13,7 +13,7 @@ export class ProjectLumpSumsPageStore {
 
   projectCallLumpSums$ = this.projectStore.projectCall$.pipe(map(it => it.lumpSums));
   projectLumpSums$: Observable<ProjectLumpSum[]>;
-  projectAcronym$ = this.projectStore.getAcronym();
+  projectTitle$ = this.projectStore.projectTitle$;
   isProjectEditable$ = this.projectStore.projectEditable$;
   partners$ = this.projectPartnerStore.partners$;
   projectPeriods$ = this.projectStore.getProject().pipe(map(project => project.periods.map(it => new ProjectPeriod(it.projectId, it.number, it.start, it.end))));

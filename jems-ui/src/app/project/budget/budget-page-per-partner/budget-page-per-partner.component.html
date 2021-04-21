@@ -1,5 +1,5 @@
 <app-main-page-template [needsCard]="true"
-                        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+                        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
                         subTitleKey="project.application.form.section.part.d">
     <h3>{{'project.application.form.budgetPerPartner.title' | translate}}</h3>
     <mat-table *ngIf="budgets$ | async" id="budget-table-per-partner"
