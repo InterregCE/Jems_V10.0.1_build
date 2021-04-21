@@ -35,6 +35,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
   Permission = Permission;
   ProgrammeLumpSumDTO = ProgrammeLumpSumDTO;
   isProgrammeSetupLocked: boolean;
+  MIN_VALUE = 0.01;
 
   @Input()
   lumpSum: ProgrammeLumpSumDTO;
@@ -50,7 +51,10 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
   lumpSumForm = this.formBuilder.group({
     name: [[]],
     description: [[]],
-    cost: [null, Validators.required],
+    cost: [null, Validators.compose([
+      Validators.min(this.MIN_VALUE),
+      Validators.required])
+    ],
     allowSplitting: ['', Validators.required],
     phase: ['', Validators.required],
     categories: ['', Validators.required]
@@ -66,6 +70,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
 
   costErrors = {
     required: 'lump.sum.cost.should.not.be.empty',
+    min: 'lump.sum.out.of.range'
   };
 
   allowSplittingErrors = {

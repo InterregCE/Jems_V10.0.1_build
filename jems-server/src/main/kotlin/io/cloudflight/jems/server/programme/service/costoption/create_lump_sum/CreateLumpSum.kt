@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -15,11 +16,13 @@ import org.springframework.transaction.annotation.Transactional
 class CreateLumpSum(
     private val persistence: ProgrammeLumpSumPersistence,
     private val audit: AuditService,
+    private val generalValidator: GeneralValidatorService,
 ) : CreateLumpSumInteractor {
 
     @CanUpdateProgrammeSetup
     @Transactional
     override fun createLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
+        validateInput(lumpSum)
         validateCreateLumpSum(lumpSumToValidate = lumpSum, currentCount = persistence.getCount())
         val saved = persistence.createLumpSum(lumpSum)
 
@@ -32,5 +35,12 @@ class CreateLumpSum(
             .description("Programme lump sum (id=${lumpSum.id}) '${lumpSum.name}' has been added")
             .build()
     }
+
+    private fun validateInput(programmeLumpSum: ProgrammeLumpSum) =
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.maxLength(programmeLumpSum.name, 50, "name"),
+            generalValidator.maxLength(programmeLumpSum.description, 255, "description"),
+            generalValidator.notNull(programmeLumpSum.phase, "phase"),
+        )
 
 }

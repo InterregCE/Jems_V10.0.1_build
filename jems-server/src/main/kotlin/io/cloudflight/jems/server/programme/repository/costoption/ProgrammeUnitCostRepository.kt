@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProgrammeUnitCostRepository : JpaRepository<ProgrammeUnitCostEntity, Long> {
 
-    fun findTop25ByOrderById(): Iterable<ProgrammeUnitCostEntity>
+    fun findTop100ByOrderById(): Iterable<ProgrammeUnitCostEntity>
 
 }

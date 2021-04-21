@@ -84,7 +84,7 @@ class ProgrammeUnitCostPersistenceTest {
 
     @Test
     fun getUnitCosts() {
-        every { repository.findTop25ByOrderById() } returns listOf(testUnitCost)
+        every { repository.findTop100ByOrderById() } returns listOf(testUnitCost)
         assertThat(programmeUnitCostPersistence.getUnitCosts()).containsExactly(expectedUnitCost)
     }
 

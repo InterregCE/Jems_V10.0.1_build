@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -15,11 +16,13 @@ import org.springframework.transaction.annotation.Transactional
 class CreateUnitCost(
     private val persistence: ProgrammeUnitCostPersistence,
     private val audit: AuditService,
+    private val generalValidator: GeneralValidatorService,
 ) : CreateUnitCostInteractor {
 
     @CanUpdateProgrammeSetup
     @Transactional
     override fun createUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
+        validateInput(unitCost)
         validateCreateUnitCost(unitCostToValidate = unitCost, currentCount = persistence.getCount())
         val saved = persistence.createUnitCost(unitCost)
 
@@ -33,4 +36,10 @@ class CreateUnitCost(
             .build()
     }
 
+    private fun validateInput(programmeUnitCost: ProgrammeUnitCost) =
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.maxLength(programmeUnitCost.name, 50, "name"),
+            generalValidator.maxLength(programmeUnitCost.description, 255, "description"),
+            generalValidator.maxLength(programmeUnitCost.type, 25, "type"),
+        )
 }

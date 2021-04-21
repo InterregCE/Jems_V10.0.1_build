@@ -59,6 +59,9 @@ class UpdateLumpSum(
     private fun validateInput(programmeLumpSum: ProgrammeLumpSum) =
         generalValidator.throwIfAnyIsInvalid(
             generalValidator.notNullOrZero(programmeLumpSum.id, "id"),
+            generalValidator.maxLength(programmeLumpSum.name, 50, "name"),
+            generalValidator.maxLength(programmeLumpSum.description, 255, "description"),
+            generalValidator.notNull(programmeLumpSum.phase, "phase"),
     )
 
 }

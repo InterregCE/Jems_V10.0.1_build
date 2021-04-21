@@ -86,7 +86,7 @@ class ProgrammeLumpSumPersistenceTest {
 
     @Test
     fun getLumpSums() {
-        every { repository.findTop25ByOrderById() } returns listOf(testLumpSum)
+        every { repository.findTop100ByOrderById() } returns listOf(testLumpSum)
         assertThat(programmeLumpSumPersistence.getLumpSums()).containsExactly(
             expectedLumpSum
         )
