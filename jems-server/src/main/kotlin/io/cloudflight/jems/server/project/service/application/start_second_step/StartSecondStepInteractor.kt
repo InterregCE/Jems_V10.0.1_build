@@ -1,7 +1,7 @@
-package io.cloudflight.jems.server.project.service.application.return_application_to_draft
+package io.cloudflight.jems.server.project.service.application.start_second_step
 
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 
-interface ReturnApplicationToDraftInteractor {
+interface StartSecondStepInteractor {
     fun returnToDraft(projectId: Long): ApplicationStatus
 }

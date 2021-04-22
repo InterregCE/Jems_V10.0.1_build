@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.application.return_application_to_draft
+package io.cloudflight.jems.server.project.service.application.start_second_step
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.authorization.CanReturnApplicationToApplicant
@@ -15,19 +15,19 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 @Service
-class ReturnApplicationToDraft(
+class StartSecondStep(
     private val projectPersistence: ProjectPersistence,
     private val projectVersionPersistence: ProjectVersionPersistence,
     private val applicationStateFactory: ApplicationStateFactory,
     private val securityService: SecurityService,
     private val auditPublisher: ApplicationEventPublisher,
-) : ReturnApplicationToDraftInteractor {
+) : StartSecondStepInteractor {
 
     @CanReturnApplicationToApplicant
     @Transactional
     override fun returnToDraft(projectId: Long): ApplicationStatus =
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
-            applicationStateFactory.getInstance(projectSummary).returnToDraft().also {
+            applicationStateFactory.getInstance(projectSummary).startSecondStep().also {
 
                 auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
 

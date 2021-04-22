@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySim
 import io.cloudflight.jems.server.project.controller.toDto
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.entity.ProjectData
+import io.cloudflight.jems.server.project.entity.ProjectDecisionEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
@@ -33,8 +34,7 @@ fun InputProject.toEntity(
     acronym = this.acronym!!,
     applicant = applicant,
     currentStatus = statusHistoryEntity,
-    step2Active = false,
-    firstStepDecision = null
+    step2Active = false
 )
 
 fun ProjectEntity.toOutputProject() = ProjectDetailDTO(

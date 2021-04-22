@@ -19,8 +19,8 @@ class ApprovedApplicationState(
     override fun returnToApplicant(): ApplicationStatus =
         returnToApplicantDefaultImpl()
 
-    override fun returnToDraft(): ApplicationStatus =
-        returnToDraftDefaultImpl()
+    override fun startSecondStep(): ApplicationStatus =
+        startSecondStepDefaultImpl()
 
     override fun revertDecision(): ApplicationStatus =
         revertCurrentStatusToPreviousStatus(validRevertStatuses = canBeRevertTo).also { reestablishedStatus ->

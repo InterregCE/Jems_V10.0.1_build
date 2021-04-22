@@ -24,6 +24,11 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.repository.UserRepository
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import kotlin.math.ceil
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
@@ -33,9 +38,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
-import kotlin.math.ceil
 
 @Service
 class ProjectServiceImpl(

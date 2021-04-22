@@ -21,9 +21,9 @@ class ProjectWorkflowPersistenceProvider(
     override fun getProjectEligibilityDecisionDate(projectId: Long): LocalDate? =
         getProjectOrThrow(projectId)!!.let {
             if (it.step2Active)
-                it.secondStepDecision!!.fundingDecision?.decisionDate
+                it.secondStepDecision!!.eligibilityDecision?.decisionDate
             else
-                it.firstStepDecision!!.fundingDecision?.decisionDate
+                it.firstStepDecision!!.eligibilityDecision?.decisionDate
         }
 
     @Transactional(readOnly = true)
@@ -77,6 +77,23 @@ class ProjectWorkflowPersistenceProvider(
                     note = actionInfo?.note
                 )
             )
+        }.currentStatus.status
+
+    @Transactional
+    override fun startSecondStep(
+        projectId: Long,
+        userId: Long,
+        actionInfo: ApplicationActionInfo?
+    ): ApplicationStatus =
+        projectRepository.getOne(projectId).apply {
+            currentStatus = projectStatusHistoryRepository.save(
+                ProjectStatusHistoryEntity(
+                    project = this, status = ApplicationStatus.DRAFT, user = userRepository.getOne(userId),
+                    decisionDate = actionInfo?.date,
+                    note = actionInfo?.note
+                )
+            )
+            step2Active = true
         }.currentStatus.status
 
     @Transactional

@@ -10,7 +10,9 @@ import io.cloudflight.jems.server.project.entity.ProjectDecisionEntity
 import io.cloudflight.jems.server.project.entity.ProjectEligibilityAssessment
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectQualityAssessment
+import io.cloudflight.jems.server.project.repository.ProjectDecisionRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.user.entity.User
 import io.cloudflight.jems.server.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 class ProjectStatusServiceImpl(
     private val projectRepo: ProjectRepository,
     private val userRepository: UserRepository,
+    private val projectDecisionRepository: ProjectDecisionRepository,
     private val auditService: AuditService,
     private val securityService: SecurityService
 ) : ProjectStatusService {
@@ -32,21 +35,9 @@ class ProjectStatusServiceImpl(
         val user = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
         var project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
+        saveQualityAssessment(project, qualityAssessmentData, user)
 
-        val qualityAssessment = ProjectQualityAssessment(
-            id = projectId,
-            projectDecision = getDecisionBasedOnStep(projectId),
-            result = qualityAssessmentData.result!!,
-            user = user,
-            note = qualityAssessmentData.note
-        )
-        project = if (project.step2Active) {
-            project.copy( secondStepDecision = project.secondStepDecision?.copy(qualityAssessment = qualityAssessment))
-        } else {
-            project.copy( firstStepDecision = project.firstStepDecision?.copy(qualityAssessment = qualityAssessment))
-        }
-
-        val result = projectRepo.save(project).toOutputProject()
+        val result = project.toOutputProject()
 
         auditService.logEvent(qualityAssessmentConcluded(projectDetailDTO = result))
         return result
@@ -60,20 +51,7 @@ class ProjectStatusServiceImpl(
         val user = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
         var project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
-
-        val eligibilityAssessment = ProjectEligibilityAssessment(
-            id = projectId,
-            projectDecision = getDecisionBasedOnStep(projectId),
-            result = eligibilityAssessmentData.result!!,
-            user = user,
-            note = eligibilityAssessmentData.note
-        )
-
-        project = if (project.step2Active) {
-            project.copy( secondStepDecision = project.secondStepDecision?.copy(eligibilityAssessment = eligibilityAssessment))
-        } else {
-            project.copy( firstStepDecision = project.firstStepDecision?.copy(eligibilityAssessment = eligibilityAssessment))
-        }
+        saveEligibilityAssessment(project, eligibilityAssessmentData, user)
 
         val result = projectRepo.save(project).toOutputProject()
 
@@ -83,16 +61,59 @@ class ProjectStatusServiceImpl(
         return result
     }
 
-    private fun getProjectOrThrow(projectId: Long): ProjectEntity =
-        projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
+    private fun saveQualityAssessment(project: ProjectEntity, qualityAssessmentData: InputProjectQualityAssessment, user: User) {
+        var projectDecisionEntity = ProjectDecisionEntity(project = project)
 
+        if (project.step2Active) {
+            if (project.secondStepDecision != null) {
+                projectDecisionEntity = project.secondStepDecision!!
+            } else
+                project.secondStepDecision = projectDecisionEntity
+        } else {
+            if (project.firstStepDecision != null) {
+                projectDecisionEntity = project.firstStepDecision!!
+            } else {
+                project.firstStepDecision  = projectDecisionEntity
+            }
+        }
 
-    private fun getDecisionBasedOnStep(projectId: Long): ProjectDecisionEntity {
-        val projectEntity = getProjectOrThrow(projectId)
+        val qualityAssessment = ProjectQualityAssessment(
+            id = projectDecisionEntity.id,
+            projectDecision = projectDecisionEntity,
+            result = qualityAssessmentData.result!!,
+            user = user,
+            note = qualityAssessmentData.note
+        )
 
-        return if (projectEntity.step2Active)
-            projectEntity.secondStepDecision!!
-        else
-            projectEntity.firstStepDecision!!
+        projectDecisionEntity.qualityAssessment = qualityAssessment
+        projectDecisionRepository.save(projectDecisionEntity)
+    }
+
+    private fun saveEligibilityAssessment(project: ProjectEntity, eligibilityAssessmentData: InputProjectEligibilityAssessment, user: User) {
+        var projectDecisionEntity = ProjectDecisionEntity(project = project)
+
+        if (project.step2Active) {
+            if (project.secondStepDecision != null) {
+                projectDecisionEntity = project.secondStepDecision!!
+            } else
+                project.secondStepDecision = projectDecisionEntity
+        } else {
+            if (project.firstStepDecision != null) {
+                projectDecisionEntity = project.firstStepDecision!!
+            } else {
+                project.firstStepDecision  = projectDecisionEntity
+            }
+        }
+
+        val eligibilityAssessment = ProjectEligibilityAssessment(
+            id = projectDecisionEntity.id,
+            projectDecision = projectDecisionEntity,
+            result = eligibilityAssessmentData.result!!,
+            user = user,
+            note = eligibilityAssessmentData.note
+        )
+
+        projectDecisionEntity.eligibilityAssessment = eligibilityAssessment
+        projectDecisionRepository.save(projectDecisionEntity)
     }
 }

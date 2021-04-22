@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.repository
 
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.data.domain.Page

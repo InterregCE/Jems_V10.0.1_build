@@ -17,11 +17,15 @@ data class ProjectDecisionEntity (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @OneToOne(mappedBy = "projectDecision", cascade = [CascadeType.ALL])
-    val qualityAssessment: ProjectQualityAssessment? = null,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
+    val project: ProjectEntity,
 
     @OneToOne(mappedBy = "projectDecision", cascade = [CascadeType.ALL])
-    val eligibilityAssessment: ProjectEligibilityAssessment? = null,
+    var qualityAssessment: ProjectQualityAssessment? = null,
+
+    @OneToOne(mappedBy = "projectDecision", cascade = [CascadeType.ALL])
+    var eligibilityAssessment: ProjectEligibilityAssessment? = null,
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "eligibility_decision_id")

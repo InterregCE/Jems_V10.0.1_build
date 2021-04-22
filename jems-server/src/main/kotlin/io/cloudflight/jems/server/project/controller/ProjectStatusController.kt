@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.project.service.application.approve_applicatio
 import io.cloudflight.jems.server.project.service.application.get_possible_status_to_revert_to.GetPossibleStatusToRevertToInteractor
 import io.cloudflight.jems.server.project.service.application.refuse_application.RefuseApplicationInteractor
 import io.cloudflight.jems.server.project.service.application.return_application_to_applicant.ReturnApplicationToApplicantInteractor
-import io.cloudflight.jems.server.project.service.application.return_application_to_draft.ReturnApplicationToDraftInteractor
+import io.cloudflight.jems.server.project.service.application.start_second_step.StartSecondStepInteractor
 import io.cloudflight.jems.server.project.service.application.revert_application_decision.RevertApplicationDecisionInteractor
 import io.cloudflight.jems.server.project.service.application.set_application_as_eligible.SetApplicationAsEligibleInteractor
 import io.cloudflight.jems.server.project.service.application.set_application_as_ineligible.SetApplicationAsIneligibleInteractor
@@ -29,7 +29,7 @@ class ProjectStatusController(
     private val setApplicationAsEligible: SetApplicationAsEligibleInteractor,
     private val setApplicationAsIneligible: SetApplicationAsIneligibleInteractor,
     private val returnApplicationToApplicant: ReturnApplicationToApplicantInteractor,
-    private val returnApplicationToDraft: ReturnApplicationToDraftInteractor,
+    private val startSecondStep: StartSecondStepInteractor,
     private val revertApplicationDecision: RevertApplicationDecisionInteractor,
     private val getPossibleStatusToRevertTo: GetPossibleStatusToRevertToInteractor,
     private val refuseApplication: RefuseApplicationInteractor
@@ -56,8 +56,8 @@ class ProjectStatusController(
     override fun returnApplicationToApplicant(id: Long) =
         returnApplicationToApplicant.returnToApplicant(id).toDTO()
 
-    override fun returnApplicationToDraft(id: Long): ApplicationStatusDTO =
-        returnApplicationToDraft.returnToDraft(id).toDTO()
+    override fun startSecondStep(id: Long): ApplicationStatusDTO =
+        startSecondStep.returnToDraft(id).toDTO()
 
     override fun findPossibleDecisionRevertStatus(id: Long): ApplicationStatusDTO? =
         getPossibleStatusToRevertTo.get(projectId = id)?.toDTO()

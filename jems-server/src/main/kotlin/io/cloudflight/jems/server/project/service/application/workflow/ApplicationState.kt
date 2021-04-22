@@ -45,7 +45,7 @@ abstract class ApplicationState(
             projectSummary.status
         )
 
-    open fun returnToDraft(): ApplicationStatus =
+    open fun startSecondStep(): ApplicationStatus =
         throw ReturnToApplicantIsNotAllowedException(
             projectSummary.status
         )
@@ -76,11 +76,10 @@ abstract class ApplicationState(
             status = ApplicationStatus.RETURNED_TO_APPLICANT
         )
 
-    protected fun returnToDraftDefaultImpl(): ApplicationStatus =
-        projectWorkflowPersistence.updateProjectCurrentStatus(
+    protected fun startSecondStepDefaultImpl(): ApplicationStatus =
+        projectWorkflowPersistence.startSecondStep(
             projectId = projectSummary.id,
             userId = securityService.getUserIdOrThrow(),
-            status = ApplicationStatus.DRAFT
         )
 
     protected fun revertCurrentStatusToPreviousStatus(validRevertStatuses: Set<ApplicationStatus>): ApplicationStatus =

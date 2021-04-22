@@ -23,6 +23,12 @@ interface ProjectWorkflowPersistence {
         actionInfo: ApplicationActionInfo? = null
     ): ApplicationStatus
 
+    fun startSecondStep(
+        projectId: Long,
+        userId: Long,
+        actionInfo: ApplicationActionInfo? = null
+    ): ApplicationStatus
+
     fun revertCurrentStatusToPreviousStatus(projectId: Long): ApplicationStatus
 
     fun updateProjectEligibilityDecision(

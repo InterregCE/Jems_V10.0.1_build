@@ -58,29 +58,13 @@ data class ProjectEntity(
     @Column(name = "step2_active")
     var step2Active: Boolean,
 
-    //initialize in service
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(name="first_step_decision_id")
-    var firstStepDecision: ProjectDecisionEntity?,
+    var firstStepDecision: ProjectDecisionEntity? = null,
 
     @ManyToOne(optional = true)
     @JoinColumn(name="second_step_decision_id")
     var secondStepDecision: ProjectDecisionEntity? = null,
-
-    //new entity ProjectDecisionEntity (step1? + normal)
-//    @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
-//    val qualityAssessment: ProjectQualityAssessment? = null,
-//
-//    @OneToOne(mappedBy = "project", cascade = [CascadeType.ALL])
-//    val eligibilityAssessment: ProjectEligibilityAssessment? = null,
-//
-//    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "eligibility_decision_id")
-//    var eligibilityDecision: ProjectStatusHistoryEntity? = null,
-//
-//    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "funding_decision_id")
-//    var fundingDecision: ProjectStatusHistoryEntity? = null,
 
     @Embedded
     val projectData: ProjectData? = null,
