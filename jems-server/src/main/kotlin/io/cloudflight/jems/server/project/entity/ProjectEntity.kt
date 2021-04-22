@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.user.entity.UserEntity
 import javax.persistence.CascadeType
+import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -54,6 +55,7 @@ data class ProjectEntity(
     @JoinColumn(name = "last_resubmission_id")
     var lastResubmission: ProjectStatusHistoryEntity? = null,
 
+    @Column(name = "step2_active")
     var step2Active: Boolean,
 
     //initialize in service
