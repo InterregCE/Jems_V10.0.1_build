@@ -2,10 +2,10 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectStore} from '../services/project-store.service';
 import {combineLatest, ReplaySubject, Subject} from 'rxjs';
-import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../../security/permissions/permission';
-import {ProjectDetailDTO, OutputProjectFile, ProjectStatusDTO, ProjectFileStorageService} from '@cat/api';
+import {OutputProjectFile, ProjectDetailDTO, ProjectFileStorageService, ProjectStatusDTO} from '@cat/api';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
@@ -60,7 +60,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
       map(([page, project, decisions, permissions]) => ({
         page,
         project,
-        fundingDecisionDefined: !!decisions.fundingDecision,
+        fundingDecisionDefined: !!decisions?.fundingDecision,
         permission: permissions[0],
         uploadPossible: this.canUploadFiles(project, permissions[0])
       }))

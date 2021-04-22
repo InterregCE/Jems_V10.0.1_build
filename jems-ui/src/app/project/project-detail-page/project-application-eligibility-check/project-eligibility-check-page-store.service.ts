@@ -14,7 +14,7 @@ export class ProjectEligibilityCheckPageStore {
     this.project$ = this.projectStore.project$;
     this.eligibilityAssessment$ = this.projectStore.projectDecisions$
       .pipe(
-        map(decisions => decisions.eligibilityAssessment)
+        map(decisions => decisions?.eligibilityAssessment)
       );
   }
 }

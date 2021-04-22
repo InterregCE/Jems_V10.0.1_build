@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
-import {combineLatest, from, Observable} from 'rxjs';
+import {combineLatest, from, Observable, of} from 'rxjs';
 import {ProjectDecisionDTO, ProjectDetailDTO, ProjectStatusDTO, ProjectStatusService} from '@cat/api';
 import {Permission} from '../../security/permissions/permission';
 import {map, switchMap, tap} from 'rxjs/operators';
@@ -12,7 +12,7 @@ export class ProjectDetailPageStore {
 
   project$: Observable<ProjectDetailDTO>;
   assessmentFilesVisible$: Observable<boolean>;
-  revertToStatus$: Observable<string>;
+  revertToStatus$: Observable<string | null>;
   callHasTwoSteps$: Observable<boolean>;
   projectInSecondStep$: Observable<boolean>;
   projectDecisions$: Observable<ProjectDecisionDTO>;
@@ -74,10 +74,14 @@ export class ProjectDetailPageStore {
       );
   }
 
-  private revertToStatus(): Observable<string> {
-    return from(this.project$)
+  private revertToStatus(): Observable<string | null> {
+    return combineLatest([this.project$, this.permissionService.permissionsChanged()])
       .pipe(
-        switchMap(project => this.projectStatusService.findPossibleDecisionRevertStatus(project.id)),
+        switchMap(([project, perms]) =>
+          perms.includes(Permission.ADMINISTRATOR)
+            ? this.projectStatusService.findPossibleDecisionRevertStatus(project.id)
+            : of(null)
+        ),
         tap(status => Log.info('Fetched revert status', status))
       );
   }

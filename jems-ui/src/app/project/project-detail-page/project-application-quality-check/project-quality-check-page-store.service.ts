@@ -14,7 +14,7 @@ export class ProjectQualityCheckPageStore {
     this.project$ = this.projectStore.project$;
     this.qualityAssessment$ = this.projectStore.projectDecisions$
       .pipe(
-        map(decisions => decisions.qualityAssessment)
+        map(decisions => decisions?.qualityAssessment)
       );
   }
 }

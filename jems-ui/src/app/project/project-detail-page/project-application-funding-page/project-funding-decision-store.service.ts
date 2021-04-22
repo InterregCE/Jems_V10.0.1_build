@@ -17,11 +17,11 @@ export class ProjectFundingDecisionStore {
     this.project$ = this.projectStore.project$;
     this.fundingDecision$ = this.projectStore.projectDecisions$
       .pipe(
-        map(decisions => decisions.fundingDecision)
+        map(decisions => decisions?.fundingDecision)
       );
     this.eligibilityDecisionDate$ = this.projectStore.projectDecisions$
       .pipe(
-        map(decisions => decisions.eligibilityDecision.decisionDate)
+        map(decisions => decisions?.eligibilityDecision?.decisionDate)
       );
   }
 

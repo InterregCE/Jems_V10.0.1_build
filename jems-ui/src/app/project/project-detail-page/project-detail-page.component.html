@@ -10,20 +10,19 @@
             </app-project-application-information>
         </div>
 
-        <div *ngIf="projectDetailStore.projectDecisions$ | async as decisions "
-             appFormLayout id="project-detail-container">
+        <div appFormLayout id="project-detail-container">
             <app-project-application-actions appNoWidthLimit></app-project-application-actions>
             <app-project-application-decisions
                     appNoWidthLimit
                     *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
-                    [decisions]="decisions"
+                    [decisions]="projectDetailStore.projectDecisions$ | async"
                     [isThisUserOwner]="details.project.applicant.id === details.user.id"
                     [projectStatus]="project.projectStatus">
             </app-project-application-decisions>
             <app-project-application-assessments
                     appNoWidthLimit
                     *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
-                    [decisions]="decisions"
+                    [decisions]="projectDetailStore.projectDecisions$ | async"
                     [projectStatus]="project.projectStatus">
             </app-project-application-assessments>
         </div>

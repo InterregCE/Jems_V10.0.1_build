@@ -13,7 +13,7 @@
                 required
                 name="assessment"
                 formControlName="assessment"
-                [disabled]="data.qualityAssessment !== null"
+                [disabled]="!!data.qualityAssessment"
                 (change)="assessmentChangeHandler($event)">
             <mat-radio-button
                     *ngFor="let option of options" [value]="option">
@@ -25,10 +25,10 @@
                                  [messages]="notesErrors"
                                  [characterLimit]="1000"
                                  [label]="'project.assessment.qualityCheck.dialog.field.note'"
-                                 [disabled]="data.qualityAssessment !== null"
+                                 [disabled]="!!data.qualityAssessment"
                                  [customStyle]="'outline'">
         </app-expandable-textarea>
-        <div appMultiColumnRow *ngIf="data.qualityAssessment === null">
+        <div appMultiColumnRow *ngIf="!data.qualityAssessment">
             <button mat-stroked-button
                     (click)="onCancel()">{{'project.assessment.qualityCheck.dialog.button.cancel' | translate}}
             </button>

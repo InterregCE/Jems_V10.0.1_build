@@ -32,7 +32,7 @@ export class ProjectApplicationActionsComponent {
     projectCallEndDate: Date,
     startStepTwoAvailable: boolean,
     returnToApplicantAvailable: boolean,
-    revertToStatus: string,
+    revertToStatus: string | null,
   }>;
 
   // TODO: create a component

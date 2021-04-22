@@ -8,24 +8,24 @@
         <div appMultiColumnRow stretch class="mb-4">
             <div>{{'project.assessment.eligibilityDecision.title' | translate}}</div>
             <div>
-                <span *ngIf="decisions.eligibilityDecision">
-                    {{'common.label.projectapplicationstatus.' + decisions.eligibilityDecision.status | translate}}
+                <span *ngIf="decisions?.eligibilityDecision">
+                    {{'common.label.projectapplicationstatus.' + decisions?.eligibilityDecision.status | translate}}
                 </span>
             </div>
             <div>
-                <span *ngIf="decisions.eligibilityDecision">
-                    {{decisions.eligibilityDecision.decisionDate | localeDate}}
+                <span *ngIf="decisions?.eligibilityDecision">
+                    {{decisions?.eligibilityDecision.decisionDate | localeDate}}
                 </span>
             </div>
             <button
-                    *ngIf="!decisions.eligibilityDecision"
+                    *ngIf="!decisions?.eligibilityDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [disabled]="!decisions.eligibilityAssessment"
+                    [disabled]="!decisions?.eligibilityAssessment"
                     [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment' | translate}}
             </button>
             <button
-                    *ngIf="decisions.eligibilityDecision"
+                    *ngIf="decisions?.eligibilityDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
@@ -34,24 +34,24 @@
         <div appMultiColumnRow stretch>
             <div>{{'project.assessment.fundingDecision.title' | translate}}</div>
             <div>
-                <span *ngIf="decisions.fundingDecision">
-                    {{'common.label.projectapplicationstatus.' + decisions.fundingDecision.status | translate}}
+                <span *ngIf="decisions?.fundingDecision">
+                    {{'common.label.projectapplicationstatus.' + decisions?.fundingDecision.status | translate}}
                 </span>
             </div>
             <div>
-                <span *ngIf="decisions.fundingDecision">
+                <span *ngIf="decisions?.fundingDecision">
                     {{projectStatus.decisionDate | localeDate }}
                 </span>
             </div>
             <button
-                    *ngIf="!decisions.fundingDecision"
+                    *ngIf="!decisions?.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [disabled]="decisions?.eligibilityDecision?.status !== STATUS.ELIGIBLE  || !decisions.qualityAssessment"
+                    [disabled]="decisions?.eligibilityDecision?.status !== STATUS.ELIGIBLE  || !decisions?.qualityAssessment"
                     [routerLink]="'./assessment/fundingDecision'">
                 {{'project.assessment.fundingDecision.assessment' | translate}}
             </button>
             <button
-                    *ngIf="!!decisions.fundingDecision"
+                    *ngIf="!!decisions?.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [color]="projectStatus.status === STATUS.APPROVEDWITHCONDITIONS ? 'primary' : null"
                     [routerLink]="'./assessment/fundingDecision'">
