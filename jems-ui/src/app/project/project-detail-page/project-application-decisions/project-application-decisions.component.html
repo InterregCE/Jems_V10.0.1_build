@@ -17,15 +17,13 @@
                     {{decisions?.eligibilityDecision.decisionDate | localeDate}}
                 </span>
             </div>
-            <button
-                    *ngIf="!decisions?.eligibilityDecision"
+            <button *ngIf="!decisions?.eligibilityDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [disabled]="!decisions?.eligibilityAssessment"
                     [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment' | translate}}
             </button>
-            <button
-                    *ngIf="decisions?.eligibilityDecision"
+            <button *ngIf="decisions?.eligibilityDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [routerLink]="'./assessment/eligibilityDecision'">
                 {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
@@ -40,18 +38,16 @@
             </div>
             <div>
                 <span *ngIf="decisions?.fundingDecision">
-                    {{projectStatus.decisionDate | localeDate }}
+                    {{decisions.fundingDecision.decisionDate | localeDate }}
                 </span>
             </div>
-            <button
-                    *ngIf="!decisions?.fundingDecision"
+            <button *ngIf="!decisions?.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [disabled]="decisions?.eligibilityDecision?.status !== STATUS.ELIGIBLE  || !decisions?.qualityAssessment"
                     [routerLink]="'./assessment/fundingDecision'">
                 {{'project.assessment.fundingDecision.assessment' | translate}}
             </button>
-            <button
-                    *ngIf="!!decisions?.fundingDecision"
+            <button *ngIf="!!decisions?.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [color]="projectStatus.status === STATUS.APPROVEDWITHCONDITIONS ? 'primary' : null"
                     [routerLink]="'./assessment/fundingDecision'">

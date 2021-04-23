@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ProjectDecisionDTO, ProjectStatusDTO} from '@cat/api';
-import {Tables} from '../../../../../common/utils/tables';
 
 @Component({
   selector: 'app-project-application-decisions',
@@ -10,7 +9,6 @@ import {Tables} from '../../../../../common/utils/tables';
 })
 export class ProjectApplicationDecisionsComponent {
   STATUS = ProjectStatusDTO.StatusEnum;
-  Tables = Tables;
 
   @Input()
   decisions: ProjectDecisionDTO;

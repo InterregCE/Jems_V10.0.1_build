@@ -12,7 +12,7 @@ export class ProjectEligibilityCheckPageStore {
 
   constructor(private projectStore: ProjectStore) {
     this.project$ = this.projectStore.project$;
-    this.eligibilityAssessment$ = this.projectStore.projectDecisions$
+    this.eligibilityAssessment$ = this.projectStore.projectCurrentDecisions$
       .pipe(
         map(decisions => decisions?.eligibilityAssessment)
       );

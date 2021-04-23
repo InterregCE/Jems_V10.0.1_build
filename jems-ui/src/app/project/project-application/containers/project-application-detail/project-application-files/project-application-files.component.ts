@@ -53,7 +53,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
   details$ = combineLatest([
     this.currentPage$,
     this.projectStore.project$,
-    this.projectStore.projectDecisions$,
+    this.projectStore.projectCurrentDecisions$,
     this.permissionService.permissionsChanged()
   ])
     .pipe(

@@ -39,7 +39,7 @@ export class ProjectStore {
   projectTitle$: Observable<string>;
   callHasTwoSteps$: Observable<boolean>;
   projectInSecondStep$: Observable<boolean>;
-  projectDecisions$: Observable<ProjectDecisionDTO>;
+  projectCurrentDecisions$: Observable<ProjectDecisionDTO>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -86,7 +86,7 @@ export class ProjectStore {
       );
     this.callHasTwoSteps$ = this.callHasTwoSteps();
     this.projectInSecondStep$ = this.projectInSecondStep();
-    this.projectDecisions$ = this.decisions();
+    this.projectCurrentDecisions$ = this.projectCurrentDecisions();
   }
 
   /**
@@ -199,8 +199,7 @@ export class ProjectStore {
   private callHasTwoSteps(): Observable<boolean> {
     return this.projectCall$
       .pipe(
-        map(call => !!call.endDateStep1),
-        shareReplay(1)
+        map(call => !!call.endDateStep1)
       );
   }
 
@@ -208,15 +207,13 @@ export class ProjectStore {
     return this.project$
       .pipe(
         map(project => project.step2Active),
-        shareReplay(1)
       );
   }
 
-  private decisions(): Observable<ProjectDecisionDTO> {
+  private projectCurrentDecisions(): Observable<ProjectDecisionDTO> {
     return this.project$
       .pipe(
         map(project => project.step2Active ? project.secondStepDecision : project.firstStepDecision),
-        shareReplay(1)
       );
   }
 }

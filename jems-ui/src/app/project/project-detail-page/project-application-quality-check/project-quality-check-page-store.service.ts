@@ -12,7 +12,7 @@ export class ProjectQualityCheckPageStore {
 
   constructor(private projectStore: ProjectStore) {
     this.project$ = this.projectStore.project$;
-    this.qualityAssessment$ = this.projectStore.projectDecisions$
+    this.qualityAssessment$ = this.projectStore.projectCurrentDecisions$
       .pipe(
         map(decisions => decisions?.qualityAssessment)
       );

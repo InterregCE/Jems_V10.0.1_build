@@ -14,7 +14,7 @@ export class ProjectEligibilityDecisionStore {
   constructor(private projectStore: ProjectStore,
               private projectStatusService: ProjectStatusService) {
     this.project$ = this.projectStore.getProject();
-    this.eligibilityDecision$ = this.projectStore.projectDecisions$
+    this.eligibilityDecision$ = this.projectStore.projectCurrentDecisions$
       .pipe(
         map(decisions => decisions.eligibilityDecision)
       );

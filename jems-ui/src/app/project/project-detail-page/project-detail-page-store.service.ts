@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
-import {combineLatest, from, Observable, of} from 'rxjs';
-import {ProjectDecisionDTO, ProjectDetailDTO, ProjectStatusDTO, ProjectStatusService} from '@cat/api';
+import {combineLatest, Observable, of} from 'rxjs';
+import {ProjectDetailDTO, ProjectStatusDTO, ProjectStatusService} from '@cat/api';
 import {Permission} from '../../security/permissions/permission';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
@@ -15,7 +15,6 @@ export class ProjectDetailPageStore {
   revertToStatus$: Observable<string | null>;
   callHasTwoSteps$: Observable<boolean>;
   projectInSecondStep$: Observable<boolean>;
-  projectDecisions$: Observable<ProjectDecisionDTO>;
 
   constructor(private projectStore: ProjectStore,
               private permissionService: PermissionService,
@@ -25,7 +24,6 @@ export class ProjectDetailPageStore {
     this.revertToStatus$ = this.revertToStatus();
     this.callHasTwoSteps$ = this.projectStore.callHasTwoSteps$;
     this.projectInSecondStep$ = this.projectStore.projectInSecondStep$;
-    this.projectDecisions$ = this.projectStore.projectDecisions$;
   }
 
   private assessmentFilesVisible(): Observable<boolean> {
@@ -59,7 +57,7 @@ export class ProjectDetailPageStore {
   }
 
   returnApplicationToDraft(projectId: number): Observable<string> {
-    return this.projectStatusService.returnApplicationToDraft(projectId)
+    return this.projectStatusService.startSecondStep(projectId)
       .pipe(
         tap(() => this.projectStore.projectStatusChanged$.next()),
         tap(status => Log.info('Changed status for project', projectId, status))

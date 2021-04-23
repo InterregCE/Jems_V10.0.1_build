@@ -15,11 +15,11 @@ export class ProjectFundingDecisionStore {
   constructor(private projectStore: ProjectStore,
               private projectStatusService: ProjectStatusService) {
     this.project$ = this.projectStore.project$;
-    this.fundingDecision$ = this.projectStore.projectDecisions$
+    this.fundingDecision$ = this.projectStore.projectCurrentDecisions$
       .pipe(
         map(decisions => decisions?.fundingDecision)
       );
-    this.eligibilityDecisionDate$ = this.projectStore.projectDecisions$
+    this.eligibilityDecisionDate$ = this.projectStore.projectCurrentDecisions$
       .pipe(
         map(decisions => decisions?.eligibilityDecision?.decisionDate)
       );
