@@ -34,6 +34,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
 
   Permission = Permission;
   MIN_VALUE = 0.01;
+  MAX_VALUE =  999999999.99;
 
   @Input()
   unitCost: ProgrammeUnitCostDTO;
@@ -55,6 +56,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     type: [[]],
     costPerUnit: ['', Validators.compose([
       Validators.min(this.MIN_VALUE),
+      Validators.max(this.MAX_VALUE),
       Validators.required])
     ],
     categories: ['', Validators.required]
@@ -74,7 +76,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
 
   costErrors = {
     required: 'programme.unitCost.costPerUnit.invalid',
-    min: 'programme.unitCost.costPerUnit.invalid'
+    min: 'programme.unitCost.costPerUnit.invalid',
+    max: 'programme.unitCost.costPerUnit.invalid'
   };
 
   categoriesErrorsMultiple = {
