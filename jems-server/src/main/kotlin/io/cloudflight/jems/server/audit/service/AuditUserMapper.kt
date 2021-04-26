@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 
 fun CurrentUser.toEsUser() = AuditUser(
-    id = user.id ?: 0,
+    id = user.id,
     email = user.email
 )
 
