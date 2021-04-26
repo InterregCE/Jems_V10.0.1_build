@@ -1,4 +1,4 @@
-<ng-container *ngxPermissionsOnly="Permissions.ProjectSubmission">
+<ng-container *hasPermission="Permissions.ProjectSubmission; alternativeCondition isThisUserOwner">
     <div *ngIf="projectStatus === STATUS.DRAFT" class="row">
         <app-pending-button
                 confirmTitle="project.detail.submit.dialog.title"

@@ -37,6 +37,8 @@ export class ProjectApplicationActionsComponent {
   projectCallEndDate: Date;
   @Input()
   projectId: number;
+  @Input()
+  isThisUserOwner: boolean;
 
   // TODO: create a component
   successMessage: boolean;
