@@ -32,7 +32,10 @@
             </ng-container>
         </div>
 
-        <h3 id="applicationFormLifecycleAttachments">{{'file.tab.header' | translate}}</h3>
+        <h3>
+            {{'file.tab.header' | translate}}
+            <app-context-info infoText="{{'file.tab.info' | translate}}"></app-context-info>
+        </h3>
         <mat-tab-group appNoWidthLimit>
             <mat-tab label="{{'file.tab.application' | translate}}">
                 <ng-template matTabContent>

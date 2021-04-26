@@ -14,7 +14,6 @@ export class ProjectDetailPageStore {
   assessmentFilesVisible$: Observable<boolean>;
   revertToStatus$: Observable<string | null>;
   callHasTwoSteps$: Observable<boolean>;
-  projectInSecondStep$: Observable<boolean>;
 
   constructor(private projectStore: ProjectStore,
               private permissionService: PermissionService,
@@ -23,7 +22,6 @@ export class ProjectDetailPageStore {
     this.assessmentFilesVisible$ = this.assessmentFilesVisible();
     this.revertToStatus$ = this.revertToStatus();
     this.callHasTwoSteps$ = this.projectStore.callHasTwoSteps$;
-    this.projectInSecondStep$ = this.projectStore.projectInSecondStep$;
   }
 
   private assessmentFilesVisible(): Observable<boolean> {

@@ -45,15 +45,14 @@ export class ProjectApplicationActionsComponent {
     this.data$ = combineLatest([
       this.projectDetailStore.project$,
       this.projectDetailStore.callHasTwoSteps$,
-      this.projectDetailStore.projectInSecondStep$,
       this.projectDetailStore.revertToStatus$,
     ]).pipe(
-      map(([project, callHasTwoSteps, projectInSecondStep, revertToStatus]) => ({
+      map(([project, callHasTwoSteps, revertToStatus]) => ({
         projectStatus: project.projectStatus.status,
         projectId: project.id,
         projectCallEndDate: project.callSettings?.endDate,
-        startStepTwoAvailable: this.startStepTwoAvailable(project.projectStatus.status, callHasTwoSteps, projectInSecondStep),
-        returnToApplicantAvailable: this.returnToApplicantAvailable(project.projectStatus.status, callHasTwoSteps, projectInSecondStep),
+        startStepTwoAvailable: this.startStepTwoAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
+        returnToApplicantAvailable: this.returnToApplicantAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
         revertToStatus,
       }))
     );

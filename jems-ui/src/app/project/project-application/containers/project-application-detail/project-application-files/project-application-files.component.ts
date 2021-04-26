@@ -126,6 +126,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
       return false;
     }
     return project.projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT
+      || project.projectStatus.status === ProjectStatusDTO.StatusEnum.STEP1DRAFT
       || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
   }
 }

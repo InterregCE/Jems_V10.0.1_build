@@ -38,7 +38,6 @@ export class ProjectStore {
   projectEditable$: Observable<boolean>;
   projectTitle$: Observable<string>;
   callHasTwoSteps$: Observable<boolean>;
-  projectInSecondStep$: Observable<boolean>;
   projectCurrentDecisions$: Observable<ProjectDecisionDTO>;
 
   // move to page store
@@ -85,7 +84,6 @@ export class ProjectStore {
         map(project => `${project.id} – ${project.acronym}`)
       );
     this.callHasTwoSteps$ = this.callHasTwoSteps();
-    this.projectInSecondStep$ = this.projectInSecondStep();
     this.projectCurrentDecisions$ = this.projectCurrentDecisions();
   }
 
@@ -200,13 +198,6 @@ export class ProjectStore {
     return this.projectCall$
       .pipe(
         map(call => !!call.endDateStep1)
-      );
-  }
-
-  private projectInSecondStep(): Observable<boolean> {
-    return this.project$
-      .pipe(
-        map(project => project.step2Active),
       );
   }
 
