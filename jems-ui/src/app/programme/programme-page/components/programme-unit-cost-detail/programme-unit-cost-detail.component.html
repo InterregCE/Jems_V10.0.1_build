@@ -58,7 +58,7 @@
     <mat-form-field>
         <mat-label>{{'unit.cost.form.field.cost' | translate}}</mat-label>
         <input currencyMask type="decimal"
-               [options]="{min: MIN_VALUE}"
+               [options]="{min: 0.00}"
                name="costPerUnit" formControlName="costPerUnit" matInput required>
         <mat-error>
             <app-form-field-errors
