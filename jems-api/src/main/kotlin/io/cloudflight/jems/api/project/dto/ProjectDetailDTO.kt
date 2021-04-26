@@ -17,4 +17,12 @@ data class ProjectDetailDTO(
     val secondStepDecision: ProjectDecisionDTO? = null,
     val projectData: ProjectDataDTO? = null,
     val periods: List<ProjectPeriodDTO> = emptyList()
-)
+) {
+    fun getStep(): ProjectDecisionDTO? {
+        return if (step2Active == true) {
+            secondStepDecision
+        } else {
+            firstStepDecision
+        }
+    }
+}

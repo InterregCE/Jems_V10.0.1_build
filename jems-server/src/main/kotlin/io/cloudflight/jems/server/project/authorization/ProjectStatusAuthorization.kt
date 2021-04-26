@@ -1,50 +1,48 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.APPROVED
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.APPROVED_WITH_CONDITIONS
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.DRAFT
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isDraft
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isEligible
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isSubmitted
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.ELIGIBLE
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.INELIGIBLE
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.NOT_APPROVED
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.RETURNED_TO_APPLICANT
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.STEP1_ELIGIBLE
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.STEP1_SUBMITTED
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.SUBMITTED
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.controller.toDTO
 import io.cloudflight.jems.server.project.service.ProjectService
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectSubmission') || @projectStatusAuthorization.isOwner(#projectId)")
+@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canSubmit(#projectId)")
 annotation class CanSubmitApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.canChangeStatusTo(#projectId, T(io.cloudflight.jems.server.project.service.application.ApplicationStatus).APPROVED)")
+@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canApproveOrRefuse(#projectId)")
 annotation class CanApproveApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.canChangeStatusTo(#projectId, T(io.cloudflight.jems.server.project.service.application.ApplicationStatus).APPROVED_WITH_CONDITIONS)")
+@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canApproveWithConditions(#projectId)")
 annotation class CanApproveApplicationWithConditions
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.canChangeStatusTo(#projectId, T(io.cloudflight.jems.server.project.service.application.ApplicationStatus).NOT_APPROVED)")
+@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canApproveOrRefuse(#projectId)")
 annotation class CanRefuseApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.canChangeStatusTo(#projectId, T(io.cloudflight.jems.server.project.service.application.ApplicationStatus).ELIGIBLE)")
+@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canSetEligibility(#projectId)")
 annotation class CanSetApplicationAsEligible
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.canChangeStatusTo(#projectId, T(io.cloudflight.jems.server.project.service.application.ApplicationStatus).INELIGIBLE)")
+@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canSetEligibility(#projectId)")
 annotation class CanSetApplicationAsIneligible
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.canChangeStatusTo(#projectId, T(io.cloudflight.jems.server.project.service.application.ApplicationStatus).RETURNED_TO_APPLICANT)")
+@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canReturnToApplicant(#projectId)")
 annotation class CanReturnApplicationToApplicant
 
 @Component
@@ -54,83 +52,63 @@ class ProjectStatusAuthorization(
     val projectService: ProjectService
 ) : Authorization(securityService) {
 
-    fun isOwner(projectId: Long): Boolean =
-        projectService.getById(projectId).applicant.id!! == securityService.currentUser?.user?.id
+    fun canSubmit(projectId: Long): Boolean {
+        val project = projectService.getById(projectId)
+        val oldStatus = project.projectStatus.status
 
-    fun canChangeStatusTo(projectId: Long, newStatus: ApplicationStatus): Boolean {
-        return projectAuthorization.canReadProject(projectId)
-            && canChangeStatusTo(projectService.getById(projectId), newStatus.toDTO())
+        return (isDraft(oldStatus) || oldStatus == RETURNED_TO_APPLICANT)
+                && isApplicantOwner(project.applicant.id!!) || isAdmin()
     }
 
-    fun canChangeStatusTo(projectDetailDTO: ProjectDetailDTO, newStatus: ApplicationStatusDTO): Boolean {
-        val oldStatus = projectDetailDTO.projectStatus.status
+    fun canApproveOrRefuse(projectId: Long): Boolean {
+        val project = projectService.getById(projectId)
+        val oldStatus = project.projectStatus.status
+        val oldPossibilities = setOf(STEP1_ELIGIBLE, ELIGIBLE, APPROVED_WITH_CONDITIONS)
 
-        if (submitted(oldStatus, newStatus)) {
-            return (isApplicantOwner(projectDetailDTO.applicant.id!!) || isAdmin())
-        }
-
-        if (returned(oldStatus, newStatus))
-            return isProgrammeUser() || isAdmin()
-
-        if (eligibilityFilled(projectDetailDTO, newStatus))
-            return isProgrammeUser() || isAdmin()
-
-        if (fundingFilled(projectDetailDTO, newStatus) || fundingChanged(projectDetailDTO, newStatus))
-            return isProgrammeUser() || isAdmin()
-
-        return false
+        return oldPossibilities.contains(oldStatus)
+                && project.getStep()?.qualityAssessment != null
+                && isProgrammeUser() || isAdmin()
     }
 
-    private fun submitted(oldStatus: ApplicationStatusDTO, newStatus: ApplicationStatusDTO): Boolean {
-        return (oldStatus == DRAFT || oldStatus == RETURNED_TO_APPLICANT) && newStatus == SUBMITTED
+    fun canApproveWithConditions(projectId: Long): Boolean {
+        val project = projectService.getById(projectId)
+        val oldStatus = project.projectStatus.status
+
+        return isEligible(oldStatus) && isProgrammeUser() || isAdmin()
     }
 
-    private fun returned(oldStatus: ApplicationStatusDTO, newStatus: ApplicationStatusDTO): Boolean {
+    fun canSetEligibility(projectId: Long): Boolean {
+        val project = projectService.getById(projectId)
+        val oldStatus = project.projectStatus.status
+
+        return isSubmitted(oldStatus)
+                && project.getStep()?.eligibilityAssessment != null
+                && isProgrammeUser() || isAdmin()
+    }
+
+    fun canReturnToApplicant(projectId: Long): Boolean {
+        val project = projectService.getById(projectId)
+        val oldStatus = project.projectStatus.status
         val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, APPROVED_WITH_CONDITIONS, APPROVED)
-        return oldPossibilities.contains(oldStatus) && newStatus == RETURNED_TO_APPLICANT
-    }
 
-    private fun fundingFilled(projectDetailDTO: ProjectDetailDTO, newStatus: ApplicationStatusDTO): Boolean {
-        val newPossibilities = setOf(APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED)
-        val oldStatus = projectDetailDTO.projectStatus.status
-
-        return oldStatus == ELIGIBLE
-            && newPossibilities.contains(newStatus)
-            && projectDetailDTO.firstStepDecision?.qualityAssessment != null
-    }
-
-    private fun fundingChanged(projectDetailDTO: ProjectDetailDTO, newStatus: ApplicationStatusDTO): Boolean {
-        val newPossibilities = setOf(APPROVED, NOT_APPROVED)
-        val oldStatus = projectDetailDTO.projectStatus.status
-
-        return oldStatus == APPROVED_WITH_CONDITIONS
-            && newPossibilities.contains(newStatus)
-    }
-
-    private fun eligibilityFilled(projectDetailDTO: ProjectDetailDTO, newStatus: ApplicationStatusDTO): Boolean {
-        val newPossibilities = setOf(ELIGIBLE, INELIGIBLE)
-        val oldStatus = projectDetailDTO.projectStatus.status
-
-        return oldStatus == SUBMITTED
-            && newPossibilities.contains(newStatus)
-            && projectDetailDTO.firstStepDecision?.eligibilityAssessment != null
+        return oldPossibilities.contains(oldStatus) && isProgrammeUser() || isAdmin()
     }
 
     fun canSetQualityAssessment(projectId: Long): Boolean {
         val project = projectService.getById(projectId)
-        val allowedStatuses = listOf(SUBMITTED, ELIGIBLE)
+        val allowedStatuses = listOf(SUBMITTED, ELIGIBLE, STEP1_SUBMITTED, STEP1_ELIGIBLE)
 
-        return project.firstStepDecision?.qualityAssessment == null
-            && (isProgrammeUser() || isAdmin())
-            && allowedStatuses.contains(project.projectStatus.status)
+        return project.getStep()?.qualityAssessment == null
+                && (isProgrammeUser() || isAdmin())
+                && allowedStatuses.contains(project.projectStatus.status)
     }
 
     fun canSetEligibilityAssessment(projectId: Long): Boolean {
         val project = projectService.getById(projectId)
 
-        return project.firstStepDecision?.eligibilityAssessment == null
-            && (isProgrammeUser() || isAdmin())
-            && project.projectStatus.status == SUBMITTED
+        return project.getStep()?.eligibilityAssessment == null
+                && (isProgrammeUser() || isAdmin())
+                && isSubmitted(project.projectStatus.status)
     }
 
 }

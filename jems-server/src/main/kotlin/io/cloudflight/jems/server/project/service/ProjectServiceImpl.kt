@@ -5,7 +5,6 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
-import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
@@ -85,8 +84,9 @@ class ProjectServiceImpl(
             ?: throw ResourceNotFoundException()
 
         val call = getCallIfOpen(project.projectCallId!!)
+        val step2Active = call.endDateStep1 != null
 
-        val projectStatus = projectStatusHistoryRepo.save(projectStatusDraft(applicant))
+        val projectStatus = projectStatusHistoryRepo.save(projectStatusDraft(applicant, step2Active))
 
         val createdProject = projectRepo.save(
             project.toEntity(
@@ -109,11 +109,19 @@ class ProjectServiceImpl(
     }
 
     fun projectStatusDraft(user: UserEntity): ProjectStatusHistoryEntity {
-        return ProjectStatusHistoryEntity(
-            status = ApplicationStatus.DRAFT,
-            user = user,
-            updated = ZonedDateTime.now()
-        )
+        return if (step2Active) {
+            ProjectStatusHistoryEntity(
+                status =  ApplicationStatus.STEP1_DRAFT,
+                user = user,
+                updated = ZonedDateTime.now()
+            )
+        } else {
+            ProjectStatusHistoryEntity(
+                status =  ApplicationStatus.DRAFT,
+                user = user,
+                updated = ZonedDateTime.now()
+            )
+        }
     }
 
     private fun getCallIfOpen(callId: Long): CallEntity {
