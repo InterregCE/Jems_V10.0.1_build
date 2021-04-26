@@ -9,14 +9,16 @@ import {Log} from '../../../common/utils/log';
 export class ProjectEligibilityDecisionStore {
 
   project$: Observable<ProjectDetailDTO>;
-  eligibilityDecision$: Observable<ProjectStatusDTO>;
 
   constructor(private projectStore: ProjectStore,
               private projectStatusService: ProjectStatusService) {
     this.project$ = this.projectStore.getProject();
-    this.eligibilityDecision$ = this.projectStore.projectCurrentDecisions$
+  }
+
+  eligibilityDecision(step: number | undefined): Observable<ProjectStatusDTO> {
+    return this.projectStore.projectDecisions(step)
       .pipe(
-        map(decisions => decisions.eligibilityDecision)
+        map(decisions => decisions?.eligibilityDecision)
       );
   }
 

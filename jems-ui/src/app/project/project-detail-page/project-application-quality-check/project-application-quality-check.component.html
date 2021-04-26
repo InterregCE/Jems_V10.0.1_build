@@ -7,21 +7,20 @@
         </app-project-application-information>
     </div>
 
-    <form appFormLayout [formGroup]="notesForm">
+    <form appFormLayout [formGroup]="qualityCheckForm">
         <h3>{{'project.assessment.qualityCheck.dialog.title' | translate}}</h3>
         <mat-radio-group
                 required
-                name="assessment"
-                formControlName="assessment"
-                [disabled]="!!data.qualityAssessment"
-                (change)="assessmentChangeHandler($event)">
+                name="result"
+                formControlName="result"
+                [disabled]="!!data.qualityAssessment">
             <mat-radio-button
                     *ngFor="let option of options" [value]="option">
                 {{'project.assessment.qualityCheck.dialog.select.' + option | translate}}
             </mat-radio-button>
         </mat-radio-group>
-        <app-expandable-textarea [control]="notesForm?.controls?.notes"
-                                 [errors]="notesForm?.controls?.notes?.errors"
+        <app-expandable-textarea [control]="qualityCheckForm?.controls?.note"
+                                 [errors]="qualityCheckForm?.controls?.note?.errors"
                                  [messages]="notesErrors"
                                  [characterLimit]="1000"
                                  [label]="'project.assessment.qualityCheck.dialog.field.note'"
@@ -36,7 +35,7 @@
             <app-pending-button
                     [confirm]="getQualityCheckConfirmation()"
                     [pending]="actionPending"
-                    [disabled]="notesForm.invalid"
+                    [disabled]="qualityCheckForm.invalid"
                     (clicked)="onSubmit()">
                 {{'project.assessment.qualityCheck.dialog.button.submit' | translate}}
             </app-pending-button>

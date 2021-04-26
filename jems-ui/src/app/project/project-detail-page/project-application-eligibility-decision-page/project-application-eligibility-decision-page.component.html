@@ -14,8 +14,7 @@
                 required
                 name="assessment"
                 formControlName="assessment"
-                [disabled]="!!data.eligibilityDecision"
-                (change)="assessmentChangeHandler($event)">
+                [disabled]="!!data.eligibilityDecision">
             <mat-radio-button *ngFor="let option of options" [value]="option">
                 <div>{{'project.assessment.eligibilityDecision.dialog.select.' + option | translate}}</div>
             </mat-radio-button>

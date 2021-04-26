@@ -16,6 +16,7 @@
                 *ngIf="details.showWithConditions"
                 [project]="details.project"
                 [status]="details.withConditionsStatus"
+                [stepStatus]="stepStatus"
                 [fundingDecision]="details.fundingDecision"
                 [eligibilityDecisionDate]="details.eligibilityDecisionDate"
                 [options]="details.withConditionsStatusOptions"
@@ -25,6 +26,7 @@
                 appNoWidthLimit
                 [project]="details.project"
                 [status]="details.fundingDecision"
+                [stepStatus]="stepStatus"
                 [fundingDecision]="details.fundingDecision"
                 [eligibilityDecisionDate]="details.eligibilityDecisionDate"
                 [options]="details.statusOptions"

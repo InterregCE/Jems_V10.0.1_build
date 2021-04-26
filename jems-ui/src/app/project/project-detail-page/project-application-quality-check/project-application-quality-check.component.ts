@@ -8,6 +8,7 @@ import {ProjectQualityCheckPageStore} from './project-quality-check-page-store.s
 import {map, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ProjectStepStatus} from '../project-step-status';
 
 @Component({
   selector: 'app-project-application-quality-check',
@@ -17,23 +18,20 @@ import {ProjectApplicationFormSidenavService} from '../../project-application/co
   providers: [ProjectQualityCheckPageStore]
 })
 export class ProjectApplicationQualityCheckComponent {
-  RECOMMEND = 'RECOMMEND';
-  RECOMMEND_WITH_CONDITIONS = 'RECOMMEND_WITH_CONDITIONS';
-  NOT_RECOMMEND = 'NOT_RECOMMENDED';
-
+  step = this.activatedRoute.snapshot.params.step;
+  stepStatus = new ProjectStepStatus(this.step);
+  assessment = InputProjectQualityAssessment.ResultEnum;
   projectId = this.activatedRoute.snapshot.params.projectId;
-  options: string[] = [this.RECOMMEND, this.RECOMMEND_WITH_CONDITIONS, this.NOT_RECOMMEND];
+  options: string[] = [this.assessment.RECOMMENDEDFORFUNDING, this.assessment.RECOMMENDEDWITHCONDITIONS, this.assessment.NOTRECOMMENDED];
 
   data$: Observable<{
     project: ProjectDetailDTO,
     qualityAssessment: OutputProjectQualityAssessment
   }>;
 
-  selectedAssessment: string;
-
-  notesForm = this.formBuilder.group({
-    assessment: ['', Validators.required],
-    notes: ['', Validators.maxLength(1000)]
+  qualityCheckForm = this.formBuilder.group({
+    result: ['', Validators.required],
+    note: ['', Validators.maxLength(1000)]
   });
 
   notesErrors = {
@@ -48,12 +46,15 @@ export class ProjectApplicationQualityCheckComponent {
               private pageStore: ProjectQualityCheckPageStore,
               private projectStore: ProjectStore,
               private sidenavService: ProjectApplicationFormSidenavService) {
-    this.data$ = combineLatest([this.pageStore.project$, this.pageStore.qualityAssessment$])
+    this.data$ = combineLatest([
+      this.pageStore.project$,
+      this.pageStore.qualityAssessment(this.step)]
+    )
       .pipe(
         tap(([project, qualityAssessment]) => {
           if (qualityAssessment) {
-            this.setQualityCheckValue(qualityAssessment);
-            this.notesForm.controls.notes.setValue(qualityAssessment.note);
+            this.qualityCheckForm.controls.result.setValue(qualityAssessment.result);
+            this.qualityCheckForm.controls.note.setValue(qualityAssessment.note);
           }
         }),
         map(([project, qualityAssessment]) => ({project, qualityAssessment}))
@@ -68,46 +69,17 @@ export class ProjectApplicationQualityCheckComponent {
     this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
-  assessmentChangeHandler(event: any): void {
-    this.selectedAssessment = event.value;
-  }
-
   private confirmQualityAssessment(): void {
-    this.projectStore.setQualityAssessment({
-      result: this.getQualityCheckValue(),
-      note: this.notesForm?.controls?.notes?.value,
-    });
+    this.projectStore.setQualityAssessment(this.qualityCheckForm.value);
     this.actionPending = false;
-  }
-
-  private getQualityCheckValue(): InputProjectQualityAssessment.ResultEnum {
-    if (this.selectedAssessment === this.RECOMMEND) {
-      return InputProjectQualityAssessment.ResultEnum.RECOMMENDEDFORFUNDING;
-    }
-    if (this.selectedAssessment === this.RECOMMEND_WITH_CONDITIONS) {
-      return InputProjectQualityAssessment.ResultEnum.RECOMMENDEDWITHCONDITIONS;
-    }
-    return InputProjectQualityAssessment.ResultEnum.NOTRECOMMENDED;
-  }
-
-  private setQualityCheckValue(qualityAssessment: OutputProjectQualityAssessment): void {
-    if (qualityAssessment.result === InputProjectQualityAssessment.ResultEnum.RECOMMENDEDFORFUNDING) {
-      this.notesForm.controls.assessment.setValue(this.RECOMMEND);
-      return;
-    }
-    if (qualityAssessment.result === InputProjectQualityAssessment.ResultEnum.RECOMMENDEDWITHCONDITIONS) {
-      this.notesForm.controls.assessment.setValue(this.RECOMMEND_WITH_CONDITIONS);
-      return;
-    }
-    this.notesForm.controls.assessment.setValue(this.NOT_RECOMMEND);
   }
 
   getQualityCheckConfirmation(): ConfirmDialogData {
     let message = 'project.assessment.qualityCheck.dialog.message.not.recommended';
-    if (this.selectedAssessment === this.RECOMMEND) {
+    if (this.qualityCheckForm.get('result')?.value === this.assessment.RECOMMENDEDFORFUNDING) {
       message = 'project.assessment.qualityCheck.dialog.message.recommended';
     }
-    if (this.selectedAssessment === this.RECOMMEND_WITH_CONDITIONS) {
+    if (this.qualityCheckForm.get('result')?.value === this.assessment.RECOMMENDEDWITHCONDITIONS) {
       message = 'project.assessment.qualityCheck.dialog.message.recommended.conditions';
     }
     return {

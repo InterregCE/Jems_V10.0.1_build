@@ -8,11 +8,13 @@ import {ProjectStore} from '../../project-application/containers/project-applica
 export class ProjectEligibilityCheckPageStore {
 
   project$: Observable<ProjectDetailDTO>;
-  eligibilityAssessment$: Observable<OutputProjectEligibilityAssessment>;
 
   constructor(private projectStore: ProjectStore) {
     this.project$ = this.projectStore.project$;
-    this.eligibilityAssessment$ = this.projectStore.projectCurrentDecisions$
+  }
+
+  eligibilityAssessment(step: number | undefined): Observable<OutputProjectEligibilityAssessment> {
+    return this.projectStore.projectDecisions(step)
       .pipe(
         map(decisions => decisions?.eligibilityAssessment)
       );

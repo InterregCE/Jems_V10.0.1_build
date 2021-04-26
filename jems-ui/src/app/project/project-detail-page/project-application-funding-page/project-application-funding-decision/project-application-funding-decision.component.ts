@@ -8,6 +8,7 @@ import {ProjectApplicationFormSidenavService} from '../../../project-application
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/internal/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {ProjectStepStatus} from '../../project-step-status';
 
 @Component({
   selector: 'app-project-application-funding-decision',
@@ -23,6 +24,8 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   status: ProjectStatusDTO;
   @Input()
   fundingDecision: ProjectStatusDTO;
+  @Input()
+  stepStatus: ProjectStepStatus;
   @Input()
   eligibilityDecisionDate: string;
   @Input()
@@ -80,9 +83,9 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
       date: this.decisionForm?.controls?.decisionDate?.value?.format('YYYY-MM-DD')
     };
 
-    if (this.decisionForm?.controls?.status?.value === ProjectStatusDTO.StatusEnum.APPROVED) {
+    if (this.decisionForm?.controls?.status?.value === this.stepStatus.approved) {
       return this.fundingDecisionStore.approveApplication(this.project.id, statusInfo);
-    } else if (this.decisionForm?.controls?.status?.value === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS) {
+    } else if (this.decisionForm?.controls?.status?.value === this.stepStatus.approvedWithConditions) {
       return this.fundingDecisionStore.approveApplicationWithCondition(this.project.id, statusInfo);
     }
     return this.fundingDecisionStore.refuseApplication(this.project.id, statusInfo);

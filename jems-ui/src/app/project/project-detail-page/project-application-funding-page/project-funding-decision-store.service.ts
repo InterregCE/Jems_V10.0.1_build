@@ -9,19 +9,23 @@ import {Log} from '../../../common/utils/log';
 export class ProjectFundingDecisionStore {
 
   project$: Observable<ProjectDetailDTO>;
-  fundingDecision$: Observable<ProjectStatusDTO>;
-  eligibilityDecisionDate$: Observable<string>
 
   constructor(private projectStore: ProjectStore,
               private projectStatusService: ProjectStatusService) {
     this.project$ = this.projectStore.project$;
-    this.fundingDecision$ = this.projectStore.projectCurrentDecisions$
+  }
+
+  fundingDecision(step: number | undefined): Observable<ProjectStatusDTO> {
+    return this.projectStore.projectDecisions(step)
       .pipe(
         map(decisions => decisions?.fundingDecision)
       );
-    this.eligibilityDecisionDate$ = this.projectStore.projectCurrentDecisions$
+  }
+
+  eligibilityDecisionDate(step: number | undefined): Observable<string> {
+    return this.projectStore.projectDecisions(step)
       .pipe(
-        map(decisions => decisions?.eligibilityDecision?.decisionDate)
+        map(decisions => decisions.eligibilityDecision.decisionDate)
       );
   }
 

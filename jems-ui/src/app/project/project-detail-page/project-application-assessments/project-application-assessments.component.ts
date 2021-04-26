@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ProjectDecisionDTO, ProjectStatusDTO} from '@cat/api';
+import {ProjectStepStatus} from '../project-step-status';
 
 @Component({
   selector: 'app-project-application-assessments',
@@ -8,10 +9,12 @@ import {ProjectDecisionDTO, ProjectStatusDTO} from '@cat/api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationAssessmentsComponent {
-  STATUS = ProjectStatusDTO.StatusEnum;
-
+  @Input()
+  step: number;
   @Input()
   decisions: ProjectDecisionDTO;
   @Input()
   projectStatus: ProjectStatusDTO;
+
+  stepStatus = new ProjectStepStatus(this.step);
 }

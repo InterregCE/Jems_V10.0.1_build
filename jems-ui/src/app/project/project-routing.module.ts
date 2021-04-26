@@ -61,7 +61,7 @@ export const routes: Routes = [
             canActivate: [PermissionGuard],
             children: [
               {
-                path: 'eligibilityDecision',
+                path: 'eligibilityDecision/:step',
                 component: ProjectApplicationEligibilityDecisionPageComponent,
                 data: {
                   breadcrumb: 'project.breadcrumb.eligibilityDecision',
@@ -70,7 +70,7 @@ export const routes: Routes = [
                 canActivate: [PermissionGuard]
               },
               {
-                path: 'qualityCheck',
+                path: 'qualityCheck/:step',
                 component: ProjectApplicationQualityCheckComponent,
                 data: {
                   breadcrumb: 'project.breadcrumb.qualityCheck',
@@ -78,7 +78,7 @@ export const routes: Routes = [
                 },
               },
               {
-                path: 'eligibilityCheck',
+                path: 'eligibilityCheck/:step',
                 component: ProjectApplicationEligibilityCheckComponent,
                 data: {
                   breadcrumb: 'project.breadcrumb.eligibilityCheck',
@@ -87,7 +87,7 @@ export const routes: Routes = [
                 canActivate: [PermissionGuard]
               },
               {
-                path: 'fundingDecision',
+                path: 'fundingDecision/:step',
                 component: ProjectApplicationFundingPageComponent,
                 data: {
                   breadcrumb: 'project.breadcrumb.fundingDecision',

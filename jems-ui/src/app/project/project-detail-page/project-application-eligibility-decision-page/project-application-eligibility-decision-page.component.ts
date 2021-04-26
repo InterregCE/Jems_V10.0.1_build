@@ -8,6 +8,7 @@ import {map, tap} from 'rxjs/operators';
 import {ProjectEligibilityDecisionStore} from './project-eligibility-decision-store.service';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {combineLatest} from 'rxjs';
+import {ProjectStepStatus} from '../project-step-status';
 
 @Component({
   selector: 'app-project-application-eligibility-decision-page',
@@ -20,15 +21,19 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
   Permission = Permission;
 
   projectId = this.activatedRoute.snapshot.params.projectId;
-  data$ = combineLatest([this.eligibilityPageStore.project$, this.eligibilityPageStore.eligibilityDecision$])
+  step = this.activatedRoute.snapshot.params.step;
+  stepStatus = new ProjectStepStatus(this.step);
+
+  data$ = combineLatest([
+    this.eligibilityPageStore.project$,
+    this.eligibilityPageStore.eligibilityDecision(this.step)]
+  )
     .pipe(
       tap(([project, eligibilityDecision]) => this.resetForm(project, eligibilityDecision)),
       map(([project, eligibilityDecision]) => ({project, eligibilityDecision}))
     );
 
-  ELIGIBLE = 'ELIGIBLE';
-  INELIGIBLE = 'INELIGIBLE';
-  options: string[] = [this.ELIGIBLE, this.INELIGIBLE];
+  options: string[] = [this.stepStatus.eligible, this.stepStatus.ineligible];
 
   today = new Date();
   dateErrors = {
@@ -47,7 +52,6 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
     maxlength: 'eligibility.decision.notes.size.too.long',
   };
 
-  selectedAssessment: string;
   actionPending = false;
 
   constructor(public eligibilityPageStore: ProjectEligibilityDecisionStore,
@@ -67,16 +71,12 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
     this.router.navigate(['app', 'project', 'detail', this.projectId]);
   }
 
-  assessmentChangeHandler(event: any): void {
-    this.selectedAssessment = event.value;
-  }
-
   submitEligibilityDecision(): void {
     const statusInfo: ApplicationActionInfoDTO = {
       note: this.notesForm?.controls?.notes?.value,
       date: this.notesForm?.controls?.decisionDate?.value.format('YYYY-MM-DD')
     };
-    (this.selectedAssessment === this.ELIGIBLE
+    (this.notesForm.get('assessment')?.value === this.stepStatus.eligible
       ? this.eligibilityPageStore.setApplicationAsEligible(this.projectId, statusInfo)
       : this.eligibilityPageStore.setApplicationAsIneligible(this.projectId, statusInfo))
       .pipe(
@@ -86,18 +86,12 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
   }
 
   private setEligibilityDecisionValue(project: ProjectDetailDTO, eligibilityDecision: ProjectStatusDTO): void {
-    if (eligibilityDecision) {
-      if (eligibilityDecision?.status === ProjectStatusDTO.StatusEnum.INELIGIBLE) {
-        this.notesForm.controls.assessment.setValue(this.INELIGIBLE);
-      } else {
-        this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
-      }
-    }
+    this.notesForm.controls.assessment.setValue(eligibilityDecision?.status);
   }
 
   getEligibilityDecisionConfirmation(): ConfirmDialogData {
     let message = 'project.assessment.eligibilityDecision.dialog.message.ineligible';
-    if (this.selectedAssessment === this.ELIGIBLE) {
+    if (this.notesForm.get('assessment')?.value === this.stepStatus.eligible) {
       message = 'project.assessment.eligibilityDecision.dialog.message.eligible';
     }
     return {

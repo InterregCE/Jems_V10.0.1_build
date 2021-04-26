@@ -1,6 +1,7 @@
 <div id="applicationFormLifecycleAssessment"
-     *ngIf="projectStatus.status !== STATUS.DRAFT && projectStatus.status !== STATUS.RETURNEDTOAPPLICANT">
-    <h3>{{'project.assessment.header' | translate}}</h3>
+     *ngIf="projectStatus.status !== stepStatus.draft && projectStatus.status !== stepStatus.returnedToApplicant">
+    <h3 class="mt-3" *ngIf="!callHasTwoSteps">{{'project.assessment.header' | translate}}></h3>
+    <h3 class="mt-3" *ngIf="callHasTwoSteps">{{'project.assessment.header.with.step' | translate : {step: step} }}</h3>
     <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>
             <mat-panel-title>{{'project.assessment.decision.header' | translate}}</mat-panel-title>
@@ -20,12 +21,12 @@
             <button *ngIf="!decisions?.eligibilityDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [disabled]="!decisions?.eligibilityAssessment"
-                    [routerLink]="'./assessment/eligibilityDecision'">
+                    [routerLink]="['./assessment/eligibilityDecision', step]">
                 {{'project.assessment.eligibilityDecision.assessment' | translate}}
             </button>
             <button *ngIf="decisions?.eligibilityDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [routerLink]="'./assessment/eligibilityDecision'">
+                    [routerLink]="['./assessment/eligibilityDecision', step]">
                 {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
             </button>
         </div>
@@ -33,7 +34,7 @@
             <div>{{'project.assessment.fundingDecision.title' | translate}}</div>
             <div>
                 <span *ngIf="decisions?.fundingDecision">
-                    {{'common.label.projectapplicationstatus.' + decisions?.fundingDecision.status | translate}}
+                    {{'common.label.projectapplicationstatus.' + projectStatus.status | translate}}
                 </span>
             </div>
             <div>
@@ -43,14 +44,14 @@
             </div>
             <button *ngIf="!decisions?.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [disabled]="decisions?.eligibilityDecision?.status !== STATUS.ELIGIBLE  || !decisions?.qualityAssessment"
-                    [routerLink]="'./assessment/fundingDecision'">
+                    [disabled]="!fundingDecisionEnabled()"
+                    [routerLink]="['./assessment/fundingDecision', step]">
                 {{'project.assessment.fundingDecision.assessment' | translate}}
             </button>
             <button *ngIf="!!decisions?.fundingDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [color]="projectStatus.status === STATUS.APPROVEDWITHCONDITIONS ? 'primary' : null"
-                    [routerLink]="'./assessment/fundingDecision'">
+                    [color]="projectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
+                    [routerLink]="['./assessment/fundingDecision', step]">
                 {{updateOrViewFundingLabel() | translate}}
             </button>
         </div>

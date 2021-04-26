@@ -8,6 +8,7 @@ import {ProjectStore} from '../../project-application/containers/project-applica
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectEligibilityCheckPageStore} from './project-eligibility-check-page-store.service';
 import {map, tap} from 'rxjs/operators';
+import {ProjectStepStatus} from '../project-step-status';
 
 @Component({
   selector: 'app-project-application-eligibility-check',
@@ -17,11 +18,12 @@ import {map, tap} from 'rxjs/operators';
   providers: [ProjectEligibilityCheckPageStore]
 })
 export class ProjectApplicationEligibilityCheckComponent {
-  ELIGIBLE = 'ELIGIBLE';
-  INELIGIBLE = 'INELIGIBLE';
 
   projectId = this.activatedRoute.snapshot.params.projectId;
-  options: string[] = [this.ELIGIBLE, this.INELIGIBLE];
+  step = this.activatedRoute.snapshot.params.step;
+  stepStatus = new ProjectStepStatus(this.step);
+
+  options: string[] = [this.stepStatus.eligible, this.stepStatus.ineligible];
   selectedAssessment: string;
   actionPending = false;
 
@@ -46,7 +48,10 @@ export class ProjectApplicationEligibilityCheckComponent {
               private pageStore: ProjectEligibilityCheckPageStore,
               protected changeDetectorRef: ChangeDetectorRef,
               private sidenavService: ProjectApplicationFormSidenavService) {
-    this.data$ = combineLatest([this.pageStore.project$, this.pageStore.eligibilityAssessment$])
+    this.data$ = combineLatest([
+      this.pageStore.project$,
+      this.pageStore.eligibilityAssessment(this.step)
+    ])
       .pipe(
         tap(([project, eligibilityAssessment]) => {
           if (eligibilityAssessment) {
@@ -75,23 +80,23 @@ export class ProjectApplicationEligibilityCheckComponent {
   }
 
   private getEligibilityCheckValue(): InputProjectEligibilityAssessment.ResultEnum {
-    return this.selectedAssessment === this.INELIGIBLE
+    return this.selectedAssessment === this.stepStatus.ineligible
       ? InputProjectEligibilityAssessment.ResultEnum.FAILED
       : InputProjectEligibilityAssessment.ResultEnum.PASSED;
   }
 
   private setEligibilityCheckValue(eligibilityAssessment: OutputProjectEligibilityAssessment): void {
     if (eligibilityAssessment.result === InputProjectEligibilityAssessment.ResultEnum.FAILED) {
-      this.notesForm.controls.assessment.setValue(this.INELIGIBLE);
+      this.notesForm.controls.assessment.setValue(this.stepStatus.ineligible);
       return;
     }
-    this.notesForm.controls.assessment.setValue(this.ELIGIBLE);
+    this.notesForm.controls.assessment.setValue(this.stepStatus.eligible);
   }
 
   getEligibilityCheckConfirmation(): ConfirmDialogData {
     return {
       title: 'project.assessment.eligibilityCheck.dialog.title',
-      message: this.selectedAssessment === this.ELIGIBLE
+      message: this.selectedAssessment === this.stepStatus.eligible
         ? 'project.assessment.eligibilityCheck.dialog.message.eligible'
         : 'project.assessment.eligibilityCheck.dialog.message.ineligible'
     };

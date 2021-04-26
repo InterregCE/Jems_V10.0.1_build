@@ -207,4 +207,11 @@ export class ProjectStore {
         map(project => project.step2Active ? project.secondStepDecision : project.firstStepDecision),
       );
   }
+
+  projectDecisions(step: number | undefined): Observable<ProjectDecisionDTO> {
+    return this.project$
+      .pipe(
+        map(project => step && Number(step) === 2 ? project.secondStepDecision : project.firstStepDecision)
+      );
+  }
 }

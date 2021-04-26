@@ -124,7 +124,8 @@ export class ProjectApplicationActionsComponent {
     if (!callHasTwoSteps || projectInSecondStep) {
       return false;
     }
-    return status === ProjectStatusDTO.StatusEnum.APPROVED || status === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS;
+    return status === ProjectStatusDTO.StatusEnum.STEP1APPROVED
+      || status === ProjectStatusDTO.StatusEnum.STEP1APPROVEDWITHCONDITIONS;
   }
 
   private returnToApplicantAvailable(status: ProjectStatusDTO.StatusEnum,

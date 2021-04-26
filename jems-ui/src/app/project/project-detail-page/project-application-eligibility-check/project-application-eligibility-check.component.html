@@ -12,7 +12,7 @@
         <mat-radio-group required
                          name="assessment"
                          formControlName="assessment"
-                         [disabled]="data.eligibilityAssessment !== null"
+                         [disabled]="!!data.eligibilityAssessment"
                          (change)="assessmentChangeHandler($event)">
             <mat-radio-button *ngFor="let option of options" [value]="option">
                 {{'project.assessment.eligibilityCheck.dialog.select.' + option | translate}}
@@ -23,10 +23,10 @@
                                  [messages]="notesErrors"
                                  [characterLimit]="1000"
                                  [label]="'project.assessment.eligibilityCheck.dialog.field.note'"
-                                 [disabled]="data.eligibilityAssessment !== null"
+                                 [disabled]="!!data.eligibilityAssessment"
                                  [customStyle]="'outline'">
         </app-expandable-textarea>
-        <div appMultiColumnRow *ngIf="data.eligibilityAssessment === null">
+        <div appMultiColumnRow *ngIf="!data.eligibilityAssessment">
             <button mat-stroked-button
                     (click)="onCancel()">{{'project.assessment.eligibilityCheck.dialog.button.cancel' | translate}}
             </button>

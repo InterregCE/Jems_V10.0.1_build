@@ -1,10 +1,10 @@
 <mat-expansion-panel
-        *ngIf="projectStatus.status !== STATUS.DRAFT && projectStatus.status !== STATUS.RETURNEDTOAPPLICANT"
+        *ngIf="projectStatus.status !== stepStatus.draft && projectStatus.status !== stepStatus.returnedToApplicant"
         [expanded]="true">
     <mat-expansion-panel-header>
         <mat-panel-title>{{'project.assessment.check.header' | translate}}</mat-panel-title>
     </mat-expansion-panel-header>
-    <div *ngIf="projectStatus.status !== STATUS.DRAFT">
+    <div *ngIf="projectStatus.status !== stepStatus.draft">
         <div appMultiColumnRow stretch class="mb-4">
             <div>{{'project.assessment.eligibilityCheck.title' | translate}}</div>
             <div>
@@ -14,12 +14,12 @@
             </div>
             <button *ngIf="!decisions?.eligibilityAssessment"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [routerLink]="'./assessment/eligibilityCheck'">
+                    [routerLink]="['./assessment/eligibilityCheck', step]">
                 {{'project.assessment.eligibilityCheck.assessment' | translate}}
             </button>
             <button *ngIf="decisions?.eligibilityAssessment"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [routerLink]="'./assessment/eligibilityCheck'">
+                    [routerLink]="['./assessment/eligibilityCheck', step]">
                 {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
             </button>
         </div>
@@ -32,13 +32,13 @@
             </div>
             <button *ngIf="!decisions?.qualityAssessment"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [disabled]="projectStatus.status === STATUS.INELIGIBLE"
-                    [routerLink]="'./assessment/qualityCheck'">
+                    [disabled]="projectStatus.status === stepStatus.ineligible"
+                    [routerLink]="['./assessment/qualityCheck', step]">
                 {{'project.assessment.qualityCheck.assessment' | translate}}
             </button>
             <button *ngIf="decisions?.qualityAssessment"
                     mat-stroked-button appFormFieldWidth="x-large"
-                    [routerLink]="'./assessment/qualityCheck'">
+                    [routerLink]="['./assessment/qualityCheck', step]">
                 {{'project.assessment.qualityCheck.assessment.view' | translate}}
             </button>
         </div>
