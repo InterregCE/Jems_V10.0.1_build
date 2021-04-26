@@ -19,6 +19,7 @@ subprojects {
             kapt platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
 
             constraints {
+                implementation "io.cloudflight.jems.plugin.contract:jems-plugin-contract:0.0.1"
                 implementation "com.github.doyaaaaaken:kotlin-csv-jvm:0.15.0"
             }
         }
