@@ -39,11 +39,11 @@ class ProjectWorkflowPersistenceProvider(
         )?.status ?: throw ApplicationStatusNotFoundException()
 
     @Transactional
-    override fun updateApplicationFirstSubmission(projectId: Long, userId: Long) =
+    override fun updateApplicationFirstSubmission(projectId: Long, userId: Long, status: ApplicationStatus) =
         projectRepository.getOne(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = ApplicationStatus.SUBMITTED, user = userRepository.getOne(userId)
+                    project = this, status = status, user = userRepository.getOne(userId)
                 )
             )
             firstSubmission = newStatus

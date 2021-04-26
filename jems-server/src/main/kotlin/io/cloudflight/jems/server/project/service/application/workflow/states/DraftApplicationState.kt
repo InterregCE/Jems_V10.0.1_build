@@ -22,7 +22,7 @@ class DraftApplicationState(
     override fun submit(): ApplicationStatus =
         ifCallIsOpen().run {
             projectWorkflowPersistence.updateApplicationFirstSubmission(
-                projectId = projectSummary.id, userId = securityService.getUserIdOrThrow()
+                projectId = projectSummary.id, userId = securityService.getUserIdOrThrow(), status = ApplicationStatus.SUBMITTED
             )
         }
 
