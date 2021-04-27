@@ -58,4 +58,7 @@ enum class AuditAction {
     //package LEGAL STATUS
     LEGAL_STATUS_EDITED,
 
+    //plugin
+    PLUGIN_CALLED,
+    PLUGIN_EXECUTED
 }

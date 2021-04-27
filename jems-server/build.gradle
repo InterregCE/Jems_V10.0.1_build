@@ -1,6 +1,22 @@
 apply plugin: 'kotlin-jpa'
 
+configurations {
+    toDownload
+}
+
+if (isCloudflightBuild()) {
+    bootJar {
+        manifest {
+            attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
+        }
+    }
+}
+
+
 dependencies {
+    implementation('io.cloudflight.jems.plugin.contract:jems-plugin-contract')
+    toDownload('io.cloudflight.jems.plugin.standard:jems-standard-plugin')
+
     implementation project(':jems-api')
     implementation project(':jems-ui')
 
@@ -42,5 +58,15 @@ dependencies {
         implementation('io.springfox:springfox-swagger-ui:2.9.2')
         implementation('io.springfox:springfox-swagger2:2.9.2')
         implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:7.10.2')
+        implementation("io.cloudflight.jems.plugin.contract:jems-plugin-contract:$jemsPluginContractVersion")
+        toDownload("io.cloudflight.jems.plugin.standard:jems-standard-plugin:$jemsStandardPluginVersion")
     }
 }
+
+task download(type: Copy) {
+    from configurations.toDownload
+    into 'build/libs/'
+    include "jems-standard-plugin*.jar"
+}
+
+build.dependsOn download
