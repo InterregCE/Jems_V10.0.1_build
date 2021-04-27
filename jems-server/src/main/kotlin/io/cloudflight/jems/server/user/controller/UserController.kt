@@ -1,51 +1,42 @@
 package io.cloudflight.jems.server.user.controller
 
 import io.cloudflight.jems.api.user.UserApi
-import io.cloudflight.jems.api.user.dto.InputPassword
-import io.cloudflight.jems.api.user.dto.InputUserCreate
-import io.cloudflight.jems.api.user.dto.InputUserUpdate
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
-import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
-import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.user.service.UserService
+import io.cloudflight.jems.api.user.dto.PasswordDTO
+import io.cloudflight.jems.api.user.dto.UserChangeDTO
+import io.cloudflight.jems.api.user.dto.UserDTO
+import io.cloudflight.jems.api.user.dto.UserSummaryDTO
+import io.cloudflight.jems.server.user.service.user.create_user.CreateUserInteractor
+import io.cloudflight.jems.server.user.service.user.get_user.GetUserInteractor
+import io.cloudflight.jems.server.user.service.user.update_user.UpdateUserInteractor
+import io.cloudflight.jems.server.user.service.user.update_user_password.UpdateUserPasswordInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class UserController(
-    val userService: UserService,
-    val securityService: SecurityService
+    private val getUserInteractor: GetUserInteractor,
+    private val createUserInteractor: CreateUserInteractor,
+    private val updateUserInteractor: UpdateUserInteractor,
+    private val updateUserPasswordInteractor: UpdateUserPasswordInteractor,
 ) : UserApi {
 
-    @PreAuthorize("hasRole('$ADMINISTRATOR')")
-    override fun list(pageable: Pageable): Page<OutputUserWithRole> {
-        return userService.findAll(pageable = pageable)
-    }
+    override fun list(pageable: Pageable): Page<UserSummaryDTO> =
+        getUserInteractor.getUsers(pageable).toDto()
 
-    @PreAuthorize("hasRole('$ADMINISTRATOR')")
-    override fun createUser(user: InputUserCreate): OutputUserWithRole {
-        return userService.create(user)
-    }
+    override fun createUser(user: UserChangeDTO): UserDTO =
+        createUserInteractor.createUser(user.toModel()).toDto()
 
-    @PreAuthorize("@userAuthorization.canUpdateUser(#id)")
-    override fun getById(id: Long): OutputUserWithRole {
-        return userService.getById(id)
-    }
+    override fun updateUser(user: UserChangeDTO): UserDTO =
+        updateUserInteractor.updateUser(user.toModel()).toDto()
 
-    @PreAuthorize("@userAuthorization.canUpdateUser(#user)")
-    override fun update(user: InputUserUpdate): OutputUserWithRole {
-        return userService.update(user)
-    }
+    override fun getById(id: Long): UserDTO =
+        getUserInteractor.getUserById(id).toDto()
 
-    @PreAuthorize("@userAuthorization.isAdmin()")
-    override fun changePassword(userId: Long, passwordData: InputPassword) {
-        this.userService.changePassword(userId, passwordData)
-    }
+    override fun resetPassword(userId: Long, newPassword: String) =
+        updateUserPasswordInteractor.resetUserPassword(userId, newPassword)
 
-    override fun changeMyPassword(passwordData: InputPassword) {
-        this.userService.changePassword(securityService.currentUser?.user?.id!!, passwordData)
-    }
+    override fun changeMyPassword(passwordData: PasswordDTO) =
+        updateUserPasswordInteractor.updateMyPassword(passwordData.toModel())
 
 }

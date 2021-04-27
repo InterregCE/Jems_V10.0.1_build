@@ -4,8 +4,6 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.user.dto.OutputUserRole
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
@@ -17,16 +15,18 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.user.service.model.UserRole
 import java.time.ZonedDateTime
 
-private val account = User(
+private val account = UserEntity(
     id = 1,
     email = "admin@admin.dev",
     name = "Name",
     surname = "Surname",
-    userRole = UserRole(id = 1, name = "ADMIN"),
+    userRole = UserRoleEntity(id = 1, name = "ADMIN"),
     password = "hash_pass"
 )
 
@@ -73,7 +73,7 @@ fun partnerWithId(id: Long) = ProjectPartnerEntity(
 )
 
 fun userWithId(id: Long) = LocalCurrentUser(
-    user = OutputUserWithRole(id = id, email = "x@y", name = "", surname = "", userRole = OutputUserRole(0, "")),
+    user = User(id = id, email = "x@y", name = "", surname = "", userRole = UserRole(0, "", permissions = emptySet())),
     password = "hash_pass",
     authorities = emptyList(),
 )

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import java.sql.Timestamp
 import java.time.ZonedDateTime
 import javax.persistence.EmbeddedId
@@ -28,7 +28,7 @@ class ProjectVersionEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     @field:NotNull
-    val user: User,
+    val user: UserEntity,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull

@@ -1,34 +1,35 @@
 <app-main-page-template [needsCard]="true"
-                        *ngIf="projectDetailStore.project$ | async as project"
+                        *ngIf="details$ | async as details"
                         titleKey="project.application.form.lifecycle.title">
     <div appFormLayout>
 
         <div appNoWidthLimit>
-            <h2>{{project.id}} – {{project.acronym}}</h2>
+            <h2>{{details.project.id}} - {{details.project.acronym}}</h2>
             <app-project-application-information appNoWidthLimit
-                                                 [project]="project">
+                                                 [project]="details.project">
             </app-project-application-information>
         </div>
 
         <div appFormLayout id="project-detail-container">
             <app-project-application-actions
                     appNoWidthLimit
-                    [projectId]="project.id"
-                    [projectStatus]="project.projectStatus.status"
+                    [projectId]="details.project.id"
+                    [isThisUserOwner]="details.project.applicant.id === details.user.id"
+                    [projectStatus]="details.project.projectStatus.status"
                     [revertToStatus]="projectDetailStore.revertToStatus$ | async"
-                    [projectCallEndDate]="project.callSettings.endDate">
+                    [projectCallEndDate]="details.project.callSettings.endDate">
             </app-project-application-actions>
             <app-project-application-decisions
                     appNoWidthLimit
                     *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
-                    [project]="project"
-                    [projectStatus]="project.projectStatus.status">
+                    [project]="details.project"
+                    [projectStatus]="details.project.projectStatus.status">
             </app-project-application-decisions>
             <app-project-application-assessments
                     appNoWidthLimit
                     *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
-                    [project]="project"
-                    [projectStatus]="project.projectStatus.status">
+                    [project]="details.project"
+                    [projectStatus]="details.project.projectStatus.status">
             </app-project-application-assessments>
         </div>
 

@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.project.entity.file.ProjectFile
 import io.cloudflight.jems.server.common.exception.DuplicateFileException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.repository.ProjectFileRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository

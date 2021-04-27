@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {tap} from 'rxjs/operators';
-import {ProjectStatusDTO} from '@cat/api';
+import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {Permission} from '../../../security/permissions/permission';
 import {TranslateService} from '@ngx-translate/core';
@@ -16,7 +16,10 @@ import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confir
 })
 export class ProjectApplicationActionsComponent {
   Alert = Alert;
-  Permission = Permission;
+  // tslint:disable-next-line:variable-name
+  UserRole = Permission;
+  // tslint:disable-next-line:variable-name
+  Permissions = UserRoleDTO.PermissionsEnum;
   STATUS = ProjectStatusDTO.StatusEnum;
 
   returnableStatuses = [
@@ -34,6 +37,8 @@ export class ProjectApplicationActionsComponent {
   projectCallEndDate: Date;
   @Input()
   projectId: number;
+  @Input()
+  isThisUserOwner: boolean;
 
   // TODO: create a component
   successMessage: boolean;

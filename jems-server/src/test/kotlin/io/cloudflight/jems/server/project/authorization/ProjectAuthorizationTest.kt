@@ -2,8 +2,6 @@ package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
-import io.cloudflight.jems.api.user.dto.OutputUserRole
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.call.authorization.CallAuthorization
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
@@ -14,6 +12,8 @@ import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Compan
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.userApplicant
+import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.user.service.model.UserRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -35,12 +35,12 @@ internal class ProjectAuthorizationTest {
             surname = userApplicant.surname
         )
 
-        private val notOwnerApplicant = OutputUserWithRole(
+        private val notOwnerApplicant = User(
             id = 256,
             name = "not-owner",
             email = "not-owner@applicant",
             surname = "applicant",
-            userRole = OutputUserRole(id = 1, name = "applicant")
+            userRole = UserRole(id = 1, name = "applicant", permissions = emptySet())
         )
 
         private fun testProject(status: ApplicationStatusDTO) = ProjectApplicantAndStatus(

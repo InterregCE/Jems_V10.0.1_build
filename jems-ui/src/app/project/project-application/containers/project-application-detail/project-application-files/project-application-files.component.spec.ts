@@ -3,9 +3,8 @@ import {ProjectApplicationFilesComponent} from './project-application-files.comp
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {OutputProjectFile} from '@cat/api';
+import {OutputProjectFile, UserRoleDTO} from '@cat/api';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectStore} from '../services/project-store.service';
 
 describe('ProjectApplicationFilesComponent', () => {
@@ -41,7 +40,8 @@ describe('ProjectApplicationFilesComponent', () => {
   it('should list project files', fakeAsync(() => {
     const permissionService = TestBed.inject(PermissionService);
     const projectStore = TestBed.inject(ProjectStore);
-    permissionService.setPermissions([Permission.ADMINISTRATOR]);
+    const role: UserRoleDTO = {id: 0, name: 'administrator', permissions: []} as UserRoleDTO;
+    permissionService.setPermissions([role]);
     let results: OutputProjectFile[] = [];
     component.details$.subscribe(result => results = result.page.content);
 

@@ -1,58 +1,64 @@
 package io.cloudflight.jems.server.user.service
 
-import io.cloudflight.jems.api.user.dto.OutputUser
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditBuilder
-import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.authentication.model.CurrentUser
-import java.util.stream.Collectors
+import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
+import io.cloudflight.jems.server.common.audit.onlyNewChanges
+import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.user.service.model.UserWithPassword
 
-fun userCreated(currentUser: CurrentUser?, createdUser: OutputUserWithRole): AuditCandidate {
-    val author = currentUser?.user?.email
-    return AuditBuilder(AuditAction.USER_CREATED)
-        .description("new user ${createdUser.email} with role ${createdUser.userRole.name} has been created by $author")
-        .build()
-}
-
-fun userRoleChanged(currentUser: CurrentUser?, user: OutputUserWithRole): AuditCandidate {
-    val author = currentUser?.user?.email
-    return AuditBuilder(AuditAction.USER_ROLE_CHANGED)
-        .description("user role '${user.userRole.name}' has been assigned to ${user.name} ${user.surname} by $author")
-        .build()
-}
-
-fun userDataChanged(userId: Long, changes: Map<String, Pair<String, String>>): AuditCandidate {
-    val changedString = changes.entries.stream()
-        .map { "${it.key} changed from ${it.value.first} to ${it.value.second}" }
-        .collect(Collectors.joining(",\n"))
-
-    return AuditBuilder(AuditAction.USER_DATA_CHANGED)
-        .description("User data changed for user $userId:\n$changedString")
-        .build()
-}
-
-/**
- * In this specific case we are logging user, which is not currently-logged-in user.
- */
-fun applicantRegistered(context: Any, createdUser: OutputUserWithRole): AuditCandidateEvent {
-    return AuditCandidateEvent(
+fun userCreated(context: Any, createdUser: User): AuditCandidateEvent =
+    AuditCandidateEvent(
         context = context,
-        auditCandidate = AuditCandidate(
-            action = AuditAction.USER_REGISTERED,
-            description = "new user '${createdUser.name} ${createdUser.surname}' with role '${createdUser.userRole.name}' registered"
-        ),
-        overrideCurrentUser = AuditUser(createdUser.id!!, createdUser.email),
+        auditCandidate = AuditBuilder(AuditAction.USER_ADDED)
+            .entityRelatedId(createdUser.id)
+            .description("A new user ${createdUser.email} was created:\n${createdUser.getDiff().onlyNewChanges()}")
+            .build()
     )
-}
 
-fun passwordChanged(initiator: CurrentUser?, changedUser: OutputUser): AuditCandidate =
-    AuditBuilder(AuditAction.PASSWORD_CHANGED)
-        .description(
-            if (initiator?.user?.id == changedUser.id)
-                "Password of user '${changedUser.name} ${changedUser.surname}' (${changedUser.email}) has been changed by himself/herself"
-            else
-                "Password of user '${changedUser.name} ${changedUser.surname}' (${changedUser.email}) has been changed by user ${initiator?.user?.email}")
-        .build()
+fun userRegistered(context: Any, createdUser: User): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        overrideCurrentUser = createdUser.toAuditUser(),
+        auditCandidate = AuditBuilder(AuditAction.USER_REGISTERED)
+            .entityRelatedId(createdUser.id)
+            .description("A new user ${createdUser.email} registered:\n${createdUser.getDiff().onlyNewChanges()}")
+            .build()
+    )
+
+fun userUpdated(context: Any, oldUser: User, newUser: User): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.USER_DATA_CHANGED)
+            .entityRelatedId(oldUser.id)
+            .description("User data changed for user id=${oldUser.id}:\n${newUser.getDiff(oldUser).fromOldToNewChanges()}")
+            .build()
+    )
+
+fun passwordChanged(ctx: Any, changedUser: UserWithPassword, initiator: User? = null): AuditCandidateEvent =
+    if (initiator == null)
+        AuditCandidateEvent(
+            context = ctx,
+            auditCandidate = AuditBuilder(AuditAction.PASSWORD_CHANGED)
+                .entityRelatedId(changedUser.id)
+                .description("Password of user ${changedUser.getUser().auditString()} has been changed by himself/herself")
+                .build()
+        )
+    else
+        AuditCandidateEvent(
+            context = ctx,
+            overrideCurrentUser = initiator.toAuditUser(),
+            auditCandidate = AuditBuilder(AuditAction.PASSWORD_CHANGED)
+                .entityRelatedId(changedUser.id)
+                .description("Password of user ${changedUser.getUser().auditString()} has been changed by user ${initiator.auditString()}")
+                .build()
+        )
+
+fun User.auditString() = "'$name $surname' ($email)"
+
+fun User.toAuditUser() = AuditUser(
+    id = id,
+    email = email,
+)

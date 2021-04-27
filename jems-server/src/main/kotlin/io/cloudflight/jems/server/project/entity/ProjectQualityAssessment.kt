@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.ZonedDateTime
 import java.util.*
 import javax.persistence.Column
@@ -36,7 +36,7 @@ data class ProjectQualityAssessment(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     @field:NotNull
-    val user: User,
+    val user: UserEntity,
 
     @field:NotNull
     val updated: ZonedDateTime = ZonedDateTime.now(),

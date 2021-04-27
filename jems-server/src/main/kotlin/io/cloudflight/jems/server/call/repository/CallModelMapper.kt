@@ -21,7 +21,7 @@ import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.programme.repository.priority.toModel
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.project.repository.toModel
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import org.springframework.data.domain.Page
 import java.util.TreeSet
 import kotlin.collections.HashSet
@@ -71,7 +71,7 @@ private fun Set<ProgrammeSpecificObjectiveEntity>.groupSpecificObjectives() =
     }.sortedBy { it.id }
 
 fun Call.toEntity(
-    user: User,
+    user: UserEntity,
     retrieveSpecificObjective: (ProgrammeObjectivePolicy) -> ProgrammeSpecificObjectiveEntity,
     retrieveStrategies: (Set<ProgrammeStrategy>) -> Set<ProgrammeStrategyEntity>,
     retrieveFunds: (Set<Long>) -> Set<ProgrammeFundEntity>,

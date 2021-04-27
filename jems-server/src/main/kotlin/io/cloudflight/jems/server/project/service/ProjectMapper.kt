@@ -21,12 +21,12 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.ProjectTransl
 import io.cloudflight.jems.server.project.entity.TranslationId
 import io.cloudflight.jems.server.project.repository.toSettingsModel
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.toOutputUser
 
 fun InputProject.toEntity(
     call: CallEntity,
-    applicant: User,
+    applicant: UserEntity,
     statusHistoryEntity: ProjectStatusHistoryEntity
 ) = ProjectEntity(
     call = call,

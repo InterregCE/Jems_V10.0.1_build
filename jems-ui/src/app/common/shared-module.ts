@@ -44,6 +44,7 @@ import {LocaleDatePipe} from './pipe/locale-date.pipe';
 import {DateFormatInfoPipe} from './pipe/date-format-info.pipe';
 import {CustomTranslatePipe} from './pipe/custom-translate-pipe';
 import {PendingButtonComponent} from '@common/components/section/form/pending-button/pending-button.component';
+import {HasPermissionDirective} from './directives/has-permission.directive';
 
 const modules = [
   CommonModule,
@@ -85,6 +86,7 @@ const declarations = [
   ContextInfoComponent,
   FormFieldWidthDirective,
   CurrencyDirective,
+  HasPermissionDirective,
   TableConfigDirective,
   MultiLanguageFormFieldComponent,
   FormLayoutDirective,

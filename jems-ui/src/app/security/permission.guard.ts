@@ -17,7 +17,7 @@ export class PermissionGuard implements CanActivate {
     let allowed = true;
     const permissionsOnly = childRoute?.data?.permissionsOnly;
     if (permissionsOnly) {
-      allowed = permissionsOnly.some((only: string) => user?.role === only);
+      allowed = permissionsOnly.some((only: string) => user?.role?.name === only);
     }
     if (!allowed) {
       Log.info('Current user role cannot access this route:', this, user?.role);

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.call.entity
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
@@ -33,7 +33,7 @@ class CallEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
     @field:NotNull
-    val creator: User,
+    val creator: UserEntity,
 
     @Column(unique = true)
     @field:NotNull

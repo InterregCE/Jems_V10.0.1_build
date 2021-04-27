@@ -1739,15 +1739,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('should fail with 400', function () {",
-									"    pm.response.to.have.status(400);",
+									"pm.test('should fail with 422', function () {",
+									"    pm.response.to.have.status(422);",
 									"});",
 									"",
 									"pm.test('should return validation errors', function () {",
 									"    const response = pm.response.json();",
-									"    pm.expect(response.formErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
-									"    pm.expect(response.formErrors.name.i18nKey).to.contain('user.name.wrong.size');",
-									"    pm.expect(response.formErrors.userRoleId.i18nKey).to.contain('user.userRoleId.should.not.be.empty');",
+									"    pm.expect(response.formErrors.surname.i18nKey).to.contain('common.error.field.blank');",
+									"    pm.expect(response.formErrors.name.i18nKey).to.contain('common.error.field.blank');",
 									"    pm.expect(response.formErrors.email.i18nKey).to.contain('user.email.wrong.format');",
 									"});",
 									""
@@ -1801,16 +1800,15 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('should fail with 400', function () {",
-									"    pm.response.to.have.status(400);",
+									"pm.test('should fail with 422', function () {",
+									"    pm.response.to.have.status(422);",
 									"});",
 									"",
 									"pm.test('should return validation errors', function () {",
 									"    const response = pm.response.json();",
-									"    pm.expect(response.formErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
-									"    pm.expect(response.formErrors.name.i18nKey).to.contain('user.name.wrong.size');",
-									"    pm.expect(response.formErrors.userRoleId.i18nKey).to.contain('user.userRoleId.should.not.be.empty');",
-									"    pm.expect(response.formErrors.email.i18nKey).to.contain('user.email.should.not.be.empty');",
+									"    pm.expect(response.formErrors.surname.i18nKey).to.contain('common.error.field.blank');",
+									"    pm.expect(response.formErrors.name.i18nKey).to.contain('common.error.field.blank');",
+									"    pm.expect(response.formErrors.email.i18nKey).to.contain('user.email.wrong.format');",
 									"});",
 									""
 								],
@@ -1841,7 +1839,66 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"userRoleId\": null\n}"
+							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"userRoleId\": -1\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user invalid role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('should fail with 404 role not found', function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test('should return error role not found', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.details[0].i18nMessage.i18nKey).to.contain('use.case.create.user.user.role.not.found');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"his.user@shouldnot.exist\",\n\t\"name\": \"This user\",\n\t\"surname\": \"should not exist\",\n    \"userRoleId\": -1\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/user",

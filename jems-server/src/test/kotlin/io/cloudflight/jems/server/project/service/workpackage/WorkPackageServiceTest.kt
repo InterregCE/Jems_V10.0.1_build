@@ -15,8 +15,8 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
@@ -42,12 +42,12 @@ class WorkPackageServiceTest {
     private val TEST_DATE: LocalDate = LocalDate.now()
     private val TEST_DATE_TIME = ZonedDateTime.of(TEST_DATE, LocalTime.of(10, 0), ZoneId.of("Europe/Bratislava"))
 
-    private val account = User(
+    private val account = UserEntity(
         id = 1,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
-        userRole = UserRole(id = 1, name = "ADMIN"),
+        userRole = UserRoleEntity(id = 1, name = "ADMIN"),
         password = "hash_pass"
     )
 

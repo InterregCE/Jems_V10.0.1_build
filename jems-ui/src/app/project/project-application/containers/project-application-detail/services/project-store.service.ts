@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {
   InputProjectData,
   InputProjectEligibilityAssessment,
@@ -10,17 +10,7 @@ import {
   ProjectStatusDTO,
   ProjectStatusService
 } from '@cat/api';
-import {
-  combineAll,
-  distinctUntilChanged,
-  filter,
-  map,
-  mergeMap,
-  shareReplay,
-  switchMap,
-  tap,
-  withLatestFrom
-} from 'rxjs/operators';
+import {distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';

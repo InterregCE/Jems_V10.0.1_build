@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.factory
 
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.user.repository.UserRepository
-import io.cloudflight.jems.server.user.repository.UserRoleRepository
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.user.repository.userrole.UserRoleRepository
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -17,21 +17,21 @@ class UserFactory(
     val passwordEncoder: PasswordEncoder
 ) {
 
-    val adminUser: User = saveAdminUser(ADMINISTRATOR_EMAIL)
+    val adminUser: UserEntity = saveAdminUser(ADMINISTRATOR_EMAIL)
 
-    val applicantUser: User = saveApplicantUser(APPLICANT_USER_EMAIL)
+    val applicantUser: UserEntity = saveApplicantUser(APPLICANT_USER_EMAIL)
 
     @Transactional
-    fun saveRole(roleName: String): UserRole {
-        return userRoleRepository.findOneByName(roleName)
-            ?: userRoleRepository.save(UserRole(0, roleName))
+    fun saveRole(roleName: String): UserRoleEntity {
+        return userRoleRepository.findByName(roleName).orElse(null)
+            ?: userRoleRepository.save(UserRoleEntity(0, roleName))
     }
 
     @Transactional
-    fun saveUser(email: String, role: UserRole): User {
-        return userRepository.findOneByEmail(email)
+    fun saveUser(email: String, role: UserRoleEntity): UserEntity {
+        return userRepository.getOneByEmail(email)
             ?: userRepository.save(
-                    User(
+                    UserEntity(
                             id = 0,
                             email = email,
                             password = passwordEncoder.encode(email),
@@ -42,12 +42,12 @@ class UserFactory(
             )
     }
 
-    fun saveAdminUser(email: String): User {
-        val adminRole: UserRole = saveRole(ADMINISTRATOR)
+    fun saveAdminUser(email: String): UserEntity {
+        val adminRole: UserRoleEntity = saveRole(ADMINISTRATOR)
         return saveUser(email, adminRole)
     }
 
-    fun saveApplicantUser(email: String): User {
+    fun saveApplicantUser(email: String): UserEntity {
         val programmeRole = saveRole(APPLICANT_USER)
         return saveUser(email, programmeRole)
     }

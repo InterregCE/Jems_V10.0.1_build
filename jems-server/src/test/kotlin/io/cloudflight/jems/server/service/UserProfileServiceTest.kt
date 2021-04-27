@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.service
 
 import io.cloudflight.jems.api.user.dto.InputUserProfile
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserProfile
-import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.UserProfileRepository
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.user.service.UserProfileService
@@ -28,12 +28,12 @@ class UserProfileServiceTest {
     lateinit var userProfileService: UserProfileService
 
     // user to be used for User Profile
-    private val user = User(
+    private val user = UserEntity(
             id = 1,
             email = "admin@admin.dev",
             name = "Name",
             surname = "Surname",
-            userRole = UserRole(id = 1, name = "ADMIN"),
+            userRole = UserRoleEntity(id = 1, name = "ADMIN"),
             password = "test"
     )
 

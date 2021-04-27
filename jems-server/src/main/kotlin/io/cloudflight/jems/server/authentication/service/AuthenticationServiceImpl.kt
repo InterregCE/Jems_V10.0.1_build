@@ -3,10 +3,12 @@ package io.cloudflight.jems.server.authentication.service
 import io.cloudflight.jems.api.authentication.dto.LoginRequest
 import io.cloudflight.jems.api.authentication.dto.OutputCurrentUser
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.audit.service.toEsUser
+import io.cloudflight.jems.server.user.controller.toDto
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -30,7 +32,7 @@ class AuthenticationServiceImpl(
     override fun getCurrentUser(): OutputCurrentUser {
         val id = securityService.currentUser?.user?.id ?: -1
         val user = securityService.currentUser?.user?.email ?: ""
-        val role = securityService.currentUser?.user?.userRole?.name ?: ""
+        val role = securityService.currentUser?.user?.userRole?.toDto() ?: UserRoleDTO(name = "", permissions = emptyList())
         return OutputCurrentUser(id, user, role)
     }
 

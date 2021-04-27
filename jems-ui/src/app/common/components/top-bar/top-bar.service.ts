@@ -61,7 +61,7 @@ export class TopBarService {
       return;
     }
     this.editUserItem = {
-      name: `${currentUser?.name} (${currentUser?.role})`,
+      name: `${currentUser?.name} (${currentUser?.role.name})`,
       isInternal: true,
       route: `/app/profile`,
     };

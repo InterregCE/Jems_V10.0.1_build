@@ -24,8 +24,8 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -106,7 +106,7 @@ class ProjectServiceImpl(
         return createdProject.toOutputProject()
     }
 
-    fun projectStatusDraft(user: User): ProjectStatusHistoryEntity {
+    fun projectStatusDraft(user: UserEntity): ProjectStatusHistoryEntity {
         return ProjectStatusHistoryEntity(
             status = ApplicationStatus.DRAFT,
             user = user,
