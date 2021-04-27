@@ -3,11 +3,11 @@
     <mat-chip-list class="mr-1 ml-1">
         <mat-chip
                 selected="true"
-                [class.draft]="project.projectStatus.status === STATUS.DRAFT || project.projectStatus.status === STATUS.RETURNEDTOAPPLICANT"
-                [class.submitted]="project.projectStatus.status === STATUS.SUBMITTED || project.projectStatus.status === STATUS.ELIGIBLE"
-                [class.approved]="project.projectStatus.status === STATUS.APPROVED"
-                [class.declined]="project.projectStatus.status === STATUS.INELIGIBLE || project.projectStatus.status === STATUS.NOTAPPROVED"
-                [class.with-conditions]="project.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS">
+                [class.draft]="project.projectStatus.status === STATUS.DRAFT || project.projectStatus.status === STATUS.RETURNEDTOAPPLICANT || project.projectStatus.status === STATUS.STEP1DRAFT"
+                [class.submitted]="project.projectStatus.status === STATUS.SUBMITTED || project.projectStatus.status === STATUS.ELIGIBLE || project.projectStatus.status === STATUS.STEP1SUBMITTED || project.projectStatus.status === STATUS.STEP1ELIGIBLE"
+                [class.approved]="project.projectStatus.status === STATUS.APPROVED || project.projectStatus.status === STATUS.STEP1APPROVED"
+                [class.declined]="project.projectStatus.status === STATUS.INELIGIBLE || project.projectStatus.status === STATUS.NOTAPPROVED || project.projectStatus.status === STATUS.STEP1INELIGIBLE || project.projectStatus.status === STATUS.STEP1NOTAPPROVED"
+                [class.with-conditions]="project.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS || project.projectStatus.status === STATUS.STEP1APPROVEDWITHCONDITIONS">
             {{'common.label.projectapplicationstatus.' + project?.projectStatus.status | translate}}
         </mat-chip>
     </mat-chip-list>

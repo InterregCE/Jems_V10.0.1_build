@@ -25,6 +25,7 @@
             </mat-error>
         </mat-form-field>
         <mat-checkbox
+                [class.hide]="published && !callForm?.controls?.is2Step.value"
                 name="is2Step"
                 formControlName="is2Step"
                 (change)="callForm?.controls?.is2Step.patchValue($event.checked)">
