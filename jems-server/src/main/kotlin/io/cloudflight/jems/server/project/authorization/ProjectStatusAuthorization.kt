@@ -1,15 +1,9 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.APPROVED
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.APPROVED_WITH_CONDITIONS
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.*
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isDraft
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isEligible
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isSubmitted
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.ELIGIBLE
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.RETURNED_TO_APPLICANT
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.STEP1_ELIGIBLE
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.STEP1_SUBMITTED
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.SUBMITTED
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectService
@@ -45,6 +39,10 @@ annotation class CanSetApplicationAsIneligible
 @PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canReturnToApplicant(#projectId)")
 annotation class CanReturnApplicationToApplicant
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canStartSecondStep(#projectId)")
+annotation class CanStartSecondStep
+
 @Component
 class ProjectStatusAuthorization(
     override val securityService: SecurityService,
@@ -67,14 +65,14 @@ class ProjectStatusAuthorization(
 
         return oldPossibilities.contains(oldStatus)
                 && project.getStep()?.qualityAssessment != null
-                && isProgrammeUser() || isAdmin()
+                && (isProgrammeUser() || isAdmin())
     }
 
     fun canApproveWithConditions(projectId: Long): Boolean {
         val project = projectService.getById(projectId)
         val oldStatus = project.projectStatus.status
 
-        return isEligible(oldStatus) && isProgrammeUser() || isAdmin()
+        return isEligible(oldStatus) && (isProgrammeUser() || isAdmin())
     }
 
     fun canSetEligibility(projectId: Long): Boolean {
@@ -83,7 +81,7 @@ class ProjectStatusAuthorization(
 
         return isSubmitted(oldStatus)
                 && project.getStep()?.eligibilityAssessment != null
-                && isProgrammeUser() || isAdmin()
+                && (isProgrammeUser() || isAdmin())
     }
 
     fun canReturnToApplicant(projectId: Long): Boolean {
@@ -91,7 +89,15 @@ class ProjectStatusAuthorization(
         val oldStatus = project.projectStatus.status
         val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, APPROVED_WITH_CONDITIONS, APPROVED)
 
-        return oldPossibilities.contains(oldStatus) && isProgrammeUser() || isAdmin()
+        return oldPossibilities.contains(oldStatus) && (isProgrammeUser() || isAdmin())
+    }
+
+    fun canStartSecondStep(projectId: Long): Boolean {
+        val project = projectService.getById(projectId)
+        val oldStatus = project.projectStatus.status
+        val oldPossibilities = setOf(STEP1_APPROVED_WITH_CONDITIONS, STEP1_APPROVED)
+
+        return oldPossibilities.contains(oldStatus) && (isProgrammeUser() || isAdmin())
     }
 
     fun canSetQualityAssessment(projectId: Long): Boolean {

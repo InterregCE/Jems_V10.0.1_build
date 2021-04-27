@@ -46,7 +46,7 @@ abstract class ApplicationState(
         )
 
     open fun startSecondStep(): ApplicationStatus =
-        throw ReturnToApplicantIsNotAllowedException(
+        throw StartSecondStepIsNotAllowedException(
             projectSummary.status
         )
 

@@ -57,7 +57,7 @@ class ProjectStatusController(
         returnApplicationToApplicant.returnToApplicant(id).toDTO()
 
     override fun startSecondStep(id: Long): ApplicationStatusDTO =
-        startSecondStep.returnToDraft(id).toDTO()
+        startSecondStep.startSecondStep(id).toDTO()
 
     override fun findPossibleDecisionRevertStatus(id: Long): ApplicationStatusDTO? =
         getPossibleStatusToRevertTo.get(projectId = id)?.toDTO()

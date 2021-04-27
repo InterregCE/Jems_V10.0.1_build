@@ -8,7 +8,7 @@ ALTER TABLE project
 CREATE TABLE project_decision
 (
     id                      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    project_id              INT UNSIGNED NULL,
+    project_id              INT UNSIGNED NOT NULL,
     eligibility_decision_id INT UNSIGNED DEFAULT NULL,
     funding_decision_id     INT UNSIGNED DEFAULT NULL,
     CONSTRAINT fk_project_eligibility_decision_project_status
@@ -21,7 +21,7 @@ CREATE TABLE project_decision
             ON UPDATE RESTRICT,
     CONSTRAINT fk_project_decision_project
         FOREIGN KEY (project_id) REFERENCES project (id)
-            ON DELETE SET NULL
+            ON DELETE CASCADE
             ON UPDATE RESTRICT
 
 );
