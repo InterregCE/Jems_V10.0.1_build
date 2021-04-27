@@ -83,6 +83,7 @@ class GetCallTest: UnitTest() {
             status = CallStatus.DRAFT,
             startDate = callDetail.startDate,
             endDate = callDetail.endDate,
+            endDateStep1 = null
         )
 
     }

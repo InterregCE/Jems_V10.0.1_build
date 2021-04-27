@@ -12,6 +12,7 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 import {RoutingService} from '../../../../../common/services/routing.service';
 import {filter} from 'rxjs/internal/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ProjectUtil} from '../../../../project-util';
 
 @Injectable()
 @UntilDestroy()
@@ -92,7 +93,7 @@ export class ProjectApplicationFormSidenavService {
             return;
           }
           const status = project.projectStatus.status;
-          const isNotOpen = status !== ProjectStatusDTO.StatusEnum.DRAFT
+          const isNotOpen = !ProjectUtil.isDraft(project)
             && status !== ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
           this.setHeadlines(isNotApplicant && isNotOpen, project.id, partners, packages);
         })

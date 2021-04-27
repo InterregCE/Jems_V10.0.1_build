@@ -1,13 +1,12 @@
 <div id="status" class="mb-3">
     {{'project.detail.table.status' | translate}}:
     <mat-chip-list class="mr-1 ml-1">
-        <mat-chip
-                selected="true"
-                [class.draft]="project.projectStatus.status === STATUS.DRAFT || project.projectStatus.status === STATUS.RETURNEDTOAPPLICANT || project.projectStatus.status === STATUS.STEP1DRAFT"
-                [class.submitted]="project.projectStatus.status === STATUS.SUBMITTED || project.projectStatus.status === STATUS.ELIGIBLE || project.projectStatus.status === STATUS.STEP1SUBMITTED || project.projectStatus.status === STATUS.STEP1ELIGIBLE"
-                [class.approved]="project.projectStatus.status === STATUS.APPROVED || project.projectStatus.status === STATUS.STEP1APPROVED"
-                [class.declined]="project.projectStatus.status === STATUS.INELIGIBLE || project.projectStatus.status === STATUS.NOTAPPROVED || project.projectStatus.status === STATUS.STEP1INELIGIBLE || project.projectStatus.status === STATUS.STEP1NOTAPPROVED"
-                [class.with-conditions]="project.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS || project.projectStatus.status === STATUS.STEP1APPROVEDWITHCONDITIONS">
+        <mat-chip selected="true"
+                  [class.draft]="hasDraftStatusColor()"
+                  [class.submitted]="hasSubmittedStatusColor()"
+                  [class.approved]="hasApprovedStatusColor()"
+                  [class.declined]="hasDeclinedStatusColor()"
+                  [class.with-conditions]="hasApprovedWithConditionsStatusColor()">
             {{'common.label.projectapplicationstatus.' + project?.projectStatus.status | translate}}
         </mat-chip>
     </mat-chip-list>
@@ -45,7 +44,7 @@
             <a [routerLink]="[CALL_PATH, project?.callSettings?.callId]">
                 {{project?.callSettings?.callName}}
             </a>
-            <span [class.expiration]="project.projectStatus.status === STATUS.DRAFT">
+            <span [class.expiration]="ProjectUtil.isDraft(project)">
                 {{'project.detail.overview.call.expiration' | translate : getCallInfo()}}
             </span>
         </span>

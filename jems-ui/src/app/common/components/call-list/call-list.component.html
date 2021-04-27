@@ -18,3 +18,7 @@
         {{'call.table.column.action.apply' | translate}}
     </button>
 </ng-template>
+
+<ng-template #endDateCell let-call>
+    {{(call.endDateTimeStep1 || call.endDateTime) | localeDate}}
+</ng-template>

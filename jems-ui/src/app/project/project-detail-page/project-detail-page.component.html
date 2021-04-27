@@ -37,7 +37,10 @@
 
         <h3>
             {{'file.tab.header' | translate}}
-            <app-context-info infoText="{{'file.tab.info' | translate}}"></app-context-info>
+            <app-context-info *ngIf="projectDetailStore.callHasTwoSteps$ | async"
+                              infoPosition="right"
+                              infoText="{{'file.tab.info' | translate}}">
+            </app-context-info>
         </h3>
         <mat-tab-group appNoWidthLimit>
             <mat-tab label="{{'file.tab.application' | translate}}">

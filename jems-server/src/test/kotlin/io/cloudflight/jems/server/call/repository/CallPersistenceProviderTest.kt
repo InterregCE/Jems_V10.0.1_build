@@ -178,6 +178,7 @@ internal class CallPersistenceProviderTest {
             status = expectedCallDetail.status,
             startDate = expectedCallDetail.startDate,
             endDate = expectedCallDetail.endDate,
+            endDateStep1 = null
         )
 
         private val callUpdate = Call(

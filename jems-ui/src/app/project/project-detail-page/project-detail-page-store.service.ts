@@ -6,6 +6,7 @@ import {Permission} from '../../security/permissions/permission';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {Log} from '../../common/utils/log';
+import {ProjectUtil} from '../project-util';
 
 @Injectable()
 export class ProjectDetailPageStore {
@@ -31,8 +32,7 @@ export class ProjectDetailPageStore {
     ])
       .pipe(
         map(([project, permissions]) =>
-          permissions[0] !== Permission.APPLICANT_USER
-          && project.projectStatus.status !== ProjectStatusDTO.StatusEnum.DRAFT
+          permissions[0] !== Permission.APPLICANT_USER && !ProjectUtil.isDraft(project)
         )
       );
 

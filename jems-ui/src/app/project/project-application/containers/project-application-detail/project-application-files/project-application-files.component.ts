@@ -11,6 +11,7 @@ import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {APIError} from '../../../../../common/models/APIError';
+import {ProjectUtil} from '../../../../project-util';
 
 @Component({
   selector: 'app-project-application-files',
@@ -125,8 +126,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
       // programme user can only upload assessment files
       return false;
     }
-    return project.projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT
-      || project.projectStatus.status === ProjectStatusDTO.StatusEnum.STEP1DRAFT
+    return ProjectUtil.isDraft(project)
       || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
   }
 }

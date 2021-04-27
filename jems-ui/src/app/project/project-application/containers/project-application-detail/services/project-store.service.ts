@@ -22,6 +22,7 @@ import {ProgrammeUnitCost} from '../../../../model/programmeUnitCost';
 import {LumpSumPhaseEnumUtils} from '../../../../model/lump-sums/LumpSumPhaseEnum';
 import {BudgetCostCategoryEnumUtils} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
 import {RoutingService} from '../../../../../common/services/routing.service';
+import {ProjectUtil} from '../../../../project-util';
 
 /**
  * Stores project related information.
@@ -164,7 +165,7 @@ export class ProjectStore {
               // programme users cannot edit projects
               return false;
             }
-            return project.projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT
+            return ProjectUtil.isDraft(project)
               || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
           }
         ),

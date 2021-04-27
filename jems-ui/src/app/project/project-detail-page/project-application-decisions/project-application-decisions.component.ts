@@ -23,7 +23,7 @@ export class ProjectApplicationDecisionsComponent {
   stepStatus = new ProjectStepStatus(this.step);
 
   updateOrViewFundingLabel(): string {
-    return this.projectStatus.status === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS
+    return this.decisions?.fundingDecision?.status === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS
       ? 'project.assessment.fundingDecision.assessment.update'
       : 'project.assessment.fundingDecision.assessment.view';
   }
