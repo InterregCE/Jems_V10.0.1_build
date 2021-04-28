@@ -5,10 +5,8 @@ configurations {
 }
 
 if (isCloudflightBuild()) {
-    bootJar {
-        manifest {
-            attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
-        }
+    springBoot {
+        mainClassName = 'org.springframework.boot.loader.PropertiesLauncher'
     }
 }
 
