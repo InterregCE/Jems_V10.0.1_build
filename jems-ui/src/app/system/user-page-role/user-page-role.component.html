@@ -1,0 +1,31 @@
+<app-main-page-template [needsCard]="true"
+                        titleKey="userRole.breadcrumb.list"
+                        subTitleKey="userRole.management.header">
+    <button *hasPermission="PERMISSIONS.RoleCreate"
+            mat-raised-button
+            class="mb-3"
+            color="primary"
+            routerLink="/app/system/userRole/create">
+        <mat-icon>add</mat-icon>{{'userRole.breadcrumb.create' | translate}}
+    </button>
+
+    <div *ngIf="success" class="success-wrapper mb-3">
+        <div class="success app-alert-success">
+            <em class="far fa-check-circle mr-1"></em>
+            <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
+        </div>
+    </div>
+
+    <div *ngIf="roleStore.page$ | async as page">
+        <app-table
+                [configuration]="tableConfiguration"
+                [rows]="page.content"
+                [totalElements]="page.totalElements"
+                [pageIndex]="roleStore.newPageIndex$ | async"
+                (newPageSize)="roleStore.newPageSize$.next($event)"
+                (newPageIndex)="roleStore.newPageIndex$.next($event)"
+                (sortRows)="roleStore.newSort$.next($event)">
+        </app-table>
+    </div>
+
+</app-main-page-template>
