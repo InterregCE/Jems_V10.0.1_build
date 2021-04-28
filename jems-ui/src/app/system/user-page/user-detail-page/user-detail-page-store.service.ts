@@ -6,7 +6,7 @@ import {
   UserService,
   UserDTO, UserRoleSummaryDTO, PasswordDTO,
 } from '@cat/api';
-import {catchError, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {SecurityService} from '../../../security/security.service';
@@ -35,7 +35,7 @@ export class UserDetailPageStore {
 
   private savedUser$ = this.saveUser$
     .pipe(
-      mergeMap(userUpdate => this.userService.updateUser(userUpdate)),
+      switchMap(userUpdate => this.userService.updateUser(userUpdate)),
       tap(saved => Log.info('Updated user:', this, saved)),
       tap(user => this.userName$.next(`${user.name} ${user.surname}`)),
       tap(() => this.userSaveSuccess$.next(true)),
@@ -43,7 +43,8 @@ export class UserDetailPageStore {
       catchError((error: HttpErrorResponse) => {
         this.userSaveError$.next(error.error);
         throw error;
-      })
+      }),
+      shareReplay(1),
     );
 
   constructor(private userService: UserService,
