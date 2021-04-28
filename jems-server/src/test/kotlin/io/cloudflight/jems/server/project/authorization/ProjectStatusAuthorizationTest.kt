@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssess
 import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
 import io.cloudflight.jems.api.user.dto.OutputUser
@@ -32,6 +33,7 @@ import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ProjectStatusAuthorizationTest {
+
 
     companion object {
         const val PID_DRAFT: Long = 1
@@ -77,20 +79,23 @@ internal class ProjectStatusAuthorizationTest {
     private val projectSubmitted = createProject(PID_SUBMITTED, ApplicationStatusDTO.SUBMITTED)
     private val projectReturned = createProject(PID_RETURNED, ApplicationStatusDTO.RETURNED_TO_APPLICANT)
     private val projectSubmittedWithEa = projectSubmitted.copy(
-        eligibilityAssessment = eligibilityAssessment
+        id = PID_SUBMITTED_WITH_EA,
+        firstStepDecision = ProjectDecisionDTO(eligibilityAssessment = eligibilityAssessment)
     )
     private val projectEligible = createProject(PID_ELIGIBLE, ApplicationStatusDTO.ELIGIBLE).copy(
-        eligibilityAssessment = eligibilityAssessment
+        firstStepDecision = ProjectDecisionDTO(eligibilityAssessment = eligibilityAssessment)
     )
     private val projectIneligible = createProject(PID_INELIGIBLE, ApplicationStatusDTO.INELIGIBLE).copy(
-        eligibilityAssessment = eligibilityAssessment
+        firstStepDecision = ProjectDecisionDTO(eligibilityAssessment = eligibilityAssessment)
     )
     private val projectEligibleWithQA = createProject(PID_ELIGIBLE_WITH_QA, ApplicationStatusDTO.ELIGIBLE).copy(
-        qualityAssessment = qualityAssessment
+        firstStepDecision = ProjectDecisionDTO(qualityAssessment = qualityAssessment)
     )
     private val projectNotApproved = createProject(PID_NOT_APPROVED, ApplicationStatusDTO.NOT_APPROVED)
     private val projectApprovedWithConditions =
-        createProject(PID_APPROVED_WITH_CONDITIONS, ApplicationStatusDTO.APPROVED_WITH_CONDITIONS)
+        createProject(PID_APPROVED_WITH_CONDITIONS, ApplicationStatusDTO.APPROVED_WITH_CONDITIONS).copy(
+            firstStepDecision = ProjectDecisionDTO(qualityAssessment = qualityAssessment)
+        )
     private val projectApproved = createProject(PID_APPROVED, ApplicationStatusDTO.APPROVED)
 
     private val projects = mapOf(
@@ -122,24 +127,24 @@ internal class ProjectStatusAuthorizationTest {
         every { securityService.currentUser } returns adminUser
         every { projectAuthorization.canReadProject(eq(PID_DRAFT)) } returns true
 
-        assertTrue(projectStatusAuthorization.canChangeStatusTo(projectDraft, ApplicationStatusDTO.SUBMITTED))
+        assertTrue(projectStatusAuthorization.canSubmit(projectDraft.id!!))
 
         listOf(projectSubmitted, projectEligible, projectApprovedWithConditions)
             .forEach {
                 every { projectAuthorization.canReadProject(eq(it.id!!)) } returns true
                 assertTrue(
-                    projectStatusAuthorization.canChangeStatusTo(it, ApplicationStatusDTO.RETURNED_TO_APPLICANT),
+                    projectStatusAuthorization.canReturnToApplicant(it.id!!),
                     "transition from ${it.projectStatus.status} to ${ApplicationStatusDTO.RETURNED_TO_APPLICANT} should be possible"
                 )
             }
 
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(projectSubmitted, ApplicationStatusDTO.SUBMITTED))
+        assertFalse(projectStatusAuthorization.canSubmit(projectSubmitted.id!!))
 
         listOf(projectDraft, projectReturned, projectIneligible, projectNotApproved)
             .forEach {
                 every { projectAuthorization.canReadProject(eq(it.id!!)) } returns true
                 assertFalse(
-                    projectStatusAuthorization.canChangeStatusTo(it, ApplicationStatusDTO.RETURNED_TO_APPLICANT),
+                    projectStatusAuthorization.canReturnToApplicant(it.id!!),
                     "transition from ${projects[it]?.projectStatus?.status} to ${ApplicationStatusDTO.RETURNED_TO_APPLICANT} should not be possible"
                 )
             }
@@ -149,39 +154,21 @@ internal class ProjectStatusAuthorizationTest {
     fun `owner can only submit and resubmit`() {
         every { securityService.currentUser } returns applicantUser
 
-        assertTrue(projectStatusAuthorization.canChangeStatusTo(projectDraft, ApplicationStatusDTO.SUBMITTED))
-        assertFalse(
-            projectStatusAuthorization.canChangeStatusTo(
-                projectSubmitted,
-                ApplicationStatusDTO.RETURNED_TO_APPLICANT
-            )
-        )
-
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(projectSubmitted, ApplicationStatusDTO.SUBMITTED))
-        assertFalse(
-            projectStatusAuthorization.canChangeStatusTo(
-                projectReturned,
-                ApplicationStatusDTO.RETURNED_TO_APPLICANT
-            )
-        )
+        assertTrue(projectStatusAuthorization.canSubmit(projectDraft.id!!))
+        assertFalse(projectStatusAuthorization.canReturnToApplicant(projectSubmitted.id!!))
+        assertFalse(projectStatusAuthorization.canSubmit(projectSubmitted.id!!))
+        assertFalse(projectStatusAuthorization.canReturnToApplicant(projectReturned.id!!))
     }
 
     @Test
     fun `programme user can only return to applicant`() {
         every { securityService.currentUser } returns programmeUser
 
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(projectDraft, ApplicationStatusDTO.SUBMITTED))
-        assertTrue(
-            projectStatusAuthorization.canChangeStatusTo(projectSubmitted, ApplicationStatusDTO.RETURNED_TO_APPLICANT)
-        )
+        assertFalse(projectStatusAuthorization.canSubmit(projectDraft.id!!))
+        assertTrue(projectStatusAuthorization.canReturnToApplicant(projectSubmitted.id!!))
 
-        assertFalse(projectStatusAuthorization.canChangeStatusTo(projectSubmitted, ApplicationStatusDTO.SUBMITTED))
-        assertFalse(
-            projectStatusAuthorization.canChangeStatusTo(
-                projectReturned,
-                ApplicationStatusDTO.RETURNED_TO_APPLICANT
-            )
-        )
+        assertFalse(projectStatusAuthorization.canSubmit(projectSubmitted.id!!))
+        assertFalse(projectStatusAuthorization.canReturnToApplicant(projectReturned.id!!))
     }
 
     @ParameterizedTest
@@ -190,13 +177,9 @@ internal class ProjectStatusAuthorizationTest {
         every { securityService.currentUser } returns currentUser
         every { projectAuthorization.canReadProject(eq(PID_SUBMITTED_WITH_EA)) } returns true
 
-        assertTrue(
-            projectStatusAuthorization.canChangeStatusTo(projectSubmittedWithEa, ApplicationStatusDTO.ELIGIBLE)
-        )
-        assertTrue(
-            projectStatusAuthorization.canChangeStatusTo(projectSubmittedWithEa, ApplicationStatusDTO.INELIGIBLE)
-        )
+        assertTrue(projectStatusAuthorization.canSetEligibility(projectSubmittedWithEa.id!!))
     }
+
 
     @ParameterizedTest
     @MethodSource("provideAdminAndProgramUsers")
@@ -234,21 +217,10 @@ internal class ProjectStatusAuthorizationTest {
         every { securityService.currentUser } returns currentUser
         every { projectAuthorization.canReadProject(eq(PID_ELIGIBLE_WITH_QA)) } returns true
 
-        assertTrue(
-            projectStatusAuthorization.canChangeStatusTo(projectEligibleWithQA, ApplicationStatusDTO.APPROVED)
-        )
-
-        assertTrue(
-            projectStatusAuthorization.canChangeStatusTo(
-                projectEligibleWithQA,
-                ApplicationStatusDTO.APPROVED_WITH_CONDITIONS
-            )
-        )
-
-        assertTrue(
-            projectStatusAuthorization.canChangeStatusTo(projectEligibleWithQA, ApplicationStatusDTO.NOT_APPROVED)
-        )
+        assertTrue(projectStatusAuthorization.canApproveOrRefuse(projectEligibleWithQA.id!!))
+        assertTrue(projectStatusAuthorization.canApproveWithConditions(projectEligibleWithQA.id!!))
     }
+
 
     @ParameterizedTest
     @MethodSource("provideAdminAndProgramUsers")
@@ -256,21 +228,8 @@ internal class ProjectStatusAuthorizationTest {
         every { securityService.currentUser } returns currentUser
         every { projectAuthorization.canReadProject(eq(PID_APPROVED_WITH_CONDITIONS)) } returns true
 
-        assertTrue(
-            projectStatusAuthorization.canChangeStatusTo(projectApprovedWithConditions, ApplicationStatusDTO.APPROVED)
-        )
-        assertTrue(
-            projectStatusAuthorization.canChangeStatusTo(
-                projectApprovedWithConditions,
-                ApplicationStatusDTO.NOT_APPROVED
-            )
-        )
-        assertFalse( // no change
-            projectStatusAuthorization.canChangeStatusTo(
-                projectApprovedWithConditions,
-                ApplicationStatusDTO.APPROVED_WITH_CONDITIONS
-            )
-        )
+        assertTrue(projectStatusAuthorization.canApproveOrRefuse(projectApprovedWithConditions.id!!))
+        assertFalse(projectStatusAuthorization.canApproveWithConditions(projectApprovedWithConditions.id!!))
     }
 
     @ParameterizedTest
@@ -280,15 +239,8 @@ internal class ProjectStatusAuthorizationTest {
 
         listOf(projectApproved, projectNotApproved).forEach {
             every { projectAuthorization.canReadProject(eq(it.id!!)) } returns true
-            assertFalse(
-                projectStatusAuthorization.canChangeStatusTo(it, ApplicationStatusDTO.APPROVED_WITH_CONDITIONS)
-            )
-            assertFalse(
-                projectStatusAuthorization.canChangeStatusTo(it, ApplicationStatusDTO.APPROVED)
-            )
-            assertFalse(
-                projectStatusAuthorization.canChangeStatusTo(it, ApplicationStatusDTO.NOT_APPROVED)
-            )
+            assertFalse(projectStatusAuthorization.canApproveWithConditions(it.id!!))
+            assertFalse(projectStatusAuthorization.canApproveOrRefuse(it.id!!))
         }
     }
 
@@ -304,7 +256,7 @@ internal class ProjectStatusAuthorizationTest {
         listOfAllowed.forEach {
             every { projectAuthorization.canReadProject(eq(it.id!!)) } returns true
             assertFalse(
-                projectStatusAuthorization.canChangeStatusTo(it, ApplicationStatusDTO.ELIGIBLE),
+                projectStatusAuthorization.canSetEligibility(it.id!!),
                 "cannot make eligibility decision without eligibility assessment"
             )
         }
@@ -323,7 +275,7 @@ internal class ProjectStatusAuthorizationTest {
         listOfAllowed.forEach {
             every { projectAuthorization.canReadProject(eq(it.id!!)) } returns true
             assertFalse(
-                projectStatusAuthorization.canChangeStatusTo(it, ApplicationStatusDTO.APPROVED)
+                projectStatusAuthorization.canApproveOrRefuse(it.id!!)
             )
         }
     }

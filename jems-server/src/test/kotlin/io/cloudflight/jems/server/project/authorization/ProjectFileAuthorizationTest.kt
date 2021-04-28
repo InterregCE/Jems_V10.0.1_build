@@ -15,6 +15,7 @@ import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.NOT_APPRO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.RETURNED_TO_APPLICANT
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.SUBMITTED
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
+import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
@@ -110,7 +111,8 @@ internal class ProjectFileAuthorizationTest {
                 callSettings = dummyCall,
                 acronym = "",
                 applicant = OutputUser(applicantId, "", "", ""),
-                projectStatus = ProjectStatusDTO(null, status, OutputUser(null, "", "", ""), ZonedDateTime.now())
+                projectStatus = ProjectStatusDTO(null, status, OutputUser(null, "", "", ""), ZonedDateTime.now()),
+                firstStepDecision = ProjectDecisionDTO()
             )
         }
 
@@ -347,7 +349,7 @@ internal class ProjectFileAuthorizationTest {
                 210,
                 42,
                 it
-            ).copy(fundingDecision = fundingDecision)
+            ).copy(firstStepDecision = ProjectDecisionDTO(fundingDecision = fundingDecision))
             every { projectAuthorization.canReadProject(eq(210)) } returns true
 
             var file = assessmentFile2005
@@ -376,7 +378,7 @@ internal class ProjectFileAuthorizationTest {
                 220,
                 42,
                 it
-            ).copy(eligibilityDecision = eligibilityDecision)
+            ).copy(firstStepDecision = ProjectDecisionDTO(eligibilityDecision = eligibilityDecision))
             every { projectAuthorization.canReadProject(eq(220)) } returns true
 
             var file = assessmentFile2005

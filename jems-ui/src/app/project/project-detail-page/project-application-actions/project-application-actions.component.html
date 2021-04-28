@@ -1,5 +1,5 @@
 <ng-container *ngIf="data$ | async as data">
-    <ng-container *hasPermission="Permissions.ProjectSubmission; alternativeCondition isThisUserOwner">
+    <ng-container *hasPermission="Permissions.ProjectSubmission; alternativeCondition data.isThisUserOwner">
         <div *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT" class="row">
             <app-pending-button
                     [confirm]="{title: 'project.detail.submit.dialog.title', message: 'project.detail.submit.dialog.message'}"

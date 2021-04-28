@@ -126,7 +126,8 @@ internal class ProjectPersistenceTest : UnitTest() {
                         start = 1,
                         end = 2,
                     )
-                )
+                ),
+                step2Active = false
             )
         }
     }

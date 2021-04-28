@@ -57,7 +57,12 @@ class ProjectBudgetCoFinancingPersistenceTest {
                 call = call,
                 acronym = "Test Project",
                 applicant = call.creator,
-                currentStatus = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = call.creator)
+                currentStatus = ProjectStatusHistoryEntity(
+                    id = 1,
+                    status = ApplicationStatus.DRAFT,
+                    user = call.creator
+                ),
+                step2Active = false
             )
         }
 

@@ -7,12 +7,13 @@ import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectService
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canSubmit(#projectId)")
+@PreAuthorize("@projectStatusAuthorization.canSubmit(#projectId)")
 annotation class CanSubmitApplication
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -55,7 +56,7 @@ class ProjectStatusAuthorization(
         val oldStatus = project.projectStatus.status
 
         return (isDraft(oldStatus) || oldStatus == RETURNED_TO_APPLICANT)
-                && isApplicantOwner(project.applicant.id!!) || isAdmin()
+            && (isApplicantOwner(project.applicant.id!!) || isAdmin() || hasPermission(UserRolePermission.ProjectSubmission))
     }
 
     fun canApproveOrRefuse(projectId: Long): Boolean {
@@ -64,8 +65,8 @@ class ProjectStatusAuthorization(
         val oldPossibilities = setOf(STEP1_ELIGIBLE, ELIGIBLE, APPROVED_WITH_CONDITIONS)
 
         return oldPossibilities.contains(oldStatus)
-                && project.getStep()?.qualityAssessment != null
-                && (isProgrammeUser() || isAdmin())
+            && project.getStep()?.qualityAssessment != null
+            && (isProgrammeUser() || isAdmin())
     }
 
     fun canApproveWithConditions(projectId: Long): Boolean {
@@ -80,8 +81,8 @@ class ProjectStatusAuthorization(
         val oldStatus = project.projectStatus.status
 
         return isSubmitted(oldStatus)
-                && project.getStep()?.eligibilityAssessment != null
-                && (isProgrammeUser() || isAdmin())
+            && project.getStep()?.eligibilityAssessment != null
+            && (isProgrammeUser() || isAdmin())
     }
 
     fun canReturnToApplicant(projectId: Long): Boolean {
@@ -105,16 +106,16 @@ class ProjectStatusAuthorization(
         val allowedStatuses = listOf(SUBMITTED, ELIGIBLE, STEP1_SUBMITTED, STEP1_ELIGIBLE)
 
         return project.getStep()?.qualityAssessment == null
-                && (isProgrammeUser() || isAdmin())
-                && allowedStatuses.contains(project.projectStatus.status)
+            && (isProgrammeUser() || isAdmin())
+            && allowedStatuses.contains(project.projectStatus.status)
     }
 
     fun canSetEligibilityAssessment(projectId: Long): Boolean {
         val project = projectService.getById(projectId)
 
         return project.getStep()?.eligibilityAssessment == null
-                && (isProgrammeUser() || isAdmin())
-                && isSubmitted(project.projectStatus.status)
+            && (isProgrammeUser() || isAdmin())
+            && isSubmitted(project.projectStatus.status)
     }
 
 }

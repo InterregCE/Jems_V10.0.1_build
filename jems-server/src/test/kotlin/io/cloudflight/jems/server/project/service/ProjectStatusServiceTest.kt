@@ -17,8 +17,10 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
+import io.cloudflight.jems.server.project.entity.ProjectDecisionEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
+import io.cloudflight.jems.server.project.repository.ProjectDecisionRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -55,6 +57,9 @@ internal class ProjectStatusServiceTest {
 
     @MockK
     lateinit var projectRepository: ProjectRepository
+
+    @RelaxedMockK
+    lateinit var projectDecisionRepository: ProjectDecisionRepository
 
     @MockK
     lateinit var userRepository: UserRepository
@@ -102,7 +107,7 @@ internal class ProjectStatusServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         projectStatusService = ProjectStatusServiceImpl(
-            projectRepository, userRepository, auditService, securityService
+            projectRepository, userRepository, projectDecisionRepository, auditService, securityService
         )
     }
 
@@ -133,7 +138,8 @@ internal class ProjectStatusServiceTest {
                 submitTime,
                 null,
                 note
-            ) else null
+            ) else null,
+            step2Active = false
         )
     }
 
@@ -150,6 +156,7 @@ internal class ProjectStatusServiceTest {
         )
         every { projectRepository.findById(16) } returns Optional.of(projectSubmitted.copy(id = 16))
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
+        every { projectDecisionRepository.save(any<ProjectDecisionEntity>()) } returnsArgument 0
 
         val inputData = InputProjectQualityAssessment(
             result = ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING,
@@ -157,7 +164,7 @@ internal class ProjectStatusServiceTest {
         )
 
         val result = projectStatusService.setQualityAssessment(16, inputData)
-        assertThat(result.qualityAssessment!!.result).isEqualTo(ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING)
+        assertThat(result.firstStepDecision?.qualityAssessment!!.result).isEqualTo(ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING)
         assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.SUBMITTED)
 
         val event = slot<AuditCandidate>()
@@ -207,6 +214,7 @@ internal class ProjectStatusServiceTest {
         )
         every { projectRepository.findById(79) } returns Optional.of(projectSubmitted.copy(id = 79))
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
+        every { projectDecisionRepository.save(any<ProjectDecisionEntity>()) } returnsArgument 0
 
         val inputData = InputProjectEligibilityAssessment(
             result = ProjectEligibilityAssessmentResult.PASSED,
@@ -214,7 +222,9 @@ internal class ProjectStatusServiceTest {
         )
 
         val result = projectStatusService.setEligibilityAssessment(79, inputData)
-        assertThat(result.eligibilityAssessment!!.result).isEqualTo(ProjectEligibilityAssessmentResult.PASSED)
+        assertThat(result.firstStepDecision?.eligibilityAssessment!!.result).isEqualTo(
+            ProjectEligibilityAssessmentResult.PASSED
+        )
         assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.SUBMITTED)
 
         val event = slot<AuditCandidate>()

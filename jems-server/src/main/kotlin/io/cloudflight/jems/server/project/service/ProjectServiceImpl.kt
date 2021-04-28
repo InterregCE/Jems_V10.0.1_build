@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
+import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
@@ -23,8 +24,6 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.repository.UserRepository
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import kotlin.math.ceil
@@ -97,27 +96,38 @@ class ProjectServiceImpl(
         )
         projectStatusHistoryRepo.save(projectStatus.copy(project = createdProject))
 
-        projectApplicationCreated(createdProject.id, createdProject.acronym, createdProject.currentStatus.status).logWith(auditService)
-        auditPublisher.publishEvent(projectVersionRecorded(this,
-            projectSummary = ProjectSummary(createdProject.id,createdProject.acronym,createdProject.currentStatus.status),
-            userEmail = applicant.email,
-            version = 1,
-            createdAt = ZonedDateTime.now(ZoneOffset.UTC)
-        ))
+        projectApplicationCreated(
+            createdProject.id,
+            createdProject.acronym,
+            createdProject.currentStatus.status
+        ).logWith(auditService)
+        auditPublisher.publishEvent(
+            projectVersionRecorded(
+                this,
+                projectSummary = ProjectSummary(
+                    createdProject.id,
+                    createdProject.acronym,
+                    createdProject.currentStatus.status
+                ),
+                userEmail = applicant.email,
+                version = 1,
+                createdAt = ZonedDateTime.now(ZoneOffset.UTC)
+            )
+        )
 
         return createdProject.toOutputProject()
     }
 
-    fun projectStatusDraft(user: UserEntity): ProjectStatusHistoryEntity {
+    fun projectStatusDraft(user: UserEntity, step2Active: Boolean): ProjectStatusHistoryEntity {
         return if (step2Active) {
             ProjectStatusHistoryEntity(
-                status =  ApplicationStatus.STEP1_DRAFT,
+                status = ApplicationStatus.STEP1_DRAFT,
                 user = user,
                 updated = ZonedDateTime.now()
             )
         } else {
             ProjectStatusHistoryEntity(
-                status =  ApplicationStatus.DRAFT,
+                status = ApplicationStatus.DRAFT,
                 user = user,
                 updated = ZonedDateTime.now()
             )
@@ -171,7 +181,7 @@ class ProjectServiceImpl(
 
         val count = ceil(duration.toDouble() / periodLength).toInt()
 
-        return (1 .. count).mapIndexed { index, period ->
+        return (1..count).mapIndexed { index, period ->
             ProjectPeriodEntity(
                 id = ProjectPeriodId(projectId = projectId, number = period),
                 start = periodLength * index + 1,
@@ -184,8 +194,8 @@ class ProjectServiceImpl(
      * Take policy only if available for this particular Call.
      */
     private fun policyToEntity(
-            policy: ProgrammeObjectivePolicy?,
-            availablePoliciesForCall: Set<ProgrammeSpecificObjectiveEntity>
+        policy: ProgrammeObjectivePolicy?,
+        availablePoliciesForCall: Set<ProgrammeSpecificObjectiveEntity>
     ): ProgrammeSpecificObjectiveEntity? {
         if (policy == null)
             return null

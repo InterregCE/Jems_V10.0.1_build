@@ -20,7 +20,8 @@ class ProjectPartnerTestUtil {
             password = "hash",
             email = "admin@admin.dev",
             surname = "Surname",
-            userRole = userRole)
+            userRole = userRole
+        )
 
         val call = CallEntity(
             id = 1,
@@ -39,13 +40,16 @@ class ProjectPartnerTestUtil {
         val projectStatus = ProjectStatusHistoryEntity(
             status = ApplicationStatus.APPROVED,
             user = user,
-            updated = ZonedDateTime.now())
+            updated = ZonedDateTime.now()
+        )
         val project = ProjectEntity(
             id = 1,
             acronym = "acronym",
             call = call,
             applicant = user,
-            currentStatus = projectStatus)
+            currentStatus = projectStatus,
+            step2Active = false
+        )
     }
 
 }

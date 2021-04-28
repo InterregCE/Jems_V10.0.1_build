@@ -79,7 +79,8 @@ class WorkPackageServiceTest {
         call = call,
         acronym = "test",
         applicant = account,
-        currentStatus = statusDraft
+        currentStatus = statusDraft,
+        step2Active = false
     )
 
     private val translatedNameInEntity = WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test")
@@ -180,13 +181,19 @@ class WorkPackageServiceTest {
             1,
             project,
             1,
-            mutableSetOf(WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test", "Specific Objective"))
+            mutableSetOf(
+                WorkPackageTransl(
+                    TranslationWorkPackageId(1, SystemLanguage.EN),
+                    "Test",
+                    "Specific Objective"
+                )
+            )
         )
 
         every { workPackageRepository.findById(1L) } returns Optional.of(workPackageUpdated)
         every { workPackageRepository.save(any<WorkPackageEntity>()) } returnsArgument 0
 
-        val expectedData = OutputWorkPackage (
+        val expectedData = OutputWorkPackage(
             id = 1,
             number = 1,
             name = setOf(InputTranslation(SystemLanguage.EN, "Test")),

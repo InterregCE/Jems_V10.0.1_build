@@ -84,14 +84,17 @@ class DraftApplicationStateTest : UnitTest() {
     fun `submit - successful`() {
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns projectCallSettings
         every {
-            projectWorkflowPersistence.updateApplicationFirstSubmission(
-                any(),
-                any()
-            )
+            projectWorkflowPersistence.updateApplicationFirstSubmission(any(), any(), any())
         } returns ApplicationStatus.SUBMITTED
 
         assertThat(draftApplicationState.submit()).isEqualTo(ApplicationStatus.SUBMITTED)
-        verify(exactly = 1) { projectWorkflowPersistence.updateApplicationFirstSubmission(PROJECT_ID, USER_ID) }
+        verify(exactly = 1) {
+            projectWorkflowPersistence.updateApplicationFirstSubmission(
+                PROJECT_ID,
+                USER_ID,
+                ApplicationStatus.SUBMITTED
+            )
+        }
     }
 
     @Test

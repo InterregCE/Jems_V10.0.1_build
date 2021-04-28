@@ -1,6 +1,3 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {tap} from 'rxjs/operators';
-import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {map, tap} from 'rxjs/operators';
 import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
@@ -33,6 +30,7 @@ export class ProjectApplicationActionsComponent {
     startStepTwoAvailable: boolean,
     returnToApplicantAvailable: boolean,
     revertToStatus: string | null,
+    isThisUserOwner: boolean
   }>;
 
   // TODO: create a component
@@ -46,14 +44,16 @@ export class ProjectApplicationActionsComponent {
       this.projectDetailStore.project$,
       this.projectDetailStore.callHasTwoSteps$,
       this.projectDetailStore.revertToStatus$,
+      this.projectDetailStore.isThisUserOwner$,
     ]).pipe(
-      map(([project, callHasTwoSteps, revertToStatus]) => ({
+      map(([project, callHasTwoSteps, revertToStatus, isThisUserOwner]) => ({
         projectStatus: project.projectStatus.status,
         projectId: project.id,
         projectCallEndDate: project.callSettings?.endDate,
         startStepTwoAvailable: this.startStepTwoAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
         returnToApplicantAvailable: this.returnToApplicantAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
         revertToStatus,
+        isThisUserOwner
       }))
     );
   }

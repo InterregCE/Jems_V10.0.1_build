@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable, of} from 'rxjs';
-import {ProjectDetailDTO, ProjectStatusDTO, ProjectStatusService} from '@cat/api';
+import {ProjectDetailDTO, ProjectStatusService} from '@cat/api';
 import {Permission} from '../../security/permissions/permission';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {Log} from '../../common/utils/log';
 import {ProjectUtil} from '../project-util';
+import {SecurityService} from '../../security/security.service';
 
 @Injectable()
 export class ProjectDetailPageStore {
@@ -15,14 +16,17 @@ export class ProjectDetailPageStore {
   assessmentFilesVisible$: Observable<boolean>;
   revertToStatus$: Observable<string | null>;
   callHasTwoSteps$: Observable<boolean>;
+  isThisUserOwner$: Observable<boolean>;
 
   constructor(private projectStore: ProjectStore,
               private permissionService: PermissionService,
-              private projectStatusService: ProjectStatusService) {
+              private projectStatusService: ProjectStatusService,
+              private securityService: SecurityService) {
     this.project$ = this.projectStore.project$;
     this.assessmentFilesVisible$ = this.assessmentFilesVisible();
     this.revertToStatus$ = this.revertToStatus();
     this.callHasTwoSteps$ = this.projectStore.callHasTwoSteps$;
+    this.isThisUserOwner$ = this.isThisUserOwner();
   }
 
   private assessmentFilesVisible(): Observable<boolean> {
@@ -79,6 +83,13 @@ export class ProjectDetailPageStore {
             : of(null)
         ),
         tap(status => Log.info('Fetched revert status', status))
+      );
+  }
+
+  private isThisUserOwner(): Observable<boolean> {
+    return combineLatest([this.project$, this.securityService.currentUser])
+      .pipe(
+        map(([project, currentUser]) => project?.applicant?.id === currentUser?.id)
       );
   }
 }

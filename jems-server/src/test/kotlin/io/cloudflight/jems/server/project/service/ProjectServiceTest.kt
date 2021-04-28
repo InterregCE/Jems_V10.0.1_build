@@ -166,7 +166,8 @@ class ProjectServiceTest {
             acronym = "test acronym",
             applicant = account,
             currentStatus = statusSubmitted,
-            firstSubmission = statusSubmitted
+            firstSubmission = statusSubmitted,
+            step2Active = false
         )
         every { projectRepository.findAll(UNPAGED) } returns PageImpl(listOf(projectToReturn))
 
@@ -227,7 +228,8 @@ class ProjectServiceTest {
             call = dummyCall,
             acronym = "test",
             applicant = account,
-            currentStatus = statusDraft
+            currentStatus = statusDraft,
+            step2Active = false
         )
 
         val result = projectService.createProject(InputProject("test", dummyCall.id))
@@ -272,7 +274,8 @@ class ProjectServiceTest {
                     acronym = "test",
                     applicant = account,
                     currentStatus = statusSubmitted,
-                    firstSubmission = statusSubmitted
+                    firstSubmission = statusSubmitted,
+                    step2Active = false
                 )
             )
 
@@ -325,7 +328,8 @@ class ProjectServiceTest {
             acronym = "test acronym",
             applicant = account,
             currentStatus = statusSubmitted,
-            firstSubmission = statusSubmitted
+            firstSubmission = statusSubmitted,
+            step2Active = false
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
@@ -354,7 +358,8 @@ class ProjectServiceTest {
             acronym = "test acronym",
             applicant = account,
             currentStatus = statusSubmitted,
-            firstSubmission = statusSubmitted
+            firstSubmission = statusSubmitted,
+            step2Active = false
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
 
@@ -386,7 +391,8 @@ class ProjectServiceTest {
             call = callWithDuration,
             acronym = "acronym",
             applicant = account,
-            currentStatus = statusDraft
+            currentStatus = statusDraft,
+            step2Active = false
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0

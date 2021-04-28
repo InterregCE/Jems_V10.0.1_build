@@ -51,8 +51,10 @@ internal class ProjectAuthorizationTest {
 
     @MockK
     lateinit var securityService: SecurityService
+
     @MockK
     lateinit var projectService: ProjectService
+
     @MockK
     lateinit var callAuthorization: CallAuthorization
 
@@ -92,8 +94,9 @@ internal class ProjectAuthorizationTest {
     fun `not-owner canReadProject`() {
         every { securityService.currentUser } returns LocalCurrentUser(
             notOwnerApplicant, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
-        ))
+                SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
+            )
+        )
         every { projectService.getApplicantAndStatusById(eq(3)) } returns testProject(ApplicationStatusDTO.DRAFT)
 
         val exception = assertThrows<ResourceNotFoundException>(
@@ -116,8 +119,9 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `programmeUser canReadProject non-DRAFT`() {
         every { securityService.currentUser } returns programmeUser
-        val possibleStatuses = ApplicationStatusDTO.values().toMutableSet()
-        possibleStatuses.remove(ApplicationStatusDTO.DRAFT)
+        val possibleStatuses = ApplicationStatusDTO.values()
+            .filter { it != ApplicationStatusDTO.DRAFT && it != ApplicationStatusDTO.STEP1_DRAFT }
+            .toMutableSet()
 
         possibleStatuses.forEach {
             every { projectService.getApplicantAndStatusById(eq(5)) } returns testProject(it)
@@ -178,10 +182,13 @@ internal class ProjectAuthorizationTest {
     fun `admin canUpdateProject - NOT`() {
         every { securityService.currentUser } returns adminUser
         val impossibleStatuses = ApplicationStatusDTO.values().toMutableSet()
-        impossibleStatuses.removeAll(listOf(
-            ApplicationStatusDTO.DRAFT,
-            ApplicationStatusDTO.RETURNED_TO_APPLICANT
-        ))
+        impossibleStatuses.removeAll(
+            listOf(
+                ApplicationStatusDTO.DRAFT,
+                ApplicationStatusDTO.STEP1_DRAFT,
+                ApplicationStatusDTO.RETURNED_TO_APPLICANT
+            )
+        )
 
         impossibleStatuses.forEach {
             every { projectService.getApplicantAndStatusById(eq(1)) } returns testProject(it)
@@ -212,18 +219,16 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `programmeUser canUpdateProject`() {
         every { securityService.currentUser } returns programmeUser
-        val impossibleStatuses = ApplicationStatusDTO.values().toMutableSet()
-        impossibleStatuses.removeAll(listOf(
-            ApplicationStatusDTO.DRAFT
-        ))
-
-        impossibleStatuses.forEach {
-            every { projectService.getApplicantAndStatusById(eq(3)) } returns testProject(it)
-            assertFalse(
-                projectAuthorization.canUpdateProject(3),
-                "programmeUser is NOT able to update Project anytime (tested with $it)"
-            )
-        }
+        ApplicationStatusDTO.values()
+            .filter { it != ApplicationStatusDTO.DRAFT && it != ApplicationStatusDTO.STEP1_DRAFT }
+            .toMutableSet()
+            .forEach {
+                every { projectService.getApplicantAndStatusById(eq(3)) } returns testProject(it)
+                assertFalse(
+                    projectAuthorization.canUpdateProject(3),
+                    "programmeUser is NOT able to update Project anytime (tested with $it)"
+                )
+            }
     }
 
     @Test
@@ -241,8 +246,9 @@ internal class ProjectAuthorizationTest {
     fun `not-owner canUpdateProject`() {
         every { securityService.currentUser } returns LocalCurrentUser(
             notOwnerApplicant, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
-        ))
+                SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
+            )
+        )
         ApplicationStatusDTO.values().forEach {
             every { projectService.getApplicantAndStatusById(eq(5)) } returns testProject(it)
             val exception = assertThrows<ResourceNotFoundException>(

@@ -1,12 +1,10 @@
-<app-main-page-template [needsCard]="true"
-                        *ngIf="details$ | async as details"
+<app-main-page-template [needsCard]="true" *ngIf="projectDetailStore.project$ | async as project"
                         titleKey="project.application.form.lifecycle.title">
     <div appFormLayout>
 
         <div appNoWidthLimit>
-            <h2>{{details.project.id}} - {{details.project.acronym}}</h2>
-            <app-project-application-information appNoWidthLimit
-                                                 [project]="details.project">
+            <h2>{{project.id}} - {{project.acronym}}</h2>
+            <app-project-application-information appNoWidthLimit [project]="project">
             </app-project-application-information>
         </div>
 

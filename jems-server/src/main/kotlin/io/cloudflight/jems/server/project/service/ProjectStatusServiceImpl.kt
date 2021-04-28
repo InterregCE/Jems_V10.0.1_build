@@ -12,8 +12,8 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectQualityAssessment
 import io.cloudflight.jems.server.project.repository.ProjectDecisionRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -61,7 +61,11 @@ class ProjectStatusServiceImpl(
         return result
     }
 
-    private fun saveQualityAssessment(project: ProjectEntity, qualityAssessmentData: InputProjectQualityAssessment, user: User) {
+    private fun saveQualityAssessment(
+        project: ProjectEntity,
+        qualityAssessmentData: InputProjectQualityAssessment,
+        user: UserEntity
+    ) {
         var projectDecisionEntity = ProjectDecisionEntity(project = project)
 
         if (project.step2Active) {
@@ -73,7 +77,7 @@ class ProjectStatusServiceImpl(
             if (project.firstStepDecision != null) {
                 projectDecisionEntity = project.firstStepDecision!!
             } else {
-                project.firstStepDecision  = projectDecisionEntity
+                project.firstStepDecision = projectDecisionEntity
             }
         }
 
@@ -89,7 +93,11 @@ class ProjectStatusServiceImpl(
         projectDecisionRepository.save(projectDecisionEntity)
     }
 
-    private fun saveEligibilityAssessment(project: ProjectEntity, eligibilityAssessmentData: InputProjectEligibilityAssessment, user: User) {
+    private fun saveEligibilityAssessment(
+        project: ProjectEntity,
+        eligibilityAssessmentData: InputProjectEligibilityAssessment,
+        user: UserEntity
+    ) {
         var projectDecisionEntity = ProjectDecisionEntity(project = project)
 
         if (project.step2Active) {
@@ -101,7 +109,7 @@ class ProjectStatusServiceImpl(
             if (project.firstStepDecision != null) {
                 projectDecisionEntity = project.firstStepDecision!!
             } else {
-                project.firstStepDecision  = projectDecisionEntity
+                project.firstStepDecision = projectDecisionEntity
             }
         }
 

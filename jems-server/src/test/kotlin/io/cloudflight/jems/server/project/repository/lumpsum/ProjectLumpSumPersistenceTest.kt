@@ -44,7 +44,12 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
             call = dummyCall,
             acronym = "Test Project",
             applicant = dummyCall.creator,
-            currentStatus = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = dummyCall.creator)
+            currentStatus = ProjectStatusHistoryEntity(
+                id = 1,
+                status = ApplicationStatus.DRAFT,
+                user = dummyCall.creator
+            ),
+            step2Active = false
         )
 
         private fun partner(sortNumber: Int, id: Long) = ProjectPartnerEntity(
@@ -113,7 +118,14 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
             endPeriod = 8,
         )
 
-        every { projectRepository.findById(eq(1)) } returns Optional.of(dummyProject.copy(lumpSums = listOf(lumpSum2, lumpSum1)))
+        every { projectRepository.findById(eq(1)) } returns Optional.of(
+            dummyProject.copy(
+                lumpSums = listOf(
+                    lumpSum2,
+                    lumpSum1
+                )
+            )
+        )
 
         assertThat(persistence.getLumpSums(1L)).containsExactly(
             ProjectLumpSum(
@@ -134,7 +146,12 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
     @Test
     fun `updateLumpSums - everything valid`() {
         val projectSlot = slot<ProjectEntity>()
-        every { projectRepository.findById(10L) } returns Optional.of(dummyProject.copy(id = 10, lumpSums = emptyList()))
+        every { projectRepository.findById(10L) } returns Optional.of(
+            dummyProject.copy(
+                id = 10,
+                lumpSums = emptyList()
+            )
+        )
 
         every { programmeLumpSumRepository.findById(20) } returns Optional.of(programmeLumpSum(20))
 
@@ -187,7 +204,12 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
     @Test
     fun `updateLumpSums - when not existing programme lump sum`() {
-        every { projectRepository.findById(11L) } returns Optional.of(dummyProject.copy(id = 11, lumpSums = emptyList()))
+        every { projectRepository.findById(11L) } returns Optional.of(
+            dummyProject.copy(
+                id = 11,
+                lumpSums = emptyList()
+            )
+        )
         every { programmeLumpSumRepository.findById(-1) } returns Optional.empty()
 
         val toBeSaved = listOf(
@@ -204,7 +226,12 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
     @Test
     fun `updateLumpSums - when not existing or not visible partner`() {
         val projectSlot = slot<ProjectEntity>()
-        every { projectRepository.findById(12L) } returns Optional.of(dummyProject.copy(id = 12, lumpSums = emptyList()))
+        every { projectRepository.findById(12L) } returns Optional.of(
+            dummyProject.copy(
+                id = 12,
+                lumpSums = emptyList()
+            )
+        )
 
         every { programmeLumpSumRepository.findById(20) } returns Optional.of(programmeLumpSum(20))
 
