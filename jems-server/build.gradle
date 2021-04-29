@@ -4,15 +4,6 @@ configurations {
     toDownload
 }
 
-if(isVerifyBuild()) {
-    bootJar {
-        manifest {
-            attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
-        }
-    }
-}
-
-
 dependencies {
     implementation('io.cloudflight.jems.plugin.contract:jems-plugin-contract')
     toDownload('io.cloudflight.jems.plugin.standard:jems-standard-plugin')
