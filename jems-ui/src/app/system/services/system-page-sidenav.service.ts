@@ -45,6 +45,11 @@ export class SystemPageSidenavService {
         route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/user`,
         scrollToTop: true,
       });
+      bulletsArray.push({
+        headline: {i18nKey: 'topbar.main.userRole.management'},
+        route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/userRole`,
+        scrollToTop: true,
+      });
     }
 
     this.sideNavService.setHeadlines(SystemPageSidenavService.SYSTEM_DETAIL_PATH, [
