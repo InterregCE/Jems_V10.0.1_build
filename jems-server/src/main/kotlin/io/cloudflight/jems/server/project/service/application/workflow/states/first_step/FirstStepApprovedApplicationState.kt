@@ -21,9 +21,6 @@ class FirstStepApprovedApplicationState (
 
     private val canBeRevertTo = setOf(ApplicationStatus.STEP1_ELIGIBLE, ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS)
 
-    override fun returnToApplicant(): ApplicationStatus =
-        returnToApplicantDefaultImpl()
-
     override fun startSecondStep(): ApplicationStatus =
         startSecondStepDefaultImpl()
 

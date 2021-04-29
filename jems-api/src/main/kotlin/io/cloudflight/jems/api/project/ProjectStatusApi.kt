@@ -63,7 +63,7 @@ interface ProjectStatusApi {
     @PutMapping("return-to-applicant")
     fun returnApplicationToApplicant(@PathVariable id: Long): ApplicationStatusDTO
 
-    @ApiOperation("Return project application to draft")
+    @ApiOperation("Start second step")
     @PutMapping("start-second-step")
     fun startSecondStep(@PathVariable id: Long): ApplicationStatusDTO
 

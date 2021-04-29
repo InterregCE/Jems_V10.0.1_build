@@ -27,9 +27,6 @@ class FirstStepApprovedApplicationWithConditionsState (
     override fun refuse(actionInfo: ApplicationActionInfo): ApplicationStatus =
         updateCurrentStatus(ApplicationStatus.STEP1_NOT_APPROVED, actionInfo)
 
-    override fun returnToApplicant(): ApplicationStatus =
-        returnToApplicantDefaultImpl()
-
     override fun startSecondStep(): ApplicationStatus =
         startSecondStepDefaultImpl()
 

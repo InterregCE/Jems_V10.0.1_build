@@ -99,4 +99,21 @@ abstract class ApplicationState(
         }
     }
 
+    protected fun updateEligibilityDecision(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
+        projectWorkflowPersistence.updateProjectEligibilityDecision(
+            projectId = projectSummary.id,
+            userId = securityService.getUserIdOrThrow(),
+            status = targetStatus,
+            actionInfo = actionInfo
+        )
+
+    protected fun updateFundingDecision(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
+        ifFundingDecisionDateIsValid(actionInfo.date).run {
+            projectWorkflowPersistence.updateProjectFundingDecision(
+                projectSummary.id,
+                securityService.getUserIdOrThrow(),
+                targetStatus,
+                actionInfo
+            )
+        }
 }

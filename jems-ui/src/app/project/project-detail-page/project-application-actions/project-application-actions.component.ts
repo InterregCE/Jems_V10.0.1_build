@@ -105,7 +105,7 @@ export class ProjectApplicationActionsComponent {
     setTimeout(() => {
       this.successMessage = false;
       this.changeDetectorRef.markForCheck();
-    }, 4000);
+    },         4000);
   }
 
   getRevertConfirmation(projectStatus: ProjectStatusDTO.StatusEnum, revertToStatus: string): ConfirmDialogData {

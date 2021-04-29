@@ -65,7 +65,7 @@ class ProjectStatusAuthorization(
         val oldPossibilities = setOf(STEP1_ELIGIBLE, ELIGIBLE, APPROVED_WITH_CONDITIONS)
 
         return oldPossibilities.contains(oldStatus)
-            && project.getStep()?.qualityAssessment != null
+            && project.getDecision()?.qualityAssessment != null
             && (isProgrammeUser() || isAdmin())
     }
 
@@ -81,7 +81,7 @@ class ProjectStatusAuthorization(
         val oldStatus = project.projectStatus.status
 
         return isSubmitted(oldStatus)
-            && project.getStep()?.eligibilityAssessment != null
+            && project.getDecision()?.eligibilityAssessment != null
             && (isProgrammeUser() || isAdmin())
     }
 
@@ -105,7 +105,7 @@ class ProjectStatusAuthorization(
         val project = projectService.getById(projectId)
         val allowedStatuses = listOf(SUBMITTED, ELIGIBLE, STEP1_SUBMITTED, STEP1_ELIGIBLE)
 
-        return project.getStep()?.qualityAssessment == null
+        return project.getDecision()?.qualityAssessment == null
             && (isProgrammeUser() || isAdmin())
             && allowedStatuses.contains(project.projectStatus.status)
     }
@@ -113,7 +113,7 @@ class ProjectStatusAuthorization(
     fun canSetEligibilityAssessment(projectId: Long): Boolean {
         val project = projectService.getById(projectId)
 
-        return project.getStep()?.eligibilityAssessment == null
+        return project.getDecision()?.eligibilityAssessment == null
             && (isProgrammeUser() || isAdmin())
             && isSubmitted(project.projectStatus.status)
     }

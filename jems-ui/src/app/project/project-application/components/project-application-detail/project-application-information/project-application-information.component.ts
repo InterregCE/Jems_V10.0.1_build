@@ -62,7 +62,7 @@ export class ProjectApplicationInformationComponent {
     return this.projectStatus === ProjectStatusDTO.StatusEnum.SUBMITTED
       || this.projectStatus === ProjectStatusDTO.StatusEnum.ELIGIBLE
       || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1SUBMITTED
-      || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1ELIGIBLE
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1ELIGIBLE;
   }
 
   hasApprovedStatusColor(): boolean {

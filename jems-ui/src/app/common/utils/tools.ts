@@ -22,6 +22,7 @@ export class Tools {
   }
 
   static checkDigitsOnInput(event: KeyboardEvent): false | boolean {
+    // tslint:disable-next-line
     const charCode = (event.which) ? event.which : event.keyCode;
     if (charCode === 101) {
       return false;

@@ -9,6 +9,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_decision")
 data class ProjectDecisionEntity (
@@ -17,8 +18,9 @@ data class ProjectDecisionEntity (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    @field:NotNull
     val project: ProjectEntity,
 
     @OneToOne(mappedBy = "projectDecision", cascade = [CascadeType.ALL])
