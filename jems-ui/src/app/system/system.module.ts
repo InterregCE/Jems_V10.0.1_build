@@ -10,7 +10,7 @@ import {SystemPageSidenavService} from './services/system-page-sidenav.service';
 import {UserPageRoleComponent} from './user-page-role/user-page-role.component';
 import {UserRoleNameResolver} from './user-page-role/user-role-detail-page/user-role-name.resolver';
 import {UserRoleDetailPageComponent} from './user-page-role/user-role-detail-page/user-role-detail-page.component';
-import {UserRoleDetailPageStore} from './user-page-role/user-role-detail-page/user-role-detail-page-store.service';
+import {UserRoleStore} from './user-page-role/user-role-detail-page/user-role-store.service';
 
 @NgModule({
   declarations: [
@@ -27,7 +27,7 @@ import {UserRoleDetailPageStore} from './user-page-role/user-role-detail-page/us
   providers: [
     UserNameResolver,
     UserRoleNameResolver,
-    UserRoleDetailPageStore,
+    UserRoleStore,
     SystemPageSidenavService
   ]
 })

@@ -9,14 +9,14 @@ import {Log} from '../../common/utils/log';
 @Injectable()
 export class UserPageRoleStore {
 
-  page$: Observable<PageUserRoleSummaryDTO>;
+  roleSummaryList$: Observable<PageUserRoleSummaryDTO>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
 
   constructor(private roleService: UserRoleService) {
-    this.page$ = this.page();
+    this.roleSummaryList$ = this.page();
   }
 
   private page(): Observable<PageUserRoleSummaryDTO> {

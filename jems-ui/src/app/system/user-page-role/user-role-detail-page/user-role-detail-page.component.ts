@@ -7,11 +7,11 @@ import {Log} from '../../../common/utils/log';
 import {take} from 'rxjs/internal/operators';
 import {UserRoleCreateDTO, UserRoleDTO} from '@cat/api';
 import {Observable, of} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {filter, tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {RoutingService} from '../../../common/services/routing.service';
-import {UserRoleDetailPageStore} from './user-role-detail-page-store.service';
+import {UserRoleStore} from './user-role-store.service';
 import {ActivatedRoute} from '@angular/router';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
@@ -26,6 +26,14 @@ export class UserRoleDetailPageComponent extends ViewEditForm {
   PERMISSIONS = UserRoleDTO.PermissionsEnum;
   roleId = this.activatedRoute?.snapshot?.params?.roleId;
 
+  redirectSuccessPayload = {
+    state: {
+      success: {
+        i18nKey: 'userRole.detail.save.success',
+      },
+    }
+  };
+
   details$: Observable<UserRoleDTO> = (this.roleId ? this.roleStore.userRole$ : of({} as UserRoleDTO))
     .pipe(
       tap(role => this.resetUserRole(role)),
@@ -37,11 +45,11 @@ export class UserRoleDetailPageComponent extends ViewEditForm {
     );
 
   userRoleForm = this.formBuilder.group({
-    name: ['', Validators.compose([
+    name: ['', [
       Validators.required,
       Validators.maxLength(50),
       Validators.minLength(1),
-    ])],
+    ]],
     permissions: this.formBuilder.group(this.generateCleanPermissions()),
   });
 
@@ -50,7 +58,7 @@ export class UserRoleDetailPageComponent extends ViewEditForm {
               private activatedRoute: ActivatedRoute,
               private router: RoutingService,
               private sidenavService: SystemPageSidenavService,
-              public roleStore: UserRoleDetailPageStore,
+              public roleStore: UserRoleStore,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService) {
     super(changeDetectorRef, translationService);
@@ -64,24 +72,15 @@ export class UserRoleDetailPageComponent extends ViewEditForm {
   }
 
   onSubmit(role: UserRoleDTO): void {
-    if (!role?.id) {
-      const redirectPayload = {
-        state: {
-          success: {
-            i18nKey: 'userRole.detail.save.success',
-          },
-        }
-      };
-      this.roleStore.createUserRole(this.extractPayloadFromForm())
-        .pipe(
-          take(1),
-          tap(() => this.router.navigate(['/app/system/userRole/'], redirectPayload)),
-        ).subscribe();
-      return;
+    if (role?.id) {
+      Log.debug('Saving user role', this);
+      return this.saveUserRole(role.id);
     }
-
-    Log.debug('Saving user role', this);
-    this.saveUserRole(role.id);
+    this.roleStore.createUserRole(this.extractPayloadFromForm())
+      .pipe(
+        take(1),
+        tap(() => this.router.navigate(['/app/system/userRole/'], this.redirectSuccessPayload)),
+      ).subscribe();
   }
 
   discard(role: UserRoleDTO): void {

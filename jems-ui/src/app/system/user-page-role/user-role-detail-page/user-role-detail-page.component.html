@@ -16,10 +16,7 @@
                 <mat-label>{{ 'userRole.table.column.name.name' | translate }}</mat-label>
                 <input formControlName="name" matInput required>
                 <mat-error>
-                    <app-form-field-errors
-                            [errors]="formName?.errors"
-                            [messages]="{}">
-                    </app-form-field-errors>
+                    <app-form-field-errors [errors]="formName?.errors"></app-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </div>

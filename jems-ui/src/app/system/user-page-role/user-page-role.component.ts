@@ -1,9 +1,10 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {UserPageRoleStore} from './user-page-role-store.service';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {Router} from '@angular/router';
 import {SystemPageSidenavService} from '../services/system-page-sidenav.service';
 import {UserRoleDTO} from '@cat/api';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-user-page-role',
@@ -15,6 +16,7 @@ import {UserRoleDTO} from '@cat/api';
 export class UserPageRoleComponent implements OnInit {
 
   PERMISSIONS = UserRoleDTO.PermissionsEnum;
+  Alert = Alert;
   success = this.router.getCurrentNavigation()?.extras?.state?.success;
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
@@ -37,17 +39,17 @@ export class UserPageRoleComponent implements OnInit {
   constructor(
     public roleStore: UserPageRoleStore,
     private router: Router,
-    private changeDetectorRef: ChangeDetectorRef,
     private systemPageSidenavService: SystemPageSidenavService,
   ) {
   }
 
   ngOnInit(): void {
     if (this.success) {
-      setTimeout(() => {
-        this.success = null;
-        this.changeDetectorRef.markForCheck();
-      },         3000);
+      setTimeout(
+        () => {
+          this.success = null;
+        },
+        3000);
     }
   }
 }
