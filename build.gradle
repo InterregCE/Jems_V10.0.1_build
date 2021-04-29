@@ -24,6 +24,13 @@ subprojects {
             }
         }
     }
+    if (isServerProject(it) && isCloudflightBuild(it)) {
+        bootJar {
+            manifest {
+                attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
+            }
+        }
+    }
 }
 
 // prevent local compile error
