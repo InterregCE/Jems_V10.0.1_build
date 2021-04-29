@@ -1,127 +1,47 @@
-<app-main-page-template [needsCard]="true" *ngIf="details$ | async as role"
+<app-main-page-template [needsCard]="true" *ngIf="role$ | async as role"
                         titleKey="userRole.breadcrumb.list"
                         [subTitleKey]="roleId ? 'userRole.detail.short' : 'userRole.breadcrumb.create'">
-    <form appFormLayout [formGroup]="userRoleForm">
-        <div page-sub-title appMultiColumnRow>
-            <ng-container *hasPermission="PERMISSIONS.RoleUpdate">
-                <button color="primary" *ngIf="userRoleForm.disabled" mat-raised-button
-                        (click)="changeFormState$.next(FormState.EDIT)">
-                    {{'common.edit.label' | translate}}
-                </button>
-            </ng-container>
-        </div>
+    <app-form (save)="save(role)"
+              (discard)="discard(role)">
 
-        <div appMultiColumnRow>
-            <mat-form-field appFormFieldWidth="xx-large">
-                <mat-label>{{ 'userRole.table.column.name.name' | translate }}</mat-label>
-                <input formControlName="name" matInput required>
-                <mat-error>
-                    <app-form-field-errors [errors]="formName?.errors"></app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </div>
-
-        <div appNoWidthLimit [appTableConfig]="[{maxInRem:13},{}]" formGroupName="permissions">
-            <div>
-                <span>{{ 'userRole.table.column.group.name' | translate }}</span>
-                <span>{{ 'userRole.table.column.permission.name' | translate }}</span>
+        <form appFormLayout [formGroup]="userRoleForm">
+            <div appMultiColumnRow>
+                <mat-form-field appFormFieldWidth="xx-large">
+                    <mat-label>{{ 'userRole.table.column.name.name' | translate }}</mat-label>
+                    <input formControlName="name" matInput required>
+                    <mat-error>
+                        <app-form-field-errors [errors]="name?.errors"></app-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
             </div>
-            <div>
-                <span>{{ 'project.application.form.lifecycle.title' | translate }}</span>
-                <div class="permission-line">
-                    <mat-checkbox
-                            [name]=PERMISSIONS.ProjectSubmission
-                            [formControlName]=PERMISSIONS.ProjectSubmission
-                            (click)="$event.stopPropagation()">
-                        {{ PERMISSIONS.ProjectSubmission }}
-                    </mat-checkbox>
+
+            <div appNoWidthLimit [appTableConfig]="[{maxInRem:13},{}]" formArrayName="permissions">
+                <div>
+                    <span>{{ 'userRole.table.column.group.name' | translate }}</span>
+                    <div></div>
+                </div>
+                <div appNoWidthLimit *ngFor="let permission of permissions.controls; let i=index;" [formGroupName]="i">
+                    <div appNoWidthLimit>{{permission.get('name').value | translate}}</div>
+                    <mat-button-toggle-group>
+                        <mat-button-toggle
+                                [checked]="permission.get('state')?.value === PermissionState.HIDDEN"
+                                (change)="changeState(permission, PermissionState.HIDDEN)">
+                            {{'Hidden' | translate}}
+                        </mat-button-toggle>
+                        <mat-button-toggle
+                                [checked]="permission.get('state')?.value === PermissionState.VIEW"
+                                (change)="changeState(permission, PermissionState.VIEW)">
+                            {{'View' | translate}}
+                        </mat-button-toggle>
+                        <mat-button-toggle
+                                [checked]="permission.get('state')?.value === PermissionState.EDIT"
+                                (change)="changeState(permission, PermissionState.EDIT)">
+                            {{'Edit' | translate}}
+                        </mat-button-toggle>
+                    </mat-button-toggle-group>
                 </div>
             </div>
-            <div>
-                <span>{{ 'topbar.main.user.management' | translate }}</span>
-                <div class="permission-line">
-                    <mat-checkbox
-                            [name]=PERMISSIONS.UserRetrieve
-                            [formControlName]=PERMISSIONS.UserRetrieve
-                            (click)="$event.stopPropagation()">
-                        {{ PERMISSIONS.UserRetrieve }}
-                    </mat-checkbox>
-                    <mat-checkbox
-                            [name]=PERMISSIONS.UserCreate
-                            [formControlName]=PERMISSIONS.UserCreate
-                            (click)="$event.stopPropagation()">
-                        {{ PERMISSIONS.UserCreate }}
-                    </mat-checkbox>
-                    <mat-checkbox
-                            [name]=PERMISSIONS.UserUpdate
-                            [formControlName]=PERMISSIONS.UserUpdate
-                            (click)="$event.stopPropagation()">
-                        {{ PERMISSIONS.UserUpdate }}
-                    </mat-checkbox>
-                    <mat-checkbox
-                            [name]=PERMISSIONS.UserUpdateRole
-                            [formControlName]=PERMISSIONS.UserUpdateRole
-                            (click)="$event.stopPropagation()">
-                        {{ PERMISSIONS.UserUpdateRole }}
-                    </mat-checkbox>
-                    <mat-checkbox
-                            [name]=PERMISSIONS.UserUpdatePassword
-                            [formControlName]=PERMISSIONS.UserUpdatePassword
-                            (click)="$event.stopPropagation()">
-                        {{ PERMISSIONS.UserUpdatePassword }}
-                    </mat-checkbox>
-                </div>
-            </div>
-            <div>
-                <span>{{ 'topbar.main.userRole.management' | translate }}</span>
-                <div class="permission-line">
-                    <mat-checkbox
-                            [name]=PERMISSIONS.RoleRetrieve
-                            [formControlName]=PERMISSIONS.RoleRetrieve
-                            (click)="$event.stopPropagation()">
-                        {{ PERMISSIONS.RoleRetrieve }}
-                    </mat-checkbox>
-                    <mat-checkbox
-                            [name]=PERMISSIONS.RoleCreate
-                            [formControlName]=PERMISSIONS.RoleCreate
-                            (click)="$event.stopPropagation()">
-                        {{ PERMISSIONS.RoleCreate }}
-                    </mat-checkbox>
-                    <mat-checkbox
-                            [name]=PERMISSIONS.RoleUpdate
-                            [formControlName]=PERMISSIONS.RoleUpdate
-                            (click)="$event.stopPropagation()">
-                        {{ PERMISSIONS.RoleUpdate }}
-                    </mat-checkbox>
-                </div>
-            </div>
-        </div>
-
-        <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
-            <button mat-stroked-button
-                    type="button"
-                    (click)="discard(role)">
-                {{'common.cancel.label' | translate}}
-            </button>
-            <button mat-raised-button
-                    color="primary"
-                    type="button"
-                    [disabled]="userRoleForm.invalid || submitted"
-                    (click)="onSubmit(role)">
-                {{role?.id && 'common.save.label' || 'common.create.label' | translate}}
-            </button>
-        </div>
-        <div>
-            <app-alert
-                    [show]="!submitted && (showSuccessMessage$ | async)"
-                    [type]="Alert.SUCCESS">
-                <p>{{'user.detail.save.success' | translate}}</p>
-            </app-alert>
-            <app-alert *ngIf="error$ | async as error"
-                       [show]="!submitted && !!error.i18nMessage?.i18nKey"
-                       [type]="Alert.ERROR">
-                <app-api-error-content [error]="error"></app-api-error-content>
-            </app-alert>
-        </div>
-    </form>
+        </form>
+    </app-form>
 </app-main-page-template>
+

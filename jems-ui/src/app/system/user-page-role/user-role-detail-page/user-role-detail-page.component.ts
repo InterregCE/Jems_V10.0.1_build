@@ -1,48 +1,31 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {TranslateService} from '@ngx-translate/core';
-import {Log} from '../../../common/utils/log';
 import {take} from 'rxjs/internal/operators';
-import {UserRoleCreateDTO, UserRoleDTO} from '@cat/api';
-import {Observable, of} from 'rxjs';
-import {filter, tap} from 'rxjs/operators';
+import {UserRoleDTO} from '@cat/api';
+import {Observable} from 'rxjs';
+import {tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
-import {FormState} from '@common/components/forms/form-state';
 import {RoutingService} from '../../../common/services/routing.service';
 import {UserRoleStore} from './user-role-store.service';
 import {ActivatedRoute} from '@angular/router';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {PermissionNode, PermissionState} from '../../../security/permissions/permission-node';
+import {FormService} from '@common/components/section/form/form.service';
+import {Permission} from '../../../security/permissions/permission';
 
 @Component({
   selector: 'app-user-role-detail-page',
   templateUrl: './user-role-detail-page.component.html',
   styleUrls: ['./user-role-detail-page.component.scss'],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserRoleDetailPageComponent extends ViewEditForm {
+export class UserRoleDetailPageComponent {
 
-  PERMISSIONS = UserRoleDTO.PermissionsEnum;
+  PermissionState = PermissionState;
   roleId = this.activatedRoute?.snapshot?.params?.roleId;
 
-  redirectSuccessPayload = {
-    state: {
-      success: {
-        i18nKey: 'userRole.detail.save.success',
-      },
-    }
-  };
-
-  details$: Observable<UserRoleDTO> = (this.roleId ? this.roleStore.userRole$ : of({} as UserRoleDTO))
-    .pipe(
-      tap(role => this.resetUserRole(role)),
-      tap(role => {
-        if (!role.id) {
-          this.changeFormState$.next(FormState.EDIT);
-        }
-      })
-    );
+  role$: Observable<UserRoleDTO>;
 
   userRoleForm = this.formBuilder.group({
     name: ['', [
@@ -50,7 +33,7 @@ export class UserRoleDetailPageComponent extends ViewEditForm {
       Validators.maxLength(50),
       Validators.minLength(1),
     ]],
-    permissions: this.formBuilder.group(this.generateCleanPermissions()),
+    permissions: this.formBuilder.array([])
   });
 
   constructor(private formBuilder: FormBuilder,
@@ -58,34 +41,42 @@ export class UserRoleDetailPageComponent extends ViewEditForm {
               private activatedRoute: ActivatedRoute,
               private router: RoutingService,
               private sidenavService: SystemPageSidenavService,
-              public roleStore: UserRoleStore,
-              protected changeDetectorRef: ChangeDetectorRef,
-              protected translationService: TranslateService) {
-    super(changeDetectorRef, translationService);
-
-    this.error$ = this.roleStore.userRoleSaveError$;
-    this.success$ = this.roleStore.userRoleSaveSuccess$;
+              private formService: FormService,
+              public roleStore: UserRoleStore) {
+    this.formService.init(this.userRoleForm);
+    this.formService.setCreation(!this.roleId);
+    this.role$ = this.roleStore.userRole$
+      .pipe(
+        tap(role => this.resetUserRole(role)),
+      );
   }
 
-  getForm(): FormGroup | null {
-    return this.userRoleForm;
-  }
-
-  onSubmit(role: UserRoleDTO): void {
+  save(role: UserRoleDTO): void {
+    const user: UserRoleDTO = {
+      id: role.id,
+      ...this.userRoleForm.value,
+      permissions: this.getFormPermissions()
+    };
     if (role?.id) {
-      Log.debug('Saving user role', this);
-      return this.saveUserRole(role.id);
+      this.roleStore.saveUserRole(user)
+        .pipe(
+          take(1),
+          tap(() => this.formService.setSuccess('User role saved successfully'))
+        ).subscribe();
+      return;
     }
-    this.roleStore.createUserRole(this.extractPayloadFromForm())
+    const redirectSuccessPayload = {
+      state: {success: {i18nKey: 'userRole.detail.save.success'}}
+    };
+    this.roleStore.createUserRole(user)
       .pipe(
         take(1),
-        tap(() => this.router.navigate(['/app/system/userRole/'], this.redirectSuccessPayload)),
+        tap(() => this.router.navigate(['/app/system/userRole/'], redirectSuccessPayload)),
       ).subscribe();
   }
 
   discard(role: UserRoleDTO): void {
     if (role.id) {
-      this.changeFormState$.next(FormState.VIEW);
       this.resetUserRole(role);
     } else {
       this.router.navigate(['/app/system/userRole']);
@@ -93,39 +84,50 @@ export class UserRoleDetailPageComponent extends ViewEditForm {
   }
 
   resetUserRole(role: UserRoleDTO): void {
-    this.formName?.patchValue(role?.name);
-    this.formPermissions.patchValue(this.generateCleanPermissions());
-    (role?.permissions || []).forEach(perm => {
-      this.formPermissions?.get(perm)?.patchValue(true);
-    });
+    this.name?.patchValue(role?.name);
+    this.permissions.clear();
+    Permission.DEFAULT_PERMISSIONS.forEach(perm => this.permissions.push(
+      this.formBuilder.group({
+        name: perm.name,
+        state: this.getCurrentState(perm, role.permissions)
+      })
+    ));
   }
 
-  private saveUserRole(roleId: number): void {
-    this.roleStore.saveUserRole$.next({
-      id: roleId,
-      ...this.extractPayloadFromForm(),
-    });
-  }
-
-  private extractPayloadFromForm(): UserRoleCreateDTO {
-    const permissionsObject: any = this.formPermissions?.value;
-    return {
-      name: this.formName?.value,
-      permissions: Object.keys(permissionsObject).filter(perm => permissionsObject[perm]) as PermissionsEnum[],
-    };
-  }
-
-  get formName(): FormControl {
+  get name(): FormControl {
     return this.userRoleForm.get('name') as FormControl;
   }
 
-  get formPermissions(): FormGroup {
-    return this.userRoleForm.get('permissions') as FormGroup;
+  get permissions(): FormArray {
+    return this.userRoleForm.get('permissions') as FormArray;
   }
 
-  private generateCleanPermissions(): any {
-    return Object.keys(UserRoleDTO.PermissionsEnum)
-      .reduce((ac: any, a: string) => ({...ac, [a]: false}), {});
+  changeState(permission: AbstractControl, value: PermissionState): void {
+    permission.get('state')?.setValue(value);
+    this.formService.setDirty(true);
   }
 
+  private getCurrentState(defaultPermission: PermissionNode, perms: UserRoleDTO.PermissionsEnum[]): PermissionState {
+    if (defaultPermission.editPermissions?.some(perm => perms?.includes(perm))) {
+      return PermissionState.EDIT;
+    }
+    if (defaultPermission.viewPermissions?.some(perm => perms?.includes(perm))) {
+      return PermissionState.VIEW;
+    }
+    return PermissionState.HIDDEN;
+  }
+
+  private getFormPermissions(): UserRoleDTO.PermissionsEnum[] {
+    return Permission.DEFAULT_PERMISSIONS
+      .flatMap((perm, i) => {
+        const state = this.permissions.at(i).get('state')?.value;
+        if (state === PermissionState.EDIT) {
+          return perm.editPermissions || [];
+        }
+        if (state === PermissionState.VIEW) {
+          return perm.viewPermissions || [];
+        }
+        return [];
+      });
+  }
 }
