@@ -1,9 +1,6 @@
 package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.*
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isDraft
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isEligible
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isSubmitted
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectService
@@ -55,7 +52,7 @@ class ProjectStatusAuthorization(
         val project = projectService.getById(projectId)
         val oldStatus = project.projectStatus.status
 
-        return (isDraft(oldStatus) || oldStatus == RETURNED_TO_APPLICANT)
+        return (oldStatus.isDraft() || oldStatus == RETURNED_TO_APPLICANT)
             && (isApplicantOwner(project.applicant.id!!) || isAdmin() || hasPermission(UserRolePermission.ProjectSubmission))
     }
 
@@ -73,14 +70,14 @@ class ProjectStatusAuthorization(
         val project = projectService.getById(projectId)
         val oldStatus = project.projectStatus.status
 
-        return isEligible(oldStatus) && (isProgrammeUser() || isAdmin())
+        return oldStatus.isEligible() && (isProgrammeUser() || isAdmin())
     }
 
     fun canSetEligibility(projectId: Long): Boolean {
         val project = projectService.getById(projectId)
         val oldStatus = project.projectStatus.status
 
-        return isSubmitted(oldStatus)
+        return oldStatus.isSubmitted()
             && project.getDecision()?.eligibilityAssessment != null
             && (isProgrammeUser() || isAdmin())
     }
@@ -115,7 +112,7 @@ class ProjectStatusAuthorization(
 
         return project.getDecision()?.eligibilityAssessment == null
             && (isProgrammeUser() || isAdmin())
-            && isSubmitted(project.projectStatus.status)
+            && project.projectStatus.status.isSubmitted()
     }
 
 }

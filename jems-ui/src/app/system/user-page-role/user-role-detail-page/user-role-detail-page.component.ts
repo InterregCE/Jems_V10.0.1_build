@@ -109,7 +109,6 @@ export class UserRoleDetailPageComponent extends ViewEditForm {
 
   private extractPayloadFromForm(): UserRoleCreateDTO {
     const permissionsObject: any = this.formPermissions?.value;
-    Object.keys(permissionsObject).filter(perm => permissionsObject[perm]);
     return {
       name: this.formName?.value,
       permissions: Object.keys(permissionsObject).filter(perm => permissionsObject[perm]) as PermissionsEnum[],
