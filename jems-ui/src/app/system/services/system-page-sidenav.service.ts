@@ -4,9 +4,10 @@ import {RoutingService} from '../../common/services/routing.service';
 import {filter, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PermissionService} from '../../security/permissions/permission.service';
-import {Permission} from '../../security/permissions/permission';
 import {combineLatest} from 'rxjs';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
+import {UserRoleDTO} from '@cat/api';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Injectable()
@@ -25,26 +26,26 @@ export class SystemPageSidenavService {
       this.routing$,
       this.permissionService.permissionsChanged(),
     ]).pipe(
-      tap(([routing, permissions]) => {
-        this.setHeadlines(permissions.some(perm => perm === Permission.ADMINISTRATOR));
-      }),
+      tap(([routing, permissions]) => this.setHeadlines(permissions as PermissionsEnum[])),
       untilDestroyed(this)
     )
       .subscribe();
   }
 
-  private setHeadlines(isAdministrator: boolean): void {
+  private setHeadlines(permissions: PermissionsEnum[]): void {
     const bulletsArray: HeadlineRoute[] = [{
       headline: {i18nKey: 'topbar.main.audit'},
       route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}`,
     }];
 
-    if (isAdministrator) {
+    if (permissions.includes(PermissionsEnum.UserRetrieve)) {
       bulletsArray.push({
         headline: {i18nKey: 'topbar.main.user.management'},
         route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/user`,
         scrollToTop: true,
       });
+    }
+    if (permissions.includes(PermissionsEnum.RoleRetrieve)) {
       bulletsArray.push({
         headline: {i18nKey: 'topbar.main.userRole.management'},
         route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/userRole`,

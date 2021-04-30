@@ -7,3 +7,12 @@
     display: inline-block;
   }
 }
+
+mat-panel-description {
+  flex: 0;
+}
+
+.mat-title-vertical-center {
+  display: flex;
+  align-items: center;
+}

@@ -11,4 +11,6 @@ export class PermissionNode {
   state?: PermissionState = PermissionState.HIDDEN;
   viewPermissions?: UserRoleDTO.PermissionsEnum[];
   editPermissions?: UserRoleDTO.PermissionsEnum[];
+  oneClickToggle?: UserRoleDTO.PermissionsEnum[];
+  children?: PermissionNode[] = [];
 }

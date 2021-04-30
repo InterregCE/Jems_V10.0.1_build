@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormControl, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {take} from 'rxjs/internal/operators';
 import {UserRoleDTO} from '@cat/api';
@@ -12,6 +12,7 @@ import {ActivatedRoute} from '@angular/router';
 import {PermissionNode, PermissionState} from '../../../security/permissions/permission-node';
 import {FormService} from '@common/components/section/form/form.service';
 import {Permission} from '../../../security/permissions/permission';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-user-role-detail-page',
@@ -83,15 +84,29 @@ export class UserRoleDetailPageComponent {
     }
   }
 
+  private extractFormPermissionSubGroup(perm: PermissionNode, currentRolePermissions: PermissionsEnum[]): FormGroup {
+    if (!perm.children?.length) {
+      return this.formBuilder.group({
+        name: perm.name,
+        isOneClickToggle: !perm.oneClickToggle?.length,
+        state: this.getCurrentState(perm, currentRolePermissions)
+      });
+    } else {
+      return this.formBuilder.group({
+        name: perm.name,
+        subtree: this.formBuilder.array(
+          perm.children.map(child => this.extractFormPermissionSubGroup(child, currentRolePermissions))
+        ),
+      });
+    }
+  }
+
   resetUserRole(role: UserRoleDTO): void {
     this.name?.patchValue(role?.name);
     this.permissions.clear();
-    Permission.DEFAULT_PERMISSIONS.forEach(perm => this.permissions.push(
-      this.formBuilder.group({
-        name: perm.name,
-        state: this.getCurrentState(perm, role.permissions)
-      })
-    ));
+    Permission.DEFAULT_PERMISSIONS.forEach(perm =>
+      this.permissions.push(this.extractFormPermissionSubGroup(perm, role.permissions))
+    );
   }
 
   get name(): FormControl {
@@ -107,27 +122,52 @@ export class UserRoleDetailPageComponent {
     this.formService.setDirty(true);
   }
 
-  private getCurrentState(defaultPermission: PermissionNode, perms: UserRoleDTO.PermissionsEnum[]): PermissionState {
+  changeStateOfToggle(permission: AbstractControl): void {
+    if (permission.get('state')?.value === PermissionState.EDIT) {
+      permission.get('state')?.setValue(PermissionState.HIDDEN);
+    } else {
+      permission.get('state')?.setValue(PermissionState.EDIT);
+    }
+    this.formService.setDirty(true);
+  }
+
+  private getCurrentState(defaultPermission: PermissionNode, perms: PermissionsEnum[]): PermissionState {
     if (defaultPermission.editPermissions?.some(perm => perms?.includes(perm))) {
       return PermissionState.EDIT;
     }
     if (defaultPermission.viewPermissions?.some(perm => perms?.includes(perm))) {
       return PermissionState.VIEW;
     }
+    if (defaultPermission.oneClickToggle?.some(perm => perms?.includes(perm))) {
+      return PermissionState.EDIT;
+    }
     return PermissionState.HIDDEN;
   }
 
-  private getFormPermissions(): UserRoleDTO.PermissionsEnum[] {
+  private getPermissionsForState(state: PermissionState, permissionNode: PermissionNode): PermissionsEnum[] {
+    if (state === PermissionState.EDIT) {
+      return permissionNode.editPermissions || permissionNode.oneClickToggle || [];
+    }
+    if (state === PermissionState.VIEW) {
+      return permissionNode.viewPermissions || [];
+    }
+    return [];
+  }
+
+  private getFormPermissions(): PermissionsEnum[] {
     return Permission.DEFAULT_PERMISSIONS
       .flatMap((perm, i) => {
-        const state = this.permissions.at(i).get('state')?.value;
-        if (state === PermissionState.EDIT) {
-          return perm.editPermissions || [];
+        const permissionGroup = this.permissions.at(i);
+
+        if (perm.children?.length) {
+          return perm.children.flatMap((childPerm, childIndex) => {
+            const stateChild = (permissionGroup.get('subtree') as FormArray).at(childIndex)?.get('state')?.value;
+            return this.getPermissionsForState(stateChild, childPerm);
+          });
         }
-        if (state === PermissionState.VIEW) {
-          return perm.viewPermissions || [];
-        }
-        return [];
+
+        const state = permissionGroup.get('state')?.value;
+        return this.getPermissionsForState(state, perm);
       });
   }
 }

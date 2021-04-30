@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {merge, Observable, of, Subject} from 'rxjs';
-import {OutputCurrentUser, UserRoleCreateDTO, UserRoleDTO, UserRoleService,} from '@cat/api';
+import {OutputCurrentUser, UserRoleCreateDTO, UserRoleDTO, UserRoleService} from '@cat/api';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {SecurityService} from '../../../security/security.service';

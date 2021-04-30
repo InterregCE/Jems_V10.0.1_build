@@ -9,27 +9,45 @@ export class Permission {
 
   public static readonly DEFAULT_PERMISSIONS: PermissionNode[] = [
     {
-      name: 'project.application.form.lifecycle.title',
+      name: 'topbar.main.dashboard',
       viewPermissions: [],
-      editPermissions: [PermissionsEnum.ProjectSubmission]
+      editPermissions: []
     },
     {
-      name: 'topbar.main.user.management',
-      viewPermissions: [PermissionsEnum.UserRetrieve],
-      editPermissions: [
-        PermissionsEnum.UserCreate,
-        PermissionsEnum.UserUpdate,
-        PermissionsEnum.UserUpdateRole,
-        PermissionsEnum.UserUpdatePassword
-      ]
+      name: 'project.application.form.lifecycle.title',
+      children: [
+        {
+          name: 'project.detail.button.submit',
+          oneClickToggle: [PermissionsEnum.ProjectSubmission],
+        },
+      ],
     },
     {
-      name: 'topbar.main.userRole.management',
-      viewPermissions: [PermissionsEnum.RoleRetrieve],
-      editPermissions: [
-        PermissionsEnum.RoleCreate,
-        PermissionsEnum.RoleUpdate
+      name: 'topbar.main.system',
+      children: [
+        {
+          name: 'topbar.main.audit',
+          oneClickToggle: ['AuditRetrieve' as PermissionsEnum],
+        },
+        {
+          name: 'topbar.main.user.management',
+          viewPermissions: [PermissionsEnum.UserRetrieve],
+          editPermissions: [
+            PermissionsEnum.UserCreate,
+            PermissionsEnum.UserUpdate,
+            PermissionsEnum.UserUpdateRole,
+            PermissionsEnum.UserUpdatePassword
+          ]
+        },
+        {
+          name: 'topbar.main.userRole.management',
+          viewPermissions: [PermissionsEnum.RoleRetrieve],
+          editPermissions: [
+            PermissionsEnum.RoleCreate,
+            PermissionsEnum.RoleUpdate
+          ],
+        },
       ]
-    },
+    }
   ];
 }
