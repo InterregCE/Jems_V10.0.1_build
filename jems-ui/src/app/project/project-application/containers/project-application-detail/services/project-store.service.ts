@@ -4,6 +4,7 @@ import {
   InputProjectData,
   InputProjectEligibilityAssessment,
   InputProjectQualityAssessment,
+  ProjectDecisionDTO,
   ProjectDetailDTO,
   ProjectPartnerBudgetCoFinancingDTO,
   ProjectService,
@@ -21,6 +22,7 @@ import {ProgrammeUnitCost} from '../../../../model/programmeUnitCost';
 import {LumpSumPhaseEnumUtils} from '../../../../model/lump-sums/LumpSumPhaseEnum';
 import {BudgetCostCategoryEnumUtils} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
 import {RoutingService} from '../../../../../common/services/routing.service';
+import {ProjectUtil} from '../../../../project-util';
 
 /**
  * Stores project related information.
@@ -36,6 +38,8 @@ export class ProjectStore {
   project$: Observable<ProjectDetailDTO>;
   projectEditable$: Observable<boolean>;
   projectTitle$: Observable<string>;
+  callHasTwoSteps$: Observable<boolean>;
+  projectCurrentDecisions$: Observable<ProjectDecisionDTO>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -80,6 +84,8 @@ export class ProjectStore {
       .pipe(
         map(project => `${project.id} – ${project.acronym}`)
       );
+    this.callHasTwoSteps$ = this.callHasTwoSteps();
+    this.projectCurrentDecisions$ = this.projectCurrentDecisions();
   }
 
   /**
@@ -159,7 +165,7 @@ export class ProjectStore {
               // programme users cannot edit projects
               return false;
             }
-            return project.projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT
+            return ProjectUtil.isDraft(project)
               || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
           }
         ),
@@ -176,6 +182,7 @@ export class ProjectStore {
           callSetting.callName,
           callSetting.startDate,
           callSetting.endDate,
+          callSetting.endDateStep1,
           callSetting.lengthOfPeriod,
           new CallFlatRateSetting(callSetting.flatRates.staffCostFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup),
           callSetting.lumpSums.map(lumpSum =>
@@ -185,6 +192,27 @@ export class ProjectStore {
           callSetting.isAdditionalFundAllowed
         )),
         shareReplay(1)
+      );
+  }
+
+  private callHasTwoSteps(): Observable<boolean> {
+    return this.projectCall$
+      .pipe(
+        map(call => !!call.endDateStep1)
+      );
+  }
+
+  private projectCurrentDecisions(): Observable<ProjectDecisionDTO> {
+    return this.project$
+      .pipe(
+        map(project => project.step2Active ? project.secondStepDecision : project.firstStepDecision),
+      );
+  }
+
+  projectDecisions(step: number | undefined): Observable<ProjectDecisionDTO> {
+    return this.project$
+      .pipe(
+        map(project => step && Number(step) === 2 ? project.secondStepDecision : project.firstStepDecision)
       );
   }
 }

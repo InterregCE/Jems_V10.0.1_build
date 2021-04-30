@@ -2,15 +2,16 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectStore} from '../services/project-store.service';
 import {combineLatest, ReplaySubject, Subject} from 'rxjs';
-import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {Permission} from '../../../../../security/permissions/permission';
-import {ProjectDetailDTO, OutputProjectFile, ProjectStatusDTO, ProjectFileStorageService} from '@cat/api';
+import {OutputProjectFile, ProjectDetailDTO, ProjectFileStorageService, ProjectStatusDTO} from '@cat/api';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {APIError} from '../../../../../common/models/APIError';
+import {ProjectUtil} from '../../../../project-util';
 
 @Component({
   selector: 'app-project-application-files',
@@ -52,13 +53,15 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
 
   details$ = combineLatest([
     this.currentPage$,
-    this.projectStore.getProject(),
+    this.projectStore.project$,
+    this.projectStore.projectCurrentDecisions$,
     this.permissionService.permissionsChanged()
   ])
     .pipe(
-      map(([page, project, permissions]) => ({
+      map(([page, project, decisions, permissions]) => ({
         page,
         project,
+        fundingDecisionDefined: !!decisions?.fundingDecision,
         permission: permissions[0],
         uploadPossible: this.canUploadFiles(project, permissions[0])
       }))
@@ -123,7 +126,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
       // programme user can only upload assessment files
       return false;
     }
-    return project.projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT
+    return ProjectUtil.isDraft(project)
       || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
   }
 }

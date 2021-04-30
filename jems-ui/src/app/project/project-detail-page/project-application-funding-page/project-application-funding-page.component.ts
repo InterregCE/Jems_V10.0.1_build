@@ -5,6 +5,8 @@ import {map} from 'rxjs/operators';
 import {ProjectFundingDecisionStore} from './project-funding-decision-store.service';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {combineLatest} from 'rxjs';
+import {ProjectStepStatus} from '../project-step-status';
 
 @Component({
   selector: 'app-project-application-funding-page',
@@ -16,24 +18,25 @@ import {ProjectApplicationFormSidenavService} from '../../project-application/co
 export class ProjectApplicationFundingPageComponent {
 
   projectId = this.activatedRoute.snapshot.params.projectId;
-  details$ = this.fundingDecisionStore.project$
+  step = this.activatedRoute.snapshot.params.step;
+  stepStatus = new ProjectStepStatus(this.step);
+
+  details$ = combineLatest([
+    this.fundingDecisionStore.project$,
+    this.fundingDecisionStore.fundingDecision(this.step),
+    this.fundingDecisionStore.eligibilityDecisionDate(this.step),
+  ])
     .pipe(
-      map(project => ({
+      map(([project, fundingDecision, eligibilityDecisionDate]) => ({
         project,
+        fundingDecision,
+        eligibilityDecisionDate,
         acronym: project.acronym,
-        status: project.fundingDecision,
-        statusOptions: [
-          ProjectStatusDTO.StatusEnum.APPROVED,
-          ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS,
-          ProjectStatusDTO.StatusEnum.NOTAPPROVED
-        ],
-        submitLabel: 'project.assessment.fundingDecision.submit.label',
-        showWithConditions: project.fundingDecision?.status === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS,
+        statusOptions: [this.stepStatus.approved, this.stepStatus.approvedWithConditions, this.stepStatus.notApproved],
+        showWithConditions: fundingDecision?.status === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS,
         withConditionsStatus: this.getApprovedWithConditionsStatus(project),
-        withConditionsStatusOptions: [
-          ProjectStatusDTO.StatusEnum.APPROVED,
-          ProjectStatusDTO.StatusEnum.NOTAPPROVED
-        ],
+        withConditionsStatusOptions: [this.stepStatus.approved, this.stepStatus.notApproved],
+        submitLabel: 'project.assessment.fundingDecision.submit.label',
         withConditionsSubmitLabel: 'project.assessment.fundingDecision.submit.finalize.label',
       }))
     )
@@ -47,10 +50,7 @@ export class ProjectApplicationFundingPageComponent {
   }
 
   private getApprovedWithConditionsStatus(project: ProjectDetailDTO): ProjectStatusDTO | null {
-    return [
-      ProjectStatusDTO.StatusEnum.APPROVED,
-      ProjectStatusDTO.StatusEnum.NOTAPPROVED
-    ]
+    return [this.stepStatus.approved, this.stepStatus.notApproved]
       .some(stat => stat === project.projectStatus.status) ? project.projectStatus : null;
   }
 }

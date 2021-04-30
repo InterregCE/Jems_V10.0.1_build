@@ -97,6 +97,7 @@ class ProjectControllerTest {
             callName = "call for applications",
             startDate = startDate,
             endDate = endDate,
+            endDateStep1 = null,
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
             flatRates = setOf(
@@ -132,6 +133,7 @@ class ProjectControllerTest {
                 callName = "call for applications",
                 startDate = startDate,
                 endDate = endDate,
+                endDateStep1 = null,
                 lengthOfPeriod = 6,
                 isAdditionalFundAllowed = false,
                 flatRates = FlatRateSetupDTO(

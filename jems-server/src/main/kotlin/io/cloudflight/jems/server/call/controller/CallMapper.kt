@@ -19,6 +19,7 @@ fun CallSummary.toDto() = CallDTO(
     status = status,
     startDateTime = startDate,
     endDateTime = endDate,
+    endDateTimeStep1 = endDateStep1
 )
 
 fun CallDetail.toDto() = CallDetailDTO(

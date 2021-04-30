@@ -27,7 +27,8 @@ class ProjectFactory(
                 acronym = "test_project",
                 applicant = author,
                 currentStatus = projectStatus,
-                firstSubmission = projectStatus
+                firstSubmission = projectStatus,
+                step2Active = false
             )
         )
     }

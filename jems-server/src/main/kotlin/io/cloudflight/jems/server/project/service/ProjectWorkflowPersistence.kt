@@ -12,7 +12,7 @@ interface ProjectWorkflowPersistence {
 
     fun getLatestApplicationStatusNotEqualTo(projectId: Long, statusToIgnore: ApplicationStatus): ApplicationStatus
 
-    fun updateApplicationFirstSubmission(projectId: Long, userId: Long): ApplicationStatus
+    fun updateApplicationFirstSubmission(projectId: Long, userId: Long, status: ApplicationStatus): ApplicationStatus
 
     fun updateProjectLastResubmission(projectId: Long, userId: Long, status: ApplicationStatus): ApplicationStatus
 
@@ -20,6 +20,12 @@ interface ProjectWorkflowPersistence {
         projectId: Long,
         userId: Long,
         status: ApplicationStatus,
+        actionInfo: ApplicationActionInfo? = null
+    ): ApplicationStatus
+
+    fun startSecondStep(
+        projectId: Long,
+        userId: Long,
         actionInfo: ApplicationActionInfo? = null
     ): ApplicationStatus
 

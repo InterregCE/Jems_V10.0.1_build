@@ -24,14 +24,6 @@ class SubmittedApplicationState(
     override fun setAsEligible(actionInfo: ApplicationActionInfo): ApplicationStatus =
         updateEligibilityDecision(ApplicationStatus.ELIGIBLE, actionInfo)
 
-
-    private fun updateEligibilityDecision(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
-        projectWorkflowPersistence.updateProjectEligibilityDecision(
-            projectId = projectSummary.id,
-            userId = securityService.getUserIdOrThrow(),
-            status = targetStatus,
-            actionInfo = actionInfo
-        )
 }
 
 

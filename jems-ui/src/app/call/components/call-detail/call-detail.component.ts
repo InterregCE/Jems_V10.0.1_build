@@ -1,9 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
 import {CallDetailDTO, OutputProgrammeStrategy, ProgrammeFundDTO} from '@cat/api';
-import {Forms} from '../../../common/utils/forms';
-import {catchError, filter, take, tap} from 'rxjs/operators';
-import {MatDialog} from '@angular/material/dialog';
+import {catchError, take, tap} from 'rxjs/operators';
 import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbox';
 import {Tools} from '../../../common/utils/tools';
 import {FormService} from '@common/components/section/form/form.service';

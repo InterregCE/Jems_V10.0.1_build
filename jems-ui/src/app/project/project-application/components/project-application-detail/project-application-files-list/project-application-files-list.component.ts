@@ -35,6 +35,8 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   @Input()
   project: ProjectDetailDTO;
   @Input()
+  fundingDecisionDefined: boolean;
+  @Input()
   permission: Permission;
 
   @Output()

@@ -20,14 +20,14 @@ import javax.validation.constraints.NotNull
 data class ProjectQualityAssessment(
 
     @Id
-    @Column(name = "project_id")
+    @Column(name = "project_decision_id")
     @field:NotNull
     val id: Long,
 
     @OneToOne(optional = false)
     @MapsId
     @field:NotNull
-    val project: ProjectEntity,
+    val projectDecision: ProjectDecisionEntity,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
@@ -49,8 +49,8 @@ data class ProjectQualityAssessment(
     }
 
     override fun equals(other: Any?): Boolean =
-        this === other || other is ProjectQualityAssessment && id == other.id && project.id == other.project.id
+        this === other || other is ProjectQualityAssessment && id == other.id && projectDecision.id == other.projectDecision.id
 
     override fun hashCode(): Int =
-        Objects.hash(id, project.id)
+        Objects.hash(id, projectDecision.id)
 }

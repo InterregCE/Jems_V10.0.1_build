@@ -37,14 +37,4 @@ class EligibleApplicationState(
     override fun refuse(actionInfo: ApplicationActionInfo): ApplicationStatus =
         updateFundingDecision(ApplicationStatus.NOT_APPROVED, actionInfo)
 
-
-    private fun updateFundingDecision(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
-        ifFundingDecisionDateIsValid(actionInfo.date).run {
-            projectWorkflowPersistence.updateProjectFundingDecision(
-                projectSummary.id,
-                securityService.getUserIdOrThrow(),
-                targetStatus,
-                actionInfo
-            )
-        }
 }

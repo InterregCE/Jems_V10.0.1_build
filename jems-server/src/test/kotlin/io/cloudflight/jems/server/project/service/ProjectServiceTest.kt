@@ -166,7 +166,8 @@ class ProjectServiceTest {
             acronym = "test acronym",
             applicant = account,
             currentStatus = statusSubmitted,
-            firstSubmission = statusSubmitted
+            firstSubmission = statusSubmitted,
+            step2Active = false
         )
         every { projectRepository.findAll(UNPAGED) } returns PageImpl(listOf(projectToReturn))
 
@@ -227,22 +228,26 @@ class ProjectServiceTest {
             call = dummyCall,
             acronym = "test",
             applicant = account,
-            currentStatus = statusDraft
+            currentStatus = statusDraft,
+            step2Active = false
         )
 
         val result = projectService.createProject(InputProject("test", dummyCall.id))
 
-        assertEquals(ProjectCallSettingsDTO(
-            callId = dummyCall.id,
-            callName = dummyCall.name,
-            startDate = dummyCall.startDate,
-            endDate = dummyCall.endDate,
-            lengthOfPeriod = 1,
-            isAdditionalFundAllowed = false,
-            flatRates = FlatRateSetupDTO(),
-            lumpSums = emptyList(),
-            unitCosts = emptyList(),
-        ), result.callSettings)
+        assertEquals(
+            ProjectCallSettingsDTO(
+                callId = dummyCall.id,
+                callName = dummyCall.name,
+                startDate = dummyCall.startDate,
+                endDate = dummyCall.endDate,
+                endDateStep1 = dummyCall.endDateStep1,
+                lengthOfPeriod = 1,
+                isAdditionalFundAllowed = false,
+                flatRates = FlatRateSetupDTO(),
+                lumpSums = emptyList(),
+                unitCosts = emptyList(),
+            ), result.callSettings
+        )
         assertEquals(result.acronym, "test")
         assertEquals(result.firstSubmission, null)
         assertEquals(result.lastResubmission, null)
@@ -262,7 +267,17 @@ class ProjectServiceTest {
     @Test
     fun projectGet_OK() {
         every { projectRepository.findById(eq(1)) } returns
-            Optional.of(ProjectEntity(id = 1, call = dummyCall, acronym = "test", applicant = account, currentStatus = statusSubmitted, firstSubmission = statusSubmitted))
+            Optional.of(
+                ProjectEntity(
+                    id = 1,
+                    call = dummyCall,
+                    acronym = "test",
+                    applicant = account,
+                    currentStatus = statusSubmitted,
+                    firstSubmission = statusSubmitted,
+                    step2Active = false
+                )
+            )
 
         val result = projectService.getById(1)
 
@@ -313,7 +328,8 @@ class ProjectServiceTest {
             acronym = "test acronym",
             applicant = account,
             currentStatus = statusSubmitted,
-            firstSubmission = statusSubmitted
+            firstSubmission = statusSubmitted,
+            step2Active = false
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
@@ -324,7 +340,10 @@ class ProjectServiceTest {
             title = projectData.title,
             duration = projectData.duration,
             intro = projectData.intro,
-            specificObjective = OutputProgrammePriorityPolicySimpleDTO(programmeObjectivePolicy = HealthyAgeing, code = "HAB"),
+            specificObjective = OutputProgrammePriorityPolicySimpleDTO(
+                programmeObjectivePolicy = HealthyAgeing,
+                code = "HAB"
+            ),
             programmePriority = null
         )
         assertThat(result.projectData).isEqualTo(expectedData)
@@ -339,7 +358,8 @@ class ProjectServiceTest {
             acronym = "test acronym",
             applicant = account,
             currentStatus = statusSubmitted,
-            firstSubmission = statusSubmitted
+            firstSubmission = statusSubmitted,
+            step2Active = false
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
 
@@ -371,7 +391,8 @@ class ProjectServiceTest {
             call = callWithDuration,
             acronym = "acronym",
             applicant = account,
-            currentStatus = statusDraft
+            currentStatus = statusDraft,
+            step2Active = false
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0

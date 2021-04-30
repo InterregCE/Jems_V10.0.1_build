@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 
 fun ApplicationStatus.toDTO() = ApplicationStatusDTO.valueOf(this.name)
-fun ApplicationActionInfoDTO.toModel() = ApplicationActionInfo(this.note,this.date)
+fun ApplicationActionInfoDTO.toModel() = ApplicationActionInfo(this.note, this.date)
 fun PartnerBudget.toProjectPartnerBudgetDTO() =
     ProjectPartnerBudgetDTO(
         partner = partner.toOutputProjectPartner(),
@@ -37,6 +37,7 @@ fun ProjectCallSettings.toDto() = ProjectCallSettingsDTO(
     callName = callName,
     startDate = startDate,
     endDate = endDate,
+    endDateStep1 = endDateStep1,
     lengthOfPeriod = lengthOfPeriod,
     isAdditionalFundAllowed = isAdditionalFundAllowed,
     flatRates = flatRates.toDto(),

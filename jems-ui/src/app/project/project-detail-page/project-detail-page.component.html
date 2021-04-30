@@ -1,39 +1,45 @@
-<app-main-page-template [needsCard]="true"
-                        *ngIf="details$ | async as details"
+<app-main-page-template [needsCard]="true" *ngIf="projectDetailStore.project$ | async as project"
                         titleKey="project.application.form.lifecycle.title">
     <div appFormLayout>
 
         <div appNoWidthLimit>
-            <h2>{{details.project.id}} - {{details.project.acronym}}</h2>
-            <app-project-application-information appNoWidthLimit
-                                                 [project]="details.project">
+            <h2>{{project.id}} - {{project.acronym}}</h2>
+            <app-project-application-information appNoWidthLimit [project]="project">
             </app-project-application-information>
         </div>
 
-        <div appFormLayout id="project-detail-container">
-            <app-project-application-actions
-                    appNoWidthLimit
-                    [projectId]="details.project.id"
-                    [isThisUserOwner]="details.project.applicant.id === details.user.id"
-                    [projectStatus]="details.project.projectStatus.status"
-                    [revertToStatus]="projectDetailStore.revertToStatus$ | async"
-                    [projectCallEndDate]="details.project.callSettings.endDate">
-            </app-project-application-actions>
-            <app-project-application-decisions
-                    appNoWidthLimit
-                    *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
-                    [project]="details.project"
-                    [projectStatus]="details.project.projectStatus.status">
+        <app-project-application-actions appNoWidthLimit></app-project-application-actions>
+        <div appFormLayout *ngxPermissionsExcept="Permission.APPLICANT_USER" id="project-detail-container">
+            <app-project-application-decisions appNoWidthLimit step="1"
+                                               [callHasTwoSteps]="projectDetailStore.callHasTwoSteps$ | async"
+                                               [decisions]="project.firstStepDecision"
+                                               [projectStatus]="project.projectStatus">
             </app-project-application-decisions>
-            <app-project-application-assessments
-                    appNoWidthLimit
-                    *ngxPermissionsExcept="[Permission.APPLICANT_USER]"
-                    [project]="details.project"
-                    [projectStatus]="details.project.projectStatus.status">
+            <app-project-application-assessments appNoWidthLimit step="1"
+                                                 [decisions]="project.firstStepDecision"
+                                                 [projectStatus]="project.projectStatus">
             </app-project-application-assessments>
+
+            <ng-container *ngIf="project.step2Active">
+                <app-project-application-decisions appNoWidthLimit step="2"
+                                                   [callHasTwoSteps]="projectDetailStore.callHasTwoSteps$ | async"
+                                                   [decisions]="project.secondStepDecision"
+                                                   [projectStatus]="project.projectStatus">
+                </app-project-application-decisions>
+                <app-project-application-assessments appNoWidthLimit step="2"
+                                                     [decisions]="project.secondStepDecision"
+                                                     [projectStatus]="project.projectStatus">
+                </app-project-application-assessments>
+            </ng-container>
         </div>
 
-        <h3 id="applicationFormLifecycleAttachments">{{'file.tab.header' | translate}}</h3>
+        <h3>
+            {{'file.tab.header' | translate}}
+            <app-context-info *ngIf="projectDetailStore.callHasTwoSteps$ | async"
+                              infoPosition="right"
+                              infoText="{{'file.tab.info' | translate}}">
+            </app-context-info>
+        </h3>
         <mat-tab-group appNoWidthLimit>
             <mat-tab label="{{'file.tab.application' | translate}}">
                 <ng-template matTabContent>

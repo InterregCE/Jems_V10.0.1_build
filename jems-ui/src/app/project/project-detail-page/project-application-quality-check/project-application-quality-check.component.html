@@ -1,36 +1,33 @@
-<app-main-page-template [needsCard]="true" *ngIf="project$ | async as project"
+<app-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
                         titleKey="project.application.form.lifecycle.title">
 
     <div page-sub-title appNoWidthLimit appFormLayout>
-        <h2>{{project.id}} – {{project.acronym}}</h2>
-        <app-project-application-information
-                appNoWidthLimit
-                [project]="project">
+        <h2>{{data.project.id}} – {{data.project.acronym}}</h2>
+        <app-project-application-information appNoWidthLimit [project]="data.project">
         </app-project-application-information>
     </div>
 
-    <form appFormLayout [formGroup]="notesForm">
+    <form appFormLayout [formGroup]="qualityCheckForm">
         <h3>{{'project.assessment.qualityCheck.dialog.title' | translate}}</h3>
         <mat-radio-group
                 required
-                name="assessment"
-                formControlName="assessment"
-                [disabled]="project.qualityAssessment !== null"
-                (change)="assessmentChangeHandler($event)">
+                name="result"
+                formControlName="result"
+                [disabled]="!!data.qualityAssessment">
             <mat-radio-button
                     *ngFor="let option of options" [value]="option">
                 {{'project.assessment.qualityCheck.dialog.select.' + option | translate}}
             </mat-radio-button>
         </mat-radio-group>
-        <app-expandable-textarea [control]="notesForm?.controls?.notes"
-                                 [errors]="notesForm?.controls?.notes?.errors"
+        <app-expandable-textarea [control]="qualityCheckForm?.controls?.note"
+                                 [errors]="qualityCheckForm?.controls?.note?.errors"
                                  [messages]="notesErrors"
                                  [characterLimit]="1000"
                                  [label]="'project.assessment.qualityCheck.dialog.field.note'"
-                                 [disabled]="project.qualityAssessment !== null"
+                                 [disabled]="!!data.qualityAssessment"
                                  [customStyle]="'outline'">
         </app-expandable-textarea>
-        <div appMultiColumnRow *ngIf="project.qualityAssessment === null">
+        <div appMultiColumnRow *ngIf="!data.qualityAssessment">
             <button mat-stroked-button
                     (click)="onCancel()">{{'project.assessment.qualityCheck.dialog.button.cancel' | translate}}
             </button>
@@ -38,7 +35,7 @@
             <app-pending-button
                     [confirm]="getQualityCheckConfirmation()"
                     [pending]="actionPending"
-                    [disabled]="notesForm.invalid || submitted"
+                    [disabled]="qualityCheckForm.invalid"
                     (clicked)="onSubmit()">
                 {{'project.assessment.qualityCheck.dialog.button.submit' | translate}}
             </app-pending-button>

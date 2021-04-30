@@ -8,7 +8,7 @@ export class NumberService {
   /**
    * Converts the given number to specific locale (eg. de-DE).
    */
-  static toLocale(value: number, locale: string = 'de-DE'): string | number {
+  static toLocale(value: number, locale = 'de-DE'): string | number {
     if (value === undefined) {
       return '';
     }
@@ -80,7 +80,7 @@ export class NumberService {
   /**
    * Truncates (rounds down) the given number to a fixed number of two decimals.
    */
-  static truncateNumber(toFloor: number, fractionLength: number = 2): number {
+  static truncateNumber(toFloor: number, fractionLength = 2): number {
     return Number(Big(toFloor).round(fractionLength, RoundingMode.RoundDown));
   }
 

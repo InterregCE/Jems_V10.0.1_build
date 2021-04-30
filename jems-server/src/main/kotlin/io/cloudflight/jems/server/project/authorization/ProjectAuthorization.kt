@@ -1,12 +1,10 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.Companion.isNotSubmittedNow
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.DRAFT
+import io.cloudflight.jems.server.authentication.authorization.Authorization
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.authorization.CallAuthorization
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectService
-import io.cloudflight.jems.server.authentication.authorization.Authorization
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -32,7 +30,7 @@ class ProjectAuthorization(
 
         val status = project.projectStatus
         if (isProgrammeUser())
-            if (status != DRAFT)
+            if (!status.isDraft())
                 return true
             else
                 throw ResourceNotFoundException("project")
@@ -52,10 +50,10 @@ class ProjectAuthorization(
         val project = projectService.getApplicantAndStatusById(projectId)
         val status = project.projectStatus
         if (isAdmin() || isApplicantOwner(project.applicantId))
-            return isNotSubmittedNow(status)
+            return status.isNotSubmittedNow()
 
         if (isProgrammeUser())
-            if (status != DRAFT)
+            if (!status.isDraft())
                 return false
             else
                 throw ResourceNotFoundException("project")

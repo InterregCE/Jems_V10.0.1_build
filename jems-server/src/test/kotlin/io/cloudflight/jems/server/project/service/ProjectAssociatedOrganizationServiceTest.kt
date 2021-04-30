@@ -66,7 +66,8 @@ internal class ProjectAssociatedOrganizationServiceTest {
         password = "hash",
         email = "admin@admin.dev",
         surname = "Surname",
-        userRole = userRole)
+        userRole = userRole
+    )
 
     private val call = CallEntity(
         id = 1,
@@ -85,13 +86,16 @@ internal class ProjectAssociatedOrganizationServiceTest {
     private val projectStatus = ProjectStatusHistoryEntity(
         status = ApplicationStatus.APPROVED,
         user = user,
-        updated = ZonedDateTime.now())
+        updated = ZonedDateTime.now()
+    )
     private val project = ProjectEntity(
         id = 1,
         acronym = "acronym",
         call = call,
         applicant = user,
-        currentStatus = projectStatus)
+        currentStatus = projectStatus,
+        step2Active = false
+    )
 
     private val projectPartner = ProjectPartnerEntity(
         id = 1,
@@ -109,35 +113,39 @@ internal class ProjectAssociatedOrganizationServiceTest {
         sortNumber = 1,
     )
 
-    private fun organization(id: Long, partner: ProjectPartnerEntity, name: String, sortNr: Int? = null) = ProjectAssociatedOrganization(
-        id = id,
-        project = partner.project,
-        partner = partner,
-        nameInOriginalLanguage = name,
-        nameInEnglish = name,
-        sortNumber = sortNr
-    )
+    private fun organization(id: Long, partner: ProjectPartnerEntity, name: String, sortNr: Int? = null) =
+        ProjectAssociatedOrganization(
+            id = id,
+            project = partner.project,
+            partner = partner,
+            nameInOriginalLanguage = name,
+            nameInEnglish = name,
+            sortNumber = sortNr
+        )
 
-    private fun outputOrganization(id: Long, partnerAbbr: String, name: String, sortNr: Int? = null) = OutputProjectAssociatedOrganization(
-        id = id,
-        partnerAbbreviation = partnerAbbr,
-        nameInOriginalLanguage = name,
-        nameInEnglish = name,
-        sortNumber = sortNr
-    )
+    private fun outputOrganization(id: Long, partnerAbbr: String, name: String, sortNr: Int? = null) =
+        OutputProjectAssociatedOrganization(
+            id = id,
+            partnerAbbreviation = partnerAbbr,
+            nameInOriginalLanguage = name,
+            nameInEnglish = name,
+            sortNumber = sortNr
+        )
 
-    private fun outputOrganizationDetail(id: Long, partner: OutputProjectPartner, name: String, sortNr: Int? = null) = OutputProjectAssociatedOrganizationDetail(
-        id = id,
-        partner = partner,
-        nameInOriginalLanguage = name,
-        nameInEnglish = name,
-        sortNumber = sortNr
-    )
+    private fun outputOrganizationDetail(id: Long, partner: OutputProjectPartner, name: String, sortNr: Int? = null) =
+        OutputProjectAssociatedOrganizationDetail(
+            id = id,
+            partner = partner,
+            nameInOriginalLanguage = name,
+            nameInEnglish = name,
+            sortNumber = sortNr
+        )
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
-        projectAssociatedOrganizationService = ProjectAssociatedOrganizationServiceImpl(projectPartnerRepository, projectAssociatedOrganizationRepository)
+        projectAssociatedOrganizationService =
+            ProjectAssociatedOrganizationServiceImpl(projectPartnerRepository, projectAssociatedOrganizationRepository)
     }
 
     @Test
@@ -153,7 +161,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
     fun `getById not-existing`() {
         every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, -1) } returns Optional.empty()
 
-        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.getById(1,-1) }
+        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.getById(1, -1) }
         assertThat(ex.entity).isEqualTo("projectAssociatedOrganisation")
     }
 
@@ -180,7 +188,10 @@ internal class ProjectAssociatedOrganizationServiceTest {
             address = AddressEntity(country = "AT")
         )
         val toFirstSave = organization(10, projectPartner, "to create")
-        val toSecondSave = toFirstSave.copy(contacts = mutableSetOf(toBePersistedContact), addresses = mutableSetOf(toBePersistedAddress))
+        val toSecondSave = toFirstSave.copy(
+            contacts = mutableSetOf(toBePersistedContact),
+            addresses = mutableSetOf(toBePersistedAddress)
+        )
         every { projectAssociatedOrganizationRepository.save(any<ProjectAssociatedOrganization>()) } returnsMany
             listOf(
                 // first save just persist AssociatedOrganization without contacts and address
@@ -196,7 +207,12 @@ internal class ProjectAssociatedOrganizationServiceTest {
             partner = projectPartner,
             sortNr = 5 // old, to be replaced by 1
         )
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(eq(projectPartner.project.id), eq(Sort.by("id"))) } returns listOf(alreadyExistingOrganization, toSecondSave)
+        every {
+            projectAssociatedOrganizationRepository.findAllByProjectId(
+                eq(projectPartner.project.id),
+                eq(Sort.by("id"))
+            )
+        } returns listOf(alreadyExistingOrganization, toSecondSave)
         every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
 
         // test create
@@ -208,15 +224,22 @@ internal class ProjectAssociatedOrganizationServiceTest {
             contacts = setOf(InputProjectContact(type = ProjectContactType.ContactPerson, firstName = "test contact"))
         )
         val result = projectAssociatedOrganizationService.create(projectPartner.id, toCreate)
-        assertThat(result).isEqualTo(outputOrganizationDetail(
-            id = 10,
-            partner = outputProjectPartner,
-            name = "to create",
-            sortNr = null // this will be updated to 2 during updateSort, but for unit test we mock hibernate so object is not tightly connected to entity
-        ).copy(
-            address = OutputProjectAssociatedOrganizationAddress(country = "AT"),
-            contacts = listOf(OutputProjectPartnerContact(type = toBePersistedContact.contactId.type, firstName = toBePersistedContact.contact!!.firstName))
-        ))
+        assertThat(result).isEqualTo(
+            outputOrganizationDetail(
+                id = 10,
+                partner = outputProjectPartner,
+                name = "to create",
+                sortNr = null // this will be updated to 2 during updateSort, but for unit test we mock hibernate so object is not tightly connected to entity
+            ).copy(
+                address = OutputProjectAssociatedOrganizationAddress(country = "AT"),
+                contacts = listOf(
+                    OutputProjectPartnerContact(
+                        type = toBePersistedContact.contactId.type,
+                        firstName = toBePersistedContact.contact!!.firstName
+                    )
+                )
+            )
+        )
 
         val slotOrganizations = mutableListOf<ProjectAssociatedOrganization>()
         verify { projectAssociatedOrganizationRepository.save(capture(slotOrganizations)) }
@@ -239,7 +262,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         verify { projectAssociatedOrganizationRepository.saveAll(capture(updatedSortNrs)) }
 
         // assert that sortNumbers are correctly recalculated
-        with (updatedSortNrs.captured) {
+        with(updatedSortNrs.captured) {
             assertThat(get(0).id).isEqualTo(9)
             assertThat(get(0).sortNumber).isEqualTo(1)
             assertThat(get(1).id).isEqualTo(10)
@@ -264,7 +287,9 @@ internal class ProjectAssociatedOrganizationServiceTest {
             name = "old name",
             sortNr = 13
         )
-        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(oldOrganization)
+        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(
+            oldOrganization
+        )
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(oldOrganization.partner)
         every { projectAssociatedOrganizationRepository.save(any<ProjectAssociatedOrganization>()) } returnsArgument 0
 
@@ -279,22 +304,34 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
         // test update
         val result = projectAssociatedOrganizationService.update(1, newValues)
-        assertThat(result).isEqualTo(outputOrganizationDetail(
-            id = 1,
-            partner = outputProjectPartner,
-            name = "new name",
-            sortNr = 13 // this will be updated to 1, but for unit test we mock hibernate so object is not tightly connected to entity
-        ))
+        assertThat(result).isEqualTo(
+            outputOrganizationDetail(
+                id = 1,
+                partner = outputProjectPartner,
+                name = "new name",
+                sortNr = 13 // this will be updated to 1, but for unit test we mock hibernate so object is not tightly connected to entity
+            )
+        )
     }
 
     @Test
     fun deleteAssociatedOrganization() {
         val orgToBeRemoved = organization(id = 1, partner = projectPartner, name = "test name")
-        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(orgToBeRemoved.project.id, orgToBeRemoved.id) } returns Optional.of(orgToBeRemoved)
+        every {
+            projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(
+                orgToBeRemoved.project.id,
+                orgToBeRemoved.id
+            )
+        } returns Optional.of(orgToBeRemoved)
         every { projectAssociatedOrganizationRepository.delete(eq(orgToBeRemoved)) } answers {}
 
         // mock updating sort after entity updated
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(eq(projectPartner.project.id), eq(Sort.by("id"))) } returns emptyList()
+        every {
+            projectAssociatedOrganizationRepository.findAllByProjectId(
+                eq(projectPartner.project.id),
+                eq(Sort.by("id"))
+            )
+        } returns emptyList()
         every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
 
         projectAssociatedOrganizationService.delete(orgToBeRemoved.project.id, orgToBeRemoved.id)
@@ -304,7 +341,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
     fun `deleteAssociatedOrganization not existing`() {
         every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, -1) } returns Optional.empty()
 
-        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.delete(1,-1) }
+        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.delete(1, -1) }
         assertThat(ex.entity).isEqualTo("projectAssociatedOrganisation")
     }
 

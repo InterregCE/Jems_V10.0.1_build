@@ -17,13 +17,15 @@ fun Collection<ProjectPeriodEntity>.toProjectPeriods() = map { it.toProjectPerio
 
 fun ProjectPeriodEntity.toProjectPeriod() = ProjectPeriod(number = id.number, start = start, end = end)
 
-fun ProjectVersionEntity.toProjectVersion() = ProjectVersion(version= id.version, projectId = id.projectId, createdAt = createdAt, user = user, status = status)
+fun ProjectVersionEntity.toProjectVersion() =
+    ProjectVersion(version = id.version, projectId = id.projectId, createdAt = createdAt, user = user, status = status)
 
 fun CallEntity.toSettingsModel() = ProjectCallSettings(
     callId = id,
     callName = name,
     startDate = startDate,
     endDate = endDate,
+    endDateStep1 = endDateStep1,
     lengthOfPeriod = lengthOfPeriod,
     isAdditionalFundAllowed = isAdditionalFundAllowed,
     flatRates = flatRates.toModel(),

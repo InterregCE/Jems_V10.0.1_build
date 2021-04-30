@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {OutputProjectFile, ProjectDetailDTO} from '@cat/api';
+import {OutputProjectFile, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import {Permission} from '../../../../../../../security/permissions/permission';
 
 @Component({
@@ -13,6 +13,8 @@ export class ActionsCellComponent {
   file: OutputProjectFile;
   @Input()
   project: ProjectDetailDTO;
+  @Input()
+  fundingDecisionDefined: boolean;
   @Input()
   permission: Permission;
 
@@ -48,6 +50,6 @@ export class ActionsCellComponent {
 
   private canChangeAssessmentFile(): boolean {
     return this.permission !== Permission.APPLICANT_USER
-      && (!this.project.fundingDecision || this.file.updated > this.project.projectStatus.updated);
+      && (!this.fundingDecisionDefined || this.file.updated > this.project.projectStatus.updated);
   }
 }

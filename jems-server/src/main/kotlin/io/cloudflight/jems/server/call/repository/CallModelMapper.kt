@@ -32,6 +32,7 @@ fun CallEntity.toModel() = CallSummary(
     status = status,
     startDate = startDate,
     endDate = endDate,
+    endDateStep1 = endDateStep1
 )
 
 fun Page<CallEntity>.toModel() = map { it.toModel() }

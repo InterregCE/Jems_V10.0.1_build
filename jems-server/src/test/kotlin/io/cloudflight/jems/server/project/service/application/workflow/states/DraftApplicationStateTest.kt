@@ -41,6 +41,7 @@ class DraftApplicationStateTest : UnitTest() {
             callName = "dummy call",
             startDate = ZonedDateTime.now().minusDays(1),
             endDate = ZonedDateTime.now().plusDays(1),
+            endDateStep1 = null,
             lengthOfPeriod = 0,
             isAdditionalFundAllowed = false,
             flatRates = emptySet(),
@@ -82,10 +83,18 @@ class DraftApplicationStateTest : UnitTest() {
     @Test
     fun `submit - successful`() {
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns projectCallSettings
-        every { projectWorkflowPersistence.updateApplicationFirstSubmission(any(), any()) } returns ApplicationStatus.SUBMITTED
+        every {
+            projectWorkflowPersistence.updateApplicationFirstSubmission(any(), any(), any())
+        } returns ApplicationStatus.SUBMITTED
 
         assertThat(draftApplicationState.submit()).isEqualTo(ApplicationStatus.SUBMITTED)
-        verify(exactly = 1) { projectWorkflowPersistence.updateApplicationFirstSubmission(PROJECT_ID, USER_ID)  }
+        verify(exactly = 1) {
+            projectWorkflowPersistence.updateApplicationFirstSubmission(
+                PROJECT_ID,
+                USER_ID,
+                ApplicationStatus.SUBMITTED
+            )
+        }
     }
 
     @Test
@@ -121,7 +130,11 @@ class DraftApplicationStateTest : UnitTest() {
 
     @Test
     fun approveWithConditions() {
-        assertThrows<ApproveWithConditionsIsNotAllowedException> { draftApplicationState.approveWithConditions(actionInfo) }
+        assertThrows<ApproveWithConditionsIsNotAllowedException> {
+            draftApplicationState.approveWithConditions(
+                actionInfo
+            )
+        }
     }
 
     @Test

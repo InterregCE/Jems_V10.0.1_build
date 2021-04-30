@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {tap} from 'rxjs/operators';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {map, tap} from 'rxjs/operators';
 import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {Permission} from '../../../security/permissions/permission';
@@ -7,6 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import * as moment from 'moment';
 import {ProjectDetailPageStore} from '../project-detail-page-store.service';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {combineLatest, Observable} from 'rxjs';
 
 @Component({
   selector: 'app-project-application-actions',
@@ -22,23 +23,15 @@ export class ProjectApplicationActionsComponent {
   Permissions = UserRoleDTO.PermissionsEnum;
   STATUS = ProjectStatusDTO.StatusEnum;
 
-  returnableStatuses = [
-    ProjectStatusDTO.StatusEnum.SUBMITTED,
-    ProjectStatusDTO.StatusEnum.ELIGIBLE,
-    ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS,
-    ProjectStatusDTO.StatusEnum.APPROVED,
-  ];
-
-  @Input()
-  projectStatus: ProjectStatusDTO.StatusEnum;
-  @Input()
-  revertToStatus: string;
-  @Input()
-  projectCallEndDate: Date;
-  @Input()
-  projectId: number;
-  @Input()
-  isThisUserOwner: boolean;
+  data$: Observable<{
+    projectStatus: ProjectStatusDTO.StatusEnum,
+    projectId: number,
+    projectCallEndDate: Date,
+    startStepTwoAvailable: boolean,
+    returnToApplicantAvailable: boolean,
+    revertToStatus: string | null,
+    isThisUserOwner: boolean
+  }>;
 
   // TODO: create a component
   successMessage: boolean;
@@ -47,41 +40,64 @@ export class ProjectApplicationActionsComponent {
   constructor(public translate: TranslateService,
               private projectDetailStore: ProjectDetailPageStore,
               private changeDetectorRef: ChangeDetectorRef) {
+    this.data$ = combineLatest([
+      this.projectDetailStore.project$,
+      this.projectDetailStore.callHasTwoSteps$,
+      this.projectDetailStore.revertToStatus$,
+      this.projectDetailStore.isThisUserOwner$,
+    ]).pipe(
+      map(([project, callHasTwoSteps, revertToStatus, isThisUserOwner]) => ({
+        projectStatus: project.projectStatus.status,
+        projectId: project.id,
+        projectCallEndDate: project.callSettings?.endDate,
+        startStepTwoAvailable: this.startStepTwoAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
+        returnToApplicantAvailable: this.returnToApplicantAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
+        revertToStatus,
+        isThisUserOwner
+      }))
+    );
   }
 
-  submitProject(): void {
-    this.projectDetailStore.submitApplication(this.projectId)
+  submitProject(projectId: number): void {
+    this.projectDetailStore.submitApplication(projectId)
       .pipe(
         tap(() => this.actionPending = false),
       ).subscribe();
   }
 
-  resubmitProject(): void {
-    this.projectDetailStore.submitApplication(this.projectId)
+  resubmitProject(projectId: number): void {
+    this.projectDetailStore.submitApplication(projectId)
       .pipe(
         tap(() => this.actionPending = false),
         tap(() => this.showSuccessMessage())
       ).subscribe();
   }
 
-  returnToApplicant(): void {
-    this.projectDetailStore.returnApplicationToApplicant(this.projectId)
+  returnToApplicant(projectId: number): void {
+    this.projectDetailStore.returnApplicationToApplicant(projectId)
       .pipe(
         tap(() => this.actionPending = false),
         tap(() => this.showSuccessMessage())
       ).subscribe();
   }
 
-  revertProjectStatus(): void {
-    this.projectDetailStore.revertApplicationDecision(this.projectId)
+  revertProjectStatus(projectId: number): void {
+    this.projectDetailStore.revertApplicationDecision(projectId)
       .pipe(
         tap(() => this.actionPending = false),
       ).subscribe();
   }
 
-  isOpen(): boolean {
+  startStepTwo(projectId: number): void {
+    this.projectDetailStore.returnApplicationToDraft(projectId)
+      .pipe(
+        tap(() => this.actionPending = false),
+      ).subscribe();
+  }
+
+  isOpen(projectCallEndDate: Date): boolean {
     const currentDate = moment(new Date());
-    return currentDate.isBefore(this.projectCallEndDate);
+    return currentDate.isBefore(projectCallEndDate);
   }
 
   private showSuccessMessage(): void {
@@ -92,14 +108,40 @@ export class ProjectApplicationActionsComponent {
     },         4000);
   }
 
-  getRevertConfirmation(): ConfirmDialogData {
+  getRevertConfirmation(projectStatus: ProjectStatusDTO.StatusEnum, revertToStatus: string): ConfirmDialogData {
     return {
       title: 'project.application.revert.status.dialog.title',
       message: 'project.application.revert.status.dialog.message',
       arguments: {
-        from: this.translate.instant('common.label.projectapplicationstatus.' + this.projectStatus),
-        to: this.translate.instant('common.label.projectapplicationstatus.' + this.revertToStatus)
+        from: this.translate.instant('common.label.projectapplicationstatus.' + projectStatus),
+        to: this.translate.instant('common.label.projectapplicationstatus.' + revertToStatus)
       }
     };
   }
+
+  private startStepTwoAvailable(status: ProjectStatusDTO.StatusEnum, callHasTwoSteps: boolean,
+                                projectInSecondStep: boolean): boolean {
+    if (!callHasTwoSteps || projectInSecondStep) {
+      return false;
+    }
+    return status === ProjectStatusDTO.StatusEnum.STEP1APPROVED
+      || status === ProjectStatusDTO.StatusEnum.STEP1APPROVEDWITHCONDITIONS;
+  }
+
+  private returnToApplicantAvailable(status: ProjectStatusDTO.StatusEnum,
+                                     callHasTwoSteps: boolean, projectInSecondStep: boolean): boolean {
+    const returnableStatuses = [
+      ProjectStatusDTO.StatusEnum.SUBMITTED,
+      ProjectStatusDTO.StatusEnum.ELIGIBLE,
+      ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS,
+      ProjectStatusDTO.StatusEnum.APPROVED,
+    ];
+
+    if (callHasTwoSteps && !projectInSecondStep) {
+      return false;
+    }
+
+    return returnableStatuses.includes(status);
+  }
+
 }

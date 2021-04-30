@@ -21,6 +21,7 @@ internal class GetProjectTest : UnitTest() {
             callName = "Call 15",
             startDate = startDate,
             endDate = endDate,
+            endDateStep1 = null,
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
             flatRates = emptySet(),

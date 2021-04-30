@@ -6,9 +6,9 @@ import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.repository.user.UserRepository
+import java.time.LocalDate
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
 
 @Repository
 class ProjectWorkflowPersistenceProvider(
@@ -20,7 +20,10 @@ class ProjectWorkflowPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getProjectEligibilityDecisionDate(projectId: Long): LocalDate? =
         getProjectOrThrow(projectId)!!.let {
-            it.eligibilityDecision?.decisionDate
+            if (it.step2Active)
+                it.secondStepDecision!!.eligibilityDecision?.decisionDate
+            else
+                it.firstStepDecision!!.eligibilityDecision?.decisionDate
         }
 
     @Transactional(readOnly = true)
@@ -36,11 +39,11 @@ class ProjectWorkflowPersistenceProvider(
         )?.status ?: throw ApplicationStatusNotFoundException()
 
     @Transactional
-    override fun updateApplicationFirstSubmission(projectId: Long, userId: Long) =
+    override fun updateApplicationFirstSubmission(projectId: Long, userId: Long, status: ApplicationStatus) =
         projectRepository.getOne(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = ApplicationStatus.SUBMITTED, user = userRepository.getOne(userId)
+                    project = this, status = status, user = userRepository.getOne(userId)
                 )
             )
             firstSubmission = newStatus
@@ -77,6 +80,23 @@ class ProjectWorkflowPersistenceProvider(
         }.currentStatus.status
 
     @Transactional
+    override fun startSecondStep(
+        projectId: Long,
+        userId: Long,
+        actionInfo: ApplicationActionInfo?
+    ): ApplicationStatus =
+        projectRepository.getOne(projectId).apply {
+            currentStatus = projectStatusHistoryRepository.save(
+                ProjectStatusHistoryEntity(
+                    project = this, status = ApplicationStatus.DRAFT, user = userRepository.getOne(userId),
+                    decisionDate = actionInfo?.date,
+                    note = actionInfo?.note
+                )
+            )
+            step2Active = true
+        }.currentStatus.status
+
+    @Transactional
     override fun revertCurrentStatusToPreviousStatus(projectId: Long) =
         getPreviousHistoryStatusOrThrow(projectId).let { previousHistoryStatus ->
             projectRepository.getOne(projectId).apply {
@@ -88,7 +108,10 @@ class ProjectWorkflowPersistenceProvider(
     @Transactional
     override fun resetProjectFundingDecisionToCurrentStatus(projectId: Long) =
         projectRepository.getOne(projectId).apply {
-            fundingDecision = currentStatus
+            if (this.step2Active)
+                this.secondStepDecision!!.fundingDecision = currentStatus
+            else
+                this.firstStepDecision!!.fundingDecision = currentStatus
         }.currentStatus.status
 
 
@@ -103,13 +126,21 @@ class ProjectWorkflowPersistenceProvider(
                     decisionDate = actionInfo.date, user = userRepository.getOne(userId)
                 )
             )
-            eligibilityDecision = newStatus
+            if (this.step2Active)
+                this.secondStepDecision!!.eligibilityDecision = newStatus
+            else
+                this.firstStepDecision!!.eligibilityDecision = newStatus
             currentStatus = newStatus
         }.currentStatus.status
 
     @Transactional
     override fun clearProjectEligibilityDecision(projectId: Long) {
-        projectRepository.getOne(projectId).eligibilityDecision = null
+        projectRepository.getOne(projectId).apply {
+            if (this.step2Active)
+                this.secondStepDecision!!.eligibilityDecision = null
+            else
+                this.firstStepDecision!!.eligibilityDecision = null
+        }
     }
 
     @Transactional
@@ -123,13 +154,21 @@ class ProjectWorkflowPersistenceProvider(
                     decisionDate = actionInfo.date, user = userRepository.getOne(userId)
                 )
             )
-            fundingDecision = newStatus
+            if (this.step2Active)
+                this.secondStepDecision!!.fundingDecision = newStatus
+            else
+                this.firstStepDecision!!.fundingDecision = newStatus
             currentStatus = newStatus
         }.currentStatus.status
 
     @Transactional
     override fun clearProjectFundingDecision(projectId: Long) {
-        projectRepository.getOne(projectId).fundingDecision = null
+        projectRepository.getOne(projectId).apply {
+            if (this.step2Active)
+                this.secondStepDecision!!.fundingDecision = null
+            else
+                this.firstStepDecision!!.fundingDecision = null
+        }
     }
 
     private fun getProjectOrThrow(projectId: Long) =
@@ -142,5 +181,4 @@ class ProjectWorkflowPersistenceProvider(
                     throw PreviousApplicationStatusNotFoundException()
                 last()
             }
-
 }

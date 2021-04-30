@@ -26,7 +26,16 @@ class ProjectFileFactory(
 
     @Transactional
     fun saveProject(author: UserEntity, call: CallEntity): ProjectEntity {
-        val projectStatus = projectStatusHistoryRepository.save(ProjectStatusHistoryEntity(0, null, ApplicationStatus.DRAFT, author, ZonedDateTime.now(), null))
+        val projectStatus = projectStatusHistoryRepository.save(
+            ProjectStatusHistoryEntity(
+                0,
+                null,
+                ApplicationStatus.DRAFT,
+                author,
+                ZonedDateTime.now(),
+                null
+            )
+        )
         return projectRepository.save(
             ProjectEntity(
                 id = 0,
@@ -34,7 +43,8 @@ class ProjectFileFactory(
                 acronym = "test_project",
                 applicant = author,
                 currentStatus = projectStatus,
-                firstSubmission = projectStatus
+                firstSubmission = projectStatus,
+                step2Active = false
             )
         )
     }
@@ -52,7 +62,9 @@ class ProjectFileFactory(
                 ProjectFileType.APPLICANT_FILE,
                 null,
                 4,
-                ZonedDateTime.now()))
+                ZonedDateTime.now()
+            )
+        )
     }
 
 }

@@ -3,7 +3,7 @@ import {NumberService} from '../services/number.service';
 
 @Pipe({name: 'percentage'})
 export class PercentagePipe implements PipeTransform {
-  transform(value: number | null, total: number, fractionLength: number = 0): number {
+  transform(value: number | null, total: number, fractionLength = 0): number {
     if (total === 0 || value === 0 || value === null) {
       return 0;
     }
