@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "941b2481-3022-4d74-9c0d-4ff1ea45a1b7",
+		"_postman_id": "9b8a112e-eebf-4e9a-926b-8770a5a76d12",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -4148,7 +4148,7 @@
 									"});\r",
 									"\r",
 									"pm.test('EA is part of the application detail', function() {\r",
-									"    const application = pm.response.json();\r",
+									"    const application = pm.response.json().decision;\r",
 									"    pm.expect(application).to.have.property(\"eligibilityAssessment\");\r",
 									"    pm.expect(application.eligibilityAssessment).not.eql(null);\r",
 									"});\r",
@@ -4160,13 +4160,13 @@
 									"\r",
 									"pm.test('EA result is properly saved', function() {\r",
 									"    const application = pm.response.json();\r",
-									"    pm.expect(application.eligibilityAssessment.result)\r",
+									"    pm.expect(application.decision.eligibilityAssessment.result)\r",
 									"        .to.eql(\"PASSED\");\r",
 									"});\r",
 									"\r",
 									"pm.test('EA note is properly saved', function() {\r",
 									"    const application = pm.response.json();\r",
-									"    pm.expect(application.eligibilityAssessment.note)\r",
+									"    pm.expect(application.decision.eligibilityAssessment.note)\r",
 									"        .to.eql(\"status set to passed\");\r",
 									"});\r",
 									""
@@ -4945,24 +4945,26 @@
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
 											"\r",
-											"const application = pm.response.json();\r",
-											"\r",
 											"pm.test('QA is part of the application detail', function() {\r",
-											"    pm.expect(application).to.have.property(\"qualityAssessment\");\r",
-											"    pm.expect(application.qualityAssessment).not.eql(null);\r",
+											"    const application = pm.response.json();\r",
+											"    pm.expect(application.decision).to.have.property(\"qualityAssessment\");\r",
+											"    pm.expect(application.decision.qualityAssessment).not.eql(null);\r",
 											"});\r",
 											"\r",
 											"pm.test('status of the application is not changed', function() {\r",
+											"    const application = pm.response.json();\r",
 											"    pm.expect(application.projectStatus.status).to.eql('SUBMITTED');\r",
 											"});\r",
 											"\r",
 											"pm.test('QA result is properly saved', function() {\r",
-											"    pm.expect(application.qualityAssessment.result)\r",
+											"    const application = pm.response.json();\r",
+											"    pm.expect(application.decision.qualityAssessment.result)\r",
 											"        .to.eql(\"RECOMMENDED_FOR_FUNDING\");\r",
 											"});\r",
 											"\r",
 											"pm.test('QA note is properly saved', function() {\r",
-											"    pm.expect(application.qualityAssessment.note)\r",
+											"    const application = pm.response.json();\r",
+											"    pm.expect(application.decision.qualityAssessment.note)\r",
 											"        .to.eql(\"status set to recommended for funding\");\r",
 											"});\r",
 											""
@@ -5897,8 +5899,9 @@
 											"\r",
 											"pm.test('funding decision is part of the project object', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application).to.have.property('fundingDecision');\r",
-											"    pm.expect(application.fundingDecision)\r",
+											"    const decision = application.decision;\r",
+											"    pm.expect(decision).to.have.property('fundingDecision');\r",
+											"    pm.expect(decision.fundingDecision)\r",
 											"        .deep.equal(application.projectStatus);\r",
 											"});\r",
 											""
@@ -6163,10 +6166,10 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-                                          "var date = new Date();\r",
-                                          "date.setDate(date.getDate() - 5);\r",
-                                          "pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
-                                          ""
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() - 5);\r",
+											"pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -6202,21 +6205,21 @@
 								},
 								"method": "PUT",
 								"header": [
-                                  {
-                                    "key": "Content-Type",
-                                    "type": "text",
-                                    "value": "application/json"
-                                  }
-                                ],
-                              "body": {
-                                "mode": "raw",
-                                "raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
-                                "options": {
-                                  "raw": {
-                                    "language": "json"
-                                  }
-                                }
-                              },
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}/approve",
 									"host": [
@@ -6517,10 +6520,10 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-                                          "var date = new Date();\r",
-                                          "date.setDate(date.getDate() - 5);\r",
-                                          "pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
-                                          ""
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() - 5);\r",
+											"pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -6556,21 +6559,21 @@
 								},
 								"method": "PUT",
 								"header": [
-                                  {
-                                    "key": "Content-Type",
-                                    "type": "text",
-                                    "value": "application/json"
-                                  }
-                                ],
-                                "body": {
-                                  "mode": "raw",
-                                  "raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
-                                  "options": {
-                                    "raw": {
-                                      "language": "json"
-                                    }
-                                  }
-                                },
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}/approve",
 									"host": [
@@ -7051,8 +7054,9 @@
 											"\r",
 											"pm.test('funding decision is part of the project object', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application).to.have.property('fundingDecision');\r",
-											"    pm.expect(application.fundingDecision)\r",
+											"    const decision = application.decision;\r",
+											"    pm.expect(decision).to.have.property('fundingDecision');\r",
+											"    pm.expect(decision.fundingDecision)\r",
 											"        .deep.equal(application.projectStatus);\r",
 											"});\r",
 											""
@@ -7390,10 +7394,11 @@
 											"\r",
 											"pm.test('project status should refer to this change', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application.fundingDecision).to.have.property('id');\r",
+											"    const decision = application.decision;\r",
+											"    pm.expect(decision.fundingDecision).to.have.property('id');\r",
 											"    pm.expect(application.projectStatus).to.have.property('id');\r",
 											"    // fundingDecision is still referring to the first funding attempt\r",
-											"    pm.expect(application.fundingDecision.id)\r",
+											"    pm.expect(decision.fundingDecision.id)\r",
 											"        .not.eql(application.projectStatus.id);\r",
 											"});\r",
 											""
