@@ -15,84 +15,70 @@
                 </mat-form-field>
             </div>
 
-            <ng-container formArrayName="permissions">
-                <mat-expansion-panel *ngFor="let perm of permissions.controls; let i=index;" [formGroupName]="i"
-                                     [hideToggle]="!perm.get('subtree')"
-                                     [expanded]="!!perm.get('subtree')">
-                    <mat-expansion-panel-header>
-                        <mat-panel-title
-                                class="mat-title-vertical-center">{{ perm.get('name').value | translate }}</mat-panel-title>
-                        <mat-panel-description *ngIf="!perm.get('subtree')" class="mr-5">
-                            <mat-button-toggle-group>
-                                <mat-button-toggle
-                                        [checked]="perm.get('state')?.value === PermissionState.HIDDEN"
-                                        (click)="$event.stopPropagation()"
-                                        (change)="changeState(perm, PermissionState.HIDDEN);">
-                                    {{'Hidden' | translate}}
-                                </mat-button-toggle>
-                                <mat-button-toggle
-                                        [checked]="perm.get('state')?.value === PermissionState.VIEW"
-                                        (click)="$event.stopPropagation()"
-                                        (change)="changeState(perm, PermissionState.VIEW)">
-                                    {{'View' | translate}}
-                                </mat-button-toggle>
-                                <mat-button-toggle
-                                        [checked]="perm.get('state')?.value === PermissionState.EDIT"
-                                        (click)="$event.stopPropagation()"
-                                        (change)="changeState(perm, PermissionState.EDIT)">
-                                    {{'Edit' | translate}}
-                                </mat-button-toggle>
-                            </mat-button-toggle-group>
-                        </mat-panel-description>
-                    </mat-expansion-panel-header>
-
-                    <ng-container *ngIf="!!perm.get('subtree')">
-                        <ng-container formArrayName="subtree">
-                            <mat-expansion-panel expanded="false"
-                                                 *ngFor="let child of perm.get('subtree').controls; let j=index;"
-                                                 [formGroupName]="j"
-                                                 hideToggle>
-                                <mat-expansion-panel-header>
-                                    <mat-panel-title class="mat-title-vertical-center">
-                                        {{ child.get('name').value | translate }}
-                                    </mat-panel-title>
-                                    <mat-panel-description class="mr-4">
-                                        <mat-button-toggle-group *ngIf="child.get('isOneClickToggle')?.value">
-                                            <mat-button-toggle
-                                                    [checked]="child.get('state')?.value === PermissionState.HIDDEN"
-                                                    (click)="$event.stopPropagation()"
-                                                    (change)="changeState(child, PermissionState.HIDDEN);">
-                                                {{'Hidden' | translate}}
-                                            </mat-button-toggle>
-                                            <mat-button-toggle
-                                                    [checked]="child.get('state')?.value === PermissionState.VIEW"
-                                                    (click)="$event.stopPropagation()"
-                                                    (change)="changeState(child, PermissionState.VIEW)">
-                                                {{'View' | translate}}
-                                            </mat-button-toggle>
-                                            <mat-button-toggle
-                                                    [checked]="child.get('state')?.value === PermissionState.EDIT"
-                                                    (click)="$event.stopPropagation()"
-                                                    (change)="changeState(child, PermissionState.EDIT)">
-                                                {{'Edit' | translate}}
-                                            </mat-button-toggle>
-                                        </mat-button-toggle-group>
-
-                                        <mat-slide-toggle *ngIf="!child.get('isOneClickToggle')?.value"
-                                                          (click)="$event.stopPropagation()"
-                                                          (change)="changeStateOfToggle(child)"
-                                                          [checked]="child.get('state')?.value === PermissionState.EDIT">
-                                        </mat-slide-toggle>
-                                    </mat-panel-description>
-                                </mat-expansion-panel-header>
-                            </mat-expansion-panel>
-                        </ng-container>
-                    </ng-container>
-
-                </mat-expansion-panel>
-            </ng-container>
+            <mat-accordion formArrayName="permissions" id="permissions">
+                <ng-container *ngFor="let perm of permissions.controls; let i=index;"
+                              [ngTemplateOutlet]="!perm.get('subtree') ? leaf : node"
+                              [ngTemplateOutletContext]="{item: perm, level: 1, form: i, context: {form: i}}">
+                </ng-container>
+            </mat-accordion>
 
         </form>
+        <div><pre>{{ userRoleForm?.value | json }}</pre></div>
     </app-form>
 </app-main-page-template>
 
+<ng-template let-item="item" let-level="level" #node>
+    <mat-expansion-panel [class.alternative]="level % 2 == 0" expanded>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{ item?.get('name')?.value | translate }}
+            </mat-panel-title>
+            <mat-panel-description>
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <ng-container
+                *ngFor="let subItem of item?.get('subtree')?.controls; let i=index;"
+                [ngTemplateOutlet]="!subItem?.get('subtree') ? leaf : node"
+                [ngTemplateOutletContext]="{item: subItem, level: level + 1, form: i}"
+        ></ng-container>
+    </mat-expansion-panel>
+</ng-template>
+
+<ng-template let-item="item" let-level="level" let-form="form" #leaf>
+    <mat-expansion-panel class="leaf" [class.alternative]="level % 2 == 0" hideToggle [formGroup]="item">
+        <mat-expansion-panel-header (click)="$event.stopPropagation()">
+            <mat-panel-title class="mat-title-vertical-center">
+                {{ item?.get('name')?.value | translate }}
+            </mat-panel-title>
+
+            <mat-panel-description class="mr-4">
+                <mat-button-toggle-group *ngIf="item.get('isOneClickToggle')?.value">
+                    <mat-button-toggle
+                            [checked]="item.get('state')?.value === PermissionState.HIDDEN"
+                            (click)="$event.stopPropagation()"
+                            (change)="changeState(item, PermissionState.HIDDEN);">
+                        {{'Hidden' | translate}}
+                    </mat-button-toggle>
+                    <mat-button-toggle
+                            [checked]="item.get('state')?.value === PermissionState.VIEW"
+                            (click)="$event.stopPropagation()"
+                            (change)="changeState(item, PermissionState.VIEW)">
+                        {{'View' | translate}}
+                    </mat-button-toggle>
+                    <mat-button-toggle
+                            [checked]="item.get('state')?.value === PermissionState.EDIT"
+                            (click)="$event.stopPropagation()"
+                            (change)="changeState(item, PermissionState.EDIT)">
+                        {{'Edit' | translate}}
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+
+                <mat-slide-toggle *ngIf="!item.get('isOneClickToggle')?.value"
+                                  (click)="$event.stopPropagation()"
+                                  (change)="changeStateOfToggle(item)"
+                                  [checked]="item.get('state')?.value === PermissionState.EDIT">
+                </mat-slide-toggle>
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+    </mat-expansion-panel>
+</ng-template>

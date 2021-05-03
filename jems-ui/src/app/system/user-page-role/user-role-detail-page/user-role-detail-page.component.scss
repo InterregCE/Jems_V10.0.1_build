@@ -1,13 +1,3 @@
-.permission-line {
-  display: block;
-  align-self: center;
-
-  mat-checkbox {
-    margin-right: 1rem;
-    display: inline-block;
-  }
-}
-
 mat-panel-description {
   flex: 0;
 }
@@ -15,4 +5,21 @@ mat-panel-description {
 .mat-title-vertical-center {
   display: flex;
   align-items: center;
+}
+
+#permissions{
+  ::ng-deep .mat-expansion-panel{
+    box-shadow: none;
+    border-bottom: 1px solid var(--blue-gray);
+    &.alternative{
+      background-color: var(--pale-blue-gray);
+    }
+    &.leaf{
+      //pointer-events: none;
+    }
+  }
+  ::ng-deep .mat-expansion-panel-body {
+    padding-right: 0;
+  }
+
 }

@@ -40,6 +40,27 @@ export class Permission {
           ]
         },
         {
+          name: 'topbar.main.user.management',
+          children: [
+            {
+              name: 'topbar.main.user.management',
+              viewPermissions: [PermissionsEnum.UserRetrieve],
+              editPermissions: [
+                PermissionsEnum.UserCreate,
+                PermissionsEnum.UserUpdate,
+              ]
+            },
+            {
+              name: 'user.detail.changeRole.dialog.title',
+              oneClickToggle: [PermissionsEnum.UserUpdateRole],
+            },
+            {
+              name: 'user.detail.changePassword.dialog.title',
+              oneClickToggle: [PermissionsEnum.UserUpdatePassword],
+            },
+          ],
+        },
+        {
           name: 'topbar.main.userRole.management',
           viewPermissions: [PermissionsEnum.RoleRetrieve],
           editPermissions: [
