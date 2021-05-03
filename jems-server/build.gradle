@@ -5,7 +5,12 @@ configurations {
 }
 
 dependencies {
+    // load from nexus
     implementation('io.cloudflight.jems.plugin.contract:jems-plugin-contract')
+    // load for local development (if projects are cloned in same root as jems)
+    //implementation files('../../jems-plugin-contract/build/libs/jems-plugin-contract-1.0.0-SNAPSHOT.jar')
+    //implementation files('../../jems-standard-plugin/build/libs/jems-standard-plugin-1.0.0-SNAPSHOT.jar')
+
     toDownload('io.cloudflight.jems.plugin.standard:jems-standard-plugin')
 
     implementation project(':jems-api')
