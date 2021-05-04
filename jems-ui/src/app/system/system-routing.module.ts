@@ -13,6 +13,9 @@ import {UserRoleNameResolver} from './user-page-role/user-role-detail-page/user-
 export const routes: Routes = [
   {
     path: '',
+    data: {
+      breadcrumb: 'system.page.title',
+    },
     children: [
       {
         path: '',
