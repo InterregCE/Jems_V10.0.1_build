@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges} from '@angular/core';
 import {ProjectDecisionDTO, ProjectStatusDTO} from '@cat/api';
 import {ProjectStepStatus} from '../project-step-status';
 
@@ -8,7 +8,8 @@ import {ProjectStepStatus} from '../project-step-status';
   styleUrls: ['./project-application-assessments.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationAssessmentsComponent {
+export class ProjectApplicationAssessmentsComponent implements OnChanges {
+
   @Input()
   step: number;
   @Input()
@@ -16,5 +17,12 @@ export class ProjectApplicationAssessmentsComponent {
   @Input()
   projectStatus: ProjectStatusDTO;
 
-  stepStatus = new ProjectStepStatus(this.step);
+  STATUS = ProjectStatusDTO.StatusEnum;
+
+  stepStatus: ProjectStepStatus;
+
+  ngOnChanges(): void {
+    this.stepStatus = new ProjectStepStatus(this.step);
+  }
+
 }

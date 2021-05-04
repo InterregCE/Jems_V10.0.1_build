@@ -27,6 +27,7 @@ export class ProjectApplicationActionsComponent {
   data$: Observable<{
     projectStatus: ProjectStatusDTO.StatusEnum,
     projectId: number,
+    projectCallEndDateStep1: Date,
     projectCallEndDate: Date,
     startStepTwoAvailable: boolean,
     returnToApplicantAvailable: boolean,
@@ -55,6 +56,7 @@ export class ProjectApplicationActionsComponent {
         projectStatus: project.projectStatus.status,
         projectId: project.id,
         projectCallEndDate: project.callSettings?.endDate,
+        projectCallEndDateStep1: project.callSettings?.endDateStep1,
         startStepTwoAvailable: this.startStepTwoAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
         returnToApplicantAvailable: this.returnToApplicantAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
         revertToStatus,

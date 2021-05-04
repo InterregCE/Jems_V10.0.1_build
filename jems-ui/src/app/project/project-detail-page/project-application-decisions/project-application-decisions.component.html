@@ -1,5 +1,5 @@
 <div id="applicationFormLifecycleAssessment"
-     *ngIf="projectStatus.status !== stepStatus.draft && projectStatus.status !== stepStatus.returnedToApplicant">
+     *ngIf="projectStatus.status !== STATUS.STEP1DRAFT && projectStatus.status !== STATUS.DRAFT && projectStatus.status !== stepStatus.returnedToApplicant">
     <h3 class="mt-3" *ngIf="!callHasTwoSteps">{{'project.assessment.header' | translate}}</h3>
     <h3 class="mt-3" *ngIf="callHasTwoSteps">{{'project.assessment.header.with.step' | translate : {step: step} }}</h3>
     <mat-expansion-panel [expanded]="true">

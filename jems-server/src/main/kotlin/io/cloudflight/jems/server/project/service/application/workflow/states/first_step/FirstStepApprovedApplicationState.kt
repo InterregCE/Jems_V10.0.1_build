@@ -28,6 +28,7 @@ class FirstStepApprovedApplicationState (
         revertCurrentStatusToPreviousStatus(validRevertStatuses = canBeRevertTo).also { reestablishedStatus ->
             when (reestablishedStatus) {
                 ApplicationStatus.STEP1_APPROVED -> projectWorkflowPersistence.clearProjectFundingDecision(projectSummary.id)
+                ApplicationStatus.STEP1_ELIGIBLE -> projectWorkflowPersistence.clearProjectFundingDecision(projectSummary.id)
                 ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS -> projectWorkflowPersistence.resetProjectFundingDecisionToCurrentStatus(
                     projectSummary.id
                 )
