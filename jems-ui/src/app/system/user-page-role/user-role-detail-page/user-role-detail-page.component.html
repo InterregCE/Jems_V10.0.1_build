@@ -14,71 +14,75 @@
                     </mat-error>
                 </mat-form-field>
             </div>
+            <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="permission-tree">
 
-            <mat-accordion formArrayName="permissions" id="permissions">
-                <ng-container *ngFor="let perm of permissions.controls; let i=index;"
-                              [ngTemplateOutlet]="!perm.get('subtree') ? leaf : node"
-                              [ngTemplateOutletContext]="{item: perm, level: 1, form: i, context: {form: i}}">
-                </ng-container>
-            </mat-accordion>
+                <mat-tree-node *matTreeNodeDef="let node"
+                               matTreeNodePadding
+                               [class.top-parent]="node.level == 0"
+                               [class.bg-light]="node.parentColor"
+                               [class.bg-dark]="!node.parentColor">
+                    <div class="permission-row-wrapper">
+                        <button mat-icon-button disabled></button>
+                        <div class="permission-row-title">{{ node.name | translate }}</div>
 
+                        <mat-button-toggle-group
+                                [class.shift-left]="node.mode === PermissionMode.HIDDEN_VIEW"
+                                *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.HIDDEN_VIEW"
+                                class="small-toggle-group">
+                            <mat-button-toggle
+                                    [checked]="node.form.get('state')?.value === PermissionState.HIDDEN"
+                                    (click)="$event.stopPropagation()"
+                                    (change)="changeState(node.form, PermissionState.HIDDEN);">
+                                <span>
+                                    <mat-icon>visibility_off</mat-icon>{{'Hidden' | translate}}
+                                </span>
+                            </mat-button-toggle>
+                            <mat-button-toggle
+                                    [checked]="node.form.get('state')?.value === PermissionState.VIEW"
+                                    (click)="$event.stopPropagation()"
+                                    (change)="changeState(node.form, PermissionState.VIEW)">
+                                <span>
+                                    <mat-icon>visibility</mat-icon>{{'View' | translate}}
+                                </span>
+                            </mat-button-toggle>
+                            <mat-button-toggle
+                                    *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT"
+                                    [checked]="node.form.get('state')?.value === PermissionState.EDIT"
+                                    (click)="$event.stopPropagation()"
+                                    (change)="changeState(node.form, PermissionState.EDIT)">
+                                <span>
+                                    <mat-icon>edit</mat-icon>{{'Edit' | translate}}
+                                </span>
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+
+                        <mat-slide-toggle *ngIf="node.mode === PermissionMode.TOGGLE_EDIT"
+                                          color="primary"
+                                          (click)="$event.stopPropagation()"
+                                          (change)="changeStateOfToggle(node.form)"
+                                          [checked]="node.form.get('state')?.value === PermissionState.EDIT">
+                        </mat-slide-toggle>
+
+                    </div>
+                </mat-tree-node>
+
+                <mat-tree-node *matTreeNodeDef="let node; when: hasChild"
+                               matTreeNodePadding
+                               [class.top-parent]="node.level == 0"
+                               [class.bg-light]="node.parentColor"
+                               [class.bg-dark]="!node.parentColor">
+                <div class="permission-row-wrapper">
+                        <button mat-icon-button matTreeNodeToggle
+                                [attr.aria-label]="'Toggle ' + node.name">
+                            <mat-icon class="mat-icon-rtl-mirror">
+                                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                            </mat-icon>
+                        </button>
+                        <div class="permission-row-title">{{ node.name | translate }}</div>
+                    </div>
+                </mat-tree-node>
+
+            </mat-tree>
         </form>
-        <div><pre>{{ userRoleForm?.value | json }}</pre></div>
     </app-form>
 </app-main-page-template>
-
-<ng-template let-item="item" let-level="level" #node>
-    <mat-expansion-panel [class.alternative]="level % 2 == 0" expanded>
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{ item?.get('name')?.value | translate }}
-            </mat-panel-title>
-            <mat-panel-description>
-            </mat-panel-description>
-        </mat-expansion-panel-header>
-        <ng-container
-                *ngFor="let subItem of item?.get('subtree')?.controls; let i=index;"
-                [ngTemplateOutlet]="!subItem?.get('subtree') ? leaf : node"
-                [ngTemplateOutletContext]="{item: subItem, level: level + 1, form: i}"
-        ></ng-container>
-    </mat-expansion-panel>
-</ng-template>
-
-<ng-template let-item="item" let-level="level" let-form="form" #leaf>
-    <mat-expansion-panel class="leaf" [class.alternative]="level % 2 == 0" hideToggle [formGroup]="item">
-        <mat-expansion-panel-header (click)="$event.stopPropagation()">
-            <mat-panel-title class="mat-title-vertical-center">
-                {{ item?.get('name')?.value | translate }}
-            </mat-panel-title>
-
-            <mat-panel-description class="mr-4">
-                <mat-button-toggle-group *ngIf="item.get('isOneClickToggle')?.value">
-                    <mat-button-toggle
-                            [checked]="item.get('state')?.value === PermissionState.HIDDEN"
-                            (click)="$event.stopPropagation()"
-                            (change)="changeState(item, PermissionState.HIDDEN);">
-                        {{'Hidden' | translate}}
-                    </mat-button-toggle>
-                    <mat-button-toggle
-                            [checked]="item.get('state')?.value === PermissionState.VIEW"
-                            (click)="$event.stopPropagation()"
-                            (change)="changeState(item, PermissionState.VIEW)">
-                        {{'View' | translate}}
-                    </mat-button-toggle>
-                    <mat-button-toggle
-                            [checked]="item.get('state')?.value === PermissionState.EDIT"
-                            (click)="$event.stopPropagation()"
-                            (change)="changeState(item, PermissionState.EDIT)">
-                        {{'Edit' | translate}}
-                    </mat-button-toggle>
-                </mat-button-toggle-group>
-
-                <mat-slide-toggle *ngIf="!item.get('isOneClickToggle')?.value"
-                                  (click)="$event.stopPropagation()"
-                                  (change)="changeStateOfToggle(item)"
-                                  [checked]="item.get('state')?.value === PermissionState.EDIT">
-                </mat-slide-toggle>
-            </mat-panel-description>
-        </mat-expansion-panel-header>
-    </mat-expansion-panel>
-</ng-template>

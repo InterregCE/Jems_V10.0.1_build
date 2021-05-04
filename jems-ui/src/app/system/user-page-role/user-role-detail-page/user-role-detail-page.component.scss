@@ -1,25 +1,71 @@
+@import "../../../theme/custom-styles/custom-buttons-styles";
+
+$toggle-btn-width: 6rem;
+$margin_from_right: 1rem;
+
 mat-panel-description {
   flex: 0;
 }
 
-.mat-title-vertical-center {
+.permission-row-wrapper {
+  width: 100%;
   display: flex;
   align-items: center;
-}
 
-#permissions{
-  ::ng-deep .mat-expansion-panel{
-    box-shadow: none;
-    border-bottom: 1px solid var(--blue-gray);
-    &.alternative{
-      background-color: var(--pale-blue-gray);
-    }
-    &.leaf{
-      //pointer-events: none;
+  mat-slide-toggle,
+  mat-button-toggle-group {
+    margin-left: auto;
+    margin-right: $margin_from_right;
+
+    mat-button-toggle {
+      width: $toggle-btn-width;
     }
   }
-  ::ng-deep .mat-expansion-panel-body {
-    padding-right: 0;
+
+  .shift-left {
+    margin-right: calc(#{$toggle-btn-width} + #{$margin_from_right} + 1px);
+  }
+}
+
+::ng-deep {
+  .small-toggle-group {
+    overflow: visible;
+    @include customize-toggle-button-size('small');
+
+    mat-icon {
+      vertical-align: middle;
+      font-size: 1.375em;
+      height: 1.25rem;
+    }
+  }
+}
+
+.mat-tree-node {
+  min-height: 2.5rem;
+}
+
+.top-parent {
+  .permission-row-title {
+    font-weight: 500;
+  }
+}
+
+.bg-light {
+  //background-color: var(--pale-blue-gray);
+}
+.bg-dark {
+  background-color: var(--table-highlight-color);
+}
+
+.permission-tree {
+  > :first-child {
+    border-top: 1px solid var(--table-border-color);
+  }
+
+  > * {
+    border-bottom: 1px solid var(--table-border-color);
+    border-right: 1px solid var(--table-border-color);
+    border-left: 1px solid var(--table-border-color);
   }
 
 }

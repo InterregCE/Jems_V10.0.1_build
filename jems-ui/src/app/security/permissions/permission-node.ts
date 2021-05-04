@@ -6,11 +6,25 @@ export enum PermissionState {
   EDIT = 'EDIT'
 }
 
+export enum PermissionMode {
+  HIDDEN_VIEW_EDIT = 'HIDDEN_VIEW_EDIT',
+  HIDDEN_VIEW = 'HIDDEN_VIEW',
+  TOGGLE_EDIT = 'TOGGLE_EDIT',
+}
+
 export class PermissionNode {
   name?: string;
   state?: PermissionState = PermissionState.HIDDEN;
   viewPermissions?: UserRoleDTO.PermissionsEnum[];
   editPermissions?: UserRoleDTO.PermissionsEnum[];
-  oneClickToggle?: UserRoleDTO.PermissionsEnum[];
+  mode?: PermissionMode = undefined;
   children?: PermissionNode[] = [];
+}
+
+export class RolePermissionRow {
+  expandable: boolean;
+  name: string;
+  level: number;
+  state: PermissionState;
+  mode?: PermissionMode = undefined;
 }
