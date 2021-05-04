@@ -40,6 +40,7 @@ The following commands are used for development:
  - `gradle clean build` for building the project; specifically use `clean` if changes for generated files are necessary
  - `spring boot` with MainClass `io.cloudflight.jems.server.Application` starts server (on default port `8080`)
  - `npm run serve:local` start the angular build watch (run for automatic reload after frontend changes)
+ - `PUBLISH_BUILD=true PUBLISH_NPM_AUTH=x ./gradlew assemble` should generate the full executable jems-server.jar (no snapshot)
 
 ### ... deploy to an environment
 
@@ -49,7 +50,7 @@ Requirements:
  - MariaDB (mandatory)
  - MinIO
  - Elastic Search
- - Kibana
+ - Kibana (optional, only if needed)
 
 Currently, there are two environments set up for internal development [4] and testing [5] with external access.
 Both are deployed on the Cloudflight OpenShift and updated automatically within each development cycle.
@@ -61,8 +62,8 @@ Manual deployment using docker compose:
  - run the following docker-compose services
    - jems-database (relational database for Jems configuration and input data)
    - jems-minio (Object storage for files)
-   - audit-database (logging into elastic search, needed for Audit Logs in Kibana)
-   - audit-analyzer (Kibana for Audit Log access)
+   - audit-database (logging into elastic search, needed for Audit Logs)
+   - audit-analyzer (Kibana for additional Audit Log access)
  - run the jar (jems-server `./build/libs`) as Spring Boot application
    - the webapp uses flyway to automatically migrate the relational database (mariaDB)
    - `--audit-service.enabled=true` can be used to enable/disable the logging into elastic search
@@ -70,6 +71,9 @@ Manual deployment using docker compose:
    - by default Spring Management endpoints are enabled on server port + 10000, e.g. when `server.port=8080` then
    `management.server.port=18080`, so to retrieve version of build use
    [localhost:18080/actuator/info](http://localhost:18080/actuator/info)
+
+application.yaml can be added to root of the full executable jems-server.jar
+the properties specified will override the default ones within resources/application.yaml
 
 ## Codestyle
 
@@ -94,7 +98,7 @@ in Kibana web interface [localhost:5601](http://localhost:5601)
 [localhost:9000](http://localhost:9000)
 
 There is no need to start anything besides MariaDB, so spring-boot will also start without MinIO and without
-Audit (ES+Kibana). There is property value `audit-service.enabled` - if you set to `false` audits will be written
+Audit (ES). There is property value `audit-service.enabled` - if you set to `false` audits will be written
 as _info \[LOG\]_ to stdout.
 
 ### API testing
@@ -102,6 +106,7 @@ For testing the API, the module [jems-rest-test](jems-rest-test) was introduced.
 The generated documentation of the API can be found on the successful started Jems server [7].
 
 ### Startup parameters
+
 You can define following startup parameters (see also [application.yaml](jems-server/src/main/resources/application.yaml)):
 - `audit-service.enabled`=[true,false] (or env variable `AUDIT_ENABLED`), if this one is set to true, you need to provide also:
   - `audit-service.url-and-port` with address of ElasticSearch (or env variable `AUDIT_ELASTICSEARCH_URL_AND_PORT`)
@@ -112,6 +117,21 @@ You can define following startup parameters (see also [application.yaml](jems-se
   - `minio-storage.accessKey` with access key for Minio (or env variable `MINIO_ACCESS_KEY`)
   - `minio-storage.secretKey` with secret key for Minio (or env variable `MINIO_SECRET_KEY`)
 - `info.helpdesk-url` URL, which is available in the main HELP tooltip
+
+### Plugins
+
+if plugins are to be used, the following startup parameter should be used
+- `-Dloader.path`=[plugins] for using the folder 'plugins' next to the jems-server as root to scan for jems plugins
+
+further this section in the [application.yaml] specifies which paths are taken for their translation files.
+the following parameters are set by default:
+```
+spring:
+   messages:
+     basename: classpath:/messages, classpath:/plugin_messages
+```
+since all translations for one language end up in the same file, plugin translation files as well as their translation keys need to use a specific unique plugin identifier!
+if the main translation files need to be exchanged, instead of the `classpath:/messages` an own path should be used.
 
 ## References
 
