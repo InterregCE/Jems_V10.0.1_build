@@ -50,21 +50,20 @@ export class FormService {
   }
 
   setError(httpError: HttpErrorResponse | null): Observable<any> {
-    if (!httpError || !httpError.error) {
+    if (!httpError) {
       this.error$.next(null);
       return of(null);
     }
 
-    const apiError = httpError.error;
+    const apiError = httpError.error || {i18nMessage: {}};
     this.error$.next(apiError);
     this.pending$.next(false);
-    if (apiError) {
-      this.success$.next(null);
-      if (!apiError.i18nMessage && !apiError.message) {
-        apiError.i18nMessage.i18nKey = 'incomplete.form';
-      }
-      this.setFieldErrors(apiError);
+    this.success$.next(null);
+    this.setValid(false);
+    if (!apiError.i18nMessage?.i18nKey && !apiError?.message) {
+      apiError.i18nMessage.i18nKey = 'incomplete.form';
     }
+    this.setFieldErrors(apiError);
 
     throw httpError;
   }

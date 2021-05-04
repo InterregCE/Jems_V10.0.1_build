@@ -4,7 +4,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {take} from 'rxjs/internal/operators';
 import {UserRoleDTO} from '@cat/api';
 import {Observable} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
 import {RoutingService} from '../../../common/services/routing.service';
 import {UserRoleStore} from './user-role-store.service';
@@ -62,7 +62,8 @@ export class UserRoleDetailPageComponent {
       this.roleStore.saveUserRole(user)
         .pipe(
           take(1),
-          tap(() => this.formService.setSuccess('User role saved successfully'))
+          tap(() => this.formService.setSuccess('User role saved successfully')),
+          catchError(err => this.formService.setError(err))
         ).subscribe();
       return;
     }
@@ -73,6 +74,7 @@ export class UserRoleDetailPageComponent {
       .pipe(
         take(1),
         tap(() => this.router.navigate(['/app/system/userRole/'], redirectSuccessPayload)),
+        catchError(err => this.formService.setError(err))
       ).subscribe();
   }
 
