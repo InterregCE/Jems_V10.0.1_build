@@ -19,8 +19,7 @@
                 <mat-tree-node *matTreeNodeDef="let node"
                                matTreeNodePadding
                                [class.top-parent]="node.level == 0"
-                               [class.bg-light]="node.parentColor"
-                               [class.bg-dark]="!node.parentColor">
+                               [class.bg-dark]="node.parentIndex % 2 === 0">
                     <div class="permission-row-wrapper">
                         <button mat-icon-button disabled></button>
                         <div class="permission-row-title">{{ node.name | translate }}</div>
@@ -32,7 +31,7 @@
                                             *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.HIDDEN_VIEW"
                                             class="small-toggle-group">
                                         <mat-button-toggle
-                                                [checked]="node.form.get('state')?.value === PermissionState.HIDDEN"
+                                                [checked]="state(node.form)?.value === PermissionState.HIDDEN"
                                                 (click)="$event.stopPropagation()"
                                                 (change)="changeState(node.form, PermissionState.HIDDEN);">
                                 <span>
@@ -41,7 +40,7 @@
                                 </span>
                                         </mat-button-toggle>
                                         <mat-button-toggle
-                                                [checked]="node.form.get('state')?.value === PermissionState.VIEW"
+                                                [checked]="state(node.form)?.value === PermissionState.VIEW"
                                                 (click)="$event.stopPropagation()"
                                                 (change)="changeState(node.form, PermissionState.VIEW)">
                                 <span>
@@ -51,7 +50,7 @@
                                         </mat-button-toggle>
                                         <mat-button-toggle
                                                 *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT"
-                                                [checked]="node.form.get('state')?.value === PermissionState.EDIT"
+                                                [checked]="state(node.form)?.value === PermissionState.EDIT"
                                                 (click)="$event.stopPropagation()"
                                                 (change)="changeState(node.form, PermissionState.EDIT)">
                                 <span>
@@ -65,7 +64,7 @@
                                         <mat-slide-toggle color="primary"
                                                           (click)="$event.stopPropagation()"
                                                           (change)="changeStateOfToggle(node.form)"
-                                                          [checked]="node.form.get('state')?.value === PermissionState.EDIT">
+                                                          [checked]="state(node.form)?.value === PermissionState.EDIT">
                                         </mat-slide-toggle>
                                         {{ 'common.permission.active' | translate}}
                                     </span>
@@ -78,8 +77,7 @@
                 <mat-tree-node *matTreeNodeDef="let node; when: hasChild"
                                matTreeNodePadding
                                [class.top-parent]="node.level == 0"
-                               [class.bg-light]="node.parentColor"
-                               [class.bg-dark]="!node.parentColor">
+                               [class.bg-dark]="node.parentIndex % 2 === 0">
                     <div class="permission-row-wrapper">
                         <button mat-icon-button matTreeNodeToggle
                                 [attr.aria-label]="'Toggle ' + node.name">
@@ -87,7 +85,7 @@
                                 {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                             </mat-icon>
                         </button>
-                        <div class="permission-row-title">{{ node.name | translate }}</div>
+                        <div class="permission-row-title">{{node.name | translate}}</div>
                         <div class="controls">
                             <div class="controls-wrapper"></div>
                         </div>

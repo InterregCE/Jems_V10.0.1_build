@@ -20,11 +20,3 @@ export class PermissionNode {
   mode?: PermissionMode = undefined;
   children?: PermissionNode[] = [];
 }
-
-export class RolePermissionRow {
-  expandable: boolean;
-  name: string;
-  level: number;
-  state: PermissionState;
-  mode?: PermissionMode = undefined;
-}

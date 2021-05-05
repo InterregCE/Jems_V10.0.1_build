@@ -9,16 +9,12 @@ import {SystemPageSidenavService} from '../../services/system-page-sidenav.servi
 import {RoutingService} from '../../../common/services/routing.service';
 import {UserRoleStore} from './user-role-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {
-  PermissionNode,
-  PermissionMode,
-  PermissionState,
-  RolePermissionRow
-} from '../../../security/permissions/permission-node';
+import {PermissionMode, PermissionNode, PermissionState} from '../../../security/permissions/permission-node';
 import {FormService} from '@common/components/section/form/form.service';
 import {Permission} from '../../../security/permissions/permission';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
+import {RolePermissionRow} from './role-permission-row';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
@@ -33,23 +29,19 @@ export class UserRoleDetailPageComponent {
   treeControl = new FlatTreeControl<RolePermissionRow>(
     node => node.level, node => node.expandable);
 
-  treeFlattener = new MatTreeFlattener<AbstractControl, RolePermissionRow>(
-    (form: AbstractControl, level: number) => {
-      const subtree = (form.get('subtree') as FormArray) || null;
-      const mode = form.get('mode')?.value || null;
-      return {
-        expandable: !!subtree,
-        name: form.get('name')?.value,
-        form,
-        level,
-        parentColor: form.get('parentColor')?.value,
-        state: !!subtree ? null : form.get('state')?.value,
-        mode: form.get('mode')?.value || null,
-      };
-    },
+  private treeFlattener = new MatTreeFlattener<AbstractControl, RolePermissionRow>(
+    (form: AbstractControl, level: number) => ({
+      expandable: !!this.subtree(form),
+      name: form.get('name')?.value,
+      form,
+      level,
+      parentIndex: form.get('parentIndex')?.value,
+      state: !!this.subtree(form) ? null : this.state(form)?.value,
+      mode: form.get('mode')?.value || null,
+    }),
     node => node.level,
     node => node.expandable,
-    form => (form.get('subtree') as FormArray).controls || []
+    form => this.subtree(form).controls || []
   );
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
@@ -118,20 +110,22 @@ export class UserRoleDetailPageComponent {
     }
   }
 
-  private extractFormPermissionSubGroup(perm: PermissionNode, currentRolePermissions: PermissionsEnum[], parentColor: boolean): FormGroup {
+  private extractFormPermissionSubGroup(perm: PermissionNode,
+                                        currentRolePermissions: PermissionsEnum[],
+                                        parentIndex: number): FormGroup {
     if (!perm.children?.length) {
       return this.formBuilder.group({
         name: perm.name,
-        parentColor,
+        parentIndex,
         mode: perm.mode,
         state: this.getCurrentState(perm, currentRolePermissions)
       });
     } else {
       return this.formBuilder.group({
         name: perm.name,
-        parentColor,
+        parentIndex,
         subtree: this.formBuilder.array(
-          perm.children.map(child => this.extractFormPermissionSubGroup(child, currentRolePermissions, parentColor))
+          perm.children.map(child => this.extractFormPermissionSubGroup(child, currentRolePermissions, parentIndex))
         ),
       });
     }
@@ -141,7 +135,7 @@ export class UserRoleDetailPageComponent {
     this.name?.patchValue(role?.name);
     this.permissions.clear();
     const groups = Permission.DEFAULT_PERMISSIONS.map((perm, index) =>
-      this.extractFormPermissionSubGroup(perm, role.permissions, index % 2 !== 0)
+      this.extractFormPermissionSubGroup(perm, role.permissions, index)
     );
     groups.forEach(group => this.permissions.push(group));
 
@@ -150,24 +144,17 @@ export class UserRoleDetailPageComponent {
     this.formService.resetEditable();
   }
 
-  get name(): FormControl {
-    return this.userRoleForm.get('name') as FormControl;
-  }
-
-  get permissions(): FormArray {
-    return this.userRoleForm.get('permissions') as FormArray;
-  }
 
   changeState(permission: AbstractControl, value: PermissionState): void {
-    permission.get('state')?.setValue(value);
+    this.state(permission)?.setValue(value);
     this.formService.setDirty(true);
   }
 
   changeStateOfToggle(permission: AbstractControl): void {
-    if (permission.get('state')?.value === PermissionState.EDIT) {
-      permission.get('state')?.setValue(PermissionState.HIDDEN);
+    if (this.state(permission)?.value === PermissionState.EDIT) {
+      this.state(permission)?.setValue(PermissionState.HIDDEN);
     } else {
-      permission.get('state')?.setValue(PermissionState.EDIT);
+      this.state(permission)?.setValue(PermissionState.EDIT);
     }
     this.formService.setDirty(true);
   }
@@ -200,16 +187,31 @@ export class UserRoleDetailPageComponent {
 
         if (perm.children?.length) {
           return perm.children.flatMap((childPerm, childIndex) => {
-            const stateChild = (permissionGroup.get('subtree') as FormArray).at(childIndex)?.get('state')?.value;
+            const stateChild = this.state(this.subtree(permissionGroup).at(childIndex))?.value;
             return this.getPermissionsForState(stateChild, childPerm);
           });
         }
 
-        const state = permissionGroup.get('state')?.value;
+        const state = this.state(permissionGroup)?.value;
         return this.getPermissionsForState(state, perm);
       });
   }
 
   hasChild = (_: number, node: RolePermissionRow) => node.expandable;
 
+  get name(): FormControl {
+    return this.userRoleForm.get('name') as FormControl;
+  }
+
+  get permissions(): FormArray {
+    return this.userRoleForm.get('permissions') as FormArray;
+  }
+
+  subtree(control: AbstractControl): FormArray {
+    return control.get('subtree') as FormArray;
+  }
+
+  state(control: AbstractControl): AbstractControl {
+    return control.get('state') as AbstractControl;
+  }
 }
