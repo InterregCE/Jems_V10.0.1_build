@@ -1,7 +1,8 @@
 @import "../../../theme/custom-styles/custom-buttons-styles";
 
 $toggle-btn-width: 6rem;
-$margin_from_right: 1rem;
+$margin_from_side: 1rem;
+$row-height: 2.5rem;
 
 mat-panel-description {
   flex: 0;
@@ -12,19 +13,36 @@ mat-panel-description {
   display: flex;
   align-items: center;
 
-  mat-slide-toggle,
-  mat-button-toggle-group {
+  .controls {
     margin-left: auto;
-    margin-right: $margin_from_right;
+
+    .controls-wrapper {
+      align-items: center;
+      display: flex;
+      border-left: 1px solid var(--table-border-color);
+      height: $row-height;
+      width: calc(3 * #{$toggle-btn-width} + 4px + 2 * #{$margin_from_side});
+
+      > * {
+        margin: 0 auto;
+        width: calc(3 * #{$toggle-btn-width} + 4px);
+      }
+
+      .slide-toggle-wrapper {
+        display: flex;
+        align-items: center;
+
+        mat-slide-toggle {
+          margin: 0 .5rem;
+        }
+      }
+    }
 
     mat-button-toggle {
       width: $toggle-btn-width;
     }
   }
 
-  .shift-left {
-    margin-right: calc(#{$toggle-btn-width} + #{$margin_from_right} + 1px);
-  }
 }
 
 ::ng-deep {
@@ -41,7 +59,7 @@ mat-panel-description {
 }
 
 .mat-tree-node {
-  min-height: 2.5rem;
+  min-height: $row-height;
 }
 
 .top-parent {
