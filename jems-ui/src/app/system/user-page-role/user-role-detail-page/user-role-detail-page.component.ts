@@ -9,7 +9,12 @@ import {SystemPageSidenavService} from '../../services/system-page-sidenav.servi
 import {RoutingService} from '../../../common/services/routing.service';
 import {UserRoleStore} from './user-role-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {PermissionNode, PermissionMode, PermissionState, RolePermissionRow} from '../../../security/permissions/permission-node';
+import {
+  PermissionNode,
+  PermissionMode,
+  PermissionState,
+  RolePermissionRow
+} from '../../../security/permissions/permission-node';
 import {FormService} from '@common/components/section/form/form.service';
 import {Permission} from '../../../security/permissions/permission';
 import {FlatTreeControl} from '@angular/cdk/tree';
@@ -142,6 +147,7 @@ export class UserRoleDetailPageComponent {
 
     this.dataSource.data = groups;
     this.treeControl.expandAll();
+    this.formService.resetEditable();
   }
 
   get name(): FormControl {

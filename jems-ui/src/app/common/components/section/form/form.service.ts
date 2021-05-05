@@ -86,9 +86,9 @@ export class FormService {
       }
       this.routingService.confirmLeave = false;
     } else {
-      this.success$.next(null);
       this.routingService.confirmLeave = true;
     }
+    this.setSuccess(null);
     this.setValid(this.form?.valid);
     this.dirty$.next(dirty);
   }
