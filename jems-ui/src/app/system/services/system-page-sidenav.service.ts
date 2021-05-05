@@ -34,22 +34,6 @@ export class SystemPageSidenavService {
       tap(roles => Log.info('Fetched roles for sidenav', this, roles))
     );
 
-  constructor(private sideNavService: SideNavService,
-              private routingService: RoutingService,
-              private permissionService: PermissionService,
-              private roleService: UserRoleService) {
-    combineLatest([
-      this.routing$,
-      this.permissionService.permissionsChanged(),
-      this.roles$
-    ]).pipe(
-      tap(([routing, permissions, roles]) =>
-        this.setHeadlines(permissions as PermissionsEnum[], roles)),
-      untilDestroyed(this)
-    )
-      .subscribe();
-  }
-
   private setHeadlines(permissions: PermissionsEnum[], roles: UserRoleSummaryDTO[]): void {
     const bulletsArray: HeadlineRoute[] = [{
       headline: {i18nKey: 'topbar.main.audit'},
@@ -88,4 +72,21 @@ export class SystemPageSidenavService {
       },
     ]);
   }
+
+  constructor(private sideNavService: SideNavService,
+              private routingService: RoutingService,
+              private permissionService: PermissionService,
+              private roleService: UserRoleService) {
+    combineLatest([
+      this.routing$,
+      this.permissionService.permissionsChanged(),
+      this.roles$
+    ]).pipe(
+      tap(([routing, permissions, roles]) =>
+        this.setHeadlines(permissions as PermissionsEnum[], roles)),
+      untilDestroyed(this)
+    )
+      .subscribe();
+  }
+
 }

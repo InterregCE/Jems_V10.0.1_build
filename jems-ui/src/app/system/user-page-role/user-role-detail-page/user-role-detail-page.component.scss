@@ -1,12 +1,8 @@
 @import "../../../theme/custom-styles/custom-buttons-styles";
 
-$toggle-btn-width: 6rem;
+$toggle-btn-width: 7rem;
 $margin_from_side: 1rem;
 $row-height: 2.5rem;
-
-mat-panel-description {
-  flex: 0;
-}
 
 .permission-row-wrapper {
   width: 100%;
@@ -60,12 +56,6 @@ mat-panel-description {
 
 .mat-tree-node {
   min-height: $row-height;
-}
-
-.top-parent {
-  .permission-row-title {
-    font-weight: 500;
-  }
 }
 
 .bg-dark {

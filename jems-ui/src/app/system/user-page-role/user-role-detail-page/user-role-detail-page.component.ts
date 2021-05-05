@@ -33,6 +33,8 @@ export class UserRoleDetailPageComponent {
     (form: AbstractControl, level: number) => ({
       expandable: !!this.subtree(form),
       name: form.get('name')?.value,
+      // TODO remove 'disabled' when all permissions are used correctly and not just mocked
+      disabled: !!form.get('disabled')?.value,
       form,
       level,
       parentIndex: form.get('parentIndex')?.value,
@@ -118,6 +120,8 @@ export class UserRoleDetailPageComponent {
         name: perm.name,
         parentIndex,
         mode: perm.mode,
+        // TODO remove 'disabled' when all permissions are used correctly and not just mocked
+        disabled: perm.temporarilyDisabled,
         state: this.getCurrentState(perm, currentRolePermissions)
       });
     } else {
@@ -160,10 +164,10 @@ export class UserRoleDetailPageComponent {
   }
 
   private getCurrentState(defaultPermission: PermissionNode, perms: PermissionsEnum[]): PermissionState {
-    if (defaultPermission.editPermissions?.some(perm => perms?.includes(perm))) {
+    if (defaultPermission.editPermissions?.every(perm => perms?.includes(perm))) {
       return PermissionState.EDIT;
     }
-    if (defaultPermission.viewPermissions?.some(perm => perms?.includes(perm))) {
+    if (defaultPermission.viewPermissions?.every(perm => perms?.includes(perm))) {
       return PermissionState.VIEW;
     }
     return PermissionState.HIDDEN;
@@ -171,7 +175,7 @@ export class UserRoleDetailPageComponent {
 
   private getPermissionsForState(state: PermissionState, permissionNode: PermissionNode): PermissionsEnum[] {
     if (state === PermissionState.EDIT) {
-      return permissionNode.editPermissions || [];
+      return (permissionNode.editPermissions || []).concat(permissionNode.viewPermissions || []);
     }
     if (state === PermissionState.VIEW) {
       return permissionNode.viewPermissions || [];
@@ -180,21 +184,18 @@ export class UserRoleDetailPageComponent {
   }
 
   private getFormPermissions(): PermissionsEnum[] {
-    // TODO do this in recursion (now it supports only 2 levels !!!)
-    return Permission.DEFAULT_PERMISSIONS
-      .flatMap((perm, i) => {
-        const permissionGroup = this.permissions.at(i);
+    return Permission.DEFAULT_PERMISSIONS.flatMap((perm: PermissionNode, index: number) =>
+      this.extractChildrenPermissions(this.permissions.at(index), perm));
+  }
 
-        if (perm.children?.length) {
-          return perm.children.flatMap((childPerm, childIndex) => {
-            const stateChild = this.state(this.subtree(permissionGroup).at(childIndex))?.value;
-            return this.getPermissionsForState(stateChild, childPerm);
-          });
-        }
+  private extractChildrenPermissions(nodeForm: AbstractControl, permissionNode: PermissionNode): PermissionsEnum[] {
+    if (!permissionNode.children?.length) {
+      const state = this.state(nodeForm)?.value;
+      return this.getPermissionsForState(state, permissionNode);
+    }
 
-        const state = this.state(permissionGroup)?.value;
-        return this.getPermissionsForState(state, perm);
-      });
+    return permissionNode.children.flatMap((node: PermissionNode, index: number) =>
+      this.extractChildrenPermissions(this.subtree(nodeForm).at(index), node));
   }
 
   hasChild = (_: number, node: RolePermissionRow) => node.expandable;

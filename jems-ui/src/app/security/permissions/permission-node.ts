@@ -14,9 +14,12 @@ export enum PermissionMode {
 
 export class PermissionNode {
   name?: string;
-  state?: PermissionState = PermissionState.HIDDEN;
   viewPermissions?: UserRoleDTO.PermissionsEnum[];
   editPermissions?: UserRoleDTO.PermissionsEnum[];
   mode?: PermissionMode = undefined;
   children?: PermissionNode[] = [];
+  // this is just for demo purpose
+  // TODO remove this when all permissions are used correctly and not just mocked
+  // tslint:disable-next-line:no-inferrable-types
+  temporarilyDisabled?: boolean = false;
 }
