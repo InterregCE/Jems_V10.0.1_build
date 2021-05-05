@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.user.entity.UserEntity
 import java.sql.Timestamp
 
 data class ProjectVersion(
-    val version: Int,
+    val version: String,
     val projectId: Long,
     val createdAt: Timestamp,
     val user: UserEntity,

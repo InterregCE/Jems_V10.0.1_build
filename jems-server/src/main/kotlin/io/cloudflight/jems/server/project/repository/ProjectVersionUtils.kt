@@ -9,6 +9,11 @@ class ProjectVersionUtils(
     private val projectVersionRepository: ProjectVersionRepository
 ) {
 
+    companion object {
+        const val DEFAULT_VERSION = "1.0"
+        fun increaseMajor(version: String?) = (version?.toFloatOrNull()?.plus(1) ?: 1.0).toString()
+    }
+
     @Transactional(readOnly = true)
     fun <T> fetch(
         version: Int?,

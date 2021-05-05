@@ -22,11 +22,9 @@ import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
-import kotlin.math.ceil
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
@@ -36,6 +34,9 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import kotlin.math.ceil
 
 @Service
 class ProjectServiceImpl(
@@ -110,7 +111,7 @@ class ProjectServiceImpl(
                     createdProject.currentStatus.status
                 ),
                 userEmail = applicant.email,
-                version = 1,
+                version = ProjectVersionUtils.DEFAULT_VERSION,
                 createdAt = ZonedDateTime.now(ZoneOffset.UTC)
             )
         )

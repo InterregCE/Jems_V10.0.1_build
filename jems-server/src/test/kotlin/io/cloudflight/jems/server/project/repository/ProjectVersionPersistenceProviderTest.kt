@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 class ProjectVersionPersistenceProviderTest : UnitTest() {
 
     private val projectId = 11L
-    private val version = 1
+    private val version = ProjectVersionUtils.DEFAULT_VERSION
     private val userId = 1L
     private val user = UserEntity(
         id = userId,
@@ -30,7 +30,7 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
         password = "hash_pass"
     )
     private val projectVersionEntity = ProjectVersionEntity(
-        id = ProjectVersionId(1, projectId),
+        id = ProjectVersionId("1.1", projectId),
         createdAt = Timestamp.valueOf(LocalDateTime.now()),
         status = ApplicationStatus.SUBMITTED,
         user = user

@@ -10,9 +10,9 @@ data class ProjectVersionId(
 
     @Column
     @field:NotNull
-    val version: Int,
+    val version: String,
 
     @Column
     @field:NotNull
     val projectId: Long
-    ) : Serializable
+) : Serializable
