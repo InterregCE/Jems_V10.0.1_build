@@ -1,10 +1,14 @@
 package io.cloudflight.jems.server.project.service.application.submit_application
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.call.repository.CallNotFound
+import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -20,6 +24,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 
 class SubmitApplicationInteractorTest : UnitTest() {
@@ -43,6 +48,12 @@ class SubmitApplicationInteractorTest : UnitTest() {
     @MockK
     lateinit var applicationStateFactory: ApplicationStateFactory
 
+    @MockK
+    lateinit var preConditionCheckPlugin: PreConditionCheckPlugin
+
+    @MockK
+    lateinit var jemsPluginRegistry: JemsPluginRegistry
+
     @RelaxedMockK
     lateinit var createNewProjectVersionInteractor: CreateNewProjectVersionInteractor
 
@@ -58,13 +69,17 @@ class SubmitApplicationInteractorTest : UnitTest() {
 
     @Test
     fun submit() {
+        every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "standard-pre-condition-check-plugin") } returns preConditionCheckPlugin
+        every { preConditionCheckPlugin.check(PROJECT_ID) } returns PreConditionCheckResult(emptyList(), true)
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary
         every { applicationStateFactory.getInstance(any()) } returns draftState
         every { draftState.submit() } returns ApplicationStatus.SUBMITTED
-        every { projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
-            PROJECT_ID,
-            ApplicationStatus.RETURNED_TO_APPLICANT
-        ) } returns ApplicationStatus.SUBMITTED
+        every {
+            projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
+                PROJECT_ID,
+                ApplicationStatus.RETURNED_TO_APPLICANT
+            )
+        } returns ApplicationStatus.SUBMITTED
 
 
         assertThat(submitApplication.submit(PROJECT_ID)).isEqualTo(ApplicationStatus.SUBMITTED)
@@ -80,4 +95,11 @@ class SubmitApplicationInteractorTest : UnitTest() {
         )
     }
 
+    @Test
+    fun `should throw exception when pre condition check fails`() {
+        every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "standard-pre-condition-check-plugin") } returns preConditionCheckPlugin
+        every { preConditionCheckPlugin.check(PROJECT_ID) } returns PreConditionCheckResult(emptyList(), false)
+
+        assertThrows<SubmitApplicationPreConditionCheckFailedException> {submitApplication.submit(PROJECT_ID) }
+    }
 }

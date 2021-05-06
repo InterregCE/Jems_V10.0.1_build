@@ -21,6 +21,10 @@
     {
       "hash": "6290d4c9",
       "reason": "micromatch has a broken package.json which can't be parsed"
+    },
+    {
+      "hash": "985635b9",
+      "reason": "plugin calls should take place inside the scope of a transaction even if the plugin's method is not annotated with @Transactional"
     }
   ]
 }

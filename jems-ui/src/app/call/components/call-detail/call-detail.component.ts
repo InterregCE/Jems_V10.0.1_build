@@ -164,6 +164,7 @@ export class CallDetailComponent implements OnInit {
   }
 
   publishCall(): void {
+    this.publishPending = true;
     this.callStore.publishCall(this.call?.id)
       .pipe(
         take(1),

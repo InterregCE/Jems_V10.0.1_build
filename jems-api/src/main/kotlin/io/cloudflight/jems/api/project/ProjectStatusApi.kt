@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project
 
+import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.project.dto.status.InputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
@@ -19,6 +20,10 @@ import javax.validation.Valid
 @Api("Project Status")
 @RequestMapping("/api/project/{id}/")
 interface ProjectStatusApi {
+
+    @ApiOperation("execute pre condition checks for project application")
+    @GetMapping("preCheck")
+    fun preConditionCheck(@PathVariable id: Long): PreConditionCheckResultDTO
 
     @ApiOperation("Submit project application")
     @PutMapping("submit")

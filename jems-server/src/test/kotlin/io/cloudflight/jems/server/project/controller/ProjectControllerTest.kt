@@ -189,8 +189,8 @@ class ProjectControllerTest {
 
         every { getProjectBudgetInteractor.getBudget(1L) } returns projectBudgetList
         assertThat(controller.getProjectBudget(1L)).containsExactly(
-            partnerBudget1.toProjectPartnerBudgetDTO(),
-            partnerBudget2.toProjectPartnerBudgetDTO()
+            partnerBudget1.toDTO(),
+            partnerBudget2.toDTO()
         )
     }
 }

@@ -86,6 +86,7 @@ import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/bu
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
 import {FilterUnitCostsPipe} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
+import { ProjectApplicationPreConditionCheckResultComponent } from './project-detail-page/project-application-pre-condition-check-result/project-application-pre-condition-check-result.component';
 
 @NgModule({
   declarations: [
@@ -103,6 +104,7 @@ import {ProjectDetailPageComponent} from './project-detail-page/project-detail-p
     ProjectApplicationActionsComponent,
     ProjectApplicationQualityCheckComponent,
     ProjectApplicationEligibilityCheckComponent,
+    ProjectApplicationPreConditionCheckResultComponent,
     ActionsCellComponent,
     ProjectApplicationFundingPageComponent,
     ProjectApplicationFundingDecisionComponent,
@@ -166,6 +168,7 @@ import {ProjectDetailPageComponent} from './project-detail-page/project-detail-p
     ProjectTimeplanPageComponent,
     FilterUnitCostsPipe,
     ProjectDetailPageComponent,
+    ProjectApplicationPreConditionCheckResultComponent,
   ],
   imports: [
     SharedModule,

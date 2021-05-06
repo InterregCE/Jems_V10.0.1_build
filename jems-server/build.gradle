@@ -40,6 +40,8 @@ dependencies {
 
     implementation('io.springfox:springfox-swagger-ui')
     implementation('io.springfox:springfox-swagger2')
+    implementation('org.mapstruct:mapstruct')
+    kapt('org.mapstruct:mapstruct-processor')
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.security:spring-security-test')

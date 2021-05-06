@@ -72,6 +72,7 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
   }
 
   submitEligibilityDecision(): void {
+    this.actionPending = true;
     const statusInfo: ApplicationActionInfoDTO = {
       note: this.notesForm?.controls?.notes?.value,
       date: this.notesForm?.controls?.decisionDate?.value.format('YYYY-MM-DD')

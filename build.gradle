@@ -20,6 +20,8 @@ subprojects {
 
             constraints {
                 implementation "com.github.doyaaaaaken:kotlin-csv-jvm:0.15.0"
+                implementation "org.mapstruct:mapstruct:1.4.2.Final"
+                kapt 'org.mapstruct:mapstruct-processor:1.4.2.Final'
             }
         }
     }

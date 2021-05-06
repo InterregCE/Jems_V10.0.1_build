@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProjectDetailPageStore} from './project-detail-page-store.service';
-import {OutputProjectFile} from '@cat/api';
+import {ProjectDetailPageStore} from './project-detail-page-store';
+import {OutputProjectFile, ProjectStatusDTO} from '@cat/api';
 import {ProjectApplicationFormSidenavService} from '../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {Permission} from '../../security/permissions/permission';
@@ -15,6 +15,7 @@ import {Permission} from '../../security/permissions/permission';
 export class ProjectDetailPageComponent {
   fileType = OutputProjectFile.TypeEnum;
   Permission = Permission;
+  STATUS = ProjectStatusDTO.StatusEnum;
 
   projectId = this.activatedRoute.snapshot.params.projectId;
 

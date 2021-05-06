@@ -50,7 +50,9 @@
   --primary-color: #{$primary};
   --primary-halftone-color: #{$primary-halftone};
   --accent-color: #{$accent};
-  --warn-color: #{$warn};
+  --error-color: #{$warn};
+  --warn-color: #{#F6D15E};
+  --info-color: #{#155724};
 
   --font-color-primary: #{$text};
   --font-color-secondary: #{$text-secondary};

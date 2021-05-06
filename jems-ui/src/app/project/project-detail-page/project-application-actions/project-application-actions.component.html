@@ -1,52 +1,66 @@
 <ng-container *ngIf="data$ | async as data">
+
+    <app-pending-button
+            class="mr-2 mt-2"
+            *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
+            [pending]="preConditionCheckInProgress"
+            (clicked)="preConditionCheck(data.projectId)">
+        {{'project.detail.button.pre.condition.check' | translate}}
+    </app-pending-button>
+
     <ng-container *hasPermission="Permissions.ProjectSubmission; alternativeCondition data.isThisUserOwner">
-        <div *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT" class="row">
-            <app-pending-button
-                    [confirm]="{title: 'project.detail.submit.dialog.title', message: 'project.detail.submit.dialog.message'}"
-                    [disabled]="!isOpen(data.projectCallEndDate)"
-                    [pending]="actionPending"
-                    (clicked)="submitProject(data.projectId)">
-                {{'project.detail.button.submit' | translate}}
-            </app-pending-button>
-        </div>
-        <div *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT" class="row">
-            <app-pending-button
-                    [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
-                    [pending]="actionPending"
-                    (clicked)="resubmitProject(data.projectId)">
-                {{'project.detail.button.resubmit' | translate}}
-            </app-pending-button>
-        </div>
+
+        <app-pending-button
+                class="mr-2 mt-2"
+                *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT"
+                [confirm]="{title: 'project.detail.submit.dialog.title', message: 'project.detail.submit.dialog.message'}"
+                [disabled]="isSubmitDisabled(data.projectCallEndDate, data.hasPreConditionCheckSucceed)"
+                [pending]="actionPending"
+                (clicked)="submitProject(data.projectId)">
+            {{'project.detail.button.submit' | translate}}
+        </app-pending-button>
+
+        <app-pending-button
+                class="mr-2 mt-2"
+                *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
+                [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
+                [pending]="actionPending"
+                [disabled]="!data.hasPreConditionCheckSucceed"
+                (clicked)="resubmitProject(data.projectId)">
+            {{'project.detail.button.resubmit' | translate}}
+        </app-pending-button>
+
     </ng-container>
 
     <ng-container *ngxPermissionsOnly="[UserRole.ADMINISTRATOR, UserRole.PROGRAMME_USER]">
-        <div class="row">
-            <app-pending-button *ngIf="data.returnToApplicantAvailable"
-                                [confirm]="{title: 'project.detail.return.dialog.title', message: 'project.detail.return.dialog.message'}"
-                                [pending]="actionPending"
-                                (clicked)="returnToApplicant(data.projectId)">
-                {{'project.detail.button.return.applicant' | translate}}
+        <app-pending-button *ngIf="data.returnToApplicantAvailable"
+                            class="mr-2 mt-2"
+                            [confirm]="{title: 'project.detail.return.dialog.title', message: 'project.detail.return.dialog.message'}"
+                            [pending]="actionPending"
+                            (clicked)="returnToApplicant(data.projectId)">
+            {{'project.detail.button.return.applicant' | translate}}
+        </app-pending-button>
+        <ng-container *ngxPermissionsOnly="UserRole.ADMINISTRATOR">
+            <app-pending-button
+                    class="mr-2 mt-2"
+                    *ngIf="data.revertToStatus; else revertNotPossible"
+                    [confirm]="getRevertConfirmation(data.projectStatus, data.revertToStatus)"
+                    [pending]="actionPending"
+                    (clicked)="revertProjectStatus(data.projectId)">
+                {{ 'project.application.revert.decision.button.label' | translate}}
+                {{ 'common.label.projectapplicationstatus.' + data.revertToStatus | translate }}
             </app-pending-button>
-            <ng-container *ngxPermissionsOnly="UserRole.ADMINISTRATOR">
-                <app-pending-button
-                        *ngIf="data.revertToStatus; else revertNotPossible"
-                        [confirm]="getRevertConfirmation(data.projectStatus, data.revertToStatus)"
-                        [pending]="actionPending"
-                        (clicked)="revertProjectStatus(data.projectId)">
-                    {{ 'project.application.revert.decision.button.label' | translate}}
-                    {{ 'common.label.projectapplicationstatus.' + data.revertToStatus | translate }}
-                </app-pending-button>
-            </ng-container>
-            <app-pending-button *ngIf="data.startStepTwoAvailable"
-                                [pending]="actionPending"
-                                (clicked)="startStepTwo(data.projectId)">
-                {{'project.application.start.step.two.button.label' | translate}}
-            </app-pending-button>
-        </div>
+        </ng-container>
+        <app-pending-button *ngIf="data.startStepTwoAvailable"
+                            class="mr-2 mt-2"
+                            [pending]="actionPending"
+                            (clicked)="startStepTwo(data.projectId)">
+            {{'project.application.start.step.two.button.label' | translate}}
+        </app-pending-button>
     </ng-container>
 
     <ng-template #revertNotPossible>
-        <button *ngxPermissionsOnly="UserRole.ADMINISTRATOR"
+        <button class="mr-2 mt-2" *ngxPermissionsOnly="UserRole.ADMINISTRATOR"
                 mat-raised-button disabled
                 (click)="revertProjectStatus(data.projectId)">
             {{ 'project.application.revert.decision.impossible.button.label' | translate }}
@@ -61,5 +75,10 @@
         <p *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT">
             {{'project.detail.returned.to.applicant.success' | translate}}
         </p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!!error.i18nMessage?.i18nKey"
+               [type]="Alert.ERROR">
+        <app-api-error-content [error]="error"></app-api-error-content>
     </app-alert>
 </ng-container>

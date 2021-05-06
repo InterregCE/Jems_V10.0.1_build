@@ -1,13 +1,14 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {map, tap} from 'rxjs/operators';
+import {catchError, finalize, map, tap} from 'rxjs/operators';
 import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {Permission} from '../../../security/permissions/permission';
 import {TranslateService} from '@ngx-translate/core';
 import * as moment from 'moment';
-import {ProjectDetailPageStore} from '../project-detail-page-store.service';
+import {ProjectDetailPageStore} from '../project-detail-page-store';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
-import {combineLatest, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {APIError} from '../../../common/models/APIError';
 
 @Component({
   selector: 'app-project-application-actions',
@@ -30,12 +31,15 @@ export class ProjectApplicationActionsComponent {
     startStepTwoAvailable: boolean,
     returnToApplicantAvailable: boolean,
     revertToStatus: string | null,
-    isThisUserOwner: boolean
+    isThisUserOwner: boolean,
+    hasPreConditionCheckSucceed: boolean
   }>;
 
   // TODO: create a component
   successMessage: boolean;
+  error$ = new BehaviorSubject<APIError | null>(null);
   actionPending = false;
+  preConditionCheckInProgress = false;
 
   constructor(public translate: TranslateService,
               private projectDetailStore: ProjectDetailPageStore,
@@ -45,35 +49,48 @@ export class ProjectApplicationActionsComponent {
       this.projectDetailStore.callHasTwoSteps$,
       this.projectDetailStore.revertToStatus$,
       this.projectDetailStore.isThisUserOwner$,
+      this.projectDetailStore.preConditionCheckResult$.pipe(map(it => it ? it.submissionAllowed : false))
     ]).pipe(
-      map(([project, callHasTwoSteps, revertToStatus, isThisUserOwner]) => ({
+      map(([project, callHasTwoSteps, revertToStatus, isThisUserOwner, hasPreConditionCheckSucceed]) => ({
         projectStatus: project.projectStatus.status,
         projectId: project.id,
         projectCallEndDate: project.callSettings?.endDate,
         startStepTwoAvailable: this.startStepTwoAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
         returnToApplicantAvailable: this.returnToApplicantAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
         revertToStatus,
-        isThisUserOwner
+        isThisUserOwner,
+        hasPreConditionCheckSucceed
       }))
     );
   }
 
+  preConditionCheck(projectId: number): void {
+    this.preConditionCheckInProgress = true;
+    this.projectDetailStore.preConditionCheck(projectId).pipe(
+      tap(() => this.preConditionCheckInProgress = false)).subscribe();
+  }
+
   submitProject(projectId: number): void {
+    this.actionPending = true;
     this.projectDetailStore.submitApplication(projectId)
       .pipe(
-        tap(() => this.actionPending = false),
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => this.actionPending = false)
       ).subscribe();
   }
 
   resubmitProject(projectId: number): void {
+    this.actionPending = true;
     this.projectDetailStore.submitApplication(projectId)
       .pipe(
-        tap(() => this.actionPending = false),
-        tap(() => this.showSuccessMessage())
+        tap(() => this.showSuccessMessage()),
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => this.actionPending = false)
       ).subscribe();
   }
 
   returnToApplicant(projectId: number): void {
+    this.actionPending = true;
     this.projectDetailStore.returnApplicationToApplicant(projectId)
       .pipe(
         tap(() => this.actionPending = false),
@@ -82,6 +99,7 @@ export class ProjectApplicationActionsComponent {
   }
 
   revertProjectStatus(projectId: number): void {
+    this.actionPending = true;
     this.projectDetailStore.revertApplicationDecision(projectId)
       .pipe(
         tap(() => this.actionPending = false),
@@ -89,23 +107,16 @@ export class ProjectApplicationActionsComponent {
   }
 
   startStepTwo(projectId: number): void {
+    this.actionPending = true;
     this.projectDetailStore.returnApplicationToDraft(projectId)
       .pipe(
         tap(() => this.actionPending = false),
       ).subscribe();
   }
 
-  isOpen(projectCallEndDate: Date): boolean {
+  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean): boolean {
     const currentDate = moment(new Date());
-    return currentDate.isBefore(projectCallEndDate);
-  }
-
-  private showSuccessMessage(): void {
-    this.successMessage = true;
-    setTimeout(() => {
-      this.successMessage = false;
-      this.changeDetectorRef.markForCheck();
-    },         4000);
+    return !(currentDate.isBefore(projectCallEndDate) && hasPreConditionCheckSucceed);
   }
 
   getRevertConfirmation(projectStatus: ProjectStatusDTO.StatusEnum, revertToStatus: string): ConfirmDialogData {
@@ -117,6 +128,22 @@ export class ProjectApplicationActionsComponent {
         to: this.translate.instant('common.label.projectapplicationstatus.' + revertToStatus)
       }
     };
+  }
+
+  private showSuccessMessage(): void {
+    this.successMessage = true;
+    setTimeout(() => {
+      this.successMessage = false;
+      this.changeDetectorRef.markForCheck();
+    },         4000);
+  }
+
+  private showErrorMessage(error: APIError): Observable<null> {
+    this.error$.next(error);
+    setTimeout(() => {
+      this.error$.next(null);
+    },         4000);
+    return of(null);
   }
 
   private startStepTwoAvailable(status: ProjectStatusDTO.StatusEnum, callHasTwoSteps: boolean,
