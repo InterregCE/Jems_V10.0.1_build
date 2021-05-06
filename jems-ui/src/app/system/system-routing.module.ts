@@ -13,6 +13,9 @@ import {UserRoleNameResolver} from './user-page-role/user-role-detail-page/user-
 export const routes: Routes = [
   {
     path: '',
+    data: {
+      breadcrumb: 'system.page.title',
+    },
     children: [
       {
         path: '',
@@ -41,13 +44,21 @@ export const routes: Routes = [
             canActivate: [PermissionGuard],
             data: {
               breadcrumb: 'user.create.header',
-              permissionsOnly: [Permission.ADMINISTRATOR],
+              permissionsOnly: [
+                UserRoleDTO.PermissionsEnum.UserCreate,
+              ],
             },
           },
           {
             path: 'detail/:userId',
             component: UserDetailPageComponent,
-            data: {dynamicBreadcrumb: true},
+            canActivate: [PermissionGuard],
+            data: {
+              dynamicBreadcrumb: true,
+              permissionsOnly: [
+                UserRoleDTO.PermissionsEnum.UserRetrieve,
+              ],
+            },
             resolve: {breadcrumb$: UserNameResolver}
           },
         ]
