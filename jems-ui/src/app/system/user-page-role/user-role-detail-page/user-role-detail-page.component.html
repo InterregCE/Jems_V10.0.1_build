@@ -1,5 +1,5 @@
 <app-main-page-template [needsCard]="true" *ngIf="role$ | async as role"
-                        titleKey="userRole.breadcrumb.list"
+                        titleKey="topbar.main.user.role.management"
                         [subTitleKey]="roleId ? 'userRole.detail.short' : 'userRole.breadcrumb.create'">
     <app-form (save)="save(role)"
               (discard)="discard(role)">

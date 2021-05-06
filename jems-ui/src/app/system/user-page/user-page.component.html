@@ -1,19 +1,17 @@
 <app-main-page-template [needsCard]="true"
-                        titleKey="user.breadcrumb.create"
-                        subTitleKey="user.management.header">
-    <button mat-raised-button class="mb-3" color="primary" routerLink="/app/system/user/detail/create">
-        + {{'user.create.button.add' | translate}}
+                        titleKey="topbar.main.user.user.management"
+                        subTitleKey="users.table.title.label">
+    <button mat-raised-button class="mb-3 put-into-paginator" color="primary" routerLink="/app/system/user/detail/create">
+        <mat-icon>add</mat-icon>{{'user.create.button.add' | translate}}
     </button>
 
-    <div *ngIf="success" class="success-wrapper mb-3">
-        <div class="success app-alert-success">
-            <em class="far fa-check-circle mr-1"></em>
-            <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
-        </div>
-    </div>
+    <app-alert *ngIf="success"
+               [show]="true"
+               [type]="Alert.SUCCESS">
+        <p *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</p>
+    </app-alert>
 
     <div *ngIf="userPageStore.page$ | async as page">
-        <h3>{{'users.table.title.label'| translate}}</h3>
         <app-table
                 [configuration]="tableConfiguration"
                 [rows]="page.content"
