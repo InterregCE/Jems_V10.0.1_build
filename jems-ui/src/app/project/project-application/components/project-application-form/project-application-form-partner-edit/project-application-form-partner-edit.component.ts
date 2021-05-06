@@ -76,21 +76,11 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     vatRecovery: ['']
   });
 
-  abbreviationErrors = {
-    maxlength: 'project.partner.name.size.too.long',
-    required: 'project.partner.name.should.not.be.empty'
-  };
   roleErrors = {
     required: 'project.partner.role.should.not.be.empty',
   };
-  nameInOriginalLanguageErrors = {
-    maxlength: 'project.organization.original.name.size.too.long'
-  };
   legalStatusErrors = {
     required: 'project.partner.legal.status.should.not.be.empty'
-  };
-  vatErrors = {
-    maxlength: 'project.partner.vat.size.too.long'
   };
 
   partnerTypeEnums = [

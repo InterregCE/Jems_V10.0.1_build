@@ -65,6 +65,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   languages$: Observable<string[]>;
   currentLanguage$: Observable<string>;
   state$ = new ReplaySubject<{ [key: string]: INPUT_STATE }>(1);
+  focusState = false;
 
   constructor(private multiLanguageContainerService: MultiLanguageContainerService,
               public languageStore: LanguageStore,
@@ -201,5 +202,9 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
 
   get inputs(): FormArray {
     return this.multiLanguageFormGroup?.get(this.constants.FORM_CONTROL_NAMES.inputs) as FormArray;
+  }
+
+  setFocusState(state: boolean): void{
+    this.focusState = state;
   }
 }

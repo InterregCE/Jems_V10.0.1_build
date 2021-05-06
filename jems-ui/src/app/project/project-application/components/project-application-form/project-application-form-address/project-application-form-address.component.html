@@ -37,59 +37,64 @@
         </mat-autocomplete>
     </mat-form-field>
 
-    <mat-form-field>
-        <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
-        <input name="street" formControlName="street" matInput>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="addressForm?.controls?.street?.errors"
-                    [messages]="streetErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-input-hint-decorator [maxLength]="50" [hasErrors]="addressForm.controls?.street?.errors !== null">
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
+            <input name="street" formControlName="street" matInput>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="addressForm?.controls?.street?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </app-input-hint-decorator>
 
-    <mat-form-field>
-        <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
-        <input name="houseNumber" formControlName="houseNumber" matInput>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="addressForm?.controls?.houseNumber?.errors"
-                    [messages]="houseNumberErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-input-hint-decorator [maxLength]="20" [hasErrors]="addressForm.controls?.houseNumber?.errors !== null">
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
+            <input name="houseNumber" formControlName="houseNumber" matInput>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="addressForm?.controls?.houseNumber?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </app-input-hint-decorator>
 
-    <mat-form-field>
-        <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
-        <input name="postalCode" formControlName="postalCode" matInput>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="addressForm?.controls?.postalCode?.errors"
-                    [messages]="postalCodeErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-input-hint-decorator [maxLength]="20" [hasErrors]="addressForm.controls?.postalCode?.errors !== null">
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
+            <input name="postalCode" formControlName="postalCode" matInput>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="addressForm?.controls?.postalCode?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </app-input-hint-decorator>
 
 
-    <mat-form-field>
-        <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
-        <input name="city" formControlName="city" matInput>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="addressForm?.controls?.city?.errors"
-                    [messages]="cityErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-input-hint-decorator [maxLength]="50" [hasErrors]="addressForm.controls?.city?.errors !== null">
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
+            <input name="city" formControlName="city" matInput>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="addressForm?.controls?.city?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </app-input-hint-decorator>
 
-    <mat-form-field *ngIf="addressForm.controls?.homepage">
-        <mat-label>{{'project.partner.main-address.homepage' | translate}}</mat-label>
-        <input name="homepage" formControlName="homepage" matInput>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="addressForm?.controls?.homepage?.errors"
-                    [messages]="homepageErrors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <app-input-hint-decorator [maxLength]="250" [hasErrors]="addressForm.controls?.homepage?.errors !== null">
+        <mat-form-field *ngIf="addressForm.controls?.homepage" class="w-100">
+            <mat-label>{{'project.partner.main-address.homepage' | translate}}</mat-label>
+            <input name="homepage" formControlName="homepage" matInput>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="addressForm?.controls?.homepage?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </app-input-hint-decorator>
 </div>

@@ -38,27 +38,29 @@
             </mat-error>
         </div>
 
-        <mat-form-field>
-            <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
-            <input name="abbreviation" formControlName="abbreviation" matInput required>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="controls?.name?.errors"
-                        [messages]="abbreviationErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+        <app-input-hint-decorator [maxLength]="15" [hasErrors]="controls?.abbreviation?.errors !== null">
+            <mat-form-field class="w-100">
+                <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
+                <input name="abbreviation" formControlName="abbreviation" matInput required>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="controls?.abbreviation?.errors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </app-input-hint-decorator>
 
-        <mat-form-field>
-            <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
-            <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="controls?.nameInOriginalLanguage?.errors"
-                        [messages]="nameInOriginalLanguageErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+        <app-input-hint-decorator [maxLength]="100" [hasErrors]="controls?.nameInOriginalLanguage?.errors !== null">
+            <mat-form-field class="w-100">
+                <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
+                <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="controls?.nameInOriginalLanguage?.errors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </app-input-hint-decorator>
 
         <app-multi-language-container [staticLanguages]="[LANGUAGE.EN]">
             <app-multi-language-form-field
@@ -103,16 +105,19 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field>
-            <mat-label>{{'project.partner.vat' | translate}}</mat-label>
-            <input name="vat" formControlName="vat" matInput>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="controls?.vat?.errors"
-                        [messages]="vatErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+        <app-input-hint-decorator [maxLength]="50" [hasErrors]="controls?.vat?.errors !== null">
+            <mat-form-field class="w-100">
+                <mat-label>{{'project.partner.vat' | translate}}</mat-label>
+                <input name="vat" formControlName="vat" matInput>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="controls?.vat?.errors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+            <p>{{'project.partner.recoverVat.intro.text' | translate}}</p>
+        </app-input-hint-decorator>
+
         <p>{{'project.partner.recoverVat.intro.text' | translate}}</p>
         <mat-button-toggle-group [disabled]="!editable">
             <mat-button-toggle

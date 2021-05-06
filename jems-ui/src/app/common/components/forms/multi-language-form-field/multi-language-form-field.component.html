@@ -10,6 +10,8 @@
                             [placeholder]="useFallBackLanguage? (inputs.value | translateBySystemLanguage: true | async) : ''"
                             [readonly]="!isEditable(getLanguageValue(formGroup),languageStore.fallbackLanguage$ | async)"
                             *ngIf="type==='input'" [formControlName]="constants.FORM_CONTROL_NAMES.translation"
+                            (focusin)="setFocusState(true)"
+                            (focusout)="setFocusState(false)"
                             matInput>
 
                     <textarea *ngIf="type==='textarea'" [formControlName]="constants.FORM_CONTROL_NAMES.translation"
@@ -18,15 +20,17 @@
                               [readonly]="!isEditable(getLanguageValue(formGroup), languageStore.fallbackLanguage$ | async)"
                               [cdkTextareaAutosize]
                               [cdkAutosizeMinRows]="minRows"
-                              [cdkAutosizeMaxRows]="maxRows">
+                              [cdkAutosizeMaxRows]="maxRows"
+                              (focusin)="setFocusState(true)"
+                              (focusout)="setFocusState(false)">
                     </textarea>
                     <app-context-info *ngIf="contextInfoText"
                                       [infoText]="contextInfoText">
                     </app-context-info>
                     <mat-hint
-                            *ngIf="isEditable(getLanguageValue(formGroup), languageStore.fallbackLanguage$ | async) && getTranslation(formGroup).dirty && getTranslation(formGroup)?.value?.length> 0">
+                            *ngIf="isEditable(getLanguageValue(formGroup), languageStore.fallbackLanguage$ | async) && focusState">
                         {{getTranslation(formGroup)?.value?.length}}
-                        / {{maxLength}} {{'common.textarea.hint' | translate}}
+                        / {{maxLength}} {{'common.text.hint' | translate}}
                     </mat-hint>
                     <mat-error>
                         <app-form-field-errors

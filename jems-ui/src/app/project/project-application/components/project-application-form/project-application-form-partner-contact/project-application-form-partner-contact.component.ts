@@ -24,39 +24,19 @@ export class ProjectApplicationFormPartnerContactComponent implements OnInit, On
     partnerContactFirstName: ['', Validators.maxLength(50)],
     partnerContactLastName: ['', Validators.maxLength(50)],
     partnerContactEmail: ['', Validators.compose([
-      Validators.maxLength(255),
-      Validators.email
+      Validators.email,
+      Validators.maxLength(255)
     ])],
     partnerContactTelephone: ['', Validators.compose([
-      Validators.maxLength(25),
-      Validators.pattern('^[0-9+()/-]*$')
+      Validators.pattern('^[0-9+()/-]*$'),
+      Validators.maxLength(25)
     ])]
   });
 
-  partnerRepresentativeTitleErrors = {
-    maxlength: 'partner.contact.representative.title.size.too.long'
-  };
-  partnerRepresentativeFirstNameErrors = {
-    maxlength: 'partner.contact.representative.first.name.size.too.long'
-  };
-  partnerRepresentativeLastNameErrors = {
-    maxlength: 'partner.contact.representative.last.name.size.too.long'
-  };
-  partnerContactTitleErrors = {
-    maxlength: 'project.contact.title.size.too.long'
-  };
-  partnerContactFirstNameErrors = {
-    maxlength: 'project.contact.first.name.size.too.long'
-  };
-  partnerContactLastNameErrors = {
-    maxlength: 'project.contact.last.name.size.too.long'
-  };
   partnerContactEmailErrors = {
-    maxlength: 'project.contact.email.size.too.long',
     email: 'project.contact.email.wrong.format'
   };
   partnerContactTelephoneErrors = {
-    maxlength: 'project.contact.telephone.size.too.long',
     pattern: 'project.contact.telephone.wrong.format'
   };
 
