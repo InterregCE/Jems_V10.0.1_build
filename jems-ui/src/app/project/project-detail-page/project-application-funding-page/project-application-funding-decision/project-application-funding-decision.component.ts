@@ -65,6 +65,7 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.actionPending = true;
     this.getDecisionAction()
       .pipe(
         take(1),

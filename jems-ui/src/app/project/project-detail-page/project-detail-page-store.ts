@@ -1,13 +1,14 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
-import {combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {ProjectDetailDTO, ProjectStatusService} from '@cat/api';
 import {Permission} from '../../security/permissions/permission';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {Log} from '../../common/utils/log';
 import {ProjectUtil} from '../project-util';
 import {SecurityService} from '../../security/security.service';
+import {PreConditionCheckResult} from '../model/plugin/PreConditionCheckResult';
 
 @Injectable()
 export class ProjectDetailPageStore {
@@ -18,6 +19,9 @@ export class ProjectDetailPageStore {
   callHasTwoSteps$: Observable<boolean>;
   isThisUserOwner$: Observable<boolean>;
 
+  private preConditionCheckResult = new BehaviorSubject<PreConditionCheckResult | null>(null);
+  preConditionCheckResult$ = this.preConditionCheckResult.asObservable();
+
   constructor(private projectStore: ProjectStore,
               private permissionService: PermissionService,
               private projectStatusService: ProjectStatusService,
@@ -27,6 +31,7 @@ export class ProjectDetailPageStore {
     this.revertToStatus$ = this.revertToStatus();
     this.callHasTwoSteps$ = this.projectStore.callHasTwoSteps$;
     this.isThisUserOwner$ = this.isThisUserOwner();
+    this.preConditionCheckResult.next(null);
   }
 
   private assessmentFilesVisible(): Observable<boolean> {
@@ -42,10 +47,22 @@ export class ProjectDetailPageStore {
 
   }
 
+  preConditionCheck(projectId: number): Observable<PreConditionCheckResult> {
+    this.preConditionCheckResult.next(null);
+    return this.projectStatusService.preConditionCheck(projectId)
+      .pipe(
+        map(resultDTO => PreConditionCheckResult.newInstance(resultDTO)),
+        tap(result => this.preConditionCheckResult.next(result)),
+        tap(() => Log.info('execute pre condition check', projectId)),
+        shareReplay(1)
+      );
+  }
+
   submitApplication(projectId: number): Observable<string> {
     return this.projectStatusService.submitApplication(projectId)
       .pipe(
-        tap(status => this.projectStore.projectStatusChanged$.next()),
+        tap(() => this.projectStore.projectStatusChanged$.next()),
+        tap(() => this.preConditionCheckResult.next(null)),
         tap(status => Log.info('Changed status for project', projectId, status))
       );
   }
@@ -53,7 +70,7 @@ export class ProjectDetailPageStore {
   returnApplicationToApplicant(projectId: number): Observable<string> {
     return this.projectStatusService.returnApplicationToApplicant(projectId)
       .pipe(
-        tap(status => this.projectStore.projectStatusChanged$.next()),
+        tap(() => this.projectStore.projectStatusChanged$.next()),
         tap(status => Log.info('Changed status for project', projectId, status))
       );
   }
@@ -69,7 +86,7 @@ export class ProjectDetailPageStore {
   revertApplicationDecision(projectId: number): Observable<string> {
     return this.projectStatusService.revertApplicationDecision(projectId)
       .pipe(
-        tap(status => this.projectStore.projectStatusChanged$.next()),
+        tap(() => this.projectStore.projectStatusChanged$.next()),
         tap(status => Log.info('Changed status for project', projectId, status))
       );
   }

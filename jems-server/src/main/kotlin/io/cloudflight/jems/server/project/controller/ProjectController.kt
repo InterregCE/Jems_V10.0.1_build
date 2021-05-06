@@ -54,7 +54,7 @@ class ProjectController(
     }
 
     override fun getProjectBudget(projectId: Long): List<ProjectPartnerBudgetDTO> =
-        getProjectBudgetInteractor.getBudget(projectId = projectId).toProjectPartnerBudgetDTO()
+        getProjectBudgetInteractor.getBudget(projectId = projectId).toDTO()
 
     override fun getProjectCoFinancing(projectId: Long): List<ProjectPartnerBudgetCoFinancingDTO> =
         getProjectBudgetCoFinancingInteractor.getBudgetCoFinancing(projectId = projectId).toProjectPartnerBudgetDTO()

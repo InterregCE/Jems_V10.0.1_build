@@ -70,6 +70,7 @@ export class ProjectApplicationQualityCheckComponent {
   }
 
   private confirmQualityAssessment(): void {
+    this.actionPending = true;
     this.projectStore.setQualityAssessment(this.qualityCheckForm.value);
     this.actionPending = false;
   }

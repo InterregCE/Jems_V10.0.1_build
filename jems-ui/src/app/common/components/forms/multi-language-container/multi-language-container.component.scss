@@ -42,8 +42,8 @@
   }
 
   ::ng-deep.mat-badge.error .mat-badge-content {
-    border: 1px solid var(--warn-color);
-    background: var(--warn-color);
+    border: 1px solid var(--error-color);
+    background: var(--error-color);
   }
 }
 

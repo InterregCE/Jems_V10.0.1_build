@@ -72,6 +72,7 @@ export class ProjectApplicationEligibilityCheckComponent {
   }
 
   confirmEligibilityAssessment(): void {
+    this.actionPending = true;
     this.projectStore.setEligibilityAssessment({
       result: this.getEligibilityCheckValue(),
       note: this.notesForm?.controls?.notes?.value,

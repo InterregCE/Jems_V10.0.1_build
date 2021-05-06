@@ -8,7 +8,21 @@
             </app-project-application-information>
         </div>
 
-        <app-project-application-actions appNoWidthLimit></app-project-application-actions>
+        <ng-container>
+            <ng-container *ngIf="project.projectStatus.status === STATUS.DRAFT || project.projectStatus.status === STATUS.STEP1DRAFT || project.projectStatus.status === STATUS.RETURNEDTOAPPLICANT">
+                <h3>{{'project.detail.pre.condition.check.result.title' | translate}}</h3>
+                <p>{{'project.detail.pre.condition.check.result.description' | translate}}</p>
+            </ng-container>
+            <app-project-application-actions appNoWidthLimit></app-project-application-actions>
+        </ng-container>
+
+
+        <ng-container *ngIf="projectDetailStore.preConditionCheckResult$ | async as results">
+            <app-project-application-pre-condition-check-result
+                    [preConditionCheckResult]="results"
+                    appNoWidthLimit></app-project-application-pre-condition-check-result>
+        </ng-container>
+
         <div appFormLayout *ngxPermissionsExcept="Permission.APPLICANT_USER" id="project-detail-container">
             <app-project-application-decisions appNoWidthLimit step="1"
                                                [callHasTwoSteps]="projectDetailStore.callHasTwoSteps$ | async"

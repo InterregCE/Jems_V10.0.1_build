@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.controller
 
+import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.project.ProjectStatusApi
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
@@ -9,6 +10,7 @@ import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
 import io.cloudflight.jems.server.project.service.ProjectStatusService
 import io.cloudflight.jems.server.project.service.application.approve_application.ApproveApplicationInteractor
 import io.cloudflight.jems.server.project.service.application.approve_application_with_conditions.ApproveApplicationWithConditionsInteractor
+import io.cloudflight.jems.server.project.service.application.execute_pre_condition_check.ExecutePreConditionCheckInteractor
 import io.cloudflight.jems.server.project.service.application.get_possible_status_to_revert_to.GetPossibleStatusToRevertToInteractor
 import io.cloudflight.jems.server.project.service.application.refuse_application.RefuseApplicationInteractor
 import io.cloudflight.jems.server.project.service.application.return_application_to_applicant.ReturnApplicationToApplicantInteractor
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class ProjectStatusController(
     private val projectStatusService: ProjectStatusService,
+    private val executePreConditionCheck: ExecutePreConditionCheckInteractor,
     private val submitApplication: SubmitApplicationInteractor,
     private val approveApplication: ApproveApplicationInteractor,
     private val approveApplicationWithConditions: ApproveApplicationWithConditionsInteractor,
@@ -34,6 +37,8 @@ class ProjectStatusController(
     private val getPossibleStatusToRevertTo: GetPossibleStatusToRevertToInteractor,
     private val refuseApplication: RefuseApplicationInteractor
 ) : ProjectStatusApi {
+    override fun preConditionCheck(id: Long): PreConditionCheckResultDTO =
+        executePreConditionCheck.execute(id).toDTO()
 
     override fun submitApplication(id: Long) =
         submitApplication.submit(id).toDTO()
