@@ -18,6 +18,6 @@ class PluginTypeIsNotValidException(pluginKey: String) : ApplicationNotFoundExce
 
 class PluginErrorException(throwable: Throwable, pluginKey: String) : ApplicationUnprocessableException(
     code = "$PLUGIN_ERROR_CODE_PREFIX-003",
-    i18nMessage = I18nMessage("$PLUGIN_ERROR_CODE_PREFIX.has.error", mapOf("pluginKey" to pluginKey)),
+    i18nMessage = I18nMessage("$PLUGIN_ERROR_KEY_PREFIX.has.error", mapOf("pluginKey" to pluginKey)),
     cause = throwable
 )
