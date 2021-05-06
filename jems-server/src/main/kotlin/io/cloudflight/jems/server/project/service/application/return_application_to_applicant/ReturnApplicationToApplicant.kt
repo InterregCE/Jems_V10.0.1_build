@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.application.return_applicatio
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanReturnApplicationToApplicant
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -38,8 +39,9 @@ class ReturnApplicationToApplicant(
                         this,
                         projectSummary,
                         userEmail = securityService.currentUser?.user?.email!!,
-                        version = projectVersionPersistence.getLatestVersionOrNull(projectId)
-                            ?.let { projectVersion -> projectVersion.version + 1 } ?: 1,
+                        version = ProjectVersionUtils.increaseMajor(
+                            projectVersionPersistence.getLatestVersionOrNull(projectId)?.version
+                        ),
                         createdAt = ZonedDateTime.now(ZoneOffset.UTC)
                     )
                 )

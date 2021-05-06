@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.create_new_project_version
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -35,14 +36,14 @@ internal class CreateNewProjectVersionTest : UnitTest() {
         password = "hash_pass"
     )
     private val currentProjectVersion = ProjectVersion(
-        1,
+        "1.0",
         projectId,
         createdAt = Timestamp.valueOf(LocalDateTime.now()),
         user,
         ApplicationStatus.RETURNED_TO_APPLICANT
     )
     private val newProjectVersion = ProjectVersion(
-        2,
+        "2.0",
         projectId,
         createdAt = Timestamp.valueOf(LocalDateTime.now()),
         user,
@@ -76,7 +77,10 @@ internal class CreateNewProjectVersionTest : UnitTest() {
         every { projectVersionPersistence.getLatestVersionOrNull(projectId) } returns currentProjectVersion
         every {
             projectVersionPersistence.createNewVersion(
-                projectId, currentProjectVersion.version + 1, ApplicationStatus.SUBMITTED, userId
+                projectId,
+                ProjectVersionUtils.increaseMajor(currentProjectVersion.version),
+                ApplicationStatus.SUBMITTED,
+                userId
             )
         } returns newProjectVersion
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary

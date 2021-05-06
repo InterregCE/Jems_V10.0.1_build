@@ -16,7 +16,7 @@ class ProjectVersionPersistenceProvider(
 ) : ProjectVersionPersistence {
 
     @Transactional
-    override fun createNewVersion(projectId: Long, version: Int, status: ApplicationStatus, userId: Long) =
+    override fun createNewVersion(projectId: Long, version: String, status: ApplicationStatus, userId: Long) =
         projectVersionRepository.save(
             ProjectVersionEntity(
                 id = ProjectVersionId(version, projectId),

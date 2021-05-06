@@ -47,7 +47,7 @@ fun projectVersionSnapshotCreated(
     )
 
 fun projectVersionRecorded(
-    context: Any, projectSummary: ProjectSummary, userEmail: String, version: Int, createdAt: ZonedDateTime
+    context: Any, projectSummary: ProjectSummary, userEmail: String, version: String, createdAt: ZonedDateTime
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
