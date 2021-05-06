@@ -21,4 +21,6 @@ interface ProjectAssociatedOrganizationService {
 
     fun refreshSortNumbers(projectId: Long)
 
+    fun findAllByProjectId(projectId: Long): Iterable<OutputProjectAssociatedOrganizationDetail>
+
 }

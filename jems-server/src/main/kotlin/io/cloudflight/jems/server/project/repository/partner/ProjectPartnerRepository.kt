@@ -17,6 +17,8 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectPartnerEntity>
 
+    fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerEntity>
+
     fun findTop30ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartnerEntity>
 
     fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole): Optional<ProjectPartnerEntity>

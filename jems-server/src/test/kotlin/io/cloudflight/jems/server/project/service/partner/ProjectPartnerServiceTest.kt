@@ -129,6 +129,15 @@ internal class ProjectPartnerServiceTest {
     }
 
     @Test
+    fun findAllByProjectIdUnpaged() {
+        every { projectPartnerRepository.findAllByProjectId(0) } returns PageImpl(emptyList())
+        every { projectPartnerRepository.findAllByProjectId(1) } returns PageImpl(listOf(projectPartner))
+
+        assertThat(projectPartnerService.findAllByProjectId(0)).isEmpty()
+        assertThat(projectPartnerService.findAllByProjectId(1)).containsExactly(outputProjectPartnerDetail)
+    }
+
+    @Test
     fun createProjectPartner() {
         val inputProjectPartner =
             InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)

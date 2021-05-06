@@ -20,6 +20,8 @@ interface ProjectPartnerService {
 
     fun findAllByProjectId(projectId: Long, page: Pageable): Page<OutputProjectPartner>
 
+    fun findAllByProjectId(projectId: Long): Iterable<OutputProjectPartnerDetail>
+
     fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort): List<OutputProjectPartner>
 
     fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail

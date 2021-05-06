@@ -58,6 +58,11 @@ class ProjectPartnerServiceImpl(
     }
 
     @Transactional(readOnly = true)
+    override fun findAllByProjectId(projectId: Long): Iterable<OutputProjectPartnerDetail> {
+        return projectPartnerRepo.findAllByProjectId(projectId).map { it.toOutputProjectPartnerDetail() }.toSet()
+    }
+
+    @Transactional(readOnly = true)
     override fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort): List<OutputProjectPartner> {
         return StreamSupport.stream(
             projectPartnerRepo.findTop30ByProjectId(projectId, sort).spliterator(),

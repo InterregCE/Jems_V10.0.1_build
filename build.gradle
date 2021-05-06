@@ -40,8 +40,8 @@ apply plugin: "org.sonarqube"
 sonarqube {
     properties {
         property "sonar.exclusions", "**/*.spec.ts"
-        // exclude frontend files from code coverage
-        property "sonar.coverage.exclusions", "**/*.ts, **/*.html, **/*.scss, **/*.properties"
+        // exclude frontend and mapper files from code coverage
+        property "sonar.coverage.exclusions", "**/*.ts, **/*.html, **/*.scss, **/*.properties, **/*Mapper.kt"
 
         property "sonar.issue.ignore.multicriteria", "e1,e2,e3"
         // ignore rule: readonly was decided to provide no big advantage

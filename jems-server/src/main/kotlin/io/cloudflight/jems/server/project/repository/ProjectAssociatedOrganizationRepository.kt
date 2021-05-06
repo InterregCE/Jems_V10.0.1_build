@@ -22,4 +22,6 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectAssociatedOrganization>
 
     fun findAllByProjectId(projectId: Long, sort: Sort): Iterable<ProjectAssociatedOrganization>
+
+    fun findAllByProjectId(projectId: Long): Iterable<ProjectAssociatedOrganization>
 }
