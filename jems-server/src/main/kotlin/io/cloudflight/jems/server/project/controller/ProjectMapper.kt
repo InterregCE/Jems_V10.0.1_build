@@ -8,6 +8,9 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
+import io.cloudflight.jems.api.project.dto.ProjectDataDTO
+import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
@@ -21,8 +24,11 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUn
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
+import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.user.controller.toDto
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
@@ -51,6 +57,37 @@ fun Collection<PartnerBudget>.toDTO() = map { it.toDTO() }
 
 fun ProjectCallSettings.toDto() = projectMapper.map(this)
 fun ProjectPartner.toOutputProjectPartner() = projectMapper.map(this)
+
+fun Project.toDto() = ProjectDetailDTO(
+    id = id,
+    callSettings = callSettings.toDto(),
+    acronym = acronym,
+    applicant = applicant.toDto(),
+    projectStatus = projectStatus.toDto(),
+    firstSubmission = firstSubmission?.toDto(),
+    lastResubmission = lastResubmission?.toDto(),
+    step2Active = step2Active,
+    firstStepDecision = firstStepDecision?.toDto(),
+    secondStepDecision = secondStepDecision?.toDto(),
+    // projectData
+    projectData = ProjectDataDTO(
+        title = title ?: emptySet(),
+        intro = intro ?: emptySet(),
+        duration = duration,
+        specificObjective = specificObjective,
+        programmePriority = programmePriority
+    ),
+    periods = periods.toDtos(id)
+)
+
+fun Collection<ProjectPeriod>.toDtos(projectId: Long?) = map { it.toDto(projectId) }
+
+fun ProjectPeriod.toDto(projectId: Long?) = ProjectPeriodDTO(
+    projectId = projectId ?: 0,
+    number = number,
+    start = start,
+    end = end
+)
 
 private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable
 
 interface ProjectService {
 
+    @Deprecated("use Interactor", replaceWith = ReplaceWith("GetProjectInteractor.getProject"))
     fun getById(id: Long): ProjectDetailDTO
 
     fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus

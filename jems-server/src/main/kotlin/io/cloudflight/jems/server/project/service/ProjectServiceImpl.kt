@@ -68,7 +68,7 @@ class ProjectServiceImpl(
             return projectRepo.findAll(page).map { it.toOutputProjectSimple() }
         }
         if (currentUser.hasRole(APPLICANT_USER)) {
-            return projectRepo.findAllByApplicantId(currentUser.user.id!!, page).map { it.toOutputProjectSimple() }
+            return projectRepo.findAllByApplicantId(currentUser.user.id, page).map { it.toOutputProjectSimple() }
         }
         return projectRepo.findAll(page).map { it.toOutputProjectSimple() }
     }

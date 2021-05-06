@@ -1,14 +1,13 @@
 package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.project.ProjectApi
-import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
-import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
+import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
+import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
-import io.cloudflight.jems.server.project.authorization.CanReadProject
 import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
@@ -35,10 +34,8 @@ class ProjectController(
         return projectService.findAll(pageable)
     }
 
-    @CanReadProject
-    override fun getProjectById(projectId: Long): ProjectDetailDTO {
-        return projectService.getById(projectId)
-    }
+    override fun getProjectById(projectId: Long, version: Int?): ProjectDetailDTO =
+        getProjectInteractor.getProject(projectId, version).toDto()
 
     override fun getProjectCallSettingsById(projectId: Long): ProjectCallSettingsDTO =
         getProjectInteractor.getProjectCallSettings(projectId).toDto()

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import javax.validation.Valid
 
 @Api("Project")
@@ -37,7 +38,10 @@ interface ProjectApi {
 
     @ApiOperation("Returns a project application by id")
     @GetMapping("/{projectId}")
-    fun getProjectById(@PathVariable projectId: Long): ProjectDetailDTO
+    fun getProjectById(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: Int? = null
+    ): ProjectDetailDTO
 
     @ApiOperation("Returns call setting of a call related to this application")
     @GetMapping("/{projectId}/callSettings")

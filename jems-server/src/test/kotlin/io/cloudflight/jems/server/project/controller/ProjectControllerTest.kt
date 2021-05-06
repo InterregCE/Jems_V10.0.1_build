@@ -10,8 +10,18 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
+import io.cloudflight.jems.api.project.dto.ProjectDataDTO
+import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
+import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
+import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
+import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
+import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
+import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -20,9 +30,16 @@ import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetP
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing.GetProjectBudgetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
+import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectDecision
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.toScaledBigDecimal
+import io.cloudflight.jems.server.user.controller.toDto
+import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -191,6 +208,74 @@ class ProjectControllerTest {
         assertThat(controller.getProjectBudget(1L)).containsExactly(
             partnerBudget1.toDTO(),
             partnerBudget2.toDTO()
+        )
+    }
+
+    @Test
+    fun `get Project by Id`() {
+        val pId = 1L
+        val user = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"))
+        val projectStatus = ProjectStatus(5L, ApplicationStatusDTO.APPROVED, user, updated = startDate)
+        val callSettings = ProjectCallSettings(
+            callId = 2L,
+            callName = "call",
+            startDate = startDate,
+            endDate = endDate,
+            lengthOfPeriod = 2,
+            endDateStep1 = endDate,
+            flatRates = emptySet(),
+            lumpSums = emptyList(),
+            unitCosts = emptyList(),
+            isAdditionalFundAllowed = false
+        )
+        val project = Project(
+            id = pId,
+            callSettings = callSettings,
+            acronym = "acronym",
+            applicant = user,
+            duration = 12,
+            programmePriority = null,
+            specificObjective = null,
+            projectStatus = projectStatus,
+            step2Active = false,
+            periods = listOf(ProjectPeriod(1, 1, 1), ProjectPeriod(2, 2, 2)),
+            firstStepDecision = ProjectDecision(
+                OutputProjectQualityAssessment(ProjectQualityAssessmentResult.NOT_RECOMMENDED, updated = startDate),
+                OutputProjectEligibilityAssessment(ProjectEligibilityAssessmentResult.FAILED, updated = startDate),
+                projectStatus
+            )
+        )
+        every { getProjectInteractor.getProject(pId, null) } returns project
+
+        assertThat(controller.getProjectById(pId)).isEqualTo(
+            ProjectDetailDTO(
+                id = project.id,
+                callSettings = ProjectCallSettingsDTO(
+                    callSettings.callId,
+                    callSettings.callName,
+                    callSettings.startDate,
+                    callSettings.endDate,
+                    callSettings.endDateStep1,
+                    callSettings.lengthOfPeriod,
+                    callSettings.isAdditionalFundAllowed,
+                    FlatRateSetupDTO(),
+                    emptyList(),
+                    emptyList()
+                ),
+                acronym = project.acronym,
+                applicant = project.applicant.toDto(),
+                projectStatus = ProjectStatusDTO(projectStatus.id, projectStatus.status, projectStatus.user.toDto(), projectStatus.updated),
+                projectData = ProjectDataDTO(duration = project.duration, programmePriority = null, specificObjective = null),
+                periods = listOf(
+                    ProjectPeriodDTO(pId, 1, 1, 1),
+                    ProjectPeriodDTO(pId, 2, 2,2)
+                ),
+                firstStepDecision = ProjectDecisionDTO(
+                    OutputProjectQualityAssessment(ProjectQualityAssessmentResult.NOT_RECOMMENDED, startDate),
+                    OutputProjectEligibilityAssessment(ProjectEligibilityAssessmentResult.FAILED, startDate),
+                    ProjectStatusDTO(projectStatus.id, projectStatus.status, user.toDto(), startDate)
+                )
+            )
         )
     }
 }
