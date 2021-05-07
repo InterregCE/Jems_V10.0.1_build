@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges} from '@angular/core';
 import {ProjectDecisionDTO, ProjectStatusDTO} from '@cat/api';
 import {ProjectStepStatus} from '../project-step-status';
 
@@ -8,7 +8,7 @@ import {ProjectStepStatus} from '../project-step-status';
   styleUrls: ['./project-application-decisions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationDecisionsComponent {
+export class ProjectApplicationDecisionsComponent implements OnChanges {
   STATUS = ProjectStatusDTO.StatusEnum;
 
   @Input()
@@ -20,7 +20,11 @@ export class ProjectApplicationDecisionsComponent {
   @Input()
   projectStatus: ProjectStatusDTO;
 
-  stepStatus = new ProjectStepStatus(this.step);
+  stepStatus: ProjectStepStatus;
+
+  ngOnChanges(): void {
+    this.stepStatus = new ProjectStepStatus(this.step);
+  }
 
   updateOrViewFundingLabel(): string {
     return this.decisions?.fundingDecision?.status === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS

@@ -1,5 +1,5 @@
 <mat-expansion-panel
-        *ngIf="projectStatus.status !== stepStatus.draft && projectStatus.status !== stepStatus.returnedToApplicant"
+        *ngIf="projectStatus.status !== STATUS.STEP1DRAFT && projectStatus.status !== STATUS.DRAFT && projectStatus.status !== stepStatus.returnedToApplicant"
         [expanded]="true">
     <mat-expansion-panel-header>
         <mat-panel-title>{{'project.assessment.check.header' | translate}}</mat-panel-title>
