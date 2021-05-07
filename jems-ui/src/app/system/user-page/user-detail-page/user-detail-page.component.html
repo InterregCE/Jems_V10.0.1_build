@@ -1,5 +1,6 @@
 <app-main-page-template [needsCard]="true" *ngIf="details$ | async as details"
-                        titleKey="user.breadcrumb.create">
+                        titleKey="topbar.main.user.user.management"
+                        subTitleKey="userRole.detail.short">
     <form appFormLayout [formGroup]="userForm">
         <div appMultiColumnRow>
             <h2 class="inline-block">{{'user.detail.page.title' | translate}}</h2>

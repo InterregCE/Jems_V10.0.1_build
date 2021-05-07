@@ -1,9 +1,9 @@
 <app-main-page-template [needsCard]="true"
-                        titleKey="userRole.breadcrumb.list"
-                        subTitleKey="userRole.management.header">
+                        titleKey="topbar.main.user.role.management"
+                        subTitleKey="userRole.breadcrumb.list">
     <button *hasPermission="PERMISSIONS.RoleCreate"
             mat-raised-button
-            class="mb-3"
+            class="mb-3 put-into-paginator"
             color="primary"
             routerLink="/app/system/userRole/create">
         <mat-icon>add</mat-icon>{{'userRole.breadcrumb.create' | translate}}

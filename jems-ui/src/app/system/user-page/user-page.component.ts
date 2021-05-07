@@ -4,6 +4,7 @@ import {RolePageService} from '../role-page/role-page.service';
 import {UserPageStore} from './user-page-store.service';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {Router} from '@angular/router';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-user-page',
@@ -15,6 +16,7 @@ import {Router} from '@angular/router';
 export class UserPageComponent implements OnInit {
 
   success = this.router.getCurrentNavigation()?.extras?.state?.success;
+  Alert = Alert;
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
     routerLink: '/app/system/user/detail',
