@@ -2,104 +2,138 @@
           (discard)="resetForm()">
     <form appFormLayout [formGroup]="partnerContactForm">
         <h3>{{'project.partner.representative.header' | translate}}</h3>
-        <app-input-hint-decorator [maxLength]="25" [hasErrors]="partnerContactForm.controls?.partnerRepresentativeTitle?.errors !== null">
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
-                <input name="partnerRepresentativeTitle" formControlName="partnerRepresentativeTitle" matInput>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="partnerContactForm?.controls?.partnerRepresentativeTitle?.errors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </app-input-hint-decorator>
 
-        <app-input-hint-decorator [maxLength]="50" [hasErrors]="partnerContactForm.controls?.partnerRepresentativeFirstName?.errors !== null">
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.representative.first.name' | translate}}</mat-label>
-                <input name="partnerRepresentativeFirstName" formControlName="partnerRepresentativeFirstName" matInput>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="partnerContactForm?.controls?.partnerRepresentativeFirstName?.errors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </app-input-hint-decorator>
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
+            <input #partnerRepresentativeTitleInput name="partnerRepresentativeTitle"
+                   formControlName="partnerRepresentativeTitle" matInput>
+            <mat-hint [appHintFor]="partnerRepresentativeTitleInput"
+                      [hide]="partnerContactForm.controls?.partnerRepresentativeTitle?.errors !== null">
+                <app-text-hint [currentLength]="partnerRepresentativeTitleInput?.value?.length"
+                               [maxLength]="25"></app-text-hint>
+            </mat-hint>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerRepresentativeTitle?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-        <app-input-hint-decorator [maxLength]="50" [hasErrors]="partnerContactForm.controls?.partnerRepresentativeLastName?.errors !== null">
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.representative.last.name' | translate}}</mat-label>
-                <input name="partnerRepresentativeLastName" formControlName="partnerRepresentativeLastName" matInput>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="partnerContactForm?.controls?.partnerRepresentativeLastName?.errors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </app-input-hint-decorator>
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.representative.first.name' | translate}}</mat-label>
+            <input #partnerRepresentativeFirstNameInput name="partnerRepresentativeFirstName"
+                   formControlName="partnerRepresentativeFirstName" matInput>
+            <mat-hint [appHintFor]="partnerRepresentativeFirstNameInput"
+                      [hide]="partnerContactForm.controls?.partnerRepresentativeFirstName?.errors !== null">
+                <app-text-hint [currentLength]="partnerRepresentativeFirstNameInput?.value?.length"
+                               [maxLength]="50"></app-text-hint>
+            </mat-hint>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerRepresentativeFirstName?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.representative.last.name' | translate}}</mat-label>
+            <input #partnerRepresentativeLastNameInput name="partnerRepresentativeLastName"
+                   formControlName="partnerRepresentativeLastName" matInput>
+            <mat-hint [appHintFor]="partnerRepresentativeLastNameInput"
+                      [hide]="partnerContactForm.controls?.partnerRepresentativeLastName?.errors !== null">
+                <app-text-hint [currentLength]="partnerRepresentativeLastNameInput?.value?.length"
+                               [maxLength]="50"></app-text-hint>
+            </mat-hint>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerRepresentativeLastName?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
         <h3>{{'project.partner.contact.header' | translate}}</h3>
 
-        <app-input-hint-decorator [maxLength]="25" [hasErrors]="partnerContactForm.controls?.partnerContactTitle?.errors !== null">
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
-                <input name="partnerContactTitle" formControlName="partnerContactTitle" matInput>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="partnerContactForm?.controls?.partnerContactTitle?.errors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </app-input-hint-decorator>
 
-        <app-input-hint-decorator [maxLength]="50" [hasErrors]="partnerContactForm.controls?.partnerContactFirstName?.errors !== null">
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
-                <input name="partnerContactFirstName" formControlName="partnerContactFirstName" matInput>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="partnerContactForm?.controls?.partnerContactFirstName?.errors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </app-input-hint-decorator>
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
+            <input #partnerContactTitleInput name="partnerContactTitle" formControlName="partnerContactTitle" matInput>
+            <mat-hint [appHintFor]="partnerContactTitleInput"
+                      [hide]="partnerContactForm.controls?.partnerContactTitle?.errors !== null">
+                <app-text-hint [currentLength]="partnerContactTitleInput?.value?.length"
+                               [maxLength]="25"></app-text-hint>
+            </mat-hint>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerContactTitle?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-        <app-input-hint-decorator [maxLength]="50" [hasErrors]="partnerContactForm.controls?.partnerContactLastName?.errors !== null">
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
-                <input name="partnerContactLastName" formControlName="partnerContactLastName" matInput>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="partnerContactForm?.controls?.partnerContactLastName?.errors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </app-input-hint-decorator>
 
-        <app-input-hint-decorator [maxLength]="255" [hasErrors]="partnerContactForm.controls?.partnerContactEmail?.errors !== null">
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
-                <input name="partnerContactEmail" formControlName="partnerContactEmail" matInput>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="partnerContactForm?.controls?.partnerContactEmail?.errors"
-                            [messages]="partnerContactEmailErrors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </app-input-hint-decorator>
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
+            <input #partnerContactFirstNameInput name="partnerContactFirstName"
+                   formControlName="partnerContactFirstName" matInput>
+            <mat-hint [appHintFor]="partnerContactFirstNameInput"
+                      [hide]="partnerContactForm.controls?.partnerContactFirstName?.errors !== null">
+                <app-text-hint [currentLength]="partnerContactFirstNameInput?.value?.length"
+                               [maxLength]="50"></app-text-hint>
+            </mat-hint>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerContactFirstName?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-        <app-input-hint-decorator [maxLength]="25" [hasErrors]="partnerContactForm.controls?.partnerContactTelephone?.errors !== null">
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
-                <input name="partnerContactTelephone" formControlName="partnerContactTelephone" matInput>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="partnerContactForm?.controls?.partnerContactTelephone?.errors"
-                            [messages]="partnerContactTelephoneErrors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </app-input-hint-decorator>
+
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
+            <input #partnerContactLastNameInput name="partnerContactLastName" formControlName="partnerContactLastName"
+                   matInput>
+            <mat-hint [appHintFor]="partnerContactLastNameInput"
+                      [hide]="partnerContactForm.controls?.partnerContactLastName?.errors !== null">
+                <app-text-hint [currentLength]="partnerContactLastNameInput?.value?.length"
+                               [maxLength]="50"></app-text-hint>
+            </mat-hint>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerContactLastName?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
+            <input #partnerContactEmailInput name="partnerContactEmail" formControlName="partnerContactEmail" matInput>
+            <mat-hint [appHintFor]="partnerContactEmailInput"
+                      [hide]="partnerContactForm.controls?.partnerContactEmail?.errors !== null">
+                <app-text-hint [currentLength]="partnerContactEmailInput?.value?.length"
+                               [maxLength]="255"></app-text-hint>
+            </mat-hint>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerContactEmail?.errors"
+                        [messages]="partnerContactEmailErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
+            <input #partnerContactTelephoneInput name="partnerContactTelephone"
+                   formControlName="partnerContactTelephone" matInput>
+            <mat-hint [appHintFor]="partnerContactTelephoneInput"
+                      [hide]="partnerContactForm.controls?.partnerContactTelephone?.errors !== null">
+                <app-text-hint [currentLength]="partnerContactTelephoneInput?.value?.length"
+                               [maxLength]="25"></app-text-hint>
+            </mat-hint>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="partnerContactForm?.controls?.partnerContactTelephone?.errors"
+                        [messages]="partnerContactTelephoneErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
     </form>
 </app-form>

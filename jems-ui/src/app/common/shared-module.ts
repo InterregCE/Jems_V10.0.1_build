@@ -45,7 +45,8 @@ import {DateFormatInfoPipe} from './pipe/date-format-info.pipe';
 import {CustomTranslatePipe} from './pipe/custom-translate-pipe';
 import {PendingButtonComponent} from '@common/components/section/form/pending-button/pending-button.component';
 import {HasPermissionDirective} from './directives/has-permission.directive';
-import { InputHintDecoratorComponent } from '@common/components/forms/form-field/input-hint-decorator.component';
+import {HintDirective} from './directives/hint.directive';
+import {TextHintComponent} from '@common/components/forms/text-hint/text-hint.component';
 
 const modules = [
   CommonModule,
@@ -98,7 +99,8 @@ const declarations = [
   ApiErrorContentComponent,
   InlineEditableFieldComponent,
   CustomTranslatePipe,
-  InputHintDecoratorComponent,
+  HintDirective,
+  TextHintComponent
 ];
 
 const providers = [
@@ -110,15 +112,14 @@ const providers = [
 
 @NgModule({
   declarations: [
-    declarations,
+    declarations
   ],
   imports: [
     modules
   ],
   exports: [
     modules,
-    declarations,
-    InputHintDecoratorComponent
+    declarations
   ],
   providers: [
     ...providers

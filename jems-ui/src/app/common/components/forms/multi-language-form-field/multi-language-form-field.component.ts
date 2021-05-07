@@ -1,4 +1,4 @@
-import {Component, forwardRef, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -44,6 +44,9 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   disabled = false;
   constants = MultiLanguageFormFieldConstants;
 
+  @ViewChild('inputElement')
+  inputElement: ElementRef;
+
   @Input()
   type: 'input' | 'textarea' = 'input';
   @Input()
@@ -65,7 +68,6 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   languages$: Observable<string[]>;
   currentLanguage$: Observable<string>;
   state$ = new ReplaySubject<{ [key: string]: INPUT_STATE }>(1);
-  focusState = false;
 
   constructor(private multiLanguageContainerService: MultiLanguageContainerService,
               public languageStore: LanguageStore,
@@ -202,9 +204,5 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
 
   get inputs(): FormArray {
     return this.multiLanguageFormGroup?.get(this.constants.FORM_CONTROL_NAMES.inputs) as FormArray;
-  }
-
-  setFocusState(state: boolean): void{
-    this.focusState = state;
   }
 }
