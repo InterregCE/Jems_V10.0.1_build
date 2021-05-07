@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.user.service.model
 enum class UserRolePermission(val key: String) {
     ProjectSubmission("ProjectSubmission"),
 
+    AuditRetrieve("AuditRetrieve"),
+
     RoleRetrieve("RoleRetrieve"),
     RoleCreate("RoleCreate"),
     RoleUpdate("RoleUpdate"),

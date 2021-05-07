@@ -7,6 +7,20 @@ export class Permission {
   public static readonly PROGRAMME_USER = 'programme user';
   public static readonly APPLICANT_USER = 'applicant user';
 
+  public static readonly SYSTEM_MODULE_PERMISSIONS = [
+    PermissionsEnum.AuditRetrieve,
+
+    PermissionsEnum.RoleRetrieve,
+    PermissionsEnum.RoleCreate,
+    PermissionsEnum.RoleUpdate,
+
+    PermissionsEnum.UserRetrieve,
+    PermissionsEnum.UserCreate,
+    PermissionsEnum.UserUpdate,
+    PermissionsEnum.UserUpdateRole,
+    PermissionsEnum.UserUpdatePassword,
+  ];
+
   public static readonly DEFAULT_PERMISSIONS: PermissionNode[] = [
     {
       name: 'topbar.main.dashboard',
@@ -63,13 +77,11 @@ export class Permission {
             PermissionsEnum.RoleCreate,
             PermissionsEnum.RoleUpdate,
           ],
-          temporarilyDisabled: true,
         },
         {
           name: 'topbar.main.audit',
           mode: PermissionMode.HIDDEN_VIEW,
-          viewPermissions: ['AuditRetrieve-to-be-done' as PermissionsEnum],
-          temporarilyDisabled: true,
+          viewPermissions: [PermissionsEnum.AuditRetrieve],
         },
       ]
     },

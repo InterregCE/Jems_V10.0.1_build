@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject} from 'rxjs';
+import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Permission} from '../../../security/permissions/permission';
-import {filter, take} from 'rxjs/operators';
+import {take} from 'rxjs/operators';
 import {SecurityService} from '../../../security/security.service';
-import {OutputCurrentUser} from '@cat/api';
+import {OutputCurrentUser, UserRoleDTO} from '@cat/api';
 
 @Injectable()
 export class TopBarService {
@@ -37,7 +37,6 @@ export class TopBarService {
     isInternal: true,
     route: '/app/system',
   };
-  private auditItem: MenuItemConfiguration;
   private editUserItem: MenuItemConfiguration;
 
   constructor(private permissionService: PermissionService,
@@ -68,37 +67,36 @@ export class TopBarService {
   }
 
   assingMenuItemsToUser(): void {
-    this.permissionService.hasPermission(Permission.APPLICANT_USER)
-      .pipe(
-        take(1),
-        filter(canSee => canSee),
-      )
-      .subscribe(() => this.menuItems$.next([this.dashboardItem, this.editUserItem]));
+    combineLatest([
+      this.permissionService.hasPermission(Permission.SYSTEM_MODULE_PERMISSIONS),
+      // TODO remove when all permissions implemented
+      this.permissionService.hasPermission(Permission.APPLICANT_USER),
+      this.permissionService.hasPermission(Permission.PROGRAMME_USER),
+      this.permissionService.hasPermission(Permission.ADMINISTRATOR),
+    ]).pipe(
+      take(1),
+    ).subscribe(([systemEnabled, isApplicant, isProgrammeUser, isAdmin]) => {
+      const menuItems: MenuItemConfiguration[] = [];
 
-    this.permissionService.hasPermission(Permission.PROGRAMME_USER)
-      .pipe(
-        take(1),
-        filter(canSee => canSee),
-      )
-      .subscribe(() => this.menuItems$.next([
-        this.applicationsItem,
-        this.callsItem,
-        this.programmItem,
-        this.systemItem,
-        this.editUserItem,
-      ]));
+      if (isApplicant) {
+        menuItems.push(this.dashboardItem);
+      }
+      if (isProgrammeUser || isAdmin) {
+        menuItems.push(this.applicationsItem);
+      }
+      if (isProgrammeUser || isAdmin) {
+        menuItems.push(this.callsItem);
+      }
+      if (isProgrammeUser || isAdmin) {
+        menuItems.push(this.programmItem);
+      }
+      if (systemEnabled) {
+        menuItems.push(this.systemItem);
+      }
 
-    this.permissionService.hasPermission(Permission.ADMINISTRATOR)
-      .pipe(
-        take(1),
-        filter(canSee => canSee),
-      )
-      .subscribe(() => this.menuItems$.next([
-        this.applicationsItem,
-        this.callsItem,
-        this.programmItem,
-        this.systemItem,
-        this.editUserItem,
-      ]));
+      menuItems.push(this.editUserItem);
+
+      this.menuItems$.next(menuItems);
+    });
   }
 }
