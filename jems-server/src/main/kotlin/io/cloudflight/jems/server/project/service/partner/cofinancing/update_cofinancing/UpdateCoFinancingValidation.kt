@@ -13,7 +13,7 @@ fun validateFinancing(
     financing: Collection<UpdateProjectPartnerCoFinancing>,
     allowedFundIds: Set<Long>
 ) {
-    if (!financing.all { it.percentage != null && it.percentage < BigDecimal.valueOf(100) && it.percentage > BigDecimal.ZERO })
+    if (!financing.all { it.percentage != null && it.percentage <= BigDecimal.valueOf(100) && it.percentage >= BigDecimal.ZERO })
         invalid("project.partner.coFinancing.percentage.invalid")
 
     if (financing.fold(BigDecimal.ZERO) { acc, e -> acc.add(e.percentage) }.compareTo(BigDecimal.valueOf(100.0)) != 0)
