@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.audit.service.AuditPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.config.AUDIT_ENABLED
 import io.cloudflight.jems.server.config.AUDIT_PROPERTY_PREFIX
-import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveAuditLog
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 @ConditionalOnProperty(prefix = AUDIT_PROPERTY_PREFIX, name = [AUDIT_ENABLED], havingValue = "true")
 class GetAudit(private val auditPersistence: AuditPersistence) : GetAuditInteractor {
 
-    @CanUpdateProgrammeSetup
+    @CanRetrieveAuditLog
     @ExceptionWrapper(GetAuditException::class)
     override fun getAudit(searchRequest: AuditSearchRequest): Page<Audit> =
         auditPersistence.getAudit(searchRequest)

@@ -59,7 +59,11 @@ export const routes: Routes = [
       {
         path: 'system',
         loadChildren: () => import('./system/system.module').then(m => m.SystemModule),
-        data: {skipBreadcrumb: true},
+        canActivate: [PermissionGuard],
+        data: {
+          skipBreadcrumb: true,
+          permissionsOnly: Permission.SYSTEM_MODULE_PERMISSIONS,
+        },
       },
     ]
   },

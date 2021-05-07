@@ -23,7 +23,7 @@ export const routes: Routes = [
         canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'audit.list.title',
-          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+          permissionsOnly: [UserRoleDTO.PermissionsEnum.AuditRetrieve],
         },
       },
       {
@@ -31,7 +31,7 @@ export const routes: Routes = [
         canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'user.breadcrumb.create',
-          permissionsOnly: [Permission.ADMINISTRATOR],
+          permissionsOnly: [UserRoleDTO.PermissionsEnum.UserRetrieve],
         },
         children: [
           {
@@ -52,13 +52,7 @@ export const routes: Routes = [
           {
             path: 'detail/:userId',
             component: UserDetailPageComponent,
-            canActivate: [PermissionGuard],
-            data: {
-              dynamicBreadcrumb: true,
-              permissionsOnly: [
-                UserRoleDTO.PermissionsEnum.UserRetrieve,
-              ],
-            },
+            data: {dynamicBreadcrumb: true},
             resolve: {breadcrumb$: UserNameResolver}
           },
         ]
@@ -70,8 +64,6 @@ export const routes: Routes = [
           breadcrumb: 'userRole.breadcrumb.list',
           permissionsOnly: [
             UserRoleDTO.PermissionsEnum.RoleRetrieve,
-            UserRoleDTO.PermissionsEnum.RoleCreate,
-            UserRoleDTO.PermissionsEnum.RoleUpdate,
           ]
         },
         children: [
@@ -93,13 +85,7 @@ export const routes: Routes = [
           {
             path: 'detail/:roleId',
             component: UserRoleDetailPageComponent,
-            canActivate: [PermissionGuard],
-            data: {
-              dynamicBreadcrumb: true,
-              permissionsOnly: [
-                UserRoleDTO.PermissionsEnum.RoleRetrieve,
-              ]
-            },
+            data: {dynamicBreadcrumb: true},
             resolve: {breadcrumb$: UserRoleNameResolver}
           },
         ]

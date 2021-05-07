@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.controller
 
 import io.cloudflight.jems.server.factory.UserFactory
 import io.cloudflight.jems.server.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -30,7 +31,7 @@ class UserRoleControllerIntegrationTest {
     @Transactional
     fun `list paginated roles`() {
         // we already have the admin and programme roles => 3 roles will be persisted
-        userFactory.saveRole("r1")
+        userFactory.saveRole("r1", listOf(UserRolePermission.RoleRetrieve))
 
         mockMvc.perform(
             get("/api/role?page=0")

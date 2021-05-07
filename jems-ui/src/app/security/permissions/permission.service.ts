@@ -32,7 +32,7 @@ export class PermissionService {
     this.permissionsChanged$.next(permissions);
   }
 
-  hasPermission(permission: string): Observable<boolean> {
+  hasPermission(permission: string | string[]): Observable<boolean> {
     return from(this.ngxPermissionsService.hasPermission(permission));
   }
 

@@ -6,6 +6,11 @@ import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.userrole.UserRoleRepository
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
+import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
+import io.cloudflight.jems.server.user.entity.UserRolePermissionEntity
+import io.cloudflight.jems.server.user.entity.UserRolePermissionId
+import io.cloudflight.jems.server.user.repository.userrole.UserRolePermissionRepository
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -14,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserFactory(
     val userRepository: UserRepository,
     val userRoleRepository: UserRoleRepository,
+    val userRolePermissionRepository: UserRolePermissionRepository,
     val passwordEncoder: PasswordEncoder
 ) {
 
@@ -22,9 +28,31 @@ class UserFactory(
     val applicantUser: UserEntity = saveApplicantUser(APPLICANT_USER_EMAIL)
 
     @Transactional
-    fun saveRole(roleName: String): UserRoleEntity {
-        return userRoleRepository.findByName(roleName).orElse(null)
-            ?: userRoleRepository.save(UserRoleEntity(0, roleName))
+    fun saveRole(roleName: String, permissions: List<UserRolePermission> = emptyList()): UserRoleEntity {
+        var role = userRoleRepository.findByName(roleName).orElse(null)
+        if (role != null)
+            return role
+
+        role = userRoleRepository.save(UserRoleEntity(0, roleName))
+        when {
+            permissions.isNotEmpty() -> {
+                permissions.map {
+                    UserRolePermissionEntity(UserRolePermissionId(role, it))
+                }.let { userRolePermissionRepository.saveAll(it) }
+            }
+            roleName == ADMINISTRATOR -> {
+                UserRolePermission.values().map {
+                    UserRolePermissionEntity(UserRolePermissionId(role, it))
+                }.let { userRolePermissionRepository.saveAll(it) }
+            }
+            roleName == PROGRAMME_USER -> {
+                userRolePermissionRepository.save(
+                    UserRolePermissionEntity(UserRolePermissionId(role, UserRolePermission.AuditRetrieve))
+                )
+            }
+        }
+
+        return role
     }
 
     @Transactional

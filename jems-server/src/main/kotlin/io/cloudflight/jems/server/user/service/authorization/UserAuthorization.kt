@@ -6,28 +6,23 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 @Retention(AnnotationRetention.RUNTIME)
-//@PreAuthorize("hasAuthority('UserRetrieve')")
-@PreAuthorize("@userAuthorization.admin")
+@PreAuthorize("hasAuthority('UserRetrieve')")
 annotation class CanRetrieveUsers
 
 @Retention(AnnotationRetention.RUNTIME)
-//@PreAuthorize("hasAuthority('UserRetrieve') || @userAuthorization.isThisUser(#userId)")
-@PreAuthorize("@userAuthorization.admin || @userAuthorization.isThisUser(#userId)")
+@PreAuthorize("hasAuthority('UserRetrieve') || @userAuthorization.isThisUser(#userId)")
 annotation class CanRetrieveUser
 
 @Retention(AnnotationRetention.RUNTIME)
-//@PreAuthorize("hasAuthority('UserCreate')")
-@PreAuthorize("@userAuthorization.admin")
+@PreAuthorize("hasAuthority('UserCreate')")
 annotation class CanCreateUser
 
 @Retention(AnnotationRetention.RUNTIME)
-//@PreAuthorize("hasAuthority('UserUpdate')")
-@PreAuthorize("@userAuthorization.admin")
+@PreAuthorize("hasAuthority('UserUpdate')")
 annotation class CanUpdateUser
 
 @Retention(AnnotationRetention.RUNTIME)
-//@PreAuthorize("hasAuthority('UserUpdatePassword')")
-@PreAuthorize("@userAuthorization.admin")
+@PreAuthorize("hasAuthority('UserUpdatePassword')")
 annotation class CanUpdateUserPassword
 
 @Component

@@ -1,11 +1,9 @@
 package io.cloudflight.jems.server.user.service.authorization
 
-import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import org.springframework.security.access.prepost.PreAuthorize
 
 @Retention(AnnotationRetention.RUNTIME)
-//@PreAuthorize("hasAuthority('RoleRetrieve')")
-@PreAuthorize("hasRole('$ADMINISTRATOR')")
+@PreAuthorize("hasAuthority('RoleRetrieve')")
 annotation class CanRetrieveRole
 
 @Retention(AnnotationRetention.RUNTIME)

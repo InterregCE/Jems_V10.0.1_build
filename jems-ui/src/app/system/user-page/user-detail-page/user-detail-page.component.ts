@@ -6,14 +6,14 @@ import {TranslateService} from '@ngx-translate/core';
 import {Log} from '../../../common/utils/log';
 import {Forms} from '../../../common/utils/forms';
 import {take} from 'rxjs/internal/operators';
-import {OutputCurrentUser, UserDTO, UserRoleSummaryDTO} from '@cat/api';
+import {OutputCurrentUser, UserDTO, UserRoleDTO, UserRoleSummaryDTO} from '@cat/api';
 import {UserDetailPageStore} from './user-detail-page-store.service';
-import {Permission} from '../../../security/permissions/permission';
 import {combineLatest, Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {RoutingService} from '../../../common/services/routing.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-user-detail-page',
@@ -22,7 +22,7 @@ import {RoutingService} from '../../../common/services/routing.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserDetailPageComponent extends ViewEditForm {
-  Permission = Permission;
+  PermissionsEnum = PermissionsEnum;
   passwordIsInEditMode = false;
 
   details$: Observable<{
