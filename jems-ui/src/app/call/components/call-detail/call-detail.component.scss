@@ -1,3 +1,24 @@
 .hide {
   display: none;
 }
+
+
+.footer {
+  border-bottom-left-radius: .3rem;
+  border-bottom-right-radius: .3rem;
+  min-height: 4rem;
+  background-color: var(--background-lighter);
+  bottom: -4rem;
+  position: sticky;
+  z-index: 4;
+  margin: 0;
+
+  .action-button {
+    margin: 1rem 0.3rem 0.2rem 1rem;
+
+    mat-icon {
+      font-size: 1.33em;
+      line-height: 1.33em;
+    }
+  }
+}
