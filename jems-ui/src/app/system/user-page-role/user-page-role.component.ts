@@ -5,6 +5,7 @@ import {Router} from '@angular/router';
 import {SystemPageSidenavService} from '../services/system-page-sidenav.service';
 import {UserRoleDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-user-page-role',
@@ -15,7 +16,7 @@ import {Alert} from '@common/components/forms/alert';
 })
 export class UserPageRoleComponent implements OnInit {
 
-  PERMISSIONS = UserRoleDTO.PermissionsEnum;
+  PermissionsEnum = PermissionsEnum;
   Alert = Alert;
   success = this.router.getCurrentNavigation()?.extras?.state?.success;
 

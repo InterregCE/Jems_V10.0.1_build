@@ -1,8 +1,8 @@
-<app-main-page-template [needsCard]="true" *ngIf="role$ | async as role"
+<app-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
                         titleKey="topbar.main.user.role.management"
                         [subTitleKey]="roleId ? 'userRole.detail.short' : 'userRole.breadcrumb.create'">
-    <app-form (save)="save(role)"
-              (discard)="discard(role)">
+    <app-form (save)="save(data.role)"
+              (discard)="discard(data.role, data.isUpdateAllowed)">
 
         <form appFormLayout [formGroup]="userRoleForm">
             <div appMultiColumnRow>
@@ -27,7 +27,7 @@
                             <div class="controls-wrapper">
                                 <div>
                                     <mat-button-toggle-group
-                                            [disabled]="node.disabled"
+                                            [disabled]="node.disabled || !data.isUpdateAllowed"
                                             *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.HIDDEN_VIEW"
                                             class="small-toggle-group">
                                         <mat-button-toggle
@@ -62,7 +62,7 @@
                                     <span *ngIf="node.mode === PermissionMode.TOGGLE_EDIT" class="slide-toggle-wrapper">
                                         {{ 'common.permission.hide' | translate}}
                                         <mat-slide-toggle color="primary"
-                                                          [disabled]="node.disabled"
+                                                          [disabled]="node.disabled || !data.isUpdateAllowed"
                                                           (click)="$event.stopPropagation()"
                                                           (change)="changeStateOfToggle(node.form)"
                                                           [checked]="state(node.form)?.value === PermissionState.EDIT">

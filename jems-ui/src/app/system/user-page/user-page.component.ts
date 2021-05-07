@@ -5,6 +5,8 @@ import {UserPageStore} from './user-page-store.service';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {Router} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
+import {UserRoleDTO} from '@cat/api';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-user-page',
@@ -15,6 +17,7 @@ import {Alert} from '@common/components/forms/alert';
 })
 export class UserPageComponent implements OnInit {
 
+  PermissionsEnum = PermissionsEnum;
   success = this.router.getCurrentNavigation()?.extras?.state?.success;
   Alert = Alert;
 
