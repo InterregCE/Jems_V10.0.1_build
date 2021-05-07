@@ -69,7 +69,9 @@ export class ProjectApplicationActionsComponent {
   preConditionCheck(projectId: number): void {
     this.preConditionCheckInProgress = true;
     this.projectDetailStore.preConditionCheck(projectId).pipe(
-      tap(() => this.preConditionCheckInProgress = false)).subscribe();
+      catchError((error) => this.showErrorMessage(error.error)),
+      finalize(() => this.preConditionCheckInProgress = false)
+    ).subscribe();
   }
 
   submitProject(projectId: number): void {
