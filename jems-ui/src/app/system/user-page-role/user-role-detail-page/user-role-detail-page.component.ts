@@ -3,8 +3,8 @@ import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validat
 import {MatDialog} from '@angular/material/dialog';
 import {take} from 'rxjs/internal/operators';
 import {UserRoleDTO} from '@cat/api';
-import {Observable} from 'rxjs';
-import {catchError, tap} from 'rxjs/operators';
+import {combineLatest, Observable, of} from 'rxjs';
+import {catchError, map, tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
 import {RoutingService} from '../../../common/services/routing.service';
 import {UserRoleStore} from './user-role-store.service';
@@ -15,6 +15,7 @@ import {Permission} from '../../../security/permissions/permission';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {RolePermissionRow} from './role-permission-row';
+import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
@@ -52,7 +53,10 @@ export class UserRoleDetailPageComponent {
   PermissionMode = PermissionMode;
   roleId = this.activatedRoute?.snapshot?.params?.roleId;
 
-  role$: Observable<UserRoleDTO>;
+  data$: Observable<{
+    role: UserRoleDTO,
+    isUpdateAllowed: boolean,
+  }>;
 
   userRoleForm = this.formBuilder.group({
     name: ['', [
@@ -69,13 +73,22 @@ export class UserRoleDetailPageComponent {
               private router: RoutingService,
               private sidenavService: SystemPageSidenavService,
               private formService: FormService,
+              private permissionService: PermissionService,
               public roleStore: UserRoleStore) {
     this.formService.init(this.userRoleForm);
     this.formService.setCreation(!this.roleId);
-    this.role$ = this.roleStore.userRole$
-      .pipe(
-        tap(role => this.resetUserRole(role)),
-      );
+
+    this.data$ = combineLatest([
+      this.roleStore.userRole$,
+      of(!this.roleId),
+      this.permissionService.hasPermission(PermissionsEnum.RoleUpdate),
+    ]).pipe(
+      map(([role, isCreation, canUserUpdate]) => ({
+        role,
+        isUpdateAllowed: canUserUpdate || isCreation,
+      })),
+      tap(data => this.resetUserRole(data.role, data.isUpdateAllowed)),
+    );
   }
 
   save(role: UserRoleDTO): void {
@@ -104,9 +117,9 @@ export class UserRoleDetailPageComponent {
       ).subscribe();
   }
 
-  discard(role: UserRoleDTO): void {
+  discard(role: UserRoleDTO, shouldUpdateBePossible: boolean): void {
     if (role.id) {
-      this.resetUserRole(role);
+      this.resetUserRole(role, shouldUpdateBePossible);
     } else {
       this.router.navigate(['/app/system/userRole']);
     }
@@ -135,7 +148,7 @@ export class UserRoleDetailPageComponent {
     }
   }
 
-  resetUserRole(role: UserRoleDTO): void {
+  resetUserRole(role: UserRoleDTO, isUpdateAllowed: boolean): void {
     this.name?.patchValue(role?.name);
     this.permissions.clear();
     const groups = Permission.DEFAULT_PERMISSIONS.map((perm, index) =>
@@ -146,6 +159,10 @@ export class UserRoleDetailPageComponent {
     this.dataSource.data = groups;
     this.treeControl.expandAll();
     this.formService.resetEditable();
+
+    if (!isUpdateAllowed) {
+      this.userRoleForm.disable();
+    }
   }
 
 
