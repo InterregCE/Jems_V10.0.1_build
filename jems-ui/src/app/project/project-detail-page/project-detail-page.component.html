@@ -8,7 +8,7 @@
             </app-project-application-information>
         </div>
 
-        <ng-container>
+        <ng-container *hasPermission="Permissions.ProjectSubmission">
             <ng-container *ngIf="project.projectStatus.status === STATUS.DRAFT || project.projectStatus.status === STATUS.STEP1DRAFT || project.projectStatus.status === STATUS.RETURNEDTOAPPLICANT">
                 <h3>{{'project.detail.pre.condition.check.result.title' | translate}}</h3>
                 <p>{{'project.detail.pre.condition.check.result.description' | translate}}</p>

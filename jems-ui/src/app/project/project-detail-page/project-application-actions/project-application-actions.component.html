@@ -1,14 +1,14 @@
 <ng-container *ngIf="data$ | async as data">
 
-    <app-pending-button
-            class="mr-2 mt-2"
-            *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
-            [pending]="preConditionCheckInProgress"
-            (clicked)="preConditionCheck(data.projectId)">
-        {{'project.detail.button.pre.condition.check' | translate}}
-    </app-pending-button>
-
     <ng-container *hasPermission="Permissions.ProjectSubmission; alternativeCondition data.isThisUserOwner">
+
+        <app-pending-button
+                class="mr-2 mt-2"
+                *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
+                [pending]="preConditionCheckInProgress"
+                (clicked)="preConditionCheck(data.projectId)">
+            {{'project.detail.button.pre.condition.check' | translate}}
+        </app-pending-button>
 
         <app-pending-button
                 class="mr-2 mt-2"
