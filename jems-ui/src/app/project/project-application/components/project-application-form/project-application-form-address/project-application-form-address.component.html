@@ -37,58 +37,67 @@
         </mat-autocomplete>
     </mat-form-field>
 
-    <mat-form-field>
+    <mat-form-field class="w-100">
         <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
-        <input name="street" formControlName="street" matInput>
+        <input #streetInput name="street" formControlName="street" matInput>
+        <mat-hint [appHintFor]="streetInput" [hide]="addressForm.controls?.street?.errors !== null">
+            <app-text-hint [currentLength]="streetInput?.value?.length" [maxLength]="50"></app-text-hint>
+        </mat-hint>
         <mat-error>
             <app-form-field-errors
-                    [errors]="addressForm?.controls?.street?.errors"
-                    [messages]="streetErrors">
+                    [errors]="addressForm?.controls?.street?.errors">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field>
+    <mat-form-field class="w-100">
         <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
-        <input name="houseNumber" formControlName="houseNumber" matInput>
+        <input #houseNumberInput name="houseNumber" formControlName="houseNumber" matInput>
+        <mat-hint [appHintFor]="houseNumberInput" [hide]="addressForm.controls?.houseNumber?.errors !== null">
+            <app-text-hint [currentLength]="houseNumberInput?.value?.length" [maxLength]="20"></app-text-hint>
+        </mat-hint>
         <mat-error>
             <app-form-field-errors
-                    [errors]="addressForm?.controls?.houseNumber?.errors"
-                    [messages]="houseNumberErrors">
+                    [errors]="addressForm?.controls?.houseNumber?.errors">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field>
+    <mat-form-field class="w-100">
         <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
-        <input name="postalCode" formControlName="postalCode" matInput>
+        <input #postCodeInput name="postalCode" formControlName="postalCode" matInput>
+        <mat-hint [appHintFor]="postCodeInput" [hide]="addressForm.controls?.postalCode?.errors !== null">
+            <app-text-hint [currentLength]="postCodeInput?.value?.length" [maxLength]="20"></app-text-hint>
+        </mat-hint>
         <mat-error>
             <app-form-field-errors
-                    [errors]="addressForm?.controls?.postalCode?.errors"
-                    [messages]="postalCodeErrors">
+                    [errors]="addressForm?.controls?.postalCode?.errors">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
 
-
-    <mat-form-field>
+    <mat-form-field class="w-100">
         <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
-        <input name="city" formControlName="city" matInput>
+        <input #cityInput name="city" formControlName="city" matInput>
+        <mat-hint [appHintFor]="cityInput" [hide]="addressForm.controls?.city?.errors !== null">
+            <app-text-hint [currentLength]="cityInput?.value?.length" [maxLength]="50"></app-text-hint>
+        </mat-hint>
         <mat-error>
             <app-form-field-errors
-                    [errors]="addressForm?.controls?.city?.errors"
-                    [messages]="cityErrors">
+                    [errors]="addressForm?.controls?.city?.errors">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field *ngIf="addressForm.controls?.homepage">
+    <mat-form-field *ngIf="addressForm.controls?.homepage" class="w-100">
         <mat-label>{{'project.partner.main-address.homepage' | translate}}</mat-label>
-        <input name="homepage" formControlName="homepage" matInput>
+        <input #homepageInput name="homepage" formControlName="homepage" matInput>
+        <mat-hint [appHintFor]="homepageInput" [hide]="addressForm.controls?.homepage?.errors !== null">
+            <app-text-hint [currentLength]="homepageInput?.value?.length" [maxLength]="250"></app-text-hint>
+        </mat-hint>
         <mat-error>
             <app-form-field-errors
-                    [errors]="addressForm?.controls?.homepage?.errors"
-                    [messages]="homepageErrors">
+                    [errors]="addressForm?.controls?.homepage?.errors">
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>

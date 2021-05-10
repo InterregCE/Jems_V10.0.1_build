@@ -1,4 +1,4 @@
-import {Component, forwardRef, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -43,6 +43,9 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
 
   disabled = false;
   constants = MultiLanguageFormFieldConstants;
+
+  @ViewChild('inputElement')
+  inputElement: ElementRef;
 
   @Input()
   type: 'input' | 'textarea' = 'input';

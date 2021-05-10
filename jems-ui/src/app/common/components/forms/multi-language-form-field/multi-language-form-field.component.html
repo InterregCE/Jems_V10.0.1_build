@@ -7,6 +7,7 @@
                         class="w-100">
                     <mat-label *ngIf="label">{{label | translate}}</mat-label>
                     <input
+                            #inputElement
                             [placeholder]="useFallBackLanguage? (inputs.value | translateBySystemLanguage: true | async) : ''"
                             [readonly]="!isEditable(getLanguageValue(formGroup),languageStore.fallbackLanguage$ | async)"
                             *ngIf="type==='input'" [formControlName]="constants.FORM_CONTROL_NAMES.translation"
@@ -14,6 +15,7 @@
 
                     <textarea *ngIf="type==='textarea'" [formControlName]="constants.FORM_CONTROL_NAMES.translation"
                               matInput
+                              #inputElement
                               [placeholder]="useFallBackLanguage? (inputs.value | translateBySystemLanguage: true | async) : ''"
                               [readonly]="!isEditable(getLanguageValue(formGroup), languageStore.fallbackLanguage$ | async)"
                               [cdkTextareaAutosize]
@@ -23,10 +25,11 @@
                     <app-context-info *ngIf="contextInfoText"
                                       [infoText]="contextInfoText">
                     </app-context-info>
-                    <mat-hint
-                            *ngIf="isEditable(getLanguageValue(formGroup), languageStore.fallbackLanguage$ | async) && getTranslation(formGroup).dirty && getTranslation(formGroup)?.value?.length> 0">
-                        {{getTranslation(formGroup)?.value?.length}}
-                        / {{maxLength}} {{'common.textarea.hint' | translate}}
+                    <mat-hint *ngIf="inputElement"
+                            [appHintFor]="inputElement.nativeElement"
+                            [hide]="!isEditable(getLanguageValue(formGroup), languageStore.fallbackLanguage$ | async)">
+                        <app-text-hint [currentLength]="getTranslation(formGroup)?.value?.length"
+                                       [maxLength]="maxLength"></app-text-hint>
                     </mat-hint>
                     <mat-error>
                         <app-form-field-errors
