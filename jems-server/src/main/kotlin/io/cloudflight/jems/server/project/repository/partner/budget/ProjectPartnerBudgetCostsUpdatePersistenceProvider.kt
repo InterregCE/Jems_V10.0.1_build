@@ -27,7 +27,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetStaffCosts(
         projectId: Long,
         partnerId: Long,
-        staffCosts: Set<BudgetStaffCostEntry>
+        staffCosts: List<BudgetStaffCostEntry>
     ) =
         budgetStaffCostRepository.saveAll(
             staffCosts.toProjectPartnerBudgetStaffCostEntities(
@@ -47,7 +47,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetTravelAndAccommodationCosts(
         projectId: Long,
         partnerId: Long,
-        travelAndAccommodationCosts: Set<BudgetTravelAndAccommodationCostEntry>
+        travelAndAccommodationCosts: List<BudgetTravelAndAccommodationCostEntry>
     ) =
         budgetTravelRepository.saveAll(
             travelAndAccommodationCosts.toProjectPartnerBudgetTravelEntities(
@@ -67,7 +67,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetInfrastructureAndWorksCosts(
         projectId: Long,
         partnerId: Long,
-        infrastructureAndWorksCosts: Set<BudgetGeneralCostEntry>
+        infrastructureAndWorksCosts: List<BudgetGeneralCostEntry>
     ) =
         budgetInfrastructureRepository.saveAll(
             infrastructureAndWorksCosts.toProjectPartnerBudgetInfrastructureEntity(
@@ -94,7 +94,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetUnitCosts(
         projectId: Long,
         partnerId: Long,
-        unitCosts: Set<BudgetUnitCostEntry>
+        unitCosts: List<BudgetUnitCostEntry>
     ): List<BudgetUnitCostEntry> =
         budgetUnitCostRepository.saveAll(unitCosts.toBudgetUnitCostEntities(
             partnerId = partnerId,
@@ -107,7 +107,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetExternalExpertiseAndServicesCosts(
         projectId: Long,
         partnerId: Long,
-        externalExpertiseAndServicesCosts: Set<BudgetGeneralCostEntry>
+        externalExpertiseAndServicesCosts: List<BudgetGeneralCostEntry>
     ) =
         budgetExternalRepository.saveAll(
             externalExpertiseAndServicesCosts.toProjectPartnerBudgetExternalEntities(
@@ -127,7 +127,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetEquipmentCosts(
         projectId: Long,
         partnerId: Long,
-        equipmentCosts: Set<BudgetGeneralCostEntry>
+        equipmentCosts: List<BudgetGeneralCostEntry>
     ) =
         budgetEquipmentRepository.saveAll(
             equipmentCosts.toProjectPartnerBudgetEquipmentEntity(

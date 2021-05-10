@@ -11,14 +11,14 @@ interface ProjectPartnerBudgetCostsUpdatePersistence {
     fun createOrUpdateBudgetEquipmentCosts(
         projectId: Long,
         partnerId: Long,
-        equipmentCosts: Set<BudgetGeneralCostEntry>
+        equipmentCosts: List<BudgetGeneralCostEntry>
     ): List<BudgetGeneralCostEntry>
 
     fun deleteAllBudgetExternalExpertiseAndServicesCostsExceptFor(partnerId: Long, idsToKeep: Set<Long>)
     fun createOrUpdateBudgetExternalExpertiseAndServicesCosts(
         projectId: Long,
         partnerId: Long,
-        externalExpertiseAndServicesCosts: Set<BudgetGeneralCostEntry>
+        externalExpertiseAndServicesCosts: List<BudgetGeneralCostEntry>
     ): List<BudgetGeneralCostEntry>
 
 
@@ -26,13 +26,13 @@ interface ProjectPartnerBudgetCostsUpdatePersistence {
     fun createOrUpdateBudgetInfrastructureAndWorksCosts(
         projectId: Long,
         partnerId: Long,
-        infrastructureAndWorksCosts: Set<BudgetGeneralCostEntry>
+        infrastructureAndWorksCosts: List<BudgetGeneralCostEntry>
     ): List<BudgetGeneralCostEntry>
 
     fun createOrUpdateBudgetStaffCosts(
         projectId: Long,
         partnerId: Long,
-        staffCosts: Set<BudgetStaffCostEntry>
+        staffCosts: List<BudgetStaffCostEntry>
     ): List<BudgetStaffCostEntry>
 
     fun deleteAllBudgetStaffCostsExceptFor(partnerId: Long, idsToKeep: Set<Long>)
@@ -40,7 +40,7 @@ interface ProjectPartnerBudgetCostsUpdatePersistence {
     fun createOrUpdateBudgetTravelAndAccommodationCosts(
         projectId: Long,
         partnerId: Long,
-        travelAndAccommodationCosts: Set<BudgetTravelAndAccommodationCostEntry>
+        travelAndAccommodationCosts: List<BudgetTravelAndAccommodationCostEntry>
     ): List<BudgetTravelAndAccommodationCostEntry>
 
     fun deleteAllBudgetTravelAndAccommodationCostsExceptFor(partnerId: Long, idsToKeep: Set<Long>)
@@ -49,6 +49,6 @@ interface ProjectPartnerBudgetCostsUpdatePersistence {
     fun createOrUpdateBudgetUnitCosts(
         projectId: Long,
         partnerId: Long,
-        unitCosts: Set<BudgetUnitCostEntry>
+        unitCosts: List<BudgetUnitCostEntry>
     ): List<BudgetUnitCostEntry>
 }

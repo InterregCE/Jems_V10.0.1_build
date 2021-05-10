@@ -68,16 +68,24 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns null
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
         every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
-        every { persistence.deleteAllBudgetTravelAndAccommodationCostsExceptFor(partnerId, listBudgetEntriesIds) } returns Unit
+        every {
+            persistence.deleteAllBudgetTravelAndAccommodationCostsExceptFor(
+                partnerId,
+                listBudgetEntriesIds
+            )
+        } returns Unit
         every {
             persistence.createOrUpdateBudgetTravelAndAccommodationCosts(
                 projectId,
                 partnerId,
-                budgetTravelCostEntries.toSet()
+                budgetTravelCostEntries.toList()
             )
         } returns budgetTravelCostEntries
 
-        val result = updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(partnerId, budgetTravelCostEntries)
+        val result = updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(
+            partnerId,
+            budgetTravelCostEntries
+        )
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
         verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
@@ -85,12 +93,17 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
         verify(atLeast = 1) { projectPersistence.getProjectIdForPartner(partnerId) }
-        verify(atLeast = 1) { persistence.deleteAllBudgetTravelAndAccommodationCostsExceptFor(partnerId, listBudgetEntriesIds) }
+        verify(atLeast = 1) {
+            persistence.deleteAllBudgetTravelAndAccommodationCostsExceptFor(
+                partnerId,
+                listBudgetEntriesIds
+            )
+        }
         verify(atLeast = 1) {
             persistence.createOrUpdateBudgetTravelAndAccommodationCosts(
                 projectId,
                 partnerId,
-                budgetTravelCostEntries.toSet()
+                budgetTravelCostEntries.toList()
             )
         }
         confirmVerified(persistence, budgetCostValidator, budgetOptionsPersistence, projectPersistence)
@@ -104,7 +117,10 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } throws I18nValidationException()
 
         assertThrows<I18nValidationException> {
-            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(partnerId, budgetTravelCostEntries)
+            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(
+                partnerId,
+                budgetTravelCostEntries
+            )
         }
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
@@ -118,7 +134,10 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } throws I18nValidationException()
 
         assertThrows<I18nValidationException> {
-            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(partnerId, budgetTravelCostEntries)
+            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(
+                partnerId,
+                budgetTravelCostEntries
+            )
         }
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
@@ -137,7 +156,10 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         )
 
         assertThrows<I18nValidationException> {
-            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(partnerId, budgetTravelCostEntries)
+            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(
+                partnerId,
+                budgetTravelCostEntries
+            )
         }
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
@@ -157,7 +179,10 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         )
 
         assertThrows<I18nValidationException> {
-            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(partnerId, budgetTravelCostEntries)
+            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(
+                partnerId,
+                budgetTravelCostEntries
+            )
         }
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
@@ -183,7 +208,10 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
 
 
         assertThrows<I18nValidationException> {
-            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(partnerId, budgetTravelCostEntriesWithInvalidPeriods)
+            updateBudgetTravelAndAccommodationCosts.updateBudgetTravelAndAccommodationCosts(
+                partnerId,
+                budgetTravelCostEntriesWithInvalidPeriods
+            )
         }
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntriesWithInvalidPeriods) }
@@ -197,10 +225,18 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
 
     private fun budgetTravelCostEntries(listBudgetEntriesIds: Set<Long>, budgetPeriods: MutableSet<BudgetPeriod>) =
         listBudgetEntriesIds
-        .map { BudgetTravelAndAccommodationCostEntry(it, BigDecimal.ONE, BigDecimal.ONE,
-            budgetPeriods, BigDecimal.ONE, emptySet(), emptySet()) }
-            .plus(BudgetTravelAndAccommodationCostEntry(null, BigDecimal.ONE, BigDecimal.ONE,
-            budgetPeriods, BigDecimal.ONE, emptySet(), emptySet()))
+            .map {
+                BudgetTravelAndAccommodationCostEntry(
+                    it, BigDecimal.ONE, BigDecimal.ONE,
+                    budgetPeriods, BigDecimal.ONE, emptySet(), emptySet()
+                )
+            }
+            .plus(
+                BudgetTravelAndAccommodationCostEntry(
+                    null, BigDecimal.ONE, BigDecimal.ONE,
+                    budgetPeriods, BigDecimal.ONE, emptySet(), emptySet()
+                )
+            )
 
     private fun createBudgetPeriods(numbers: Set<Int>) =
         numbers.map { BudgetPeriod(it, BigDecimal.TEN.truncate()) }.toMutableSet()

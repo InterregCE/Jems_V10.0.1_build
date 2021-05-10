@@ -26,10 +26,22 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
         every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns null
-        every { budgetCostsPersistence.deleteAllBudgetInfrastructureAndWorksCostsExceptFor(partnerId, listBudgetEntriesIds) } returns Unit
-        every { budgetCostsPersistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, budgetGeneralCostEntries.toSet()) } returns budgetGeneralCostEntries
+        every {
+            budgetCostsPersistence.deleteAllBudgetInfrastructureAndWorksCostsExceptFor(
+                partnerId,
+                listBudgetEntriesIds
+            )
+        } returns Unit
+        every {
+            budgetCostsPersistence.createOrUpdateBudgetInfrastructureAndWorksCosts(
+                projectId,
+                partnerId,
+                budgetGeneralCostEntries.toList()
+            )
+        } returns budgetGeneralCostEntries
 
-        val result = updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(partnerId, budgetGeneralCostEntries)
+        val result =
+            updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(partnerId, budgetGeneralCostEntries)
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) }
         verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
@@ -37,8 +49,19 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
         verify(atLeast = 1) { projectPersistence.getProjectIdForPartner(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
         verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
-        verify(atLeast = 1) { budgetCostsPersistence.deleteAllBudgetInfrastructureAndWorksCostsExceptFor(partnerId, listBudgetEntriesIds) }
-        verify(atLeast = 1) { budgetCostsPersistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, budgetGeneralCostEntries.toSet()) }
+        verify(atLeast = 1) {
+            budgetCostsPersistence.deleteAllBudgetInfrastructureAndWorksCostsExceptFor(
+                partnerId,
+                listBudgetEntriesIds
+            )
+        }
+        verify(atLeast = 1) {
+            budgetCostsPersistence.createOrUpdateBudgetInfrastructureAndWorksCosts(
+                projectId,
+                partnerId,
+                budgetGeneralCostEntries.toList()
+            )
+        }
         confirmVerified(budgetCostsPersistence, budgetCostValidator, projectPersistence)
 
         assertEquals(budgetGeneralCostEntries, result)
@@ -88,7 +111,10 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
 
 
         assertThrows<I18nValidationException> {
-            updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(partnerId, budgetGeneralCostEntriesWithInvalidPeriods)
+            updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(
+                partnerId,
+                budgetGeneralCostEntriesWithInvalidPeriods
+            )
         }
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntriesWithInvalidPeriods) }
@@ -96,7 +122,7 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
         verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers) }
         verify(atLeast = 1) { projectPersistence.getProjectIdForPartner(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
-        confirmVerified(budgetCostValidator,  projectPersistence)
+        confirmVerified(budgetCostValidator, projectPersistence)
     }
 
     @Test

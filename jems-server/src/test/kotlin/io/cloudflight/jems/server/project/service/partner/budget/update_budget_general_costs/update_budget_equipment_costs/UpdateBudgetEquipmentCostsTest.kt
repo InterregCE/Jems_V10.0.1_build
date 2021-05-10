@@ -36,7 +36,7 @@ internal class UpdateBudgetEquipmentCostsTest : UpdateBudgetGeneralCostsTest() {
             budgetCostsPersistence.createOrUpdateBudgetEquipmentCosts(
                 projectId,
                 partnerId,
-                budgetGeneralCostEntries.toSet()
+                budgetGeneralCostEntries.toList()
             )
         } returns budgetGeneralCostEntries
 
@@ -58,7 +58,7 @@ internal class UpdateBudgetEquipmentCostsTest : UpdateBudgetGeneralCostsTest() {
             budgetCostsPersistence.createOrUpdateBudgetEquipmentCosts(
                 projectId,
                 partnerId,
-                budgetGeneralCostEntries.toSet()
+                budgetGeneralCostEntries.toList()
             )
         }
         confirmVerified(budgetCostsPersistence, budgetCostValidator, projectPersistence)

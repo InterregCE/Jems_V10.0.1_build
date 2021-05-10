@@ -49,7 +49,8 @@ class UpdateBudgetUnitCosts(
                     it.rowSum = calculateRowSum(it.numberOfUnits, unitCostPerUnitById[it.unitCostId])
                     it.truncateBaseEntryNumbers()
                 }
-            }.toSet())
+            }.toList()
+        )
     }
 
     private fun throwIfOtherCostFlatRateIsSet(budgetOptions: ProjectPartnerBudgetOptions?) {

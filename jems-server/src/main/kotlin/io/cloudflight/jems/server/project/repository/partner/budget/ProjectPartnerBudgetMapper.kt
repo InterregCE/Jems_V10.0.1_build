@@ -36,7 +36,8 @@ fun List<ProjectPartnerBudgetStaffCostRow>.toBudgetStaffCostEntryList() =
             description = groupedRows.value.extractField { it.description },
             comment = groupedRows.value.extractField { it.comment },
             unitType = groupedRows.value.extractField { it.unitType },
-            budgetPeriods = groupedRows.value.filter { it.periodNumber != null }.mapTo(HashSet()) { BudgetPeriod(it.periodNumber!!, it.amount) },
+            budgetPeriods = groupedRows.value.filter { it.periodNumber != null }
+                .mapTo(HashSet()) { BudgetPeriod(it.periodNumber!!, it.amount) },
             unitCostId = groupedRows.value.first().unitCostId,
             numberOfUnits = groupedRows.value.first().numberOfUnits,
             pricePerUnit = groupedRows.value.first().pricePerUnit,
@@ -65,7 +66,7 @@ fun ProjectPartnerBudgetStaffCostEntity.toBudgetStaffCostEntry() = BudgetStaffCo
     rowSum = baseProperties.rowSum
 )
 
-fun Set<BudgetStaffCostEntry>.toProjectPartnerBudgetStaffCostEntities(
+fun List<BudgetStaffCostEntry>.toProjectPartnerBudgetStaffCostEntities(
     partnerId: Long,
     projectPeriodEntityResolver: (Int) -> ProjectPeriodEntity
 ) = map { it.toProjectPartnerBudgetStaffCostEntity(partnerId, projectPeriodEntityResolver) }
@@ -125,7 +126,7 @@ fun ProjectPartnerBudgetTravelEntity.toBudgetTravelAndAccommodationCostEntry() =
     rowSum = baseProperties.rowSum
 )
 
-fun Set<BudgetTravelAndAccommodationCostEntry>.toProjectPartnerBudgetTravelEntities(
+fun List<BudgetTravelAndAccommodationCostEntry>.toProjectPartnerBudgetTravelEntities(
     partnerId: Long,
     projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
 ) = map { it.toProjectPartnerBudgetTravelEntity(partnerId, projectPeriodEntityReferenceResolver) }
@@ -169,7 +170,7 @@ fun BudgetTravelAndAccommodationCostEntry.toProjectPartnerBudgetTravelEntity(
 fun List<ProjectPartnerBudgetEquipmentEntity>.equipmentEntitiesToBudgetGeneralEntries() =
     this.map { it.toBudgetGeneralCostEntry() }
 
-fun Set<BudgetGeneralCostEntry>.toProjectPartnerBudgetEquipmentEntity(
+fun List<BudgetGeneralCostEntry>.toProjectPartnerBudgetEquipmentEntity(
     partnerId: Long,
     projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
 ) = map { it.toProjectPartnerBudgetEquipmentEntity(partnerId, projectPeriodEntityReferenceResolver) }
@@ -215,7 +216,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetEquipmentEntity(
 fun List<ProjectPartnerBudgetExternalEntity>.externalEntitiesToBudgetGeneralEntries() =
     this.map { it.toBudgetGeneralCostEntry() }
 
-fun Set<BudgetGeneralCostEntry>.toProjectPartnerBudgetExternalEntities(
+fun List<BudgetGeneralCostEntry>.toProjectPartnerBudgetExternalEntities(
     partnerId: Long,
     projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
 ) = map { it.toProjectPartnerBudgetExternalEntity(partnerId, projectPeriodEntityReferenceResolver) }
@@ -261,7 +262,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetExternalEntity(
 fun List<ProjectPartnerBudgetInfrastructureEntity>.infrastructureEntitiesToBudgetGeneralEntries() =
     this.map { it.toBudgetGeneralCostEntry() }
 
-fun Set<BudgetGeneralCostEntry>.toProjectPartnerBudgetInfrastructureEntity(
+fun List<BudgetGeneralCostEntry>.toProjectPartnerBudgetInfrastructureEntity(
     partnerId: Long,
     projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity
 ) = map { it.toProjectPartnerBudgetInfrastructureEntity(partnerId, projectPeriodEntityReferenceResolver) }

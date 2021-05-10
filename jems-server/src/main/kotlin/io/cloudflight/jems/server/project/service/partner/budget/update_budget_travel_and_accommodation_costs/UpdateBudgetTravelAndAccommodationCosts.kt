@@ -48,11 +48,14 @@ class UpdateBudgetTravelAndAccommodationCosts(
         return persistence.createOrUpdateBudgetTravelAndAccommodationCosts(
             projectId,
             partnerId,
-            travelCosts.map { it.apply {
-                it.rowSum = calculateRowSum(it)
-                this.truncateBaseEntryNumbers()
-                this.pricePerUnit.truncate()
-            } }.toSet())
+            travelCosts.map {
+                it.apply {
+                    it.rowSum = calculateRowSum(it)
+                    this.truncateBaseEntryNumbers()
+                    this.pricePerUnit.truncate()
+                }
+            }.toList()
+        )
     }
 
     private fun throwIfTravelOrOtherCostFlatRateAreSet(budgetOptions: ProjectPartnerBudgetOptions?) {

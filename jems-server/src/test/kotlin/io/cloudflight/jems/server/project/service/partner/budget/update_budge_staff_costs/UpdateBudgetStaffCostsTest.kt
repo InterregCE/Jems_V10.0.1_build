@@ -8,7 +8,9 @@ import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValid
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.truncate
-import io.cloudflight.jems.server.project.service.partner.model.*
+import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
+import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -70,7 +72,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
             persistence.createOrUpdateBudgetStaffCosts(
                 projectId,
                 partnerId,
-                budgetStaffCostEntries.toSet()
+                budgetStaffCostEntries.toList()
             )
         } returns budgetStaffCostEntries
 
@@ -87,7 +89,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
             persistence.createOrUpdateBudgetStaffCosts(
                 projectId,
                 partnerId,
-                budgetStaffCostEntries.toSet()
+                budgetStaffCostEntries.toList()
             )
         }
         confirmVerified(persistence, budgetCostValidator, budgetOptionsPersistence, projectPersistence)
