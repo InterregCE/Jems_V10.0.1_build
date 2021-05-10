@@ -64,12 +64,8 @@ class ProjectServiceImpl(
     @Transactional(readOnly = true)
     override fun findAll(page: Pageable): Page<OutputProjectSimple> {
         val currentUser = securityService.currentUser!!
-        if (currentUser.hasRole(ADMINISTRATOR)) {
+        if (currentUser.hasRole(ADMINISTRATOR) || currentUser.hasRole(PROGRAMME_USER)) {
             return projectRepo.findAll(page).map { it.toOutputProjectSimple() }
-        }
-        if (currentUser.hasRole(PROGRAMME_USER)) {
-            return projectRepo.findAllByCurrentStatusStatusNot(ApplicationStatus.DRAFT, page)
-                .map { it.toOutputProjectSimple() }
         }
         if (currentUser.hasRole(APPLICANT_USER)) {
             return projectRepo.findAllByApplicantId(currentUser.user.id!!, page).map { it.toOutputProjectSimple() }
