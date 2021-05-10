@@ -3,6 +3,9 @@ package io.cloudflight.jems.server.plugin.services
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySimple
 import io.cloudflight.jems.api.project.dto.ProjectDataDTO
+import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
+import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.api.project.dto.description.InputProjectCooperationCriteria
 import io.cloudflight.jems.api.project.dto.description.InputProjectHorizontalPrinciples
 import io.cloudflight.jems.api.project.dto.description.InputProjectOverallObjective
@@ -11,6 +14,10 @@ import io.cloudflight.jems.api.project.dto.description.InputProjectRelevance
 import io.cloudflight.jems.api.project.dto.description.OutputProjectDescription
 import io.cloudflight.jems.api.project.dto.description.OutputProjectLongTermPlans
 import io.cloudflight.jems.api.project.dto.description.OutputProjectManagement
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammeObjectivePolicyData
@@ -18,6 +25,30 @@ import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammePr
 import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammeSpecificObjectiveData
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectContactTypeData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerAddressData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerAddressTypeData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerRoleData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerVatRecoveryData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetCostData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetGeneralCostEntryData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetPeriodData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetStaffCostEntryData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetTravelAndAccommodationCostEntryData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetUnitCostEntryData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerBudgetOptionsData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingFundTypeData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerContributionData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerContributionStatusData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerContactData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerEssentialData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerMotivationData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.ProjectDataSectionC
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.longTermPlans.ProjectLongTermPlansData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectCooperationCriteriaData
@@ -41,6 +72,20 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivityTranslatedValueData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputTranslatedValueData
+import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
+import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
+import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
+import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
+import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
+import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
@@ -126,9 +171,9 @@ fun InputProjectCooperationCriteria.toDataModel() = ProjectCooperationCriteriaDa
 )
 
 fun InputProjectHorizontalPrinciples.toDataModel() = ProjectHorizontalPrinciplesData(
-    sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffectData.valueOf(sustainableDevelopmentCriteriaEffect!!.name),
-    equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffectData.valueOf(equalOpportunitiesEffect!!.name),
-    sexualEqualityEffect = ProjectHorizontalPrinciplesEffectData.valueOf(sexualEqualityEffect!!.name)
+    sustainableDevelopmentCriteriaEffect = if (sustainableDevelopmentCriteriaEffect != null) ProjectHorizontalPrinciplesEffectData.valueOf(sustainableDevelopmentCriteriaEffect!!.name) else null,
+    equalOpportunitiesEffect = if (equalOpportunitiesEffect != null) ProjectHorizontalPrinciplesEffectData.valueOf(equalOpportunitiesEffect!!.name) else null,
+    sexualEqualityEffect = if (sexualEqualityEffect != null) ProjectHorizontalPrinciplesEffectData.valueOf(sexualEqualityEffect!!.name) else null
 )
 
 fun OutputProjectLongTermPlans.toDataModel() = ProjectLongTermPlansData(
@@ -184,3 +229,174 @@ fun List<ProjectResult>.toResultDataModel() = map {
         translatedValues = it.translatedValues.map { ProjectResultTranslatedValueData(language = SystemLanguageData.valueOf(it.language.name), description = it.description) }.toSet(),
     )
 }.toList()
+
+fun ProjectPartnerBudgetOptions.toDataModel() = ProjectPartnerBudgetOptionsData(
+    partnerId = partnerId,
+    officeAndAdministrationOnStaffCostsFlatRate = officeAndAdministrationOnStaffCostsFlatRate,
+    officeAndAdministrationOnDirectCostsFlatRate = officeAndAdministrationOnDirectCostsFlatRate,
+    travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
+    staffCostsFlatRate = staffCostsFlatRate,
+    otherCostsOnStaffCostsFlatRate = otherCostsOnStaffCostsFlatRate
+)
+
+fun ProjectPartnerCoFinancingAndContribution.toDataModel() = ProjectPartnerCoFinancingAndContributionData(
+    finances = finances.map { it.toDataModel() }.toSet(),
+    partnerContributions = partnerContributions.map { it.toDataModel() }.toSet(),
+    partnerAbbreviation = partnerAbbreviation
+)
+
+fun ProjectPartnerCoFinancing.toDataModel() = ProjectPartnerCoFinancingData(
+    fundType = ProjectPartnerCoFinancingFundTypeData.valueOf(fundType.name),
+    fund = fund?.toDataModel(),
+    percentage = percentage
+)
+
+fun ProjectPartnerContribution.toDataModel() = ProjectPartnerContributionData(
+    id = id,
+    name = name,
+    status = ProjectPartnerContributionStatusData.valueOf(status!!.name),
+    amount = amount,
+    isPartner = isPartner
+)
+
+fun BudgetCosts.toDataModel() = BudgetCostData(
+    staffCosts = staffCosts.map { it.toDataModel() }.toList(),
+    travelCosts = travelCosts.map { it.toDataModel() }.toList(),
+    externalCosts = externalCosts.map { it.toDataModel() }.toList(),
+    equipmentCosts = equipmentCosts.map { it.toDataModel() }.toList(),
+    infrastructureCosts = infrastructureCosts.map { it.toDataModel() }.toList(),
+    unitCosts = unitCosts.map { it.toDataModel() }.toList()
+)
+
+fun BudgetStaffCostEntry.toDataModel() = BudgetStaffCostEntryData(
+    id = id,
+    numberOfUnits = numberOfUnits,
+    rowSum = rowSum,
+    budgetPeriods = budgetPeriods.map { it.toDataModel() }.toMutableSet(),
+    pricePerUnit = pricePerUnit,
+    description = description.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    comment = comment.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    unitType = unitType.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    unitCostId = unitCostId
+)
+
+fun BudgetPeriod.toDataModel() = BudgetPeriodData(
+    number = number,
+    amount = amount
+)
+
+fun BudgetTravelAndAccommodationCostEntry.toDataModel() = BudgetTravelAndAccommodationCostEntryData(
+    id = id,
+    numberOfUnits = numberOfUnits,
+    rowSum = rowSum,
+    budgetPeriods = budgetPeriods.map { it.toDataModel() }.toMutableSet(),
+    pricePerUnit = pricePerUnit,
+    description = description.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    unitType = unitType.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    unitCostId = unitCostId
+)
+
+fun BudgetGeneralCostEntry.toDataModel() = BudgetGeneralCostEntryData(
+    id = id,
+    numberOfUnits = numberOfUnits,
+    rowSum = rowSum,
+    budgetPeriods = budgetPeriods.map { it.toDataModel() }.toMutableSet(),
+    pricePerUnit = pricePerUnit,
+    description = description.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    unitType = unitType.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    unitCostId = unitCostId
+)
+
+fun BudgetUnitCostEntry.toDataModel() = BudgetUnitCostEntryData(
+    id = id,
+    numberOfUnits = numberOfUnits,
+    rowSum = rowSum,
+    budgetPeriods = budgetPeriods.map { it.toDataModel() }.toMutableSet(),
+    unitCostId = unitCostId
+)
+
+fun OutputProjectPartnerDetail.toDataModel(budget: PartnerBudgetData) = ProjectPartnerData(
+    id = id,
+    abbreviation = abbreviation,
+    role = ProjectPartnerRoleData.valueOf(role.name),
+    sortNumber = sortNumber,
+    nameInOriginalLanguage = nameInOriginalLanguage,
+    nameInEnglish = nameInEnglish,
+    department = department.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    partnerType = if (partnerType != null) ProjectTargetGroupData.valueOf(partnerType!!.name) else null,
+    legalStatusId = legalStatusId,
+    vat = vat,
+    vatRecovery = if (vatRecovery != null) ProjectPartnerVatRecoveryData.valueOf(vatRecovery!!.name) else null,
+    addresses = addresses.map { it.toDataModel() }.toList(),
+    contacts = contacts.map { it.toDataModel() }.toList(),
+    motivation = motivation?.toDataModel(),
+    budget = budget
+)
+
+fun ProjectPartnerAddressDTO.toDataModel() = ProjectPartnerAddressData(
+    type = ProjectPartnerAddressTypeData.valueOf(type.name),
+    country = country,
+    nutsRegion2 = nutsRegion2,
+    nutsRegion3 = nutsRegion3,
+    street = street,
+    houseNumber = houseNumber,
+    postalCode = postalCode,
+    city = city,
+    homepage = homepage
+)
+
+fun OutputProjectPartnerContact.toDataModel() = ProjectPartnerContactData(
+    type = ProjectContactTypeData.valueOf(type.name),
+    title = title,
+    firstName = firstName,
+    lastName = lastName,
+    email = email,
+    telephone = telephone
+)
+
+fun ProjectPartnerMotivationDTO.toDataModel() = ProjectPartnerMotivationData(
+    organizationRelevance = organizationRelevance.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    organizationRole = organizationRole.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    organizationExperience = organizationExperience.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet()
+)
+
+fun OutputProjectAssociatedOrganizationDetail.toDataModel() = ProjectAssociatedOrganizationData(
+    id = id,
+    partner = partner.toDataModel(),
+    nameInOriginalLanguage = nameInOriginalLanguage,
+    nameInEnglish = nameInEnglish,
+    sortNumber = sortNumber,
+    address = address?.toDataModel(),
+    contacts = contacts.map { it.toDataModel() },
+    roleDescription = roleDescription.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet()
+)
+
+fun OutputProjectAssociatedOrganizationAddress.toDataModel() = ProjectAssociatedOrganizationAddressData(
+    country = country,
+    nutsRegion2 = nutsRegion2,
+    nutsRegion3 = nutsRegion3,
+    street = street,
+    houseNumber = houseNumber,
+    postalCode = postalCode,
+    city = city,
+    homepage = homepage
+)
+
+fun OutputProjectPartner.toDataModel() = ProjectPartnerEssentialData(
+    id = id,
+    abbreviation = abbreviation,
+    role = ProjectPartnerRoleData.valueOf(role.name),
+    sortNumber = sortNumber,
+    country = country
+)
+
+fun ProjectLumpSum.toDataModel() = ProjectLumpSumData(
+    programmeLumpSumId = programmeLumpSumId,
+    period = period,
+    lumpSumContributions = lumpSumContributions.map { it.toDataModel() }.toList()
+)
+
+fun ProjectPartnerLumpSum.toDataModel() = ProjectPartnerLumpSumData(
+    partnerId = partnerId,
+    amount = amount
+)

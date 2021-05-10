@@ -32,6 +32,12 @@ class ProjectAssociatedOrganizationServiceImpl(
             .map { it.toOutputProjectAssociatedOrganization() }
     }
 
+    @Transactional(readOnly = true)
+    override fun findAllByProjectId(projectId: Long): Iterable<OutputProjectAssociatedOrganizationDetail> {
+        return projectAssociatedOrganizationRepo.findAllByProjectId(projectId)
+            .map { it.toOutputProjectAssociatedOrganizationDetail() }
+    }
+
     @Transactional
     override fun create(projectId: Long, associatedOrganization: InputProjectAssociatedOrganizationCreate): OutputProjectAssociatedOrganizationDetail {
         val partner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.partnerId)
