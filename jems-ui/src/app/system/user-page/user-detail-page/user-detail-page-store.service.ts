@@ -6,7 +6,7 @@ import {
   UserService,
   UserDTO, UserRoleSummaryDTO, PasswordDTO,
 } from '@cat/api';
-import {catchError, map, mergeMap, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {SecurityService} from '../../../security/security.service';
@@ -19,6 +19,7 @@ import {APIError} from '../../../common/models/APIError';
 export class UserDetailPageStore {
   public static USER_DETAIL_PATH = '/app/system/user/detail/';
   public static PROFILE_PATH = '/app/profile';
+  public static CREATE_USER_PATH = '/app/system/user/detail/create';
 
   // TODO: remove when switching to new edit mode
   userSaveError$ = new Subject<APIError | null>();
@@ -98,7 +99,13 @@ export class UserDetailPageStore {
         tap(user => this.updateUserName(user)),
       );
 
-    return merge(initialUser$, ownProfileUser$, this.savedUser$);
+    const createUser$ = this.router.routeChanges(UserDetailPageStore.CREATE_USER_PATH)
+      .pipe(
+        filter(isCreateUser => isCreateUser),
+        map(() => ({} as UserDTO)),
+      );
+
+    return merge(initialUser$, ownProfileUser$, this.savedUser$, createUser$);
   }
 
   private roles(): Observable<UserRoleSummaryDTO[]> {
