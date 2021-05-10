@@ -110,10 +110,12 @@ internal class ProjectAuthorizationTest {
         every { securityService.currentUser } returns programmeUser
         every { projectService.getApplicantAndStatusById(eq(4)) } returns testProject(ApplicationStatusDTO.DRAFT)
 
-        val exception = assertThrows<ResourceNotFoundException>(
-            "programme user cannot find project in ${ApplicationStatusDTO.DRAFT}"
-        ) { projectAuthorization.canReadProject(4) }
-        assertThat(exception.entity).isEqualTo("project")
+        ApplicationStatusDTO.values().forEach {
+            assertTrue(
+                projectAuthorization.canReadProject(4),
+                "programme user is able to read Project anytime (also $it)"
+            )
+        }
     }
 
     @Test

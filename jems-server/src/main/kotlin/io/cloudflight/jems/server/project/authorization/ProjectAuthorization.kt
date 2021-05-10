@@ -25,15 +25,8 @@ class ProjectAuthorization(
 
     fun canReadProject(id: Long): Boolean {
         val project = projectService.getApplicantAndStatusById(id)
-        if (isAdmin() || isApplicantOwner(project.applicantId))
+        if (isAdmin() || isApplicantOwner(project.applicantId) || isProgrammeUser())
             return true
-
-        val status = project.projectStatus
-        if (isProgrammeUser())
-            if (!status.isDraft())
-                return true
-            else
-                throw ResourceNotFoundException("project")
 
         if (isApplicantNotOwner(project.applicantId))
             throw ResourceNotFoundException("project")

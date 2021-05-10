@@ -193,22 +193,40 @@ class ProjectServiceTest {
     }
 
     @Test
-    fun `programme user lists submitted projects`() {
+    fun projectRetrieval_programme_user() {
         every { securityService.currentUser } returns
-            LocalCurrentUser(
-                user, "hash_pass",
-                listOf(SimpleGrantedAuthority("ROLE_$PROGRAMME_USER"))
-            )
+                LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$PROGRAMME_USER")))
 
-        projectService.findAll(UNPAGED)
+        val projectToReturn = ProjectEntity(
+            id = 25,
+            call = dummyCall,
+            acronym = "test acronym",
+            applicant = account,
+            currentStatus = statusSubmitted,
+            firstSubmission = statusSubmitted,
+            step2Active = false
+        )
+        every { projectRepository.findAll(UNPAGED) } returns PageImpl(listOf(projectToReturn))
 
-        verify {
-            projectRepository.findAllByCurrentStatusStatusNot(
-                withArg {
-                    assertThat(it).isEqualTo(ApplicationStatus.DRAFT)
-                }, UNPAGED
+        // test start
+        val result = projectService.findAll(UNPAGED)
+
+        // assertions:
+        assertEquals(1, result.totalElements)
+
+        val expectedProjects = listOf(
+            OutputProjectSimple(
+                id = 25,
+                callName = dummyCall.name,
+                acronym = "test acronym",
+                firstSubmissionDate = TEST_DATE_TIME,
+                lastResubmissionDate = null,
+                projectStatus = ApplicationStatusDTO.SUBMITTED,
+                specificObjectiveCode = null,
+                programmePriorityCode = null
             )
-        }
+        )
+        assertIterableEquals(expectedProjects, result.get().collect(Collectors.toList()))
     }
 
     @Test
