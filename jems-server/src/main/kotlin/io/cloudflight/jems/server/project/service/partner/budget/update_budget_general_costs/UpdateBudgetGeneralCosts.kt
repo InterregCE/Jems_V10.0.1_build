@@ -49,13 +49,13 @@ abstract class UpdateBudgetGeneralCosts(
                 this.truncateBaseEntryNumbers()
                 this.pricePerUnit.truncate()
             }
-        }.toSet())
+        }.toList())
     }
 
     protected abstract fun deleteAllBudgetGeneralCostsExceptFor(partnerId: Long, idsToKeep: Set<Long>)
     protected abstract fun createOrUpdateBudgetGeneralCosts(
         partnerId: Long,
-        budgetGeneralCosts: Set<BudgetGeneralCostEntry>
+        budgetGeneralCosts: List<BudgetGeneralCostEntry>
     ): List<BudgetGeneralCostEntry>
 
     private fun calculateRowSum(generalCostEntry: BudgetGeneralCostEntry) =

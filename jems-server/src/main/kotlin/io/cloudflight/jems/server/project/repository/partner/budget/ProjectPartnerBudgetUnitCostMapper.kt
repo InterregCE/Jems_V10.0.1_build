@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.project.entity.partner.budget.unit_cost.Projec
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 
-fun Set<BudgetUnitCostEntry>.toBudgetUnitCostEntities(
+fun List<BudgetUnitCostEntry>.toBudgetUnitCostEntities(
     partnerId: Long,
     getProgrammeUnitCost: (Long) -> ProgrammeUnitCostEntity,
     projectPeriodEntityReferenceResolver: (Int) -> ProjectPeriodEntity

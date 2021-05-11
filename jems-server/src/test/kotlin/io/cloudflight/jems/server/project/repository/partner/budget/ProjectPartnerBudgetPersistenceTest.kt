@@ -192,7 +192,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         ){projectPeriodEntity}
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetStaffCostRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
-        val result = persistence.createOrUpdateBudgetStaffCosts(projectId, partnerId, setOf(staffCostEntry))
+        val result = persistence.createOrUpdateBudgetStaffCosts(projectId, partnerId, listOf(staffCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
@@ -204,7 +204,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         ){projectPeriodEntity}
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetEquipmentRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
-        val result = persistence.createOrUpdateBudgetEquipmentCosts(projectId, partnerId, setOf(generalCostEntry))
+        val result = persistence.createOrUpdateBudgetEquipmentCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
@@ -217,7 +217,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetExternalRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
-            persistence.createOrUpdateBudgetExternalExpertiseAndServicesCosts(projectId, partnerId, setOf(generalCostEntry))
+            persistence.createOrUpdateBudgetExternalExpertiseAndServicesCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
@@ -230,7 +230,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetInfrastructureRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
-            persistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, setOf(generalCostEntry))
+            persistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
@@ -243,7 +243,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetTravelRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
-            persistence.createOrUpdateBudgetTravelAndAccommodationCosts(projectId, partnerId, setOf(travelCostEntry))
+            persistence.createOrUpdateBudgetTravelAndAccommodationCosts(projectId, partnerId, listOf(travelCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
@@ -254,7 +254,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
             programmeUnitCostEntity
         )
         val partnerBudgetEntities =
-            setOf(unitCostEntry).toBudgetUnitCostEntities(
+            listOf(unitCostEntry).toBudgetUnitCostEntities(
                 partnerId,
                 { programmeUnitCostEntity },
                 { projectPeriodEntity }
@@ -263,7 +263,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetUnitCostRepository.saveAll(partnerBudgetEntities) } returns partnerBudgetEntities
 
-        val result = persistence.createOrUpdateBudgetUnitCosts(projectId, partnerId, setOf(unitCostEntry))
+        val result = persistence.createOrUpdateBudgetUnitCosts(projectId, partnerId, listOf(unitCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }

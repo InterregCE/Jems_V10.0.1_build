@@ -26,10 +26,11 @@ class UpdateBudgetInfrastructureAndWorksCosts(
 
     @Transactional
     @CanUpdateProjectPartner
-    override fun createOrUpdateBudgetGeneralCosts(partnerId: Long, budgetGeneralCosts: Set<BudgetGeneralCostEntry>) =
+    override fun createOrUpdateBudgetGeneralCosts(partnerId: Long, budgetGeneralCosts: List<BudgetGeneralCostEntry>) =
         persistence.createOrUpdateBudgetInfrastructureAndWorksCosts(
             projectPersistence.getProjectIdForPartner(partnerId),
             partnerId,
-            budgetGeneralCosts)
+            budgetGeneralCosts
+        )
 
 }
