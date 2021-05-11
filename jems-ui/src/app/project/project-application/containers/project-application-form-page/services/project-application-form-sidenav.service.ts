@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
-import {mergeMap, map, tap, switchMap} from 'rxjs/operators';
+import {catchError, map, mergeMap, switchMap, tap} from 'rxjs/operators';
 import {ProjectPartnerService, ProjectStatusDTO, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '../../../../../common/utils/log';
@@ -96,7 +96,8 @@ export class ProjectApplicationFormSidenavService {
           const isNotOpen = !ProjectUtil.isDraft(project)
             && status !== ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
           this.setHeadlines(isNotApplicant && isNotOpen, project.id, partners, packages);
-        })
+        }),
+        catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
       );
 
     this.routingService.routeChanges(ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL)
