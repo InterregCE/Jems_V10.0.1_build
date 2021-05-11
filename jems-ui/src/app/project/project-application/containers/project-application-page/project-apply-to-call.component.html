@@ -2,10 +2,68 @@
         [needsCard]="true"
         *ngxPermissionsOnly="Permission.APPLICANT_USER"
         titleKey="project.detail.new.title">
-    <app-project-application-submission
-            *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
-            [success$]="applicationSaveSuccess$"
-            [error$]="applicationSaveError$"
-            (submitProjectApplication)="createApplication($event)">
-    </app-project-application-submission>
+
+    <form appFormLayout *ngIf="callStore.call$ | async as call" [formGroup]="submissionForm">
+        <h3>{{'project.detail.new.call.info.title' | translate}} {{call.id}} – {{call.name}}</h3>
+
+        <div id="project-info">
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'call.detail.field.start' | translate}}</span>
+                <span class="p-1">{{call.startDateTime | localeDate}}</span>
+            </div>
+            <div class="project-row" *ngIf="call.endDateTimeStep1">
+                <span class="header p-1 pr-3">{{'call.detail.field.end.step1' | translate}}</span>
+                <span class="p-1">{{'project.detail.overview.call.expiration' | translate: getFormattedTimeLeft(call.endDateTimeStep1)}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'call.detail.field.end' | translate}}</span>
+                <span class="p-1">{{'project.detail.overview.call.expiration' | translate: getFormattedTimeLeft(call.endDateTime)}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3"></span>
+                <span class="p-1">
+                <a (click)="navigateToCallDetails()">{{'project.detail.new.call.info.details.link' | translate}}</a>
+            </span>
+            </div>
+        </div>
+
+        <app-alert [type]="Alert.WARNING" [show]="true">{{'project.detail.new.hint' | translate}}</app-alert>
+
+        <mat-form-field>
+            <mat-label>{{'project.detail.new.field.acronym' | translate}}</mat-label>
+            <input name="acronym" formControlName="acronym" matInput required>
+            <app-context-info
+                    infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
+            </app-context-info>
+            <mat-error>
+                <app-form-field-errors [errors]="submissionForm?.controls?.acronym?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <div appMultiColumnRow>
+            <button *ngxPermissionsOnly="Permission.APPLICANT_USER"
+                    mat-stroked-button
+                    type="button"
+                    (click)="onCancel()">
+                {{'project.detail.new.button.cancel' | translate}}
+            </button>
+            <button mat-raised-button
+                    color="primary"
+                    type="submit"
+                    [disabled]="submissionForm.invalid"
+                    (click)="createApplication()">
+                {{'project.detail.new.button.create' | translate}}
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+        </div>
+
+        <app-alert *ngIf="saveError$ | async as error"
+                   [show]="!!error?.i18nMessage.i18nKey"
+                   [type]="Alert.ERROR">
+            <app-api-error-content [error]="error"></app-api-error-content>
+        </app-alert>
+        `
+    </form>
+
 </app-main-page-template>

@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {routes} from './project-routing.module';
-import {ProjectApplicationSubmissionComponent} from './project-application/components/project-application-submission/project-application-submission.component';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
 import {SharedModule} from '../common/shared-module';
 import {ProjectApplicationFilesListComponent} from './project-application/components/project-application-detail/project-application-files-list/project-application-files-list.component';
@@ -86,14 +85,13 @@ import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/bu
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
 import {FilterUnitCostsPipe} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
-import { ProjectApplicationPreConditionCheckResultComponent } from './project-detail-page/project-application-pre-condition-check-result/project-application-pre-condition-check-result.component';
+import {ProjectApplicationPreConditionCheckResultComponent} from './project-detail-page/project-application-pre-condition-check-result/project-application-pre-condition-check-result.component';
 
 @NgModule({
   declarations: [
     DescriptionCellComponent,
     ProjectApplicationComponent,
     ProjectApplyToCallComponent,
-    ProjectApplicationSubmissionComponent,
     ProjectDetailPageComponent,
     ProjectApplicationFilesListComponent,
     ProjectApplicationInformationComponent,
