@@ -6,6 +6,7 @@ import {Log} from '../../../common/utils/log';
 import {SecurityService} from '../../../security/security.service';
 import {RoutingService} from '../../../common/services/routing.service';
 import {filter, take} from 'rxjs/internal/operators';
+import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
 
 @Injectable()
 export class UserRoleStore {
@@ -19,7 +20,8 @@ export class UserRoleStore {
 
   constructor(private roleService: UserRoleService,
               private router: RoutingService,
-              private securityService: SecurityService) {
+              private securityService: SecurityService,
+              private pageSidenavService: SystemPageSidenavService) {
     this.userRole$ = this.userRole();
     this.userRoleName$ = this.userRoleName();
     this.currentUser$ = this.securityService.currentUser;
@@ -30,6 +32,7 @@ export class UserRoleStore {
       .pipe(
         take(1),
         tap(saved => Log.info('Created user role:', this, saved)),
+        tap(() => this.pageSidenavService.rolesChanged$.next())
       );
   }
 
@@ -37,7 +40,8 @@ export class UserRoleStore {
     return this.roleService.updateUserRole(user)
       .pipe(
         tap(saved => this.savedUserRole$.next(saved)),
-        tap(saved => Log.info('Updated user role:', this, saved))
+        tap(saved => Log.info('Updated user role:', this, saved)),
+        tap(() => this.pageSidenavService.rolesChanged$.next())
       );
   }
 

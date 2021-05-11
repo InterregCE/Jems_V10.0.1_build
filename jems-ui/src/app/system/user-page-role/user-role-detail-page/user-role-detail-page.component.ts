@@ -76,7 +76,6 @@ export class UserRoleDetailPageComponent {
               private permissionService: PermissionService,
               public roleStore: UserRoleStore) {
     this.formService.init(this.userRoleForm);
-    this.formService.setCreation(!this.roleId);
 
     this.data$ = combineLatest([
       this.roleStore.userRole$,
@@ -158,7 +157,11 @@ export class UserRoleDetailPageComponent {
 
     this.dataSource.data = groups;
     this.treeControl.expandAll();
-    this.formService.resetEditable();
+    if (this.roleId) {
+      this.formService.resetEditable();
+    } else {
+      this.formService.setCreation(true);
+    }
 
     if (!isUpdateAllowed) {
       this.userRoleForm.disable();
