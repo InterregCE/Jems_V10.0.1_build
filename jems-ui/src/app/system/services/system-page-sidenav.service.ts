@@ -35,10 +35,13 @@ export class SystemPageSidenavService {
     );
 
   private setHeadlines(permissions: PermissionsEnum[], roles: UserRoleSummaryDTO[]): void {
-    const bulletsArray: HeadlineRoute[] = [{
-      headline: {i18nKey: 'topbar.main.audit'},
-      route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}`,
-    }];
+    const bulletsArray: HeadlineRoute[] = [];
+    if (permissions.includes(PermissionsEnum.AuditRetrieve)) {
+      bulletsArray.push({
+        headline: {i18nKey: 'topbar.main.audit'},
+        route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/audit`,
+      });
+    }
 
     if (permissions.includes(PermissionsEnum.UserRetrieve)) {
       const userManagementHeadline = {

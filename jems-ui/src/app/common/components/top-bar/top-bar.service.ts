@@ -3,9 +3,10 @@ import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Permission} from '../../../security/permissions/permission';
-import {take} from 'rxjs/operators';
+import {map, take} from 'rxjs/operators';
 import {SecurityService} from '../../../security/security.service';
 import {OutputCurrentUser, UserRoleDTO} from '@cat/api';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable()
 export class TopBarService {
@@ -69,13 +70,14 @@ export class TopBarService {
   assingMenuItemsToUser(): void {
     combineLatest([
       this.permissionService.hasPermission(Permission.SYSTEM_MODULE_PERMISSIONS),
+      this.securityService.currentUser.pipe(map(currentUser => currentUser?.role)),
       // TODO remove when all permissions implemented
       this.permissionService.hasPermission(Permission.APPLICANT_USER),
       this.permissionService.hasPermission(Permission.PROGRAMME_USER),
       this.permissionService.hasPermission(Permission.ADMINISTRATOR),
     ]).pipe(
       take(1),
-    ).subscribe(([systemEnabled, isApplicant, isProgrammeUser, isAdmin]) => {
+    ).subscribe(([systemEnabled, role, isApplicant, isProgrammeUser, isAdmin]) => {
       const menuItems: MenuItemConfiguration[] = [];
 
       if (isApplicant) {
@@ -91,6 +93,13 @@ export class TopBarService {
         menuItems.push(this.programmItem);
       }
       if (systemEnabled) {
+        if (role?.permissions.includes(PermissionsEnum.AuditRetrieve)) {
+          this.systemItem.route = '/app/system/audit';
+        } else if (role?.permissions.includes(PermissionsEnum.UserRetrieve)) {
+          this.systemItem.route = '/app/system/user';
+        } else if (role?.permissions.includes(PermissionsEnum.RoleRetrieve)) {
+          this.systemItem.route = '/app/system/userRole';
+        }
         menuItems.push(this.systemItem);
       }
 
