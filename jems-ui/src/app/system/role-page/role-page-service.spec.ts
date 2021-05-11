@@ -37,7 +37,7 @@ describe('RolePageService', () => {
 
   it('should list user roles for admin', fakeAsync(() => {
     const permissionService = TestBed.inject(PermissionService);
-    const role: UserRoleDTO = {id: 0, name: 'administrator', permissions: []} as UserRoleDTO;
+    const role: UserRoleDTO = {id: 0, name: 'administrator', permissions: [UserRoleDTO.PermissionsEnum.RoleRetrieve]} as UserRoleDTO;
     permissionService.setPermissions([role]);
     let results: UserRoleSummaryDTO[] = [];
     service.userRoles().subscribe(result => results = result);
