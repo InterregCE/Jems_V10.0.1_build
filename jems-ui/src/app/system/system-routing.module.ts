@@ -18,7 +18,7 @@ export const routes: Routes = [
     },
     children: [
       {
-        path: '',
+        path: 'audit',
         component: AuditLogComponent,
         canActivate: [PermissionGuard],
         data: {
