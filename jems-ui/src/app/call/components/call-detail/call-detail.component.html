@@ -150,3 +150,12 @@
         </app-call-funds>
     </form>
 </app-form>
+
+<mat-card-footer *ngIf="isApplicant" class="footer">
+    <button mat-raised-button color="primary"
+            class="action-button"
+            [disabled]="!isOpen(call)"
+            (click)="applyToCall(call.id)">
+        {{'call.table.column.action.apply' | translate}} <mat-icon>arrow_forward</mat-icon>
+    </button>
+</mat-card-footer>

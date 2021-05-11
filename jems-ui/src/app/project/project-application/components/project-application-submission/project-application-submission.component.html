@@ -1,4 +1,29 @@
-<form appFormLayout [formGroup]="submissionForm">
+<form appFormLayout *ngIf="callStore.call$ | async as call" [formGroup]="submissionForm">
+
+
+    <h3>{{'project.detail.new.call.info.title' | translate}} {{call.id}} – {{call.name}}</h3>
+
+    <div id="project-info">
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'call.detail.field.start' | translate}}</span>
+            <span class="p-1">{{getFormattedDateTime(call.startDateTime)}}</span>
+        </div>
+        <div class="project-row" *ngIf="call.endDateTimeStep1">
+            <span class="header p-1 pr-3">{{'call.detail.field.end.step1' | translate}}</span>
+            <span class="p-1">{{'project.detail.overview.call.expiration' | translate: getFormattedTimeLeft(call.endDateTimeStep1)}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'call.detail.field.end' | translate}}</span>
+            <span class="p-1">{{'project.detail.overview.call.expiration' | translate: getFormattedTimeLeft(call.endDateTime)}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3"></span>
+            <span class="p-1"><a (click)="navigateToCallDetails()">{{'project.detail.new.call.info.details.link' | translate}}</a></span>
+        </div>
+    </div>
+
+    <app-alert [type]="Alert.WARNING" [show]="true">{{'project.detail.new.hint' | translate}}</app-alert>
+
     <mat-form-field>
         <mat-label>{{'project.detail.new.field.acronym' | translate}}</mat-label>
         <input name="acronym" formControlName="acronym" matInput required>
@@ -25,7 +50,7 @@
                 type="submit"
                 [disabled]="submissionForm.invalid || submitted"
                 (click)="onSubmit()">
-            + {{'project.detail.new.button.create' | translate}}
+            {{'project.detail.new.button.create' | translate}} <mat-icon>arrow_forward</mat-icon>
         </button>
     </div>
     <app-alert

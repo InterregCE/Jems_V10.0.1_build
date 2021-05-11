@@ -1,8 +1,7 @@
 <app-main-page-template
         [needsCard]="true"
         *ngxPermissionsOnly="Permission.APPLICANT_USER"
-        titleKey="project.breadcrumb.list"
-        subTitleKey="project.detail.new.title">
+        titleKey="project.detail.new.title">
     <app-project-application-submission
             *ngxPermissionsExcept="[Permission.PROGRAMME_USER]"
             [success$]="applicationSaveSuccess$"
