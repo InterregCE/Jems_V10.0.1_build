@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.user.repository.userrole.toModel
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import org.springframework.data.domain.Page
@@ -44,4 +45,17 @@ fun UserChange.toEntity(passwordEncoded: String, role: UserRoleEntity) = UserEnt
     surname = surname,
     userRole = role,
     password = passwordEncoded,
+)
+
+fun UserEntity.toUserSummary() = UserSummary(
+    id = this.id,
+    email = this.email,
+    name = this.name,
+    surname = this.surname,
+    userRole = this.userRole.toUserRoleSummary()
+)
+
+fun UserRoleEntity.toUserRoleSummary() = UserRoleSummary(
+    id = id,
+    name = name,
 )

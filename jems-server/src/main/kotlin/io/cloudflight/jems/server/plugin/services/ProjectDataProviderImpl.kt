@@ -5,8 +5,9 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
+import io.cloudflight.jems.server.project.controller.toDto
 import io.cloudflight.jems.server.project.service.ProjectDescriptionService
-import io.cloudflight.jems.server.project.service.ProjectService
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.lumpsum.get_project_lump_sums.GetProjectLumpSumsInteractor
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
@@ -23,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ProjectDataProviderImpl(
-    private val projectService: ProjectService,
+    private val projectPersistence: ProjectPersistence,
     private val projectDescriptionService: ProjectDescriptionService,
     private val workPackagePersistence: WorkPackagePersistence,
     private val resultPersistence: ProjectResultPersistence,
@@ -43,7 +44,7 @@ class ProjectDataProviderImpl(
 
     @Transactional(readOnly = true)
     override fun getProjectDataForProjectId(projectId: Long): ProjectData {
-        val sectionA = projectService.getById(projectId).projectData?.toDataModel()
+        val sectionA = projectPersistence.getProject(projectId).toDto().projectData?.toDataModel()
 
         val partners = projectPartnerService.findAllByProjectId(projectId).map {
             val budgetOptions = getBudgetOptions.getBudgetOptions(it.id!!)?.toDataModel()

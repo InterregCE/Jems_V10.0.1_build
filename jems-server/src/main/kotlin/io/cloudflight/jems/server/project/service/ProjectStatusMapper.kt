@@ -9,6 +9,9 @@ import io.cloudflight.jems.server.project.entity.ProjectDecisionEntity
 import io.cloudflight.jems.server.project.entity.ProjectEligibilityAssessment
 import io.cloudflight.jems.server.project.entity.ProjectQualityAssessment
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
+import io.cloudflight.jems.server.project.service.model.ProjectDecision
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
+import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.service.toOutputUser
 
 fun ProjectStatusHistoryEntity.toOutputProjectStatus() = ProjectStatusDTO(
@@ -18,6 +21,15 @@ fun ProjectStatusHistoryEntity.toOutputProjectStatus() = ProjectStatusDTO(
         updated = updated,
         decisionDate = decisionDate,
         note = note
+)
+
+fun ProjectStatusHistoryEntity.toProjectStatus() = ProjectStatus(
+    id = id,
+    status = ApplicationStatusDTO.valueOf(status.name),
+    user = user.toUserSummary(),
+    updated = updated,
+    decisionDate = decisionDate,
+    note = note
 )
 
 fun ProjectQualityAssessment.toOutputProjectQualityAssessment() = OutputProjectQualityAssessment(
@@ -37,4 +49,11 @@ fun ProjectDecisionEntity.toProjectDecisionDTO() = ProjectDecisionDTO(
     eligibilityAssessment = eligibilityAssessment?.toOutputProjectEligibilityAssessment(),
     eligibilityDecision = eligibilityDecision?.toOutputProjectStatus(),
     fundingDecision = fundingDecision?.toOutputProjectStatus()
+)
+
+fun ProjectDecisionEntity.toProjectDecision() = ProjectDecision(
+    qualityAssessment = qualityAssessment?.toOutputProjectQualityAssessment(),
+    eligibilityAssessment = eligibilityAssessment?.toOutputProjectEligibilityAssessment(),
+    eligibilityDecision = eligibilityDecision?.toProjectStatus(),
+    fundingDecision = fundingDecision?.toProjectStatus()
 )

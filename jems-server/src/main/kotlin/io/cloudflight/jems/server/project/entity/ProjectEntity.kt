@@ -56,6 +56,7 @@ data class ProjectEntity(
     var lastResubmission: ProjectStatusHistoryEntity? = null,
 
     @Column(name = "step2_active")
+    @field:NotNull
     var step2Active: Boolean,
 
     @ManyToOne(optional = true)
