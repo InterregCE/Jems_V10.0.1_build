@@ -16,12 +16,12 @@ class UserProfileServiceImpl (
 
     @Transactional
     override fun setUserProfile(profileData: InputUserProfile): OutputUserProfile {
-        val userId = securityService.currentUser!!.user.id!!
+        val userId = securityService.currentUser!!.user.id
         return userProfileRepository.save(profileData.toEntity(userId)).toOutputUserProfile()
     }
 
     override fun getUserProfile(): OutputUserProfile? {
-        val userId = securityService.currentUser!!.user.id!!
+        val userId = securityService.currentUser!!.user.id
         return userProfileRepository.findByIdOrNull(userId)?.toOutputUserProfile()
     }
 }

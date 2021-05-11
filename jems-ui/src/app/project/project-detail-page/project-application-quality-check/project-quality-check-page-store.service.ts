@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {OutputProjectEligibilityAssessment, OutputProjectQualityAssessment, ProjectDetailDTO} from '@cat/api';
+import {OutputProjectQualityAssessment, ProjectDetailDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 

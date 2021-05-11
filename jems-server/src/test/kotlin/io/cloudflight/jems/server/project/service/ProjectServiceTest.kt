@@ -142,7 +142,7 @@ class ProjectServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
-        every { userRepository.findById(eq(user.id!!)) } returns Optional.of(account)
+        every { userRepository.findById(eq(user.id)) } returns Optional.of(account)
         every { projectStatusHistoryRepository.save(any<ProjectStatusHistoryEntity>()) } returnsArgument 0
         projectService = ProjectServiceImpl(
             projectRepository,
@@ -278,39 +278,8 @@ class ProjectServiceTest {
 
     @Test
     fun projectCreation_withoutUser() {
-        every { userRepository.findById(eq(user.id!!)) } returns Optional.empty()
+        every { userRepository.findById(eq(user.id)) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> { projectService.createProject(InputProject("test", dummyCall.id)) }
-    }
-
-    @Test
-    fun projectGet_OK() {
-        every { projectRepository.findById(eq(1)) } returns
-            Optional.of(
-                ProjectEntity(
-                    id = 1,
-                    call = dummyCall,
-                    acronym = "test",
-                    applicant = account,
-                    currentStatus = statusSubmitted,
-                    firstSubmission = statusSubmitted,
-                    step2Active = false
-                )
-            )
-
-        val result = projectService.getById(1)
-
-        assertThat(result).isNotNull()
-        assertThat(result.id).isEqualTo(1)
-        assertThat(result.acronym).isEqualTo("test")
-        assertThat(result.projectStatus.id).isEqualTo(11)
-        assertThat(result.firstSubmission?.id).isEqualTo(11)
-        assertThat(result.firstSubmission?.updated).isEqualTo(TEST_DATE_TIME)
-    }
-
-    @Test
-    fun projectGet_notExisting() {
-        every { projectRepository.findById(eq(-1)) } returns Optional.empty()
-        assertThrows<ResourceNotFoundException> { projectService.getById(-1) }
     }
 
     private fun verifyAudit(projectIdExpected: String) {

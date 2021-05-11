@@ -1,13 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  OnInit,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CallDetailDTO, InputProject, ProjectCallSettingsDTO} from '@cat/api';
+import {CallDetailDTO, InputProject} from '@cat/api';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Permission} from '../../../../security/permissions/permission';

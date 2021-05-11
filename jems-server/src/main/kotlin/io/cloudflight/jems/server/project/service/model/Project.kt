@@ -25,4 +25,12 @@ data class Project(
     val programmePriority: OutputProgrammePrioritySimple?,
 
     val periods: List<ProjectPeriod> = emptyList()
-)
+)  {
+    fun getDecision(): ProjectDecision? {
+        return if (step2Active) {
+            secondStepDecision
+        } else {
+            firstStepDecision
+        }
+    }
+}

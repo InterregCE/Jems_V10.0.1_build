@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {OutputProjectFile, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import {OutputProjectFile, ProjectDetailDTO} from '@cat/api';
 import {Permission} from '../../../../../../../security/permissions/permission';
 
 @Component({

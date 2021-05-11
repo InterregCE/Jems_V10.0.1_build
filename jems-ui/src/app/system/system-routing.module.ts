@@ -2,7 +2,6 @@ import {Routes} from '@angular/router';
 import {UserPageComponent} from './user-page/user-page.component';
 import {UserNameResolver} from './user-page/user-detail-page/user-name.resolver';
 import {PermissionGuard} from '../security/permission.guard';
-import {Permission} from '../security/permissions/permission';
 import {AuditLogComponent} from './audit-log/audit-log.component';
 import {UserDetailPageComponent} from './user-page/user-detail-page/user-detail-page.component';
 import {UserRoleDTO} from '@cat/api';
