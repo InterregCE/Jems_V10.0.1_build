@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity.partner.budget.travel
 
-import io.cloudflight.jems.server.project.entity.partner.budget.BudgetTranslation
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTranslBase
+import io.cloudflight.jems.server.common.entity.TranslationEntity
+import io.cloudflight.jems.server.common.entity.TranslationId
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
@@ -9,19 +9,10 @@ import javax.persistence.Entity
 data class ProjectPartnerBudgetTravelTranslEntity(
 
     @EmbeddedId
-    override val budgetTranslation: BudgetTranslation<ProjectPartnerBudgetTravelEntity>,
+    override val translationId: TranslationId<ProjectPartnerBudgetTravelEntity>,
 
     val unitType: String? = null,
 
     val description: String? = null
 
-): ProjectPartnerBudgetTranslBase {
-    override fun equals(other: Any?) =
-        this === other ||
-            other !== null &&
-            other is ProjectPartnerBudgetTravelTranslEntity &&
-            budgetTranslation == other.budgetTranslation
-
-    override fun hashCode() =
-        budgetTranslation.hashCode()
-}
+) : TranslationEntity()

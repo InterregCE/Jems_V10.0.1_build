@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.entity.partner.budget.general
 
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetBase
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPeriodBase
-import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetTranslBase
 import java.math.BigDecimal
 
 interface ProjectPartnerBudgetGeneralBase :
