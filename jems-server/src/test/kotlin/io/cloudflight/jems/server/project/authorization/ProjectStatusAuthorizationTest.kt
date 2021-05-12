@@ -1,22 +1,22 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
-import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
-import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
-import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
-import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
-import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectDecision
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
+import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -52,18 +52,19 @@ internal class ProjectStatusAuthorizationTest {
     lateinit var securityService: SecurityService
 
     @MockK
-    lateinit var projectService: ProjectService
+    lateinit var projectPersistence: ProjectPersistence
 
     @MockK
     lateinit var projectAuthorization: ProjectAuthorization
 
     lateinit var projectStatusAuthorization: ProjectStatusAuthorization
 
-    private val userApplicantWithoutRole = OutputUser(
+    private val userApplicantWithoutRole = UserSummary(
         id = applicantUser.user.id,
         email = applicantUser.user.email,
         name = applicantUser.user.name,
-        surname = applicantUser.user.surname
+        surname = applicantUser.user.surname,
+        userRole = UserRoleSummary(1L, "role")
     )
 
     private val eligibilityAssessment = OutputProjectEligibilityAssessment(
@@ -80,21 +81,21 @@ internal class ProjectStatusAuthorizationTest {
     private val projectReturned = createProject(PID_RETURNED, ApplicationStatusDTO.RETURNED_TO_APPLICANT)
     private val projectSubmittedWithEa = projectSubmitted.copy(
         id = PID_SUBMITTED_WITH_EA,
-        firstStepDecision = ProjectDecisionDTO(eligibilityAssessment = eligibilityAssessment)
+        firstStepDecision = ProjectDecision(eligibilityAssessment = eligibilityAssessment)
     )
     private val projectEligible = createProject(PID_ELIGIBLE, ApplicationStatusDTO.ELIGIBLE).copy(
-        firstStepDecision = ProjectDecisionDTO(eligibilityAssessment = eligibilityAssessment)
+        firstStepDecision = ProjectDecision(eligibilityAssessment = eligibilityAssessment)
     )
     private val projectIneligible = createProject(PID_INELIGIBLE, ApplicationStatusDTO.INELIGIBLE).copy(
-        firstStepDecision = ProjectDecisionDTO(eligibilityAssessment = eligibilityAssessment)
+        firstStepDecision = ProjectDecision(eligibilityAssessment = eligibilityAssessment)
     )
     private val projectEligibleWithQA = createProject(PID_ELIGIBLE_WITH_QA, ApplicationStatusDTO.ELIGIBLE).copy(
-        firstStepDecision = ProjectDecisionDTO(qualityAssessment = qualityAssessment)
+        firstStepDecision = ProjectDecision(qualityAssessment = qualityAssessment)
     )
     private val projectNotApproved = createProject(PID_NOT_APPROVED, ApplicationStatusDTO.NOT_APPROVED)
     private val projectApprovedWithConditions =
         createProject(PID_APPROVED_WITH_CONDITIONS, ApplicationStatusDTO.APPROVED_WITH_CONDITIONS).copy(
-            firstStepDecision = ProjectDecisionDTO(qualityAssessment = qualityAssessment)
+            firstStepDecision = ProjectDecision(qualityAssessment = qualityAssessment)
         )
     private val projectApproved = createProject(PID_APPROVED, ApplicationStatusDTO.APPROVED)
 
@@ -115,10 +116,10 @@ internal class ProjectStatusAuthorizationTest {
     fun setup() {
         MockKAnnotations.init(this)
         projectStatusAuthorization =
-            ProjectStatusAuthorization(securityService, projectAuthorization, projectService)
+            ProjectStatusAuthorization(securityService, projectAuthorization, projectPersistence)
 
         projects.forEach { (projectId, projectObject) ->
-            every { projectService.getById(projectId) } returns projectObject
+            every { projectPersistence.getProject(projectId) } returns projectObject
         }
     }
 
@@ -312,10 +313,10 @@ internal class ProjectStatusAuthorizationTest {
         assertFalse(projectStatusAuthorization.isProgrammeUser())
     }
 
-    private fun createProject(id: Long, status: ApplicationStatusDTO): ProjectDetailDTO {
-        return ProjectDetailDTO(
+    private fun createProject(id: Long, status: ApplicationStatusDTO): Project {
+        return Project(
             id = id,
-            callSettings = ProjectCallSettingsDTO(
+            callSettings = ProjectCallSettings(
                 callId = 1,
                 callName = "call",
                 startDate = ZonedDateTime.now(),
@@ -323,7 +324,7 @@ internal class ProjectStatusAuthorizationTest {
                 endDateStep1 = null,
                 lengthOfPeriod = 12,
                 isAdditionalFundAllowed = false,
-                flatRates = FlatRateSetupDTO(),
+                flatRates = emptySet(),
                 lumpSums = emptyList(),
                 unitCosts = emptyList(),
             ),
@@ -331,7 +332,11 @@ internal class ProjectStatusAuthorizationTest {
             applicant = userApplicantWithoutRole,
             firstSubmission = null,
             lastResubmission = null,
-            projectStatus = ProjectStatusDTO(1, status, userApplicantWithoutRole, ZonedDateTime.now(), null)
+            projectStatus = ProjectStatus(1, status, userApplicantWithoutRole, ZonedDateTime.now(), null),
+            duration = null,
+            programmePriority = null,
+            specificObjective = null,
+            step2Active = false
         )
     }
 

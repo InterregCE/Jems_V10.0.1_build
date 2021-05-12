@@ -49,7 +49,7 @@ class UpdateProjectLumpSums(
     }
 
     private fun validateWrongSplitting(lumpSums: List<ProjectLumpSum>, settings: ProjectCallSettings) {
-        val lumpSumsById = settings.lumpSums.associateBy { it.id!! }
+        val lumpSumsById = settings.lumpSums.associateBy { it.id }
 
         if (lumpSums.any {
                 it.lumpSumContributions.size > 1 && lumpSumsById[it.programmeLumpSumId].isLumpSumNotSplittable()
