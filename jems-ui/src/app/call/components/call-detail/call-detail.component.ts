@@ -221,7 +221,8 @@ export class CallDetailComponent implements OnInit {
 
   isOpen(call: CallDTO): boolean {
     const currentDate = moment(new Date());
-    return currentDate.isBefore(call.endDateTime) && currentDate.isAfter(call.startDateTime);
+    const endDateTime = call.endDateTimeStep1 || call.endDateTime;
+    return currentDate.isBefore(endDateTime) && currentDate.isAfter(call.startDateTime);
   }
 
   applyToCall(callId: number): void {
