@@ -167,21 +167,15 @@ internal class ProjectPersistenceTest : UnitTest() {
     }
 
     @Test
-    fun `getProjectSummary - not existing`() {
-        every { projectRepository.findById(-1) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getProjectSummary(-1) }
-        assertThat(ex.entity).isEqualTo("project")
-    }
-
-    @Test
     fun `getProjectSummary - everything OK`() {
         val project = dummyProject()
-        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        every { projectRepository.getOne(PROJECT_ID) } returns project
         assertThat(persistence.getProjectSummary(PROJECT_ID)).isEqualTo(
             ProjectSummary(
                 id = PROJECT_ID,
+                callName = "call name",
                 acronym = project.acronym,
-                status = project.currentStatus.status
+                status = project.currentStatus.status,
             )
         )
     }

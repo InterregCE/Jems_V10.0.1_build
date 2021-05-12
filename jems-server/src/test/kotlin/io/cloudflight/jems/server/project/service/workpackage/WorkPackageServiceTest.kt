@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.workpackage
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
@@ -21,6 +20,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -143,8 +143,9 @@ class WorkPackageServiceTest {
 
     @Test
     fun getProjectIdForWorkPackageId() {
-        every { workPackageRepository.findById(18L) } returns Optional.of(mockWorkPackage.copy(project = project.copy(id = 9465)))
-        assertThat(workPackageService.getProjectIdForWorkPackageId(18L)).isEqualTo(9465)
+        every { workPackageRepository.findById(18L) } returns Optional.of(mockWorkPackage)
+        assertThat(workPackageService.getProjectForWorkPackageId(18L))
+            .isEqualTo(ProjectApplicantAndStatus(applicantId = account.id, projectStatus = ApplicationStatus.DRAFT))
     }
 
     @Test

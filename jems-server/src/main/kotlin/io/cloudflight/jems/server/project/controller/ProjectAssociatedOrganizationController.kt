@@ -25,17 +25,17 @@ class ProjectAssociatedOrganizationController(
         return associatedOrganizationService.getById(projectId, id)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    @PreAuthorize("@projectAuthorization.canOwnerUpdateProject(#projectId)")
     override fun createAssociatedOrganization(projectId: Long, associatedOrganization: InputProjectAssociatedOrganizationCreate): OutputProjectAssociatedOrganizationDetail {
         return associatedOrganizationService.create(projectId = projectId, associatedOrganization = associatedOrganization)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    @PreAuthorize("@projectAuthorization.canOwnerUpdateProject(#projectId)")
     override fun updateAssociatedOrganization(projectId: Long, associatedOrganization: InputProjectAssociatedOrganizationUpdate): OutputProjectAssociatedOrganizationDetail {
         return associatedOrganizationService.update(projectId, associatedOrganization)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    @PreAuthorize("@projectAuthorization.canOwnerUpdateProject(#projectId)")
     override fun deleteAssociatedOrganization(projectId: Long, id: Long) {
         return associatedOrganizationService.delete(projectId, id);
     }

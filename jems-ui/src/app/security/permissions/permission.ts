@@ -34,14 +34,7 @@ export class Permission {
         {
           name: 'All applications',
           mode: PermissionMode.HIDDEN_VIEW,
-          viewPermissions: ['All applications-to-be-done' as PermissionsEnum],
-          temporarilyDisabled: true,
-        },
-        {
-          name: 'Submitted applications',
-          mode: PermissionMode.HIDDEN_VIEW,
-          viewPermissions: ['Submitted applications-to-be-done' as PermissionsEnum],
-          temporarilyDisabled: true,
+          viewPermissions: [PermissionsEnum.ProjectRetrieve],
         },
       ],
     },

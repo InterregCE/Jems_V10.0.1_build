@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing
 
-import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
-import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import org.springframework.stereotype.Service
@@ -13,7 +12,7 @@ class GetCoFinancing(
 ) : GetCoFinancingInteractor {
 
     @Transactional(readOnly = true)
-    @CanReadProjectPartner
+    @CanRetrieveProjectPartner
     override fun getCoFinancing(partnerId: Long): ProjectPartnerCoFinancingAndContribution =
         persistence.getCoFinancingAndContributions(partnerId)
 

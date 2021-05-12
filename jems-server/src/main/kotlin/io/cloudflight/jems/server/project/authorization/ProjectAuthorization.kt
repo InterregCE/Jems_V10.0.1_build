@@ -4,27 +4,38 @@ import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.authorization.CallAuthorization
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.service.ProjectService
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
-annotation class CanUpdateProject
+@PreAuthorize("hasAuthority('ProjectRetrieve') || @projectAuthorization.isUserOwnerOfProject(#projectId)")
+annotation class CanRetrieveProject
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-annotation class CanReadProject
+@PreAuthorize("hasAuthority('ProjectRetrieve')")
+annotation class CanRetrieveProjects
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectUpdate') || @projectAuthorization.canOwnerUpdateProject(#projectId)")
+annotation class CanUpdateProject
 
 @Component
 class ProjectAuthorization(
     override val securityService: SecurityService,
-    val projectService: ProjectService,
+    val projectPersistence: ProjectPersistence,
     val callAuthorization: CallAuthorization
 ) : Authorization(securityService) {
 
+    fun isUserOwnerOfProject(projectId: Long): Boolean {
+        val isOwner = isActiveUserIdEqualTo(userId = projectPersistence.getApplicantAndStatusById(projectId).applicantId)
+        if (isOwner)
+            return true
+        throw ResourceNotFoundException("project") // should be same exception as if entity not found
+    }
+
     fun canReadProject(id: Long): Boolean {
-        val project = projectService.getApplicantAndStatusById(id)
+        val project = projectPersistence.getApplicantAndStatusById(id)
         if (isAdmin() || isApplicantOwner(project.applicantId) || isProgrammeUser())
             return true
 
@@ -39,22 +50,12 @@ class ProjectAuthorization(
             && (isAdmin() || isApplicantUser())
     }
 
-    fun canUpdateProject(projectId: Long): Boolean {
-        val project = projectService.getApplicantAndStatusById(projectId)
-        val status = project.projectStatus
-        if (isAdmin() || isApplicantOwner(project.applicantId))
-            return status.isNotSubmittedNow()
-
-        if (isProgrammeUser())
-            if (!status.isDraft())
-                return false
-            else
-                throw ResourceNotFoundException("project")
-
-        if (isApplicantNotOwner(project.applicantId))
-            throw ResourceNotFoundException("project")
-
-        return false
+    fun canOwnerUpdateProject(projectId: Long): Boolean {
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+        val isOwner = isActiveUserIdEqualTo(project.applicantId)
+        if (isOwner)
+            return project.projectStatus.isNotSubmittedNow()
+        throw ResourceNotFoundException("project") // should be same exception as if entity not found
     }
 
 }

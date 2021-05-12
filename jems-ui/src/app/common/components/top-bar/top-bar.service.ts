@@ -70,6 +70,7 @@ export class TopBarService {
   assingMenuItemsToUser(): void {
     combineLatest([
       this.permissionService.hasPermission(Permission.SYSTEM_MODULE_PERMISSIONS),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectRetrieve),
       this.securityService.currentUser.pipe(map(currentUser => currentUser?.role)),
       // TODO remove when all permissions implemented
       this.permissionService.hasPermission(Permission.APPLICANT_USER),
@@ -77,13 +78,13 @@ export class TopBarService {
       this.permissionService.hasPermission(Permission.ADMINISTRATOR),
     ]).pipe(
       take(1),
-    ).subscribe(([systemEnabled, role, isApplicant, isProgrammeUser, isAdmin]) => {
+    ).subscribe(([systemEnabled, applicationsEnabled, role, isApplicant, isProgrammeUser, isAdmin]) => {
       const menuItems: MenuItemConfiguration[] = [];
 
       if (isApplicant) {
         menuItems.push(this.dashboardItem);
       }
-      if (isProgrammeUser || isAdmin) {
+      if (applicationsEnabled) {
         menuItems.push(this.applicationsItem);
       }
       if (isProgrammeUser || isAdmin) {

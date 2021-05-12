@@ -27,14 +27,23 @@ import javax.validation.Valid
 @RequestMapping("/api/project")
 interface ProjectApi {
 
-    @ApiOperation("Returns all project applications")
+    @ApiOperation("Returns all project applications in the system")
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
     @GetMapping
-    fun getProjects(pageable: Pageable): Page<OutputProjectSimple>
+    fun getAllProjects(pageable: Pageable): Page<OutputProjectSimple>
+
+    @ApiOperation("Returns applications of current user")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
+    @GetMapping("/mine")
+    fun getMyProjects(pageable: Pageable): Page<OutputProjectSimple>
 
     @ApiOperation("Returns a project application by id")
     @GetMapping("/{projectId}")

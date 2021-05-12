@@ -11,7 +11,7 @@ class UpdateWorkPackageInvestment(
     private val workPackagePersistence: WorkPackagePersistence
 ) : UpdateWorkPackageInvestmentInteractor {
 
-    @PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectWorkPackageInvestment(#workPackageInvestment.id)")
+    @PreAuthorize("hasAuthority('ProjectUpdate') || @projectWorkPackageAuthorization.canOwnerUpdateProjectInvestment(#workPackageInvestment.id)")
     @Transactional
     override fun updateWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment) =
         workPackagePersistence.updateWorkPackageInvestment(workPackageId, workPackageInvestment)

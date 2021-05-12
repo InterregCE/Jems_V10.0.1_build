@@ -9,12 +9,12 @@ import {
   ProjectPartnerBudgetCoFinancingDTO,
   ProjectService,
   ProjectStatusDTO,
-  ProjectStatusService
+  ProjectStatusService,
+  UserRoleCreateDTO,
 } from '@cat/api';
 import {distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectCallSettings} from '../../../../model/projectCallSettings';
 import {CallFlatRateSetting} from '../../../../model/call-flat-rate-setting';
 import {ProgrammeLumpSum} from '../../../../model/lump-sums/programmeLumpSum';
@@ -23,6 +23,8 @@ import {LumpSumPhaseEnumUtils} from '../../../../model/lump-sums/LumpSumPhaseEnu
 import {BudgetCostCategoryEnumUtils} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
 import {RoutingService} from '../../../../../common/services/routing.service';
 import {ProjectUtil} from '../../../../project-util';
+import {SecurityService} from '../../../../../security/security.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 /**
  * Stores project related information.
@@ -69,6 +71,7 @@ export class ProjectStore {
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
               private router: RoutingService,
+              private securityService: SecurityService,
               private permissionService: PermissionService) {
     this.router.routeParameterChanges(ProjectStore.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
@@ -158,17 +161,18 @@ export class ProjectStore {
   }
 
   private projectEditable(): Observable<boolean> {
-    return combineLatest([this.project$, this.permissionService.permissionsChanged()])
+    return combineLatest([
+      this.project$,
+      this.permissionService.permissionsChanged(),
+      this.securityService.currentUser,
+    ])
       .pipe(
-        map(([project, permissions]) => {
-            if (permissions.some(perm => perm === Permission.PROGRAMME_USER)) {
-              // programme users cannot edit projects
-              return false;
-            }
-            return ProjectUtil.isDraft(project)
-              || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
+        map(([project, permissions, currentUser]) => {
+          if (permissions.includes(PermissionsEnum.ProjectUpdate)) {
+            return true;
           }
-        ),
+          return ProjectUtil.isOpenForModifications(project) && currentUser?.id === project.applicant.id;
+        }),
         shareReplay(1)
       );
   }

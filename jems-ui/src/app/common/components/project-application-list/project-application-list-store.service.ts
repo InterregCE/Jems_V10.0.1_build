@@ -10,16 +10,18 @@ import {Log} from '../../utils/log';
 export class ProjectApplicationListStore {
 
   page$: Observable<PageOutputProjectSimple>;
+  pageFilteredByOwner$: Observable<PageOutputProjectSimple>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
 
   constructor(private projectService: ProjectService) {
-    this.page$ = this.page();
+    this.page$ = this.page(false);
+    this.pageFilteredByOwner$ = this.page(true);
   }
 
-  private page(): Observable<PageOutputProjectSimple> {
+  private page(filterByOwner: boolean): Observable<PageOutputProjectSimple> {
     return combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
@@ -30,11 +32,14 @@ export class ProjectApplicationListStore {
       )
     ])
       .pipe(
-        switchMap(([pageIndex, pageSize, sort]) =>
-          this.projectService.getProjects(pageIndex, pageSize, sort)),
+        switchMap(([pageIndex, pageSize, sort]) => {
+          if (filterByOwner) {
+            return this.projectService.getMyProjects(pageIndex, pageSize, sort);
+          } else {
+            return this.projectService.getAllProjects(pageIndex, pageSize, sort);
+          }
+        }),
         tap(page => Log.info('Fetched the projects:', this, page.content)),
       );
   }
 }
-
-

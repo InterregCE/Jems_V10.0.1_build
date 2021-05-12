@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.repository.toModel
 import io.cloudflight.jems.server.common.entity.extractField
@@ -16,10 +17,12 @@ import io.cloudflight.jems.server.project.entity.ProjectVersionEntity
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.toProjectDecision
 import io.cloudflight.jems.server.project.service.toProjectStatus
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
+import org.springframework.data.domain.Page
 
 fun Set<ProgrammeUnitCostEntity>.toModel() = map { it.toProgrammeUnitCost() }
 
@@ -65,6 +68,19 @@ fun ProjectEntity.toModel() = Project(
     programmePriority = priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
     periods = periods.toProjectPeriods()
 )
+
+fun ProjectEntity.toSummaryModel() = ProjectSummary(
+    id = id,
+    callName = call.name,
+    acronym = acronym,
+    status = currentStatus.status,
+    firstSubmissionDate = firstSubmission?.updated,
+    lastResubmissionDate = lastResubmission?.updated,
+    specificObjectiveCode = priorityPolicy?.code,
+    programmePriorityCode = priorityPolicy?.programmePriority?.code,
+)
+
+fun Page<ProjectEntity>.toModel() = map { it.toSummaryModel() }
 
 fun List<ProjectRow>.toProjectEntryApplyNonHistoricalData(project: ProjectEntity) =
     this.groupBy { it.id }.map { groupedRows ->

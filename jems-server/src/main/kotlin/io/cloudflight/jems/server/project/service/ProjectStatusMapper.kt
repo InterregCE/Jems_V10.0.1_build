@@ -25,7 +25,7 @@ fun ProjectStatusHistoryEntity.toOutputProjectStatus() = ProjectStatusDTO(
 
 fun ProjectStatusHistoryEntity.toProjectStatus() = ProjectStatus(
     id = id,
-    status = ApplicationStatusDTO.valueOf(status.name),
+    status = status,
     user = user.toUserSummary(),
     updated = updated,
     decisionDate = decisionDate,

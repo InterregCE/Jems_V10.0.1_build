@@ -16,15 +16,14 @@ import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
-import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.toSummaryModel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
@@ -52,12 +51,6 @@ class ProjectServiceImpl(
     @Transactional(readOnly = true)
     override fun getById(id: Long): ProjectDetailDTO {
         return projectRepo.findById(id).map { it.toOutputProject() }
-            .orElseThrow { ResourceNotFoundException("project") }
-    }
-
-    @Transactional(readOnly = true)
-    override fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus {
-        return projectRepo.findById(id).map { it.toApplicantAndStatus() }
             .orElseThrow { ResourceNotFoundException("project") }
     }
 
@@ -93,24 +86,13 @@ class ProjectServiceImpl(
         )
         projectStatusHistoryRepo.save(projectStatus.copy(project = createdProject))
 
-        projectApplicationCreated(
-            createdProject.id,
-            createdProject.acronym,
-            createdProject.currentStatus.status
-        ).logWith(auditService)
-        auditPublisher.publishEvent(
-            projectVersionRecorded(
-                this,
-                projectSummary = ProjectSummary(
-                    createdProject.id,
-                    createdProject.acronym,
-                    createdProject.currentStatus.status
-                ),
-                userEmail = applicant.email,
-                version = ProjectVersionUtils.DEFAULT_VERSION,
-                createdAt = ZonedDateTime.now(ZoneOffset.UTC)
-            )
-        )
+        auditPublisher.publishEvent(projectApplicationCreated(this, createdProject))
+        auditPublisher.publishEvent(projectVersionRecorded(
+            context = this,
+            projectSummary = createdProject.toSummaryModel(),
+            userEmail = applicant.email,
+            version = ProjectVersionUtils.DEFAULT_VERSION,
+            createdAt = ZonedDateTime.now(ZoneOffset.UTC)))
 
         return createdProject.toOutputProject()
     }

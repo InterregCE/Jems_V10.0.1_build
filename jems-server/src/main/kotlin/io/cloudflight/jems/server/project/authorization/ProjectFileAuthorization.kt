@@ -11,15 +11,16 @@ import io.cloudflight.jems.api.project.dto.file.ProjectFileType.ASSESSMENT_FILE
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.controller.toDto
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.file.FileStorageService
-import io.cloudflight.jems.server.project.service.ProjectService
 import org.springframework.stereotype.Component
 import java.time.ZonedDateTime
 
 @Component
 class ProjectFileAuthorization(
     override val securityService: SecurityService,
-    val projectService: ProjectService,
+    val projectPersistence: ProjectPersistence,
     val fileStorageService: FileStorageService,
     val projectAuthorization: ProjectAuthorization
 ): Authorization(securityService) {
@@ -29,7 +30,7 @@ class ProjectFileAuthorization(
             return true
 
         projectAuthorization.canReadProject(projectId)
-        val project = projectService.getApplicantAndStatusById(projectId)
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
 
         return when (fileType) {
             APPLICANT_FILE -> isApplicantOwner(project.applicantId) && project.projectStatus.isNotSubmittedNow()
@@ -43,7 +44,7 @@ class ProjectFileAuthorization(
             return true
 
         projectAuthorization.canReadProject(projectId)
-        val project = projectService.getById(projectId)
+        val project = projectPersistence.getProject(projectId).toDto()
         val file = fileStorageService.getFileDetail(projectId, fileId)
 
         return when (file.type) {
@@ -57,6 +58,8 @@ class ProjectFileAuthorization(
         val status = projectDetailDTO.projectStatus.status
         if (isApplicantOwner(projectDetailDTO.applicant.id!!))
             return status.isNotSubmittedNow() && file.updated.isAfter(getLastSubmissionFor(projectDetailDTO))
+        else if (isProgrammeUser()) // programme user can see APPLICANT_FILEs, but he cannot change description
+            return false
         else
             throw ResourceNotFoundException("project_file")
     }
@@ -86,7 +89,7 @@ class ProjectFileAuthorization(
             return true
 
         projectAuthorization.canReadProject(projectId)
-        val project = projectService.getApplicantAndStatusById(projectId)
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
         val file = fileStorageService.getFileDetail(projectId, fileId)
 
         if (isApplicantOwner(project.applicantId))
@@ -109,7 +112,7 @@ class ProjectFileAuthorization(
 
         return when (fileType) {
             ASSESSMENT_FILE -> isProgrammeUser()
-            APPLICANT_FILE -> isProgrammeUser() || isApplicantOwner(projectService.getApplicantAndStatusById(projectId).applicantId)
+            APPLICANT_FILE -> isProgrammeUser() || isApplicantOwner(projectPersistence.getApplicantAndStatusById(projectId).applicantId)
             else -> false
         }
     }

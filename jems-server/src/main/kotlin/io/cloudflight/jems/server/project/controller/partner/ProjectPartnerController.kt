@@ -8,8 +8,8 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
-import io.cloudflight.jems.server.project.authorization.CanReadProject
-import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
@@ -23,17 +23,17 @@ class ProjectPartnerController(
     private val projectPartnerService: ProjectPartnerService
 ) : ProjectPartnerApi {
 
-    @CanReadProject
+    @CanRetrieveProject
     override fun getProjectPartners(projectId: Long, pageable: Pageable): Page<OutputProjectPartner> {
         return projectPartnerService.findAllByProjectId(projectId, pageable)
     }
 
-    @CanReadProject
+    @CanRetrieveProject
     override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable): List<OutputProjectPartner> {
         return projectPartnerService.findAllByProjectIdForDropdown(projectId, pageable.sort)
     }
 
-    @CanReadProjectPartner
+    @CanRetrieveProjectPartner
     override fun getProjectPartnerById(projectId: Long, partnerId: Long): OutputProjectPartnerDetail {
         return projectPartnerService.getById(partnerId)
     }
@@ -43,7 +43,7 @@ class ProjectPartnerController(
         return projectPartnerService.create(projectId = projectId, projectPartner = projectPartner)
     }
 
-    @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+    @PreAuthorize("hasAuthority('ProjectUpdate') || @projectPartnerAuthorization.canOwnerUpdatePartner(#projectPartner.id)")
     override fun updateProjectPartner(projectId: Long, projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
         return projectPartnerService.update(projectPartner)
     }

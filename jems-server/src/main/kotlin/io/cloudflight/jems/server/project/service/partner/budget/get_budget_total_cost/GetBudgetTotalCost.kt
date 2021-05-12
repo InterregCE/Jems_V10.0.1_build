@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost
 
-import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
@@ -16,7 +16,7 @@ class GetBudgetTotalCost(
 ) : GetBudgetTotalCostInteractor {
 
     @Transactional(readOnly = true)
-    @CanReadProjectPartner
+    @CanRetrieveProjectPartner
     override fun getBudgetTotalCost(partnerId: Long): BigDecimal {
 
         val budgetOptions = getBudgetOptions.getBudgetOptions(partnerId)
