@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
@@ -61,6 +62,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Optional
 import java.util.stream.Collectors
+import org.springframework.http.HttpStatus
 
 class ProjectServiceTest : UnitTest() {
 
@@ -93,6 +95,13 @@ class ProjectServiceTest : UnitTest() {
         updated = TEST_DATE_TIME
     )
 
+    private val statusStep1Draft = ProjectStatusHistoryEntity(
+        id = 10,
+        status = ApplicationStatus.STEP1_DRAFT,
+        user = account,
+        updated = TEST_DATE_TIME
+    )
+
     private val statusSubmitted = ProjectStatusHistoryEntity(
         id = 11,
         status = ApplicationStatus.SUBMITTED,
@@ -110,6 +119,36 @@ class ProjectServiceTest : UnitTest() {
         funds = mutableSetOf(),
         startDate = ZonedDateTime.now().minusDays(1),
         endDateStep1 = null,
+        endDate = ZonedDateTime.now().plusDays(1),
+        status = CallStatus.PUBLISHED,
+        lengthOfPeriod = 1
+    )
+
+    private val dummyCall2Step = CallEntity(
+        id = 6,
+        creator = account,
+        name = "call",
+        prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthyAgeing, "HAB")),
+        strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
+        isAdditionalFundAllowed = false,
+        funds = mutableSetOf(),
+        startDate = ZonedDateTime.now().minusDays(1),
+        endDateStep1 = ZonedDateTime.now().plusHours(2),
+        endDate = ZonedDateTime.now().plusDays(1),
+        status = CallStatus.PUBLISHED,
+        lengthOfPeriod = 1
+    )
+
+    private val dummyCall2StepExpired = CallEntity(
+        id = 8,
+        creator = account,
+        name = "call",
+        prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthyAgeing, "HAB")),
+        strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
+        isAdditionalFundAllowed = false,
+        funds = mutableSetOf(),
+        startDate = ZonedDateTime.now().minusDays(1),
+        endDateStep1 = ZonedDateTime.now().minusHours(2),
         endDate = ZonedDateTime.now().plusDays(1),
         status = CallStatus.PUBLISHED,
         lengthOfPeriod = 1
@@ -314,6 +353,71 @@ class ProjectServiceTest : UnitTest() {
     fun projectGet_notExisting() {
         every { projectRepository.findById(eq(-1)) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> { projectService.getById(-1) }
+    }
+
+    @Test
+    fun projectCreation_beforeEndDateStep1() {
+        every { userRepository.findByIdOrNull(eq(user.id)) } returns account
+        every { callRepository.findById(eq(dummyCall2Step.id)) } returns Optional.of(dummyCall2Step)
+        every { projectRepository.save(any()) } returns ProjectEntity(
+            id = 613,
+            call = dummyCall2Step,
+            acronym = "test",
+            applicant = account,
+            currentStatus = statusStep1Draft,
+            step2Active = false
+        )
+
+        val slotAudit = mutableListOf<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(slotAudit)) } answers {}
+
+        val result = projectService.createProject(InputProject("test", dummyCall2Step.id))
+
+        assertEquals(
+            ProjectCallSettingsDTO(
+                callId = dummyCall2Step.id,
+                callName = dummyCall2Step.name,
+                startDate = dummyCall2Step.startDate,
+                endDate = dummyCall2Step.endDate,
+                endDateStep1 = dummyCall2Step.endDateStep1,
+                lengthOfPeriod = 1,
+                isAdditionalFundAllowed = false,
+                flatRates = FlatRateSetupDTO(),
+                lumpSums = emptyList(),
+                unitCosts = emptyList(),
+            ), result.callSettings
+        )
+        assertEquals(result.acronym, "test")
+        assertEquals(result.firstSubmission, null)
+        assertEquals(result.lastResubmission, null)
+        assertEquals(result.projectStatus.id, 10)
+        assertEquals(result.projectStatus.status, ApplicationStatusDTO.STEP1_DRAFT)
+        assertEquals(result.projectStatus.updated, TEST_DATE_TIME)
+
+        assertThat(slotAudit).hasSize(2)
+        with(slotAudit[0]) {
+            assertEquals("613", auditCandidate.project?.id)
+            assertEquals(AuditAction.APPLICATION_STATUS_CHANGED, auditCandidate.action)
+            assertEquals("Project application created with status STEP1_DRAFT", auditCandidate.description)
+        }
+        with(slotAudit[1]) {
+            assertEquals("613", auditCandidate.project?.id)
+            assertEquals(AuditAction.APPLICATION_VERSION_RECORDED, auditCandidate.action)
+            assertThat(auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: admin@admin.dev on")
+        }
+
+    }
+
+    @Test
+    fun projectCreation_afterEndDateStep1() {
+        every { userRepository.findByIdOrNull(eq(user.id)) } returns account
+        every { callRepository.findById(eq(dummyCall2StepExpired.id)) } returns Optional.of(dummyCall2StepExpired)
+
+        val ex = assertThrows<I18nValidationException> { projectService.createProject(InputProject("test", dummyCall2StepExpired.id)) }
+        assertThat(ex).isEqualTo(I18nValidationException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            i18nKey = "call.not.open"
+        ))
     }
 
     private val projectData = InputProjectData(

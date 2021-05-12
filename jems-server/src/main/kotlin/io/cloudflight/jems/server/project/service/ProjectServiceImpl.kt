@@ -116,11 +116,13 @@ class ProjectServiceImpl(
     private fun getCallIfOpen(callId: Long): CallEntity {
         val call = callRepository.findById(callId)
             .orElseThrow { ResourceNotFoundException("call") }
+        val callApplyDeadline = if (call.endDateStep1 != null) { call.endDateStep1 } else { call.endDate }
         if (call.status == CallStatus.PUBLISHED
-            && ZonedDateTime.now().isBefore(call.endDate)
+            && ZonedDateTime.now().isBefore(callApplyDeadline)
             && ZonedDateTime.now().isAfter(call.startDate)
-        )
+        ) {
             return call
+        }
 
         auditService.logEvent(callAlreadyEnded(callId = callId))
 
