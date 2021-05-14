@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.BaseBudgetProperties
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetBase
 import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralBase
 import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralRow
 import io.cloudflight.jems.server.project.entity.partner.budget.general.equipment.ProjectPartnerBudgetEquipmentEntity
@@ -20,6 +21,7 @@ import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
@@ -34,13 +36,14 @@ import org.junit.jupiter.api.BeforeAll
 import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
+import kotlin.reflect.KClass
 
 
 open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
 
     protected val partnerId = 1L
     protected val projectId = 2L
-    protected val timestamp = Timestamp.valueOf(LocalDateTime.now())
+    protected val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
     protected val version = 3
 
     private val entityId = 1L
@@ -54,7 +57,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
-    protected lateinit var projectVersionUtils: ProjectVersionUtils
+    private lateinit var projectVersionUtils: ProjectVersionUtils
 
     @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
@@ -101,7 +104,119 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp
     }
 
-    protected fun projectPartnerBudgetStaffCostEntity() =
+    protected class CurrentVersionOfBudgetCostTestInput<T : ProjectPartnerBudgetBase, E>(
+        val name: String,
+        var entity: T,
+        val repository: ProjectPartnerBaseBudgetRepository<T>,
+        val callback: (partnerId: Long, version: Int?) -> List<E>,
+        val expectedResult: E
+    )
+
+    protected class PreviousVersionOfBudgetCostTestInput<T : ProjectPartnerBudgetBase, E, R>(
+        val name: String,
+        var row: R,
+        val repository: ProjectPartnerBaseBudgetRepository<T>,
+        val callback: (partnerId: Long, version: Int?) -> List<E>,
+        val expectedResult: E,
+        val projectClass: KClass<*> = ProjectPartnerBudgetStaffCostRow::class,
+        val isForGettingUnitCosts: Boolean = false
+    )
+
+
+    protected fun testInputsForGettingCurrentVerionOfBudgetCosts(): List<CurrentVersionOfBudgetCostTestInput<out ProjectPartnerBudgetBase, out BaseBudgetEntry>> {
+        val staffCostEntity = projectPartnerBudgetStaffCostEntity()
+        val travelEntity = projectPartnerBudgetTravelEntity()
+        val infrastructureEntity = projectPartnerBudgetInfrastructureEntity()
+        val externalEntity = projectPartnerBudgetExternalEntity()
+        val equipmentEntity = projectPartnerBudgetEquipmentEntity()
+        val unitCostEntity = projectPartnerBudgetUnitCostEntity()
+        return listOf(
+            CurrentVersionOfBudgetCostTestInput(
+                "staff costs", staffCostEntity, budgetStaffCostRepository,
+                persistence::getBudgetStaffCosts, budgetStaffCostEntry(staffCostEntity)
+            ),
+            CurrentVersionOfBudgetCostTestInput(
+                "travel and accommodation costs", travelEntity, budgetTravelRepository,
+                persistence::getBudgetTravelAndAccommodationCosts, budgetTravelAndAccommodationCostEntry(travelEntity)
+            ),
+            CurrentVersionOfBudgetCostTestInput(
+                "infrastructure and works costs", infrastructureEntity, budgetInfrastructureRepository,
+                persistence::getBudgetInfrastructureAndWorksCosts, budgetGeneralCostEntry(infrastructureEntity)
+            ),
+            CurrentVersionOfBudgetCostTestInput(
+                "external costs", externalEntity, budgetExternalRepository,
+                persistence::getBudgetExternalExpertiseAndServicesCosts, budgetGeneralCostEntry(externalEntity)
+            ),
+            CurrentVersionOfBudgetCostTestInput(
+                "equipment costs", equipmentEntity, budgetEquipmentRepository,
+                persistence::getBudgetEquipmentCosts, budgetGeneralCostEntry(equipmentEntity)
+            ),
+            CurrentVersionOfBudgetCostTestInput(
+                "unit costs", unitCostEntity, budgetUnitCostRepository,
+                persistence::getBudgetUnitCosts, budgetUnitCostEntry(unitCostEntity)
+            )
+        )
+    }
+
+    protected fun testInputsForGettingPreviousVersionOfBudgetCosts(): List<PreviousVersionOfBudgetCostTestInput<out ProjectPartnerBudgetBase, out BaseBudgetEntry, out Any>> {
+        val staffCostRow = mockBudgetStaffCostRow()
+        val travelRow = mockBudgetTravelCostRow()
+        val generalRow = mockBudgetGeneralRow()
+        val unitCostRow = mockBudgetUnitCostRow()
+        return listOf(
+            PreviousVersionOfBudgetCostTestInput(
+                "staff costs", staffCostRow, budgetStaffCostRepository,
+                persistence::getBudgetStaffCosts, budgetStaffCostEntry(staffCostRow),
+                ProjectPartnerBudgetStaffCostRow::class
+            ),
+            PreviousVersionOfBudgetCostTestInput(
+                "travel and accommodation costs", travelRow, budgetTravelRepository,
+                persistence::getBudgetTravelAndAccommodationCosts, budgetTravelAndAccommodationCostEntry(travelRow),
+                ProjectPartnerBudgetTravelCostRow::class
+            ),
+            PreviousVersionOfBudgetCostTestInput(
+                "infrastructure and works costs", generalRow, budgetInfrastructureRepository,
+                persistence::getBudgetInfrastructureAndWorksCosts, budgetGeneralCostEntry(generalRow),
+                ProjectPartnerBudgetGeneralRow::class
+            ),
+            PreviousVersionOfBudgetCostTestInput(
+                "external costs", generalRow, budgetExternalRepository,
+                persistence::getBudgetExternalExpertiseAndServicesCosts, budgetGeneralCostEntry(generalRow),
+                ProjectPartnerBudgetGeneralRow::class
+            ),
+            PreviousVersionOfBudgetCostTestInput(
+                "equipment costs", generalRow, budgetEquipmentRepository,
+                persistence::getBudgetEquipmentCosts, budgetGeneralCostEntry(generalRow),
+                ProjectPartnerBudgetGeneralRow::class
+            ),
+            PreviousVersionOfBudgetCostTestInput(
+                "unit costs", unitCostRow, budgetUnitCostRepository,
+                persistence::getBudgetUnitCosts, budgetUnitCostEntry(unitCostRow),
+                ProjectPartnerBudgetUnitCostRow::class, true
+            )
+        )
+    }
+
+    protected fun testInputsForGettingCostsTotal() =
+        listOf(
+            Triple("staff costs total", budgetStaffCostRepository, persistence::getBudgetStaffCostTotal),
+            Triple(
+                "travel and accommodation costs total", budgetTravelRepository,
+                persistence::getBudgetTravelAndAccommodationCostTotal
+            ),
+            Triple(
+                "infrastructure and works costs total", budgetInfrastructureRepository,
+                persistence::getBudgetInfrastructureAndWorksCostTotal
+            ),
+            Triple(
+                "external costs total", budgetExternalRepository,
+                persistence::getBudgetExternalExpertiseAndServicesCostTotal
+            ),
+            Triple("equipment costs total", budgetEquipmentRepository, persistence::getBudgetEquipmentCostTotal),
+            Triple("unit costs total", budgetUnitCostRepository, persistence::getBudgetUnitCostTotal),
+        )
+
+    private fun projectPartnerBudgetStaffCostEntity() =
         ProjectPartnerBudgetStaffCostEntity(
             id = entityId,
             baseProperties = BaseBudgetProperties(
@@ -114,7 +229,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             unitCostId = unitCostId
         )
 
-    protected fun budgetStaffCostEntry(entity: ProjectPartnerBudgetStaffCostEntity) =
+    private fun budgetStaffCostEntry(entity: ProjectPartnerBudgetStaffCostEntity) =
         BudgetStaffCostEntry(
             id = entity.id,
             budgetPeriods = mutableSetOf(),
@@ -124,7 +239,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             rowSum = entity.baseProperties.rowSum
         )
 
-    protected fun budgetStaffCostEntry(staffCostRow: ProjectPartnerBudgetStaffCostRow) =
+    private fun budgetStaffCostEntry(staffCostRow: ProjectPartnerBudgetStaffCostRow) =
         BudgetStaffCostEntry(
             id = staffCostRow.getId(),
             unitCostId = staffCostRow.getUnitCostId(),
@@ -142,7 +257,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             )
         )
 
-    protected fun mockStaffCostRow(): ProjectPartnerBudgetStaffCostRow {
+    private fun mockBudgetStaffCostRow(): ProjectPartnerBudgetStaffCostRow {
         val mockRow: ProjectPartnerBudgetStaffCostRow = mockk()
         every { mockRow.getId() } returns entityId
         every { mockRow.language } returns SystemLanguage.EN
@@ -160,7 +275,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
     }
 
 
-    protected fun projectPartnerBudgetTravelEntity() =
+    private fun projectPartnerBudgetTravelEntity() =
         ProjectPartnerBudgetTravelEntity(
             id = entityId,
             baseProperties = BaseBudgetProperties(
@@ -173,7 +288,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             unitCostId = unitCostId
         )
 
-    protected fun budgetTravelAndAccommodationCostEntry(entity: ProjectPartnerBudgetTravelEntity) =
+    private fun budgetTravelAndAccommodationCostEntry(entity: ProjectPartnerBudgetTravelEntity) =
         BudgetTravelAndAccommodationCostEntry(
             id = entity.id,
             budgetPeriods = mutableSetOf(),
@@ -183,7 +298,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             rowSum = entity.baseProperties.rowSum
         )
 
-    protected fun budgetTravelAndAccommodationCostEntry(travelRow: ProjectPartnerBudgetTravelCostRow) =
+    private fun budgetTravelAndAccommodationCostEntry(travelRow: ProjectPartnerBudgetTravelCostRow) =
         BudgetTravelAndAccommodationCostEntry(
             id = travelRow.getId(),
             unitCostId = travelRow.getUnitCostId(),
@@ -200,7 +315,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             )
         )
 
-    protected fun mockTravelCostRow(): ProjectPartnerBudgetTravelCostRow {
+    private fun mockBudgetTravelCostRow(): ProjectPartnerBudgetTravelCostRow {
         val mockRow: ProjectPartnerBudgetTravelCostRow = mockk()
         every { mockRow.getId() } returns entityId
         every { mockRow.language } returns SystemLanguage.EN
@@ -216,7 +331,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         return mockRow
     }
 
-    protected fun projectPartnerBudgetInfrastructureEntity() =
+    private fun projectPartnerBudgetInfrastructureEntity() =
         ProjectPartnerBudgetInfrastructureEntity(
             id = entityId,
             baseProperties = BaseBudgetProperties(
@@ -230,7 +345,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             investmentId = investmentId
         )
 
-    protected fun projectPartnerBudgetExternalEntity() =
+    private fun projectPartnerBudgetExternalEntity() =
         ProjectPartnerBudgetExternalEntity(
             id = entityId,
             baseProperties = BaseBudgetProperties(
@@ -244,7 +359,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             investmentId = investmentId
         )
 
-    protected fun projectPartnerBudgetEquipmentEntity() =
+    private fun projectPartnerBudgetEquipmentEntity() =
         ProjectPartnerBudgetEquipmentEntity(
             id = entityId,
             baseProperties = BaseBudgetProperties(
@@ -258,7 +373,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             investmentId = investmentId
         )
 
-    protected fun budgetGeneralCostEntry(entity: ProjectPartnerBudgetGeneralBase) =
+    private fun budgetGeneralCostEntry(entity: ProjectPartnerBudgetGeneralBase) =
         BudgetGeneralCostEntry(
             id = entity.id,
             budgetPeriods = mutableSetOf(),
@@ -269,7 +384,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             investmentId = entity.investmentId
         )
 
-    protected fun mockProjectPartnerBudgetGeneralRow(): ProjectPartnerBudgetGeneralRow {
+    private fun mockBudgetGeneralRow(): ProjectPartnerBudgetGeneralRow {
         val mockRow: ProjectPartnerBudgetGeneralRow = mockk()
         every { mockRow.getId() } returns entityId
         every { mockRow.language } returns SystemLanguage.EN
@@ -287,8 +402,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         return mockRow
     }
 
-
-    protected fun budgetGeneralCostEntry(generalRow: ProjectPartnerBudgetGeneralRow) =
+    private fun budgetGeneralCostEntry(generalRow: ProjectPartnerBudgetGeneralRow) =
         BudgetGeneralCostEntry(
             id = generalRow.getId(),
             unitCostId = generalRow.getUnitCostId(),
@@ -307,7 +421,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             )
         )
 
-    protected fun projectPartnerBudgetUnitCostEntity() =
+    private fun projectPartnerBudgetUnitCostEntity() =
         ProjectPartnerBudgetUnitCostEntity(
             id = entityId,
             baseProperties = BaseBudgetProperties(
@@ -319,7 +433,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             unitCost = ProgrammeUnitCostEntity(id = entityId, costPerUnit = BigDecimal.TEN, isOneCostCategory = true)
         )
 
-    protected fun budgetUnitCostEntry(entity: ProjectPartnerBudgetUnitCostEntity) =
+    private fun budgetUnitCostEntry(entity: ProjectPartnerBudgetUnitCostEntity) =
         BudgetUnitCostEntry(
             id = entity.id,
             budgetPeriods = mutableSetOf(),
@@ -328,7 +442,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             rowSum = entity.baseProperties.rowSum,
         )
 
-    protected fun budgetGeneralCostEntry(row: ProjectPartnerBudgetUnitCostRow) =
+    private fun budgetUnitCostEntry(row: ProjectPartnerBudgetUnitCostRow) =
         BudgetUnitCostEntry(
             id = row.getId(),
             unitCostId = row.getUnitCostId(),
@@ -342,7 +456,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             )
         )
 
-    protected fun mockProjectPartnerBudgetUnitCostRow(): ProjectPartnerBudgetUnitCostRow {
+    private fun mockBudgetUnitCostRow(): ProjectPartnerBudgetUnitCostRow {
         val mockRow: ProjectPartnerBudgetUnitCostRow = mockk()
         every { mockRow.getId() } returns entityId
         every { mockRow.getPartnerId() } returns partnerId

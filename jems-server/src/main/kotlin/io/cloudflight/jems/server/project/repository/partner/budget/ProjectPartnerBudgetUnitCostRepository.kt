@@ -22,7 +22,5 @@ interface ProjectPartnerBudgetUnitCostRepository :
              """,
         nativeQuery = true
     )
-    fun findAllByPartnerIdAsOfTimestamp(
-        partnerId: Long, timestamp: Timestamp
-    ): List<ProjectPartnerBudgetUnitCostRow>
+    fun findAllByPartnerIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp): List<ProjectPartnerBudgetUnitCostRow>
 }

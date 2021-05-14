@@ -30,8 +30,18 @@ interface ProjectPartnerBaseBudgetRepository<T : ProjectPartnerBudgetBase> : Cru
     )
     fun <T> findAllByPartnerIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp, viewClass: Class<T>): List<T>
 
-    @Query("SELECT SUM(e.baseProperties.rowSum) FROM #{#entityName} e WHERE e.baseProperties.partnerId = :id")
-    fun sumTotalForPartner(@Param("id") partnerId: Long): BigDecimal?
+    @Query("SELECT SUM(e.baseProperties.rowSum) FROM #{#entityName} e WHERE e.baseProperties.partnerId = :partnerId")
+    fun sumTotalForPartner(partnerId: Long): BigDecimal?
+
+    @Query(
+        """
+                SELECT SUM(entity.row_sum)
+                FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP  :timestamp AS entity
+                WHERE entity.partner_id = :partnerId
+            """,
+        nativeQuery = true
+    )
+    fun sumTotalForPartnerAsOfTimestamp(partnerId: Long, timestamp: Timestamp): BigDecimal?
 
     @Query("SELECT new io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetView(e.baseProperties.partnerId, SUM(e.baseProperties.rowSum)) FROM #{#entityName} e WHERE e.baseProperties.partnerId IN :ids GROUP BY e.baseProperties.partnerId")
     fun sumForAllPartners(@Param("ids") partnerIds: Set<Long>): List<ProjectPartnerBudgetView>

@@ -95,7 +95,8 @@ interface ProjectPartnerBudgetApi {
     @ApiOperation("Get project partner Budget: total")
     @GetMapping("/total")
     fun getTotal(
-        @PathVariable partnerId: Long
+        @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: Int? = null
     ): BigDecimal
 
     @ApiOperation("Get project partner Co-Financing")

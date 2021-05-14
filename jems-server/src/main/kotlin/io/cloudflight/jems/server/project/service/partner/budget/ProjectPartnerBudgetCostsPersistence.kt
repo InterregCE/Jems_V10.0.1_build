@@ -8,7 +8,6 @@ import java.math.BigDecimal
 
 interface ProjectPartnerBudgetCostsPersistence {
 
-
     fun getBudgetEquipmentCosts(partnerId: Long, version: Int? = null): List<BudgetGeneralCostEntry>
     fun getBudgetEquipmentCostTotal(partnerId: Long, version: Int? = null): BigDecimal
 
@@ -21,11 +20,14 @@ interface ProjectPartnerBudgetCostsPersistence {
     fun getBudgetStaffCosts(partnerId: Long, version: Int? = null): List<BudgetStaffCostEntry>
     fun getBudgetStaffCostTotal(partnerId: Long, version: Int? = null): BigDecimal
 
-    fun getBudgetTravelAndAccommodationCosts(partnerId: Long, version: Int? = null): List<BudgetTravelAndAccommodationCostEntry>
+    fun getBudgetTravelAndAccommodationCosts(
+        partnerId: Long, version: Int? = null
+    ): List<BudgetTravelAndAccommodationCostEntry>
+
     fun getBudgetTravelAndAccommodationCostTotal(partnerId: Long, version: Int? = null): BigDecimal
 
     fun getBudgetUnitCosts(partnerId: Long, version: Int? = null): List<BudgetUnitCostEntry>
     fun getBudgetUnitCostTotal(partnerId: Long, version: Int? = null): BigDecimal
 
-    fun getBudgetLumpSumsCostTotal(partnerId: Long): BigDecimal
+    fun getBudgetLumpSumsCostTotal(partnerId: Long, version: Int? = null): BigDecimal
 }

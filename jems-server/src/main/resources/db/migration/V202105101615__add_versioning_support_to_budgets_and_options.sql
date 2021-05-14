@@ -70,3 +70,6 @@ ALTER TABLE project_partner_budget_unit_cost
 
 ALTER TABLE project_partner_budget_unit_cost_period
     ADD SYSTEM VERSIONING;
+
+ALTER TABLE project_partner_lump_sum
+    ADD SYSTEM VERSIONING;
