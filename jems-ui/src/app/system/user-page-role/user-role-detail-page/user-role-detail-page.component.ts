@@ -170,8 +170,10 @@ export class UserRoleDetailPageComponent {
 
 
   changeState(permission: AbstractControl, value: PermissionState): void {
-    this.state(permission)?.setValue(value);
-    this.formService.setDirty(true);
+    if (this.state(permission).value !== value) {
+      this.state(permission)?.setValue(value);
+      this.formService.setDirty(true);
+    }
   }
 
   changeStateOfToggle(permission: AbstractControl): void {

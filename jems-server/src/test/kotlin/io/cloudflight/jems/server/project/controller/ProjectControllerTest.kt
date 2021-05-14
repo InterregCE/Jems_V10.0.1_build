@@ -9,11 +9,11 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDataDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
@@ -36,6 +36,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDecision
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.cloudflight.jems.server.user.controller.toDto
@@ -49,6 +50,8 @@ import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
@@ -75,20 +78,26 @@ class ProjectControllerTest {
             country = "CZ",
         )
 
-        private val outputPartner1 = OutputProjectPartner(
-            id = partner1.id!!,
-            abbreviation = partner1.abbreviation,
-            role = partner1.role,
-            sortNumber = partner1.sortNumber,
-            country = partner1.country,
+        private val projectSummary = ProjectSummary(
+            id = 8L,
+            callName = "call name",
+            acronym = "ACR",
+            status = ApplicationStatus.SUBMITTED,
+            firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+            lastResubmissionDate = ZonedDateTime.parse("2021-05-14T23:30:00+02:00"),
+            specificObjectiveCode = "SO1.1",
+            programmePriorityCode = "P1",
         )
 
-        private val outputPartner2 = OutputProjectPartner(
-            id = partner2.id!!,
-            abbreviation = partner2.abbreviation,
-            role = partner2.role,
-            sortNumber = partner2.sortNumber,
-            country = partner2.country,
+        private val outputProjectSimple = OutputProjectSimple(
+            id = 8L,
+            callName = "call name",
+            acronym = "ACR",
+            projectStatus = ApplicationStatusDTO.SUBMITTED,
+            firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+            lastResubmissionDate = ZonedDateTime.parse("2021-05-14T23:30:00+02:00"),
+            specificObjectiveCode = "SO1.1",
+            programmePriorityCode = "P1",
         )
     }
 
@@ -107,6 +116,17 @@ class ProjectControllerTest {
     @InjectMockKs
     private lateinit var controller: ProjectController
 
+    @Test
+    fun getAllProjects() {
+        every { getProjectInteractor.getAllProjects(any()) } returns PageImpl(listOf(projectSummary))
+        assertThat(controller.getAllProjects(Pageable.unpaged()).content).containsExactly(outputProjectSimple)
+    }
+
+    @Test
+    fun getMyProjects() {
+        every { getProjectInteractor.getMyProjects(any()) } returns PageImpl(listOf(projectSummary))
+        assertThat(controller.getMyProjects(Pageable.unpaged()).content).containsExactly(outputProjectSimple)
+    }
 
     @Test
     fun getProjectCallSettings() {
