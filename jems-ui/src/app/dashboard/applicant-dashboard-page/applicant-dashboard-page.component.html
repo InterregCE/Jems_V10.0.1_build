@@ -4,7 +4,7 @@
     </ng-container>
 
     <h2>{{'call.applications.title' | translate}}</h2>
-    <app-project-application-list appNoWidthLimit></app-project-application-list>
+    <app-project-application-list appNoWidthLimit filterByOwner="true"></app-project-application-list>
 
     <h2>{{'call.list.open.title' | translate}}</h2>
     <app-call-list appNoWidthLimit [isApplicant]="true"></app-call-list>

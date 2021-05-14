@@ -13,9 +13,8 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEnt
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.jems.server.project.controller.toDto
-import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.entity.ProjectData
-import io.cloudflight.jems.server.project.entity.ProjectDecisionEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
@@ -65,7 +64,7 @@ fun ProjectEntity.toOutputProjectSimple() = OutputProjectSimple(
 
 fun ProjectEntity.toApplicantAndStatus() = ProjectApplicantAndStatus(
     applicantId = applicant.id,
-    projectStatus = ApplicationStatusDTO.valueOf(currentStatus.status.name)
+    projectStatus = currentStatus.status,
 )
 
 fun InputProjectData.toEntity(projectId: Long) = ProjectData(

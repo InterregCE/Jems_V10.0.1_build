@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9b8a112e-eebf-4e9a-926b-8770a5a76d12",
+		"_postman_id": "4dead170-1ddd-4248-91f5-f7b182bb4edf",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -2846,7 +2846,7 @@
 					"response": []
 				},
 				{
-					"name": "programme user cannot see list of files",
+					"name": "programme user NOW CAN see list of all files",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -2861,14 +2861,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('programme user should not be able to see files when application is DRAFT', function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									"\r",
-									"pm.test('programme user should not be able to see files because he cannot see project in DRAFT', function() {\r",
-									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"i18nMessage\");\r",
-									"    pm.expect(response.i18nMessage.i18nKey).to.equal(\"project.not.exists\");\r",
+									"pm.test('programme user is now able to see project in DRAFT, so he can also see applicant files', function() {\r",
+									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									""
 								],
@@ -2931,14 +2925,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('programme user should not be able to upload APPLICANT file when he cannot read project itself', function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									"\r",
-									"pm.test('programme user can see the error - he cannot see project itself', function() {\r",
-									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"i18nMessage\");\r",
-									"    pm.expect(response.i18nMessage.i18nKey).to.equal(\"project.not.exists\");\r",
+									"pm.test('programme user should not be able to upload APPLICANT file', function() {\r",
+									"    pm.response.to.have.status(403);\r",
 									"});\r",
 									""
 								],
@@ -3017,14 +3005,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('programme user should not be able to set description, when he cannot see DRAFT project', function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									"\r",
-									"pm.test('programme user can see the error - he cannot find project itself', function() {\r",
-									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"i18nMessage\");\r",
-									"    pm.expect(response.i18nMessage.i18nKey).to.equal(\"project.not.exists\");\r",
+									"pm.test('programme user should not be able to set description, although he can see DRAFT project', function() {\r",
+									"    pm.response.to.have.status(403);\r",
 									"});\r",
 									""
 								],
@@ -3077,7 +3059,7 @@
 					"response": []
 				},
 				{
-					"name": "programme user cannot download file",
+					"name": "programme user NOW CAN download applicant file",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -3092,14 +3074,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('programme user should not be able to download file, cause he cannot see application in DRAFT', function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									"\r",
-									"pm.test('programme user can see the error - he cannot find project itself', function() {\r",
-									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"i18nMessage\");\r",
-									"    pm.expect(response.i18nMessage.i18nKey).to.equal(\"project.not.exists\");\r",
+									"pm.test('programme user is able to download also APPLICANT file, cause he can see application in DRAFT', function() {\r",
+									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									""
 								],
@@ -3223,68 +3199,83 @@
 					},
 					"response": []
 				},
-                {
-                  "name": "fill in project title",
-                  "event": [
-                    {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          "const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
-                          "pm.variables.set(\r",
-                          "    'project_title',\r",
-                          "    projectName.substr(0,250)\r",
-                          ");\r",
-                          "pm.variables.set(\r",
-                          "    'project_acronym_to_create',\r",
-                          "    projectName.substr(0,25)\r",
-                          ");\r",
-                          ""
-                        ],
-                        "type": "text/javascript"
-                      }
-                    },
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test('project title should be saved', function() {\r",
-                          "    pm.response.to.have.status(200);\r",
-                          "});\r",
-                          "\r",
-                          ""
-                        ],
-                        "type": "text/javascript"
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "PUT",
-                    "header": [
-                      {
-                        "key": "Content-Type",
-                        "type": "text",
-                        "value": "application/json"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
-                    },
-                    "url": {
-                      "raw": "{{url}}/api/project/{{application_id}}",
-                      "host": [
-                        "{{url}}"
-                      ],
-                      "path": [
-                        "api",
-                        "project",
-                        "{{application_id}}"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
+				{
+					"name": "fill in project title",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+									"pm.variables.set(\r",
+									"    'project_title',\r",
+									"    projectName.substr(0,250)\r",
+									");\r",
+									"pm.variables.set(\r",
+									"    'project_acronym_to_create',\r",
+									"    projectName.substr(0,25)\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('project title should be saved', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "upload file to application",
 					"event": [
@@ -4063,68 +4054,83 @@
 					},
 					"response": []
 				},
-                {
-                  "name": "fill in project title",
-                  "event": [
-                    {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          "const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
-                          "pm.variables.set(\r",
-                          "    'project_title',\r",
-                          "    projectName.substr(0,250)\r",
-                          ");\r",
-                          "pm.variables.set(\r",
-                          "    'project_acronym_to_create',\r",
-                          "    projectName.substr(0,25)\r",
-                          ");\r",
-                          ""
-                        ],
-                        "type": "text/javascript"
-                      }
-                    },
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test('project title should be saved', function() {\r",
-                          "    pm.response.to.have.status(200);\r",
-                          "});\r",
-                          "\r",
-                          ""
-                        ],
-                        "type": "text/javascript"
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "PUT",
-                    "header": [
-                      {
-                        "key": "Content-Type",
-                        "type": "text",
-                        "value": "application/json"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
-                    },
-                    "url": {
-                      "raw": "{{url}}/api/project/{{application_id}}",
-                      "host": [
-                        "{{url}}"
-                      ],
-                      "path": [
-                        "api",
-                        "project",
-                        "{{application_id}}"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
+				{
+					"name": "fill in project title",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+									"pm.variables.set(\r",
+									"    'project_title',\r",
+									"    projectName.substr(0,250)\r",
+									");\r",
+									"pm.variables.set(\r",
+									"    'project_acronym_to_create',\r",
+									"    projectName.substr(0,25)\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('project title should be saved', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "submit application",
 					"event": [
@@ -4923,68 +4929,83 @@
 							},
 							"response": []
 						},
-                        {
-                          "name": "fill in project title",
-                          "event": [
-                            {
-                              "listen": "prerequest",
-                              "script": {
-                                "exec": [
-                                  "const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_title',\r",
-                                  "    projectName.substr(0,250)\r",
-                                  ");\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_acronym_to_create',\r",
-                                  "    projectName.substr(0,25)\r",
-                                  ");\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            },
-                            {
-                              "listen": "test",
-                              "script": {
-                                "exec": [
-                                  "pm.test('project title should be saved', function() {\r",
-                                  "    pm.response.to.have.status(200);\r",
-                                  "});\r",
-                                  "\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            }
-                          ],
-                          "request": {
-                            "method": "PUT",
-                            "header": [
-                              {
-                                "key": "Content-Type",
-                                "type": "text",
-                                "value": "application/json"
-                              }
-                            ],
-                            "body": {
-                              "mode": "raw",
-                              "raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
-                            },
-                            "url": {
-                              "raw": "{{url}}/api/project/{{application_id}}",
-                              "host": [
-                                "{{url}}"
-                              ],
-                              "path": [
-                                "api",
-                                "project",
-                                "{{application_id}}"
-                              ]
-                            }
-                          },
-                          "response": []
-                        },
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "submit application",
 							"event": [
@@ -5352,68 +5373,83 @@
 							},
 							"response": []
 						},
-                        {
-                          "name": "fill in project title",
-                          "event": [
-                            {
-                              "listen": "prerequest",
-                              "script": {
-                                "exec": [
-                                  "const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_title',\r",
-                                  "    projectName.substr(0,250)\r",
-                                  ");\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_acronym_to_create',\r",
-                                  "    projectName.substr(0,25)\r",
-                                  ");\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            },
-                            {
-                              "listen": "test",
-                              "script": {
-                                "exec": [
-                                  "pm.test('project title should be saved', function() {\r",
-                                  "    pm.response.to.have.status(200);\r",
-                                  "});\r",
-                                  "\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            }
-                          ],
-                          "request": {
-                            "method": "PUT",
-                            "header": [
-                              {
-                                "key": "Content-Type",
-                                "type": "text",
-                                "value": "application/json"
-                              }
-                            ],
-                            "body": {
-                              "mode": "raw",
-                              "raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
-                            },
-                            "url": {
-                              "raw": "{{url}}/api/project/{{application_id}}",
-                              "host": [
-                                "{{url}}"
-                              ],
-                              "path": [
-                                "api",
-                                "project",
-                                "{{application_id}}"
-                              ]
-                            }
-                          },
-                          "response": []
-                        },
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "submit application",
 							"event": [
@@ -5769,68 +5805,83 @@
 							},
 							"response": []
 						},
-                        {
-                          "name": "fill in project title",
-                          "event": [
-                            {
-                              "listen": "prerequest",
-                              "script": {
-                                "exec": [
-                                  "const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_title',\r",
-                                  "    projectName.substr(0,250)\r",
-                                  ");\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_acronym_to_create',\r",
-                                  "    projectName.substr(0,25)\r",
-                                  ");\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            },
-                            {
-                              "listen": "test",
-                              "script": {
-                                "exec": [
-                                  "pm.test('project title should be saved', function() {\r",
-                                  "    pm.response.to.have.status(200);\r",
-                                  "});\r",
-                                  "\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            }
-                          ],
-                          "request": {
-                            "method": "PUT",
-                            "header": [
-                              {
-                                "key": "Content-Type",
-                                "type": "text",
-                                "value": "application/json"
-                              }
-                            ],
-                            "body": {
-                              "mode": "raw",
-                              "raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
-                            },
-                            "url": {
-                              "raw": "{{url}}/api/project/{{application_id}}",
-                              "host": [
-                                "{{url}}"
-                              ],
-                              "path": [
-                                "api",
-                                "project",
-                                "{{application_id}}"
-                              ]
-                            }
-                          },
-                          "response": []
-                        },
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "submit application",
 							"event": [
@@ -6334,68 +6385,83 @@
 							},
 							"response": []
 						},
-                        {
-                          "name": "fill in project title",
-                          "event": [
-                            {
-                              "listen": "prerequest",
-                              "script": {
-                                "exec": [
-                                  "const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_title',\r",
-                                  "    projectName.substr(0,250)\r",
-                                  ");\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_acronym_to_create',\r",
-                                  "    projectName.substr(0,25)\r",
-                                  ");\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            },
-                            {
-                              "listen": "test",
-                              "script": {
-                                "exec": [
-                                  "pm.test('project title should be saved', function() {\r",
-                                  "    pm.response.to.have.status(200);\r",
-                                  "});\r",
-                                  "\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            }
-                          ],
-                          "request": {
-                            "method": "PUT",
-                            "header": [
-                              {
-                                "key": "Content-Type",
-                                "type": "text",
-                                "value": "application/json"
-                              }
-                            ],
-                            "body": {
-                              "mode": "raw",
-                              "raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
-                            },
-                            "url": {
-                              "raw": "{{url}}/api/project/{{application_id}}",
-                              "host": [
-                                "{{url}}"
-                              ],
-                              "path": [
-                                "api",
-                                "project",
-                                "{{application_id}}"
-                              ]
-                            }
-                          },
-                          "response": []
-                        },
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "submit application",
 							"event": [
@@ -6689,68 +6755,83 @@
 							},
 							"response": []
 						},
-                        {
-                          "name": "fill in project title",
-                          "event": [
-                            {
-                              "listen": "prerequest",
-                              "script": {
-                                "exec": [
-                                  "const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_title',\r",
-                                  "    projectName.substr(0,250)\r",
-                                  ");\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_acronym_to_create',\r",
-                                  "    projectName.substr(0,25)\r",
-                                  ");\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            },
-                            {
-                              "listen": "test",
-                              "script": {
-                                "exec": [
-                                  "pm.test('project title should be saved', function() {\r",
-                                  "    pm.response.to.have.status(200);\r",
-                                  "});\r",
-                                  "\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            }
-                          ],
-                          "request": {
-                            "method": "PUT",
-                            "header": [
-                              {
-                                "key": "Content-Type",
-                                "type": "text",
-                                "value": "application/json"
-                              }
-                            ],
-                            "body": {
-                              "mode": "raw",
-                              "raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
-                            },
-                            "url": {
-                              "raw": "{{url}}/api/project/{{application_id}}",
-                              "host": [
-                                "{{url}}"
-                              ],
-                              "path": [
-                                "api",
-                                "project",
-                                "{{application_id}}"
-                              ]
-                            }
-                          },
-                          "response": []
-                        },
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "submit application",
 							"event": [
@@ -7105,68 +7186,83 @@
 							},
 							"response": []
 						},
-                        {
-                          "name": "fill in project title",
-                          "event": [
-                            {
-                              "listen": "prerequest",
-                              "script": {
-                                "exec": [
-                                  "const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_title',\r",
-                                  "    projectName.substr(0,250)\r",
-                                  ");\r",
-                                  "pm.variables.set(\r",
-                                  "    'project_acronym_to_create',\r",
-                                  "    projectName.substr(0,25)\r",
-                                  ");\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            },
-                            {
-                              "listen": "test",
-                              "script": {
-                                "exec": [
-                                  "pm.test('project title should be saved', function() {\r",
-                                  "    pm.response.to.have.status(200);\r",
-                                  "});\r",
-                                  "\r",
-                                  ""
-                                ],
-                                "type": "text/javascript"
-                              }
-                            }
-                          ],
-                          "request": {
-                            "method": "PUT",
-                            "header": [
-                              {
-                                "key": "Content-Type",
-                                "type": "text",
-                                "value": "application/json"
-                              }
-                            ],
-                            "body": {
-                              "mode": "raw",
-                              "raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
-                            },
-                            "url": {
-                              "raw": "{{url}}/api/project/{{application_id}}",
-                              "host": [
-                                "{{url}}"
-                              ],
-                              "path": [
-                                "api",
-                                "project",
-                                "{{application_id}}"
-                              ]
-                            }
-                          },
-                          "response": []
-                        },
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "submit application",
 							"event": [
@@ -9024,6 +9120,21 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "PUT",
 								"header": [
 									{
@@ -11075,6 +11186,21 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "PUT",
 								"header": [
 									{

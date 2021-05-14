@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {ProjectApplicationListStore} from '@common/components/project-application-list/project-application-list-store.service';
@@ -11,6 +11,9 @@ import {ProjectApplicationListStore} from '@common/components/project-applicatio
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationListComponent {
+
+  @Input()
+  filterByOwner: false;
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
     routerLink: '/app/project/detail',

@@ -17,7 +17,8 @@ import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
@@ -39,21 +40,20 @@ import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
-import io.mockk.MockKAnnotations
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertIterableEquals
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.LocalDate
 import java.time.LocalTime
@@ -62,7 +62,7 @@ import java.time.ZonedDateTime
 import java.util.Optional
 import java.util.stream.Collectors
 
-class ProjectServiceTest {
+class ProjectServiceTest : UnitTest() {
 
     private val TEST_DATE: LocalDate = LocalDate.now()
     private val TEST_DATE_TIME = ZonedDateTime.of(TEST_DATE, LocalTime.of(10, 0), ZoneId.of("Europe/Bratislava"))
@@ -136,23 +136,13 @@ class ProjectServiceTest {
     @MockK
     lateinit var securityService: SecurityService
 
-    lateinit var projectService: ProjectService
+    @InjectMockKs
+    lateinit var projectService: ProjectServiceImpl
 
-    @BeforeEach
+    @BeforeAll
     fun setup() {
-        MockKAnnotations.init(this)
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
-        every { userRepository.findById(eq(user.id)) } returns Optional.of(account)
         every { projectStatusHistoryRepository.save(any<ProjectStatusHistoryEntity>()) } returnsArgument 0
-        projectService = ProjectServiceImpl(
-            projectRepository,
-            projectStatusHistoryRepository,
-            callRepository,
-            userRepository,
-            auditService,
-            auditPublisher,
-            securityService
-        )
     }
 
     @Test
@@ -240,6 +230,7 @@ class ProjectServiceTest {
 
     @Test
     fun projectCreation_OK() {
+        every { userRepository.findByIdOrNull(eq(user.id)) } returns account
         every { callRepository.findById(eq(dummyCall.id)) } returns Optional.of(dummyCall)
         every { projectRepository.save(any()) } returns ProjectEntity(
             id = 612,
@@ -249,6 +240,8 @@ class ProjectServiceTest {
             currentStatus = statusDraft,
             step2Active = false
         )
+        val slotAudit = mutableListOf<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(slotAudit)) } answers {}
 
         val result = projectService.createProject(InputProject("test", dummyCall.id))
 
@@ -273,23 +266,54 @@ class ProjectServiceTest {
         assertEquals(result.projectStatus.status, ApplicationStatusDTO.DRAFT)
         assertEquals(result.projectStatus.updated, TEST_DATE_TIME)
 
-        verifyAudit("612")
+        assertThat(slotAudit).hasSize(2)
+        with(slotAudit[0]) {
+            assertEquals("612", auditCandidate.project?.id)
+            assertEquals(AuditAction.APPLICATION_STATUS_CHANGED, auditCandidate.action)
+            assertEquals("Project application created with status DRAFT", auditCandidate.description)
+        }
+        with(slotAudit[1]) {
+            assertEquals("612", auditCandidate.project?.id)
+            assertEquals(AuditAction.APPLICATION_VERSION_RECORDED, auditCandidate.action)
+            assertThat(auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: admin@admin.dev on")
+        }
     }
 
     @Test
     fun projectCreation_withoutUser() {
-        every { userRepository.findById(eq(user.id)) } returns Optional.empty()
+        every { userRepository.findByIdOrNull(eq(user.id)) } returns null
         assertThrows<ResourceNotFoundException> { projectService.createProject(InputProject("test", dummyCall.id)) }
     }
 
-    private fun verifyAudit(projectIdExpected: String) {
-        val event = slot<AuditCandidate>()
+    @Test
+    fun projectGet_OK() {
+        every { projectRepository.findById(eq(1)) } returns
+            Optional.of(
+                ProjectEntity(
+                    id = 1,
+                    call = dummyCall,
+                    acronym = "test",
+                    applicant = account,
+                    currentStatus = statusSubmitted,
+                    firstSubmission = statusSubmitted,
+                    step2Active = false
+                )
+            )
 
-        verify { auditService.logEvent(capture(event)) }
-        with(event) {
-            assertEquals(projectIdExpected, captured.project?.id)
-            assertEquals(AuditAction.APPLICATION_STATUS_CHANGED, captured.action)
-        }
+        val result = projectService.getById(1)
+
+        assertThat(result).isNotNull()
+        assertThat(result.id).isEqualTo(1)
+        assertThat(result.acronym).isEqualTo("test")
+        assertThat(result.projectStatus.id).isEqualTo(11)
+        assertThat(result.firstSubmission?.id).isEqualTo(11)
+        assertThat(result.firstSubmission?.updated).isEqualTo(TEST_DATE_TIME)
+    }
+
+    @Test
+    fun projectGet_notExisting() {
+        every { projectRepository.findById(eq(-1)) } returns Optional.empty()
+        assertThrows<ResourceNotFoundException> { projectService.getById(-1) }
     }
 
     private val projectData = InputProjectData(

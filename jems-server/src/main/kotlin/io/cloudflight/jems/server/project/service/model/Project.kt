@@ -21,16 +21,8 @@ data class Project(
     val title: Set<InputTranslation>? = emptySet(),
     val intro: Set<InputTranslation>? = emptySet(),
     val duration: Int?,
-    val specificObjective: OutputProgrammePriorityPolicySimpleDTO?,
-    val programmePriority: OutputProgrammePrioritySimple?,
+    val specificObjective: OutputProgrammePriorityPolicySimpleDTO? = null,
+    val programmePriority: OutputProgrammePrioritySimple? = null,
 
     val periods: List<ProjectPeriod> = emptyList()
-)  {
-    fun getDecision(): ProjectDecision? {
-        return if (step2Active) {
-            secondStepDecision
-        } else {
-            firstStepDecision
-        }
-    }
-}
+)

@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
+import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDataDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
@@ -27,11 +28,13 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.user.controller.toDto
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
+import org.springframework.data.domain.Page
 
 fun ApplicationStatus.toDTO() = projectMapper.map(this)
 fun ApplicationActionInfoDTO.toModel() = projectMapper.map(this)
@@ -88,6 +91,17 @@ fun ProjectPeriod.toDto(projectId: Long?) = ProjectPeriodDTO(
     start = start,
     end = end
 )
+
+fun Page<ProjectSummary>.toDto() = map { OutputProjectSimple(
+    id = it.id,
+    callName = it.callName,
+    acronym = it.acronym,
+    projectStatus = ApplicationStatusDTO.valueOf(it.status.name),
+    firstSubmissionDate = it.firstSubmissionDate,
+    lastResubmissionDate = it.lastResubmissionDate,
+    specificObjectiveCode = it.specificObjectiveCode,
+    programmePriorityCode = it.programmePriorityCode,
+)}
 
 private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 

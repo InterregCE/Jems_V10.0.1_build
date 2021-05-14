@@ -33,6 +33,7 @@ class SubmitApplicationInteractorTest : UnitTest() {
         private const val PROJECT_ID = 1L
         private val summary = ProjectSummary(
             id = PROJECT_ID,
+            callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.DRAFT
         )

@@ -27,6 +27,9 @@ class Authorization(
     fun hasPermission(permission: UserRolePermission): Boolean =
         securityService.currentUser?.hasPermission(permission)!!
 
+    protected fun isActiveUserIdEqualTo(userId: Long): Boolean =
+        userId == securityService.currentUser?.user?.id
+
     protected fun isApplicantOwner(applicantId: Long): Boolean =
         isApplicantUser() && applicantId == securityService.currentUser?.user?.id
 

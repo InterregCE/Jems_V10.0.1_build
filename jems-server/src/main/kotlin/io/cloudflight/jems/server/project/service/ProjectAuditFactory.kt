@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
@@ -12,14 +13,16 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 fun projectApplicationCreated(
-    projectId: Long,
-    projectAcronym: String,
-    newStatus: ApplicationStatus,
-): AuditCandidate =
-    AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
-        .project(id = projectId, name = projectAcronym)
-        .description("Project application created with status $newStatus")
-        .build()
+    context: Any,
+    project: ProjectEntity,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
+            .project(id = project.id, name = project.acronym)
+            .description("Project application created with status ${project.currentStatus.status}")
+            .build()
+    )
 
 fun projectStatusChanged(
     context: Any, projectSummary: ProjectSummary, newStatus: ApplicationStatus

@@ -10,6 +10,8 @@ import io.cloudflight.jems.server.project.repository.workpackage.investment.Work
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.toIndexedEntity
 import io.cloudflight.jems.server.project.repository.workpackage.output.toModel
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
@@ -131,8 +133,8 @@ class WorkPackagePersistenceProvider(
         ).activities.toModel()
 
     @Transactional(readOnly = true)
-    override fun getProjectIdFromWorkPackageInvestment(workPackageInvestmentId: Long): Long =
-        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.id
+    override fun getProjectFromWorkPackageInvestment(workPackageInvestmentId: Long): ProjectApplicantAndStatus =
+        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.toApplicantAndStatus()
 
     private fun getWorkPackageOrThrow(workPackageId: Long): WorkPackageEntity =
         workPackageRepository.findById(workPackageId).orElseThrow { ResourceNotFoundException("workPackage") }

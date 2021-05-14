@@ -26,6 +26,7 @@ import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectService
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing.GetProjectBudgetCoFinancingInteractor
@@ -215,7 +216,7 @@ class ProjectControllerTest {
     fun `get Project by Id`() {
         val pId = 1L
         val user = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"))
-        val projectStatus = ProjectStatus(5L, ApplicationStatusDTO.APPROVED, user, updated = startDate)
+        val projectStatus = ProjectStatus(5L, ApplicationStatus.APPROVED, user, updated = startDate)
         val callSettings = ProjectCallSettings(
             callId = 2L,
             callName = "call",
@@ -264,7 +265,7 @@ class ProjectControllerTest {
                 ),
                 acronym = project.acronym,
                 applicant = project.applicant.toDto(),
-                projectStatus = ProjectStatusDTO(projectStatus.id, projectStatus.status, projectStatus.user.toDto(), projectStatus.updated),
+                projectStatus = ProjectStatusDTO(projectStatus.id, ApplicationStatusDTO.APPROVED, projectStatus.user.toDto(), projectStatus.updated),
                 projectData = ProjectDataDTO(duration = project.duration, programmePriority = null, specificObjective = null),
                 periods = listOf(
                     ProjectPeriodDTO(pId, 1, 1, 1),
@@ -273,7 +274,7 @@ class ProjectControllerTest {
                 firstStepDecision = ProjectDecisionDTO(
                     OutputProjectQualityAssessment(ProjectQualityAssessmentResult.NOT_RECOMMENDED, startDate),
                     OutputProjectEligibilityAssessment(ProjectEligibilityAssessmentResult.FAILED, startDate),
-                    ProjectStatusDTO(projectStatus.id, projectStatus.status, user.toDto(), startDate)
+                    ProjectStatusDTO(projectStatus.id, ApplicationStatusDTO.APPROVED, user.toDto(), startDate)
                 )
             )
         )

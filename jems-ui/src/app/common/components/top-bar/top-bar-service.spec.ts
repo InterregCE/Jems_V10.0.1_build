@@ -41,7 +41,7 @@ describe('TopBarService', () => {
 
     (securityService as any).myCurrentUser.next({
       name: 'user',
-      role: {name: Permission.ADMINISTRATOR, permissions: [PermissionsEnum.AuditRetrieve]}
+      role: {name: Permission.ADMINISTRATOR, permissions: [PermissionsEnum.ProjectRetrieve, PermissionsEnum.AuditRetrieve]}
     });
     tick();
     expect(menuItems.length).toBe(5);
@@ -53,7 +53,7 @@ describe('TopBarService', () => {
 
     (securityService as any).myCurrentUser.next({
       name: 'user',
-      role: {name: Permission.PROGRAMME_USER, permissions: [PermissionsEnum.UserRetrieve]}
+      role: {name: Permission.PROGRAMME_USER, permissions: [PermissionsEnum.ProjectRetrieve, PermissionsEnum.UserRetrieve]}
     });
     tick();
     expect(menuItems.length).toBe(5);

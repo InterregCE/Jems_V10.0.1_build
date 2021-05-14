@@ -6,13 +6,15 @@ import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.authorization.CanReadProject
-import io.cloudflight.jems.server.project.authorization.CanReadProjectWorkPackage
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectWorkPackage
 import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -30,16 +32,16 @@ class WorkPackageServiceImpl(
         private const val MAX_WORK_PACKAGES_PER_PROJECT = 20L
     }
 
-    @CanReadProjectWorkPackage
+    @CanRetrieveProjectWorkPackage
     @Transactional(readOnly = true)
     override fun getWorkPackageById(workPackageId: Long): OutputWorkPackage =
         getWorkPackageOrThrow(workPackageId).toOutputWorkPackage()
 
     @Transactional(readOnly = true)
-    override fun getProjectIdForWorkPackageId(id: Long): Long =
-        getWorkPackageOrThrow(id).project.id
+    override fun getProjectForWorkPackageId(id: Long): ProjectApplicantAndStatus =
+        getWorkPackageOrThrow(id).project.toApplicantAndStatus()
 
-    @CanReadProject
+    @CanRetrieveProject
     @Transactional(readOnly = true)
     override fun getWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple> {
         return workPackageRepository.findAllByProjectId(projectId, pageable).map { it.toOutputWorkPackageSimple() }
@@ -63,7 +65,7 @@ class WorkPackageServiceImpl(
         return workPackageSavedWithTranslations.toOutputWorkPackage()
     }
 
-    @PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectWorkPackage(#inputWorkPackageUpdate.id)")
+    @PreAuthorize("hasAuthority('ProjectUpdate') || @projectWorkPackageAuthorization.canOwnerUpdateProjectWorkPackage(#inputWorkPackageUpdate.id)")
     @Transactional
     override fun updateWorkPackage(inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage {
         val oldWorkPackage = getWorkPackageOrThrow(inputWorkPackageUpdate.id)

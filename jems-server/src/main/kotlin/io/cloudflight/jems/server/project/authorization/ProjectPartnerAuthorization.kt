@@ -1,32 +1,36 @@
 package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerService
 import io.cloudflight.jems.server.authentication.authorization.Authorization
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectPartnerAuthorization.canUpdateProjectPartner(#partnerId)")
+@PreAuthorize("hasAuthority('ProjectUpdate') || @projectPartnerAuthorization.canOwnerUpdatePartner(#partnerId)")
 annotation class CanUpdateProjectPartner
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectPartnerAuthorization.canReadProjectPartner(#partnerId)")
-annotation class CanReadProjectPartner
+@PreAuthorize("hasAuthority('ProjectRetrieve') || @projectPartnerAuthorization.isUserOwnerOfPartner(#partnerId)")
+annotation class CanRetrieveProjectPartner
 
 @Component
 class ProjectPartnerAuthorization(
     override val securityService: SecurityService,
-    val projectPartnerService: ProjectPartnerService,
-    val projectAuthorization: ProjectAuthorization
+    val projectPersistence: ProjectPersistence,
 ) : Authorization(securityService) {
 
-    fun canReadProjectPartner(partnerId: Long): Boolean {
-        return projectAuthorization.canReadProject(projectPartnerService.getProjectIdForPartnerId(partnerId))
+    fun isUserOwnerOfPartner(partnerId: Long): Boolean =
+        isActiveUserIdEqualTo(userId = getProjectFromPartnerId(partnerId).applicantId)
+
+    fun canOwnerUpdatePartner(partnerId: Long): Boolean {
+        val project = getProjectFromPartnerId(partnerId)
+        return project.projectStatus.isNotSubmittedNow() && isActiveUserIdEqualTo(project.applicantId)
     }
 
-    fun canUpdateProjectPartner(partnerId: Long): Boolean {
-        return projectAuthorization.canUpdateProject(projectPartnerService.getProjectIdForPartnerId(partnerId))
+    private fun getProjectFromPartnerId(partnerId: Long): ProjectApplicantAndStatus {
+        return projectPersistence.getApplicantAndStatusById(projectPersistence.getProjectIdForPartner(partnerId))
     }
 
 }
