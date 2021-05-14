@@ -50,6 +50,12 @@ class ProjectServiceImpl(
 ) : ProjectService {
 
     @Transactional(readOnly = true)
+    override fun getById(id: Long): ProjectDetailDTO {
+        return projectRepo.findById(id).map { it.toOutputProject() }
+            .orElseThrow { ResourceNotFoundException("project") }
+    }
+
+    @Transactional(readOnly = true)
     override fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus {
         return projectRepo.findById(id).map { it.toApplicantAndStatus() }
             .orElseThrow { ResourceNotFoundException("project") }
