@@ -249,7 +249,7 @@ internal class ProjectPersistenceTest : UnitTest() {
     fun `get Project with previous version`() {
         val timestamp = Timestamp.valueOf(LocalDateTime.now())
         val project = dummyProject()
-        val version = 3
+        val version = "3.0"
         val mockRow: ProjectRow = mockk()
         every { mockRow.id } returns 1L
         every { mockRow.language } returns SystemLanguage.EN

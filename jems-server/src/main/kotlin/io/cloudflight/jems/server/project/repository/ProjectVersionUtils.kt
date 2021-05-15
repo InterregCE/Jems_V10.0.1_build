@@ -16,7 +16,7 @@ class ProjectVersionUtils(
 
     @Transactional(readOnly = true)
     fun <T> fetch(
-        version: Int?,
+        version: String?,
         projectId: Long,
         currentVersionFetcher: () -> T,
         previousVersionFetcher: (timestamp: Timestamp) -> T

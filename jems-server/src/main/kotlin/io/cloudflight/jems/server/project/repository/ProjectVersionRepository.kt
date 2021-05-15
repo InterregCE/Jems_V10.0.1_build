@@ -10,7 +10,7 @@ import java.sql.Timestamp
 interface ProjectVersionRepository : JpaRepository<ProjectVersionEntity, Long> {
 
     @Query("SELECT row_end FROM #{#entityName}  where project_id= :projectId and version= :version", nativeQuery = true)
-    fun findTimestampByVersion(projectId: Long, version: Int): Timestamp?
+    fun findTimestampByVersion(projectId: Long, version: String): Timestamp?
 
     fun findFirstByIdProjectIdOrderByCreatedAtDesc(projectId: Long): ProjectVersionEntity?
 

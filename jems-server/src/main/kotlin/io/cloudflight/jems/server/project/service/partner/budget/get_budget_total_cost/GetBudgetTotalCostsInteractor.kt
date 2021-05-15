@@ -3,5 +3,5 @@ package io.cloudflight.jems.server.project.service.partner.budget.get_budget_tot
 import java.math.BigDecimal
 
 interface GetBudgetTotalCostInteractor {
-    fun getBudgetTotalCost(partnerId: Long, version: Int? = null): BigDecimal
+    fun getBudgetTotalCost(partnerId: Long, version: String? = null): BigDecimal
 }

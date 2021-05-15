@@ -36,7 +36,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 ) : ProjectPartnerBudgetCostsPersistence {
 
     @Transactional(readOnly = true)
-    override fun getBudgetStaffCosts(partnerId: Long, version: Int?): List<BudgetStaffCostEntry> =
+    override fun getBudgetStaffCosts(partnerId: Long, version: String?): List<BudgetStaffCostEntry> =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
                 budgetStaffCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
@@ -50,7 +50,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
         )
 
     @Transactional(readOnly = true)
-    override fun getBudgetTravelAndAccommodationCosts(partnerId: Long, version: Int?) =
+    override fun getBudgetTravelAndAccommodationCosts(partnerId: Long, version: String?) =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
                 budgetTravelRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
@@ -64,7 +64,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
         )
 
     @Transactional(readOnly = true)
-    override fun getBudgetInfrastructureAndWorksCosts(partnerId: Long, version: Int?) =
+    override fun getBudgetInfrastructureAndWorksCosts(partnerId: Long, version: String?) =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
                 budgetInfrastructureRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
@@ -78,7 +78,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
         )
 
     @Transactional(readOnly = true)
-    override fun getBudgetUnitCosts(partnerId: Long, version: Int?): List<BudgetUnitCostEntry> =
+    override fun getBudgetUnitCosts(partnerId: Long, version: String?): List<BudgetUnitCostEntry> =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
                 budgetUnitCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId).toModel()
@@ -90,7 +90,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
         )
 
     @Transactional(readOnly = true)
-    override fun getBudgetExternalExpertiseAndServicesCosts(partnerId: Long, version: Int?) =
+    override fun getBudgetExternalExpertiseAndServicesCosts(partnerId: Long, version: String?) =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
                 budgetExternalRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
@@ -104,7 +104,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
         )
 
     @Transactional(readOnly = true)
-    override fun getBudgetEquipmentCosts(partnerId: Long, version: Int?) =
+    override fun getBudgetEquipmentCosts(partnerId: Long, version: String?) =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
                 budgetEquipmentRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
@@ -118,31 +118,31 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
         )
 
     @Transactional(readOnly = true)
-    override fun getBudgetStaffCostTotal(partnerId: Long, version: Int?): BigDecimal =
+    override fun getBudgetStaffCostTotal(partnerId: Long, version: String?): BigDecimal =
         getCostTotal(partnerId, version, budgetStaffCostRepository)
 
     @Transactional(readOnly = true)
-    override fun getBudgetTravelAndAccommodationCostTotal(partnerId: Long, version: Int?): BigDecimal =
+    override fun getBudgetTravelAndAccommodationCostTotal(partnerId: Long, version: String?): BigDecimal =
         getCostTotal(partnerId, version, budgetTravelRepository)
 
     @Transactional(readOnly = true)
-    override fun getBudgetEquipmentCostTotal(partnerId: Long, version: Int?): BigDecimal =
+    override fun getBudgetEquipmentCostTotal(partnerId: Long, version: String?): BigDecimal =
         getCostTotal(partnerId, version, budgetEquipmentRepository)
 
     @Transactional(readOnly = true)
-    override fun getBudgetExternalExpertiseAndServicesCostTotal(partnerId: Long, version: Int?): BigDecimal =
+    override fun getBudgetExternalExpertiseAndServicesCostTotal(partnerId: Long, version: String?): BigDecimal =
         budgetExternalRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
 
     @Transactional(readOnly = true)
-    override fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long, version: Int?): BigDecimal =
+    override fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long, version: String?): BigDecimal =
         getCostTotal(partnerId, version, budgetInfrastructureRepository)
 
     @Transactional(readOnly = true)
-    override fun getBudgetUnitCostTotal(partnerId: Long, version: Int?): BigDecimal =
+    override fun getBudgetUnitCostTotal(partnerId: Long, version: String?): BigDecimal =
         getCostTotal(partnerId, version, budgetUnitCostRepository)
 
     @Transactional(readOnly = true)
-    override fun getBudgetLumpSumsCostTotal(partnerId: Long, version: Int?): BigDecimal =
+    override fun getBudgetLumpSumsCostTotal(partnerId: Long, version: String?): BigDecimal =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
                 budgetLumpSumRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
@@ -153,7 +153,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
         )
 
     private fun <T : ProjectPartnerBudgetBase> getCostTotal(
-        partnerId: Long, version: Int?, repository: ProjectPartnerBaseBudgetRepository<T>,
+        partnerId: Long, version: String?, repository: ProjectPartnerBaseBudgetRepository<T>,
     ) =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {

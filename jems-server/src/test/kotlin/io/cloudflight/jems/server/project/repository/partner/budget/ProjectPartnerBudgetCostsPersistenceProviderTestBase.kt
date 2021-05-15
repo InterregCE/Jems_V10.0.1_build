@@ -27,10 +27,9 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
-import io.mockk.MockKAnnotations
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeAll
 import java.math.BigDecimal
@@ -44,7 +43,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
     protected val partnerId = 1L
     protected val projectId = 2L
     protected val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
-    protected val version = 3
+    protected val version = "3.0"
 
     private val entityId = 1L
     private val unitCostId = 5L
@@ -57,49 +56,45 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
-    private lateinit var projectVersionUtils: ProjectVersionUtils
+    @MockK
+    lateinit var projectVersionUtils: ProjectVersionUtils
 
-    @RelaxedMockK
+    @MockK
     lateinit var projectPersistence: ProjectPersistence
 
-    @RelaxedMockK
+    @MockK
     lateinit var budgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository
 
-    @RelaxedMockK
+    @MockK
     lateinit var budgetTravelRepository: ProjectPartnerBudgetTravelRepository
 
-    @RelaxedMockK
+    @MockK
     lateinit var budgetExternalRepository: ProjectPartnerBudgetExternalRepository
 
-    @RelaxedMockK
+    @MockK
     lateinit var budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository
 
-    @RelaxedMockK
+    @MockK
     lateinit var budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository
 
-    @RelaxedMockK
+    @MockK
     lateinit var budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository
 
-    @RelaxedMockK
+    @MockK
     lateinit var budgetLumpSumRepository: ProjectLumpSumRepository
 
+    @InjectMockKs
     protected lateinit var persistence: ProjectPartnerBudgetCostsPersistenceProvider
 
     @BeforeAll
     fun setup() {
-        MockKAnnotations.init(this)
-        projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
-        persistence = ProjectPartnerBudgetCostsPersistenceProvider(
-            projectVersionUtils,
-            projectPersistence,
-            budgetStaffCostRepository,
-            budgetTravelRepository,
-            budgetExternalRepository,
-            budgetEquipmentRepository,
-            budgetInfrastructureRepository,
-            budgetUnitCostRepository,
-            budgetLumpSumRepository
-        )
+        every {
+            projectVersionUtils.fetch<Any>(version, projectId, any(), any())
+        } answers { lastArg<(Timestamp) -> Any>().invoke(timestamp) }
+        every {
+            projectVersionUtils.fetch<Any>(null, projectId, any(), any())
+        } answers { thirdArg<() -> Any>().invoke() }
+
         every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
         every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp
     }
@@ -108,7 +103,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         val name: String,
         var entity: T,
         val repository: ProjectPartnerBaseBudgetRepository<T>,
-        val callback: (partnerId: Long, version: Int?) -> List<E>,
+        val callback: (partnerId: Long, version: String?) -> List<E>,
         val expectedResult: E
     )
 
@@ -116,7 +111,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         val name: String,
         var row: R,
         val repository: ProjectPartnerBaseBudgetRepository<T>,
-        val callback: (partnerId: Long, version: Int?) -> List<E>,
+        val callback: (partnerId: Long, version: String?) -> List<E>,
         val expectedResult: E,
         val projectClass: KClass<*> = ProjectPartnerBudgetStaffCostRow::class,
         val isForGettingUnitCosts: Boolean = false

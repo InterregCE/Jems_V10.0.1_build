@@ -22,7 +22,7 @@ class GetProject(
         persistence.getProjectCallSettings(projectId)
 
     @CanRetrieveProject
-    override fun getProject(projectId: Long, version: Int?): Project =
+    override fun getProject(projectId: Long, version: String?): Project =
         persistence.getProject(projectId, version)
 
     @CanRetrieveProjects

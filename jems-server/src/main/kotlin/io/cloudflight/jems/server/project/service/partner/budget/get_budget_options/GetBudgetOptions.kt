@@ -10,6 +10,6 @@ class GetBudgetOptions(private val persistence: ProjectPartnerBudgetOptionsPersi
 
     @Transactional(readOnly = true)
     @CanRetrieveProjectPartner
-    override fun getBudgetOptions(partnerId: Long) =
-        persistence.getBudgetOptions(partnerId)
+    override fun getBudgetOptions(partnerId: Long, version: String?) =
+        persistence.getBudgetOptions(partnerId, version)
 }

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.partner.budget.options
 
 import io.cloudflight.jems.server.call.repository.toModel
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetEquipmentRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetExternalRepository
@@ -9,6 +10,7 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetUnitCostRepository
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import org.springframework.stereotype.Repository
@@ -16,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ProjectPartnerBudgetOptionsPersistenceProvider(
+    private val projectVersionUtils: ProjectVersionUtils,
+    private val projectPersistence: ProjectPersistence,
     private val budgetOptionsRepository: ProjectPartnerBudgetOptionsRepository,
     private val budgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository,
     private val budgetTravelRepository: ProjectPartnerBudgetTravelRepository,
@@ -27,8 +31,16 @@ class ProjectPartnerBudgetOptionsPersistenceProvider(
 ) : ProjectPartnerBudgetOptionsPersistence {
 
     @Transactional(readOnly = true)
-    override fun getBudgetOptions(partnerId: Long): ProjectPartnerBudgetOptions? =
-        budgetOptionsRepository.findById(partnerId).map { it.toProjectPartnerBudgetOptions() }.orElse(null)
+    override fun getBudgetOptions(partnerId: Long, version: String?): ProjectPartnerBudgetOptions? =
+        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+            currentVersionFetcher = {
+                budgetOptionsRepository.findById(partnerId).map { it.toProjectPartnerBudgetOptions() }.orElse(null)
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetOptionsRepository.findByPartnerIdAsOfTimestamp(partnerId, timestamp)
+                    .map { it.toProjectPartnerBudgetOptions() }.orElse(null)
+            }
+        )
 
     @Transactional(readOnly = true)
     override fun getBudgetOptions(partnerIds: Set<Long>): List<ProjectPartnerBudgetOptions> =

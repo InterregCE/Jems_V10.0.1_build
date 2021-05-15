@@ -17,7 +17,7 @@ class GetBudgetTotalCost(
 
     @Transactional(readOnly = true)
     @CanRetrieveProjectPartner
-    override fun getBudgetTotalCost(partnerId: Long, version: Int?): BigDecimal {
+    override fun getBudgetTotalCost(partnerId: Long, version: String?): BigDecimal {
 
         val budgetOptions = getBudgetOptions.getBudgetOptions(partnerId)
 
@@ -48,14 +48,14 @@ class GetBudgetTotalCost(
     }
 
     private fun fetchTravelCostsOrZero(
-        partnerId: Long, travelAndAccommodationOnStaffCostsFlatRate: Int?, version: Int?
+        partnerId: Long, travelAndAccommodationOnStaffCostsFlatRate: Int?, version: String?
     ) =
         if (travelAndAccommodationOnStaffCostsFlatRate == null)
             budgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId, version)
         else
             BigDecimal.ZERO
 
-    private fun fetchStaffCostsOrZero(partnerId: Long, staffCostsFlatRate: Int?, version: Int?) =
+    private fun fetchStaffCostsOrZero(partnerId: Long, staffCostsFlatRate: Int?, version: String?) =
         if (staffCostsFlatRate == null)
             budgetCostsPersistence.getBudgetStaffCostTotal(partnerId, version)
         else

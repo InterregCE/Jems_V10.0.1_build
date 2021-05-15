@@ -49,7 +49,7 @@ interface ProjectApi {
     @GetMapping("/{projectId}")
     fun getProjectById(
         @PathVariable projectId: Long,
-        @RequestParam(required = false) version: Int? = null
+        @RequestParam(required = false) version: String? = null
     ): ProjectDetailDTO
 
     @ApiOperation("Returns call setting of a call related to this application")

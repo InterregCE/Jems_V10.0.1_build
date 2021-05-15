@@ -33,7 +33,7 @@ class ProjectController(
     override fun getMyProjects(pageable: Pageable): Page<OutputProjectSimple> =
         getProjectInteractor.getMyProjects(pageable).toDto()
 
-    override fun getProjectById(projectId: Long, version: Int?): ProjectDetailDTO =
+    override fun getProjectById(projectId: Long, version: String?): ProjectDetailDTO =
         getProjectInteractor.getProject(projectId, version).toDto()
 
     override fun getProjectCallSettingsById(projectId: Long): ProjectCallSettingsDTO =
