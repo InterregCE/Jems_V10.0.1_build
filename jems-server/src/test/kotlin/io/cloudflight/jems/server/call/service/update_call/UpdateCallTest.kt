@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -29,6 +30,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -117,6 +119,7 @@ class UpdateCallTest: UnitTest() {
                     "name changed from 'old name' to 'call name'"
             )
         )
+        clearMocks(auditPublisher)
     }
 
     @Test
@@ -138,6 +141,17 @@ class UpdateCallTest: UnitTest() {
 
         assertThrows<UpdateRestrictedFieldsWhenCallPublished> { updateCall.updateCall(call) }
         verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
+    }
+
+    @Test
+    fun `update published Call - assign priorities when there were none`() {
+        every { persistence.getCallIdForNameIfExists(callToUpdate.name) } returns null
+        every { persistence.getCallById(CALL_ID) } returns existingCall.copy(objectives = emptyList())
+        every { persistence.updateCall(any()) } returns existingCall
+
+        assertDoesNotThrow { updateCall.updateCall(callToUpdate) }
+        verify(exactly = 1) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
+        clearMocks(auditPublisher)
     }
 
     private fun provideNotAllowedChangesToPublishedCall(): Stream<Arguments> {
