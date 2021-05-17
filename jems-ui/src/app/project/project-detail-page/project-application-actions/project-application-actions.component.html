@@ -2,6 +2,11 @@
 
     <ng-container *hasPermission="Permissions.ProjectSubmission; alternativeCondition data.isThisUserOwner">
 
+        <ng-container *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT">
+            <h3>{{'project.detail.pre.condition.check.result.title' | translate}}</h3>
+            <p>{{'project.detail.pre.condition.check.result.description' | translate}}</p>
+        </ng-container>
+
         <app-pending-button
                 class="mr-2 mt-2"
                 *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
