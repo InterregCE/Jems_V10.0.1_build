@@ -28,6 +28,7 @@ import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/p
 import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/budget-page-per-partner.component';
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
+import {UserRoleDTO} from '@cat/api';
 
 export const routes: Routes = [
   {
@@ -37,6 +38,8 @@ export const routes: Routes = [
       {
         path: '',
         component: ProjectApplicationComponent,
+        canActivate: [PermissionGuard],
+        data: {permissionsOnly: [UserRoleDTO.PermissionsEnum.ProjectRetrieve]},
       },
       {
         path: 'applyTo/:callId',

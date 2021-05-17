@@ -29,14 +29,9 @@ export class Permission {
       temporarilyDisabled: true,
     },
     {
-      name: 'Applications',
-      children: [
-        {
-          name: 'All applications',
-          mode: PermissionMode.HIDDEN_VIEW,
-          viewPermissions: [PermissionsEnum.ProjectRetrieve],
-        },
-      ],
+      name: 'topbar.main.project',
+      mode: PermissionMode.HIDDEN_VIEW,
+      viewPermissions: [PermissionsEnum.ProjectRetrieve],
     },
     {
       name: 'Calls',
