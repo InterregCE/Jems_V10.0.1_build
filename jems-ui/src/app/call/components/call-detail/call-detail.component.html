@@ -2,7 +2,11 @@
           (save)="onSubmit()">
     <app-alert [show]="published && !isApplicant"
                [type]="Alert.WARNING">
-        <p>{{'call.detail.edit.published.warning' | translate}}</p>
+        <span>{{'call.detail.edit.published.warning' | translate}}</span>
+    </app-alert>
+    <app-alert [show]="isApplicant && !isOpen(call)"
+               [type]="Alert.WARNING">
+        <span>{{'call.table.column.action.apply.inactive.note' | translate}}</span>
     </app-alert>
     <form appFormLayout [formGroup]="callForm">
         <app-pending-button
@@ -151,7 +155,7 @@
     </form>
 </app-form>
 
-<mat-card-footer *ngIf="isApplicant" class="footer">
+<mat-card-footer *ngIf="isApplicant && isOpen(call)" class="footer">
     <button mat-raised-button color="primary"
             class="action-button"
             [disabled]="!isOpen(call)"
