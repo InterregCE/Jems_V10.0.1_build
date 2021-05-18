@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.common.exception
 import io.cloudflight.jems.api.common.dto.APIErrorDTO
 import io.cloudflight.jems.api.common.dto.ErrorDetailDTO
 import io.cloudflight.jems.api.common.dto.I18nMessage
-import java.util.*
+import java.util.UUID
 
 const val DEFAULT_ERROR_CODE = "ERR"
 val DEFAULT_ERROR_MESSAGE = I18nMessage(i18nKey = "unknown.error.message")

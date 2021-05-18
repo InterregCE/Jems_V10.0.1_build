@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.entity
 import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
 import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType

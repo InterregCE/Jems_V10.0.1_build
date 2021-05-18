@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.user.service.model.UserRoleCreate
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import java.util.*
+import java.util.Optional
 
 interface UserRolePersistence {
 

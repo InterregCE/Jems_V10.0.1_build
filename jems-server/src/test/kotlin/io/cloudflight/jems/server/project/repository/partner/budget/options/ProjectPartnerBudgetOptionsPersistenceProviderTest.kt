@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 internal class ProjectPartnerBudgetOptionsPersistenceProviderTest : UnitTest() {
 

@@ -33,7 +33,7 @@ import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStr
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSynergy
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSynergyTransl
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceTransl
-import java.util.*
+import java.util.UUID
 import kotlin.collections.HashSet
 
 // region Project Relevance
