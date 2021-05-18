@@ -126,7 +126,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
 
   addNewPartnerContribution(initialValue?: ProjectPartnerContributionDTO): void {
     this.partnerContributions.push(this.formBuilder.group({
-      name: [initialValue ? initialValue.name : '', [Validators.required]],
+      name: [initialValue ? initialValue.name : '', [Validators.required, Validators.maxLength(255)]],
       status: [initialValue ? initialValue.status : '', [Validators.required]],
       amount: [initialValue ? initialValue.amount : 0, [Validators.required, Validators.min(0)]],
       isPartner: [initialValue ? initialValue.isPartner : false]
