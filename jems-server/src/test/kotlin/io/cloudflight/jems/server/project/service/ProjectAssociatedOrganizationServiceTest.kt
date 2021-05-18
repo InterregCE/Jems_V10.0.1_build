@@ -12,7 +12,6 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectA
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -26,6 +25,7 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContact
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -55,6 +55,9 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
     @MockK
     lateinit var projectAssociatedOrganizationRepository: ProjectAssociatedOrganizationRepository
+
+    @MockK
+    private lateinit var projectVersionUtils: ProjectVersionUtils
 
     lateinit var projectAssociatedOrganizationService: ProjectAssociatedOrganizationService
 
@@ -146,7 +149,11 @@ internal class ProjectAssociatedOrganizationServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         projectAssociatedOrganizationService =
-            ProjectAssociatedOrganizationServiceImpl(projectPartnerRepository, projectAssociatedOrganizationRepository)
+            ProjectAssociatedOrganizationServiceImpl(
+                projectPartnerRepository,
+                projectAssociatedOrganizationRepository,
+                projectVersionUtils
+            )
     }
 
     @Test
@@ -154,7 +161,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         val org = organization(1, projectPartner, "test", 1)
         every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(org)
 
-        assertThat(projectAssociatedOrganizationService.getById(1, 1))
+        assertThat(projectAssociatedOrganizationService.getById(1, 1, null))
             .isEqualTo(outputOrganizationDetail(1, outputProjectPartner, "test", 1))
     }
 
@@ -162,7 +169,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
     fun `getById not-existing`() {
         every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, -1) } returns Optional.empty()
 
-        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.getById(1, -1) }
+        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.getById(1, -1, null) }
         assertThat(ex.entity).isEqualTo("projectAssociatedOrganisation")
     }
 
@@ -171,7 +178,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         every { projectAssociatedOrganizationRepository.findAllByProjectId(1, UNPAGED) } returns
             PageImpl(listOf(organization(1, projectPartner, "test", 1)))
 
-        assertThat(projectAssociatedOrganizationService.findAllByProjectId(1, UNPAGED))
+        assertThat(projectAssociatedOrganizationService.findAllByProjectId(1, UNPAGED, null))
             .containsExactly(outputOrganization(1, projectPartner.abbreviation, "test", 1))
     }
 

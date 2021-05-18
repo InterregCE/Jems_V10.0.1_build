@@ -6,7 +6,10 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectA
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerHistoricalData
+import java.sql.Timestamp
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -15,21 +18,36 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ProjectAssociatedOrganizationServiceImpl(
-        private val projectPartnerRepo: ProjectPartnerRepository,
-        private val projectAssociatedOrganizationRepo: ProjectAssociatedOrganizationRepository
+    private val projectPartnerRepo: ProjectPartnerRepository,
+    private val projectAssociatedOrganizationRepo: ProjectAssociatedOrganizationRepository,
+    private val projectVersionUtils: ProjectVersionUtils,
 ) : ProjectAssociatedOrganizationService {
 
     @Transactional(readOnly = true)
-    override fun getById(projectId: Long, id: Long): OutputProjectAssociatedOrganizationDetail {
-        return projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, id)
-            .map { it.toOutputProjectAssociatedOrganizationDetail() }
-            .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }
+    override fun getById(projectId: Long, id: Long, version: String?): OutputProjectAssociatedOrganizationDetail {
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, id)
+                    .map { it.toOutputProjectAssociatedOrganizationDetail() }
+                    .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }
+            },
+            previousVersionFetcher = { timestamp ->
+                getAssociatedOrganizationHistoricalDetail(id, projectId, timestamp)
+            }
+        )
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectId(projectId: Long, page: Pageable): Page<OutputProjectAssociatedOrganization> {
-        return projectAssociatedOrganizationRepo.findAllByProjectId(projectId, page)
-            .map { it.toOutputProjectAssociatedOrganization() }
+    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<OutputProjectAssociatedOrganization> {
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectAssociatedOrganizationRepo.findAllByProjectId(projectId, page)
+                    .map { it.toOutputProjectAssociatedOrganization() }
+            },
+            previousVersionFetcher = { timestamp ->
+                projectAssociatedOrganizationRepo.findAllByProjectId(projectId, page, timestamp).map { it.toOutputAssociatedOrganizationHistoricalData() }
+            }
+        )
     }
 
     @Transactional(readOnly = true)
@@ -93,5 +111,23 @@ class ProjectAssociatedOrganizationServiceImpl(
         val projectAssociatedOrganisations = projectAssociatedOrganizationRepo.findAllByProjectId(projectId, sort)
             .mapIndexed { index, old -> old.copy(sortNumber = index.plus(1)) }
         projectAssociatedOrganizationRepo.saveAll(projectAssociatedOrganisations)
+    }
+
+    private fun getAssociatedOrganizationHistoricalDetail(
+        id: Long,
+        projectId: Long,
+        timestamp: Timestamp,
+    ): OutputProjectAssociatedOrganizationDetail {
+        val partnerId = projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, id)
+            .map { it.toOutputProjectAssociatedOrganizationDetail() }
+            .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }.partner.id
+        val partner =  projectPartnerRepo.findOneById(partnerId!!, timestamp)
+            .toOutputProjectPartnerHistoricalData()
+        val address = projectAssociatedOrganizationRepo.findAssociatedOrganizationAddressesByIdAsOfTimestamp(id, timestamp)
+            .toProjectAssociatedOrganizationAddressHistoricalData().first()
+        val contacts = projectAssociatedOrganizationRepo.findAssociatedOrganizationContactsByIdAsOfTimestamp(id, timestamp)
+            .toAssociatedOrganizationContactHistoricalData()
+        return projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, id, timestamp)
+            .toProjectPartnerMotivationHistoricalData(partner, address, contacts).first()
     }
 }

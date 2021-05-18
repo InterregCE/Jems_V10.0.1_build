@@ -16,13 +16,13 @@ class ProjectAssociatedOrganizationController(
     private val associatedOrganizationService: ProjectAssociatedOrganizationService
 ) : ProjectAssociatedOrganizationApi{
     @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-    override fun getAssociatedOrganizations(projectId: Long, pageable: Pageable): Page<OutputProjectAssociatedOrganization> {
-        return associatedOrganizationService.findAllByProjectId(projectId, pageable)
+    override fun getAssociatedOrganizations(projectId: Long, pageable: Pageable, version: String?): Page<OutputProjectAssociatedOrganization> {
+        return associatedOrganizationService.findAllByProjectId(projectId, pageable, version)
     }
 
     @PreAuthorize("@projectAuthorization.canReadProject(#projectId)")
-    override fun getAssociatedOrganizationById(projectId: Long, id: Long): OutputProjectAssociatedOrganizationDetail {
-        return associatedOrganizationService.getById(projectId, id)
+    override fun getAssociatedOrganizationById(projectId: Long, id: Long, version: String?): OutputProjectAssociatedOrganizationDetail {
+        return associatedOrganizationService.getById(projectId, id, version)
     }
 
     @PreAuthorize("@projectAuthorization.canOwnerUpdateProject(#projectId)")

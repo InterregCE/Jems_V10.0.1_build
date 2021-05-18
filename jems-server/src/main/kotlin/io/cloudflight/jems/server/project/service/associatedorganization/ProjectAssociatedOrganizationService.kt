@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable
 
 interface ProjectAssociatedOrganizationService {
 
-    fun getById(projectId: Long, id: Long): OutputProjectAssociatedOrganizationDetail
+    fun getById(projectId: Long, id: Long, version: String?): OutputProjectAssociatedOrganizationDetail
 
-    fun findAllByProjectId(projectId: Long, page: Pageable): Page<OutputProjectAssociatedOrganization>
+    fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<OutputProjectAssociatedOrganization>
 
     fun create(projectId: Long, associatedOrganization: InputProjectAssociatedOrganizationCreate): OutputProjectAssociatedOrganizationDetail
 

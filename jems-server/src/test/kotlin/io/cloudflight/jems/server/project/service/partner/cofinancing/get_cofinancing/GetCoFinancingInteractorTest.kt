@@ -64,14 +64,14 @@ internal class GetCoFinancingInteractorTest {
             )
         )
 
-        every { persistence.getCoFinancingAndContributions(1) } returns
+        every { persistence.getCoFinancingAndContributions(1, null) } returns
             ProjectPartnerCoFinancingAndContribution(
                 finances = finances,
                 partnerContributions = contributions,
                 partnerAbbreviation = "mocked abbr"
             )
 
-        assertThat(getInteractor.getCoFinancing(1))
+        assertThat(getInteractor.getCoFinancing(1,null))
             .isEqualTo(
                 ProjectPartnerCoFinancingAndContribution(
                     finances = finances,

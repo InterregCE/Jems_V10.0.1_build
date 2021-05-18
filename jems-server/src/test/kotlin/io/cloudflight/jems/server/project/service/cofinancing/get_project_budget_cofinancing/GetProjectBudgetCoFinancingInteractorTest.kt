@@ -59,9 +59,9 @@ class GetProjectBudgetCoFinancingInteractorTest : UnitTest() {
     fun getBudgetCoFinancing() {
         every { projectBudgetPersistence.getPartnersForProjectId(1) } returns listOf(partner1, partner2)
 
-        every { projectPartnerCoFinancingPersistenceProvider.getCoFinancingAndContributions(partner1Id) } returns projectPartnerCoFinancingAndContribution
+        every { projectPartnerCoFinancingPersistenceProvider.getCoFinancingAndContributions(partner1Id, null) } returns projectPartnerCoFinancingAndContribution
 
-        every { projectPartnerCoFinancingPersistenceProvider.getCoFinancingAndContributions(partner2Id) } returns projectPartnerCoFinancingAndContribution
+        every { projectPartnerCoFinancingPersistenceProvider.getCoFinancingAndContributions(partner2Id, null) } returns projectPartnerCoFinancingAndContribution
 
         every { getBudgetTotalCost.getBudgetTotalCost(partner1Id) } returns totalCostPartner1
         every { getBudgetTotalCost.getBudgetTotalCost(partner2Id) } returns totalCostPartner2

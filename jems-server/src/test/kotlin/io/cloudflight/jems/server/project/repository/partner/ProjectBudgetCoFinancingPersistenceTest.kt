@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -17,7 +16,10 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
+import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
@@ -26,6 +28,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Upda
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -75,16 +78,27 @@ class ProjectBudgetCoFinancingPersistenceTest {
         )
     }
 
-    @MockK
+    @RelaxedMockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
+
+    @RelaxedMockK
+    lateinit var projectPersistence: ProjectPersistence
+
+    @MockK
+    lateinit var projectVersionRepo: ProjectVersionRepository
+
+    private lateinit var projectVersionUtils: ProjectVersionUtils
 
     private lateinit var persistence: ProjectPartnerCoFinancingPersistence
 
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
+        projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
-            projectPartnerRepository
+            projectPartnerRepository,
+            projectVersionUtils,
+            projectPersistence
         )
     }
 
@@ -140,7 +154,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
             )
         )
 
-        val result = persistence.getCoFinancingAndContributions(PARTNER_ID)
+        val result = persistence.getCoFinancingAndContributions(PARTNER_ID, null)
 
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(

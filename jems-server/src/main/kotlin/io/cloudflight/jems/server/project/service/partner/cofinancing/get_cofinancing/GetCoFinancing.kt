@@ -13,7 +13,7 @@ class GetCoFinancing(
 
     @Transactional(readOnly = true)
     @CanRetrieveProjectPartner
-    override fun getCoFinancing(partnerId: Long): ProjectPartnerCoFinancingAndContribution =
-        persistence.getCoFinancingAndContributions(partnerId)
+    override fun getCoFinancing(partnerId: Long, version: String?): ProjectPartnerCoFinancingAndContribution =
+        persistence.getCoFinancingAndContributions(partnerId, version)
 
 }

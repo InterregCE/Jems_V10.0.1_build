@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.project.repository.partner.cofinancing
 
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerFinancingRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
@@ -25,7 +27,15 @@ fun ProjectPartnerCoFinancingEntity.toModel() = ProjectPartnerCoFinancing(
     percentage = percentage
 )
 
+fun PartnerFinancingRow.toModel() = ProjectPartnerCoFinancing(
+    fundType = type,
+    fund = programmeFund?.toModel(),
+    percentage = percentage
+)
+
 fun Collection<ProjectPartnerCoFinancingEntity>.toCoFinancingModel() = map { it.toModel() }
+
+fun Collection<PartnerFinancingRow>.toProjectPartnerFinancingHistoricalData() = map { it.toModel() }
 // endregion Finances
 
 
@@ -48,5 +58,15 @@ fun ProjectPartnerContributionEntity.toModel() = ProjectPartnerContribution(
     isPartner = name == null
 )
 
+fun PartnerContributionRow.toModel() = ProjectPartnerContribution(
+    id = id,
+    name = name,
+    status = status,
+    amount = amount,
+    isPartner = name == null
+)
+
 fun Collection<ProjectPartnerContributionEntity>.toContributionModel() = map { it.toModel() }
+
+fun Collection<PartnerContributionRow>.toProjectPartnerContributionHistoricalData() = map { it.toModel() }
 // endregion Contributions
