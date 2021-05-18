@@ -5,11 +5,16 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
-import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetUnitCostEntities
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetEquipmentEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetExternalEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetInfrastructureEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetStaffCostEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetTravelEntity
 import io.cloudflight.jems.server.project.service.partner.model.*
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -18,7 +23,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.util.*
+import java.util.Optional
 
 
 class ProjectPartnerBudgetPersistenceTest: UnitTest() {

@@ -1,10 +1,10 @@
-package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost
+package io.cloudflight.jems.server.project.entity.partner.budget.general
 
 import io.cloudflight.jems.server.common.entity.TranslationView
 import org.springframework.beans.factory.annotation.Value
 import java.math.BigDecimal
 
-interface ProjectPartnerBudgetStaffCostRow : TranslationView {
+interface ProjectPartnerBudgetGeneralRow: TranslationView {
     fun getId(): Long
 
     @Value("#{target.partner_id}")
@@ -21,6 +21,9 @@ interface ProjectPartnerBudgetStaffCostRow : TranslationView {
     @Value("#{target.price_per_unit}")
     fun getPricePerUnit(): BigDecimal
 
+    @Value("#{target.investment_id}")
+    fun getInvestmentId(): Long?
+
     @Value("#{target.row_sum}")
     fun getRowSum(): BigDecimal
 
@@ -29,8 +32,9 @@ interface ProjectPartnerBudgetStaffCostRow : TranslationView {
 
     fun getDescription(): String?
 
-    fun getComment(): String?
-
     @Value("#{target.unit_type}")
     fun getUnitType(): String?
+
+    @Value("#{target.award_procedures}")
+    fun getAwardProcedures(): String?
 }

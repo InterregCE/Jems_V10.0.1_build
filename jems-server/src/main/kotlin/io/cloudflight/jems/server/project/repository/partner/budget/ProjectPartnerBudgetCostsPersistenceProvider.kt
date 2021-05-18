@@ -1,7 +1,19 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetBase
+import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralRow
+import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostRow
+import io.cloudflight.jems.server.project.entity.partner.budget.travel.ProjectPartnerBudgetTravelCostRow
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.ProjectLumpSumRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetGeneralCostEntryList
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetGeneralEntryList
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetStaffCostEntries
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetStaffCostEntryList
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetTravelAndAccommodationCostEntries
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetTravelCostEntryList
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetUnitCostEntryList
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
@@ -24,69 +36,131 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 ) : ProjectPartnerBudgetCostsPersistence {
 
     @Transactional(readOnly = true)
-    override fun getBudgetStaffCosts(partnerId: Long, version: Int?): List<BudgetStaffCostEntry> =
+    override fun getBudgetStaffCosts(partnerId: Long, version: String?): List<BudgetStaffCostEntry> =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
                 budgetStaffCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
                     .toBudgetStaffCostEntries()
             },
             previousVersionFetcher = { timestamp ->
-                budgetStaffCostRepository.findAllByPartnerIdAsOfTimestamp(partnerId, timestamp)
-                    .toBudgetStaffCostEntryList()
+                budgetStaffCostRepository.findAllByPartnerIdAsOfTimestamp(
+                    partnerId, timestamp, ProjectPartnerBudgetStaffCostRow::class.java
+                ).toBudgetStaffCostEntryList()
             }
         )
 
+    @Transactional(readOnly = true)
+    override fun getBudgetTravelAndAccommodationCosts(partnerId: Long, version: String?) =
+        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+            currentVersionFetcher = {
+                budgetTravelRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                    .toBudgetTravelAndAccommodationCostEntries()
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetTravelRepository.findAllByPartnerIdAsOfTimestamp(
+                    partnerId, timestamp, ProjectPartnerBudgetTravelCostRow::class.java
+                ).toBudgetTravelCostEntryList()
+            }
+        )
 
     @Transactional(readOnly = true)
-    override fun getBudgetStaffCostTotal(partnerId: Long): BigDecimal =
-        budgetStaffCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+    override fun getBudgetInfrastructureAndWorksCosts(partnerId: Long, version: String?) =
+        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+            currentVersionFetcher = {
+                budgetInfrastructureRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                    .toBudgetGeneralEntryList()
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetInfrastructureRepository.findAllByPartnerIdAsOfTimestamp(
+                    partnerId, timestamp, ProjectPartnerBudgetGeneralRow::class.java
+                ).toBudgetGeneralCostEntryList()
+            }
+        )
 
     @Transactional(readOnly = true)
-    override fun getBudgetTravelAndAccommodationCosts(partnerId: Long) =
-        budgetTravelRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
-            .toBudgetTravelAndAccommodationCostEntries()
+    override fun getBudgetUnitCosts(partnerId: Long, version: String?): List<BudgetUnitCostEntry> =
+        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+            currentVersionFetcher = {
+                budgetUnitCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId).toModel()
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetUnitCostRepository.findAllByPartnerIdAsOfTimestamp(partnerId, timestamp)
+                    .toBudgetUnitCostEntryList()
+            }
+        )
 
     @Transactional(readOnly = true)
-    override fun getBudgetTravelAndAccommodationCostTotal(partnerId: Long): BigDecimal =
-        budgetTravelRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+    override fun getBudgetExternalExpertiseAndServicesCosts(partnerId: Long, version: String?) =
+        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+            currentVersionFetcher = {
+                budgetExternalRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                    .toBudgetGeneralEntryList()
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetExternalRepository.findAllByPartnerIdAsOfTimestamp(
+                    partnerId, timestamp, ProjectPartnerBudgetGeneralRow::class.java
+                ).toBudgetGeneralCostEntryList()
+            }
+        )
 
     @Transactional(readOnly = true)
-    override fun getBudgetInfrastructureAndWorksCosts(partnerId: Long) =
-        budgetInfrastructureRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
-            .infrastructureEntitiesToBudgetGeneralEntries()
+    override fun getBudgetEquipmentCosts(partnerId: Long, version: String?) =
+        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+            currentVersionFetcher = {
+                budgetEquipmentRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                    .toBudgetGeneralEntryList()
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetExternalRepository.findAllByPartnerIdAsOfTimestamp(
+                    partnerId, timestamp, ProjectPartnerBudgetGeneralRow::class.java
+                ).toBudgetGeneralCostEntryList()
+            }
+        )
 
     @Transactional(readOnly = true)
-    override fun getBudgetUnitCosts(partnerId: Long): List<BudgetUnitCostEntry> =
-        budgetUnitCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId).toModel()
+    override fun getBudgetStaffCostTotal(partnerId: Long, version: String?): BigDecimal =
+        getCostTotal(partnerId, version, budgetStaffCostRepository)
 
     @Transactional(readOnly = true)
-    override fun getBudgetUnitCostTotal(partnerId: Long): BigDecimal =
-        budgetUnitCostRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+    override fun getBudgetTravelAndAccommodationCostTotal(partnerId: Long, version: String?): BigDecimal =
+        getCostTotal(partnerId, version, budgetTravelRepository)
 
     @Transactional(readOnly = true)
-    override fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long): BigDecimal =
-        budgetInfrastructureRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+    override fun getBudgetEquipmentCostTotal(partnerId: Long, version: String?): BigDecimal =
+        getCostTotal(partnerId, version, budgetEquipmentRepository)
 
     @Transactional(readOnly = true)
-    override fun getBudgetExternalExpertiseAndServicesCosts(partnerId: Long) =
-        budgetExternalRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
-            .externalEntitiesToBudgetGeneralEntries()
-
-    @Transactional(readOnly = true)
-    override fun getBudgetExternalExpertiseAndServicesCostTotal(partnerId: Long): BigDecimal =
+    override fun getBudgetExternalExpertiseAndServicesCostTotal(partnerId: Long, version: String?): BigDecimal =
         budgetExternalRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
 
     @Transactional(readOnly = true)
-    override fun getBudgetEquipmentCosts(partnerId: Long) =
-        budgetEquipmentRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
-            .equipmentEntitiesToBudgetGeneralEntries()
+    override fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long, version: String?): BigDecimal =
+        getCostTotal(partnerId, version, budgetInfrastructureRepository)
 
     @Transactional(readOnly = true)
-    override fun getBudgetEquipmentCostTotal(partnerId: Long): BigDecimal =
-        budgetEquipmentRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+    override fun getBudgetUnitCostTotal(partnerId: Long, version: String?): BigDecimal =
+        getCostTotal(partnerId, version, budgetUnitCostRepository)
 
     @Transactional(readOnly = true)
-    override fun getBudgetLumpSumsCostTotal(partnerId: Long): BigDecimal =
-        budgetLumpSumRepository.getPartnerLumpSumsTotal(partnerId) ?: BigDecimal.ZERO
+    override fun getBudgetLumpSumsCostTotal(partnerId: Long, version: String?): BigDecimal =
+        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+            currentVersionFetcher = {
+                budgetLumpSumRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) ?: BigDecimal.ZERO
+            }
+        )
 
+    private fun <T : ProjectPartnerBudgetBase> getCostTotal(
+        partnerId: Long, version: String?, repository: ProjectPartnerBaseBudgetRepository<T>,
+    ) =
+        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+            currentVersionFetcher = {
+                repository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+            },
+            previousVersionFetcher = { timestamp ->
+                repository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) ?: BigDecimal.ZERO
+            }
+        )
 }

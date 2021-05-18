@@ -44,14 +44,14 @@ class ProjectPartnerBudgetController(
     override fun updateBudgetStaffCosts(partnerId: Long, budgetStaffCostEntryDTOList: List<BudgetStaffCostEntryDTO>) =
         updateBudgetStaffCosts.updateBudgetStaffCosts(partnerId, budgetStaffCostEntryDTOList.toBudgetStaffCostEntryList()).toBudgetStaffCostEntryDTOList()
 
-    override fun getBudgetOptions(partnerId: Long): ProjectPartnerBudgetOptionsDto =
-        getBudgetOptions.getBudgetOptions(partnerId)?.toProjectPartnerBudgetOptionsDto()
+    override fun getBudgetOptions(partnerId: Long, version: String?): ProjectPartnerBudgetOptionsDto =
+        getBudgetOptions.getBudgetOptions(partnerId, version)?.toProjectPartnerBudgetOptionsDto()
             ?: ProjectPartnerBudgetOptionsDto()
 
     override fun updateBudgetOptions(partnerId: Long, budgetOptionsDto: ProjectPartnerBudgetOptionsDto) =
         updateBudgetOptions.updateBudgetOptions(partnerId, budgetOptionsDto.toProjectPartnerBudgetOptions(partnerId))
 
-    override fun getBudgetCosts(partnerId: Long, version: Int?) =
+    override fun getBudgetCosts(partnerId: Long, version: String?) =
         getBudgetCosts.getBudgetCosts(partnerId, version).toBudgetCostsDTO()
 
     override fun updateBudgetTravel(partnerId: Long, travelAndAccommodationCosts: List<BudgetTravelAndAccommodationCostEntryDTO>) =
@@ -69,8 +69,8 @@ class ProjectPartnerBudgetController(
     override fun updateBudgetUnitCosts(partnerId: Long, unitCosts: List<BudgetUnitCostEntryDTO>) =
         updateBudgetUnitCosts.updateBudgetUnitCosts(partnerId, unitCosts.toBudgetUnitCostEntryList()).toBudgetUnitCostEntryDTOList()
 
-    override fun getTotal(partnerId: Long) =
-        getBudgetTotalCost.getBudgetTotalCost(partnerId)
+    override fun getTotal(partnerId: Long, version: String?) =
+        getBudgetTotalCost.getBudgetTotalCost(partnerId, version)
 
     override fun getProjectPartnerCoFinancing(partnerId: Long): ProjectPartnerCoFinancingAndContributionOutputDTO =
         getCoFinancing.getCoFinancing(partnerId).toDto()

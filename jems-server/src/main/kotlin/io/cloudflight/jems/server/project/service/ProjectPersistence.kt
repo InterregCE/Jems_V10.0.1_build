@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable
 
 interface ProjectPersistence {
 
-    fun getProject(projectId: Long, version: Int? = null): Project
+    fun getProject(projectId: Long, version: String? = null): Project
 
     fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus
 

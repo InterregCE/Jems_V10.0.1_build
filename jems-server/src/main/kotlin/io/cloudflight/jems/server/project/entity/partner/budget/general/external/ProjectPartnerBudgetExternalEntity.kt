@@ -27,7 +27,7 @@ data class ProjectPartnerBudgetExternalEntity(
     @Column
     override val investmentId: Long?,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetTranslation.budget")
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     override var translatedValues: MutableSet<ProjectPartnerBudgetExternalTranslEntity> = mutableSetOf(),
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetPeriodId.budget")

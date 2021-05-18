@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBu
 
 interface ProjectPartnerBudgetOptionsPersistence {
 
-    fun getBudgetOptions(partnerId: Long): ProjectPartnerBudgetOptions?
+    fun getBudgetOptions(partnerId: Long, version: String? = null): ProjectPartnerBudgetOptions?
     fun getBudgetOptions(partnerIds: Set<Long>): List<ProjectPartnerBudgetOptions>
     fun updateBudgetOptions(partnerId: Long, options: ProjectPartnerBudgetOptions)
     fun deleteBudgetOptions(partnerId: Long)

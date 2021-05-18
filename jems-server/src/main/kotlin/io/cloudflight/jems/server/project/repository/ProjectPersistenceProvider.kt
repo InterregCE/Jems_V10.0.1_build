@@ -22,7 +22,7 @@ class ProjectPersistenceProvider(
 ) : ProjectPersistence {
 
     @Transactional(readOnly = true)
-    override fun getProject(projectId: Long, version: Int?): Project {
+    override fun getProject(projectId: Long, version: String?): Project {
         val project = getProjectOrThrow(projectId)
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {

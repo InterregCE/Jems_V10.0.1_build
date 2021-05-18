@@ -8,24 +8,26 @@ import java.math.BigDecimal
 
 interface ProjectPartnerBudgetCostsPersistence {
 
+    fun getBudgetEquipmentCosts(partnerId: Long, version: String? = null): List<BudgetGeneralCostEntry>
+    fun getBudgetEquipmentCostTotal(partnerId: Long, version: String? = null): BigDecimal
 
-    fun getBudgetEquipmentCosts(partnerId: Long): List<BudgetGeneralCostEntry>
-    fun getBudgetEquipmentCostTotal(partnerId: Long): BigDecimal
+    fun getBudgetExternalExpertiseAndServicesCosts(partnerId: Long, version: String? = null): List<BudgetGeneralCostEntry>
+    fun getBudgetExternalExpertiseAndServicesCostTotal(partnerId: Long, version: String? = null): BigDecimal
 
-    fun getBudgetExternalExpertiseAndServicesCosts(partnerId: Long): List<BudgetGeneralCostEntry>
-    fun getBudgetExternalExpertiseAndServicesCostTotal(partnerId: Long): BigDecimal
+    fun getBudgetInfrastructureAndWorksCosts(partnerId: Long, version: String? = null): List<BudgetGeneralCostEntry>
+    fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long, version: String? = null): BigDecimal
 
-    fun getBudgetInfrastructureAndWorksCosts(partnerId: Long): List<BudgetGeneralCostEntry>
-    fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long): BigDecimal
+    fun getBudgetStaffCosts(partnerId: Long, version: String? = null): List<BudgetStaffCostEntry>
+    fun getBudgetStaffCostTotal(partnerId: Long, version: String? = null): BigDecimal
 
-    fun getBudgetStaffCosts(partnerId: Long, version: Int? = null): List<BudgetStaffCostEntry>
-    fun getBudgetStaffCostTotal(partnerId: Long): BigDecimal
+    fun getBudgetTravelAndAccommodationCosts(
+        partnerId: Long, version: String? = null
+    ): List<BudgetTravelAndAccommodationCostEntry>
 
-    fun getBudgetTravelAndAccommodationCosts(partnerId: Long): List<BudgetTravelAndAccommodationCostEntry>
-    fun getBudgetTravelAndAccommodationCostTotal(partnerId: Long): BigDecimal
+    fun getBudgetTravelAndAccommodationCostTotal(partnerId: Long, version: String? = null): BigDecimal
 
-    fun getBudgetUnitCosts(partnerId: Long): List<BudgetUnitCostEntry>
-    fun getBudgetUnitCostTotal(partnerId: Long): BigDecimal
+    fun getBudgetUnitCosts(partnerId: Long, version: String? = null): List<BudgetUnitCostEntry>
+    fun getBudgetUnitCostTotal(partnerId: Long, version: String? = null): BigDecimal
 
-    fun getBudgetLumpSumsCostTotal(partnerId: Long): BigDecimal
+    fun getBudgetLumpSumsCostTotal(partnerId: Long, version: String? = null): BigDecimal
 }

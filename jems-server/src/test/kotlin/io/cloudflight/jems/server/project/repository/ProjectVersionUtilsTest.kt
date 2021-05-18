@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 internal class ProjectVersionUtilsTest : UnitTest() {
 
     private val projectId = 11L
-    private val version = 1
+    private val version = "1.0"
     private val timestamp = Timestamp.valueOf(LocalDateTime.now())
     private val currentVersionFetcher = { "currentVersion" }
     private val previousVersionFetcher = { timestamp: Timestamp -> "previousVersion for timestamp: $timestamp" }

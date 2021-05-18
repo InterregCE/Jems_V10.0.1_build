@@ -27,7 +27,7 @@ data class ProjectPartnerBudgetEquipmentEntity(
     @field:NotNull
     override val baseProperties: BaseBudgetProperties,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetTranslation.budget")
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     override val translatedValues: MutableSet<ProjectPartnerBudgetEquipmentTranslEntity> = mutableSetOf(),
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetPeriodId.budget")

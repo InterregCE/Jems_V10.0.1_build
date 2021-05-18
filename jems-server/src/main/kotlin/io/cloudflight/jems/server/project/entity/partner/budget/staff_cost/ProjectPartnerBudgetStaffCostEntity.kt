@@ -27,7 +27,7 @@ data class ProjectPartnerBudgetStaffCostEntity(
     @field:NotNull
     val pricePerUnit: BigDecimal,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetTranslation.budget")
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectPartnerBudgetStaffCostTranslEntity> = mutableSetOf(),
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "budgetPeriodId.budget")
