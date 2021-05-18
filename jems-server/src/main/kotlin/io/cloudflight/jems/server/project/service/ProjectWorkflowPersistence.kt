@@ -2,19 +2,20 @@ package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import java.time.LocalDate
 
 interface ProjectWorkflowPersistence {
 
     fun getProjectEligibilityDecisionDate(projectId: Long): LocalDate?
 
-    fun getApplicationPreviousStatus(projectId: Long): ApplicationStatus
+    fun getApplicationPreviousStatus(projectId: Long): ProjectStatus
 
     fun getLatestApplicationStatusNotEqualTo(projectId: Long, statusToIgnore: ApplicationStatus): ApplicationStatus
 
     fun updateApplicationFirstSubmission(projectId: Long, userId: Long, status: ApplicationStatus): ApplicationStatus
 
-    fun updateProjectLastResubmission(projectId: Long, userId: Long, status: ApplicationStatus): ApplicationStatus
+    fun updateProjectLastResubmission(projectId: Long, userId: Long, status: ProjectStatus): ApplicationStatus
 
     fun updateProjectCurrentStatus(
         projectId: Long,

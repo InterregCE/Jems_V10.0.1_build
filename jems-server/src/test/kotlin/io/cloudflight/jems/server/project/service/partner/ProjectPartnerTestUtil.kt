@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserSummary
 import java.time.ZonedDateTime
 
 class ProjectPartnerTestUtil {
@@ -49,6 +51,14 @@ class ProjectPartnerTestUtil {
             applicant = user,
             currentStatus = projectStatus,
             step2Active = false
+        )
+
+        val userSummary = UserSummary(
+            id = 1,
+            email = user.email,
+            name = user.name,
+            surname = user.surname,
+            userRole = UserRoleSummary(id = 1, name = "ADMIN"),
         )
     }
 

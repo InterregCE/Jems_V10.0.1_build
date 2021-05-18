@@ -6,7 +6,7 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 
 data class ProjectStatus(
-    val id: Long?,
+    val id: Long? = null,
     val status: ApplicationStatus,
     val user: UserSummary,
     val updated: ZonedDateTime,
