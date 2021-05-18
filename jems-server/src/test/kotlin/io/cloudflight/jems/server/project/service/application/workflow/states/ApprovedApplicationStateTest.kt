@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.application.workflow.states
 
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -53,6 +54,9 @@ class ApprovedApplicationStateTest {
 
     @MockK
     lateinit var securityService: SecurityService
+
+    @MockK
+    lateinit var projectPersistence: ProjectPersistence
 
     @InjectMockKs
     private lateinit var approvedApplicationState: ApprovedApplicationState

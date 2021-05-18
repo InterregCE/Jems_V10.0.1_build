@@ -154,6 +154,21 @@ class ProjectServiceTest : UnitTest() {
         lengthOfPeriod = 1
     )
 
+    private val dummyCallExpired = CallEntity(
+        id = 9,
+        creator = account,
+        name = "call",
+        prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthyAgeing, "HAB")),
+        strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
+        isAdditionalFundAllowed = false,
+        funds = mutableSetOf(),
+        startDate = ZonedDateTime.now().minusDays(1),
+        endDateStep1 = ZonedDateTime.now().minusHours(2),
+        endDate = ZonedDateTime.now().minusHours(1),
+        status = CallStatus.PUBLISHED,
+        lengthOfPeriod = 1
+    )
+
     @RelaxedMockK
     lateinit var projectRepository: ProjectRepository
 
@@ -414,6 +429,18 @@ class ProjectServiceTest : UnitTest() {
         every { callRepository.findById(eq(dummyCall2StepExpired.id)) } returns Optional.of(dummyCall2StepExpired)
 
         val ex = assertThrows<I18nValidationException> { projectService.createProject(InputProject("test", dummyCall2StepExpired.id)) }
+        assertThat(ex).isEqualTo(I18nValidationException(
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+            i18nKey = "call.not.open"
+        ))
+    }
+
+    @Test
+    fun projectCreation_afterEndDate() {
+        every { userRepository.findByIdOrNull(eq(user.id)) } returns account
+        every { callRepository.findById(eq(dummyCallExpired.id)) } returns Optional.of(dummyCallExpired)
+
+        val ex = assertThrows<I18nValidationException> { projectService.createProject(InputProject("test", dummyCallExpired.id)) }
         assertThat(ex).isEqualTo(I18nValidationException(
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
             i18nKey = "call.not.open"
