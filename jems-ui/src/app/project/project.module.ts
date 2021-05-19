@@ -11,7 +11,6 @@ import {ProjectApplicationFilesComponent} from './project-application/containers
 import {DescriptionCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/description-cell/description-cell.component';
 import {ProjectApplicationEligibilityCheckComponent} from './project-detail-page/project-application-eligibility-check/project-application-eligibility-check.component';
 import {ProjectApplicationQualityCheckComponent} from './project-detail-page/project-application-quality-check/project-application-quality-check.component';
-import {ProjectStore} from './project-application/containers/project-application-detail/services/project-store.service';
 import {ActionsCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/actions-cell/actions-cell.component';
 import {ProjectApplicationDecisionsComponent} from './project-detail-page/project-application-decisions/project-application-decisions.component';
 import {ProjectApplicationActionsComponent} from './project-detail-page/project-application-actions/project-application-actions.component';
@@ -31,7 +30,6 @@ import {ProjectApplicationFormManagementDetailComponent} from './project-applica
 import {ProjectApplicationFormFuturePlansDetailComponent} from './project-application/components/project-application-form/project-application-form-future-plans-detail/project-application-form-future-plans-detail.component';
 import {ContributionRadioColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-radio-column/contribution-radio-column.component';
 import {ProjectApplicationFormPartnerContactComponent} from './project-application/components/project-application-form/project-application-form-partner-contact/project-application-form-partner-contact.component';
-import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
 import {RouterModule} from '@angular/router';
 import {ProjectApplyToCallComponent} from './project-application/containers/project-application-page/project-apply-to-call.component';
 import {ProjectApplicationFormOverallObjectiveSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-overall-objective-section/project-application-form-overall-objective-section.component';
@@ -86,6 +84,10 @@ import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/pro
 import {FilterUnitCostsPipe} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
 import {ProjectApplicationPreConditionCheckResultComponent} from './project-detail-page/project-application-pre-condition-check-result/project-application-pre-condition-check-result.component';
+import {ProjectStore} from './project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
+import {ProjectVersionStore} from './services/project-version-store.service';
+import {ProjectPageTemplateComponent} from './project-page-template/project-page-template.component';
 
 @NgModule({
   declarations: [
@@ -167,6 +169,7 @@ import {ProjectApplicationPreConditionCheckResultComponent} from './project-deta
     FilterUnitCostsPipe,
     ProjectDetailPageComponent,
     ProjectApplicationPreConditionCheckResultComponent,
+    ProjectPageTemplateComponent,
   ],
   imports: [
     SharedModule,
@@ -178,6 +181,7 @@ import {ProjectApplicationPreConditionCheckResultComponent} from './project-deta
   providers: [
     DatePipe,
     ProjectStore,
+    ProjectVersionStore,
     ProjectApplicationFormSidenavService,
     ProjectApplicationFormStore,
     ProjectAcronymResolver,

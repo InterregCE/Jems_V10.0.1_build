@@ -24,6 +24,7 @@ import {BudgetCostCategoryEnumUtils} from '../../../../model/lump-sums/BudgetCos
 import {RoutingService} from '../../../../../common/services/routing.service';
 import {ProjectUtil} from '../../../../project-util';
 import {SecurityService} from '../../../../../security/security.service';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 /**
@@ -67,16 +68,16 @@ export class ProjectStore {
       tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
     );
 
-
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
               private router: RoutingService,
               private securityService: SecurityService,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              private projectVersionStore: ProjectVersionStore) {
     this.router.routeParameterChanges(ProjectStore.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
-        tap(id => this.projectId$.next(Number(id)))
+        tap(id => this.projectId$.next(id as number))
       ).subscribe();
 
     this.project$ = this.project();
@@ -133,10 +134,10 @@ export class ProjectStore {
   }
 
   private project(): Observable<ProjectDetailDTO> {
-    const byId$ = this.projectId$
+    const byId$ = combineLatest([this.projectId$, this.projectVersionStore.currentRouteVersion$])
       .pipe(
-        filter(id => !!id),
-        switchMap(id => this.projectService.getProjectById(id)),
+        filter(([id]) => !!id),
+        switchMap(([id, version]) => this.projectService.getProjectById(id, version)),
         tap(project => Log.info('Fetched project:', this, project))
       );
 
@@ -165,9 +166,13 @@ export class ProjectStore {
       this.project$,
       this.permissionService.permissionsChanged(),
       this.securityService.currentUser,
+      this.projectVersionStore.currentIsLatest$
     ])
       .pipe(
-        map(([project, permissions, currentUser]) => {
+        map(([project, permissions, currentUser, currentVersionIsLatest]) => {
+          if (!currentVersionIsLatest) {
+            return false;
+          }
           if (permissions.includes(PermissionsEnum.ProjectUpdate)) {
             return true;
           }

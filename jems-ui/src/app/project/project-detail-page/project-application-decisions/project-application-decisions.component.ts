@@ -1,6 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges} from '@angular/core';
 import {ProjectDecisionDTO, ProjectStatusDTO} from '@cat/api';
 import {ProjectStepStatus} from '../project-step-status';
+import {Observable} from 'rxjs';
+import {ProjectDetailPageStore} from '../project-detail-page-store';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-application-decisions',
@@ -21,6 +24,17 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
   projectStatus: ProjectStatusDTO;
 
   stepStatus: ProjectStepStatus;
+
+  data$: Observable<{
+    isProjectLatestVersion: boolean;
+  }>;
+
+  constructor(private projectDetailPageStore: ProjectDetailPageStore) {
+    this.data$ = this.projectDetailPageStore.isProjectLatestVersion$
+      .pipe(
+        map(isProjectLatestVersion => ({isProjectLatestVersion}))
+      );
+  }
 
   ngOnChanges(): void {
     this.stepStatus = new ProjectStepStatus(this.step);

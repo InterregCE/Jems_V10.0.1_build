@@ -8,7 +8,6 @@ import {InputProjectPartnership, ProjectDescriptionService} from '@cat/api';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-form-project-partnership-section',
@@ -44,7 +43,6 @@ export class ProjectApplicationFormProjectPartnershipSectionComponent {
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectDescriptionService: ProjectDescriptionService,
               private projectApplicationFormStore: ProjectApplicationFormStore) {
     this.projectApplicationFormStore.init(this.projectId);

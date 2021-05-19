@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {ProjectStore} from '../services/project-store.service';
 import {combineLatest, ReplaySubject, Subject} from 'rxjs';
 import {catchError, map, mergeMap, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
@@ -12,6 +11,7 @@ import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {APIError} from '../../../../../common/models/APIError';
 import {ProjectUtil} from '../../../../project-util';
+import {ProjectDetailPageStore} from '../../../../project-detail-page/project-detail-page-store';
 
 @Component({
   selector: 'app-project-application-files',
@@ -53,22 +53,23 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
 
   details$ = combineLatest([
     this.currentPage$,
-    this.projectStore.project$,
-    this.projectStore.projectCurrentDecisions$,
+    this.projectDetailPageStore.project$,
+    this.projectDetailPageStore.projectCurrentDecisions$,
+    this.projectDetailPageStore.isProjectLatestVersion$,
     this.permissionService.permissionsChanged()
   ])
     .pipe(
-      map(([page, project, decisions, permissions]) => ({
+      map(([page, project, decisions, isProjectLatestVersion, permissions]) => ({
         page,
         project,
         fundingDecisionDefined: !!decisions?.fundingDecision,
         permission: permissions[0],
-        uploadPossible: this.canUploadFiles(project, permissions[0])
+        uploadPossible: this.canUploadFiles(project, permissions[0], isProjectLatestVersion)
       }))
     );
 
   constructor(private permissionService: PermissionService,
-              private projectStore: ProjectStore,
+              private projectDetailPageStore: ProjectDetailPageStore,
               private projectFileStorageService: ProjectFileStorageService) {
     super();
   }
@@ -115,7 +116,10 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
       ).subscribe();
   }
 
-  private canUploadFiles(project: ProjectDetailDTO, permission: Permission): boolean {
+  private canUploadFiles(project: ProjectDetailDTO, permission: Permission, isProjectLatestVersion: boolean): boolean {
+    if (!isProjectLatestVersion) {
+      return false;
+    }
     if (permission === Permission.ADMINISTRATOR) {
       return true;
     }

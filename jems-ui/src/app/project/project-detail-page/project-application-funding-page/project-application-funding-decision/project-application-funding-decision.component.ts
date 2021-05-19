@@ -4,7 +4,6 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {tap} from 'rxjs/operators';
 import {ProjectFundingDecisionStore} from '../project-funding-decision-store.service';
 import {RoutingService} from '../../../../common/services/routing.service';
-import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/internal/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
@@ -54,8 +53,7 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
 
   constructor(private fundingDecisionStore: ProjectFundingDecisionStore,
               private formBuilder: FormBuilder,
-              private router: RoutingService,
-              private sidenavService: ProjectApplicationFormSidenavService) {
+              private router: RoutingService) {
   }
 
   ngOnInit(): void {

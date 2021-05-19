@@ -1,6 +1,6 @@
-<app-main-page-template [needsCard]="true"
-                        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
-                        subTitleKey="project.application.form.section.part.d">
+<app-project-page-template [needsCard]="true"
+                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
+                           subTitleKey="project.application.form.section.part.d">
     <h3>{{'project.application.form.budget.title' | translate}}</h3>
 
     <mat-table id="budget-table"
@@ -97,4 +97,4 @@
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
         <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
     </mat-table>
-</app-main-page-template>
+</app-project-page-template>

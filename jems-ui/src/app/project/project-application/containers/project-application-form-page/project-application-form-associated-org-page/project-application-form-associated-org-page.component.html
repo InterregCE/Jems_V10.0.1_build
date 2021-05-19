@@ -1,6 +1,6 @@
-<app-main-page-template [needsCard]="true"
-                        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
-                        subTitleKey="project.application.form.section.part.b">
+<app-project-page-template [needsCard]="true"
+                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
+                           subTitleKey="project.application.form.section.part.b">
 
     <h3>{{'project.application.form.section.part.b.associatedOrganizations' | translate}}</h3>
 
@@ -22,4 +22,4 @@
             (newSort)="newSort$.next($event)"
             (deleteAssociatedOrganization)="deleteAssociatedOrganization($event)">
     </app-project-application-form-associated-organizations-list>
-</app-main-page-template>
+</app-project-page-template>

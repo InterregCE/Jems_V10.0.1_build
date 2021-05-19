@@ -19,7 +19,6 @@ import {
 import {Log} from '../../../../../common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
 import {Router} from '@angular/router';
 
 @Injectable()
@@ -95,8 +94,7 @@ export class ProjectAssociatedOrganizationStore {
 
   constructor(private associatedOrganizationService: ProjectAssociatedOrganizationService,
               private projectStore: ProjectStore,
-              private router: Router,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
+              private router: Router) {
   }
 
   init(associatedOrganizationId: number | string | null): void {

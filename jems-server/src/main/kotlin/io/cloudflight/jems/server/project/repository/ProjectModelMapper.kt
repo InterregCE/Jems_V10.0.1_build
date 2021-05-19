@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.repository
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.repository.toModel
 import io.cloudflight.jems.server.common.entity.extractField
@@ -32,6 +31,8 @@ fun ProjectPeriodEntity.toProjectPeriod() = ProjectPeriod(number = id.number, st
 
 fun ProjectVersionEntity.toProjectVersion() =
     ProjectVersion(version = id.version, projectId = id.projectId, createdAt = createdAt, user = user, status = status)
+
+fun List<ProjectVersionEntity>.toProjectVersions() = map { it.toProjectVersion() }
 
 fun CallEntity.toSettingsModel() = ProjectCallSettings(
     callId = id,

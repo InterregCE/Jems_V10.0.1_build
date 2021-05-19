@@ -20,8 +20,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
-import java.sql.Timestamp
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 internal class CreateNewProjectVersionTest : UnitTest() {
 
@@ -38,14 +37,14 @@ internal class CreateNewProjectVersionTest : UnitTest() {
     private val currentProjectVersion = ProjectVersion(
         "1.0",
         projectId,
-        createdAt = Timestamp.valueOf(LocalDateTime.now()),
+        createdAt = ZonedDateTime.now(),
         user,
         ApplicationStatus.RETURNED_TO_APPLICANT
     )
     private val newProjectVersion = ProjectVersion(
         "2.0",
         projectId,
-        createdAt = Timestamp.valueOf(LocalDateTime.now()),
+        createdAt = ZonedDateTime.now(),
         user,
         ApplicationStatus.SUBMITTED
     )

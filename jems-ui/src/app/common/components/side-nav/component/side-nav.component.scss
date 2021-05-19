@@ -73,3 +73,9 @@ ul {
   text-decoration: underline var(--font-color-contrast);
   text-decoration-width: 0.07rem;
 }
+
+.disabled {
+  pointer-events: none;
+  cursor: default;
+  color: var(--font-color-secondary);
+}

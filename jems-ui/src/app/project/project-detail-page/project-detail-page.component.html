@@ -1,5 +1,5 @@
-<app-main-page-template [needsCard]="true" *ngIf="projectDetailStore.project$ | async as project"
-                        titleKey="project.application.form.lifecycle.title">
+<app-project-page-template [needsCard]="true" *ngIf="projectDetailStore.project$ | async as project"
+                           titleKey="project.application.form.lifecycle.title">
     <div appFormLayout>
 
         <div appNoWidthLimit>
@@ -69,4 +69,4 @@
             </mat-tab>
         </mat-tab-group>
     </div>
-</app-main-page-template>
+</app-project-page-template>

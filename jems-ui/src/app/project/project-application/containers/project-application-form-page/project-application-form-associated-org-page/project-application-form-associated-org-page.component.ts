@@ -5,7 +5,6 @@ import {map, mergeMap, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectAssociatedOrganizationService} from '@cat/api';
-import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {Permission} from '../../../../../security/permissions/permission';
@@ -42,7 +41,6 @@ export class ProjectApplicationFormAssociatedOrgPageComponent {
       );
 
   constructor(public projectStore: ProjectStore,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
               private activatedRoute: ActivatedRoute) {
   }

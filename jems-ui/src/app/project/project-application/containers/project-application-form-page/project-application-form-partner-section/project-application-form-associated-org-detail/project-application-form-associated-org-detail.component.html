@@ -1,4 +1,4 @@
-<app-main-page-template
+<app-project-page-template
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.b">
     <app-project-application-form-associated-organization-edit
@@ -13,4 +13,4 @@
             (update)="associatedOrganizationStore.saveAssociatedOrganization$.next($event)"
             (cancel)="redirectToAssociatedOrganizationOverview()">
     </app-project-application-form-associated-organization-edit>
-</app-main-page-template>
+</app-project-page-template>

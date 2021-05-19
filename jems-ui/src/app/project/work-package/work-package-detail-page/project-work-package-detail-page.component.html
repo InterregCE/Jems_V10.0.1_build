@@ -1,6 +1,6 @@
-<app-main-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
-                        titleKey="project.application.form.section.part.c"
-                        subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
+<app-project-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
+                           titleKey="project.application.form.section.part.c"
+                           subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
     <mat-tab-group
             appNoWidthLimit
             *ngIf="workPackageId"
@@ -26,4 +26,4 @@
     <app-project-work-package-objectives-tab *ngIf="!workPackageId">
     </app-project-work-package-objectives-tab>
 
-</app-main-page-template>
+</app-project-page-template>

@@ -23,7 +23,7 @@ class ProjectVersionEntity(
     val rowEnd: Timestamp? = null,
 
     @field:NotNull
-    val createdAt: Timestamp = Timestamp.valueOf(ZonedDateTime.now().toLocalDateTime()),
+    val createdAt: ZonedDateTime = ZonedDateTime.now(),
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")

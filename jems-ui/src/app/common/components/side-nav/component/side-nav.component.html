@@ -9,7 +9,11 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <div *ngFor="let subtitle of data.bullets" class="side-nav-main">
-                <mat-expansion-panel class="mat-elevation-z0"
+                <ng-container *ngIf="subtitle.headlineTemplate"
+                              [ngTemplateOutlet]="subtitle.headlineTemplate"></ng-container>
+
+                <mat-expansion-panel *ngIf="!subtitle.headlineTemplate"
+                                     class="mat-elevation-z0"
                                      [expanded]="subtitle.bullets?.length"
                                      [disabled]="!subtitle.bullets?.length">
                     <mat-expansion-panel-header>
@@ -24,12 +28,12 @@
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <ul class="side-nav-section" *ngIf="subtitle.bullets?.length">
-                        <li *ngFor="let section of subtitle.bullets"
+                        <li *ngFor="let section of subtitle.bullets" [class.disabled]="subtitle.disabled"
                             (click)="sideNavService.navigate(section)">
                             <span class="first-list-item">
                                 {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}</span>
                             <ul class="side-nav-subsection" *ngIf="section.bullets?.length">
-                                <li *ngFor="let subsection of section.bullets"
+                                <li *ngFor="let subsection of section.bullets" [class.disabled]="subtitle.disabled"
                                     (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
                                     <span class="second-list-item">{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</span>
                                 </li>

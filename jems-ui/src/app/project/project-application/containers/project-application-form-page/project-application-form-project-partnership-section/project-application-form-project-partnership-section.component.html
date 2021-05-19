@@ -1,4 +1,4 @@
-<app-main-page-template
+<app-project-page-template
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.c">
     <app-project-application-form-project-partnership-detail
@@ -7,4 +7,4 @@
             [error$]="saveError$"
             (updateData)="updatePartnership$.next($event)">
     </app-project-application-form-project-partnership-detail>
-</app-main-page-template>
+</app-project-page-template>

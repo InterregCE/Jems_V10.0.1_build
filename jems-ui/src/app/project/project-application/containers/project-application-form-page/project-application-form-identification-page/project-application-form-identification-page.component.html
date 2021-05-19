@@ -1,13 +1,12 @@
-<app-main-page-template
+<app-project-page-template
         *ngIf="details$ | async as details"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async}"
         subTitleKey="project.application.form.section.part.a">
     <app-project-application-form
             *ngIf="details$ | async as details"
             [project]="details.project"
-            [editable]="projectStore.projectEditable$ | async"
             [priorities]="details.callObjectives.priorities"
             [objectivesWithPolicies]="details.callObjectives.objectivesWithPolicies">
     </app-project-application-form>
-</app-main-page-template>
+</app-project-page-template>
 

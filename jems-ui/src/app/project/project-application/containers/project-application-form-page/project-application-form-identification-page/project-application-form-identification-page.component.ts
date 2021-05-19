@@ -3,7 +3,6 @@ import {combineLatest} from 'rxjs';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {
@@ -34,7 +33,7 @@ export class ProjectApplicationFormIdentificationPageComponent {
             const orderBool = a.code.toLocaleLowerCase() > b.code.toLocaleLowerCase();
             return orderBool ? 1 : -1;
           })
-          .map(objective => ({ title: objective.title, code: objective.code }) as OutputProgrammePrioritySimple),
+          .map(objective => ({title: objective.title, code: objective.code}) as OutputProgrammePrioritySimple),
         objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
       }))
     );
@@ -53,7 +52,6 @@ export class ProjectApplicationFormIdentificationPageComponent {
               private projectApplicationFormStore: ProjectApplicationFormStore,
               private projectService: ProjectService,
               private activatedRoute: ActivatedRoute,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private callService: CallService) {
     this.projectApplicationFormStore.init(this.projectId);
   }
