@@ -4,11 +4,17 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
@@ -46,7 +52,11 @@ internal class CreateProjectPartnerInteractorTest {
     )
     private val partnerTranslatedValues =
         mutableSetOf(ProjectPartnerTranslEntity(TranslationPartnerId(1, SystemLanguage.EN), "test"))
-    private val laegalStatus = ProgrammeLegalStatusEntity(id = 1)
+    private val legalStatus = ProgrammeLegalStatusEntity(id = 1)
+    private val partnerAddress = ProjectPartnerAddress(
+        addressId = ProjectPartnerAddressId(1, ProjectPartnerAddressType.Organization),
+        address = AddressEntity("AT")
+    )
     private val projectPartnerWithOrganization = ProjectPartnerEntity(
         id = 1,
         project = ProjectPartnerTestUtil.project,
@@ -56,9 +66,10 @@ internal class CreateProjectPartnerInteractorTest {
         nameInEnglish = "test",
         translatedValues = partnerTranslatedValues,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
-        legalStatus = laegalStatus,
+        legalStatus = legalStatus,
         vat = "test vat",
-        vatRecovery = ProjectPartnerVatRecovery.Yes
+        vatRecovery = ProjectPartnerVatRecovery.Yes,
+        addresses = setOf(partnerAddress)
     )
 
     private val outputProjectPartnerDetail = projectPartner.toOutputProjectPartnerDetail()
@@ -102,6 +113,24 @@ internal class CreateProjectPartnerInteractorTest {
                 1,
                 inputProjectPartner
             )
-        ).isEqualTo(projectPartnerWithOrganization.toOutputProjectPartnerDetail())
+        ).isEqualTo(
+            OutputProjectPartnerDetail(
+                id = projectPartnerWithOrganization.id,
+                abbreviation = projectPartnerWithOrganization.abbreviation,
+                role = projectPartnerWithOrganization.role,
+                sortNumber = projectPartnerWithOrganization.sortNumber,
+                nameInOriginalLanguage = projectPartnerWithOrganization.nameInOriginalLanguage,
+                nameInEnglish = projectPartnerWithOrganization.nameInEnglish,
+                department = setOf(InputTranslation(SystemLanguage.EN, "test")),
+                partnerType = projectPartnerWithOrganization.partnerType,
+                vat = projectPartnerWithOrganization.vat,
+                vatRecovery = projectPartnerWithOrganization.vatRecovery,
+                legalStatusId = projectPartnerWithOrganization.legalStatus.id,
+                addresses = listOf(ProjectPartnerAddressDTO(
+                    type = partnerAddress.addressId.type,
+                    country = partnerAddress.address.country
+                ))
+            )
+        )
     }
 }

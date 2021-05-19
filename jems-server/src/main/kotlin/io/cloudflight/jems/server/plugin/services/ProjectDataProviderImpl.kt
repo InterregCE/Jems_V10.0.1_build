@@ -10,13 +10,11 @@ import io.cloudflight.jems.server.project.service.ProjectDescriptionService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
-import io.cloudflight.jems.server.project.service.lumpsum.get_project_lump_sums.GetProjectLumpSumsInteractor
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCostsInteractor
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCostInteractor
-import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancingInteractor
-import io.cloudflight.jems.server.project.service.partner.get_project_partner.GetProjectPartnerInteractor
+import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.slf4j.LoggerFactory
@@ -32,8 +30,8 @@ class ProjectDataProviderImpl(
     private val resultPersistence: ProjectResultPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val associatedOrganizationService: ProjectAssociatedOrganizationService,
-    private val getBudgetOptions: GetBudgetOptionsInteractor,
-    private val getCoFinancing: GetCoFinancingInteractor,
+    private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
+    private val coFinancingPersistence: ProjectPartnerCoFinancingPersistence,
     private val getBudgetCosts: GetBudgetCostsInteractor,
     private val getBudgetTotalCost: GetBudgetTotalCostInteractor,
     private val projectLumpSumPersistence: ProjectLumpSumPersistence
@@ -49,9 +47,11 @@ class ProjectDataProviderImpl(
         val sectionA = projectPersistence.getProject(projectId).toDto().projectData?.toDataModel()
 
         val partners = partnerPersistence.findAllByProjectId(projectId).map {
-            val budgetOptions = getBudgetOptions.getBudgetOptions(it.id!!)?.toDataModel()
-            val coFinancing = getCoFinancing.getCoFinancing(it.id!!, null).toDataModel()
+            val budgetOptions = budgetOptionsPersistence.getBudgetOptions(it.id!!)?.toDataModel()
+            val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(it.id!!, null).toDataModel()
+            // getBudgetCosts should be replaced by persistence/service call without permissions
             val budgetCosts = getBudgetCosts.getBudgetCosts(it.id!!).toDataModel()
+            // getBudgetTotalCost should be replaced by persistence/service call without permissions
             val budgetTotalCost = getBudgetTotalCost.getBudgetTotalCost(it.id!!)
             val budget = PartnerBudgetData(budgetOptions, coFinancing, budgetCosts, budgetTotalCost)
             it.toDataModel(budget)
