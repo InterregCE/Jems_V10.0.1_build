@@ -27,7 +27,7 @@ class ExecutePreConditionCheck(
                 projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                     when {
                         // todo pluginKey should be fetched from call settings for the project when it is added
-                        callSettings.endDateStep1 == null || projectSummary.status.isInStepTwo() ->
+                        callSettings.endDateStep1 == null || projectSummary.status.isInStep2() ->
                             jemsPluginRegistry.get(
                                 PreConditionCheckPlugin::class, key = pluginKey
                             ).check(projectId)

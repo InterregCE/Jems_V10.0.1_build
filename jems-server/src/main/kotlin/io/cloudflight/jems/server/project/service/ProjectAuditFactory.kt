@@ -79,14 +79,38 @@ fun callAlreadyEnded(callId: Long): AuditCandidate =
     AuditBuilder(AuditAction.CALL_ALREADY_ENDED)
         .description("Attempted unsuccessfully to submit or to apply for call '$callId' that has already ended").build()
 
-fun qualityAssessmentConcluded(projectDetailDTO: ProjectDetailDTO): AuditCandidate =
-    AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
+fun qualityAssessmentStep1Concluded(context: Any, projectDetailDTO: ProjectDetailDTO): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
         .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
-        .description("Project application quality assessment concluded as ${projectDetailDTO.firstStepDecision?.qualityAssessment?.result}")
+        .description("Project application quality assessment (step 1) concluded as ${projectDetailDTO.firstStepDecision?.qualityAssessment?.result}")
         .build()
+    )
 
-fun eligibilityAssessmentConcluded(projectDetailDTO: ProjectDetailDTO): AuditCandidate =
-    AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
-        .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
-        .description("Project application eligibility assessment concluded as ${projectDetailDTO.firstStepDecision?.eligibilityAssessment?.result}")
-        .build()
+fun qualityAssessmentStep2Concluded(context: Any, projectDetailDTO: ProjectDetailDTO): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
+            .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
+            .description("Project application quality assessment concluded as ${projectDetailDTO.secondStepDecision?.qualityAssessment?.result}")
+            .build()
+    )
+
+fun eligibilityAssessmentStep1Concluded(context: Any, projectDetailDTO: ProjectDetailDTO): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
+            .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
+            .description("Project application eligibility assessment (step 1) concluded as ${projectDetailDTO.firstStepDecision?.eligibilityAssessment?.result}")
+            .build()
+    )
+
+fun eligibilityAssessmentStep2Concluded(context: Any, projectDetailDTO: ProjectDetailDTO): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
+            .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
+            .description("Project application eligibility assessment concluded as ${projectDetailDTO.secondStepDecision?.eligibilityAssessment?.result}")
+            .build()
+    )

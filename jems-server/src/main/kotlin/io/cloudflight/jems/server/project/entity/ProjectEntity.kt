@@ -16,7 +16,6 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
-import javax.persistence.OneToOne
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project")
@@ -57,6 +56,7 @@ data class ProjectEntity(
 
     @Column(name = "step2_active")
     @field:NotNull
+    @Deprecated("This flag is about to be removed", replaceWith = ReplaceWith("status.isStep2Active()"))
     var step2Active: Boolean,
 
     @ManyToOne(optional = true)

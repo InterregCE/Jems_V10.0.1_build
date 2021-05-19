@@ -30,7 +30,7 @@ class ProjectPartnerAuthorization(
 
     fun canOwnerUpdatePartner(partnerId: Long): Boolean {
         val project = getProjectFromPartnerId(partnerId)
-        return project.projectStatus.isNotSubmittedNow() && isActiveUserIdEqualTo(project.applicantId)
+        return project.projectStatus.hasNotBeenSubmittedYet() && isActiveUserIdEqualTo(project.applicantId)
     }
 
     private fun getProjectFromPartnerId(partnerId: Long): ProjectApplicantAndStatus {

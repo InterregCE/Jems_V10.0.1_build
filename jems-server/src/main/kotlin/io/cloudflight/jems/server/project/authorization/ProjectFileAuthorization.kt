@@ -33,7 +33,7 @@ class ProjectFileAuthorization(
         val project = projectPersistence.getApplicantAndStatusById(projectId)
 
         return when (fileType) {
-            APPLICANT_FILE -> isApplicantOwner(project.applicantId) && project.projectStatus.isNotSubmittedNow()
+            APPLICANT_FILE -> isApplicantOwner(project.applicantId) && project.projectStatus.hasNotBeenSubmittedYet()
             ASSESSMENT_FILE -> isProgrammeUser()
             else -> false
         }

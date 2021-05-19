@@ -162,7 +162,8 @@ internal class ProjectFileAuthorizationTest {
                 callSettings = dummyCallDto,
                 acronym = "",
                 applicant = OutputUser(null, "", "", ""),
-                projectStatus = statusDTO
+                projectStatus = statusDTO,
+                step2Active = true,
             )
         }
 

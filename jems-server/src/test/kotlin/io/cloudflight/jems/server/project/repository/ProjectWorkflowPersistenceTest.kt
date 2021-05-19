@@ -126,7 +126,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 ),
                 step2Active = false
             );
-            val firstStepDecision = ProjectDecisionEntity(
+            val secondStepDecision = ProjectDecisionEntity(
                 eligibilityDecision = ProjectStatusHistoryEntity(
                     id = 2,
                     status = ApplicationStatus.ELIGIBLE,
@@ -141,7 +141,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 ),
                 project = project
             );
-            project.firstStepDecision = firstStepDecision;
+            project.secondStepDecision = secondStepDecision;
             return project;
         }
     }
@@ -170,7 +170,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         val project = dummyProject()
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
         assertThat(persistence.getProjectEligibilityDecisionDate(PROJECT_ID)).isEqualTo(
-            project.firstStepDecision?.eligibilityDecision?.decisionDate
+            project.secondStepDecision?.eligibilityDecision?.decisionDate
         )
     }
 

@@ -9,8 +9,8 @@ import io.cloudflight.jems.api.project.dto.status.InputProjectEligibilityAssessm
 import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
-import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.entity.CallEntity
@@ -22,31 +22,35 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.ProjectDecisionRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
-import io.mockk.MockKAnnotations
+import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Optional
+import java.util.stream.Stream
 
-internal class ProjectStatusServiceTest {
+internal class ProjectStatusServiceTest: UnitTest() {
 
     companion object {
         const val NOTE_DENIED = "denied"
@@ -65,15 +69,13 @@ internal class ProjectStatusServiceTest {
     lateinit var userRepository: UserRepository
 
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
     lateinit var securityService: SecurityService
 
-    @MockK
-    lateinit var projectStatusHistoryRepository: ProjectStatusHistoryRepository
-
-    lateinit var projectStatusService: ProjectStatusService
+    @InjectMockKs
+    lateinit var projectStatusService: ProjectStatusServiceImpl
 
     private val user = UserEntity(
         id = 1,
@@ -103,21 +105,13 @@ internal class ProjectStatusServiceTest {
 
     private val projectSubmitted = createProject(ApplicationStatus.SUBMITTED, NOTE_DENIED)
 
-    @BeforeEach
-    fun setup() {
-        MockKAnnotations.init(this)
-        projectStatusService = ProjectStatusServiceImpl(
-            projectRepository, userRepository, projectDecisionRepository, auditService, securityService
-        )
-    }
-
     private fun createProject(status: ApplicationStatus, note: String? = null): ProjectEntity {
         val submitTime: ZonedDateTime?
         val statusTime: ZonedDateTime
         if (status == ApplicationStatus.DRAFT) {
             submitTime = null
             statusTime = DRAFT_TIME
-        } else if (status == ApplicationStatus.SUBMITTED) {
+        } else if (status == ApplicationStatus.SUBMITTED || status == ApplicationStatus.STEP1_SUBMITTED) {
             submitTime = SUBMIT_TIME
             statusTime = SUBMIT_TIME
         } else { // status RETURNED_TO_APPLICANT
@@ -133,7 +127,7 @@ internal class ProjectStatusServiceTest {
             firstSubmission = if (submitTime != null) ProjectStatusHistoryEntity(
                 2,
                 null,
-                ApplicationStatus.SUBMITTED,
+                if (status == ApplicationStatus.STEP1_SUBMITTED) ApplicationStatus.STEP1_SUBMITTED else ApplicationStatus.SUBMITTED,
                 user,
                 submitTime,
                 null,
@@ -143,8 +137,9 @@ internal class ProjectStatusServiceTest {
         )
     }
 
-    @Test
-    fun `set quality assessment`() {
+    @ParameterizedTest
+    @MethodSource("provideSubmittedProjects")
+    fun `set quality assessment`(project: ProjectEntity) {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(any()) } returns UserEntity(
             1,
@@ -154,7 +149,7 @@ internal class ProjectStatusServiceTest {
             UserRoleEntity(7, "programme"),
             "hash_pass"
         )
-        every { projectRepository.findById(16) } returns Optional.of(projectSubmitted.copy(id = 16))
+        every { projectRepository.findById(16) } returns Optional.of(project.copy(id = 16))
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
         every { projectDecisionRepository.save(any<ProjectDecisionEntity>()) } returnsArgument 0
 
@@ -164,15 +159,22 @@ internal class ProjectStatusServiceTest {
         )
 
         val result = projectStatusService.setQualityAssessment(16, inputData)
-        assertThat(result.firstStepDecision?.qualityAssessment!!.result).isEqualTo(ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING)
-        assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.SUBMITTED)
+        if (project.currentStatus.status.isInStep2()) {
+            assertThat(result.secondStepDecision?.qualityAssessment!!.result).isEqualTo(ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING)
+            assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.SUBMITTED)
+        } else {
+            assertThat(result.firstStepDecision?.qualityAssessment!!.result).isEqualTo(ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING)
+            assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.STEP1_SUBMITTED)
+        }
 
-        val event = slot<AuditCandidate>()
-        verify { auditService.logEvent(capture(event)) }
-        assertThat(event.captured.action).isEqualTo(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
-        assertThat(event.captured.project?.id).isEqualTo(16.toString())
-        assertThat(event.captured.description).isEqualTo("Project application quality assessment concluded as RECOMMENDED_FOR_FUNDING")
-
+        val event = slot<AuditCandidateEvent>()
+        verify { auditPublisher.publishEvent(capture(event)) }
+        assertThat(event.captured.auditCandidate.action).isEqualTo(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
+        assertThat(event.captured.auditCandidate.project?.id).isEqualTo(16.toString())
+        assertThat(event.captured.auditCandidate.description).isEqualTo(
+            "Project application quality assessment ${if (project.currentStatus.status.isInStep2()) "" else "(step 1) "}concluded as RECOMMENDED_FOR_FUNDING"
+        )
+        clearMocks(auditPublisher)
     }
 
     @Test
@@ -201,8 +203,9 @@ internal class ProjectStatusServiceTest {
         assertThrows<ResourceNotFoundException> { projectStatusService.setQualityAssessment(-51, data) }
     }
 
-    @Test
-    fun `set eligibility assessment`() {
+    @ParameterizedTest
+    @MethodSource("provideSubmittedProjects")
+    fun `set eligibility assessment`(project: ProjectEntity) {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
         every { userRepository.findByIdOrNull(any()) } returns UserEntity(
             1,
@@ -212,7 +215,7 @@ internal class ProjectStatusServiceTest {
             UserRoleEntity(7, "programme"),
             "hash_pass"
         )
-        every { projectRepository.findById(79) } returns Optional.of(projectSubmitted.copy(id = 79))
+        every { projectRepository.findById(79) } returns Optional.of(project.copy(id = 79))
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
         every { projectDecisionRepository.save(any<ProjectDecisionEntity>()) } returnsArgument 0
 
@@ -222,16 +225,26 @@ internal class ProjectStatusServiceTest {
         )
 
         val result = projectStatusService.setEligibilityAssessment(79, inputData)
-        assertThat(result.firstStepDecision?.eligibilityAssessment!!.result).isEqualTo(
-            ProjectEligibilityAssessmentResult.PASSED
-        )
-        assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.SUBMITTED)
+        if (project.currentStatus.status.isInStep2()) {
+            assertThat(result.secondStepDecision?.eligibilityAssessment!!.result).isEqualTo(
+                ProjectEligibilityAssessmentResult.PASSED
+            )
+            assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.SUBMITTED)
+        } else {
+            assertThat(result.firstStepDecision?.eligibilityAssessment!!.result).isEqualTo(
+                ProjectEligibilityAssessmentResult.PASSED
+            )
+            assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.STEP1_SUBMITTED)
+        }
 
-        val event = slot<AuditCandidate>()
-        verify { auditService.logEvent(capture(event)) }
-        assertThat(event.captured.action).isEqualTo(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
-        assertThat(event.captured.project?.id).isEqualTo(79.toString())
-        assertThat(event.captured.description).isEqualTo("Project application eligibility assessment concluded as PASSED")
+        val event = slot<AuditCandidateEvent>()
+        verify { auditPublisher.publishEvent(capture(event)) }
+        assertThat(event.captured.auditCandidate.action).isEqualTo(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
+        assertThat(event.captured.auditCandidate.project?.id).isEqualTo(79.toString())
+        assertThat(event.captured.auditCandidate.description).isEqualTo(
+            "Project application eligibility assessment ${if (project.currentStatus.status.isInStep2()) "" else "(step 1) "}concluded as PASSED"
+        )
+        clearMocks(auditPublisher)
     }
 
     @Test
@@ -258,6 +271,13 @@ internal class ProjectStatusServiceTest {
 
         val data = InputProjectEligibilityAssessment(ProjectEligibilityAssessmentResult.FAILED)
         assertThrows<ResourceNotFoundException> { projectStatusService.setEligibilityAssessment(-22, data) }
+    }
+
+    private fun provideSubmittedProjects(): Stream<Arguments> {
+        return Stream.of(
+            Arguments.of(createProject(ApplicationStatus.SUBMITTED)),
+            Arguments.of(createProject(ApplicationStatus.STEP1_SUBMITTED)),
+        )
     }
 
 }

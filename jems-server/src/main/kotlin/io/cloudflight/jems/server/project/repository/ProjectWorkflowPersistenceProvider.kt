@@ -22,7 +22,7 @@ class ProjectWorkflowPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getProjectEligibilityDecisionDate(projectId: Long): LocalDate? =
         getProjectOrThrow(projectId)!!.let {
-            if (it.step2Active)
+            if (it.currentStatus.status.isInStep2())
                 it.secondStepDecision!!.eligibilityDecision?.decisionDate
             else
                 it.firstStepDecision!!.eligibilityDecision?.decisionDate
@@ -114,7 +114,7 @@ class ProjectWorkflowPersistenceProvider(
     @Transactional
     override fun resetProjectFundingDecisionToCurrentStatus(projectId: Long) =
         projectRepository.getOne(projectId).apply {
-            if (this.step2Active)
+            if (this.currentStatus.status.isInStep2())
                 this.secondStepDecision!!.fundingDecision = currentStatus
             else
                 this.firstStepDecision!!.fundingDecision = currentStatus
@@ -132,7 +132,7 @@ class ProjectWorkflowPersistenceProvider(
                     decisionDate = actionInfo.date, user = userRepository.getOne(userId)
                 )
             )
-            if (this.step2Active)
+            if (this.currentStatus.status.isInStep2())
                 this.secondStepDecision!!.eligibilityDecision = newStatus
             else
                 this.firstStepDecision!!.eligibilityDecision = newStatus
@@ -142,7 +142,7 @@ class ProjectWorkflowPersistenceProvider(
     @Transactional
     override fun clearProjectEligibilityDecision(projectId: Long) {
         projectRepository.getOne(projectId).apply {
-            if (this.step2Active)
+            if (this.currentStatus.status.isInStep2())
                 this.secondStepDecision!!.eligibilityDecision = null
             else
                 this.firstStepDecision!!.eligibilityDecision = null
@@ -160,7 +160,7 @@ class ProjectWorkflowPersistenceProvider(
                     decisionDate = actionInfo.date, user = userRepository.getOne(userId)
                 )
             )
-            if (this.step2Active)
+            if (this.currentStatus.status.isInStep2())
                 this.secondStepDecision!!.fundingDecision = newStatus
             else
                 this.firstStepDecision!!.fundingDecision = newStatus
@@ -170,7 +170,7 @@ class ProjectWorkflowPersistenceProvider(
     @Transactional
     override fun clearProjectFundingDecision(projectId: Long) {
         projectRepository.getOne(projectId).apply {
-            if (this.step2Active)
+            if (this.currentStatus.status.isInStep2())
                 this.secondStepDecision!!.fundingDecision = null
             else
                 this.firstStepDecision!!.fundingDecision = null

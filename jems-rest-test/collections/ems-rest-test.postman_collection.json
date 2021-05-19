@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "90c0abd9-b128-4ee0-9d3d-9b622e700817",
+		"_postman_id": "3ea2c8e9-255f-4e9c-9649-d74157e32a5b",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -4273,7 +4273,7 @@
 							"script": {
 								"exec": [
 									"pm.test('applicant should not be able to enter EA', function() {\r",
-									"    pm.response.to.have.status(403);\r",
+									"    pm.response.to.have.status(404);\r",
 									"});\r",
 									""
 								],
@@ -4345,9 +4345,9 @@
 									"});\r",
 									"\r",
 									"pm.test('EA is part of the application detail', function() {\r",
-									"    const application = pm.response.json().decision;\r",
-									"    pm.expect(application).to.have.property(\"eligibilityAssessment\");\r",
-									"    pm.expect(application.eligibilityAssessment).not.eql(null);\r",
+									"    const decision = pm.response.json().secondStepDecision;\r",
+									"    pm.expect(decision).to.have.property(\"eligibilityAssessment\");\r",
+									"    pm.expect(decision.eligibilityAssessment).not.eql(null);\r",
 									"});\r",
 									"\r",
 									"pm.test('status of the application is not changed', function() {\r",
@@ -4357,13 +4357,13 @@
 									"\r",
 									"pm.test('EA result is properly saved', function() {\r",
 									"    const application = pm.response.json();\r",
-									"    pm.expect(application.decision.eligibilityAssessment.result)\r",
+									"    pm.expect(application.secondStepDecision.eligibilityAssessment.result)\r",
 									"        .to.eql(\"PASSED\");\r",
 									"});\r",
 									"\r",
 									"pm.test('EA note is properly saved', function() {\r",
 									"    const application = pm.response.json();\r",
-									"    pm.expect(application.decision.eligibilityAssessment.note)\r",
+									"    pm.expect(application.secondStepDecision.eligibilityAssessment.note)\r",
 									"        .to.eql(\"status set to passed\");\r",
 									"});\r",
 									""
@@ -5148,7 +5148,7 @@
 									"script": {
 										"exec": [
 											"pm.test('applicant should not be able to enter QA', function() {\r",
-											"    pm.response.to.have.status(403);\r",
+											"    pm.response.to.have.status(404);\r",
 											"});\r",
 											""
 										],
@@ -5221,8 +5221,8 @@
 											"\r",
 											"pm.test('QA is part of the application detail', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application.decision).to.have.property(\"qualityAssessment\");\r",
-											"    pm.expect(application.decision.qualityAssessment).not.eql(null);\r",
+											"    pm.expect(application.secondStepDecision).to.have.property(\"qualityAssessment\");\r",
+											"    pm.expect(application.secondStepDecision.qualityAssessment).not.eql(null);\r",
 											"});\r",
 											"\r",
 											"pm.test('status of the application is not changed', function() {\r",
@@ -5232,13 +5232,13 @@
 											"\r",
 											"pm.test('QA result is properly saved', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application.decision.qualityAssessment.result)\r",
+											"    pm.expect(application.secondStepDecision.qualityAssessment.result)\r",
 											"        .to.eql(\"RECOMMENDED_FOR_FUNDING\");\r",
 											"});\r",
 											"\r",
 											"pm.test('QA note is properly saved', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application.decision.qualityAssessment.note)\r",
+											"    pm.expect(application.secondStepDecision.qualityAssessment.note)\r",
 											"        .to.eql(\"status set to recommended for funding\");\r",
 											"});\r",
 											""
@@ -5734,7 +5734,7 @@
 									"script": {
 										"exec": [
 											"pm.test('applicant should not be able to enter QA when INELIGIBLE state already', function() {\r",
-											"    pm.response.to.have.status(403);\r",
+											"    pm.response.to.have.status(404);\r",
 											"});\r",
 											""
 										],
@@ -6327,7 +6327,7 @@
 											"\r",
 											"pm.test('funding decision is part of the project object', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    const decision = application.decision;\r",
+											"    const decision = application.secondStepDecision;\r",
 											"    pm.expect(decision).to.have.property('fundingDecision');\r",
 											"    pm.expect(decision.fundingDecision)\r",
 											"        .deep.equal(application.projectStatus);\r",
@@ -7713,7 +7713,7 @@
 											"\r",
 											"pm.test('funding decision is part of the project object', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    const decision = application.decision;\r",
+											"    const decision = application.secondStepDecision;\r",
 											"    pm.expect(decision).to.have.property('fundingDecision');\r",
 											"    pm.expect(decision.fundingDecision)\r",
 											"        .deep.equal(application.projectStatus);\r",
@@ -8053,7 +8053,7 @@
 											"\r",
 											"pm.test('project status should refer to this change', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    const decision = application.decision;\r",
+											"    const decision = application.secondStepDecision;\r",
 											"    pm.expect(decision.fundingDecision).to.have.property('id');\r",
 											"    pm.expect(application.projectStatus).to.have.property('id');\r",
 											"    // fundingDecision is still referring to the first funding attempt\r",

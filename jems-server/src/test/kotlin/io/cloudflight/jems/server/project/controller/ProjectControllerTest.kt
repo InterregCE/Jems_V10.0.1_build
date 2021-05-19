@@ -262,7 +262,7 @@ class ProjectControllerTest {
             programmePriority = null,
             specificObjective = null,
             projectStatus = projectStatus,
-            step2Active = false,
+            step2Active = true,
             periods = listOf(ProjectPeriod(1, 1, 1), ProjectPeriod(2, 2, 2)),
             firstStepDecision = ProjectDecision(
                 OutputProjectQualityAssessment(ProjectQualityAssessmentResult.NOT_RECOMMENDED, updated = startDate),
@@ -295,6 +295,7 @@ class ProjectControllerTest {
                     projectStatus.user.toDto(),
                     projectStatus.updated
                 ),
+                step2Active = true,
                 projectData = ProjectDataDTO(
                     duration = project.duration,
                     programmePriority = null,

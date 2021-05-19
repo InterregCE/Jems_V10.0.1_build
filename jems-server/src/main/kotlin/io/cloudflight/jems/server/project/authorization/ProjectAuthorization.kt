@@ -54,7 +54,7 @@ class ProjectAuthorization(
         val project = projectPersistence.getApplicantAndStatusById(projectId)
         val isOwner = isActiveUserIdEqualTo(project.applicantId)
         if (isOwner)
-            return project.projectStatus.isNotSubmittedNow()
+            return project.projectStatus.hasNotBeenSubmittedYet()
         throw ResourceNotFoundException("project") // should be same exception as if entity not found
     }
 

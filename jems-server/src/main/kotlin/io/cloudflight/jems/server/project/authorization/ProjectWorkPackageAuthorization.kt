@@ -33,7 +33,7 @@ class ProjectWorkPackageAuthorization(
 
     fun canOwnerUpdateProjectWorkPackage(workPackageId: Long): Boolean {
         val project = getProjectFromWorkPackageId(workPackageId)
-        return project.projectStatus.isNotSubmittedNow() && isActiveUserIdEqualTo(project.applicantId)
+        return project.projectStatus.hasNotBeenSubmittedYet() && isActiveUserIdEqualTo(project.applicantId)
     }
 
     fun isUserOwnerOfWorkPackage(workPackageId: Long): Boolean =
@@ -44,7 +44,7 @@ class ProjectWorkPackageAuthorization(
 
     fun canOwnerUpdateProjectInvestment(investmentId: Long): Boolean {
         val project = getProjectFromInvestmentId(investmentId)
-        return project.projectStatus.isNotSubmittedNow() && isActiveUserIdEqualTo(project.applicantId)
+        return project.projectStatus.hasNotBeenSubmittedYet() && isActiveUserIdEqualTo(project.applicantId)
     }
 
     fun isUserOwnerOfInvestment(investmentId: Long): Boolean =
