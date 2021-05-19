@@ -66,7 +66,7 @@ abstract class ApplicationState(
 
     protected fun getPossibleStatusToRevertToDefaultImpl(validRevertStatuses: Set<ApplicationStatus>) =
         projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).let { previousStatus ->
-            validRevertStatuses.firstOrNull { it === previousStatus }
+            validRevertStatuses.firstOrNull { it === previousStatus.status }
         }
 
     protected fun returnToApplicantDefaultImpl(): ApplicationStatus =
@@ -85,12 +85,12 @@ abstract class ApplicationState(
     protected fun revertCurrentStatusToPreviousStatus(validRevertStatuses: Set<ApplicationStatus>): ApplicationStatus =
         projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).also { previousStatus ->
 
-            if (!validRevertStatuses.contains(previousStatus))
-                throw DecisionReversionIsNotPossibleException(projectSummary.status, previousStatus)
+            if (!validRevertStatuses.contains(previousStatus.status))
+                throw DecisionReversionIsNotPossibleException(projectSummary.status, previousStatus.status)
 
             projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(projectSummary.id)
 
-        }
+        }.status
 
     protected fun ifFundingDecisionDateIsValid(fundingDecisionDate: LocalDate?) {
         projectWorkflowPersistence.getProjectEligibilityDecisionDate(projectSummary.id).let { decisionDate ->

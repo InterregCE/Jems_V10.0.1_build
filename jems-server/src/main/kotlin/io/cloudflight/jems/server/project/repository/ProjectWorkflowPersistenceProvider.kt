@@ -5,6 +5,8 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
+import io.cloudflight.jems.server.project.service.toProjectStatus
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import java.time.LocalDate
 import org.springframework.stereotype.Repository
@@ -27,8 +29,8 @@ class ProjectWorkflowPersistenceProvider(
         }
 
     @Transactional(readOnly = true)
-    override fun getApplicationPreviousStatus(projectId: Long): ApplicationStatus =
-        getPreviousHistoryStatusOrThrow(projectId).status
+    override fun getApplicationPreviousStatus(projectId: Long): ProjectStatus =
+        getPreviousHistoryStatusOrThrow(projectId).toProjectStatus()
 
     @Transactional(readOnly = true)
     override fun getLatestApplicationStatusNotEqualTo(
@@ -51,11 +53,15 @@ class ProjectWorkflowPersistenceProvider(
         }.currentStatus.status
 
     @Transactional
-    override fun updateProjectLastResubmission(projectId: Long, userId: Long, status: ApplicationStatus) =
+    override fun updateProjectLastResubmission(projectId: Long, userId: Long, status: ProjectStatus) =
         projectRepository.getOne(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = status, user = userRepository.getOne(userId)
+                    project = this,
+                    status = status.status,
+                    user = userRepository.getOne(userId),
+                    decisionDate = status.decisionDate,
+                    note = status.note,
                 )
             )
             lastResubmission = newStatus

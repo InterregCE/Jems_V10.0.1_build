@@ -22,15 +22,19 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.workflow.states.ProjectStatusTestUtil.Companion.userSummary
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.Optional
 
@@ -183,11 +187,22 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 id = 2,
                 status = ApplicationStatus.INELIGIBLE,
                 user = ProjectPartnerTestUtil.user,
-                updated = endDate
+                updated = endDate,
+                decisionDate = LocalDate.of(2021, 5, 19),
+                note = "explanatory note"
             )
         )
         every { projectStatusHistoryRepository.findTop2ByProjectIdOrderByUpdatedDesc(PROJECT_ID) } returns statusHistories
-        assertThat(persistence.getApplicationPreviousStatus(PROJECT_ID)).isEqualTo(ApplicationStatus.INELIGIBLE)
+        assertThat(persistence.getApplicationPreviousStatus(PROJECT_ID)).isEqualTo(
+            ProjectStatus(
+                id = 2,
+                status = ApplicationStatus.INELIGIBLE,
+                user = ProjectPartnerTestUtil.userSummary,
+                updated = endDate,
+                decisionDate = LocalDate.of(2021, 5, 19),
+                note = "explanatory note",
+            )
+        )
     }
 
     @Test
@@ -237,10 +252,24 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         val status =
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.APPROVED, user = user, updated = endDate)
         // any because of auto set updated timestamp
-        every { projectStatusHistoryRepository.save(any()) } returns status
+        val slot = slot<ProjectStatusHistoryEntity>()
+        every { projectStatusHistoryRepository.save(capture(slot)) } returns status
 
-        assertThat(persistence.updateProjectLastResubmission(PROJECT_ID, user.id, ApplicationStatus.APPROVED))
+        val toClone = ProjectStatus(
+            status = ApplicationStatus.APPROVED,
+            user = userSummary,
+            updated = ZonedDateTime.now(),
+            decisionDate = LocalDate.of(2021, 5, 19),
+            note = "note to be persisted",
+        )
+
+        assertThat(persistence.updateProjectLastResubmission(PROJECT_ID, user.id, toClone))
             .isEqualTo(ApplicationStatus.APPROVED)
+        with(slot.captured) {
+            assertThat(this.status).isEqualTo(ApplicationStatus.APPROVED)
+            assertThat(decisionDate).isEqualTo(LocalDate.of(2021, 5, 19))
+            assertThat(note).isEqualTo("note to be persisted")
+        }
     }
 
     @Test

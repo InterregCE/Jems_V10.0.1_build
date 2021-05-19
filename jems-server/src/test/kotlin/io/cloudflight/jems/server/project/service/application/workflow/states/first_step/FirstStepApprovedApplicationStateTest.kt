@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.application.workflow.ReturnToA
 import io.cloudflight.jems.server.project.service.application.workflow.SetAsEligibleIsNotAllowedException
 import io.cloudflight.jems.server.project.service.application.workflow.SetAsIneligibleIsNotAllowedException
 import io.cloudflight.jems.server.project.service.application.workflow.SubmitIsNotAllowedException
+import io.cloudflight.jems.server.project.service.application.workflow.states.ProjectStatusTestUtil.Companion.getStatusModelForStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -67,7 +68,7 @@ class FirstStepApprovedApplicationStateTest {
     @Test
     fun `should have state APPROVED_WITH_CONDITIONS when reverting decision`() {
         val status = ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns status
+        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         every { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID) } returns status
         every { projectWorkflowPersistence.resetProjectFundingDecisionToCurrentStatus(PROJECT_ID) } returns status
 
@@ -78,7 +79,7 @@ class FirstStepApprovedApplicationStateTest {
 
     @Test
     fun `should have state ELIGIBLE when reverting decision`() {
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns ApplicationStatus.STEP1_ELIGIBLE
+        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(ApplicationStatus.STEP1_ELIGIBLE)
         every { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID) } returns ApplicationStatus.STEP1_ELIGIBLE
         every { projectWorkflowPersistence.clearProjectFundingDecision(PROJECT_ID) } answers { }
 
@@ -94,14 +95,14 @@ class FirstStepApprovedApplicationStateTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun `should throw DecisionReversionIsNotPossibleException when reverting decision`(status: ApplicationStatus) {
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns status
+        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         assertThrows<DecisionReversionIsNotPossibleException> { approvedApplicationState.revertDecision() }
     }
 
     @ParameterizedTest(name = "get possible status to revert to {0}")
     @EnumSource(value = ApplicationStatus::class, names = ["STEP1_ELIGIBLE", "STEP1_APPROVED_WITH_CONDITIONS"])
     fun `should get possible status when reverting decision`(status: ApplicationStatus) {
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns status
+        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         assertThat(approvedApplicationState.getPossibleStatusToRevertTo()).isEqualTo(status)
     }
 
@@ -112,7 +113,7 @@ class FirstStepApprovedApplicationStateTest {
         mode = EnumSource.Mode.EXCLUDE
     )
     fun `should get invalid possible status when reverting decision`(status: ApplicationStatus) {
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns status
+        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         assertThat(approvedApplicationState.getPossibleStatusToRevertTo()).isNull()
     }
 

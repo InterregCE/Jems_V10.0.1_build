@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.ReturnToApplicantIsNotPossibleException
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 
 class ReturnedToApplicantApplicationState(
@@ -22,16 +23,16 @@ class ReturnedToApplicantApplicationState(
                 userId = securityService.getUserIdOrThrow(),
                 status = previousStatus
             )
-        }
+        }.status
 
 
-    private fun ifPreviousStateIsValid(): ApplicationStatus =
+    private fun ifPreviousStateIsValid(): ProjectStatus =
         projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).also { previousStatus ->
-            when (previousStatus) {
+            when (previousStatus.status) {
                 ApplicationStatus.SUBMITTED, ApplicationStatus.ELIGIBLE, ApplicationStatus.APPROVED, ApplicationStatus.APPROVED_WITH_CONDITIONS -> Unit
                 else -> throw ReturnToApplicantIsNotPossibleException(
                     fromStatus = projectSummary.status,
-                    toStatus = previousStatus
+                    toStatus = previousStatus.status
                 )
             }
         }
