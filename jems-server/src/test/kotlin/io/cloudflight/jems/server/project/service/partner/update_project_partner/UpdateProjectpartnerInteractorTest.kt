@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
@@ -18,25 +19,19 @@ import io.cloudflight.jems.server.project.repository.partner.toEntity
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
-import io.mockk.MockKAnnotations
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-internal class UpdateProjectpartnerInteractorTest {
+internal class UpdateProjectpartnerInteractorTest: UnitTest() {
     @MockK
     lateinit var persistence: PartnerPersistence
 
-    lateinit var updateInteractor: UpdateProjectPartnerInteractor
-
-    @BeforeEach
-    fun setup() {
-        MockKAnnotations.init(this)
-        updateInteractor = UpdateProjectPartner(persistence)
-    }
+    @InjectMockKs
+    lateinit var updateInteractor: UpdateProjectPartner
 
     private val partnerTranslatedValues =
         mutableSetOf(ProjectPartnerTranslEntity(TranslationPartnerId(1, SystemLanguage.EN), "test"))

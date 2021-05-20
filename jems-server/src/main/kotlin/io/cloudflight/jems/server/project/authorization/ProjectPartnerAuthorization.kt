@@ -15,6 +15,10 @@ annotation class CanUpdateProjectPartner
 @PreAuthorize("hasAuthority('ProjectRetrieve') || @projectPartnerAuthorization.isUserOwnerOfPartner(#partnerId)")
 annotation class CanRetrieveProjectPartner
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectUpdate') || @projectPartnerAuthorization.canOwnerUpdatePartner(#projectPartner.id)")
+annotation class CanUpdateProjectPartnerBase
+
 @Component
 class ProjectPartnerAuthorization(
     override val securityService: SecurityService,

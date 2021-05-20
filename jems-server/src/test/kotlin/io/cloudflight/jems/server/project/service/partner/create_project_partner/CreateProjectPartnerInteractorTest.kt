@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.AddressEntity
@@ -20,25 +21,19 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEnt
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
-import io.mockk.MockKAnnotations
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-internal class CreateProjectPartnerInteractorTest {
+internal class CreateProjectPartnerInteractorTest: UnitTest() {
     @MockK
     lateinit var persistence: PartnerPersistence
 
-    lateinit var createInteractor: CreateProjectPartnerInteractor
-
-    @BeforeEach
-    fun setup() {
-        MockKAnnotations.init(this)
-        createInteractor = CreateProjectPartner(persistence)
-    }
+    @InjectMockKs
+    lateinit var createInteractor: CreateProjectPartner
 
     private val projectPartner = ProjectPartnerEntity(
         id = 1,

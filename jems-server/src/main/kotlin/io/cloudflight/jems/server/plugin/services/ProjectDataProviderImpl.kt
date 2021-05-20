@@ -49,9 +49,9 @@ class ProjectDataProviderImpl(
         val partners = partnerPersistence.findAllByProjectId(projectId).map {
             val budgetOptions = budgetOptionsPersistence.getBudgetOptions(it.id!!)?.toDataModel()
             val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(it.id!!, null).toDataModel()
-            // getBudgetCosts should be replaced by persistence/service call without permissions
+            //TODO getBudgetCosts should be replaced by persistence/service call without permissions
             val budgetCosts = getBudgetCosts.getBudgetCosts(it.id!!).toDataModel()
-            // getBudgetTotalCost should be replaced by persistence/service call without permissions
+            //TODO getBudgetTotalCost should be replaced by persistence/service call without permissions
             val budgetTotalCost = getBudgetTotalCost.getBudgetTotalCost(it.id!!)
             val budget = PartnerBudgetData(budgetOptions, coFinancing, budgetCosts, budgetTotalCost)
             it.toDataModel(budget)

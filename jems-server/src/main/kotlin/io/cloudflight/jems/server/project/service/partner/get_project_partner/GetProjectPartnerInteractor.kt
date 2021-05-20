@@ -8,13 +8,13 @@ import org.springframework.data.domain.Sort
 
 interface GetProjectPartnerInteractor {
 
-    fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<OutputProjectPartner>
+    fun findAllByProjectId(projectId: Long, page: Pageable, version: String? = null): Page<OutputProjectPartner>
 
     fun findAllByProjectId(projectId: Long): Iterable<OutputProjectPartnerDetail>
 
-    fun getById(partnerId: Long, version: String?): OutputProjectPartnerDetail
+    fun getById(partnerId: Long, version: String? = null): OutputProjectPartnerDetail
 
-    fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String?): List<OutputProjectPartner>
+    fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String? = null): List<OutputProjectPartner>
 
     // used for authorization
     fun getProjectIdForPartnerId(id: Long): Long

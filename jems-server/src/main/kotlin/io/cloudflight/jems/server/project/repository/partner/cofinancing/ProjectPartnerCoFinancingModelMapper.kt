@@ -2,12 +2,14 @@ package io.cloudflight.jems.server.project.repository.partner.cofinancing
 
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerFinancingRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 
@@ -70,3 +72,10 @@ fun Collection<ProjectPartnerContributionEntity>.toContributionModel() = map { i
 
 fun Collection<PartnerContributionRow>.toProjectPartnerContributionHistoricalData() = map { it.toModel() }
 // endregion Contributions
+
+fun ProjectPartnerEntity.extractCoFinancingAndContribution() =
+    ProjectPartnerCoFinancingAndContribution(
+        finances = financing.toCoFinancingModel(),
+        partnerContributions = partnerContributions.toContributionModel(),
+        partnerAbbreviation = abbreviation
+    )

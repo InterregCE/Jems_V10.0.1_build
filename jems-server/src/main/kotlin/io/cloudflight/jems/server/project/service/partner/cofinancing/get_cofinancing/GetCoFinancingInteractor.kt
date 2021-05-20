@@ -4,6 +4,6 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 
 interface GetCoFinancingInteractor {
 
-    fun getCoFinancing(partnerId: Long, version: String?): ProjectPartnerCoFinancingAndContribution
+    fun getCoFinancing(partnerId: Long, version: String? = null): ProjectPartnerCoFinancingAndContribution
 
 }

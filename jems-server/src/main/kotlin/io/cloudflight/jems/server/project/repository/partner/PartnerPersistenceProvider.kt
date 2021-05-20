@@ -61,7 +61,7 @@ class PartnerPersistenceProvider(
                 projectPartnerRepository.findAllByProjectId(projectId, page).map { it.toOutputProjectPartner() }
             },
             previousVersionFetcher = { timestamp ->
-                projectPartnerRepository.findAllByProjectId(projectId, page, timestamp).map { it.toOutputProjectPartnerHistoricalData() }
+                projectPartnerRepository.findAllByProjectIdAsOfTimestamp(projectId, page, timestamp).map { it.toOutputProjectPartnerHistoricalData() }
             }
         )
     }
@@ -76,10 +76,7 @@ class PartnerPersistenceProvider(
                 ).map { it.toOutputProjectPartner() }.collect(Collectors.toList())
             },
             previousVersionFetcher = { timestamp ->
-                StreamSupport.stream(
-                    projectPartnerRepository.findTop30ByProjectIdSortBySortNumber(projectId, timestamp).spliterator(),
-                    false
-                ).map { it.toOutputProjectPartnerHistoricalData() }.collect(Collectors.toList())
+                projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp).toOutputProjectPartnerHistoricalData()
             }
         )
     }

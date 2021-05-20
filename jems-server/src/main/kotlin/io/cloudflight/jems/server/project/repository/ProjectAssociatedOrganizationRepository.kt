@@ -58,7 +58,8 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
              entity.sort_number AS sortNumber,
              entity.name_in_original_language AS nameInOriginalLanguage,
              entity.name_in_english AS nameInEnglish,
-             translation.*
+             translation.*,
+             translation.role_description AS roleDescription
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.organization_id
              WHERE entity.id = :id AND entity.project_id = :projectId

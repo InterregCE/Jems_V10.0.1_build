@@ -8,7 +8,7 @@ interface ProjectPartnerCoFinancingPersistence {
 
     fun getAvailableFundIds(partnerId: Long): Set<Long>
 
-    fun getCoFinancingAndContributions(partnerId: Long, version: String?): ProjectPartnerCoFinancingAndContribution
+    fun getCoFinancingAndContributions(partnerId: Long, version: String? = null): ProjectPartnerCoFinancingAndContribution
 
     fun updateCoFinancingAndContribution(
         partnerId: Long,

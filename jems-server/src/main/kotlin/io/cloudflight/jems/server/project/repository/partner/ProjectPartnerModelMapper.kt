@@ -245,7 +245,7 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
     motivation = motivation
 ) }.first()
 
-fun Iterable<PartnerSimpleRow>.toOutputProjectPartnerHistoricalData() = map { it.toOutputProjectPartnerHistoricalData() }
+fun Iterable<PartnerSimpleRow>.toOutputProjectPartnerHistoricalData() = map { it.toOutputProjectPartnerHistoricalData() }.toList()
 
 fun PartnerSimpleRow.toOutputProjectPartnerHistoricalData() = OutputProjectPartner(
     id = id,

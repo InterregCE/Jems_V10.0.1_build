@@ -172,7 +172,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              """,
         nativeQuery = true
     )
-    fun findAllByProjectId(projectId: Long, pageable: Pageable, timestamp: Timestamp): Page<PartnerSimpleRow>
+    fun findAllByProjectIdAsOfTimestamp(projectId: Long, pageable: Pageable, timestamp: Timestamp): Page<PartnerSimpleRow>
 
     @Query(
         """
@@ -190,7 +190,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              """,
         nativeQuery = true
     )
-    fun findTop30ByProjectIdSortBySortNumber(projectId: Long, timestamp: Timestamp): Iterable<PartnerSimpleRow>
+    fun findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId: Long, timestamp: Timestamp): Iterable<PartnerSimpleRow>
 
     @Query(
         value = """
@@ -207,5 +207,5 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              """,
         nativeQuery = true
     )
-    fun findOneById(partnerId: Long, timestamp: Timestamp): PartnerSimpleRow
+    fun findOneByIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp): PartnerSimpleRow
 }

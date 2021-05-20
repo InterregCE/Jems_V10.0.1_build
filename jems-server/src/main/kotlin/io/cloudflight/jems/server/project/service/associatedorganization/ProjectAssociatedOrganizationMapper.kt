@@ -141,19 +141,19 @@ fun ProjectAssociatedOrganizationAddress.toOutputProjectAssociatedOrganizationDe
     homepage = address?.homepage
 )
 
-fun List<ProjectAssociatedOrganizationRow>.toProjectPartnerMotivationHistoricalData(
+fun List<ProjectAssociatedOrganizationRow>.toAssociatedOrganizationDetailHistoricalData(
     partner: OutputProjectPartner,
     address: OutputProjectAssociatedOrganizationAddress,
     contacts: List<OutputProjectPartnerContact>) =
     this.groupBy { it.id }.map { groupedRows -> OutputProjectAssociatedOrganizationDetail(
-    id = groupedRows.value.first().id,
-    partner = partner,
-    nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
-    nameInEnglish = groupedRows.value.first().nameInEnglish,
-    sortNumber = groupedRows.value.first().sortNumber,
-    address = address,
-    contacts = contacts,
-    roleDescription = groupedRows.value.extractField { it.roleDescription },
+        id = groupedRows.value.first().id,
+        partner = partner,
+        nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
+        nameInEnglish = groupedRows.value.first().nameInEnglish,
+        sortNumber = groupedRows.value.first().sortNumber,
+        address = address,
+        contacts = contacts,
+        roleDescription = groupedRows.value.extractField { it.roleDescription },
     ) }
 
 fun List<AssociatedOrganizationAddressRow>.toProjectAssociatedOrganizationAddressHistoricalData() =
