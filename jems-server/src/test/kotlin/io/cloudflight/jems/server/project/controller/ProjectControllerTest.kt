@@ -31,6 +31,7 @@ import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetP
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing.GetProjectBudgetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
+import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDecision
@@ -109,6 +110,9 @@ class ProjectControllerTest {
 
     @MockK
     lateinit var getProjectBudgetCoFinancingInteractor: GetProjectBudgetCoFinancingInteractor
+
+    @MockK
+    lateinit var getProjectVersionsInteractor: GetProjectVersionsInteractor
 
     @MockK
     lateinit var getProjectInteractor: GetProjectInteractor
@@ -285,11 +289,20 @@ class ProjectControllerTest {
                 ),
                 acronym = project.acronym,
                 applicant = project.applicant.toDto(),
-                projectStatus = ProjectStatusDTO(projectStatus.id, ApplicationStatusDTO.APPROVED, projectStatus.user.toDto(), projectStatus.updated),
-                projectData = ProjectDataDTO(duration = project.duration, programmePriority = null, specificObjective = null),
+                projectStatus = ProjectStatusDTO(
+                    projectStatus.id,
+                    ApplicationStatusDTO.APPROVED,
+                    projectStatus.user.toDto(),
+                    projectStatus.updated
+                ),
+                projectData = ProjectDataDTO(
+                    duration = project.duration,
+                    programmePriority = null,
+                    specificObjective = null
+                ),
                 periods = listOf(
                     ProjectPeriodDTO(pId, 1, 1, 1),
-                    ProjectPeriodDTO(pId, 2, 2,2)
+                    ProjectPeriodDTO(pId, 2, 2, 2)
                 ),
                 firstStepDecision = ProjectDecisionDTO(
                     OutputProjectQualityAssessment(ProjectQualityAssessmentResult.NOT_RECOMMENDED, startDate),

@@ -1,5 +1,5 @@
-<app-main-page-template [needsCard]="true" *ngIf="details$ | async as details"
-                        titleKey="project.application.form.lifecycle.title">
+<app-project-page-template [needsCard]="true" *ngIf="details$ | async as details"
+                           titleKey="project.application.form.lifecycle.title">
 
     <div page-sub-title appNoWidthLimit appFormLayout>
         <h2>{{details.acronym}}</h2>
@@ -33,4 +33,4 @@
                 [submitLabel]="details.submitLabel">
         </app-project-application-funding-decision>
     </div>
-</app-main-page-template>
+</app-project-page-template>

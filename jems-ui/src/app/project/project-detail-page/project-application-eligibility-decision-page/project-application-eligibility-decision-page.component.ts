@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Permission} from '../../../security/permissions/permission';
-import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import {map, tap} from 'rxjs/operators';
@@ -57,8 +56,7 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
   constructor(public eligibilityPageStore: ProjectEligibilityDecisionStore,
               private router: Router,
               private activatedRoute: ActivatedRoute,
-              private formBuilder: FormBuilder,
-              private sidenavService: ProjectApplicationFormSidenavService) {
+              private formBuilder: FormBuilder) {
   }
 
   private resetForm(project: ProjectDetailDTO, eligibilityDecision: ProjectStatusDTO): void {

@@ -7,7 +7,6 @@ import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confir
 import {ProjectQualityCheckPageStore} from './project-quality-check-page-store.service';
 import {map, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectStepStatus} from '../project-step-status';
 
 @Component({
@@ -44,8 +43,7 @@ export class ProjectApplicationQualityCheckComponent {
               private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder,
               private pageStore: ProjectQualityCheckPageStore,
-              private projectStore: ProjectStore,
-              private sidenavService: ProjectApplicationFormSidenavService) {
+              private projectStore: ProjectStore) {
     this.data$ = combineLatest([
       this.pageStore.project$,
       this.pageStore.qualityAssessment(this.step)]

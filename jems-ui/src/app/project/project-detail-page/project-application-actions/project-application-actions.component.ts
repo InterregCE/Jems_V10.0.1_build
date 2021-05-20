@@ -34,6 +34,7 @@ export class ProjectApplicationActionsComponent {
     revertToStatus: string | null,
     isThisUserOwner: boolean,
     hasPreConditionCheckSucceed: boolean
+    isProjectLatestVersion: boolean
   }>;
 
   // TODO: create a component
@@ -50,18 +51,20 @@ export class ProjectApplicationActionsComponent {
       this.projectDetailStore.callHasTwoSteps$,
       this.projectDetailStore.revertToStatus$,
       this.projectDetailStore.isThisUserOwner$,
-      this.projectDetailStore.preConditionCheckResult$.pipe(map(it => it ? it.submissionAllowed : false))
+      this.projectDetailStore.preConditionCheckResult$.pipe(map(it => it ? it.submissionAllowed : false)),
+      this.projectDetailStore.isProjectLatestVersion$
     ]).pipe(
-      map(([project, callHasTwoSteps, revertToStatus, isThisUserOwner, hasPreConditionCheckSucceed]) => ({
+      map(([project, callHasTwoSteps, revertToStatus, isThisUserOwner, hasPreConditionCheckSucceed, isProjectLatestVersion]) => ({
         projectStatus: project.projectStatus.status,
         projectId: project.id,
         projectCallEndDate: project.callSettings?.endDate,
         projectCallEndDateStep1: project.callSettings?.endDateStep1,
-        startStepTwoAvailable: this.startStepTwoAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
-        returnToApplicantAvailable: this.returnToApplicantAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active),
+        startStepTwoAvailable: this.startStepTwoAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active, isProjectLatestVersion),
+        returnToApplicantAvailable: this.returnToApplicantAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active, isProjectLatestVersion),
         revertToStatus,
         isThisUserOwner,
-        hasPreConditionCheckSucceed
+        hasPreConditionCheckSucceed,
+        isProjectLatestVersion
       }))
     );
   }
@@ -118,7 +121,10 @@ export class ProjectApplicationActionsComponent {
       ).subscribe();
   }
 
-  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean): boolean {
+  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, isProjectLatestVersion: boolean): boolean {
+    if (!isProjectLatestVersion) {
+      return false;
+    }
     const currentDate = moment(new Date());
     return !(currentDate.isBefore(projectCallEndDate) && hasPreConditionCheckSucceed);
   }
@@ -150,9 +156,11 @@ export class ProjectApplicationActionsComponent {
     return of(null);
   }
 
-  private startStepTwoAvailable(status: ProjectStatusDTO.StatusEnum, callHasTwoSteps: boolean,
-                                projectInSecondStep: boolean): boolean {
-    if (!callHasTwoSteps || projectInSecondStep) {
+  private startStepTwoAvailable(status: ProjectStatusDTO.StatusEnum,
+                                callHasTwoSteps: boolean,
+                                projectInSecondStep: boolean,
+                                isProjectLatestVersion: boolean): boolean {
+    if (!isProjectLatestVersion || !callHasTwoSteps || projectInSecondStep) {
       return false;
     }
     return status === ProjectStatusDTO.StatusEnum.STEP1APPROVED
@@ -160,7 +168,9 @@ export class ProjectApplicationActionsComponent {
   }
 
   private returnToApplicantAvailable(status: ProjectStatusDTO.StatusEnum,
-                                     callHasTwoSteps: boolean, projectInSecondStep: boolean): boolean {
+                                     callHasTwoSteps: boolean,
+                                     projectInSecondStep: boolean,
+                                     isProjectLatestVersion: boolean): boolean {
     const returnableStatuses = [
       ProjectStatusDTO.StatusEnum.SUBMITTED,
       ProjectStatusDTO.StatusEnum.ELIGIBLE,
@@ -168,7 +178,7 @@ export class ProjectApplicationActionsComponent {
       ProjectStatusDTO.StatusEnum.APPROVED,
     ];
 
-    if (callHasTwoSteps && !projectInSecondStep) {
+    if (!isProjectLatestVersion || (callHasTwoSteps && !projectInSecondStep)) {
       return false;
     }
 

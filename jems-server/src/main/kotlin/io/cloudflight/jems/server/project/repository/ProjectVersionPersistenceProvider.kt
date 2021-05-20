@@ -29,4 +29,7 @@ class ProjectVersionPersistenceProvider(
     override fun getLatestVersionOrNull(projectId: Long): ProjectVersion? =
         projectVersionRepository.findFirstByIdProjectIdOrderByCreatedAtDesc(projectId)?.toProjectVersion()
 
+    @Transactional(readOnly = true)
+    override fun getAllVersionsByProjectId(projectId: Long): List<ProjectVersion> =
+        projectVersionRepository.findAllVersionsByIdProjectIdOrderByCreatedAtDesc(projectId).toProjectVersions()
 }

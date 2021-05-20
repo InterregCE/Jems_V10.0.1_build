@@ -1,4 +1,4 @@
-<app-main-page-template
+<app-project-page-template
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.c">
     <app-project-application-form-project-relevance-and-context-detail
@@ -11,4 +11,4 @@
             (updateData)="updateProjectRelevance$.next($event)"
             (deleteData)="deleteEntriesFromTables$.next($event)">
     </app-project-application-form-project-relevance-and-context-detail>
-</app-main-page-template>
+</app-project-page-template>

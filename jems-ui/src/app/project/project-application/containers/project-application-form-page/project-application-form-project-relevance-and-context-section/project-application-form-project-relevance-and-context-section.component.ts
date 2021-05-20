@@ -1,13 +1,12 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, merge, Subject} from 'rxjs';
-import {catchError, mergeMap, map, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
-import {InputProjectRelevance, ProjectDescriptionService, CallService} from '@cat/api';
+import {CallService, InputProjectRelevance, ProjectDescriptionService} from '@cat/api';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 
 @Component({
   selector: 'app-project-application-form-project-relevance-and-context-section',
@@ -75,7 +74,6 @@ export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent {
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
               private callService: CallService,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectDescriptionService: ProjectDescriptionService,
               private projectApplicationFormStore: ProjectApplicationFormStore) {
     this.projectApplicationFormStore.init(this.projectId);

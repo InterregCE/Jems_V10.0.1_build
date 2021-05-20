@@ -14,4 +14,5 @@ interface ProjectVersionRepository : JpaRepository<ProjectVersionEntity, Long> {
 
     fun findFirstByIdProjectIdOrderByCreatedAtDesc(projectId: Long): ProjectVersionEntity?
 
+    fun findAllVersionsByIdProjectIdOrderByCreatedAtDesc(projectId: Long): List<ProjectVersionEntity>
 }

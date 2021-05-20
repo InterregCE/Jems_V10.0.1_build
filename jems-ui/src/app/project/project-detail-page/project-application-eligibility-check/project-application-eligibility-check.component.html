@@ -1,6 +1,6 @@
-<app-main-page-template *ngIf="data$ | async as data"
-                        [needsCard]="true"
-                        titleKey="project.application.form.lifecycle.title">
+<app-project-page-template *ngIf="data$ | async as data"
+                           [needsCard]="true"
+                           titleKey="project.application.form.lifecycle.title">
     <div page-sub-title appNoWidthLimit appFormLayout>
         <h2>{{data.project.id}} – {{data.project.acronym}}</h2>
         <app-project-application-information appNoWidthLimit [project]="data.project">
@@ -40,4 +40,4 @@
             </app-pending-button>
         </div>
     </form>
-</app-main-page-template>
+</app-project-page-template>

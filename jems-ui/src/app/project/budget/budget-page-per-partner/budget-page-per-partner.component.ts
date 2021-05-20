@@ -8,7 +8,6 @@ import {
 import {tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {NumberService} from '../../../common/services/number.service';
 import {ProjectPartnerDetailPageStore} from '../../partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ProjectPartnerBudgetModel} from './models/ProjectPartnerBudgetModel';
@@ -49,7 +48,6 @@ export class BudgetPagePerPartnerComponent {
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private pageStore: ProjectPartnerDetailPageStore) {
   }
 

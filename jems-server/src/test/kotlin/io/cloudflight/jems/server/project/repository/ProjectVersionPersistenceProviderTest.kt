@@ -13,8 +13,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.sql.Timestamp
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 class ProjectVersionPersistenceProviderTest : UnitTest() {
 
@@ -31,7 +30,7 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
     )
     private val projectVersionEntity = ProjectVersionEntity(
         id = ProjectVersionId("1.1", projectId),
-        createdAt = Timestamp.valueOf(LocalDateTime.now()),
+        createdAt = ZonedDateTime.now(),
         status = ApplicationStatus.SUBMITTED,
         user = user
     )
@@ -60,5 +59,15 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
         every { projectVersionRepository.findFirstByIdProjectIdOrderByCreatedAtDesc(projectId) } returns projectVersionEntity
         val latestProjectVersion = projectVersionPersistenceProvider.getLatestVersionOrNull(projectId)
         assertThat(latestProjectVersion).isEqualTo(projectVersionEntity.toProjectVersion())
+    }
+
+    @Test
+    fun `should return the list of all versions`() {
+        val entities = listOf(projectVersionEntity)
+        every { projectVersionRepository.findAllVersionsByIdProjectIdOrderByCreatedAtDesc(projectId) } returns entities
+
+        assertThat(
+            projectVersionPersistenceProvider.getAllVersionsByProjectId(projectId)
+        ).isEqualTo(entities.toProjectVersions())
     }
 }

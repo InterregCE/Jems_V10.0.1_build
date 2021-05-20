@@ -5,7 +5,6 @@ import {InputProjectEligibilityAssessment, OutputProjectEligibilityAssessment, P
 import {combineLatest, Observable} from 'rxjs';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectEligibilityCheckPageStore} from './project-eligibility-check-page-store.service';
 import {map, tap} from 'rxjs/operators';
 import {ProjectStepStatus} from '../project-step-status';
@@ -46,8 +45,7 @@ export class ProjectApplicationEligibilityCheckComponent {
               private formBuilder: FormBuilder,
               private projectStore: ProjectStore,
               private pageStore: ProjectEligibilityCheckPageStore,
-              protected changeDetectorRef: ChangeDetectorRef,
-              private sidenavService: ProjectApplicationFormSidenavService) {
+              protected changeDetectorRef: ChangeDetectorRef) {
     this.data$ = combineLatest([
       this.pageStore.project$,
       this.pageStore.eligibilityAssessment(this.step)

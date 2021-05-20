@@ -1,0 +1,46 @@
+<app-main-page-template
+        [needsCard]="needsCard"
+        [headerTemplate]="versionWarn"
+        [titleText]="titleText"
+        [subTitleKey]="subTitleKey">
+    <ng-content></ng-content>
+</app-main-page-template>
+
+<ng-template #versionWarn>
+    <app-alert *ngIf="versionWarnData$ | async as data"
+               [type]="Alert.WARNING"
+               [show]="!data.currentIsLatest">
+        <div id="version-warn">
+            <span class="mt-2">{{'project.versions.warn.old.version' | translate}}</span>
+            <span class="mt-2">
+                {{data.current?.version}}, {{data.current?.status}}
+                ({{data.current?.createdAt | localeDate: 'L' : 'LT'}})
+            </span>
+            <button id="switch-to-current" mat-raised-button
+                    (click)="projectVersionStore.changeVersion(data.latest)">
+                {{'project.versions.warn.switch' | translate}}
+            </button>
+        </div>
+    </app-alert>
+</ng-template>
+
+<ng-template #sidenavVersionSelect>
+    <ng-container *ngIf="projectVersionStore.versions$ | async as versions">
+        <mat-form-field *ngIf="versions.length" class="ml-4">
+            <mat-label>{{'project.versions.select.label' | translate}}</mat-label>
+            <mat-select [value]="projectVersionStore.currentVersion$ | async"
+                        (selectionChange)="projectVersionStore.changeVersion($event.value)">
+                <mat-option *ngFor="let version of versions; let first = first"
+                            [value]="version">
+                    <ng-container *ngIf="first">
+                        {{'project.versions.select.format.first' | translate : {version: version.version} }}
+                    </ng-container>
+                    <ng-container *ngIf="!first">
+                        {{'project.versions.select.format' | translate : {version: version.version} }}
+                    </ng-container>
+                </mat-option>
+            </mat-select>
+            <input matInput style="display:none">
+        </mat-form-field>
+    </ng-container>
+</ng-template>

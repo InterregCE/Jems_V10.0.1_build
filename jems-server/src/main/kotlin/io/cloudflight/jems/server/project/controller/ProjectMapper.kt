@@ -12,6 +12,7 @@ import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDataDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
+import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
@@ -29,6 +30,7 @@ import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.user.controller.toDto
 import org.mapstruct.Mapper
@@ -54,6 +56,9 @@ fun setIssuesCount(message: PreConditionCheckMessageDTO) {
 }
 
 fun PartnerBudget.toDTO() = projectMapper.map(this)
+
+fun ProjectVersion.toDTO() = projectMapper.map(this)
+fun Collection<ProjectVersion>.toDTOs() = map { it.toDTO() }
 
 fun Collection<PartnerBudget>.toDTO() = map { it.toDTO() }
     .sortedBy { it.partner.sortNumber }
@@ -110,6 +115,7 @@ abstract class ProjectMapper {
 
     abstract fun map(applicationStatus: ApplicationStatus): ApplicationStatusDTO
     abstract fun map(applicationActionInfoDTO: ApplicationActionInfoDTO): ApplicationActionInfo
+    abstract fun map(projectVersion: ProjectVersion): ProjectVersionDTO
 
     @Mapping(source = "submissionAllowed", target = "submissionAllowed")
     abstract fun map(preConditionCheckResult: PreConditionCheckResult): PreConditionCheckResultDTO

@@ -1,4 +1,4 @@
-<app-main-page-template
+<app-project-page-template
         [needsCard]="true"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.c">
@@ -22,4 +22,4 @@
             (newSort)="newSort$.next($event)"
             (deleteWorkPackage)="deleteWorkPackage($event)">
     </app-project-application-form-work-packages-list>
-</app-main-page-template>
+</app-project-page-template>

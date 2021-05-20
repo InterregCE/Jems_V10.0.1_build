@@ -8,4 +8,6 @@ interface ProjectVersionPersistence {
     fun createNewVersion(projectId: Long, version: String, status: ApplicationStatus, userId: Long): ProjectVersion
 
     fun getLatestVersionOrNull(projectId: Long): ProjectVersion?
+
+    fun getAllVersionsByProjectId(projectId: Long): List<ProjectVersion>
 }

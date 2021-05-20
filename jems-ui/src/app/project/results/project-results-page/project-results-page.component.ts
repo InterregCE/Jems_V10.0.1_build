@@ -8,7 +8,6 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {InputTranslation, ProjectPeriodDTO, ProjectResultDTO, ResultIndicatorSummaryDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
-import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 
 @UntilDestroy()
@@ -38,8 +37,7 @@ export class ProjectResultsPageComponent implements OnInit {
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,
               private projectResultsPageStore: ProjectResultsPageStore,
-              private activatedRoute: ActivatedRoute,
-              private sidenavService: ProjectApplicationFormSidenavService) {
+              private activatedRoute: ActivatedRoute) {
     this.formService.init(this.form, this.projectResultsPageStore.isProjectEditable$);
   }
 

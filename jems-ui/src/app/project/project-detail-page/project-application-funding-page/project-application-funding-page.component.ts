@@ -4,7 +4,6 @@ import {ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {ProjectFundingDecisionStore} from './project-funding-decision-store.service';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {combineLatest} from 'rxjs';
 import {ProjectStepStatus} from '../project-step-status';
 
@@ -45,8 +44,7 @@ export class ProjectApplicationFundingPageComponent {
   constructor(public projectStore: ProjectStore,
               private router: Router,
               private activatedRoute: ActivatedRoute,
-              public fundingDecisionStore: ProjectFundingDecisionStore,
-              private sidenavService: ProjectApplicationFormSidenavService) {
+              public fundingDecisionStore: ProjectFundingDecisionStore) {
   }
 
   private getApprovedWithConditionsStatus(project: ProjectDetailDTO): ProjectStatusDTO | null {
