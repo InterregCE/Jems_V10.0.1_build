@@ -69,8 +69,8 @@ internal class CallPersistenceProviderTest {
         private const val UNIT_COST_ID = 3L
         private const val USER_ID = 302L
 
-        private val START = ZonedDateTime.now()
-        private val END = ZonedDateTime.now().plusDays(5)
+        private val START = ZonedDateTime.now().withSecond(0).withNano(0)
+        private val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
 
         private val user = UserEntity(
             id = USER_ID,

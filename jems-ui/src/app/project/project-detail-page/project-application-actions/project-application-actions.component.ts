@@ -118,6 +118,8 @@ export class ProjectApplicationActionsComponent {
     this.projectDetailStore.returnApplicationToDraft(projectId)
       .pipe(
         tap(() => this.actionPending = false),
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => this.actionPending = false)
       ).subscribe();
   }
 

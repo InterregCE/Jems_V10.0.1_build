@@ -16,4 +16,17 @@ data class ProjectCallSettings(
     val flatRates: Set<ProjectCallFlatRate>,
     val lumpSums: List<ProgrammeLumpSum>,
     val unitCosts: List<ProgrammeUnitCost>,
-)
+) {
+    fun isCallStep1Closed(): Boolean {
+        return if (endDateStep1 == null) {
+            false
+        }
+        else {
+            ZonedDateTime.now().isBefore(startDate) || ZonedDateTime.now().isAfter(endDateStep1)
+        }
+    }
+
+    fun isCallStep2Closed(): Boolean {
+        return ZonedDateTime.now().isBefore(startDate) || ZonedDateTime.now().isAfter(endDate)
+    }
+}
