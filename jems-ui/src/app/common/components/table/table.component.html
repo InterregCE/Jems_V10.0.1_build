@@ -46,10 +46,10 @@
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></mat-header-row>
-    <mat-row
-            [class.clickable-table-row]="configuration.isTableClickable"
-            *matRowDef="let row; columns: columnsToDisplay;"
-            [routerLink]="configuration.isTableClickable ? [configuration.routerLink, row.id] : []"></mat-row>
+    <mat-row [class.clickable-table-row]="configuration.isTableClickable"
+             *matRowDef="let row; columns: columnsToDisplay;"
+             [routerLink]="configuration.isTableClickable ? [configuration.routerLink, row.id] : []"
+             queryParamsHandling="merge"></mat-row>
 </mat-table>
 <app-paginator
         *ngIf="configuration?.sortable"

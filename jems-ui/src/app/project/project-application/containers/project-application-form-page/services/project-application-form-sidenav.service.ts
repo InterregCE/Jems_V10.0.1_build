@@ -171,7 +171,6 @@ export class ProjectApplicationFormSidenavService {
           },
           {
             headline: {i18nKey: 'project.application.form.section.part.b'},
-            disabled: !currentVersionIsLatest,
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.b.partners'},

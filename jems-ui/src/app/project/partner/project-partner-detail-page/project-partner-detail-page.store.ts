@@ -10,15 +10,15 @@ import {
   BudgetStaffCostEntryDTO,
   BudgetTravelAndAccommodationCostEntryDTO,
   BudgetUnitCostEntryDTO,
-  CallService,
   CallDetailDTO,
+  CallService,
   OutputProjectPartnerDetail,
-  ProjectPeriodDTO,
   ProgrammeFundDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
-  ProjectPartnerCoFinancingAndContributionOutputDTO
+  ProjectPartnerCoFinancingAndContributionOutputDTO,
+  ProjectPeriodDTO
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {NumberService} from '../../../common/services/number.service';
@@ -34,6 +34,7 @@ import {UnitCostsBudgetTable} from '../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-table-entry';
 import {InvestmentSummary} from '../../work-package/work-package-detail-page/workPackageInvestment';
 import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
+import {ProjectVersionStore} from '../../services/project-version-store.service';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -58,7 +59,8 @@ export class ProjectPartnerDetailPageStore {
               private partnerStore: ProjectPartnerStore,
               private callService: CallService,
               private projectWorkPackagePageStore: ProjectWorkPackagePageStore,
-              private projectPartnerBudgetService: ProjectPartnerBudgetService
+              private projectPartnerBudgetService: ProjectPartnerBudgetService,
+              private projectVersionStore: ProjectVersionStore
   ) {
     this.investmentSummaries$ = this.projectWorkPackagePageStore.projectInvestmentSummaries$.pipe(shareReplay(1));
     this.unitCosts$ = this.projectStore.projectCall$.pipe(
@@ -145,45 +147,59 @@ export class ProjectPartnerDetailPageStore {
   }
 
   private financingAndContribution(): Observable<ProjectPartnerCoFinancingAndContributionOutputDTO> {
-    return combineLatest([this.updateFinancingAndContributionEvent.pipe(startWith(null)), this.partnerStore.partner$])
+    return combineLatest([
+      this.partnerStore.partner$,
+      this.projectVersionStore.currentRouteVersion$,
+      this.updateFinancingAndContributionEvent.pipe(startWith(null))
+    ])
       .pipe(
-        map(([, partner]) => partner),
-        filter(partner => !!partner.id),
-        switchMap(partner =>
-          this.projectPartnerBudgetService.getProjectPartnerCoFinancing(partner.id)
+        filter(([partner, version]) => !!partner.id),
+        switchMap(([partner, version]) =>
+          this.projectPartnerBudgetService.getProjectPartnerCoFinancing(partner.id, version)
         ),
       );
   }
 
   private budgetOptions(): Observable<BudgetOptions> {
-    return combineLatest([this.updateBudgetOptionsEvent$.pipe(startWith(null)), this.partnerStore.partner$]).pipe(
-      map(([, partner]) => partner),
-      filter(partner => !!partner.id),
-      map(partner => partner.id),
-      switchMap(id =>
-        this.projectPartnerBudgetService.getBudgetOptions(id)
-      ),
-      map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(it.officeAndAdministrationOnStaffCostsFlatRate, it.officeAndAdministrationOnDirectCostsFlatRate, it.staffCostsFlatRate, it.travelAndAccommodationOnStaffCostsFlatRate, it.otherCostsOnStaffCostsFlatRate)),
-      shareReplay(1)
-    );
+    return combineLatest([
+      this.partnerStore.partner$,
+      this.projectVersionStore.currentRouteVersion$,
+      this.updateBudgetOptionsEvent$.pipe(startWith(null))
+    ])
+      .pipe(
+        filter(([partner, version]) => !!partner.id),
+        switchMap(([partner, version]) => this.projectPartnerBudgetService.getBudgetOptions(partner.id, version)),
+        map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(
+          it.officeAndAdministrationOnStaffCostsFlatRate,
+          it.officeAndAdministrationOnDirectCostsFlatRate,
+          it.staffCostsFlatRate,
+          it.travelAndAccommodationOnStaffCostsFlatRate,
+          it.otherCostsOnStaffCostsFlatRate
+        )),
+        shareReplay(1)
+      );
   }
 
   private budgets(): Observable<PartnerBudgetTables> {
-    return combineLatest([this.updateBudgetEvent$.pipe(startWith(null)), this.updateBudgetOptionsEvent$.pipe(startWith(null)), this.partnerStore.partner$]).pipe(
-      map(([, , partner]) => partner),
-      filter(partner => !!partner.id),
-      map(partner => partner.id),
-      switchMap(id => this.projectPartnerBudgetService.getBudgetCosts(id)),
-      map(data => new PartnerBudgetTables(
-        this.toStaffCostsTable(data.staffCosts),
-        this.toTravelAndAccommodationCostsTable(data.travelCosts),
-        this.toBudgetTable(data.externalCosts),
-        this.toBudgetTable(data.equipmentCosts),
-        this.toBudgetTable(data.infrastructureCosts),
-        this.toUnitCostsTable(data.unitCosts)
-      )),
-      shareReplay(1)
-    );
+    return combineLatest([
+      this.partnerStore.partner$,
+      this.projectVersionStore.currentRouteVersion$,
+      this.updateBudgetEvent$.pipe(startWith(null)),
+      this.updateBudgetOptionsEvent$.pipe(startWith(null))
+    ])
+      .pipe(
+        filter(([partner, version]) => !!partner.id),
+        switchMap(([partner, version]) => this.projectPartnerBudgetService.getBudgetCosts(partner.id, version)),
+        map(data => new PartnerBudgetTables(
+          this.toStaffCostsTable(data.staffCosts),
+          this.toTravelAndAccommodationCostsTable(data.travelCosts),
+          this.toBudgetTable(data.externalCosts),
+          this.toBudgetTable(data.equipmentCosts),
+          this.toBudgetTable(data.infrastructureCosts),
+          this.toUnitCostsTable(data.unitCosts)
+        )),
+        shareReplay(1)
+      );
 
   }
 
@@ -196,11 +212,14 @@ export class ProjectPartnerDetailPageStore {
   private totalBudget(): Observable<number> {
     return combineLatest([
       this.partnerStore.partner$,
+      this.projectVersionStore.currentRouteVersion$,
       this.updateBudgetOptionsEvent$.pipe(startWith(null)),
       this.updateBudgetEvent$.pipe(startWith(null))
     ])
       .pipe(
-        switchMap(([partner]) => partner?.id ? this.projectPartnerBudgetService.getTotal(partner.id) : of(0)),
+        switchMap(
+          ([partner, version]) => partner?.id ? this.projectPartnerBudgetService.getTotal(partner.id, version) : of(0)
+        ),
         map(total => NumberService.truncateNumber(total)),
         shareReplay(1)
       );

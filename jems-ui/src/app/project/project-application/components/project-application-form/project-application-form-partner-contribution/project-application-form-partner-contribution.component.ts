@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {FormBuilder} from '@angular/forms';
 import {OutputProjectPartnerDetail, ProjectPartnerMotivationDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
@@ -12,24 +12,25 @@ import {catchError, take, tap} from 'rxjs/operators';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerContributionComponent implements OnInit, OnChanges {
+export class ProjectApplicationFormPartnerContributionComponent implements OnChanges {
   @Input()
   partner: OutputProjectPartnerDetail;
 
-  partnerContributionForm: FormGroup;
+  partnerContributionForm = this.formBuilder.group({
+    organizationRelevance: [],
+    organizationRole: [],
+    organizationExperience: [],
+  });
 
   constructor(private formBuilder: FormBuilder,
               private partnerStore: ProjectPartnerStore,
               private formService: FormService) {
-  }
-
-  ngOnInit(): void {
-    this.initForm();
+    this.formService.init(this.partnerContributionForm, this.partnerStore.isProjectEditable$);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.partner) {
-      this.initForm();
+      this.resetForm();
     }
   }
 
@@ -47,13 +48,10 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnIni
       ).subscribe();
   }
 
-  initForm(): void {
-    this.partnerContributionForm = this.formBuilder.group({
-      organizationRelevance: [this.partner?.motivation?.organizationRelevance || []],
-      organizationRole: [this.partner?.motivation?.organizationRole || []],
-      organizationExperience: [this.partner?.motivation?.organizationExperience || []],
-    });
-    this.formService.init(this.partnerContributionForm, this.partnerStore.isProjectEditable$);
+  resetForm(): void {
+    this.partnerContributionForm.get('organizationRelevance')?.setValue(this.partner?.motivation?.organizationRelevance || []);
+    this.partnerContributionForm.get('organizationRole')?.setValue(this.partner?.motivation?.organizationRole || []);
+    this.partnerContributionForm.get('organizationExperience')?.setValue(this.partner?.motivation?.organizationExperience || []);
   }
 
   get controls(): any {
