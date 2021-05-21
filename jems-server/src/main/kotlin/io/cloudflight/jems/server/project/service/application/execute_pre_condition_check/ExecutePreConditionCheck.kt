@@ -17,13 +17,12 @@ class ExecutePreConditionCheck(
     private val projectPersistence: ProjectPersistence,
     //TODO should be replaced with persistence after MP2-1510
     private val pluginStatusRepository: PluginStatusRepository
-) :
-    ExecutePreConditionCheckInteractor {
+) : ExecutePreConditionCheckInteractor {
 
     @ExceptionWrapper(ExecutePreConditionCheckException::class)
     @Transactional(readOnly = true)
     override fun execute(projectId: Long): PreConditionCheckResult =
-        if (pluginStatusRepository.findById(pluginKey).isEmpty || pluginStatusRepository.findById(pluginKey).get().enabled)
+        if (isPluginEnabled())
             projectPersistence.getProjectCallSettings(projectId).let { callSettings ->
                 projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                     when {
@@ -37,5 +36,14 @@ class ExecutePreConditionCheck(
                 }
             }
         else PreConditionCheckResult(emptyList(), true)
+
+
+    private fun isPluginEnabled(): Boolean =
+        pluginStatusRepository.findById(pluginKey).let {
+            when {
+                it.isPresent -> it.get().enabled
+                else -> true
+            }
+        }
 
 }
