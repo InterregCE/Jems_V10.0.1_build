@@ -9,11 +9,11 @@
     <mat-expansion-panel [class.alternative]="index%2==0">
         <mat-expansion-panel-header [expandedHeight]="'48px'">
             <mat-panel-title [class.mat-body]="level>1" class="text-overflow-ellipsis"
-                             [matTooltip]="item.messageKey | translate"
+                             [matTooltip]="item.message.i18nKey | translate: item.message.i18nArguments"
                              [matTooltipShowDelay]="1000">
                 <ng-container [ngTemplateOutlet]="icon"
                               [ngTemplateOutletContext]="{type:item.messageType}"></ng-container>
-                {{item.messageKey | translate}}
+                {{item.message.i18nKey | translate: item.message.i18nArguments}}
             </mat-panel-title>
             <mat-panel-description class="mat-body">
                 {{item.issueCount}} {{'project.detail.pre.condition.check.result.issues.count' | translate}}
@@ -30,7 +30,7 @@
 <ng-template let-item="item" let-level="level" let-index="index" #leaf>
     <div class="leaf" [class.alternative]="index%2==0">
         <ng-container [ngTemplateOutlet]="icon" [ngTemplateOutletContext]="{type:item.messageType}"></ng-container>
-        {{item.messageKey | translate}}
+        {{item.message.i18nKey | translate: item.message.i18nArguments}}
     </div>
 </ng-template>
 

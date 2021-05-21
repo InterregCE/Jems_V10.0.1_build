@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository
 interface ProgrammeLumpSumRepository : JpaRepository<ProgrammeLumpSumEntity, Long> {
 
     fun findTop100ByOrderById(): Iterable<ProgrammeLumpSumEntity>
+    fun findAllByIdIn(ids: List<Long>): Iterable<ProgrammeLumpSumEntity>
 
 }

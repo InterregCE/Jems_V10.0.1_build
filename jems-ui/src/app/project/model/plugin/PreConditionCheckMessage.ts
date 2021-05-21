@@ -1,14 +1,15 @@
 import {PluginMessageType} from './PluginMessageType';
 import {PreConditionCheckMessageDTO} from '@cat/api';
+import {I18nMessage} from '../../../common/models/I18nMessage';
 
 export class PreConditionCheckMessage {
   issueCount = 0;
-  messageKey: string;
+  message: I18nMessage;
   messageType: PluginMessageType;
   subSectionMessages: PreConditionCheckMessage[];
 
-  constructor(issueCount: number, messageKey: string, messageType: PluginMessageType, subSectionMessages: Array<PreConditionCheckMessage>) {
-    this.messageKey = messageKey;
+  constructor(issueCount: number, message: I18nMessage, messageType: PluginMessageType, subSectionMessages: Array<PreConditionCheckMessage>) {
+    this.message = message;
     this.messageType = messageType;
     this.subSectionMessages = subSectionMessages;
     this.issueCount = issueCount;
@@ -17,7 +18,7 @@ export class PreConditionCheckMessage {
   static newInstance(preConditionCheckMessageDTO: PreConditionCheckMessageDTO): PreConditionCheckMessage {
     return new PreConditionCheckMessage(
       preConditionCheckMessageDTO.issueCount,
-      preConditionCheckMessageDTO.messageKey,
+      preConditionCheckMessageDTO.message,
       preConditionCheckMessageDTO.messageType as PluginMessageType,
       preConditionCheckMessageDTO.subSectionMessages.map(it => PreConditionCheckMessage.newInstance(it))
     );

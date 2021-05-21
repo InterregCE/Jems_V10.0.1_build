@@ -5,7 +5,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
-import io.cloudflight.jems.server.project.controller.toDto
+import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.project.service.ProjectDescriptionService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ProjectDataProviderImpl(
     private val projectPersistence: ProjectPersistence,
+    private val programmeLumpSumPersistence: ProgrammeLumpSumPersistence,
     private val projectDescriptionService: ProjectDescriptionService,
     private val workPackagePersistence: WorkPackagePersistence,
     private val resultPersistence: ProjectResultPersistence,
@@ -44,7 +45,7 @@ class ProjectDataProviderImpl(
 
     @Transactional(readOnly = true)
     override fun getProjectDataForProjectId(projectId: Long): ProjectData {
-        val sectionA = projectPersistence.getProject(projectId).toDto().projectData?.toDataModel()
+        val sectionA = projectPersistence.getProject(projectId).toDataModel()
 
         val partners = partnerPersistence.findAllByProjectId(projectId).map {
             val budgetOptions = budgetOptionsPersistence.getBudgetOptions(it.id!!)?.toDataModel()
@@ -56,15 +57,21 @@ class ProjectDataProviderImpl(
             val budget = PartnerBudgetData(budgetOptions, coFinancing, budgetCosts, budgetTotalCost)
             it.toDataModel(budget)
         }.toSet()
-        val associatedOrganisations = associatedOrganizationService.findAllByProjectId(projectId).map { it.toDataModel() }.toSet()
+        val associatedOrganisations =
+            associatedOrganizationService.findAllByProjectId(projectId).map { it.toDataModel() }.toSet()
         val sectionB = ProjectDataSectionB(partners, associatedOrganisations)
 
-        val workPackages = workPackagePersistence.getRichWorkPackagesByProjectId(projectId, PageRequest.of(0, MAX_WORK_PACKAGES_PER_PROJECT)).content.toDataModel()
+        val workPackages = workPackagePersistence.getRichWorkPackagesByProjectId(
+            projectId,
+            PageRequest.of(0, MAX_WORK_PACKAGES_PER_PROJECT)
+        ).content.toDataModel()
         val results = resultPersistence.getResultsForProject(projectId).toResultDataModel()
         val sectionC = projectDescriptionService.getProjectDescription(projectId).toDataModel(workPackages, results)
 
-        val lumpSums = projectLumpSumPersistence.getLumpSums(projectId).map { it.toDataModel() }.toList()
-        val sectionE = ProjectDataSectionE(lumpSums)
+
+        val projectLumpSums = projectLumpSumPersistence.getLumpSums(projectId)
+        val lumpSumsDetail = programmeLumpSumPersistence.getLumpSums(projectLumpSums.map { it.programmeLumpSumId })
+        val sectionE = ProjectDataSectionE(projectLumpSums.map { it.toDataModel(lumpSumsDetail) }.toList())
 
         logger.info("Retrieved project data for project id=$projectId via plugin.")
 

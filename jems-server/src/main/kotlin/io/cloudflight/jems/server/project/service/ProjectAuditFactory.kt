@@ -35,6 +35,17 @@ fun projectStatusChanged(
             .build()
     )
 
+fun unsuccessfulProjectSubmission(
+    context: Any, projectSummary: ProjectSummary
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
+            .project(id = projectSummary.id, name = projectSummary.acronym)
+            .description("Unsuccessful attempt to submit an application from ${projectSummary.status}. Verification failed.")
+            .build()
+    )
+
 
 fun projectVersionSnapshotCreated(
     context: Any, projectSummary: ProjectSummary, projectVersion: ProjectVersion
@@ -45,7 +56,8 @@ fun projectVersionSnapshotCreated(
             .project(id = projectSummary.id, name = projectSummary.acronym)
             .description(
                 "New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on " +
-                    "${projectVersion.createdAt.toLocalDateTime().withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}"
+                    "${projectVersion.createdAt.toLocalDateTime().withNano(0)
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}"
             ).build()
     )
 

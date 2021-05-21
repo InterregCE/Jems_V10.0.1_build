@@ -27,6 +27,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.Pro
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.project.service.ProjectDescriptionService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -82,6 +83,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     lateinit var getBudgetTotalCost: GetBudgetTotalCostInteractor
     @RelaxedMockK
     lateinit var projectLumpSumPersistence: ProjectLumpSumPersistence
+    @RelaxedMockK
+    lateinit var programmeLumpSumPersistence: ProgrammeLumpSumPersistence
 
     @InjectMockKs
     lateinit var projectDataProvider: ProjectDataProviderImpl
@@ -183,6 +186,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             ProjectDataSectionA(
                 title = setOf(InputTranslationData(SystemLanguageData.EN, "title")),
                 intro = emptySet(),
+                acronym = project.acronym,
                 duration = project.duration,
                 specificObjective = project.specificObjective?.toDataModel(),
                 programmePriority = project.programmePriority?.toDataModel()
