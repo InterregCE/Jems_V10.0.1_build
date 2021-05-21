@@ -10,7 +10,6 @@ import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
@@ -41,7 +40,6 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.http.HttpStatus
 import java.util.Optional
 
 internal class PartnerPersistenceTest {
@@ -200,84 +198,6 @@ internal class PartnerPersistenceTest {
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
         val ex = assertThrows<ResourceNotFoundException> { persistence.create(-1, inputProjectPartner) }
         assertThat(ex.entity).isEqualTo("project")
-    }
-
-    @Test
-    fun `error createProjectPartner when MAX count exceeded`() {
-        every { projectRepository.findById(1) } returns Optional.of(project)
-        every { projectPartnerRepository.countByProjectId(eq(1)) } returns 30
-        every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
-
-        val ex = assertThrows<I18nValidationException> {
-            persistence.create(
-                1, InputProjectPartnerCreate(
-                    "partner", ProjectPartnerRole.PARTNER, null, "test", "test", setOf(
-                        InputTranslation(
-                            SystemLanguage.EN, "test"
-                        )
-                    ), ProjectTargetGroup.BusinessSupportOrganisation,
-                    1, "test vat", ProjectPartnerVatRecovery.Yes
-                )
-            )
-        }
-        assertThat(ex.i18nKey).isEqualTo("project.partner.max.allowed.count.reached")
-        assertThat(ex.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
-    }
-
-    @Test
-    fun `error on multiple LEAD_PARTNER partner creation attempt`() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER, legalStatusId = 1)
-        val inputProjectPartnerLead =
-            InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        val projectPartnerWithProject = ProjectPartnerEntity(
-            0,
-            project,
-            inputProjectPartner.abbreviation!!,
-            inputProjectPartner.role!!,
-            legalStatus = legalStatus
-        )
-
-        every { projectRepository.findById(1) } returns Optional.of(project)
-        every { projectPartnerRepository.countByProjectId(eq(1)) } returns 2
-        every {
-            projectPartnerRepository.findFirstByProjectIdAndRole(
-                1,
-                ProjectPartnerRole.LEAD_PARTNER
-            )
-        } returns Optional.of(projectPartnerWithProject)
-        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.empty()
-        every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartner
-        every { projectPartnerRepository.save(projectPartner) } returns projectPartnerInclTransl
-        every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
-        // also handle sorting
-        val projectPartners = listOf(projectPartner, projectPartnerWithProject)
-        every { projectPartnerRepository.findTop30ByProjectId(1, any<Sort>()) } returns projectPartners
-        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
-
-        // new with Partner role creation will work
-        assertThat(persistence.create(1, inputProjectPartner)).isEqualTo(outputProjectPartnerDetail)
-        verify { projectPartnerRepository.save(projectPartnerWithProject) }
-        // but new Lead should fail
-        assertThrows<I18nValidationException> { persistence.create(1, inputProjectPartnerLead) }
-    }
-
-    @Test
-    fun `error on already existing partner name when creating`() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        val inputProjectPartner2 = InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER, legalStatusId = 1)
-        val projectPartnerWithProject = ProjectPartnerEntity(0, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
-
-        every { projectRepository.findById(1) } returns Optional.of(project)
-        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.of(projectPartnerWithProject)
-        every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
-        every { projectPartnerRepository.countByProjectId(eq(1)) } returns 0
-
-        val ex = assertThrows<I18nValidationException> {
-            persistence.create(1, inputProjectPartner2)
-        }
-
-        assertThat(ex.i18nKey).isEqualTo("project.partner.abbreviation.already.existing")
-        assertThat(ex.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
     }
 
     @Test
@@ -441,27 +361,6 @@ internal class PartnerPersistenceTest {
             )
         }
         assertThat(exception.entity).isEqualTo("projectPartner")
-    }
-
-    @Test
-    fun `error on already existing partner name when updating`() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        val updateProjectPartner = InputProjectPartnerUpdate(1, "partner", ProjectPartnerRole.PARTNER, legalStatusId = 1)
-        val projectPartnerWithProject = ProjectPartnerEntity(0, project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
-        val oldProjectPartnerWithProject = ProjectPartnerEntity(0, project, "old partner", inputProjectPartner.role!!, legalStatus = legalStatus)
-
-        every { projectRepository.findById(1) } returns Optional.of(project)
-        every { projectPartnerRepository.findById(1) } returns Optional.of(oldProjectPartnerWithProject)
-        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.of(projectPartnerWithProject)
-        every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
-        every { projectPartnerRepository.countByProjectId(eq(1)) } returns 1
-
-        val ex = assertThrows<I18nValidationException> {
-            persistence.update(updateProjectPartner)
-        }
-
-        assertThat(ex.i18nKey).isEqualTo("project.partner.abbreviation.already.existing")
-        assertThat(ex.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
     }
 
     @Test

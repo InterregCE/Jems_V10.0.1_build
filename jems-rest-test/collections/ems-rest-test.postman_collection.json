@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4dead170-1ddd-4248-91f5-f7b182bb4edf",
+		"_postman_id": "90c0abd9-b128-4ee0-9d3d-9b622e700817",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -3119,73 +3119,73 @@
 				}
 			]
 		},
-        {
-            "name": "Disable standard-pre-condition-check-plugin",
-            "item": [
-              {
-                "name": "Disable standard-pre-condition-check-plugin",
-                "event": [
-                  {
-                    "listen": "prerequest",
-                    "script": {
-                      "exec": [
-                        "pm.variables.set(\r",
-                        "    'pluginKey',\r",
-                        "    'standard-pre-condition-check-plugin'\r",
-                        ");\r",
-                        ""
-                      ],
-                      "type": "text/javascript"
-                    }
-                  },
-                  {
-                    "listen": "test",
-                    "script": {
-                      "exec": [
-                        "pm.test('standard-pre-condition-check-plugin should be disabled', function() {\r",
-                        "    pm.response.to.have.status(200);\r",
-                        "});\r",
-                        ""
-                      ],
-                      "type": "text/javascript"
-                    }
-                  }
-                ],
-                "request": {
-                  "auth": {
-                    "type": "basic",
-                    "basic": [
-                      {
-                        "key": "password",
-                        "value": "{{admin_password}}",
-                        "type": "string"
-                      },
-                      {
-                        "key": "username",
-                        "value": "{{admin_email}}",
-                        "type": "string"
-                      }
-                    ]
-                  },
-                  "method": "POST",
-                  "header": [],
-                  "url": {
-                    "raw": "{{url}}/api/plugin/{{pluginKey}}/disable",
-                    "host": [
-                      "{{url}}"
-                    ],
-                    "path": [
-                      "api",
-                      "plugin",
-                      "{{pluginKey}}",
-                      "disable"
-                    ]
-                  }
-                },
-                "response": []
-              }
-            ]
-        },
+		{
+			"name": "Disable standard-pre-condition-check-plugin",
+			"item": [
+				{
+					"name": "Disable standard-pre-condition-check-plugin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\r",
+									"    'pluginKey',\r",
+									"    'standard-pre-condition-check-plugin'\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('standard-pre-condition-check-plugin should be disabled', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{admin_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{admin_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/plugin/{{pluginKey}}/disable",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"plugin",
+								"{{pluginKey}}",
+								"disable"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "submit and resubmit application",
 			"item": [
@@ -8418,15 +8418,14 @@
 									"pm.test('applicant cannot update Partner B to be LEAD when A already is', function() {\r",
 									"    const error = pm.response.json();\r",
 									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.i18nMessage.i18nKey).to.eql(\"project.partner.role.lead.already.existing\");\r",
+									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.update.project.partner.role.lead.already.existing\");\r",
 									"});\r",
 									"\r",
 									"pm.test('correct id is sent to FE in error response', function() {\r",
 									"    const error = pm.response.json();\r",
-									"    pm.expect(error.i18nMessage.i18nArguments[0]).to.eql(pm.variables.get('partnerIdA') + \"\",);\r",
-									"    pm.expect(error.i18nMessage.i18nArguments[1]).to.eql(pm.variables.get('partnerAbbreviationALead') + \"\");\r",
-									"});\r",
-									""
+									"    pm.expect(error.details[0].i18nMessage.i18nArguments.currentLeadId).to.eql(pm.variables.get('partnerIdA') + \"\",);\r",
+									"    pm.expect(error.details[0].i18nMessage.i18nArguments.currentLeadAbbreviation).to.eql(pm.variables.get('partnerAbbreviationALead') + \"\");\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -8564,7 +8563,7 @@
 									"\r",
 									"pm.test('applicant cannot create LeadPartner C cause B is now LeadPartner', function() {\r",
 									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.i18nMessage.i18nKey).to.eql(\"project.partner.role.lead.already.existing\");\r",
+									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.create.project.partner.role.lead.already.existing\");\r",
 									"});\r",
 									""
 								],
@@ -8634,7 +8633,7 @@
 									"\r",
 									"pm.test('applicant cannot override LeadPartner A cause B is now LeadPartner', function() {\r",
 									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.i18nMessage.i18nKey).to.eql(\"project.partner.oldLeadPartnerId.is.not.lead\");\r",
+									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.create.project.partner.oldLeadPartnerId.is.not.lead\");\r",
 									"});\r",
 									""
 								],
@@ -11988,74 +11987,74 @@
 				}
 			]
 		},
-      {
-        "name": "Enable standard-pre-condition-check-plugin",
-        "item": [
-          {
-            "name": "Enable standard-pre-condition-check-plugin",
-            "event": [
-              {
-                "listen": "prerequest",
-                "script": {
-                  "exec": [
-                    "pm.variables.set(\r",
-                    "    'pluginKey',\r",
-                    "    'standard-pre-condition-check-plugin'\r",
-                    ");\r",
-                    ""
-                  ],
-                  "type": "text/javascript"
-                }
-              },
-              {
-                "listen": "test",
-                "script": {
-                  "exec": [
-                    "pm.test('standard-pre-condition-check-plugin should be enabled', function() {\r",
-                    "    pm.response.to.have.status(200);\r",
-                    "});\r",
-                    ""
-                  ],
-                  "type": "text/javascript"
-                }
-              }
-            ],
-            "request": {
-              "auth": {
-                "type": "basic",
-                "basic": [
-                  {
-                    "key": "password",
-                    "value": "{{admin_password}}",
-                    "type": "string"
-                  },
-                  {
-                    "key": "username",
-                    "value": "{{admin_email}}",
-                    "type": "string"
-                  }
-                ]
-              },
-              "method": "POST",
-              "header": [],
-              "url": {
-                "raw": "{{url}}/api/plugin/{{pluginKey}}/enable",
-                "host": [
-                  "{{url}}"
-                ],
-                "path": [
-                  "api",
-                  "plugin",
-                  "{{pluginKey}}",
-                  "enable"
-                ]
-              }
-            },
-            "response": []
-          }
-        ]
-      }
-    ],
+		{
+			"name": "Enable standard-pre-condition-check-plugin",
+			"item": [
+				{
+					"name": "Enable standard-pre-condition-check-plugin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\r",
+									"    'pluginKey',\r",
+									"    'standard-pre-condition-check-plugin'\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('standard-pre-condition-check-plugin should be enabled', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{admin_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{admin_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/plugin/{{pluginKey}}/enable",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"plugin",
+								"{{pluginKey}}",
+								"enable"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
 	"auth": {
 		"type": "basic",
 		"basic": [
