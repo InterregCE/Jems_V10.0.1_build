@@ -17,7 +17,7 @@
                 ({{data.current?.createdAt | localeDate: 'L' : 'LT'}})
             </span>
             <button id="switch-to-current" mat-raised-button
-                    (click)="projectVersionStore.changeVersion(data.latest)">
+                    (click)="pageStore.changeVersion(data.latest)">
                 {{'project.versions.warn.switch' | translate}}
             </button>
         </div>
@@ -25,12 +25,13 @@
 </ng-template>
 
 <ng-template #sidenavVersionSelect>
-    <ng-container *ngIf="projectVersionStore.versions$ | async as versions">
-        <mat-form-field *ngIf="versions.length" class="ml-4">
+    <ng-container *ngIf="versionSelectData$ | async as data">
+        <mat-form-field *ngIf="data.versions.length" class="ml-4">
             <mat-label>{{'project.versions.select.label' | translate}}</mat-label>
-            <mat-select [value]="projectVersionStore.currentVersion$ | async"
-                        (selectionChange)="projectVersionStore.changeVersion($event.value)">
-                <mat-option *ngFor="let version of versions; let first = first"
+            <mat-select *ngIf="data.current?.version"
+                        [value]="data.current"
+                        (selectionChange)="pageStore.changeVersion($event.value)">
+                <mat-option *ngFor="let version of data.versions; let first = first"
                             [value]="version">
                     <ng-container *ngIf="first">
                         {{'project.versions.select.format.first' | translate : {version: version.version} }}

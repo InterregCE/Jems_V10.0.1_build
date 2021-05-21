@@ -12,7 +12,6 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProjectUtil} from '../../../../project-util';
 import {filter} from 'rxjs/internal/operators';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 import {RoutingService} from '../../../../../common/services/routing.service';
 
 @Injectable()
@@ -78,8 +77,7 @@ export class ProjectApplicationFormSidenavService {
               private projectStore: ProjectStore,
               private translate: TranslateService,
               private permissionService: PermissionService,
-              private routingService: RoutingService,
-              private projectVersionStore: ProjectVersionStore) {
+              private routingService: RoutingService) {
 
     const headlines$ = combineLatest([
       this.isNotApplicant$,
@@ -87,7 +85,7 @@ export class ProjectApplicationFormSidenavService {
       this.partners$,
       this.packages$,
       this.versionSelectTemplate$,
-      this.projectVersionStore.currentIsLatest$
+      this.projectStore.currentVersionIsLatest$
     ])
       .pipe(
         filter(([isNotApplicant, project]) => !!project),

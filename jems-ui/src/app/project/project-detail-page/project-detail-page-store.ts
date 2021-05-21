@@ -36,7 +36,7 @@ export class ProjectDetailPageStore {
     this.callHasTwoSteps$ = this.projectStore.callHasTwoSteps$;
     this.isThisUserOwner$ = this.isThisUserOwner();
     this.preConditionCheckResult.next(null);
-    this.isProjectLatestVersion$ = this.projectVersionStore.currentIsLatest$;
+    this.isProjectLatestVersion$ = this.projectStore.currentVersionIsLatest$;
     this.projectCurrentDecisions$ = this.projectStore.projectCurrentDecisions$;
   }
 
