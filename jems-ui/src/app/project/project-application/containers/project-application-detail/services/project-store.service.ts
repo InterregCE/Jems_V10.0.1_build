@@ -10,6 +10,7 @@ import {
   ProjectService,
   ProjectStatusDTO,
   ProjectStatusService,
+  ProjectVersionDTO,
   UserRoleCreateDTO,
 } from '@cat/api';
 import {distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, tap, withLatestFrom} from 'rxjs/operators';
@@ -39,6 +40,7 @@ export class ProjectStore {
 
   projectStatus$: Observable<ProjectStatusDTO.StatusEnum>;
   project$: Observable<ProjectDetailDTO>;
+  currentVersionIsLatest$: Observable<boolean>;
   projectEditable$: Observable<boolean>;
   projectTitle$: Observable<string>;
   callHasTwoSteps$: Observable<boolean>;
@@ -81,6 +83,7 @@ export class ProjectStore {
       ).subscribe();
 
     this.project$ = this.project();
+    this.currentVersionIsLatest$ = this.currentVersionIsLatest();
     this.projectEditable$ = this.projectEditable();
     this.projectStatus$ = this.projectStatus();
     this.projectCall$ = this.projectCallSettings();
@@ -166,7 +169,7 @@ export class ProjectStore {
       this.project$,
       this.permissionService.permissionsChanged(),
       this.securityService.currentUser,
-      this.projectVersionStore.currentIsLatest$
+      this.currentVersionIsLatest$
     ])
       .pipe(
         map(([project, permissions, currentUser, currentVersionIsLatest]) => {
@@ -223,5 +226,32 @@ export class ProjectStore {
       .pipe(
         map(project => step && Number(step) === 2 ? project.secondStepDecision : project.firstStepDecision)
       );
+  }
+
+  private currentVersionIsLatest(): Observable<boolean> {
+    return combineLatest([
+      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.versions$,
+      this.project$.pipe(
+        distinctUntilChanged((o, n) => o.projectStatus.status === n.projectStatus.status)
+      )
+    ])
+      .pipe(
+        map(([currentVersion, versions, project]) => {
+            if (!currentVersion) {
+              return true;
+            }
+            const latest = this.latestVersion(versions);
+            const current = Number(currentVersion);
+            // if project is editable the current version is the next one
+            return ProjectUtil.isOpenForModifications(project) ? latest < current : latest === current;
+          }
+        ),
+        shareReplay(1)
+      );
+  }
+
+  private latestVersion(versions?: ProjectVersionDTO[]): number {
+    return versions?.length ? Number(versions[0].version) : 1;
   }
 }
