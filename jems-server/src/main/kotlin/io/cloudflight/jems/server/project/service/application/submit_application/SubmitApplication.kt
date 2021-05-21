@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.authorization.CanSubmitApplication
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.execute_pre_condition_check.pluginKey
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.create_new_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -44,9 +45,8 @@ class SubmitApplication(
             }
         }
 
-
     private fun preCheckAndSubmit(projectSummary: ProjectSummary, pluginKey: String) =
-        if (pluginStatusRepository.findById(pluginKey).isEmpty || pluginStatusRepository.findById(pluginKey).get().enabled)
+        if (isPluginEnabled())
             jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey).check(projectSummary.id).let {
                 when {
                     it.isSubmissionAllowed -> this.submitApplication(projectSummary)
@@ -67,5 +67,13 @@ class SubmitApplication(
                     projectSummary.id, ApplicationStatus.RETURNED_TO_APPLICANT
                 )
             )
+        }
+
+    private fun isPluginEnabled(): Boolean =
+        pluginStatusRepository.findById(pluginKey).let {
+            when {
+                it.isPresent -> it.get().enabled
+                else -> true
+            }
         }
 }
