@@ -8,15 +8,22 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAs
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.TranslationOrganizationId
+import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationAddressRow
+import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationContactRow
+import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationSimpleRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContact
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
+import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationTransl
+import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
 
@@ -132,4 +139,52 @@ fun ProjectAssociatedOrganizationAddress.toOutputProjectAssociatedOrganizationDe
     postalCode = address?.postalCode,
     city = address?.city,
     homepage = address?.homepage
+)
+
+fun List<ProjectAssociatedOrganizationRow>.toAssociatedOrganizationDetailHistoricalData(
+    partner: OutputProjectPartner,
+    address: OutputProjectAssociatedOrganizationAddress,
+    contacts: List<OutputProjectPartnerContact>) =
+    this.groupBy { it.id }.map { groupedRows -> OutputProjectAssociatedOrganizationDetail(
+        id = groupedRows.value.first().id,
+        partner = partner,
+        nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
+        nameInEnglish = groupedRows.value.first().nameInEnglish,
+        sortNumber = groupedRows.value.first().sortNumber,
+        address = address,
+        contacts = contacts,
+        roleDescription = groupedRows.value.extractField { it.roleDescription },
+    ) }
+
+fun List<AssociatedOrganizationAddressRow>.toProjectAssociatedOrganizationAddressHistoricalData() =
+    this.groupBy { it.id }.map { groupedRows ->
+        OutputProjectAssociatedOrganizationAddress(
+            country = groupedRows.value.first().country,
+            nutsRegion2 = groupedRows.value.first().nutsRegion2,
+            nutsRegion3 = groupedRows.value.first().nutsRegion3,
+            street = groupedRows.value.first().street,
+            houseNumber = groupedRows.value.first().houseNumber,
+            postalCode = groupedRows.value.first().postalCode,
+            city = groupedRows.value.first().city,
+            homepage = groupedRows.value.first().homepage
+        )
+    }
+
+fun AssociatedOrganizationSimpleRow.toOutputAssociatedOrganizationHistoricalData() = OutputProjectAssociatedOrganization(
+    id = id,
+    partnerAbbreviation = partnerAbbreviation,
+    nameInOriginalLanguage = nameInOriginalLanguage,
+    nameInEnglish = nameInEnglish,
+    sortNumber = sortNumber
+)
+
+fun Collection<AssociatedOrganizationContactRow>.toAssociatedOrganizationContactHistoricalData() = map { it.toModel() }.toList()
+
+fun AssociatedOrganizationContactRow.toModel() = OutputProjectPartnerContact(
+    type = type,
+    title = title,
+    firstName = firstName,
+    lastName = lastName,
+    email = email,
+    telephone = telephone
 )

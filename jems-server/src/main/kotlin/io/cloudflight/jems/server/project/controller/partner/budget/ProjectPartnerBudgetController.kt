@@ -72,8 +72,8 @@ class ProjectPartnerBudgetController(
     override fun getTotal(partnerId: Long, version: String?) =
         getBudgetTotalCost.getBudgetTotalCost(partnerId, version)
 
-    override fun getProjectPartnerCoFinancing(partnerId: Long): ProjectPartnerCoFinancingAndContributionOutputDTO =
-        getCoFinancing.getCoFinancing(partnerId).toDto()
+    override fun getProjectPartnerCoFinancing(partnerId: Long, version: String?): ProjectPartnerCoFinancingAndContributionOutputDTO =
+        getCoFinancing.getCoFinancing(partnerId, version).toDto()
 
     override fun updateProjectPartnerCoFinancing(partnerId: Long, partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO) =
         updateCoFinancing.updateCoFinancing(

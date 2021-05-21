@@ -10,11 +10,17 @@ import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
+import io.cloudflight.jems.server.project.entity.partner.PartnerAddressRow
+import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
+import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
+import io.cloudflight.jems.server.project.entity.partner.PartnerMotivationRow
+import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContact
@@ -185,4 +191,66 @@ fun ProjectPartnerAddress.toDto() = ProjectPartnerAddressDTO(
     postalCode = address.postalCode,
     city = address.city,
     homepage = address.homepage
+)
+
+fun Collection<PartnerAddressRow>.toProjectPartnerAddressHistoricalData() = map { it.toModel() }.toList()
+
+fun PartnerAddressRow.toModel() = ProjectPartnerAddressDTO(
+    type = type,
+    country = country,
+    nutsRegion2 = nutsRegion2,
+    nutsRegion3 = nutsRegion3,
+    street = street,
+    houseNumber = houseNumber,
+    postalCode = postalCode,
+    city = city,
+    homepage = homepage
+)
+
+fun Collection<PartnerContactRow>.toProjectPartnerContactHistoricalData() = map { it.toModel() }.toList()
+
+fun PartnerContactRow.toModel() = OutputProjectPartnerContact(
+    type = type,
+    title = title,
+    firstName = firstName,
+    lastName = lastName,
+    email = email,
+    telephone = telephone
+)
+
+fun List<PartnerMotivationRow>.toProjectPartnerMotivationHistoricalData() = this.groupBy { it.partnerId }.map { groupedRows -> ProjectPartnerMotivationDTO(
+    organizationRelevance = groupedRows.value.extractField { it.organizationRelevance },
+    organizationRole = groupedRows.value.extractField { it.organizationRole },
+    organizationExperience = groupedRows.value.extractField { it.organizationExperience },
+) }.first()
+
+fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
+    addresses: List<ProjectPartnerAddressDTO>,
+    contacts: List<OutputProjectPartnerContact>,
+    motivation: ProjectPartnerMotivationDTO
+) = this.groupBy { it.id }.map { groupedRows -> OutputProjectPartnerDetail(
+    id = groupedRows.value.first().id,
+    abbreviation = groupedRows.value.first().abbreviation,
+    role = groupedRows.value.first().role,
+    sortNumber = groupedRows.value.first().sortNumber,
+    nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
+    nameInEnglish = groupedRows.value.first().nameInEnglish,
+    department = groupedRows.value.extractField { it.department },
+    partnerType = groupedRows.value.first().partnerType,
+    legalStatusId = groupedRows.value.first().legalStatusId,
+    vat = groupedRows.value.first().vat,
+    vatRecovery = groupedRows.value.first().vatRecovery,
+    addresses = addresses,
+    contacts = contacts,
+    motivation = motivation
+) }.first()
+
+fun Iterable<PartnerSimpleRow>.toOutputProjectPartnerHistoricalData() = map { it.toOutputProjectPartnerHistoricalData() }.toList()
+
+fun PartnerSimpleRow.toOutputProjectPartnerHistoricalData() = OutputProjectPartner(
+    id = id,
+    abbreviation = abbreviation,
+    role = role,
+    sortNumber = sortNumber,
+    country = country
 )

@@ -103,7 +103,8 @@ interface ProjectPartnerBudgetApi {
     @ApiOperation("Get project partner Co-Financing")
     @GetMapping("/cofinancing")
     fun getProjectPartnerCoFinancing(
-        @PathVariable partnerId: Long
+        @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: String? = null
     ): ProjectPartnerCoFinancingAndContributionOutputDTO
 
     @ApiOperation("Update project partner co-financing")

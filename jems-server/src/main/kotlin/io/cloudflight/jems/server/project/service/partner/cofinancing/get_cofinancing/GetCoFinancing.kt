@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing
 
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
@@ -13,7 +14,7 @@ class GetCoFinancing(
 
     @Transactional(readOnly = true)
     @CanRetrieveProjectPartner
-    override fun getCoFinancing(partnerId: Long): ProjectPartnerCoFinancingAndContribution =
-        persistence.getCoFinancingAndContributions(partnerId)
-
+    @ExceptionWrapper(GetCoFinancingException::class)
+    override fun getCoFinancing(partnerId: Long, version: String?): ProjectPartnerCoFinancingAndContribution =
+        persistence.getCoFinancingAndContributions(partnerId, version)
 }

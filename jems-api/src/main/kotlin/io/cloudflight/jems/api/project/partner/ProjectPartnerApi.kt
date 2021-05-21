@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.DeleteMapping
 import javax.validation.Valid
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Project Partner")
 @RequestMapping("/api/project/{projectId}/partner")
@@ -34,17 +35,23 @@ interface ProjectPartnerApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
     )
     @GetMapping
-    fun getProjectPartners(@PathVariable projectId: Long, pageable: Pageable): Page<OutputProjectPartner>
+    fun getProjectPartners(@PathVariable projectId: Long,
+                           pageable: Pageable,
+                           @RequestParam(required = false) version: String? = null): Page<OutputProjectPartner>
 
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
     )
     @GetMapping("/ids")
-    fun getProjectPartnersForDropdown(@PathVariable projectId: Long, pageable: Pageable): List<OutputProjectPartner>
+    fun getProjectPartnersForDropdown(@PathVariable projectId: Long,
+                                      pageable: Pageable,
+                                      @RequestParam(required = false) version: String? = null): List<OutputProjectPartner>
 
     @ApiOperation("Returns a project partner by id")
     @GetMapping("/{partnerId}")
-    fun getProjectPartnerById(@PathVariable projectId: Long, @PathVariable partnerId: Long): OutputProjectPartnerDetail
+    fun getProjectPartnerById(@PathVariable projectId: Long,
+                              @PathVariable partnerId: Long,
+                              @RequestParam(required = false) version: String? = null): OutputProjectPartnerDetail
 
     @ApiOperation("Creates new project partner")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

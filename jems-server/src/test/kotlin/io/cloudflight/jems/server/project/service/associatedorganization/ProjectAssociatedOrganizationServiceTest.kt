@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service
+package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.InputProjectContact
@@ -6,13 +6,11 @@ import io.cloudflight.jems.api.project.dto.ProjectContactType
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
-import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -29,8 +27,6 @@ import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizati
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
-import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationServiceImpl
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.mockk.MockKAnnotations
@@ -44,7 +40,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import java.util.Optional
 
@@ -57,8 +52,6 @@ internal class ProjectAssociatedOrganizationServiceTest {
     lateinit var projectAssociatedOrganizationRepository: ProjectAssociatedOrganizationRepository
 
     lateinit var projectAssociatedOrganizationService: ProjectAssociatedOrganizationService
-
-    private val UNPAGED = Pageable.unpaged()
 
     private val userRole = UserRoleEntity(1, "ADMIN")
     private val user = UserEntity(
@@ -124,15 +117,6 @@ internal class ProjectAssociatedOrganizationServiceTest {
             sortNumber = sortNr
         )
 
-    private fun outputOrganization(id: Long, partnerAbbr: String, name: String, sortNr: Int? = null) =
-        OutputProjectAssociatedOrganization(
-            id = id,
-            partnerAbbreviation = partnerAbbr,
-            nameInOriginalLanguage = name,
-            nameInEnglish = name,
-            sortNumber = sortNr
-        )
-
     private fun outputOrganizationDetail(id: Long, partner: OutputProjectPartner, name: String, sortNr: Int? = null) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
@@ -146,33 +130,10 @@ internal class ProjectAssociatedOrganizationServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         projectAssociatedOrganizationService =
-            ProjectAssociatedOrganizationServiceImpl(projectPartnerRepository, projectAssociatedOrganizationRepository)
-    }
-
-    @Test
-    fun getById() {
-        val org = organization(1, projectPartner, "test", 1)
-        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(org)
-
-        assertThat(projectAssociatedOrganizationService.getById(1, 1))
-            .isEqualTo(outputOrganizationDetail(1, outputProjectPartner, "test", 1))
-    }
-
-    @Test
-    fun `getById not-existing`() {
-        every { projectAssociatedOrganizationRepository.findFirstByProjectIdAndId(1, -1) } returns Optional.empty()
-
-        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.getById(1, -1) }
-        assertThat(ex.entity).isEqualTo("projectAssociatedOrganisation")
-    }
-
-    @Test
-    fun findAllByProjectId() {
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(1, UNPAGED) } returns
-            PageImpl(listOf(organization(1, projectPartner, "test", 1)))
-
-        assertThat(projectAssociatedOrganizationService.findAllByProjectId(1, UNPAGED))
-            .containsExactly(outputOrganization(1, projectPartner.abbreviation, "test", 1))
+            ProjectAssociatedOrganizationServiceImpl(
+                projectPartnerRepository,
+                projectAssociatedOrganizationRepository
+            )
     }
 
     @Test

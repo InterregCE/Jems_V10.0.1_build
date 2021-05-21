@@ -25,7 +25,7 @@ class GetProjectBudgetCoFinancing(
 
         partners.keys.forEach {
             budgetCoFinancingContributions.put(it,
-                projectPartnerCoFinancingPersistenceProvider.getCoFinancingAndContributions(it)
+                projectPartnerCoFinancingPersistenceProvider.getCoFinancingAndContributions(it, null)
             )
         }
 

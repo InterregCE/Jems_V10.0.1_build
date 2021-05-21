@@ -1,8 +1,5 @@
 package io.cloudflight.jems.server.project.service.application
 
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
-import io.cloudflight.jems.server.project.authorization.isNotSubmittedNow
-
 enum class ApplicationStatus {
     STEP1_DRAFT,
     STEP1_SUBMITTED,
