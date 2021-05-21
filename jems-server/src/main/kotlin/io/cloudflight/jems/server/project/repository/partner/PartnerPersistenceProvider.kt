@@ -10,7 +10,9 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
@@ -97,20 +99,6 @@ class PartnerPersistenceProvider(
         val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
         val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!).orElseThrow { ResourceNotFoundException("legalstatus") }
 
-        // to be possible to list all partners for dropdowns we decided to limit total amount of them
-        if (projectPartnerRepository.countByProjectId(projectId) >= MAX_PROJECT_PARTNERS)
-            throw I18nValidationException(
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-                i18nKey = "project.partner.max.allowed.count.reached"
-            )
-
-        // prevent multiple role LEAD_PARTNER entries
-        if (projectPartner.role!!.isLead)
-            validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
-
-        // prevent multiple partners with same abbreviation
-        validatePartnerAbbreviationUnique(projectId, abbreviation = projectPartner.abbreviation!!)
-
         val partnerCreated = projectPartnerRepository.save(projectPartner.toEntity(project = project, legalStatus = legalStatus))
         // save translations for which the just created Id is needed
         projectPartnerRepository.save(
@@ -129,13 +117,6 @@ class PartnerPersistenceProvider(
         val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!).orElseThrow { ResourceNotFoundException("legalstatus") }
 
         val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
-        if (makingThisLead)
-            validateLeadPartnerChange(projectId, projectPartner.oldLeadPartnerId)
-
-        if (oldProjectPartner.abbreviation != projectPartner.abbreviation) {
-            validatePartnerAbbreviationUnique(projectId, abbreviation = projectPartner.abbreviation!!)
-        }
-
         val partnerUpdated = projectPartnerRepository.save(
             oldProjectPartner.copy(
                 abbreviation = projectPartner.abbreviation!!,
@@ -208,57 +189,6 @@ class PartnerPersistenceProvider(
         projectPartnerRepository.saveAll(projectPartners)
     }
 
-    private fun validateLeadPartnerChange(projectId: Long, oldLeadPartnerId: Long?) {
-        if (oldLeadPartnerId == null)
-            validateOnlyOneLeadPartner(projectId)
-        else
-            updateOldLeadPartner(projectId, oldLeadPartnerId)
-    }
-
-    private fun validatePartnerAbbreviationUnique(projectId: Long, abbreviation: String) {
-        val partnerWithSameName = projectPartnerRepository.findFirstByProjectIdAndAbbreviation(projectId, abbreviation)
-        if (partnerWithSameName.isPresent) {
-            throw I18nValidationException(
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-                i18nKey = "project.partner.abbreviation.already.existing",
-                i18nArguments = listOf(abbreviation)
-            )
-        }
-    }
-
-    /**
-     * validate project partner to be saved: only one role LEAD should exist.
-     */
-    private fun validateOnlyOneLeadPartner(projectId: Long) {
-        val projectPartner = projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER)
-        if (projectPartner.isPresent) {
-            val currentLead = projectPartner.get()
-            throw I18nValidationException(
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-                i18nKey = "project.partner.role.lead.already.existing",
-                i18nArguments = listOf(currentLead.id.toString(), currentLead.abbreviation)
-            )
-        }
-    }
-
-    private fun updateOldLeadPartner(projectId: Long, oldLeadPartnerId: Long) {
-        val oldLeadPartner = projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER)
-            .orElseThrow { ResourceNotFoundException("projectPartner") }
-
-        if (oldLeadPartner.id == oldLeadPartnerId)
-            projectPartnerRepository.save(oldLeadPartner.copy(role = ProjectPartnerRole.PARTNER))
-        else
-            throw I18nValidationException(
-                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-                i18nKey = "project.partner.oldLeadPartnerId.is.not.lead"
-            )
-    }
-
-    private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {
-        return projectPartnerRepository.findById(partnerId)
-            .orElseThrow { ResourceNotFoundException("projectPartner") }
-    }
-
     private fun getPartnerHistoricalDetail(
         partnerId: Long,
         timestamp: Timestamp,
@@ -273,4 +203,8 @@ class PartnerPersistenceProvider(
             .toProjectPartnerDetailHistoricalData(addresses, contacts, motivation)
     }
 
+    private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {
+        return projectPartnerRepository.findById(partnerId)
+            .orElseThrow { ResourceNotFoundException("projectPartner") }
+    }
 }

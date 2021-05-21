@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectContactType
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
@@ -15,6 +16,7 @@ import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalSta
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.toEntity
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -22,13 +24,18 @@ import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import java.util.*
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.http.HttpStatus
 
 internal class UpdateProjectpartnerInteractorTest: UnitTest() {
     @MockK
     lateinit var persistence: PartnerPersistence
+
+    @MockK
+    lateinit var projectPartnerRepository: ProjectPartnerRepository
 
     @InjectMockKs
     lateinit var updateInteractor: UpdateProjectPartner
@@ -63,6 +70,10 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
             legalStatus = legalStatus
         )
         every { persistence.update(projectPartnerUpdate) } returns updatedProjectPartner.toOutputProjectPartnerDetail()
+        every { projectPartnerRepository.findById(1) } returns Optional.of(updatedProjectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.PARTNER) } returns Optional.of(updatedProjectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "updated") } returns Optional.of(updatedProjectPartner)
+
 
         Assertions.assertThat(updateInteractor.update(projectPartnerUpdate))
             .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
@@ -177,8 +188,30 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
             legalStatus = legalStatus
         )
         every { updateInteractor.update(projectPartnerUpdate) } returns updatedProjectPartner.toOutputProjectPartnerDetail()
+        every { projectPartnerRepository.findById(1) } returns Optional.of(updatedProjectPartner)
 
         Assertions.assertThat(updateInteractor.update(projectPartnerUpdate))
             .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
+    }
+
+    @Test
+    fun `error on already existing partner name when updating`() {
+        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
+        val updateProjectPartner = InputProjectPartnerUpdate(1, "partner", ProjectPartnerRole.PARTNER, legalStatusId = 1)
+        val projectPartnerWithProject = ProjectPartnerEntity(0,
+            ProjectPartnerTestUtil.project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
+        val oldProjectPartnerWithProject = ProjectPartnerEntity(0,
+            ProjectPartnerTestUtil.project, "old partner", inputProjectPartner.role!!, legalStatus = legalStatus)
+
+        every { projectPartnerRepository.findById(1) } returns Optional.of(oldProjectPartnerWithProject)
+        every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.of(projectPartnerWithProject)
+        every { projectPartnerRepository.countByProjectId(eq(1)) } returns 1
+
+        val ex = assertThrows<PartnerAbbreviationNotUnique> {
+            updateInteractor.update(updateProjectPartner)
+        }
+
+        Assertions.assertThat(ex.i18nMessage.i18nKey).isEqualTo("use.case.update.project.partner.abbreviation.not.unique")
+        Assertions.assertThat(ex.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
     }
 }
