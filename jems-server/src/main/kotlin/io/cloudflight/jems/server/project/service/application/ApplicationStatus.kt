@@ -19,4 +19,12 @@ enum class ApplicationStatus {
 
     fun isNotSubmittedNow() =
         this == DRAFT || this == STEP1_DRAFT || this == RETURNED_TO_APPLICANT
+
+    fun isInStepTwo() =
+        setOf(
+            DRAFT, SUBMITTED, RETURNED_TO_APPLICANT,
+            ELIGIBLE, INELIGIBLE,
+            APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED
+        ).contains(this)
+
 }

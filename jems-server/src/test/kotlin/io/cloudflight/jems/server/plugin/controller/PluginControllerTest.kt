@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.SamplePluginTypeOne
 import io.cloudflight.jems.server.plugin.SamplePluginTypeTwo
+import io.cloudflight.jems.server.plugin.services.update_plugin_status.UpdatePluginStatusInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -17,6 +18,9 @@ internal class PluginControllerTest : UnitTest() {
 
     @MockK
     lateinit var jemsPluginRegistry: JemsPluginRegistry
+
+    @MockK
+    lateinit var updatePluginStatus: UpdatePluginStatusInteractor
 
     @InjectMockKs
     lateinit var pluginController: PluginController

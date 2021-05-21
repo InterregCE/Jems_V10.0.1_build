@@ -17,6 +17,10 @@ class ProgrammeLumpSumPersistenceProvider(
         repository.findTop100ByOrderById().toModel()
 
     @Transactional(readOnly = true)
+    override fun getLumpSums(lumpSumIds: List<Long>): List<ProgrammeLumpSum> =
+        repository.findAllByIdIn(lumpSumIds).toModel()
+
+    @Transactional(readOnly = true)
     override fun getLumpSum(lumpSumId: Long): ProgrammeLumpSum =
         getLumpSumOrThrow(lumpSumId).toModel()
 

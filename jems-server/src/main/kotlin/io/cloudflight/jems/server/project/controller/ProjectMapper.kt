@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.plugin.dto.MessageTypeDTO
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckMessageDTO
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
@@ -16,6 +17,7 @@ import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.plugin.contract.models.common.I18nMessageData
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.MessageType
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckMessage
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
@@ -97,16 +99,18 @@ fun ProjectPeriod.toDto(projectId: Long?) = ProjectPeriodDTO(
     end = end
 )
 
-fun Page<ProjectSummary>.toDto() = map { OutputProjectSimple(
-    id = it.id,
-    callName = it.callName,
-    acronym = it.acronym,
-    projectStatus = ApplicationStatusDTO.valueOf(it.status.name),
-    firstSubmissionDate = it.firstSubmissionDate,
-    lastResubmissionDate = it.lastResubmissionDate,
-    specificObjectiveCode = it.specificObjectiveCode,
-    programmePriorityCode = it.programmePriorityCode,
-)}
+fun Page<ProjectSummary>.toDto() = map {
+    OutputProjectSimple(
+        id = it.id,
+        callName = it.callName,
+        acronym = it.acronym,
+        projectStatus = ApplicationStatusDTO.valueOf(it.status.name),
+        firstSubmissionDate = it.firstSubmissionDate,
+        lastResubmissionDate = it.lastResubmissionDate,
+        specificObjectiveCode = it.specificObjectiveCode,
+        programmePriorityCode = it.programmePriorityCode,
+    )
+}
 
 private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 
@@ -137,4 +141,7 @@ abstract class ProjectMapper {
 
     fun map(projectCallFlatRateSet: Set<ProjectCallFlatRate>): FlatRateSetupDTO =
         projectCallFlatRateSet.toDto()
+
+    fun map(i18nMessageData: I18nMessageData): I18nMessage =
+        I18nMessage(i18nMessageData.i18nKey, i18nMessageData.i18nArguments)
 }
