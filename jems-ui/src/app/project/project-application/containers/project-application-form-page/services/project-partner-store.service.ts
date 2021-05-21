@@ -16,6 +16,7 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 import {ProjectPartner} from '../../../../model/ProjectPartner';
 import {ProjectPartnerRoleEnumUtil} from '../../../../model/ProjectPartnerRoleEnum';
 import {RoutingService} from '../../../../../common/services/routing.service';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 
 @Injectable()
 export class ProjectPartnerStore {
@@ -32,7 +33,8 @@ export class ProjectPartnerStore {
   constructor(private partnerService: ProjectPartnerService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectStore: ProjectStore,
-              private routingService: RoutingService) {
+              private routingService: RoutingService,
+              private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
 
     this.partners$ = combineLatest([this.projectStore.getProject(), this.partnerUpdateEvent$]).pipe(
@@ -43,14 +45,15 @@ export class ProjectPartnerStore {
 
     combineLatest([
       this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
-      this.projectStore.projectId$
+      this.projectStore.projectId$,
+      this.projectVersionStore.currentRouteVersion$
     ]).pipe(
       tap(([partnerId, projectId]) => {
         this.partnerId = Number(partnerId);
         this.projectId = projectId;
       }),
-      switchMap(([partnerId, projectId]) =>
-        partnerId && projectId ? this.partnerService.getProjectPartnerById(Number(partnerId), projectId) : of({})
+      switchMap(([partnerId, projectId, version]) =>
+        partnerId && projectId ? this.partnerService.getProjectPartnerById(Number(partnerId), projectId, version) : of({})
       ),
       tap(partner => this.partner$.next(partner)),
       tap(partner => Log.info('Fetched the programme partner:', this, partner)),

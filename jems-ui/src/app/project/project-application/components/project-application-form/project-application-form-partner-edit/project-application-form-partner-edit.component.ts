@@ -47,8 +47,6 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   @Input()
   projectId: number;
   @Input()
-  editable: boolean;
-  @Input()
   legalStatuses: ProgrammeLegalStatusDTO[];
 
   @Output()
@@ -111,8 +109,8 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   }
 
   ngOnInit(): void {
+    this.formService.init(this.partnerForm, this.partnerStore.isProjectEditable$);
     this.resetForm();
-    this.formService.init(this.partnerForm);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -206,7 +204,6 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   }
 
   private resetForm(): void {
-    this.formService.setEditable(this.editable);
     if (!this.partnerId) {
       this.formService.setCreation(true);
     }

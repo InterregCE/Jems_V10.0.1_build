@@ -3,18 +3,18 @@
     <form appFormLayout id="partner-form" [formGroup]="partnerForm">
         <h3>{{'project.partner.detail.title' | translate}}</h3>
 
-        <mat-form-field *ngIf="!editable && partner.sortNumber">
+        <mat-form-field *ngIf="!partnerForm.enabled && partner.sortNumber">
             <mat-label>{{'project.application.form.partner.table.number' | translate}}</mat-label>
             <input name="sortNumber" formControlName="sortNumber" matInput>
         </mat-form-field>
 
-        <mat-form-field *ngIf="!editable">
+        <mat-form-field *ngIf="!partnerForm.enabled">
             <mat-label>{{'project.partner.role.label' | translate}}</mat-label>
             <input ngModel="{{('common.label.project.partner.role.' + controls?.role?.value) | translate}}"
                    name="role" formControlName="fakeRole" matInput>
         </mat-form-field>
 
-        <div *ngIf="editable">
+        <div *ngIf="partnerForm.enabled">
             <div appLabel>{{'project.partner.role.label' | translate}} *</div>
             <mat-button-toggle-group>
                 <mat-button-toggle
@@ -124,7 +124,7 @@
         </mat-form-field>
         <p>{{'project.partner.recoverVat.intro.text' | translate}}</p>
 
-        <mat-button-toggle-group [disabled]="!editable">
+        <mat-button-toggle-group [disabled]="!partnerForm.enabled">
             <mat-button-toggle
                     [checked]="controls?.vatRecovery.value === VatRecoveryEnum.Yes"
                     (change)="setVat(VatRecoveryEnum.Yes)"

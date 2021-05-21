@@ -20,6 +20,7 @@ import {Log} from '../../../../../common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 
 @Injectable()
 export class ProjectAssociatedOrganizationStore {
@@ -36,11 +37,15 @@ export class ProjectAssociatedOrganizationStore {
   associatedOrganizationSaveSuccess$ = new Subject<boolean>();
   associatedOrganizationSaveError$ = new Subject<HttpErrorResponse | null>();
 
-  private associatedOrganizationById$ = combineLatest([this.associatedOrganizationId$, this.projectId$])
+  private associatedOrganizationById$ = combineLatest([
+    this.associatedOrganizationId$,
+    this.projectId$,
+    this.projectVersionStore.currentRouteVersion$
+  ])
     .pipe(
       distinctUntilChanged(),
-      mergeMap(([associatedOrganizationId, projectId]) => associatedOrganizationId
-        ? this.associatedOrganizationService.getAssociatedOrganizationById(associatedOrganizationId, projectId)
+      mergeMap(([associatedOrganizationId, projectId, version]) => associatedOrganizationId
+        ? this.associatedOrganizationService.getAssociatedOrganizationById(associatedOrganizationId, projectId, version)
         : of({})
       ),
       tap(projectAssociatedOrganization => Log.info('Fetched project associatedOrganization:', this, projectAssociatedOrganization)),
@@ -94,6 +99,7 @@ export class ProjectAssociatedOrganizationStore {
 
   constructor(private associatedOrganizationService: ProjectAssociatedOrganizationService,
               private projectStore: ProjectStore,
+              private projectVersionStore: ProjectVersionStore,
               private router: Router) {
   }
 

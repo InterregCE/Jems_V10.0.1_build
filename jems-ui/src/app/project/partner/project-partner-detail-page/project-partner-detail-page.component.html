@@ -9,10 +9,9 @@
                    [selectedIndex]="activeTab$ | async">
         <mat-tab label="{{'partner.tab.identity' | translate}}">
             <app-project-application-form-partner-edit
-                    *ngIf="partnerStore.partner$ | async as partner"
+                    *ngIf="partner"
                     [partner]="partner"
                     [projectId]="projectId"
-                    [editable]="projectStore.projectEditable$ | async"
                     [legalStatuses]="legalStatuses$ | async">
             </app-project-application-form-partner-edit>
         </mat-tab>

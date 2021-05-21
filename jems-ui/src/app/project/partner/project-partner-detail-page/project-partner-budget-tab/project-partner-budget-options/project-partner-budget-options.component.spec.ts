@@ -8,6 +8,8 @@ import {ActivatedRoute} from '@angular/router';
 import {BudgetOptions} from '../../../../model/budget/budget-options';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {of} from 'rxjs';
 
 describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
   let component: ProjectPartnerBudgetOptionsComponent;
@@ -28,6 +30,12 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {params: {projectId: 1}}
+          }
+        },
+        {
+          provide: ProjectVersionStore,
+          useValue: {
+            currentRouteVersion$: of('1.0')
           }
         },
         {
@@ -60,7 +68,7 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
   it('should fetch and save budget options', fakeAsync(() => {
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/partner/2/budget/options'
+      url: '//api/project/partner/2/budget/options?version=1.0'
     });
 
     component.doUpdateBudgetOptions(new BudgetOptions(8, 12, 10, 10, null));
