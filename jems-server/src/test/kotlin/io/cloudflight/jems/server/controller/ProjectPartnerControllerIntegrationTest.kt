@@ -161,7 +161,7 @@ class ProjectPartnerControllerIntegrationTest {
             .andExpect(status().isInternalServerError)
             .andExpect(
                 jsonPath("$.i18nMessage.i18nKey")
-                    .value("use.case.get.project.partner.failed")
+                    .value("use.case.get.project.partner.by.id.failed")
             )
     }
 }

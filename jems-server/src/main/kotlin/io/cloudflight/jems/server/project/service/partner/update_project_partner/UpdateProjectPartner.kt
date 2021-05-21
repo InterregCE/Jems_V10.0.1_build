@@ -25,19 +25,19 @@ class UpdateProjectPartner(
 
     @CanUpdateProjectPartner
     @Transactional
-    @ExceptionWrapper(UpdateProjectPartnerException::class)
+    @ExceptionWrapper(UpdateProjectPartnerAddressesException::class)
     override fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): OutputProjectPartnerDetail =
         persistence.updatePartnerAddresses(partnerId, addresses)
 
     @CanUpdateProjectPartner
     @Transactional
-    @ExceptionWrapper(UpdateProjectPartnerException::class)
+    @ExceptionWrapper(UpdateProjectPartnerContactsException::class)
     override fun updatePartnerContacts(partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail =
         persistence.updatePartnerContacts(partnerId, contacts)
 
     @CanUpdateProjectPartner
     @Transactional
-    @ExceptionWrapper(UpdateProjectPartnerException::class)
+    @ExceptionWrapper(UpdateProjectPartnerMotivationException::class)
     override fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail =
         persistence.updatePartnerMotivation(partnerId, motivation)
 }

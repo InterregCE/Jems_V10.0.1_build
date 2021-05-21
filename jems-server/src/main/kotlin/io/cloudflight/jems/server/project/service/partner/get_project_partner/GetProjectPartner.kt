@@ -19,19 +19,19 @@ class GetProjectPartner(
 
     @CanRetrieveProject
     @Transactional(readOnly = true)
-    @ExceptionWrapper(GetProjectPartnerException::class)
+    @ExceptionWrapper(GetProjectPartnersByProjectIdException::class)
     override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<OutputProjectPartner> =
         persistence.findAllByProjectId(projectId, page, version)
 
     @CanRetrieveProjectPartner
     @Transactional(readOnly = true)
-    @ExceptionWrapper(GetProjectPartnerException::class)
+    @ExceptionWrapper(GetProjectPartnerByIdException::class)
     override fun getById(partnerId: Long, version: String?): OutputProjectPartnerDetail =
         persistence.getById(partnerId, version)
 
     @CanRetrieveProject
     @Transactional(readOnly = true)
-    @ExceptionWrapper(GetProjectPartnerException::class)
+    @ExceptionWrapper(GetProjectPartnerByProjectIdForDropdownException::class)
     override fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String?): List<OutputProjectPartner> =
         persistence.findAllByProjectIdForDropdown(projectId, sort, version)
 
