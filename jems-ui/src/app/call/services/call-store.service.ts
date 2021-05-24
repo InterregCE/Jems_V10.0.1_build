@@ -1,71 +1,50 @@
 import {Injectable} from '@angular/core';
 import {
-  CallDetailDTO, CallDTO,
-  CallService, CallUpdateRequestDTO,
+  CallDetailDTO,
+  CallDTO,
+  CallService,
+  CallUpdateRequestDTO,
   FlatRateSetupDTO,
   ProgrammeCostOptionService,
   ProgrammeLumpSumListDTO,
   ProgrammeUnitCostListDTO
 } from '@cat/api';
-import {Observable, ReplaySubject} from 'rxjs';
-import {map, shareReplay, tap} from 'rxjs/operators';
+import {merge, Observable, of, Subject} from 'rxjs';
+import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../common/utils/log';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {Permission} from '../../security/permissions/permission';
+import {RoutingService} from '../../common/services/routing.service';
 
 @Injectable()
 export class CallStore {
   public static CALL_DETAIL_PATH = '/app/call/detail';
   private callId: number;
-  call$ = new ReplaySubject<CallDetailDTO | any>(1);
-  unitCosts$ = new ReplaySubject<ProgrammeUnitCostListDTO[] | any>(1);
-  lumpSums$ = new ReplaySubject<ProgrammeLumpSumListDTO[] | any>(1);
+  call$: Observable<CallDetailDTO | any>;
+  unitCosts$: Observable<ProgrammeUnitCostListDTO[]>;
+  lumpSums$: Observable<ProgrammeLumpSumListDTO[]>;
   isApplicant$: Observable<boolean>;
+
+  private savedCall$ = new Subject<CallDetailDTO>();
 
   constructor(private callService: CallService,
               private programmeCostOptionService: ProgrammeCostOptionService,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              private router: RoutingService) {
     this.isApplicant$ = this.permissionService.permissionsChanged()
       .pipe(
         map(permissions => permissions.some(perm => perm === Permission.APPLICANT_USER)),
         shareReplay(1)
       );
-  }
-
-  init(callId: number | string): void {
-    if (callId && callId === this.callId) {
-      return;
-    }
-    if (!callId) {
-      this.call$.next({});
-      this.unitCosts$.next([]);
-      this.lumpSums$.next([]);
-      return;
-    }
-    this.callId = Number(callId);
-    this.callService.getCallById(this.callId)
-      .pipe(
-        tap(call => Log.info('Fetched project call:', this, call)),
-        tap(call => this.call$.next(call)),
-      ).subscribe();
-
-    this.programmeCostOptionService.getProgrammeUnitCosts()
-      .pipe(
-        tap(list => Log.info('Fetched the Unit Costs:', this, list)),
-        tap(list => this.unitCosts$.next(list)),
-      ).subscribe();
-
-    this.programmeCostOptionService.getProgrammeLumpSums()
-      .pipe(
-        tap(list => Log.info('Fetched the Lump Sums:', this, list)),
-        tap(list => this.lumpSums$.next(list)),
-      ).subscribe();
+    this.call$ = this.call();
+    this.unitCosts$ = this.unitCosts();
+    this.lumpSums$ = this.lumpSums();
   }
 
   saveCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
     return this.callService.updateCall(call)
       .pipe(
-        tap(saved => this.call$.next(saved)),
+        tap(saved => this.savedCall$.next(saved)),
         tap(saved => Log.info('Updated call:', this, saved))
       );
   }
@@ -73,7 +52,7 @@ export class CallStore {
   createCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
     return this.callService.createCall(call)
       .pipe(
-        tap(created => this.call$.next(created)),
+        tap(created => this.savedCall$.next(created)),
         tap(created => Log.info('Created call:', this, created)),
       );
   }
@@ -81,15 +60,14 @@ export class CallStore {
   publishCall(callId: number): Observable<CallDTO> {
     return this.callService.publishCall(callId)
       .pipe(
-        tap(saved => this.call$.next(saved)),
-        tap(saved => Log.info('Published call:', this, saved)),
+        tap(saved => Log.info('Published call:', this, saved))
       );
   }
 
   saveFlatRates(flatRates: FlatRateSetupDTO): Observable<CallDetailDTO> {
     return this.callService.updateCallFlatRateSetup(this.callId, flatRates)
       .pipe(
-        tap(saved => this.call$.next(saved)),
+        tap(saved => this.savedCall$.next(saved)),
         tap(saved => Log.info('Updated call flat rates:', this, saved))
       );
   }
@@ -97,7 +75,7 @@ export class CallStore {
   saveLumpSums(lumpSumIds: number[]): Observable<CallDetailDTO> {
     return this.callService.updateCallLumpSums(this.callId, lumpSumIds)
       .pipe(
-        tap(saved => this.call$.next(saved)),
+        tap(saved => this.savedCall$.next(saved)),
         tap(saved => Log.info('Updated call lump sums:', this, saved))
       );
   }
@@ -105,8 +83,35 @@ export class CallStore {
   saveUnitCosts(unitCostIds: number[]): Observable<CallDetailDTO> {
     return this.callService.updateCallUnitCosts(this.callId, unitCostIds)
       .pipe(
-        tap(saved => this.call$.next(saved)),
+        tap(saved => this.savedCall$.next(saved)),
         tap(saved => Log.info('Updated call unit costs:', this, saved))
+      );
+  }
+
+  private call(): Observable<CallDetailDTO | {}> {
+    const initialCall = this.router.routeParameterChanges(CallStore.CALL_DETAIL_PATH, 'callId')
+      .pipe(
+        switchMap(id => id ? this.callService.getCallById(Number(id)) : of({})),
+        tap(call => this.callId = (call as any)?.id),
+        tap(call => Log.info('Fetched the call:', this, call)),
+      );
+    return merge(initialCall, this.savedCall$)
+      .pipe(
+        shareReplay(1)
+      );
+  }
+
+  private unitCosts(): Observable<ProgrammeUnitCostListDTO[]> {
+    return this.programmeCostOptionService.getProgrammeUnitCosts()
+      .pipe(
+        tap(list => Log.info('Fetched the Unit Costs:', this, list)),
+      );
+  }
+
+  private lumpSums(): Observable<ProgrammeLumpSumListDTO[]> {
+    return this.programmeCostOptionService.getProgrammeLumpSums()
+      .pipe(
+        tap(list => Log.info('Fetched the Lump Sums:', this, list))
       );
   }
 }

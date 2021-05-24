@@ -72,7 +72,6 @@ export class CallConfigurationComponent extends BaseComponent {
               private programmeFundService: ProgrammeFundService,
               private callNavService: CallPageSidenavService) {
     super();
-    this.callStore.init(this.callId);
     this.callNavService.init(this.callId);
   }
 
@@ -97,8 +96,8 @@ export class CallConfigurationComponent extends BaseComponent {
       return allPriorities;
     }
     const savedPolicies = call.objectives
-        .flatMap(priority => priority.specificObjectives)
-        .map(specificObjectives => specificObjectives.programmeObjectivePolicy);
+      .flatMap(priority => priority.specificObjectives)
+      .map(specificObjectives => specificObjectives.programmeObjectivePolicy);
     Log.debug('Adapting the priority policies', this, allPriorities, savedPolicies);
     return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
   }
