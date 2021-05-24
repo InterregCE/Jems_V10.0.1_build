@@ -220,6 +220,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     this.controls.legalStatusId.setValue(this.partner?.legalStatusId);
     this.controls.vat.setValue(this.partner?.vat);
     this.controls.vatRecovery.setValue(this.partner?.vatRecovery);
+    this.controls.sortNumber.setValue(this.partner?.sortNumber);
   }
 
   private handleLeadAlreadyExisting(controls: any, error: APIError): void {

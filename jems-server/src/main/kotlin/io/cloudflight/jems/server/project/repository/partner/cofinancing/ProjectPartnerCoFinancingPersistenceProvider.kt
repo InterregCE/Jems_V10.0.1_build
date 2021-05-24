@@ -78,11 +78,12 @@ class ProjectPartnerCoFinancingPersistenceProvider(
             .toProjectPartnerFinancingHistoricalData()
         val partnerContributions = projectPartnerRepo.findPartnerContributionByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerContributionHistoricalData()
-        val partner = projectPartnerRepo.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp).first()
+        val partnerAbbrev =
+            projectPartnerRepo.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp).firstOrNull()?.abbreviation
         return ProjectPartnerCoFinancingAndContribution(
             finances = finances,
             partnerContributions = partnerContributions,
-            partnerAbbreviation = partner.abbreviation
+            partnerAbbreviation = partnerAbbrev ?: ""
         )
     }
 

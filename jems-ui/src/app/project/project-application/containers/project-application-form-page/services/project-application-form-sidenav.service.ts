@@ -37,7 +37,7 @@ export class ProjectApplicationFormSidenavService {
           .map(partner => ({
               headline: {
                 i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
-                i18nArguments: {partner: `${partner.sortNumber} ${partner.abbreviation}`}
+                i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
               },
               route: `/app/project/detail/${projectId}/applicationFormPartner/detail/${partner.id}`,
             }
