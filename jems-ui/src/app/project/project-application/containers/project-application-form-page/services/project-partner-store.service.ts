@@ -68,6 +68,10 @@ export class ProjectPartnerStore {
       ),
       tap(partner => this.partner$.next(partner)),
       tap(partner => Log.info('Fetched the programme partner:', this, partner)),
+      catchError(err => {
+        this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
+        return of({});
+      })
     ).subscribe();
   }
 
