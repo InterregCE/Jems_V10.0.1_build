@@ -39,14 +39,4 @@ internal class ProjectVersionUtilsTest : UnitTest() {
         val result = projectVersionUtils.fetch(version, projectId, currentVersionFetcher, previousVersionFetcher)
         assertThat(result).isEqualTo("previousVersion for timestamp: $timestamp")
     }
-
-    @Test
-    fun `should throw ApplicationVersionNotFoundException when version is not exist`() {
-
-        every { projectVersionRepository.findTimestampByVersion(projectId, version) } returns null
-
-        assertThrows<ApplicationVersionNotFoundException> {
-            projectVersionUtils.fetch(version, projectId, currentVersionFetcher, previousVersionFetcher)
-        }
-    }
 }
