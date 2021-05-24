@@ -65,7 +65,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         override val language: SystemLanguage?,
         override val fundId: Long?,
         override val selected: Boolean?,
-        override val fundType: ProgrammeFundType?,
+        override val fundType: String?,
         override val abbreviation: String?,
         override val description: String?,
     ) : PartnerFinancingRow

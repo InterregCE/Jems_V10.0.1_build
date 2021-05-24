@@ -32,12 +32,12 @@ fun ProjectPartnerCoFinancingEntity.toModel() = ProjectPartnerCoFinancing(
     percentage = percentage
 )
 
-fun Collection<PartnerFinancingRow>.toProjectPartnerFinancingHistoricalData() = this.groupBy { it.partnerId }.map { groupedRows -> ProjectPartnerCoFinancing(
+fun Collection<PartnerFinancingRow>.toProjectPartnerFinancingHistoricalData() = this.groupBy { it.type }.map { groupedRows -> ProjectPartnerCoFinancing(
     fundType = groupedRows.value.first().type,
     fund = ProgrammeFund(
         id = groupedRows.value.firstOrNull()?.fundId ?: 0,
         selected = groupedRows.value.first().selected ?: false,
-        type = groupedRows.value.firstOrNull()?.fundType ?: ProgrammeFundType.OTHER,
+        type = (if (groupedRows.value.firstOrNull()?.fundType != null) ProgrammeFundType.from(groupedRows.value.first().fundType!!) else ProgrammeFundType.OTHER)!!,
         abbreviation = groupedRows.value.extractField { it.abbreviation },
         description = groupedRows.value.extractField { it.description }
     ),
