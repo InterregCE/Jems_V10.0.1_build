@@ -2,11 +2,12 @@ import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {MatTableDataSource} from '@angular/material/table';
-import {ProgrammeLumpSumListDTO, CallDetailDTO} from '@cat/api';
+import {CallDetailDTO, ProgrammeLumpSumListDTO} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {filter} from 'rxjs/internal/operators';
 
 @UntilDestroy()
 @Component({
@@ -57,6 +58,7 @@ export class CallLumpSumsComponent implements OnInit {
     });
     this.formService.init(this.callLumpSumForm);
     this.callStore.call$.pipe(
+      filter(call => !!call.id),
       untilDestroyed(this)
     ).subscribe((call: CallDetailDTO) => {
       this.initialSelection.clear();

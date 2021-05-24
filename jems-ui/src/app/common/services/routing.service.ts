@@ -68,7 +68,7 @@ export class RoutingService {
     return this.currentRoute
       .pipe(
         map(route => this.containsPath(route, url) ? this.getParameter(route.snapshot, parameter) : null),
-        distinctUntilChanged(),
+        distinctUntilChanged((o, n) => o === n),
         tap(param => Log.debug('Route param changed', this, url, param)),
       );
   }

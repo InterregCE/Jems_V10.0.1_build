@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectService} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -22,7 +22,7 @@ import {Alert} from '@common/components/forms/alert';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ProjectApplyToCallComponent implements OnInit {
+export class ProjectApplyToCallComponent {
   Permission = Permission;
   Alert = Alert;
 
@@ -38,10 +38,6 @@ export class ProjectApplyToCallComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private localeDatePipe: LocaleDatePipe,
               protected projectService: ProjectService) {
-  }
-
-  ngOnInit(): void {
-    this.callStore.init(this.callId);
   }
 
   onCancel(): void {
