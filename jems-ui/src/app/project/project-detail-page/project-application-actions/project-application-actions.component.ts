@@ -123,12 +123,12 @@ export class ProjectApplicationActionsComponent {
       ).subscribe();
   }
 
-  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, isProjectLatestVersion: boolean): boolean {
+  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, isProjectLatestVersion: boolean, projectStatus: ProjectStatusDTO.StatusEnum): boolean {
     if (!isProjectLatestVersion) {
       return false;
     }
     const currentDate = moment(new Date());
-    return !(currentDate.isBefore(projectCallEndDate) && hasPreConditionCheckSucceed);
+    return !(currentDate.isBefore(projectCallEndDate) && (hasPreConditionCheckSucceed || projectStatus === this.STATUS.STEP1DRAFT));
   }
 
   getRevertConfirmation(projectStatus: ProjectStatusDTO.StatusEnum, revertToStatus: string): ConfirmDialogData {
