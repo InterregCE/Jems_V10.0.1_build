@@ -38,8 +38,7 @@ export class ProjectPageTemplateStore {
         map(([versions, project]) =>
           ProjectUtil.isOpenForModifications(project) ? [this.nextVersion(versions), ...versions] : versions
         ),
-        shareReplay(1),
-        tap(ver => Log.error('version', this, ver)),
+        shareReplay(1)
       );
   }
 

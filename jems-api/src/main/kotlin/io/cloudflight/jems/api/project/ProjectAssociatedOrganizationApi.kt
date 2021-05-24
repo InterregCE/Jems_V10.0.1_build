@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import javax.validation.Valid
 import org.springframework.web.bind.annotation.RequestParam
+import javax.validation.Valid
 
 @Api("Project Associated Organization")
 @RequestMapping("/api/project/{projectId}/organization")
@@ -42,7 +42,7 @@ interface ProjectAssociatedOrganizationApi {
         @PathVariable projectId: Long,
         @PathVariable id: Long,
         @RequestParam(required = false) version: String? = null
-    ): OutputProjectAssociatedOrganizationDetail
+    ): OutputProjectAssociatedOrganizationDetail?
 
     @ApiOperation("Creates new associated organization")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

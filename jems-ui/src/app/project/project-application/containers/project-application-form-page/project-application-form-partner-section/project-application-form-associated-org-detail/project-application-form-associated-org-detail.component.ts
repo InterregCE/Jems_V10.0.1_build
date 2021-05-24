@@ -1,12 +1,13 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest} from 'rxjs';
 import {NutsStore} from '../../../../../../common/services/nuts.store';
-import {distinctUntilChanged, map, takeUntil, tap} from 'rxjs/operators';
+import {distinctUntilChanged, map, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectPartnerService} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectAssociatedOrganizationStore} from '../../services/project-associated-organization-store.service';
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
+import {ProjectVersionStore} from '../../../../../services/project-version-store.service';
 
 @Component({
   selector: 'app-project-application-form-associated-org-detail',
@@ -22,7 +23,10 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent extends BaseComp
   details$ = combineLatest([
     this.associatedOrganizationStore.getProjectAssociatedOrganization(),
     this.nutsStore.getNuts(),
-    this.partnerService.getProjectPartnersForDropdown(this.projectId, ['sortNumber,asc'])
+    this.projectVersionStore.currentRouteVersion$
+      .pipe(
+        switchMap(version => this.partnerService.getProjectPartnersForDropdown(this.projectId, undefined, version))
+      )
   ])
     .pipe(
       map(([organization, nuts, partners]) => ({organization, nuts, partners}))
@@ -30,6 +34,7 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent extends BaseComp
 
   constructor(public associatedOrganizationStore: ProjectAssociatedOrganizationStore,
               public projectStore: ProjectStore,
+              private projectVersionStore: ProjectVersionStore,
               private partnerService: ProjectPartnerService,
               private nutsStore: NutsStore,
               private activatedRoute: ActivatedRoute,

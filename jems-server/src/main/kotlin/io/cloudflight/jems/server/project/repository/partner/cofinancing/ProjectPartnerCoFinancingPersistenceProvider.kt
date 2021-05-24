@@ -9,23 +9,26 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
-import java.sql.Timestamp
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.sql.Timestamp
 
 @Repository
 class ProjectPartnerCoFinancingPersistenceProvider(
     private val projectPartnerRepo: ProjectPartnerRepository,
     private val projectVersionUtils: ProjectVersionUtils,
     private val projectPersistence: ProjectPersistence,
-    ) : ProjectPartnerCoFinancingPersistence {
+) : ProjectPartnerCoFinancingPersistence {
 
     @Transactional(readOnly = true)
     override fun getAvailableFundIds(partnerId: Long): Set<Long> =
         getPartnerOrThrow(partnerId).project.call.funds.mapTo(HashSet()) { it.id }
 
     @Transactional(readOnly = true)
-    override fun getCoFinancingAndContributions(partnerId: Long, version: String?): ProjectPartnerCoFinancingAndContribution {
+    override fun getCoFinancingAndContributions(
+        partnerId: Long,
+        version: String?
+    ): ProjectPartnerCoFinancingAndContribution {
         val partner = getPartnerOrThrow(partnerId)
         return projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
@@ -34,6 +37,10 @@ class ProjectPartnerCoFinancingPersistenceProvider(
             previousVersionFetcher = { timestamp ->
                 getPartnerCoFinancingAndContributions(partnerId, timestamp)
             }
+        ) ?: ProjectPartnerCoFinancingAndContribution(
+            finances = emptyList(),
+            partnerContributions = emptyList(),
+            partnerAbbreviation = ""
         )
     }
 

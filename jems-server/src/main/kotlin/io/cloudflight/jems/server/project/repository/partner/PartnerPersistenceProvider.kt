@@ -7,27 +7,23 @@ import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
-import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import java.sql.Timestamp
-import java.util.stream.Collectors
-import java.util.stream.StreamSupport
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.sql.Timestamp
+import java.util.stream.Collectors
+import java.util.stream.StreamSupport
 
 @Repository
 class PartnerPersistenceProvider(
@@ -53,7 +49,7 @@ class PartnerPersistenceProvider(
             previousVersionFetcher = { timestamp ->
                 getPartnerHistoricalDetail(id, timestamp)
             }
-        )
+        ) ?: throw ApplicationVersionNotFoundException()
     }
 
     @Transactional(readOnly = true)
@@ -63,13 +59,18 @@ class PartnerPersistenceProvider(
                 projectPartnerRepository.findAllByProjectId(projectId, page).map { it.toOutputProjectPartner() }
             },
             previousVersionFetcher = { timestamp ->
-                projectPartnerRepository.findAllByProjectIdAsOfTimestamp(projectId, page, timestamp).map { it.toOutputProjectPartnerHistoricalData() }
+                projectPartnerRepository.findAllByProjectIdAsOfTimestamp(projectId, page, timestamp)
+                    .map { it.toOutputProjectPartnerHistoricalData() }
             }
-        )
+        ) ?: Page.empty()
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String?): List<OutputProjectPartner> {
+    override fun findAllByProjectIdForDropdown(
+        projectId: Long,
+        sort: Sort,
+        version: String?
+    ): List<OutputProjectPartner> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 StreamSupport.stream(
@@ -78,9 +79,10 @@ class PartnerPersistenceProvider(
                 ).map { it.toOutputProjectPartner() }.collect(Collectors.toList())
             },
             previousVersionFetcher = { timestamp ->
-                projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp).toOutputProjectPartnerHistoricalData()
+                projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
+                    .toOutputProjectPartnerHistoricalData()
             }
-        )
+        ) ?: emptyList()
     }
 
     // used for authorization
@@ -97,13 +99,16 @@ class PartnerPersistenceProvider(
     @Transactional
     override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
         val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
-        val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!).orElseThrow { ResourceNotFoundException("legalstatus") }
+        val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!)
+            .orElseThrow { ResourceNotFoundException("legalstatus") }
 
-        val partnerCreated = projectPartnerRepository.save(projectPartner.toEntity(project = project, legalStatus = legalStatus))
+        val partnerCreated =
+            projectPartnerRepository.save(projectPartner.toEntity(project = project, legalStatus = legalStatus))
         // save translations for which the just created Id is needed
         projectPartnerRepository.save(
             partnerCreated.copy(
-                translatedValues = projectPartner.combineTranslatedValues(partnerCreated.id))
+                translatedValues = projectPartner.combineTranslatedValues(partnerCreated.id)
+            )
         )
         updateSortByRole(projectId)
         // entity is attached, number will have been updated
@@ -114,7 +119,8 @@ class PartnerPersistenceProvider(
     override fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
         val oldProjectPartner = getPartnerOrThrow(projectPartner.id)
         val projectId = oldProjectPartner.project.id
-        val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!).orElseThrow { ResourceNotFoundException("legalstatus") }
+        val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!)
+            .orElseThrow { ResourceNotFoundException("legalstatus") }
 
         val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
         val partnerUpdated = projectPartnerRepository.save(
@@ -138,7 +144,10 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional
-    override fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): OutputProjectPartnerDetail {
+    override fun updatePartnerAddresses(
+        partnerId: Long,
+        addresses: Set<ProjectPartnerAddressDTO>
+    ): OutputProjectPartnerDetail {
         val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepository.save(
             projectPartner.copy(
@@ -148,7 +157,10 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional
-    override fun updatePartnerContacts(partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail {
+    override fun updatePartnerContacts(
+        partnerId: Long,
+        contacts: Set<InputProjectContact>
+    ): OutputProjectPartnerDetail {
         val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepository.save(
             projectPartner.copy(
@@ -158,7 +170,10 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional
-    override fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail {
+    override fun updatePartnerMotivation(
+        partnerId: Long,
+        motivation: ProjectPartnerMotivationDTO
+    ): OutputProjectPartnerDetail {
         val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepository.save(
             projectPartner.copy(
@@ -179,10 +194,12 @@ class PartnerPersistenceProvider(
      * sets or updates the sort number for all partners for the specified project.
      */
     private fun updateSortByRole(projectId: Long) {
-        val sort = Sort.by(listOf(
-            Sort.Order(Sort.Direction.ASC, "role"),
-            Sort.Order(Sort.Direction.ASC, "id")
-        ))
+        val sort = Sort.by(
+            listOf(
+                Sort.Order(Sort.Direction.ASC, "role"),
+                Sort.Order(Sort.Direction.ASC, "id")
+            )
+        )
 
         val projectPartners = projectPartnerRepository.findTop30ByProjectId(projectId, sort)
             .mapIndexed { index, old -> old.copy(sortNumber = index.plus(1)) }

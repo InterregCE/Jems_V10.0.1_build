@@ -96,11 +96,10 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     @Query(
         """
             SELECT
-             entity.id AS partnerId,
              addresses.*,
              addresses.nuts_region2 AS nutsRegion2,
-             addresses.nuts_region3 AS nutsRegion3, 
-             addresses.house_number AS houseNumber, 
+             addresses.nuts_region3 AS nutsRegion3,
+             addresses.house_number AS houseNumber,
              addresses.postal_code AS postalCode
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses ON entity.id = addresses.partner_id
@@ -172,7 +171,11 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              """,
         nativeQuery = true
     )
-    fun findAllByProjectIdAsOfTimestamp(projectId: Long, pageable: Pageable, timestamp: Timestamp): Page<PartnerSimpleRow>
+    fun findAllByProjectIdAsOfTimestamp(
+        projectId: Long,
+        pageable: Pageable,
+        timestamp: Timestamp
+    ): Page<PartnerSimpleRow>
 
     @Query(
         """
@@ -190,7 +193,10 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              """,
         nativeQuery = true
     )
-    fun findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId: Long, timestamp: Timestamp): Iterable<PartnerSimpleRow>
+    fun findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+        projectId: Long,
+        timestamp: Timestamp
+    ): Iterable<PartnerSimpleRow>
 
     @Query(
         value = """
