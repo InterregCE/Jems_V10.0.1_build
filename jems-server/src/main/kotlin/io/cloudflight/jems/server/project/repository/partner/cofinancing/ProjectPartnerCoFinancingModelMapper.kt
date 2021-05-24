@@ -1,7 +1,10 @@
 package io.cloudflight.jems.server.project.repository.partner.cofinancing
 
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerFinancingRow
@@ -29,15 +32,19 @@ fun ProjectPartnerCoFinancingEntity.toModel() = ProjectPartnerCoFinancing(
     percentage = percentage
 )
 
-fun PartnerFinancingRow.toModel() = ProjectPartnerCoFinancing(
-    fundType = type,
-    fund = programmeFund?.toModel(),
-    percentage = percentage
-)
+fun Collection<PartnerFinancingRow>.toProjectPartnerFinancingHistoricalData() = this.groupBy { it.partnerId }.map { groupedRows -> ProjectPartnerCoFinancing(
+    fundType = groupedRows.value.first().type,
+    fund = ProgrammeFund(
+        id = groupedRows.value.firstOrNull()?.fundId ?: 0,
+        selected = groupedRows.value.first().selected ?: false,
+        type = groupedRows.value.firstOrNull()?.fundType ?: ProgrammeFundType.OTHER,
+        abbreviation = groupedRows.value.extractField { it.abbreviation },
+        description = groupedRows.value.extractField { it.description }
+    ),
+    percentage = groupedRows.value.first().percentage
+)}
 
 fun Collection<ProjectPartnerCoFinancingEntity>.toCoFinancingModel() = map { it.toModel() }
-
-fun Collection<PartnerFinancingRow>.toProjectPartnerFinancingHistoricalData() = map { it.toModel() }
 // endregion Finances
 
 
