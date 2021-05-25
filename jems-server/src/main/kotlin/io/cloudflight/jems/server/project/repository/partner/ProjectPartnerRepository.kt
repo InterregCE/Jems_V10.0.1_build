@@ -41,18 +41,15 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     @Query(
         """
             SELECT
-             entity.id AS partnerId,
              financing.*,
              fund.id AS fundId,
              fund.type AS fundType,
              fund.selected AS selected,
              fundTransl.*
-             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_co_financing FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS financing ON entity.id = financing.partner_id
+             FROM #{#entityName}_co_financing FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS financing
              LEFT JOIN programme_fund AS fund ON financing.programme_fund_id = fund.id
              LEFT JOIN programme_fund_transl AS fundTransl ON fund.id = fundTransl.source_entity_id
-             WHERE entity.id = :partnerId
-             ORDER BY entity.id
+             WHERE financing.partner_id = :partnerId
              """,
         nativeQuery = true
     )
@@ -63,17 +60,14 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     @Query(
         """
             SELECT
-             entity.id AS partnerId,
              contribution.*
-             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_contribution FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS contribution ON entity.id = contribution.partner_id
-             WHERE entity.id = :id
-             ORDER BY entity.id
+             FROM #{#entityName}_contribution FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS contribution
+             WHERE contribution.partner_id = :partnerId
              """,
         nativeQuery = true
     )
     fun findPartnerContributionByIdAsOfTimestamp(
-        id: Long, timestamp: Timestamp
+        partnerId: Long, timestamp: Timestamp
     ): List<PartnerContributionRow>
 
     @Query(
@@ -134,12 +128,15 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     @Query(
         """
             SELECT
+             entity.id AS partnerId,
              motivationTransl.*,
              motivationTransl.organization_relevance AS organizationRelevance,
              motivationTransl.organization_role AS organizationRole,
              motivationTransl.organization_experience AS organizationExperience
-             FROM #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTransl
-             WHERE motivationTransl.partner_id = :partnerId
+             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+             LEFT JOIN #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTransl ON entity.id = motivationTransl.partner_id
+             WHERE entity.id = :partnerId
+             ORDER BY entity.id
              """,
         nativeQuery = true
     )

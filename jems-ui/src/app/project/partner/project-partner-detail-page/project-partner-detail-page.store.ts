@@ -158,7 +158,8 @@ export class ProjectPartnerDetailPageStore {
         switchMap(([partner, version]) =>
           this.projectPartnerBudgetService.getProjectPartnerCoFinancing(partner.id, version)
         ),
-        tap(financing => Log.info('Fetched partner financing and contribution', this, financing))
+        tap(financing => Log.info('Fetched partner financing and contribution', this, financing)),
+        shareReplay(1)
       );
   }
 

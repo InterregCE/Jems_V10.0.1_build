@@ -5,7 +5,6 @@ import java.math.BigDecimal
 
 interface PartnerContributionRow {
     val id: Long
-    val partnerId: Long
     val name: String?
     val status: ProjectPartnerContributionStatus?
     val amount: BigDecimal

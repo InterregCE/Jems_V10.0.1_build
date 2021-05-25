@@ -104,18 +104,15 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
     @Query(
         """
             SELECT
-             entity.id AS associatedOrganizationId,
              contacts.*,
              contacts.first_name AS firstName,
              contacts.last_name AS lastName
-             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_contact FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS contacts ON entity.id = contacts.organization_id
-             WHERE entity.id = :id
-             ORDER BY entity.id
+             FROM #{#entityName}_contact FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS contacts
+             WHERE contacts.organization_id = :organizationId
              """,
         nativeQuery = true
     )
     fun findAssociatedOrganizationContactsByIdAsOfTimestamp(
-        id: Long, timestamp: Timestamp
+        organizationId: Long, timestamp: Timestamp
     ): List<AssociatedOrganizationContactRow>
 }
