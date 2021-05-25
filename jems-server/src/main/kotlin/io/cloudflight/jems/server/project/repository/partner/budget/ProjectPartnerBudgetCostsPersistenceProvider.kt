@@ -47,7 +47,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
                     partnerId, timestamp, ProjectPartnerBudgetStaffCostRow::class.java
                 ).toBudgetStaffCostEntryList()
             }
-        )
+        ) ?: emptyList()
 
     @Transactional(readOnly = true)
     override fun getBudgetTravelAndAccommodationCosts(partnerId: Long, version: String?) =
@@ -61,7 +61,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
                     partnerId, timestamp, ProjectPartnerBudgetTravelCostRow::class.java
                 ).toBudgetTravelCostEntryList()
             }
-        )
+        ) ?: emptyList()
 
     @Transactional(readOnly = true)
     override fun getBudgetInfrastructureAndWorksCosts(partnerId: Long, version: String?) =
@@ -75,7 +75,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
                     partnerId, timestamp, ProjectPartnerBudgetGeneralRow::class.java
                 ).toBudgetGeneralCostEntryList()
             }
-        )
+        ) ?: emptyList()
 
     @Transactional(readOnly = true)
     override fun getBudgetUnitCosts(partnerId: Long, version: String?): List<BudgetUnitCostEntry> =
@@ -87,7 +87,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
                 budgetUnitCostRepository.findAllByPartnerIdAsOfTimestamp(partnerId, timestamp)
                     .toBudgetUnitCostEntryList()
             }
-        )
+        ) ?: emptyList()
 
     @Transactional(readOnly = true)
     override fun getBudgetExternalExpertiseAndServicesCosts(partnerId: Long, version: String?) =
@@ -101,7 +101,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
                     partnerId, timestamp, ProjectPartnerBudgetGeneralRow::class.java
                 ).toBudgetGeneralCostEntryList()
             }
-        )
+        ) ?: emptyList()
 
     @Transactional(readOnly = true)
     override fun getBudgetEquipmentCosts(partnerId: Long, version: String?) =
@@ -115,7 +115,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
                     partnerId, timestamp, ProjectPartnerBudgetGeneralRow::class.java
                 ).toBudgetGeneralCostEntryList()
             }
-        )
+        ) ?: emptyList()
 
     @Transactional(readOnly = true)
     override fun getBudgetStaffCostTotal(partnerId: Long, version: String?): BigDecimal =
@@ -145,22 +145,22 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     override fun getBudgetLumpSumsCostTotal(partnerId: Long, version: String?): BigDecimal =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
-                budgetLumpSumRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+                budgetLumpSumRepository.sumTotalForPartner(partnerId)
             },
             previousVersionFetcher = { timestamp ->
-                budgetLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) ?: BigDecimal.ZERO
+                budgetLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp)
             }
-        )
+        ) ?: BigDecimal.ZERO
 
     private fun <T : ProjectPartnerBudgetBase> getCostTotal(
         partnerId: Long, version: String?, repository: ProjectPartnerBaseBudgetRepository<T>,
     ) =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
-                repository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+                repository.sumTotalForPartner(partnerId)
             },
             previousVersionFetcher = { timestamp ->
-                repository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) ?: BigDecimal.ZERO
+                repository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp)
             }
-        )
+        ) ?: BigDecimal.ZERO
 }

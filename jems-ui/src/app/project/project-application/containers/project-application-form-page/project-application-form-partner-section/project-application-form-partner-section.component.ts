@@ -9,6 +9,7 @@ import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 
 @Component({
   selector: 'app-project-application-form-partner-section',
@@ -33,18 +34,20 @@ export class ProjectApplicationFormPartnerSectionComponent {
         startWith({active: 'sortNumber', direction: 'asc'}),
         map(sort => sort?.direction ? sort : {active: 'sortNumber', direction: 'asc'}),
         map(sort => `${sort.active},${sort.direction}`)
-      )
+      ),
+      this.projectVersionStore.currentRouteVersion$
     ])
       .pipe(
-        mergeMap(([pageIndex, pageSize, sort]) =>
+        mergeMap(([pageIndex, pageSize, sort, version]) =>
           // put lead partner on top by default
-          this.projectPartnerService.getProjectPartners(this.projectId, pageIndex, pageSize, ['role,asc', sort])),
+          this.projectPartnerService.getProjectPartners(this.projectId, pageIndex, pageSize, undefined, version)),
         tap(page => Log.info('Fetched the project partners:', this, page.content)),
       );
 
   constructor(public projectStore: ProjectStore,
               private projectPartnerService: ProjectPartnerService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private projectVersionStore: ProjectVersionStore,
               private activatedRoute: ActivatedRoute) {
   }
 

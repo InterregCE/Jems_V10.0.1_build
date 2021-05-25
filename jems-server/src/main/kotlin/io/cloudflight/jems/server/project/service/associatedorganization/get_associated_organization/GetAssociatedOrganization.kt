@@ -18,12 +18,16 @@ class GetAssociatedOrganization(
     @Transactional(readOnly = true)
     @CanRetrieveProject
     @ExceptionWrapper(GetAssociatedOrganizationByIdException::class)
-    override fun getById(projectId: Long, id: Long, version: String?): OutputProjectAssociatedOrganizationDetail =
+    override fun getById(projectId: Long, id: Long, version: String?): OutputProjectAssociatedOrganizationDetail? =
         persistence.getById(projectId, id, version)
 
     @Transactional(readOnly = true)
     @CanRetrieveProject
     @ExceptionWrapper(GetAssociatedOrganizationsByProjectIdException::class)
-    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<OutputProjectAssociatedOrganization> =
+    override fun findAllByProjectId(
+        projectId: Long,
+        page: Pageable,
+        version: String?
+    ): Page<OutputProjectAssociatedOrganization> =
         persistence.findAllByProjectId(projectId, page, version)
 }

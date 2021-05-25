@@ -18,4 +18,4 @@ data class ProjectPartnerAddressDTO(
 
     val homepage: String? = null
 
-): InputAddress
+) : InputAddress

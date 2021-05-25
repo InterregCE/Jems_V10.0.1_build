@@ -8,5 +8,9 @@ enum class ProgrammeFundType(val key: String) {
     NDICI("NDICI"),
     OCTP("OCTP"),
     INTERREG_FUNDS("Interreg Funds"),
-    OTHER("Other")
+    OTHER("Other");
+
+    companion object {
+        fun from(s: String): ProgrammeFundType? = values().find { it.key == s }
+    }
 }

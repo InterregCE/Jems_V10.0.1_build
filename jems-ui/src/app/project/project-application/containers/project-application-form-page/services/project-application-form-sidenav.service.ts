@@ -13,6 +13,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProjectUtil} from '../../../../project-util';
 import {filter} from 'rxjs/internal/operators';
 import {RoutingService} from '../../../../../common/services/routing.service';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 
 @Injectable()
 @UntilDestroy()
@@ -24,11 +25,11 @@ export class ProjectApplicationFormSidenavService {
   private fetchPackages$ = new Subject<number>();
 
   private partners$: Observable<HeadlineRoute[]> =
-    merge(this.projectStore.projectId$, this.fetchPartners$)
+    combineLatest([merge(this.projectStore.projectId$, this.fetchPartners$), this.projectVersionStore.currentRouteVersion$])
       .pipe(
-        mergeMap(projectId => forkJoin([
+        mergeMap(([projectId, version]) => forkJoin([
             of(projectId),
-            this.projectPartnerService.getProjectPartners(projectId, 0, 100, ['sortNumber,asc'])
+            this.projectPartnerService.getProjectPartners(projectId, 0, 100, undefined, version)
           ])
         ),
         tap(([projectId, partners]) => Log.info('Fetched the project partners:', this, partners.content)),
@@ -36,7 +37,7 @@ export class ProjectApplicationFormSidenavService {
           .map(partner => ({
               headline: {
                 i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
-                i18nArguments: {partner: `${partner.sortNumber} ${partner.abbreviation}`}
+                i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
               },
               route: `/app/project/detail/${projectId}/applicationFormPartner/detail/${partner.id}`,
             }
@@ -75,6 +76,7 @@ export class ProjectApplicationFormSidenavService {
               private projectPartnerService: ProjectPartnerService,
               private workPackageService: WorkPackageService,
               private projectStore: ProjectStore,
+              private projectVersionStore: ProjectVersionStore,
               private translate: TranslateService,
               private permissionService: PermissionService,
               private routingService: RoutingService) {

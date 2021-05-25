@@ -26,6 +26,6 @@ class ProjectVersionUtils(
         } else {
             projectVersionRepository.findTimestampByVersion(projectId, version)?.let {
                 previousVersionFetcher.invoke(it)
-            } ?: throw ApplicationVersionNotFoundException()
+            }
         }
 }

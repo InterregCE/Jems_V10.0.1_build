@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.project.repository
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
@@ -33,7 +33,7 @@ class ProjectPersistenceProvider(
                 projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
                     .toProjectEntryApplyNonHistoricalData(project)
             }
-        )
+        ) ?: throw ApplicationVersionNotFoundException()
     }
 
     @Transactional(readOnly = true)

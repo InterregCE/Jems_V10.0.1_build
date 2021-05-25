@@ -9,7 +9,7 @@ import {
   ProjectPartnerService,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject} from 'rxjs';
-import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
@@ -37,8 +37,12 @@ export class ProjectPartnerStore {
               private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
 
-    this.partners$ = combineLatest([this.projectStore.getProject(), this.partnerUpdateEvent$]).pipe(
-      switchMap(([project]) => this.partnerService.getProjectPartnersForDropdown(project.id, ['sortNumber,asc'])),
+    this.partners$ = combineLatest([
+      this.projectStore.getProject(),
+      this.projectVersionStore.currentRouteVersion$,
+      this.partnerUpdateEvent$
+    ]).pipe(
+      switchMap(([project, version]) => this.partnerService.getProjectPartnersForDropdown(project.id, undefined, version)),
       map(projectPartners => projectPartners.map(projectPartner => new ProjectPartner(projectPartner.id, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
       shareReplay(1)
     );
@@ -52,11 +56,22 @@ export class ProjectPartnerStore {
         this.partnerId = Number(partnerId);
         this.projectId = projectId;
       }),
-      switchMap(([partnerId, projectId, version]) =>
-        partnerId && projectId ? this.partnerService.getProjectPartnerById(Number(partnerId), projectId, version) : of({})
+      switchMap(([partnerId, projectId, version]) => partnerId && projectId
+        ? this.partnerService.getProjectPartnerById(Number(partnerId), projectId, version)
+          .pipe(
+            catchError(err => {
+              this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
+              return of({});
+            })
+          )
+        : of({})
       ),
       tap(partner => this.partner$.next(partner)),
       tap(partner => Log.info('Fetched the programme partner:', this, partner)),
+      catchError(err => {
+        this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
+        return of({});
+      })
     ).subscribe();
   }
 

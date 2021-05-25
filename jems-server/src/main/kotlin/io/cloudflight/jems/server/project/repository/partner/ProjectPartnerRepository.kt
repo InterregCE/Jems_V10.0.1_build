@@ -42,16 +42,22 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         """
             SELECT
              entity.id AS partnerId,
-             financing.*
+             financing.*,
+             fund.id AS fundId,
+             fund.type AS fundType,
+             fund.selected AS selected,
+             fundTransl.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_co_financing FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS financing ON entity.id = financing.partner_id
-             WHERE entity.id = :id
+             LEFT JOIN programme_fund AS fund ON financing.programme_fund_id = fund.id
+             LEFT JOIN programme_fund_transl AS fundTransl ON fund.id = fundTransl.source_entity_id
+             WHERE entity.id = :partnerId
              ORDER BY entity.id
              """,
         nativeQuery = true
     )
     fun findPartnerFinancingByIdAsOfTimestamp(
-        id: Long, timestamp: Timestamp
+        partnerId: Long, timestamp: Timestamp
     ): List<PartnerFinancingRow>
 
     @Query(
@@ -96,58 +102,49 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     @Query(
         """
             SELECT
-             entity.id AS partnerId,
              addresses.*,
              addresses.nuts_region2 AS nutsRegion2,
-             addresses.nuts_region3 AS nutsRegion3, 
-             addresses.house_number AS houseNumber, 
+             addresses.nuts_region3 AS nutsRegion3,
+             addresses.house_number AS houseNumber,
              addresses.postal_code AS postalCode
-             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses ON entity.id = addresses.partner_id
-             WHERE entity.id = :id
-             ORDER BY entity.id
+             FROM #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses
+             WHERE addresses.partner_id = :partnerId
              """,
         nativeQuery = true
     )
     fun findPartnerAddressesByIdAsOfTimestamp(
-        id: Long, timestamp: Timestamp
+        partnerId: Long, timestamp: Timestamp
     ): List<PartnerAddressRow>
 
     @Query(
         """
             SELECT
-             entity.id AS partnerId,
              contacts.*,
              contacts.first_name AS firstName,
              contacts.last_name AS lastName
-             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_contact FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS contacts ON entity.id = contacts.partner_id
-             WHERE entity.id = :id
-             ORDER BY entity.id
+             FROM #{#entityName}_contact FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS contacts
+             WHERE contacts.partner_id = :partnerId
              """,
         nativeQuery = true
     )
     fun findPartnerContactsByIdAsOfTimestamp(
-        id: Long, timestamp: Timestamp
+        partnerId: Long, timestamp: Timestamp
     ): List<PartnerContactRow>
 
     @Query(
         """
             SELECT
-             entity.id AS partnerId,
              motivationTransl.*,
              motivationTransl.organization_relevance AS organizationRelevance,
              motivationTransl.organization_role AS organizationRole,
              motivationTransl.organization_experience AS organizationExperience
-             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTransl ON entity.id = motivationTransl.partner_id
-             WHERE entity.id = :id
-             ORDER BY entity.id
+             FROM #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTransl
+             WHERE motivationTransl.partner_id = :partnerId
              """,
         nativeQuery = true
     )
     fun findPartnerMotivationByIdAsOfTimestamp(
-        id: Long, timestamp: Timestamp
+        partnerId: Long, timestamp: Timestamp
     ): List<PartnerMotivationRow>
 
     @Query(
@@ -172,7 +169,11 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              """,
         nativeQuery = true
     )
-    fun findAllByProjectIdAsOfTimestamp(projectId: Long, pageable: Pageable, timestamp: Timestamp): Page<PartnerSimpleRow>
+    fun findAllByProjectIdAsOfTimestamp(
+        projectId: Long,
+        pageable: Pageable,
+        timestamp: Timestamp
+    ): Page<PartnerSimpleRow>
 
     @Query(
         """
@@ -190,7 +191,10 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              """,
         nativeQuery = true
     )
-    fun findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId: Long, timestamp: Timestamp): Iterable<PartnerSimpleRow>
+    fun findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+        projectId: Long,
+        timestamp: Timestamp
+    ): Iterable<PartnerSimpleRow>
 
     @Query(
         value = """

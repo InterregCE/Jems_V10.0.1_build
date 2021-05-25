@@ -222,12 +222,12 @@ fun List<PartnerMotivationRow>.toProjectPartnerMotivationHistoricalData() = this
     organizationRelevance = groupedRows.value.extractField { it.organizationRelevance },
     organizationRole = groupedRows.value.extractField { it.organizationRole },
     organizationExperience = groupedRows.value.extractField { it.organizationExperience },
-) }.first()
+) }.firstOrNull()
 
 fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
     addresses: List<ProjectPartnerAddressDTO>,
     contacts: List<OutputProjectPartnerContact>,
-    motivation: ProjectPartnerMotivationDTO
+    motivation: ProjectPartnerMotivationDTO?
 ) = this.groupBy { it.id }.map { groupedRows -> OutputProjectPartnerDetail(
     id = groupedRows.value.first().id,
     abbreviation = groupedRows.value.first().abbreviation,

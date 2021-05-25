@@ -35,6 +35,7 @@ import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-ta
 import {InvestmentSummary} from '../../work-package/work-package-detail-page/workPackageInvestment';
 import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
 import {ProjectVersionStore} from '../../services/project-version-store.service';
+import {Log} from '../../../common/utils/log';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -157,6 +158,7 @@ export class ProjectPartnerDetailPageStore {
         switchMap(([partner, version]) =>
           this.projectPartnerBudgetService.getProjectPartnerCoFinancing(partner.id, version)
         ),
+        tap(financing => Log.info('Fetched partner financing and contribution', this, financing))
       );
   }
 
