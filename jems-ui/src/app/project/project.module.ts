@@ -52,8 +52,6 @@ import {ProjectPartnerStore} from './project-application/containers/project-appl
 import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
 import {ProjectApplicationFormAssociatedOrganizationsListComponent} from './project-application/components/project-application-form/project-application-form-associated-organizations-list/project-application-form-associated-organizations-list.component';
 import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
-import {ProjectApplicationFormAssociatedOrganizationEditComponent} from './project-application/components/project-application-form/project-application-form-associated-organization-edit/project-application-form-associated-organization-edit.component';
-import {ProjectAssociatedOrganizationStore} from './project-application/containers/project-application-form-page/services/project-associated-organization-store.service';
 import {ProjectPartnerBudgetOptionsComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-options/project-partner-budget-options.component';
 import {ContributionToggleColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-toggle-column/contribution-toggle-column.component';
 import {ProjectApplicationFormIdentificationPageComponent} from './project-application/containers/project-application-form-page/project-application-form-identification-page/project-application-form-identification-page.component';
@@ -149,7 +147,6 @@ import {ProjectPageTemplateComponent} from './project-page-template/project-page
     ProjectPartnerCoFinancingTabComponent,
     ProjectPartnerBudgetOptionsComponent,
     ProjectApplicationPartnerIdentityComponent,
-    ProjectApplicationFormAssociatedOrganizationEditComponent,
     ProjectApplicationFormIdentificationPageComponent,
     ProjectApplicationFormAssociatedOrgPageComponent,
     ProjectApplicationFormAddressComponent,
@@ -186,7 +183,6 @@ import {ProjectPageTemplateComponent} from './project-page-template/project-page
     ProjectApplicationFormStore,
     ProjectAcronymResolver,
     ProjectPartnerStore,
-    ProjectAssociatedOrganizationStore,
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,
     ProjectLumpSumsPageStore
