@@ -3,6 +3,7 @@ import {
   InputProjectContact,
   InputProjectPartnerCreate,
   InputProjectPartnerUpdate,
+  OutputProjectPartner,
   OutputProjectPartnerDetail,
   ProjectPartnerAddressDTO,
   ProjectPartnerMotivationDTO,
@@ -29,6 +30,7 @@ export class ProjectPartnerStore {
   isProjectEditable$: Observable<boolean>;
   partner$ = new ReplaySubject<OutputProjectPartnerDetail | any>(1);
   partners$: Observable<ProjectPartner[]>;
+  dropdownPartners$: Observable<OutputProjectPartner[]>;
 
   constructor(private partnerService: ProjectPartnerService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
@@ -36,6 +38,7 @@ export class ProjectPartnerStore {
               private routingService: RoutingService,
               private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
+    this.dropdownPartners$ = this.dropdownPartners();
 
     this.partners$ = combineLatest([
       this.projectStore.getProject(),
@@ -68,10 +71,6 @@ export class ProjectPartnerStore {
       ),
       tap(partner => this.partner$.next(partner)),
       tap(partner => Log.info('Fetched the programme partner:', this, partner)),
-      catchError(err => {
-        this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
-        return of({});
-      })
     ).subscribe();
   }
 
@@ -115,6 +114,13 @@ export class ProjectPartnerStore {
       .pipe(
         tap(saved => this.partner$.next(saved)),
         tap(saved => Log.info('Updated partner motivation:', this, saved)),
+      );
+  }
+
+  private dropdownPartners(): Observable<OutputProjectPartner[]> {
+    return this.projectVersionStore.currentRouteVersion$
+      .pipe(
+        switchMap(version => this.partnerService.getProjectPartnersForDropdown(this.projectId, undefined, version))
       );
   }
 }

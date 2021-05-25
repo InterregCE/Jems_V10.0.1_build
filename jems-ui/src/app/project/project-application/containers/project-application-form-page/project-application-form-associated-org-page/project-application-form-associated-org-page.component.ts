@@ -8,6 +8,7 @@ import {ProjectAssociatedOrganizationService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {Permission} from '../../../../../security/permissions/permission';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 
 @Component({
   selector: 'app-project-application-form-associated-org-page',
@@ -32,17 +33,19 @@ export class ProjectApplicationFormAssociatedOrgPageComponent {
         startWith({active: 'sortNumber', direction: 'asc'}),
         map(sort => sort?.direction ? sort : {active: 'sortNumber', direction: 'asc'}),
         map(sort => `${sort.active},${sort.direction}`)
-      )
+      ),
+      this.projectVersionStore.currentRouteVersion$
     ])
       .pipe(
-        mergeMap(([pageIndex, pageSize, sort]) =>
-          this.projectAssociatedOrganizationService.getAssociatedOrganizations(this.projectId, pageIndex, pageSize, [sort])),
+        mergeMap(([pageIndex, pageSize, sort, version]) =>
+          this.projectAssociatedOrganizationService.getAssociatedOrganizations(this.projectId, pageIndex, pageSize, undefined, version)),
         tap(page => Log.info('Fetched the project associated organizations:', this, page.content)),
       );
 
   constructor(public projectStore: ProjectStore,
               private projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private projectVersionStore: ProjectVersionStore) {
   }
 
   deleteAssociatedOrganization(associatedOrganizationId: number): void {
