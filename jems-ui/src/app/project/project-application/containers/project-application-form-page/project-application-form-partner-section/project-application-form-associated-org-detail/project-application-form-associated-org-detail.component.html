@@ -16,8 +16,7 @@
                 <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput required>
                 <mat-error>
                     <app-form-field-errors
-                            [errors]="associatedOrganizationForm.controls?.nameInOriginalLanguage?.errors"
-                            [messages]="nameInOriginalLanguageErrors">
+                            [errors]="associatedOrganizationForm.controls?.nameInOriginalLanguage?.errors">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -38,9 +37,7 @@
                     </mat-option>
                 </mat-select>
                 <mat-error>
-                    <app-form-field-errors
-                            [errors]="associatedOrganizationForm.controls?.partnerId?.errors"
-                            [messages]="partnerIdErrors">
+                    <app-form-field-errors [errors]="associatedOrganizationForm.controls?.partnerId?.errors">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -55,9 +52,7 @@
                 <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
                 <input name="representativeTitle" formControlName="representativeTitle" matInput>
                 <mat-error>
-                    <app-form-field-errors
-                            [errors]="associatedOrganizationForm?.controls?.representativeTitle?.errors"
-                            [messages]="representativeTitleErrors">
+                    <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.representativeTitle?.errors">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -67,8 +62,7 @@
                 <input name="representativeFirstName" formControlName="representativeFirstName" matInput>
                 <mat-error>
                     <app-form-field-errors
-                            [errors]="associatedOrganizationForm?.controls?.representativeFirstName?.errors"
-                            [messages]="representativeFirstNameErrors">
+                            [errors]="associatedOrganizationForm?.controls?.representativeFirstName?.errors">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -78,8 +72,7 @@
                 <input name="representativeLastName" formControlName="representativeLastName" matInput>
                 <mat-error>
                     <app-form-field-errors
-                            [errors]="associatedOrganizationForm?.controls?.representativeLastName?.errors"
-                            [messages]="representativeLastNameErrors">
+                            [errors]="associatedOrganizationForm?.controls?.representativeLastName?.errors">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -90,9 +83,7 @@
                 <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
                 <input name="contactTitle" formControlName="contactTitle" matInput>
                 <mat-error>
-                    <app-form-field-errors
-                            [errors]="associatedOrganizationForm?.controls?.contactTitle?.errors"
-                            [messages]="contactTitleErrors">
+                    <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactTitle?.errors">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -101,9 +92,7 @@
                 <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
                 <input name="contactFirstName" formControlName="contactFirstName" matInput>
                 <mat-error>
-                    <app-form-field-errors
-                            [errors]="associatedOrganizationForm?.controls?.contactFirstName?.errors"
-                            [messages]="contactFirstNameErrors">
+                    <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactFirstName?.errors">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -112,9 +101,7 @@
                 <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
                 <input name="contactLastName" formControlName="contactLastName" matInput>
                 <mat-error>
-                    <app-form-field-errors
-                            [errors]="associatedOrganizationForm?.controls?.contactLastName?.errors"
-                            [messages]="contactLastNameErrors">
+                    <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactLastName?.errors">
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>

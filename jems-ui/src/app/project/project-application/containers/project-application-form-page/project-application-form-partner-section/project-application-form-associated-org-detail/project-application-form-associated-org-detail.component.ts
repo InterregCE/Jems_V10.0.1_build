@@ -63,37 +63,10 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
     roleDescription: [],
   });
 
-  nameInOriginalLanguageErrors = {
-    maxlength: 'project.organization.original.name.size.too.long',
-    required: 'project.organization.original.should.not.be.empty',
-  };
-  partnerIdErrors = {
-    required: 'project.organization.partner.should.not.be.empty',
-  };
-  representativeTitleErrors = {
-    maxlength: 'project.contact.title.size.too.long'
-  };
-  representativeFirstNameErrors = {
-    maxlength: 'project.contact.first.name.size.too.long'
-  };
-  representativeLastNameErrors = {
-    maxlength: 'project.contact.last.name.size.too.long'
-  };
-  contactTitleErrors = {
-    maxlength: 'project.contact.title.size.too.long'
-  };
-  contactFirstNameErrors = {
-    maxlength: 'project.contact.first.name.size.too.long'
-  };
-  contactLastNameErrors = {
-    maxlength: 'project.contact.last.name.size.too.long'
-  };
   contactEmailErrors = {
-    maxlength: 'project.contact.email.size.too.long',
     email: 'project.contact.email.wrong.format'
   };
   contactTelephoneErrors = {
-    maxlength: 'project.contact.telephone.size.too.long',
     pattern: 'project.contact.telephone.wrong.format'
   };
 
