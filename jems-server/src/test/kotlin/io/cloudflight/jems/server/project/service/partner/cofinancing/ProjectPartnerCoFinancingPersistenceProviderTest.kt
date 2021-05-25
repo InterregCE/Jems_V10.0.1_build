@@ -59,7 +59,6 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     ) : PartnerIdentityRow
 
     protected class PreviousVersionOfCoFinancing(
-        override val partnerId: Long,
         override val type: ProjectPartnerCoFinancingFundType,
         override val percentage: BigDecimal,
         override val language: SystemLanguage?,
@@ -72,7 +71,6 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     protected class PreviousVersionOfContribution(
         override val id: Long,
-        override val partnerId: Long,
         override val name: String?,
         override val status: ProjectPartnerContributionStatus?,
         override val amount: BigDecimal
@@ -84,7 +82,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         ProjectPartnerCoFinancingEntity(
             coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundType.MainFund),
             percentage = BigDecimal.valueOf(15.5),
-            programmeFund = fund
+            programmeFund = null
         ),
         ProjectPartnerCoFinancingEntity(
             coFinancingFundId = ProjectPartnerCoFinancingFundId(
@@ -173,7 +171,6 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     private val previousFinancingValues = listOf(
         PreviousVersionOfCoFinancing(
-            partnerId = 1,
             type = ProjectPartnerCoFinancingFundType.MainFund,
             percentage = BigDecimal.valueOf(15.5),
             language = null,
@@ -184,7 +181,6 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             selected = true
         ),
         PreviousVersionOfCoFinancing(
-            partnerId = 1,
             type = ProjectPartnerCoFinancingFundType.PartnerContribution,
             percentage = BigDecimal.valueOf(25.5),
             language = null,
@@ -199,14 +195,12 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     private val previousContributionValues = listOf(
         PreviousVersionOfContribution(
             id = 1,
-            partnerId = 1,
             name = null,
             status = ProjectPartnerContributionStatus.Public,
             amount = BigDecimal.ONE
         ),
         PreviousVersionOfContribution(
             id = 2,
-            partnerId = 1,
             name = "BMW",
             status = ProjectPartnerContributionStatus.AutomaticPublic,
             amount = BigDecimal.ZERO
@@ -260,24 +254,24 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         assertThat(persistence.getCoFinancingAndContributions(1, null)).isEqualTo(currentValue)
     }
 
-//    @Test
-//    fun `should return previous version of coFinancing`() {
-//        every { projectPartnerRepository.findById(partnerId) } returns Optional.of(projectPartner)
-//        every { projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp) } returns listOf(
-//            previousProjectPartner
-//        )
-//        every {
-//            projectPartnerRepository.findPartnerFinancingByIdAsOfTimestamp(
-//                partnerId,
-//                timestamp
-//            )
-//        } returns previousFinancingValues
-//        every {
-//            projectPartnerRepository.findPartnerContributionByIdAsOfTimestamp(
-//                partnerId,
-//                timestamp
-//            )
-//        } returns previousContributionValues
-//        assertThat(persistence.getCoFinancingAndContributions(1, version)).isEqualTo(previousValue)
-//    }
+    @Test
+    fun `should return previous version of coFinancing`() {
+        every { projectPartnerRepository.findById(partnerId) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp) } returns listOf(
+            previousProjectPartner
+        )
+        every {
+            projectPartnerRepository.findPartnerFinancingByIdAsOfTimestamp(
+                partnerId,
+                timestamp
+            )
+        } returns previousFinancingValues
+        every {
+            projectPartnerRepository.findPartnerContributionByIdAsOfTimestamp(
+                partnerId,
+                timestamp
+            )
+        } returns previousContributionValues
+        assertThat(persistence.getCoFinancingAndContributions(1, version)).isEqualTo(previousValue)
+    }
 }

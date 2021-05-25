@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.common.entity.TranslationView
 import java.math.BigDecimal
 
 interface PartnerFinancingRow: TranslationView {
-    val partnerId: Long
     val type: ProjectPartnerCoFinancingFundType
     val percentage: BigDecimal
     val fundId: Long?

@@ -143,7 +143,7 @@ fun ProjectAssociatedOrganizationAddress.toOutputProjectAssociatedOrganizationDe
 
 fun List<ProjectAssociatedOrganizationRow>.toAssociatedOrganizationDetailHistoricalData(
     partner: OutputProjectPartner,
-    address: OutputProjectAssociatedOrganizationAddress,
+    address: OutputProjectAssociatedOrganizationAddress?,
     contacts: List<OutputProjectPartnerContact>) =
     this.groupBy { it.id }.map { groupedRows -> OutputProjectAssociatedOrganizationDetail(
         id = groupedRows.value.first().id,

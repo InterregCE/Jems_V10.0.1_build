@@ -65,7 +65,7 @@ class AssociatedOrganizationPersistenceProvider(
             .toOutputProjectPartnerHistoricalData()
         val address =
             projectAssociatedOrganizationRepo.findAssociatedOrganizationAddressesByIdAsOfTimestamp(id, timestamp)
-                .toProjectAssociatedOrganizationAddressHistoricalData().first()
+                .toProjectAssociatedOrganizationAddressHistoricalData().firstOrNull()
         val contacts =
             projectAssociatedOrganizationRepo.findAssociatedOrganizationContactsByIdAsOfTimestamp(id, timestamp)
                 .toAssociatedOrganizationContactHistoricalData()
