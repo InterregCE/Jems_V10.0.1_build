@@ -15,9 +15,9 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '../../../../../common/utils/forms';
 import {filter, map, take} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
-import {Router} from '@angular/router';
 import {ProjectPartnerDetailPageComponent} from '../../../../partner/project-partner-detail-page/project-partner-detail-page.component';
 import {TabService} from '../../../../../common/services/tab.service';
+import {RoutingService} from '../../../../../common/services/routing.service';
 
 
 @Component({
@@ -54,7 +54,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   tableConfiguration: TableConfiguration;
 
   constructor(private dialog: MatDialog,
-              private router: Router,
+              private router: RoutingService,
               private tabService: TabService) {
   }
 
