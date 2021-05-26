@@ -6,19 +6,19 @@ import {catchError, take, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {Subject} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
-import {CallStore} from '../../../../call/services/call-store.service';
 import {LocaleDatePipe} from '../../../../common/pipe/locale-date.pipe';
 import {FormBuilder, Validators} from '@angular/forms';
 import {RoutingService} from '../../../../common/services/routing.service';
 import {APIError} from '../../../../common/models/APIError';
 import moment from 'moment/moment';
 import {Alert} from '@common/components/forms/alert';
+import {ApplyToCallPageStore} from './apply-to-call-page-store.service';
 
 @Component({
   selector: 'app-project-apply-to-call',
   templateUrl: 'project-apply-to-call.component.html',
   styleUrls: ['project-apply-to-call.component.scss'],
-  providers: [CallStore],
+  providers: [ApplyToCallPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
@@ -32,7 +32,7 @@ export class ProjectApplyToCallComponent {
   callId = this.activatedRoute.snapshot.params.callId;
   saveError$ = new Subject<APIError>();
 
-  constructor(public callStore: CallStore,
+  constructor(public callStore: ApplyToCallPageStore,
               private formBuilder: FormBuilder,
               private router: RoutingService,
               private activatedRoute: ActivatedRoute,
