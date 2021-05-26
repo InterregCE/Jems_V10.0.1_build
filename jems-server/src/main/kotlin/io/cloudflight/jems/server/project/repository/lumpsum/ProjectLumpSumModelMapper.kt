@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.lumpsum
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumRow
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -59,3 +60,18 @@ fun List<ProjectPartnerLumpSum>.toPartnerLumpSumEntity(
         amount = it.amount,
     )
 }
+
+fun List<ProjectLumpSumRow>.toProjectLumpSumHistoricalData() =
+    this.groupBy { it.orderNr }.map { groupedRows ->
+        ProjectLumpSum(
+            programmeLumpSumId = groupedRows.value.first().programmeLumpSumId,
+            period = groupedRows.value.first().endPeriod,
+            lumpSumContributions = groupedRows.value
+                .map {
+                    ProjectPartnerLumpSum(
+                        partnerId = it.projectPartnerId,
+                        amount = it.amount
+                    )
+                }.toList()
+        )
+    }

@@ -12,8 +12,8 @@ class ProjectLumpSumController(
     private val updateProjectLumpSumsInteractor: UpdateProjectLumpSumsInteractor,
 ) : ProjectLumpSumApi {
 
-    override fun getProjectLumpSums(projectId: Long): List<ProjectLumpSumDTO> =
-        getProjectLumpSumsInteractor.getLumpSums(projectId).toDto()
+    override fun getProjectLumpSums(projectId: Long, version: String?): List<ProjectLumpSumDTO> =
+        getProjectLumpSumsInteractor.getLumpSums(projectId, version).toDto()
 
     override fun updateProjectLumpSums(projectId: Long, lumpSums: List<ProjectLumpSumDTO>): List<ProjectLumpSumDTO> =
         updateProjectLumpSumsInteractor.updateLumpSums(projectId, lumpSums.toModel()).toDto()

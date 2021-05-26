@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Project Lump Sum")
 @RequestMapping("/api/project/{projectId}/lumpSum")
@@ -16,7 +17,10 @@ interface ProjectLumpSumApi {
 
     @ApiOperation("Returns all project lump sums")
     @GetMapping
-    fun getProjectLumpSums(@PathVariable projectId: Long): List<ProjectLumpSumDTO>
+    fun getProjectLumpSums(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<ProjectLumpSumDTO>
 
     @ApiOperation("Update project partner")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

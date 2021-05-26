@@ -56,7 +56,7 @@ class ProjectBudgetPersistenceTest {
     lateinit var budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository
 
     @MockK
-    lateinit var projectLumpSumRepository: ProjectLumpSumRepository
+    lateinit var projectPartnerLumpSumRepository: ProjectPartnerLumpSumRepository
 
     @MockK
     lateinit var projectPartnerUnitCostRepository: ProjectPartnerBudgetUnitCostRepository
@@ -77,7 +77,7 @@ class ProjectBudgetPersistenceTest {
             budgetEquipmentRepository,
             budgetInfrastructureRepository,
             projectPartnerUnitCostRepository,
-            projectLumpSumRepository,
+            projectPartnerLumpSumRepository,
         )
     }
 
@@ -147,7 +147,7 @@ class ProjectBudgetPersistenceTest {
 
     @Test
     fun getLumpSumContributionPerPartner() {
-        every { projectLumpSumRepository.sumLumpSumsPerPartner(setOf(PARTNER_ID)) } returns listOf(
+        every { projectPartnerLumpSumRepository.sumLumpSumsPerPartner(setOf(PARTNER_ID)) } returns listOf(
             ProjectLumpSumPerPartnerSumEntity(
                 partner = partnerWithId(PARTNER_ID),
                 sum = BigDecimal.TEN,

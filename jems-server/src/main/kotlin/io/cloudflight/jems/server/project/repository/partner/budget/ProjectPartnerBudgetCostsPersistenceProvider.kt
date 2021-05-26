@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectP
 import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostRow
 import io.cloudflight.jems.server.project.entity.partner.budget.travel.ProjectPartnerBudgetTravelCostRow
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
-import io.cloudflight.jems.server.project.repository.budget.ProjectLumpSumRepository
+import io.cloudflight.jems.server.project.repository.budget.ProjectPartnerLumpSumRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetGeneralCostEntryList
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetGeneralEntryList
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetStaffCostEntries
@@ -32,7 +32,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
     private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
     private val budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository,
-    private val budgetLumpSumRepository: ProjectLumpSumRepository
+    private val budgetPartnerLumpSumRepository: ProjectPartnerLumpSumRepository
 ) : ProjectPartnerBudgetCostsPersistence {
 
     @Transactional(readOnly = true)
@@ -145,10 +145,10 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     override fun getBudgetLumpSumsCostTotal(partnerId: Long, version: String?): BigDecimal =
         projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
-                budgetLumpSumRepository.sumTotalForPartner(partnerId)
+                budgetPartnerLumpSumRepository.sumTotalForPartner(partnerId)
             },
             previousVersionFetcher = { timestamp ->
-                budgetLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp)
+                budgetPartnerLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp)
             }
         ) ?: BigDecimal.ZERO
 
