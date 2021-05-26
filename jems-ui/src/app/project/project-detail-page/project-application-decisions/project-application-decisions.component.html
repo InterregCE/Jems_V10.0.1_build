@@ -1,8 +1,10 @@
-<div id="applicationFormLifecycleAssessment"
-     *ngIf="projectStatus.status !== STATUS.STEP1DRAFT && projectStatus.status !== STATUS.DRAFT && projectStatus.status !== stepStatus.returnedToApplicant">
-    <h3 class="mt-3" *ngIf="!callHasTwoSteps">{{'project.assessment.header' | translate}}</h3>
-    <h3 class="mt-3" *ngIf="callHasTwoSteps">{{'project.assessment.header.with.step' | translate : {step: step} }}</h3>
-    <mat-expansion-panel [expanded]="true" *ngIf="data$ | async as data">
+<ng-container *ngIf="data$ | async as data">
+<div id="applicationFormLifecycleAssessment" *ngIf="isPanelVisible(data.callHasTwoSteps)">
+    <h3 class="mt-3" *ngIf="!data.callHasTwoSteps">{{'project.assessment.header' | translate}}</h3>
+    <h3 class="mt-3" *ngIf="data.callHasTwoSteps">
+        {{'project.assessment.header.with.step' | translate : {step: step} }}
+    </h3>
+    <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>
             <mat-panel-title>{{'project.assessment.decision.header' | translate}}</mat-panel-title>
         </mat-expansion-panel-header>
@@ -18,13 +20,14 @@
                     {{decisions?.eligibilityDecision.decisionDate | localeDate}}
                 </span>
             </div>
-            <button *ngIf="!decisions?.eligibilityDecision && data.isProjectLatestVersion"
+            <button *ngIf="isDecisionEditable(decisions?.eligibilityDecision, data.isProjectLatestVersion)"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [disabled]="!decisions?.eligibilityAssessment"
                     [routerLink]="['./assessment/eligibilityDecision', step]" queryParamsHandling="merge">
                 {{'project.assessment.eligibilityDecision.assessment' | translate}}
             </button>
-            <button *ngIf="decisions?.eligibilityDecision"
+            <button *ngIf="!isDecisionEditable(decisions?.eligibilityDecision, data.isProjectLatestVersion)"
+                    [disabled]="!decisions?.eligibilityDecision"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [routerLink]="['./assessment/eligibilityDecision', step]" queryParamsHandling="merge">
                 {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
@@ -42,14 +45,15 @@
                     {{decisions.fundingDecision.decisionDate | localeDate }}
                 </span>
             </div>
-            <button *ngIf="!decisions?.fundingDecision && data.isProjectLatestVersion"
+            <button *ngIf="isDecisionEditable(decisions?.fundingDecision, data.isProjectLatestVersion)"
                     mat-stroked-button appFormFieldWidth="x-large"
                     [disabled]="!fundingDecisionEnabled()"
                     [routerLink]="['./assessment/fundingDecision', step]" queryParamsHandling="merge">
                 {{'project.assessment.fundingDecision.assessment' | translate}}
             </button>
-            <button *ngIf="!!decisions?.fundingDecision"
+            <button *ngIf="!isDecisionEditable(decisions?.fundingDecision, data.isProjectLatestVersion)"
                     mat-stroked-button appFormFieldWidth="x-large"
+                    [disabled]="!decisions?.fundingDecision"
                     [color]="projectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
                     [routerLink]="['./assessment/fundingDecision', step]" queryParamsHandling="merge">
                 {{updateOrViewFundingLabel() | translate}}
@@ -57,3 +61,4 @@
         </div>
     </mat-expansion-panel>
 </div>
+</ng-container>

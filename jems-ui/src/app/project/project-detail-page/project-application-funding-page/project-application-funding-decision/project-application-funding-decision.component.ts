@@ -60,6 +60,9 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
     this.decisionForm.controls.status.setValue(this.status?.status);
     this.decisionForm.controls.notes.setValue(this.status?.note);
     this.decisionForm.controls.decisionDate.setValue(this.status?.decisionDate);
+    if (this.project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT) {
+      this.decisionForm.disable();
+    }
   }
 
   onSubmit(): void {

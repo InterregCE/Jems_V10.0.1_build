@@ -43,7 +43,7 @@
         <app-pending-button
                 [confirm]="getFundingConfirmation()"
                 [pending]="actionPending"
-                [disabled]="decisionForm.invalid"
+                [disabled]="decisionForm.invalid || decisionForm.disabled"
                 (clicked)="onSubmit()">
             {{submitLabel | translate}}
         </app-pending-button>
