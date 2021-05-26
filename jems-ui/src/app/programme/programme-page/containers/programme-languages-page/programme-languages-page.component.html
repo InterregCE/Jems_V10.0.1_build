@@ -1,7 +1,7 @@
 <app-main-page-template [needsCard]="true" *ngIf="languages$ | async as languages"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.languages">
-    <ng-container *ngxPermissionsExcept="Permission.APPLICANT_USER">
+    <ng-container>
         <app-programme-languages
                 [languages]="languages"
                 [success$]="languagesSaveSuccess$"

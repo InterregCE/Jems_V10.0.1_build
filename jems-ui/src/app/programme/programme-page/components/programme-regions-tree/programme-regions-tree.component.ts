@@ -27,8 +27,6 @@ export class ProgrammeRegionsTreeComponent extends BaseComponent implements OnIn
 
   constructor(public programmeEditableStateStore: ProgrammeEditableStateStore) {
     super();
-
-    this.programmeEditableStateStore.init();
   }
 
   ngOnInit(): void {

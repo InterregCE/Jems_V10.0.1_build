@@ -23,7 +23,7 @@ export class TopBarService {
     isInternal: true,
     route: '/app/project',
   };
-  private programmItem: MenuItemConfiguration = {
+  private programmeItem: MenuItemConfiguration = {
     name: 'topbar.main.programme',
     isInternal: true,
     route: '/app/programme',
@@ -71,17 +71,19 @@ export class TopBarService {
     combineLatest([
       this.permissionService.hasPermission(Permission.SYSTEM_MODULE_PERMISSIONS),
       this.permissionService.hasPermission(PermissionsEnum.ProjectRetrieve),
+      this.permissionService.hasPermission(Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS),
       this.securityService.currentUser.pipe(map(currentUser => currentUser?.role)),
       // TODO remove when all permissions implemented
-      this.permissionService.hasPermission(Permission.APPLICANT_USER),
+      // this.permissionService.hasPermission(Permission.APPLICANT_USER),
       this.permissionService.hasPermission(Permission.PROGRAMME_USER),
       this.permissionService.hasPermission(Permission.ADMINISTRATOR),
     ]).pipe(
       take(1),
-    ).subscribe(([systemEnabled, applicationsEnabled, role, isApplicant, isProgrammeUser, isAdmin]) => {
+    ).subscribe(([
+      systemEnabled, applicationsEnabled, programmeSetupEnabled, role, isProgrammeUser, isAdmin]) => {
       const menuItems: MenuItemConfiguration[] = [];
 
-      if (isApplicant) {
+      if (!isProgrammeUser && !isAdmin) {
         menuItems.push(this.dashboardItem);
       }
       if (applicationsEnabled) {
@@ -90,8 +92,8 @@ export class TopBarService {
       if (isProgrammeUser || isAdmin) {
         menuItems.push(this.callsItem);
       }
-      if (isProgrammeUser || isAdmin) {
-        menuItems.push(this.programmItem);
+      if (programmeSetupEnabled) {
+        menuItems.push(this.programmeItem);
       }
       if (systemEnabled) {
         if (role?.permissions.includes(PermissionsEnum.AuditRetrieve)) {

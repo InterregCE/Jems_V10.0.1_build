@@ -20,7 +20,6 @@ import {
   ResultIndicatorDetailDTO,
   ResultIndicatorUpdateRequestDTO
 } from '@cat/api';
-import {Permission} from '../../../../security/permissions/permission';
 import {
   ResultIndicatorCodeRelation,
   ProgrammeResultIndicatorConstants
@@ -39,7 +38,6 @@ import {LanguageStore} from '../../../../common/services/language-store.service'
 })
 export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implements OnInit {
 
-  Permission = Permission;
   programmeResultIndicatorConstants = ProgrammeResultIndicatorConstants;
   isProgrammeSetupLocked: boolean;
 
@@ -78,13 +76,12 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
               private languageStore: LanguageStore,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService) {
     super(changeDetectorRef, translationService);
 
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
       tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
       untilDestroyed(this)

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.programme.service.language.get_languages
 
-import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.service.language.ProgrammeLanguagePersistence
 import io.cloudflight.jems.server.programme.service.language.model.AvailableProgrammeLanguages
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
@@ -22,7 +22,7 @@ class GetLanguages(
         )
     }
 
-    @CanReadProgrammeSetup
+    @CanRetrieveProgrammeSetup
     @Transactional(readOnly = true)
     override fun getAllLanguages(): List<ProgrammeLanguage> =
         persistence.getLanguages()

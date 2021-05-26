@@ -6,7 +6,6 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
-import {Permission} from '../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-programme-strategies-page',
@@ -15,8 +14,6 @@ import {Permission} from '../../../../security/permissions/permission';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeStrategiesPageComponent {
-  Permission = Permission;
-
   strategies$ = this.programmeStrategyService.getProgrammeStrategies()
     .pipe(
       tap(programmeStrategies => Log.info('Fetched programme strategies:', this, programmeStrategies))

@@ -47,7 +47,7 @@ export const routes: Routes = [
         loadChildren: () => import('./programme/programme.module').then(m => m.ProgrammeModule),
         data: {
           skipBreadcrumb: true,
-          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+          permissionsOnly: Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS,
         },
         canActivate: [PermissionGuard]
       },

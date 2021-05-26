@@ -1,7 +1,8 @@
 <form appFormLayout [formGroup]="programmeStrategyForm">
     <div appMultiColumnRow>
         <h3 class="mb-0">{{'programme.strategy.title' | translate}}</h3>
-        <button *ngIf="formState === FormState.VIEW" mat-raised-button color="primary"
+        <button mat-raised-button color="primary"
+                *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'programme.strategy.button.edit' | translate}}
         </button>

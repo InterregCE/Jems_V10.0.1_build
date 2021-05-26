@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.programme.service.costoption.get_lump_sum
 
-import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
-import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import org.springframework.stereotype.Service
@@ -12,12 +11,12 @@ class GetLumpSum(
     private val persistence: ProgrammeLumpSumPersistence,
 ) : GetLumpSumInteractor {
 
-    @CanReadProgrammeSetup
+    @CanRetrieveProgrammeSetup
     @Transactional(readOnly = true)
     override fun getLumpSums(): List<ProgrammeLumpSum> =
         persistence.getLumpSums()
 
-    @CanUpdateProgrammeSetup
+    @CanRetrieveProgrammeSetup
     @Transactional(readOnly = true)
     override fun getLumpSum(lumpSumId: Long): ProgrammeLumpSum =
         persistence.getLumpSum(lumpSumId)

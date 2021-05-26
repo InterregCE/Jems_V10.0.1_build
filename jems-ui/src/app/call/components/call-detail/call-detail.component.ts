@@ -91,7 +91,6 @@ export class CallDetailComponent implements OnInit {
               private formService: FormService,
               private callNavService: CallPageSidenavService,
               private programmeEditableStateStore: ProgrammeEditableStateStore) {
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
       tap(isProgrammeEditingLimited => this.isFirstCall = !isProgrammeEditingLimited),
       untilDestroyed(this)

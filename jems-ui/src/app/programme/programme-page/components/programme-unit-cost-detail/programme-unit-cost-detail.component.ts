@@ -13,7 +13,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
-import {Permission} from '../../../../security/permissions/permission';
 import {
   ProgrammeUnitCostDTO
 } from '@cat/api';
@@ -32,7 +31,6 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements OnInit {
 
-  Permission = Permission;
   MIN_VALUE = 0.01;
   MAX_VALUE =  999999999.99;
 
@@ -115,13 +113,12 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
               public numberService: NumberService) {
     super(changeDetectorRef, translationService);
 
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
         tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
         untilDestroyed(this)

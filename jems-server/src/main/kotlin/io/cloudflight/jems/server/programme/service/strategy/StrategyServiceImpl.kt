@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.strategy.InputProgrammeStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.OutputProgrammeStrategy
 import io.cloudflight.jems.server.call.repository.CallRepository
-import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import org.springframework.context.ApplicationEventPublisher
@@ -18,7 +18,7 @@ class StrategyServiceImpl(
     private val auditPublisher: ApplicationEventPublisher
 ) : StrategyService {
 
-    @CanReadProgrammeSetup
+    @CanRetrieveProgrammeSetup
     @Transactional(readOnly = true)
     override fun getProgrammeStrategies(): List<OutputProgrammeStrategy> {
         return strategyRepository.findAll().toDto()

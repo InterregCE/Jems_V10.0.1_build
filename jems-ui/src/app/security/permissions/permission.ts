@@ -21,6 +21,11 @@ export class Permission {
     PermissionsEnum.UserUpdatePassword,
   ];
 
+  public static readonly PROGRAMME_SETUP_MODULE_PERMISSIONS = [
+    PermissionsEnum.ProgrammeSetupRetrieve,
+    PermissionsEnum.ProgrammeSetupUpdate,
+  ];
+
   public static readonly DEFAULT_PERMISSIONS: PermissionNode[] = [
     {
       name: 'topbar.main.dashboard',
@@ -41,11 +46,10 @@ export class Permission {
       temporarilyDisabled: true,
     },
     {
-      name: 'Programme',
+      name: 'topbar.main.programme',
       mode: PermissionMode.HIDDEN_VIEW_EDIT,
-      viewPermissions: ['View programme-to-be-done' as PermissionsEnum],
-      editPermissions: ['Edit programme-to-be-done' as PermissionsEnum],
-      temporarilyDisabled: true,
+      viewPermissions: [PermissionsEnum.ProgrammeSetupRetrieve],
+      editPermissions: [PermissionsEnum.ProgrammeSetupUpdate],
     },
     {
       name: 'topbar.main.system',

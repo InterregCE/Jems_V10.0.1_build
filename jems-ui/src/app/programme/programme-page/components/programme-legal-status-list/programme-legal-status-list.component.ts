@@ -43,7 +43,6 @@ export class ProgrammeLegalStatusListComponent extends ViewEditForm implements O
               protected translationService: TranslateService,
               public programmeEditableStateStore: ProgrammeEditableStateStore) {
     super(changeDetectorRef, translationService);
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
         tap(isProgrammeEditingLimited => this.isProgrammeSetupRestricted = isProgrammeEditingLimited),
         untilDestroyed(this)

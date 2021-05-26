@@ -1,8 +1,8 @@
 <form id="funds" appFormLayout [formGroup]="editableFundsForm">
     <div appMultiColumnRow>
         <h3 class="mb-0">{{'programme.fund.list.title' | translate}}</h3>
-        <button appFormFieldWidth="small" color="primary"
-                *ngIf="formState === FormState.VIEW" mat-raised-button
+        <button appFormFieldWidth="small" color="primary" mat-raised-button
+                *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>

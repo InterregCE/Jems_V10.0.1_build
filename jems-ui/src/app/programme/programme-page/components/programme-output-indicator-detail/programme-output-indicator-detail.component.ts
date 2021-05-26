@@ -8,7 +8,6 @@ import {
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {Permission} from '../../../../security/permissions/permission';
 import {
   InputTranslation,
   OutputIndicatorCreateRequestDTO,
@@ -43,7 +42,6 @@ import {LanguageStore} from '../../../../common/services/language-store.service'
 })
 export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implements OnInit {
 
-  Permission = Permission;
   programmeOutputIndicatorConstants = ProgrammeOutputIndicatorConstants;
   isProgrammeSetupLocked: boolean;
 
@@ -90,11 +88,10 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
               protected translationService: TranslateService,
               private languageStore: LanguageStore,
               private programmeIndicatorService: ProgrammeIndicatorService,
-              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
   ) {
     super(changeDetectorRef, translationService);
 
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
       tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
       untilDestroyed(this)

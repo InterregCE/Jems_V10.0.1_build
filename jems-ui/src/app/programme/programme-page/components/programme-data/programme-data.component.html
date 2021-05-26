@@ -1,9 +1,10 @@
 <form appFormLayout [formGroup]="programmeForm">
     <div appMultiColumnRow>
         <h3 class="mb-0">{{'programme.data.header' | translate}}</h3>
-        <button color="primary" *ngIf="formState === FormState.VIEW" mat-raised-button
+        <button color="primary" mat-raised-button
+                *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
-            {{'programme.data.button.edit' | translate}}
+            {{'common.edit.label' | translate}}
         </button>
     </div>
     <mat-form-field>

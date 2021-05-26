@@ -10,7 +10,8 @@ import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.nuts.service.toOutput
-import io.cloudflight.jems.server.programme.authorization.CanReadNuts
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveNuts
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.entity.ProgrammeData
 import org.springframework.stereotype.Service
@@ -25,7 +26,7 @@ class ProgrammeDataServiceImpl(
 ) : ProgrammeDataService {
 
     @Transactional(readOnly = true)
-    @CanUpdateProgrammeSetup
+    @CanRetrieveProgrammeSetup
     override fun get(): OutputProgrammeData =
         getProgrammeDataOrThrow().toOutputProgrammeData()
 
@@ -66,7 +67,7 @@ class ProgrammeDataServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    @CanReadNuts
+    @CanRetrieveNuts
     override fun getAvailableNuts(): List<OutputNuts> =
         getProgrammeDataOrThrow().programmeNuts.toDto()
 

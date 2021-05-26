@@ -33,7 +33,10 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   @Output()
   saveFunds = new EventEmitter<ProgrammeFundDTO[]>();
 
-  editableFundsForm = new FormGroup({});
+  editableFundsForm = this.formBuilder.group({
+    funds: this.formBuilder.array([]),
+  });
+
   isProgrammeSetupLocked: boolean;
 
   constructor(
@@ -44,7 +47,6 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   ) {
     super(changeDetectorRef, translationService);
 
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
         tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
         untilDestroyed(this)
@@ -53,9 +55,6 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.editableFundsForm = this.formBuilder.group({
-      funds: this.formBuilder.array([]),
-    });
     this.resetForm();
   }
 
@@ -74,7 +73,7 @@ export class ProgrammeBasicFundsComponent extends ViewEditForm implements OnInit
   }
 
   resetForm(): void {
-    this.fundsForm.clear();
+    this.fundsForm?.clear();
     this.programmeFunds.forEach(fund => this.addControl(fund));
     this.changeFormState$.next(FormState.VIEW);
   }

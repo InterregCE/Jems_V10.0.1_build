@@ -12,7 +12,6 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
-import {Permission} from '../../../../security/permissions/permission';
 import {
   ProgrammeLumpSumDTO
 } from '@cat/api';
@@ -32,7 +31,6 @@ import {Forms} from '../../../../common/utils/forms';
 })
 export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnInit {
 
-  Permission = Permission;
   ProgrammeLumpSumDTO = ProgrammeLumpSumDTO;
   isProgrammeSetupLocked: boolean;
   MIN_VALUE = 0.01;
@@ -103,13 +101,12 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
               public numberService: NumberService) {
     super(changeDetectorRef, translationService);
 
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
         tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
         untilDestroyed(this)

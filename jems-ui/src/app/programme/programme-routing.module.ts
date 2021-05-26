@@ -10,7 +10,6 @@ import {ProgrammeLegalStatusComponent} from './programme-page/containers/program
 import {ProgrammeSimplifiedCostOptionsComponent} from './programme-page/containers/programme-simplified-cost-options/programme-simplified-cost-options.component';
 import {ProgrammeLumpSumsSubmissionPageComponent} from './programme-page/containers/programme-lump-sums-submission-page/programme-lump-sums-submission-page.component';
 import {ProgrammeUnitCostsSubmissionPageComponent} from './programme-page/containers/programme-unit-costs-submission-page/programme-unit-costs-submission-page.component';
-import {Permission} from '../security/permissions/permission';
 import {ProgrammePriorityDetailPageComponent} from './priorities/programme-priority-list-page/programme-priority-detail-page/programme-priority-detail-page.component';
 import {ProgrammePriorityListPageComponent} from './priorities/programme-priority-list-page/programme-priority-list-page.component';
 
@@ -19,7 +18,6 @@ export const routes: Routes = [
     path: '',
     data: {
       breadcrumb: 'programme.breadcrumb.setup',
-      permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
     },
     children: [
       {

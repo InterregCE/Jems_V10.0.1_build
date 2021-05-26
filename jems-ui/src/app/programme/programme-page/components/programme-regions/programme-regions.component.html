@@ -25,7 +25,7 @@
             </div>
         </div>
     </div>
-    <div  *ngIf="formState === FormState.EDIT" class="mt-3">
+    <div  *ngIf="formState === FormState.EDIT && (programmeEditableStateStore.hasEditPermission$ | async)" class="mt-3">
         <button mat-stroked-button class="mr-3"
                 (click)="onCancel()">
             {{'common.cancel.label' | translate}}

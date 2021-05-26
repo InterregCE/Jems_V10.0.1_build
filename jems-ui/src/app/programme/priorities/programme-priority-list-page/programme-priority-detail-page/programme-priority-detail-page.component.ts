@@ -53,7 +53,7 @@ export class ProgrammePriorityDetailPageComponent {
               private formBuilder: FormBuilder,
               private changeDetectorRef: ChangeDetectorRef, // TODO: remove when new edit mode is introduced
               private dialog: MatDialog,
-              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
               public pageStore: ProgrammePriorityDetailPageStore) {
 
     this.data$ = combineLatest([
@@ -74,7 +74,6 @@ export class ProgrammePriorityDetailPageComponent {
       tap(data => (data.priority as any)?.id ? this.form.disable() : this.form.enable())
     );
 
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
         tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
         untilDestroyed(this)

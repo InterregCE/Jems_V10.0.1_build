@@ -3,6 +3,8 @@ import {ProgrammePageSidenavService} from '../../programme-page/services/program
 import {ProgrammePrioritiesPageStore} from './programme-priorities-page-store.service';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
+import {UserRoleDTO} from '@cat/api';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-programme-priority-list-page',
@@ -12,6 +14,8 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
   providers: [ProgrammePrioritiesPageStore]
 })
 export class ProgrammePriorityListPageComponent implements OnInit {
+
+  PermissionsEnum = PermissionsEnum;
 
   @ViewChild('specificObjective', {static: true})
   specificObjective: TemplateRef<any>;

@@ -35,13 +35,17 @@ internal class AuthorizationUtil {
 
         internal val programmeUser = LocalCurrentUser(
             userProgramme, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
+                SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name),
+                SimpleGrantedAuthority(UserRolePermission.ProgrammeSetupRetrieve.key),
+                SimpleGrantedAuthority(UserRolePermission.ProgrammeSetupUpdate.key),
             )
         )
 
         internal val adminUser = LocalCurrentUser(
             userAdmin, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
+                SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name),
+                SimpleGrantedAuthority(UserRolePermission.ProgrammeSetupRetrieve.key),
+                SimpleGrantedAuthority(UserRolePermission.ProgrammeSetupUpdate.key),
             )
         )
 

@@ -16,6 +16,7 @@ import {Permission} from '../../../../security/permissions/permission';
 import {InputProgrammeData, OutputProgrammeData} from '@cat/api';
 import {Tools} from '../../../../common/utils/tools';
 import {TranslateService} from '@ngx-translate/core';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
 @Component({
   selector: 'app-programme-data',
@@ -96,7 +97,10 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+              protected changeDetectorRef: ChangeDetectorRef,
+              protected translationService: TranslateService,
+              public programmeEditableStateStore: ProgrammeEditableStateStore
+  ) {
     super(changeDetectorRef, translationService);
   }
 

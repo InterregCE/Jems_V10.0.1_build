@@ -22,7 +22,7 @@ export class PermissionGuard implements CanActivate {
         || permissionsOnly.some((only: string) => user?.role?.permissions.includes(only as UserRoleDTO.PermissionsEnum));
     }
     if (!allowed) {
-      Log.info('Current user role cannot access this route:', this, user?.role);
+      Log.info(`Current user role cannot access this route. Missing permissions: ${permissionsOnly}. Route:`, this, user?.role);
       this.router.navigate(['app']);
     }
     return allowed;

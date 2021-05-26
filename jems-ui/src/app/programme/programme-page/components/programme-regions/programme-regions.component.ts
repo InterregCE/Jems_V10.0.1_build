@@ -13,6 +13,7 @@ import {ProgrammeRegionCheckbox} from '../../model/programme-region-checkbox';
 import {FormState} from '@common/components/forms/form-state';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
 import {TranslateService} from '@ngx-translate/core';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
 @Component({
   selector: 'app-programme-regions',
@@ -33,7 +34,11 @@ export class ProgrammeRegionsComponent extends ViewEditForm implements OnInit {
   @Output()
   cancelEdit = new EventEmitter<void>();
 
-  constructor(protected changeDetectorRef: ChangeDetectorRef,  protected translationService: TranslateService) {
+  constructor(
+    protected changeDetectorRef: ChangeDetectorRef,
+    protected translationService: TranslateService,
+    public programmeEditableStateStore: ProgrammeEditableStateStore,
+  ) {
     super(changeDetectorRef, translationService);
   }
 

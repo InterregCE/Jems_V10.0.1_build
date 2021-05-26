@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
-import {Permission} from '../../../../security/permissions/permission';
 import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {
@@ -22,8 +21,6 @@ import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammePageComponent extends BaseComponent {
-  Permission = Permission;
-
   programmeSaveError$ = new Subject<I18nValidationError | null>();
   programmeSaveSuccess$ = new Subject<boolean>();
   saveProgrammeData$ = new Subject<OutputProgrammeData>();
