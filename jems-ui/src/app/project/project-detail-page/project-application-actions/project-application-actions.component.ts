@@ -125,7 +125,7 @@ export class ProjectApplicationActionsComponent {
 
   isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, isProjectLatestVersion: boolean, projectStatus: ProjectStatusDTO.StatusEnum): boolean {
     if (!isProjectLatestVersion) {
-      return false;
+      return true;
     }
     const currentDate = moment(new Date());
     return !(currentDate.isBefore(projectCallEndDate) && (hasPreConditionCheckSucceed || projectStatus === this.STATUS.STEP1DRAFT));
