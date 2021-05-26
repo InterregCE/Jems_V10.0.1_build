@@ -1,15 +1,19 @@
 <h1 mat-dialog-title>
-    {{data.title | translate}}
+    {{title | translate}}
 </h1>
 
 <div mat-dialog-content>
     <p>{{message | translate : arguments}}</p>
 
     <app-alert [closable]="false"
-               [show]="!!data.warnMessage"
-               [type]="Alert.WARNING">
-        <p>{{warnMessage | translate : warnArguments}}</p>
+               [show]="hasProminentText"
+               [type]="type">
+        <p>{{prominentText | translate : prominentTextArguments}}</p>
     </app-alert>
+
+    <p *ngIf="arguments?.boldWarningMessage" class="bold-message-area">
+        {{arguments['boldWarningMessage'] | translate}}
+    </p>
 </div>
 
 <div mat-dialog-actions>

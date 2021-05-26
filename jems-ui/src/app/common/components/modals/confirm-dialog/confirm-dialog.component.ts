@@ -1,7 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Alert} from '@common/components/forms/alert';
-import {I18nMessage} from '../../../models/I18nMessage';
+import { Alert } from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -11,11 +10,23 @@ import {I18nMessage} from '../../../models/I18nMessage';
 export class ConfirmDialogComponent {
   Alert = Alert;
 
-  data: ConfirmDialogData;
+  title: string;
+  message: string;
+  arguments?: any;
+  hasProminentText?: boolean;
+  prominentText: string;
+  prominentTextArguments?: any;
+  type?: Alert;
 
   constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public confirmDialogData: ConfirmDialogData) {
-    this.data = confirmDialogData;
+              @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData) {
+    this.title = data.title;
+    this.message = data.message;
+    this.arguments = data.arguments;
+    this.hasProminentText = data.hasProminentText;
+    this.prominentText = data.prominentText === undefined ? '' : data.prominentText;
+    this.prominentTextArguments = data.prominentTextArguments;
+    this.type = data.type;
   }
 
   onConfirm(): void {
@@ -25,27 +36,14 @@ export class ConfirmDialogComponent {
   onDismiss(): void {
     this.dialogRef.close(false);
   }
-
-  get message(): string {
-    return (this.data?.message as any)?.i18nKey || this.data?.message;
-  }
-
-  get arguments(): any {
-    return (this.data?.message as any)?.i18nArguments;
-  }
-
-  get warnMessage(): string {
-    return (this.data?.warnMessage as any)?.i18nKey || this.data?.warnMessage;
-  }
-
-  get warnArguments(): any {
-    return (this.data?.warnMessage as any)?.i18nArguments;
-  }
-
 }
 
 export class ConfirmDialogData {
   public title: string;
-  public message: I18nMessage | string;
-  public warnMessage?: I18nMessage | string;
+  public message: string;
+  public arguments?: any;
+  public hasProminentText?: boolean;
+  public prominentText?: string;
+  public prominentTextArguments?: any;
+  public type?: Alert;
 }
