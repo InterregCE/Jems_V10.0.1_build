@@ -24,6 +24,14 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.ProjectDataSectionC
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.ProjectTargetGroupData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.ProjectWorkPackageData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivityData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivityDeliverableData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivityTranslatedValueData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentAddressData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputTranslatedValueData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -33,6 +41,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
+import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDecision
@@ -48,6 +57,14 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageTranslatedValue
+import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.every
@@ -165,6 +182,44 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             infrastructureCosts = emptyList(),
             unitCosts = emptyList()
         )
+        private val investment = WorkPackageInvestment(
+            id = 2L,
+            investmentNumber = 3,
+            title = setOf(InputTranslation(SystemLanguage.EN, "title")),
+            justificationExplanation = setOf(InputTranslation(SystemLanguage.EN, "justificationExplanation")),
+            justificationTransactionalRelevance = setOf(InputTranslation(SystemLanguage.EN, "justificationTransactionalRelevance")),
+            justificationBenefits = setOf(InputTranslation(SystemLanguage.EN, "justificationBenefits")),
+            justificationPilot = setOf(InputTranslation(SystemLanguage.EN, "justificationPilot")),
+            address = Address("country", "reg2", "reg3", "str", "nr", "code", "city"),
+            risk = setOf(InputTranslation(SystemLanguage.EN, "risk")),
+            documentation = setOf(InputTranslation(SystemLanguage.EN, "documentation")),
+            ownershipSiteLocation = setOf(InputTranslation(SystemLanguage.EN, "ownershipSiteLocation")),
+            ownershipRetain = setOf(InputTranslation(SystemLanguage.EN, "ownershipRetain")),
+            ownershipMaintenance = setOf(InputTranslation(SystemLanguage.EN, "ownershipMaintenance"))
+        )
+        private val activity = WorkPackageActivity(
+            activityNumber = 2,
+            translatedValues = setOf(WorkPackageActivityTranslatedValue(SystemLanguage.EN, "title", "description")),
+            startPeriod = 3,
+            endPeriod = 4,
+            deliverables = listOf(WorkPackageActivityDeliverable())
+        )
+        private val workPackageOutput = WorkPackageOutput(
+            outputNumber = 0,
+            programmeOutputIndicatorId = null,
+            programmeOutputIndicatorIdentifier = "id",
+            targetValue = BigDecimal.TEN,
+            periodNumber = 1,
+            translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "title", "description"))
+        )
+        private val workPackage = ProjectWorkPackageFull(
+            id = 1L,
+            workPackageNumber = 1,
+            translatedValues = setOf(ProjectWorkPackageTranslatedValue(SystemLanguage.EN, "name", "objective", "audience")),
+            activities = listOf(activity),
+            outputs = listOf(workPackageOutput),
+            investments = listOf(investment)
+        )
     }
 
     @Test
@@ -178,6 +233,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id!!, null) } returns partnerCoFinancing
         every { getBudgetCosts.getBudgetCosts(projectPartner.id!!) } returns budgetCosts
         every { getBudgetTotalCost.getBudgetTotalCost(projectPartner.id!!) } returns totalCost
+        every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns listOf(workPackage)
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)
@@ -232,7 +288,43 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 projectOverallObjective = null,
                 projectRelevance = null,
                 projectPartnership = null,
-                projectWorkPackages = emptyList(),
+                projectWorkPackages = listOf(ProjectWorkPackageData(
+                    id = workPackage.id,
+                    workPackageNumber = workPackage.workPackageNumber,
+                    name = setOf(InputTranslationData(SystemLanguageData.EN, "name")),
+                    specificObjective = setOf(InputTranslationData(SystemLanguageData.EN, "objective")),
+                    objectiveAndAudience = setOf(InputTranslationData(SystemLanguageData.EN, "audience")),
+                    activities = listOf(WorkPackageActivityData(
+                        activityNumber = activity.activityNumber,
+                        translatedValues = setOf(WorkPackageActivityTranslatedValueData(SystemLanguageData.EN, "title", "description")),
+                        startPeriod = activity.startPeriod,
+                        endPeriod = activity.endPeriod,
+                        deliverables = listOf(WorkPackageActivityDeliverableData())
+                    )),
+                    outputs = listOf(WorkPackageOutputData(
+                        outputNumber = workPackageOutput.outputNumber,
+                        programmeOutputIndicatorId = workPackageOutput.programmeOutputIndicatorId,
+                        programmeOutputIndicatorIdentifier = workPackageOutput.programmeOutputIndicatorIdentifier,
+                        targetValue = workPackageOutput.targetValue,
+                        periodNumber = workPackageOutput.periodNumber,
+                        translatedValues = setOf(WorkPackageOutputTranslatedValueData(SystemLanguageData.EN, "title", "description"))
+                    )),
+                    investments = listOf(WorkPackageInvestmentData(
+                        id = investment.id,
+                        investmentNumber = investment.investmentNumber,
+                        title = setOf(InputTranslationData(SystemLanguageData.EN, "title")),
+                        justificationExplanation = setOf(InputTranslationData(SystemLanguageData.EN, "justificationExplanation")),
+                        justificationTransactionalRelevance = setOf(InputTranslationData(SystemLanguageData.EN, "justificationTransactionalRelevance")),
+                        justificationBenefits = setOf(InputTranslationData(SystemLanguageData.EN, "justificationBenefits")),
+                        justificationPilot = setOf(InputTranslationData(SystemLanguageData.EN, "justificationPilot")),
+                        address = WorkPackageInvestmentAddressData("country", "reg2", "reg3", "str", "nr", "code", "city"),
+                        risk = setOf(InputTranslationData(SystemLanguageData.EN, "risk")),
+                        documentation = setOf(InputTranslationData(SystemLanguageData.EN, "documentation")),
+                        ownershipSiteLocation = setOf(InputTranslationData(SystemLanguageData.EN, "ownershipSiteLocation")),
+                        ownershipRetain = setOf(InputTranslationData(SystemLanguageData.EN, "ownershipRetain")),
+                        ownershipMaintenance = setOf(InputTranslationData(SystemLanguageData.EN, "ownershipMaintenance"))
+                    ))
+                )),
                 projectResults = emptyList(),
                 projectManagement = null,
                 projectLongTermPlans = null

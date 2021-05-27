@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import org.springframework.data.domain.Page
-import kotlin.collections.HashSet
 
 fun Page<WorkPackageInvestmentEntity>.toWorkPackageInvestmentPage() = this.map { it.toWorkPackageInvestment() }
 
@@ -22,6 +21,9 @@ fun WorkPackageInvestmentEntity.toInvestmentSummary() = InvestmentSummary(
     investmentNumber = investmentNumber,
     workPackageNumber = workPackage.number
 )
+
+fun Iterable<WorkPackageInvestmentEntity>.toModel() =  map { it.toWorkPackageInvestment() }
+    .sortedBy { it.investmentNumber }
 
 fun WorkPackageInvestmentEntity.toWorkPackageInvestment() = WorkPackageInvestment(
     id = id,
