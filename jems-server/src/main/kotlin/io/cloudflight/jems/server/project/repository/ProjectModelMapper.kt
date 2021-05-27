@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPol
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
+import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.ProjectRow
 import io.cloudflight.jems.server.project.entity.ProjectVersionEntity
 import io.cloudflight.jems.server.project.service.model.Project
@@ -83,7 +84,7 @@ fun ProjectEntity.toSummaryModel() = ProjectSummary(
 
 fun Page<ProjectEntity>.toModel() = map { it.toSummaryModel() }
 
-fun List<ProjectRow>.toProjectEntryApplyNonHistoricalData(project: ProjectEntity) =
+fun List<ProjectRow>.toProjectEntryWithDetailData(project: ProjectEntity, periods: List<ProjectPeriod>) =
     this.groupBy { it.id }.map { groupedRows ->
         Project(
             id = groupedRows.key,
@@ -92,10 +93,7 @@ fun List<ProjectRow>.toProjectEntryApplyNonHistoricalData(project: ProjectEntity
             intro = groupedRows.value.extractField { it.intro },
             duration = groupedRows.value.first().duration,
             step2Active = groupedRows.value.first().step2Active,
-            periods = groupedRows.value.filter { it.periodNumber != null }
-                .map {
-                    ProjectPeriod(it.periodNumber!!, it.periodStart!!, it.periodEnd!!)
-                },
+            periods = periods,
             // map non historic data
             callSettings = project.call.toSettingsModel(),
             applicant = project.applicant.toUserSummary(),
@@ -108,3 +106,7 @@ fun List<ProjectRow>.toProjectEntryApplyNonHistoricalData(project: ProjectEntity
             secondStepDecision = project.secondStepDecision?.toProjectDecision()
         )
     }.first()
+
+fun List<ProjectPeriodRow>.toProjectPeriodHistoricalData() = map {
+    ProjectPeriod(it.periodNumber!!, it.periodStart!!, it.periodEnd!!)
+}.toList()

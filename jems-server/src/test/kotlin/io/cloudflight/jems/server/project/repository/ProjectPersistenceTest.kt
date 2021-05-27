@@ -22,6 +22,7 @@ import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySim
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
+import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.ProjectRow
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
@@ -251,6 +252,7 @@ internal class ProjectPersistenceTest : UnitTest() {
         val project = dummyProject()
         val version = "3.0"
         val mockRow: ProjectRow = mockk()
+        val mockPeriodRow: ProjectPeriodRow = mockk()
         every { mockRow.id } returns 1L
         every { mockRow.language } returns SystemLanguage.EN
         every { mockRow.intro } returns "intro"
@@ -258,13 +260,14 @@ internal class ProjectPersistenceTest : UnitTest() {
         every { mockRow.acronym } returns "acronym"
         every { mockRow.duration } returns 12
         every { mockRow.step2Active } returns false
-        every { mockRow.periodNumber } returns 1
-        every { mockRow.periodStart } returns 1
-        every { mockRow.periodEnd } returns 12
+        every { mockPeriodRow.periodNumber } returns 1
+        every { mockPeriodRow.periodStart } returns 1
+        every { mockPeriodRow.periodEnd } returns 12
         every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
 
         every { projectRepository.findByIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+        every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockPeriodRow)
         assertThat(persistence.getProject(PROJECT_ID, version))
             .isEqualTo(
                 Project(
@@ -274,7 +277,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                     acronym = mockRow.acronym,
                     duration = mockRow.duration,
                     step2Active = mockRow.step2Active,
-                    periods = listOf(ProjectPeriod(mockRow.periodNumber!!, mockRow.periodStart!!, mockRow.periodEnd!!)),
+                    periods = listOf(ProjectPeriod(mockPeriodRow.periodNumber!!, mockPeriodRow.periodStart!!, mockPeriodRow.periodEnd!!)),
                     applicant = project.applicant.toUserSummary(),
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),

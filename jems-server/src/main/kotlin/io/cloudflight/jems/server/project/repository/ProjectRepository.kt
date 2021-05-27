@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository
 
 import io.cloudflight.jems.server.project.entity.ProjectEntity
+import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.ProjectRow
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.data.domain.Page
@@ -18,11 +19,9 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
         """
             SELECT
              entity.*, entity.step2_active as step2Active,
-             translation.*,
-             period.number as periodNumber, period.start as periodStart, period.end as periodEnd
+             translation.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.project_id
-             LEFT JOIN #{#entityName}_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS period ON entity.id = period.project_id
              WHERE entity.id = :id
              ORDER BY entity.id
              """,
@@ -31,6 +30,22 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
     fun findByIdAsOfTimestamp(
         id: Long, timestamp: Timestamp
     ): List<ProjectRow>
+
+
+    @Query(
+        """
+            SELECT
+             period.number as periodNumber,
+              period.start as periodStart,
+               period.end as periodEnd
+             FROM #{#entityName}_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS period
+             WHERE period.project_id = :projectId
+             """,
+        nativeQuery = true
+    )
+    fun findPeriodsByProjectIdAsOfTimestamp(
+        projectId: Long, timestamp: Timestamp
+    ): List<ProjectPeriodRow>
 
     @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
     override fun findAll(pageable: Pageable): Page<ProjectEntity>
