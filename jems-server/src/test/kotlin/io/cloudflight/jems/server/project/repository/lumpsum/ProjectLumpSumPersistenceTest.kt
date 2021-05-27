@@ -20,10 +20,13 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEn
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
+import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -33,6 +36,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.util.Optional
+import org.junit.jupiter.api.BeforeEach
 
 internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
@@ -84,8 +88,22 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
     @MockK
     lateinit var programmeLumpSumRepository: ProgrammeLumpSumRepository
 
-    @InjectMockKs
+    @MockK
+    lateinit var projectLumpSumRepository: ProjectLumpSumRepository
+
+    @MockK
+    lateinit var projectVersionRepo: ProjectVersionRepository
+
     private lateinit var persistence: ProjectLumpSumPersistenceProvider
+
+    private lateinit var projectVersionUtils: ProjectVersionUtils
+
+    @BeforeEach
+    fun setup() {
+        MockKAnnotations.init(this)
+        projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
+        persistence = ProjectLumpSumPersistenceProvider(projectVersionUtils, projectRepository, projectLumpSumRepository, programmeLumpSumRepository, projectPartnerRepository)
+    }
 
     @Test
     fun `get lump sums - not-existing project`() {
