@@ -22,9 +22,4 @@ interface ProjectRow: TranslationView {
     // projectData - project_transl
     val title: String?
     val intro: String?
-
-    // periods - project_period
-    val periodNumber: Int?
-    val periodStart: Int?
-    val periodEnd: Int?
 }
