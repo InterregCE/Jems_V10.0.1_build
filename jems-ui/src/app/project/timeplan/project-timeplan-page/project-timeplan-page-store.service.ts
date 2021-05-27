@@ -29,7 +29,7 @@ export class ProjectTimeplanPageStore {
     return this.projectId$
       .pipe(
         filter(id => !!id),
-        switchMap(id => this.workPackageService.getFullWorkPackagesByProjectId(id)),
+        switchMap(id => this.workPackageService.getWorkPackagesForTimePlanByProjectId(id)),
         map(page => page.content),
         tap(workPackages => Log.info('Fetching work packages for timeplan', this, workPackages))
       );

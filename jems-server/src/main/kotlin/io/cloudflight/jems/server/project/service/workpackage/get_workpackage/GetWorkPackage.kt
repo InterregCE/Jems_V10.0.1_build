@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 class GetWorkPackage(private val persistence: WorkPackagePersistence) : GetWorkPackageInteractor {
 
     @CanRetrieveProject
-    override fun getRichWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackage> =
-        persistence.getRichWorkPackagesByProjectId(projectId, pageable)
+    override fun getWorkPackagesForTimePlanByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackage> =
+        persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId, pageable)
 
 }

@@ -75,6 +75,8 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivityDeliverableData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivityDeliverableTranslatedValueData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivityTranslatedValueData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentAddressData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputTranslatedValueData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
@@ -83,6 +85,7 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLu
 import io.cloudflight.jems.server.project.controller.workpackage.extractField
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
+import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
@@ -97,7 +100,8 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBu
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
+import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 
 fun Project.toDataModel() = ProjectDataSectionA(
@@ -324,13 +328,16 @@ fun OutputProjectLongTermPlans.toDataModel() = ProjectLongTermPlansData(
     }.toSet()
 )
 
-fun List<ProjectWorkPackage>.toDataModel() = map {
+fun List<ProjectWorkPackageFull>.toDataModel() = map {
     ProjectWorkPackageData(
         id = it.id,
         workPackageNumber = it.workPackageNumber,
         name = it.translatedValues.extractField { it.name }.toDataModel(),
+        specificObjective = it.translatedValues.extractField { it.specificObjective }.toDataModel(),
+        objectiveAndAudience = it.translatedValues.extractField { it.objectiveAndAudience }.toDataModel(),
         activities = it.activities.toActivityDataModel(),
-        outputs = it.outputs.toOutputDataModel()
+        outputs = it.outputs.toOutputDataModel(),
+        investments = it.investments.toInvestmentDataModel()
     )
 }.toList()
 
@@ -370,6 +377,7 @@ fun List<WorkPackageOutput>.toOutputDataModel() = map {
         programmeOutputIndicatorId = it.programmeOutputIndicatorId,
         programmeOutputIndicatorIdentifier = it.programmeOutputIndicatorIdentifier,
         targetValue = it.targetValue,
+        periodNumber = it.periodNumber,
         translatedValues = it.translatedValues.map {
             WorkPackageOutputTranslatedValueData(
                 language = SystemLanguageData.valueOf(
@@ -379,6 +387,34 @@ fun List<WorkPackageOutput>.toOutputDataModel() = map {
         }.toSet(),
     )
 }.toList()
+
+fun List<WorkPackageInvestment>.toInvestmentDataModel() = map {
+    WorkPackageInvestmentData(
+        id = it.id,
+        investmentNumber = it.investmentNumber,
+        address = it.address?.toDataModel(),
+        title = it.title.toDataModel(),
+        justificationExplanation = it.justificationExplanation.toDataModel(),
+        justificationTransactionalRelevance = it.justificationTransactionalRelevance.toDataModel(),
+        justificationBenefits = it.justificationBenefits.toDataModel(),
+        justificationPilot = it.justificationPilot.toDataModel(),
+        risk = it.risk.toDataModel(),
+        documentation = it.documentation.toDataModel(),
+        ownershipSiteLocation = it.ownershipSiteLocation.toDataModel(),
+        ownershipRetain = it.ownershipRetain.toDataModel(),
+        ownershipMaintenance = it.ownershipMaintenance.toDataModel()
+    )
+}.toList()
+
+fun Address.toDataModel() = WorkPackageInvestmentAddressData(
+    country = country,
+    nutsRegion2 = nutsRegion2,
+    nutsRegion3 = nutsRegion3,
+    street = street,
+    houseNumber = houseNumber,
+    postalCode = postalCode,
+    city = city
+)
 
 fun List<ProjectResult>.toResultDataModel() = map {
     ProjectResultData(

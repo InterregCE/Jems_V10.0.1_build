@@ -61,10 +61,7 @@ class ProjectDataProviderImpl(
             associatedOrganizationService.findAllByProjectId(projectId).map { it.toDataModel() }.toSet()
         val sectionB = ProjectDataSectionB(partners, associatedOrganisations)
 
-        val workPackages = workPackagePersistence.getRichWorkPackagesByProjectId(
-            projectId,
-            PageRequest.of(0, MAX_WORK_PACKAGES_PER_PROJECT)
-        ).content.toDataModel()
+        val workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId).toDataModel()
         val results = resultPersistence.getResultsForProject(projectId).toResultDataModel()
         val sectionC = projectDescriptionService.getProjectDescription(projectId).toDataModel(workPackages, results)
 

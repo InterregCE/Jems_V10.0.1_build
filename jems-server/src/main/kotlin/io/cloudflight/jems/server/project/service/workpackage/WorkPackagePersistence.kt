@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatu
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import org.springframework.data.domain.Page
@@ -11,7 +12,8 @@ import org.springframework.data.domain.Pageable
 
 interface WorkPackagePersistence {
 
-    fun getRichWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackage>
+    fun getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackage>
+    fun getWorkPackagesWithAllDataByProjectId(projectId: Long): List<ProjectWorkPackageFull>
 
     fun updateWorkPackageOutputs(workPackageId: Long, workPackageOutputs: List<WorkPackageOutput>): List<WorkPackageOutput>
     fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): List<WorkPackageOutput>
