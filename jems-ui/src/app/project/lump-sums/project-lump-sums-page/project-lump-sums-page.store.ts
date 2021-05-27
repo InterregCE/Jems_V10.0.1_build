@@ -7,6 +7,7 @@ import {ProjectLumpSum} from '../../model/lump-sums/projectLumpSum';
 import {PartnerContribution} from '../../model/lump-sums/partnerContribution';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectPeriod} from '../../model/ProjectPeriod';
+import {ProjectVersionStore} from '../../services/project-version-store.service';
 
 @Injectable()
 export class ProjectLumpSumsPageStore {
@@ -20,7 +21,10 @@ export class ProjectLumpSumsPageStore {
 
   private updateProjectLumpSumsEvent$ = new BehaviorSubject(null);
 
-  constructor(private projectStore: ProjectStore, private projectLumpSumService: ProjectLumpSumService, private projectPartnerStore: ProjectPartnerStore) {
+  constructor(private projectStore: ProjectStore,
+              private projectLumpSumService: ProjectLumpSumService,
+              private projectPartnerStore: ProjectPartnerStore,
+              private projectVersionStore: ProjectVersionStore) {
     this.projectLumpSums$ = this.projectLumpSums();
   }
 
@@ -33,8 +37,14 @@ export class ProjectLumpSumsPageStore {
   }
 
   private projectLumpSums(): Observable<ProjectLumpSum[]> {
-    return combineLatest([this.projectStore.getProject(), this.updateProjectLumpSumsEvent$.pipe(startWith(null))]).pipe(
-      switchMap(([project]) => this.projectLumpSumService.getProjectLumpSums(project.id)),
+    return combineLatest([
+      this.projectStore.getProject(),
+      this.projectVersionStore.currentRouteVersion$,
+      this.updateProjectLumpSumsEvent$.pipe(startWith(null))
+    ]).pipe(
+      switchMap(([project, version]) =>
+        this.projectLumpSumService.getProjectLumpSums(project.id, version)
+      ),
       map(projectLumpSums =>
         projectLumpSums.map(projectLumpSum =>
           new ProjectLumpSum(

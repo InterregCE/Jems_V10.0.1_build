@@ -207,7 +207,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   }
 
   getPeriod(itemIndex: number, periods: ProjectPeriod[]): ProjectPeriod | undefined {
-    const periodNumber = this.items.at(itemIndex).get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value;
+    const periodNumber = this.items.at(itemIndex)?.get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value;
     if (periodNumber === 0) {
       return {periodNumber: 0} as any;
     }
