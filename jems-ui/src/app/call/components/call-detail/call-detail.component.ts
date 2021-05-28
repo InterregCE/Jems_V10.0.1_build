@@ -216,9 +216,7 @@ export class CallDetailComponent implements OnInit {
     return {
       title: 'call.dialog.title',
       message: 'call.dialog.message',
-      hasProminentText: this.isFirstCall,
-      prominentText: 'call.dialog.message.and.additional.message',
-      type: Alert.WARNING
+      warnMessage: this.isFirstCall ? 'call.dialog.message.and.additional.message' : undefined
     };
   }
 
