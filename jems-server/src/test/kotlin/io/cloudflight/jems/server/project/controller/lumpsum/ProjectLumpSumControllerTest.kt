@@ -74,9 +74,9 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             programmeLumpSumId = 5,
             period = 7,
             lumpSumContributions = listOf(
-                ProjectPartnerLumpSumDTO(partnerId = 23, amount = BigDecimal.ZERO),
-                ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(0, 2)),
-                ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(0, 1)),
+                ProjectPartnerLumpSumDTO(partnerId = 23, amount = BigDecimal.valueOf(-1)),
+                ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(-1, 2)),
+                ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(-1, 1)),
             )
         )
         val lumpSumDto2 = ProjectLumpSumDTO(
@@ -94,7 +94,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             ProjectLumpSum(
                 programmeLumpSumId = 5,
                 period = 7,
-                lumpSumContributions = emptyList(), // zero contributions are ignored
+                lumpSumContributions = emptyList(), // negative contributions are not allowed
             ),
             ProjectLumpSum(
                 programmeLumpSumId = 6,
