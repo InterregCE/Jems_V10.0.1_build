@@ -46,7 +46,8 @@ export class ProjectPartnerStore {
       this.partnerUpdateEvent$
     ]).pipe(
       switchMap(([project, version]) => this.partnerService.getProjectPartnersForDropdown(project.id, undefined, version)),
-      map(projectPartners => projectPartners.map(projectPartner => new ProjectPartner(projectPartner.id, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
+      map(projectPartners => projectPartners.map((projectPartner, index) =>
+        new ProjectPartner(projectPartner.id, index, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
       shareReplay(1)
     );
 
