@@ -175,7 +175,7 @@ fun InputProjectRelevance.toDataModel() = ProjectRelevanceData(
     }?.toList(),
     projectStrategies = projectStrategies?.map {
         ProjectRelevanceStrategyData(
-            strategy = ProgrammeStrategyData.valueOf(it.strategy!!.name),
+            strategy = if(it.strategy != null) ProgrammeStrategyData.valueOf(it.strategy!!.name) else ProgrammeStrategyData.Other,
             specification = it.specification.map {
                 InputTranslationData(
                     SystemLanguageData.valueOf(it.language.name),
