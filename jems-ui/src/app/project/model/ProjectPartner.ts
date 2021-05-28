@@ -16,6 +16,6 @@ export class ProjectPartner {
   }
 
   toPartnerNumberString(): string {
-    return this.role === ProjectPartnerRoleEnum.LEAD_PARTNER ? 'LP1' : 'PP'.concat(this.sortNumber.toString());
+    return this.role === ProjectPartnerRoleEnum.LEAD_PARTNER ? 'LP1' : 'PP'.concat(this.sortNumber?.toString());
   }
 }

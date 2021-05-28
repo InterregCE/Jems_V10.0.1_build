@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.lumpsum
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
@@ -11,14 +12,21 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ProjectLumpSumPersistenceProvider(
+    private val projectVersionUtils: ProjectVersionUtils,
     private val projectRepository: ProjectRepository,
+    private val projectLumpSumRepository: ProjectLumpSumRepository,
     private val programmeLumpSumRepository: ProgrammeLumpSumRepository,
     private val projectPartnerRepository: ProjectPartnerRepository,
 ) : ProjectLumpSumPersistence {
 
     @Transactional(readOnly = true)
-    override fun getLumpSums(projectId: Long): List<ProjectLumpSum> =
-        getProjectOrThrow(projectId).lumpSums.toModel()
+    override fun getLumpSums(projectId: Long, version: String?): List<ProjectLumpSum> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = { getProjectOrThrow(projectId).lumpSums.toModel() },
+            previousVersionFetcher = { timestamp ->
+                projectLumpSumRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp).toProjectLumpSumHistoricalData()
+            }
+        )?: emptyList()
 
     @Transactional
     override fun updateLumpSums(projectId: Long, lumpSums: List<ProjectLumpSum>): List<ProjectLumpSum> {
@@ -37,7 +45,8 @@ class ProjectLumpSumPersistenceProvider(
         projectRepository.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
 
     private fun getProgrammeLumpSumOrThrow(programmeLumpSumId: Long) =
-        programmeLumpSumRepository.findById(programmeLumpSumId).orElseThrow { ResourceNotFoundException("programmeLumpSum") }
+        programmeLumpSumRepository.findById(programmeLumpSumId)
+            .orElseThrow { ResourceNotFoundException("programmeLumpSum") }
 
     private fun getProjectPartnerOrThrow(projectId: Long, partnerId: Long) =
         projectPartnerRepository.findFirstByProjectIdAndId(projectId, partnerId)

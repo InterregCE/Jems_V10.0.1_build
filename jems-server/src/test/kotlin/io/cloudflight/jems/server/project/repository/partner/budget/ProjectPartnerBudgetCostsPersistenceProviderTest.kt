@@ -100,30 +100,30 @@ class ProjectPartnerBudgetCostsPersistenceProviderTest : ProjectPartnerBudgetCos
     @Test
     fun `should return current version of budget lump sums total`() {
 
-        every { budgetLumpSumRepository.sumTotalForPartner(partnerId) } returns BigDecimal.TEN
+        every { budgetPartnerLumpSumRepository.sumTotalForPartner(partnerId) } returns BigDecimal.TEN
         assertThat(persistence.getBudgetLumpSumsCostTotal(partnerId)).isEqualTo(BigDecimal.TEN)
-        verify { budgetLumpSumRepository.sumTotalForPartner(partnerId) }
+        verify { budgetPartnerLumpSumRepository.sumTotalForPartner(partnerId) }
     }
 
     @Test
     fun `should return previous version of budget lump sums total`() {
 
-        every { budgetLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) } returns BigDecimal.ONE
+        every { budgetPartnerLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) } returns BigDecimal.ONE
         assertThat(persistence.getBudgetLumpSumsCostTotal(partnerId, version)).isEqualTo(BigDecimal.ONE)
-        verify { budgetLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) }
+        verify { budgetPartnerLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) }
     }
 
     @Test
     fun `should return zero as current version of budget lump sums total when sum of costs is null`() {
-        every { budgetLumpSumRepository.sumTotalForPartner(partnerId) } returns null
+        every { budgetPartnerLumpSumRepository.sumTotalForPartner(partnerId) } returns null
         assertThat(persistence.getBudgetLumpSumsCostTotal(partnerId)).isEqualTo(BigDecimal.ZERO)
-        verify { budgetLumpSumRepository.sumTotalForPartner(partnerId) }
+        verify { budgetPartnerLumpSumRepository.sumTotalForPartner(partnerId) }
     }
 
     @Test
     fun `should return zero as previous version of budget lump sums total when sum of costs is null`() {
-        every { budgetLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) } returns null
+        every { budgetPartnerLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) } returns null
         assertThat(persistence.getBudgetLumpSumsCostTotal(partnerId, version)).isEqualTo(BigDecimal.ZERO)
-        verify { budgetLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) }
+        verify { budgetPartnerLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) }
     }
 }

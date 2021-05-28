@@ -19,7 +19,7 @@ import io.cloudflight.jems.server.project.entity.partner.budget.unit_cost.Projec
 import io.cloudflight.jems.server.project.entity.partner.budget.unit_cost.ProjectPartnerBudgetUnitCostRow
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
-import io.cloudflight.jems.server.project.repository.budget.ProjectLumpSumRepository
+import io.cloudflight.jems.server.project.repository.budget.ProjectPartnerLumpSumRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
@@ -81,7 +81,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
     lateinit var budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository
 
     @MockK
-    lateinit var budgetLumpSumRepository: ProjectLumpSumRepository
+    lateinit var budgetPartnerLumpSumRepository: ProjectPartnerLumpSumRepository
 
     @InjectMockKs
     protected lateinit var persistence: ProjectPartnerBudgetCostsPersistenceProvider

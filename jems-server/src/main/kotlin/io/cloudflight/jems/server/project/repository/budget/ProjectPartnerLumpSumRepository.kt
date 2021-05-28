@@ -11,7 +11,7 @@ import java.sql.Timestamp
 import java.util.UUID
 
 @Repository
-interface ProjectLumpSumRepository : CrudRepository<ProjectPartnerLumpSumEntity, UUID> {
+interface ProjectPartnerLumpSumRepository : CrudRepository<ProjectPartnerLumpSumEntity, UUID> {
 
     @Query("SELECT new io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumEntity(e.id.projectPartner, SUM(e.amount)) FROM #{#entityName} e WHERE e.id.projectPartner.id IN :ids GROUP BY e.id.projectPartner")
     fun sumLumpSumsPerPartner(@Param("ids") partnerIds: Set<Long>): List<ProjectLumpSumPerPartnerSumEntity>

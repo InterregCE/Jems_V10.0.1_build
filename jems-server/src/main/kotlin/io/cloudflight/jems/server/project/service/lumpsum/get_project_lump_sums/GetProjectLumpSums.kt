@@ -12,6 +12,6 @@ class GetProjectLumpSums(
 
     @Transactional(readOnly = true)
     @CanRetrieveProject
-    override fun getLumpSums(projectId: Long) = persistence.getLumpSums(projectId)
+    override fun getLumpSums(projectId: Long, version: String?) = persistence.getLumpSums(projectId, version)
 
 }
