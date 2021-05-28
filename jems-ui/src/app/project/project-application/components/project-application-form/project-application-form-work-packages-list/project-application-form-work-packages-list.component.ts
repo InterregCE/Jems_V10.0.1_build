@@ -82,19 +82,20 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
   }
 
   delete(workPackage: OutputWorkPackageSimple, name: string): void {
-    const message = name
+    const i18nKey = name
       ? 'project.application.form.workpackage.table.action.delete.dialog.message'
       : 'project.application.form.workpackage.table.action.delete.dialog.message.no.name';
 
-    Forms.confirmDialog(
+    Forms.confirm(
       this.dialog,
-      'project.application.form.workpackage.table.action.delete.dialog.header',
-      message,
-      {name, boldWarningMessage: 'project.application.form.workpackage.table.action.delete.dialog.warning'})
-      .pipe(
-        take(1),
-        filter(answer => !!answer),
-        map(() => this.deleteWorkPackage.emit(workPackage.id)),
-      ).subscribe();
+      {
+        title: 'project.application.form.workpackage.table.action.delete.dialog.header',
+        message: {i18nKey, i18nArguments: {name}},
+        warnMessage: 'project.application.form.workpackage.table.action.delete.dialog.warning'
+      }).pipe(
+      take(1),
+      filter(answer => !!answer),
+      map(() => this.deleteWorkPackage.emit(workPackage.id)),
+    ).subscribe();
   }
 }

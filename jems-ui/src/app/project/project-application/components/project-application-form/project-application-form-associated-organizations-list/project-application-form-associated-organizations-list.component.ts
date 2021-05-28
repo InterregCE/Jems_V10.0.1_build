@@ -12,7 +12,7 @@ import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {MatDialog} from '@angular/material/dialog';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {PageOutputProjectAssociatedOrganization, OutputProjectAssociatedOrganization} from '@cat/api';
+import {OutputProjectAssociatedOrganization, PageOutputProjectAssociatedOrganization} from '@cat/api';
 import {Forms} from '../../../../../common/utils/forms';
 import {filter, map, take} from 'rxjs/operators';
 
@@ -46,7 +46,8 @@ export class ProjectApplicationFormAssociatedOrganizationsListComponent implemen
 
   tableConfiguration: TableConfiguration;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog) {
+  }
 
   ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
@@ -57,7 +58,7 @@ export class ProjectApplicationFormAssociatedOrganizationsListComponent implemen
           displayedColumn: 'project.application.form.associatedOrganization.table.number',
           elementProperty: 'sortNumber',
           i18nFixedKey: 'project.organization.number.format.short',
-          i18nArgs: (element: any) => ({ sortNumber: element.sortNumber}),
+          i18nArgs: (element: any) => ({sortNumber: element.sortNumber}),
         },
         {
           displayedColumn: 'project.application.form.associatedOrganization.table.associatedOrganization',
@@ -79,17 +80,20 @@ export class ProjectApplicationFormAssociatedOrganizationsListComponent implemen
   }
 
   delete(associatedOrganization: OutputProjectAssociatedOrganization): void {
-    Forms.confirmDialog(
+    Forms.confirm(
       this.dialog,
-      'project.application.form.associatedOrganization.table.action.delete.dialog.header',
-      'project.application.form.associatedOrganization.table.action.delete.dialog.message',
-      {name: associatedOrganization.nameInOriginalLanguage,
-       boldWarningMessage: 'project.application.form.associatedOrganization.table.action.delete.dialog.warning' })
-      .pipe(
-        take(1),
-        filter(answer => !!answer),
-        map(() => this.deleteAssociatedOrganization.emit(associatedOrganization.id)),
-      ).subscribe();
+      {
+        title: 'project.application.form.associatedOrganization.table.action.delete.dialog.header',
+        message: {
+          i18nKey: 'project.application.form.associatedOrganization.table.action.delete.dialog.message',
+          i18nArguments: {name: associatedOrganization.nameInOriginalLanguage}
+        },
+        warnMessage: 'project.application.form.associatedOrganization.table.action.delete.dialog.warning'
+      }).pipe(
+      take(1),
+      filter(answer => !!answer),
+      map(() => this.deleteAssociatedOrganization.emit(associatedOrganization.id)),
+    ).subscribe();
   }
 
 }

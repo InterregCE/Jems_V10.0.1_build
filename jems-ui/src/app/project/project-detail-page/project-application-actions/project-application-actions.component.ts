@@ -134,10 +134,12 @@ export class ProjectApplicationActionsComponent {
   getRevertConfirmation(projectStatus: ProjectStatusDTO.StatusEnum, revertToStatus: string): ConfirmDialogData {
     return {
       title: 'project.application.revert.status.dialog.title',
-      message: 'project.application.revert.status.dialog.message',
-      arguments: {
-        from: this.translate.instant('common.label.projectapplicationstatus.' + projectStatus),
-        to: this.translate.instant('common.label.projectapplicationstatus.' + revertToStatus)
+      message: {
+        i18nKey: 'project.application.revert.status.dialog.message',
+        i18nArguments: {
+          from: this.translate.instant('common.label.projectapplicationstatus.' + projectStatus),
+          to: this.translate.instant('common.label.projectapplicationstatus.' + revertToStatus)
+        }
       }
     };
   }
