@@ -31,7 +31,7 @@
                 class="mr-2 mt-2"
                 *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
                 [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
-                [disabled]="!data.isProjectLatestVersion"
+                [disabled]="!data.isProjectLatestVersion || !data.hasPreConditionCheckSucceed"
                 [pending]="actionPending"
                 (clicked)="resubmitProject(data.projectId)">
             {{'project.detail.button.resubmit' | translate}}
