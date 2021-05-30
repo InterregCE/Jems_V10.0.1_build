@@ -1,8 +1,20 @@
 package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.description.InputProjectCooperationCriteria
+import io.cloudflight.jems.api.project.dto.description.InputProjectHorizontalPrinciples
+import io.cloudflight.jems.api.project.dto.description.InputProjectOverallObjective
+import io.cloudflight.jems.api.project.dto.description.InputProjectPartnership
+import io.cloudflight.jems.api.project.dto.description.InputProjectRelevance
+import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceBenefit
+import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceStrategy
+import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceSynergy
 import io.cloudflight.jems.api.project.dto.description.OutputProjectDescription
+import io.cloudflight.jems.api.project.dto.description.OutputProjectLongTermPlans
+import io.cloudflight.jems.api.project.dto.description.OutputProjectManagement
+import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
@@ -13,6 +25,7 @@ import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentRe
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
+import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
@@ -23,6 +36,17 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerBudgetOptionsData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.ProjectDataSectionC
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.longTermPlans.ProjectLongTermPlansData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectCooperationCriteriaData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectHorizontalPrinciplesData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectHorizontalPrinciplesEffectData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectManagementData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.overallObjective.ProjectOverallObjectiveData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.partnership.ProjectPartnershipData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.ProjectRelevanceBenefitData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.ProjectRelevanceData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.ProjectRelevanceStrategyData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.ProjectRelevanceSynergyData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.ProjectTargetGroupData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.ProjectWorkPackageData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivityData
@@ -149,11 +173,59 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             title = setOf(InputTranslation(SystemLanguage.EN, "title"))
         )
         private val projectDescription = OutputProjectDescription(
-            projectOverallObjective = null,
-            projectRelevance = null,
-            projectPartnership = null,
-            projectManagement = null,
-            projectLongTermPlans = null
+            projectOverallObjective = InputProjectOverallObjective(
+                overallObjective = setOf(InputTranslation(SystemLanguage.EN, "overallObjective"))
+            ),
+            projectRelevance = InputProjectRelevance(
+                territorialChallenge = setOf(InputTranslation(SystemLanguage.EN, "territorialChallenge")),
+                commonChallenge = setOf(InputTranslation(SystemLanguage.EN, "commonChallenge")),
+                transnationalCooperation = setOf(InputTranslation(SystemLanguage.EN, "transnationalCooperation")),
+                projectBenefits = listOf(InputProjectRelevanceBenefit(
+                    group = ProjectTargetGroup.LocalPublicAuthority,
+                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                )),
+                projectStrategies = listOf(InputProjectRelevanceStrategy(
+                    strategy = ProgrammeStrategy.AtlanticStrategy,
+                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                )),
+                projectSynergies = listOf(InputProjectRelevanceSynergy(
+                    synergy = setOf(InputTranslation(SystemLanguage.EN, "synergy")),
+                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                )),
+                availableKnowledge = setOf(InputTranslation(SystemLanguage.EN, "availableKnowledge"))
+            ),
+            projectPartnership = InputProjectPartnership(
+                partnership = setOf(InputTranslation(SystemLanguage.EN, "partnership"))
+            ),
+            projectManagement = OutputProjectManagement(
+                projectCoordination = setOf(InputTranslation(SystemLanguage.EN, "projectCoordination")),
+                projectQualityAssurance = setOf(InputTranslation(SystemLanguage.EN, "projectQualityAssurance")),
+                projectCommunication = setOf(InputTranslation(SystemLanguage.EN, "projectCommunication")),
+                projectFinancialManagement = setOf(InputTranslation(SystemLanguage.EN, "projectFinancialManagement")),
+                projectCooperationCriteria = InputProjectCooperationCriteria(
+                    projectJointDevelopment = true,
+                    projectJointFinancing = true,
+                    projectJointImplementation = true,
+                    projectJointStaffing = true
+                ),
+                projectJointDevelopmentDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointDevelopmentDescription")),
+                projectJointImplementationDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointImplementationDescription")),
+                projectJointStaffingDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointStaffingDescription")),
+                projectJointFinancingDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointFinancingDescription")),
+                projectHorizontalPrinciples = InputProjectHorizontalPrinciples(
+                    sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffect.PositiveEffects,
+                    equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffect.Neutral,
+                    sexualEqualityEffect = ProjectHorizontalPrinciplesEffect.NegativeEffects
+                ),
+                sustainableDevelopmentDescription = setOf(InputTranslation(SystemLanguage.EN, "sustainableDevelopmentDescription")),
+                equalOpportunitiesDescription = setOf(InputTranslation(SystemLanguage.EN, "equalOpportunitiesDescription")),
+                sexualEqualityDescription = setOf(InputTranslation(SystemLanguage.EN, "sexualEqualityDescription"))
+            ),
+            projectLongTermPlans = OutputProjectLongTermPlans(
+                projectOwnership = setOf(InputTranslation(SystemLanguage.EN, "projectOwnership")),
+                projectDurability = setOf(InputTranslation(SystemLanguage.EN, "projectDurability")),
+                projectTransferability = setOf(InputTranslation(SystemLanguage.EN, "projectTransferability"))
+            )
         )
         private val projectPartner = OutputProjectPartnerDetail(
             id = 2L,
@@ -285,9 +357,30 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         )
         assertThat(projectData.sectionC).isEqualTo(
             ProjectDataSectionC(
-                projectOverallObjective = null,
-                projectRelevance = null,
-                projectPartnership = null,
+                projectOverallObjective = ProjectOverallObjectiveData(
+                    overallObjective = setOf(InputTranslationData(SystemLanguageData.EN, "overallObjective"))
+                ),
+                projectRelevance = ProjectRelevanceData(
+                    territorialChallenge = setOf(InputTranslationData(SystemLanguageData.EN, "territorialChallenge")),
+                    commonChallenge = setOf(InputTranslationData(SystemLanguageData.EN, "commonChallenge")),
+                    transnationalCooperation = setOf(InputTranslationData(SystemLanguageData.EN, "transnationalCooperation")),
+                    projectBenefits = listOf(ProjectRelevanceBenefitData(
+                        group = ProjectTargetGroupData.LocalPublicAuthority,
+                        specification = setOf(InputTranslationData(SystemLanguageData.EN, "specification"))
+                    )),
+                    projectStrategies = listOf(ProjectRelevanceStrategyData(
+                        strategy = ProgrammeStrategyData.AtlanticStrategy,
+                        specification = setOf(InputTranslationData(SystemLanguageData.EN, "specification"))
+                    )),
+                    projectSynergies = listOf(ProjectRelevanceSynergyData(
+                        synergy = setOf(InputTranslationData(SystemLanguageData.EN, "synergy")),
+                        specification = setOf(InputTranslationData(SystemLanguageData.EN, "specification"))
+                    )),
+                    availableKnowledge = setOf(InputTranslationData(SystemLanguageData.EN, "availableKnowledge"))
+                ),
+                projectPartnership = ProjectPartnershipData(
+                    partnership = setOf(InputTranslationData(SystemLanguageData.EN, "partnership"))
+                ),
                 projectWorkPackages = listOf(ProjectWorkPackageData(
                     id = workPackage.id,
                     workPackageNumber = workPackage.workPackageNumber,
@@ -326,8 +419,35 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                     ))
                 )),
                 projectResults = emptyList(),
-                projectManagement = null,
-                projectLongTermPlans = null
+                projectManagement = ProjectManagementData(
+                    projectCoordination = setOf(InputTranslationData(SystemLanguageData.EN, "projectCoordination")),
+                    projectQualityAssurance = setOf(InputTranslationData(SystemLanguageData.EN, "projectQualityAssurance")),
+                    projectCommunication = setOf(InputTranslationData(SystemLanguageData.EN, "projectCommunication")),
+                    projectFinancialManagement = setOf(InputTranslationData(SystemLanguageData.EN, "projectFinancialManagement")),
+                    projectCooperationCriteria = ProjectCooperationCriteriaData(
+                        projectJointStaffing = true,
+                        projectJointImplementation = true,
+                        projectJointFinancing = true,
+                        projectJointDevelopment = true
+                    ),
+                    projectJointDevelopmentDescription = setOf(InputTranslationData(SystemLanguageData.EN, "projectJointDevelopmentDescription")),
+                    projectJointImplementationDescription = setOf(InputTranslationData(SystemLanguageData.EN, "projectJointImplementationDescription")),
+                    projectJointStaffingDescription = setOf(InputTranslationData(SystemLanguageData.EN, "projectJointStaffingDescription")),
+                    projectJointFinancingDescription = setOf(InputTranslationData(SystemLanguageData.EN, "projectJointFinancingDescription")),
+                    projectHorizontalPrinciples = ProjectHorizontalPrinciplesData(
+                        sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffectData.PositiveEffects,
+                        equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffectData.Neutral,
+                        sexualEqualityEffect = ProjectHorizontalPrinciplesEffectData.NegativeEffects
+                    ),
+                    sustainableDevelopmentDescription = setOf(InputTranslationData(SystemLanguageData.EN, "sustainableDevelopmentDescription")),
+                    equalOpportunitiesDescription = setOf(InputTranslationData(SystemLanguageData.EN, "equalOpportunitiesDescription")),
+                    sexualEqualityDescription = setOf(InputTranslationData(SystemLanguageData.EN, "sexualEqualityDescription"))
+                ),
+                projectLongTermPlans = ProjectLongTermPlansData(
+                    projectOwnership = setOf(InputTranslationData(SystemLanguageData.EN, "projectOwnership")),
+                    projectDurability = setOf(InputTranslationData(SystemLanguageData.EN, "projectDurability")),
+                    projectTransferability = setOf(InputTranslationData(SystemLanguageData.EN, "projectTransferability"))
+                )
             )
         )
         assertThat(projectData.sectionE).isEqualTo(

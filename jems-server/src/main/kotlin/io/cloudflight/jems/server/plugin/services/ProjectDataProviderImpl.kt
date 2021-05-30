@@ -18,7 +18,6 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -40,7 +39,6 @@ class ProjectDataProviderImpl(
 
     companion object {
         private val logger = LoggerFactory.getLogger(ProjectDataProviderImpl::class.java)
-        private const val MAX_WORK_PACKAGES_PER_PROJECT = 20
     }
 
     @Transactional(readOnly = true)
