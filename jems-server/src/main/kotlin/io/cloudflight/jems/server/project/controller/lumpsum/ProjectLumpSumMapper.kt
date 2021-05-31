@@ -34,5 +34,5 @@ fun ProjectPartnerLumpSumDTO.toPartnerContributionModel() =
     )
 
 fun List<ProjectPartnerLumpSumDTO>.toPartnerContributionModel() =
-    filter { it.amount.compareTo(BigDecimal.ZERO) != -1 }
+    filter { it.amount.compareTo(BigDecimal.ZERO) > 0 }
         .map { it.toPartnerContributionModel() }
