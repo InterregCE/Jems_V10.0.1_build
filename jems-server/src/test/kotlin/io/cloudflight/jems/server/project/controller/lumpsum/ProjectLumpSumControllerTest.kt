@@ -75,7 +75,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             period = 7,
             lumpSumContributions = listOf(
                 ProjectPartnerLumpSumDTO(partnerId = 23, amount = BigDecimal.valueOf(-1)),
-                ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(0, 2)),
+                ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(-1, 2)),
                 ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(-1, 1)),
             )
         )

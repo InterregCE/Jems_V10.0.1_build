@@ -7,10 +7,12 @@ import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
+import io.cloudflight.jems.server.project.service.model.ProjectPeriods
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Service
 class UpdateProjectLumpSums(
@@ -51,7 +53,8 @@ class UpdateProjectLumpSums(
         val lumpSumsById = settings.lumpSums.associateBy { it.id }
 
         if (lumpSums.any {
-                it.lumpSumContributions.size > 1 && lumpSumsById[it.programmeLumpSumId].isLumpSumNotSplittable()
+                it.lumpSumContributions.filter { it.amount.compareTo(BigDecimal.ZERO) > 0 }
+                    .size > 1 && lumpSumsById[it.programmeLumpSumId].isLumpSumNotSplittable()
             })
             throw I18nValidationException(i18nKey = "project.lumpSum.splitting.not.allowed")
     }
