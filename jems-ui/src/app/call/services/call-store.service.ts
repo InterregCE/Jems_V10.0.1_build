@@ -20,7 +20,7 @@ import {RoutingService} from '../../common/services/routing.service';
 export class CallStore {
   public static CALL_DETAIL_PATH = '/app/call/detail';
   private callId: number;
-  call$: Observable<CallDetailDTO | any>;
+  call$: Observable<CallDetailDTO>;
   unitCosts$: Observable<ProgrammeUnitCostListDTO[]>;
   lumpSums$: Observable<ProgrammeLumpSumListDTO[]>;
   isApplicant$: Observable<boolean>;
@@ -88,16 +88,16 @@ export class CallStore {
       );
   }
 
-  private call(): Observable<CallDetailDTO | {}> {
-    const initialCall = this.router.routeParameterChanges(CallStore.CALL_DETAIL_PATH, 'callId')
+  private call(): Observable<CallDetailDTO> {
+    const initialCall$ = this.router.routeParameterChanges(CallStore.CALL_DETAIL_PATH, 'callId')
       .pipe(
-        switchMap(id => id ? this.callService.getCallById(Number(id)) : of({})),
+        switchMap(id => id ? this.callService.getCallById(Number(id)) : of({} as CallDetailDTO)),
         tap(call => this.callId = (call as any)?.id),
         tap(call => Log.info('Fetched the call:', this, call)),
       );
-    return merge(initialCall, this.savedCall$)
+    return merge(initialCall$, this.savedCall$)
       .pipe(
-        shareReplay(1)
+        shareReplay(1, 50)
       );
   }
 
