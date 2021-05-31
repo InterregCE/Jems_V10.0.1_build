@@ -12,7 +12,7 @@ import javax.persistence.OneToOne
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_decision")
-data class ProjectDecisionEntity (
+class ProjectDecisionEntity (
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

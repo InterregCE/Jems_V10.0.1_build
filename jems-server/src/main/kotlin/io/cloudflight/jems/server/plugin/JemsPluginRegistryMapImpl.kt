@@ -30,7 +30,7 @@ class JemsPluginRegistryMapImpl : JemsPluginRegistry {
     override fun registerPlugins(plugins: List<JemsPlugin>) {
         plugins.forEach {
             registry[it.getKey()] = it
-            logger.info("plugin with key:${it.getKey()} and name:${it.getName()} is registered")
+            logger.info("plugin with key: ${it.getKey()}, name: ${it.getName()}, version: ${it.getVersion()} is registered")
         }
     }
 
