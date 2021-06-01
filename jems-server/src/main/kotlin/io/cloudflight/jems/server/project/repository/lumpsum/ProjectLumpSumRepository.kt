@@ -15,12 +15,12 @@ interface ProjectLumpSumRepository : PagingAndSortingRepository<ProjectLumpSumEn
             SELECT
              entity.project_id as projectId,
              entity.order_nr as orderNr,
-             entity.end_period as endPeriod,
+             CONVERT(entity.end_period, INT) as endPeriod,
              entity.programme_lump_sum_id as programmeLumpSumId,
              partnerLumpSum.project_partner_id as projectPartnerId,
              partnerLumpSum.amount as amount
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN project_partner_lump_sum FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerLumpSum ON partnerLumpSum.project_id = entity.project_id AND partnerLumpSum.order_nr = entity.order_nr 
+             LEFT JOIN project_partner_lump_sum FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerLumpSum ON partnerLumpSum.project_id = entity.project_id AND partnerLumpSum.order_nr = entity.order_nr
              WHERE entity.project_id = :projectId
              """,
         nativeQuery = true
