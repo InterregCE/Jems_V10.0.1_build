@@ -6,6 +6,10 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('AuditRetrieve')")
+annotation class CanRetrieveAuditLog
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
 annotation class CanUpdateProgrammeSetup
 

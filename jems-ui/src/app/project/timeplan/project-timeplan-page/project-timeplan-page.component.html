@@ -1,6 +1,6 @@
-<app-main-page-template
+<app-project-page-template
         [needsCard]="true"
-        [titleText]="'project.application.form.acronym' | translate : {acronym: pageStore.projectAcronym$ | async}"
+        [titleText]="'project.application.form.acronym' | translate : {projectTitle: pageStore.projectTitle$ | async}"
         subTitleKey="project.application.form.section.part.c">
     <div appFormLayout>
         <h3>{{ 'project.application.form.section.part.c.subsection.six' | translate }}</h3>
@@ -22,6 +22,6 @@
             </app-multi-language-container>
         </div>
     </div>
-</app-main-page-template>
+</app-project-page-template>
 
 

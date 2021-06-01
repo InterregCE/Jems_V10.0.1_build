@@ -2,7 +2,11 @@
           (save)="onSubmit()">
     <app-alert [show]="published && !isApplicant"
                [type]="Alert.WARNING">
-        <p>{{'call.detail.edit.published.warning' | translate}}</p>
+        <span>{{'call.detail.edit.published.warning' | translate}}</span>
+    </app-alert>
+    <app-alert [show]="isApplicant && !isOpen(call)"
+               [type]="Alert.WARNING">
+        <span>{{'call.table.column.action.apply.inactive.note' | translate}}</span>
     </app-alert>
     <form appFormLayout [formGroup]="callForm">
         <app-pending-button
@@ -25,6 +29,7 @@
             </mat-error>
         </mat-form-field>
         <mat-checkbox
+                [class.hide]="published && !callForm?.controls?.is2Step.value"
                 name="is2Step"
                 formControlName="is2Step"
                 (change)="callForm?.controls?.is2Step.patchValue($event.checked)">
@@ -149,3 +154,11 @@
         </app-call-funds>
     </form>
 </app-form>
+
+<mat-card-footer *ngIf="isApplicant && isOpen(call)" class="footer">
+    <button mat-raised-button color="primary"
+            class="action-button"
+            (click)="applyToCall(call.id)">
+        {{'call.table.column.action.apply' | translate}} <mat-icon>arrow_forward</mat-icon>
+    </button>
+</mat-card-footer>

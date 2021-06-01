@@ -3,6 +3,16 @@ package io.cloudflight.jems.server.project.repository.partner.budget
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetStaffCostEntry
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetTravelAndAccommodationCostEntry
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetUnitCostEntities
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toModel
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetEquipmentEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetExternalEntities
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetInfrastructureEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetStaffCostEntities
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetTravelEntities
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
@@ -27,7 +37,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetStaffCosts(
         projectId: Long,
         partnerId: Long,
-        staffCosts: Set<BudgetStaffCostEntry>
+        staffCosts: List<BudgetStaffCostEntry>
     ) =
         budgetStaffCostRepository.saveAll(
             staffCosts.toProjectPartnerBudgetStaffCostEntities(
@@ -47,7 +57,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetTravelAndAccommodationCosts(
         projectId: Long,
         partnerId: Long,
-        travelAndAccommodationCosts: Set<BudgetTravelAndAccommodationCostEntry>
+        travelAndAccommodationCosts: List<BudgetTravelAndAccommodationCostEntry>
     ) =
         budgetTravelRepository.saveAll(
             travelAndAccommodationCosts.toProjectPartnerBudgetTravelEntities(
@@ -67,7 +77,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetInfrastructureAndWorksCosts(
         projectId: Long,
         partnerId: Long,
-        infrastructureAndWorksCosts: Set<BudgetGeneralCostEntry>
+        infrastructureAndWorksCosts: List<BudgetGeneralCostEntry>
     ) =
         budgetInfrastructureRepository.saveAll(
             infrastructureAndWorksCosts.toProjectPartnerBudgetInfrastructureEntity(
@@ -94,7 +104,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetUnitCosts(
         projectId: Long,
         partnerId: Long,
-        unitCosts: Set<BudgetUnitCostEntry>
+        unitCosts: List<BudgetUnitCostEntry>
     ): List<BudgetUnitCostEntry> =
         budgetUnitCostRepository.saveAll(unitCosts.toBudgetUnitCostEntities(
             partnerId = partnerId,
@@ -107,7 +117,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetExternalExpertiseAndServicesCosts(
         projectId: Long,
         partnerId: Long,
-        externalExpertiseAndServicesCosts: Set<BudgetGeneralCostEntry>
+        externalExpertiseAndServicesCosts: List<BudgetGeneralCostEntry>
     ) =
         budgetExternalRepository.saveAll(
             externalExpertiseAndServicesCosts.toProjectPartnerBudgetExternalEntities(
@@ -127,7 +137,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     override fun createOrUpdateBudgetEquipmentCosts(
         projectId: Long,
         partnerId: Long,
-        equipmentCosts: Set<BudgetGeneralCostEntry>
+        equipmentCosts: List<BudgetGeneralCostEntry>
     ) =
         budgetEquipmentRepository.saveAll(
             equipmentCosts.toProjectPartnerBudgetEquipmentEntity(

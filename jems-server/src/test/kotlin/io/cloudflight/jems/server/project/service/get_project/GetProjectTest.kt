@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.get_project
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.mockk.every
@@ -21,6 +22,7 @@ internal class GetProjectTest : UnitTest() {
             callName = "Call 15",
             startDate = startDate,
             endDate = endDate,
+            endDateStep1 = null,
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
             flatRates = emptySet(),
@@ -31,6 +33,9 @@ internal class GetProjectTest : UnitTest() {
 
     @MockK
     lateinit var persistence: ProjectPersistence
+
+    @MockK
+    lateinit var securityService: SecurityService
 
     @InjectMockKs
     lateinit var getProject: GetProject

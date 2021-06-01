@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -20,14 +20,14 @@ import javax.validation.constraints.NotNull
 data class ProjectQualityAssessment(
 
     @Id
-    @Column(name = "project_id")
+    @Column(name = "project_decision_id")
     @field:NotNull
     val id: Long,
 
     @OneToOne(optional = false)
     @MapsId
     @field:NotNull
-    val project: ProjectEntity,
+    val projectDecision: ProjectDecisionEntity,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
@@ -36,7 +36,7 @@ data class ProjectQualityAssessment(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     @field:NotNull
-    val user: User,
+    val user: UserEntity,
 
     @field:NotNull
     val updated: ZonedDateTime = ZonedDateTime.now(),
@@ -49,8 +49,8 @@ data class ProjectQualityAssessment(
     }
 
     override fun equals(other: Any?): Boolean =
-        this === other || other is ProjectQualityAssessment && id == other.id && project.id == other.project.id
+        this === other || other is ProjectQualityAssessment && id == other.id && projectDecision.id == other.projectDecision.id
 
     override fun hashCode(): Int =
-        Objects.hash(id, project.id)
+        Objects.hash(id, projectDecision.id)
 }

@@ -25,22 +25,6 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
   filteredRegion2: Observable<string[]>;
   filteredRegion3: Observable<string[]>;
 
-  streetErrors = {
-    maxlength: 'address.street.size.too.long'
-  };
-  houseNumberErrors = {
-    maxlength: 'address.houseNumber.size.too.long'
-  };
-  postalCodeErrors = {
-    maxlength: 'address.postalCode.size.too.long'
-  };
-  cityErrors = {
-    maxlength: 'address.city.size.too.long'
-  };
-  homepageErrors = {
-    maxlength: 'address.homepage.size.too.long'
-  };
-
   ngOnInit(): void {
     this.initializeFilters();
   }

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.entity.file
 
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.ZonedDateTime
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -35,7 +35,7 @@ data class ProjectFile(
 
     @ManyToOne(optional = false)
     @field:NotNull
-    val author: User,
+    val author: UserEntity,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull

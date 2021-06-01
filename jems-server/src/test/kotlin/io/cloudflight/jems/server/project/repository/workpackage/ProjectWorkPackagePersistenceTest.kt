@@ -277,7 +277,7 @@ class ProjectWorkPackagePersistenceTest {
         every { repositoryActivity.findAllByActivityIdWorkPackageIdIn(setOf(WORK_PACKAGE_ID, WORK_PACKAGE_ID_2)) } returns listOf(activity2, activity1)
         every { repositoryOutput.findAllByOutputIdWorkPackageIdIn(setOf(WORK_PACKAGE_ID, WORK_PACKAGE_ID_2)) } returns listOf(output2, output1)
 
-        val result = persistence.getRichWorkPackagesByProjectId(1, Pageable.unpaged())
+        val result = persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(1, Pageable.unpaged())
         assertThat(result.totalElements).isEqualTo(2)
         assertThat(result.content.map { it.id }).containsExactly(WORK_PACKAGE_ID, WORK_PACKAGE_ID_2)
         assertThat(result.content.map { it.workPackageNumber }).containsExactly(1, 2)

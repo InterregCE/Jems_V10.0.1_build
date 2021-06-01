@@ -3,6 +3,10 @@
     {
       "rule": "archunit.jpa.entities.no-column-names",
       "reason": "specific usages like account for user entity and embedded relations are needed"
+    },
+    {
+      "rule": "gradle.buildlog.errors.io.cloudflight.gradle.license.missing",
+      "reason": "we don't know what kind of license we should provide for the jems-plugin-contract"
     }
   ],
   "suppressedIssues": [
@@ -17,6 +21,10 @@
     {
       "hash": "6290d4c9",
       "reason": "micromatch has a broken package.json which can't be parsed"
+    },
+    {
+      "hash": "985635b9",
+      "reason": "plugin calls should take place inside the scope of a transaction even if the plugin's method is not annotated with @Transactional"
     }
   ]
 }

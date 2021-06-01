@@ -47,6 +47,12 @@
 
 @mixin custom-disabled-form-fields() {
 
+  .mat-form-field-appearance-fill.mat-form-field-disabled .mat-form-field-flex{
+    background: none;
+    border-bottom: 1px dotted;
+    border-color: var(--outline-color);
+  }
+  
   .mat-form-field-disabled .mat-form-field-underline {
     height: 0;
   }

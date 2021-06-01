@@ -26,6 +26,7 @@ import {TranslatableMatPaginatorIntl} from './translatable-mat-paginator-intl.se
 import {TranslatableMatDatepickerIntl} from './translatable-mat-datepicker-intl.service';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 const modules = [
   MatTabsModule,
@@ -52,7 +53,8 @@ const modules = [
   MatTreeModule,
   MatFormFieldModule,
   MatChipsModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatSlideToggleModule,
 ];
 
 @NgModule({

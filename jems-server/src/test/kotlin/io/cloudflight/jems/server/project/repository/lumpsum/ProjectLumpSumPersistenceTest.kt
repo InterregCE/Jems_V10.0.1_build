@@ -20,10 +20,13 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEn
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
+import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -33,6 +36,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.util.Optional
+import org.junit.jupiter.api.BeforeEach
 
 internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
@@ -44,7 +48,12 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
             call = dummyCall,
             acronym = "Test Project",
             applicant = dummyCall.creator,
-            currentStatus = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = dummyCall.creator)
+            currentStatus = ProjectStatusHistoryEntity(
+                id = 1,
+                status = ApplicationStatus.DRAFT,
+                user = dummyCall.creator
+            ),
+            step2Active = false
         )
 
         private fun partner(sortNumber: Int, id: Long) = ProjectPartnerEntity(
@@ -79,8 +88,22 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
     @MockK
     lateinit var programmeLumpSumRepository: ProgrammeLumpSumRepository
 
-    @InjectMockKs
+    @MockK
+    lateinit var projectLumpSumRepository: ProjectLumpSumRepository
+
+    @MockK
+    lateinit var projectVersionRepo: ProjectVersionRepository
+
     private lateinit var persistence: ProjectLumpSumPersistenceProvider
+
+    private lateinit var projectVersionUtils: ProjectVersionUtils
+
+    @BeforeEach
+    fun setup() {
+        MockKAnnotations.init(this)
+        projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
+        persistence = ProjectLumpSumPersistenceProvider(projectVersionUtils, projectRepository, projectLumpSumRepository, programmeLumpSumRepository, projectPartnerRepository)
+    }
 
     @Test
     fun `get lump sums - not-existing project`() {
@@ -113,7 +136,14 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
             endPeriod = 8,
         )
 
-        every { projectRepository.findById(eq(1)) } returns Optional.of(dummyProject.copy(lumpSums = listOf(lumpSum2, lumpSum1)))
+        every { projectRepository.findById(eq(1)) } returns Optional.of(
+            dummyProject.copy(
+                lumpSums = listOf(
+                    lumpSum2,
+                    lumpSum1
+                )
+            )
+        )
 
         assertThat(persistence.getLumpSums(1L)).containsExactly(
             ProjectLumpSum(
@@ -134,7 +164,12 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
     @Test
     fun `updateLumpSums - everything valid`() {
         val projectSlot = slot<ProjectEntity>()
-        every { projectRepository.findById(10L) } returns Optional.of(dummyProject.copy(id = 10, lumpSums = emptyList()))
+        every { projectRepository.findById(10L) } returns Optional.of(
+            dummyProject.copy(
+                id = 10,
+                lumpSums = emptyList()
+            )
+        )
 
         every { programmeLumpSumRepository.findById(20) } returns Optional.of(programmeLumpSum(20))
 
@@ -187,7 +222,12 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
     @Test
     fun `updateLumpSums - when not existing programme lump sum`() {
-        every { projectRepository.findById(11L) } returns Optional.of(dummyProject.copy(id = 11, lumpSums = emptyList()))
+        every { projectRepository.findById(11L) } returns Optional.of(
+            dummyProject.copy(
+                id = 11,
+                lumpSums = emptyList()
+            )
+        )
         every { programmeLumpSumRepository.findById(-1) } returns Optional.empty()
 
         val toBeSaved = listOf(
@@ -204,7 +244,12 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
     @Test
     fun `updateLumpSums - when not existing or not visible partner`() {
         val projectSlot = slot<ProjectEntity>()
-        every { projectRepository.findById(12L) } returns Optional.of(dummyProject.copy(id = 12, lumpSums = emptyList()))
+        every { projectRepository.findById(12L) } returns Optional.of(
+            dummyProject.copy(
+                id = 12,
+                lumpSums = emptyList()
+            )
+        )
 
         every { programmeLumpSumRepository.findById(20) } returns Optional.of(programmeLumpSum(20))
 

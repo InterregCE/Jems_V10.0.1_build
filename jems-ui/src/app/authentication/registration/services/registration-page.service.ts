@@ -3,7 +3,7 @@ import {Observable, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {catchError, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
-import {UserRegistrationService, InputUserRegistration} from '@cat/api';
+import {UserRegistrationService, UserRegistrationDTO} from '@cat/api';
 import {Router} from '@angular/router';
 
 
@@ -24,7 +24,7 @@ export class RegistrationPageService {
     return this.userSaveSuccess$.asObservable();
   }
 
-  registerApplicant(applicant: InputUserRegistration): void {
+  registerApplicant(applicant: UserRegistrationDTO): void {
     this.userRegistrationService.registerApplicant(applicant).pipe(
       tap(() => this.userSaveSuccess$.next(true)),
       catchError((error: HttpErrorResponse) => {

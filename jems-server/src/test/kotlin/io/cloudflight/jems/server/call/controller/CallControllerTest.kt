@@ -60,6 +60,7 @@ class CallControllerTest: UnitTest() {
             status = CallStatus.DRAFT,
             startDate = ZonedDateTime.now().minusDays(1),
             endDate = ZonedDateTime.now().plusDays(1),
+            endDateStep1 = null
         )
 
         private val callDetail = CallDetail(
@@ -104,6 +105,7 @@ class CallControllerTest: UnitTest() {
             status = CallStatus.DRAFT,
             startDateTime = call.startDate,
             endDateTime = call.endDate,
+            endDateTimeStep1 = null
         )
 
         private val callDetailDto = CallDetailDTO(

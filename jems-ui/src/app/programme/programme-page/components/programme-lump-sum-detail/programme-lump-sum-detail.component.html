@@ -19,13 +19,14 @@
         <app-multi-language-form-field
                 formControlName="description"
                 label="lump.sum.form.field.description"
-                [maxLength]="500">
+                [maxLength]="255">
         </app-multi-language-form-field>
     </app-multi-language-container>
 
     <mat-form-field>
         <mat-label>{{'lump.sum.form.field.cost' | translate}}</mat-label>
         <input currencyMask type="decimal"
+               [options]="{min: 0.00}"
                name="cost" formControlName="cost" matInput required>
         <mat-error>
             <app-form-field-errors

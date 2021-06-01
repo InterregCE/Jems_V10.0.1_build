@@ -1,9 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
-import {CallDetailDTO, OutputProgrammeStrategy, ProgrammeFundDTO} from '@cat/api';
-import {Forms} from '../../../common/utils/forms';
-import {catchError, filter, take, tap} from 'rxjs/operators';
-import {MatDialog} from '@angular/material/dialog';
+import {CallDetailDTO, CallDTO, OutputProgrammeStrategy, ProgrammeFundDTO} from '@cat/api';
+import {catchError, take, tap} from 'rxjs/operators';
 import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbox';
 import {Tools} from '../../../common/utils/tools';
 import {FormService} from '@common/components/section/form/form.service';
@@ -13,6 +11,8 @@ import {ProgrammeEditableStateStore} from '../../../programme/programme-page/ser
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {Router} from '@angular/router';
+import moment from 'moment';
 
 @UntilDestroy()
 @Component({
@@ -85,7 +85,8 @@ export class CallDetailComponent implements OnInit {
     multipleFundsAllowed: [false]
   });
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private router: Router,
+              private formBuilder: FormBuilder,
               private callStore: CallStore,
               private formService: FormService,
               private callNavService: CallPageSidenavService,
@@ -166,6 +167,7 @@ export class CallDetailComponent implements OnInit {
   }
 
   publishCall(): void {
+    this.publishPending = true;
     this.callStore.publishCall(this.call?.id)
       .pipe(
         take(1),
@@ -215,5 +217,15 @@ export class CallDetailComponent implements OnInit {
       title: 'call.dialog.title',
       message: this.isFirstCall ? 'call.dialog.message.and.additional.message' : 'call.dialog.message'
     };
+  }
+
+  isOpen(call: CallDTO): boolean {
+    const currentDate = moment(new Date());
+    const endDateTime = call.endDateTimeStep1 || call.endDateTime;
+    return currentDate.isBefore(endDateTime) && currentDate.isAfter(call.startDateTime);
+  }
+
+  applyToCall(callId: number): void {
+    this.router.navigate(['/app/project/applyTo/' + callId]);
   }
 }

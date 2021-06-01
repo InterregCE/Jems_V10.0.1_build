@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project
 
+import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.project.dto.status.InputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
@@ -19,6 +20,10 @@ import javax.validation.Valid
 @Api("Project Status")
 @RequestMapping("/api/project/{id}/")
 interface ProjectStatusApi {
+
+    @ApiOperation("execute pre condition checks for project application")
+    @GetMapping("preCheck")
+    fun preConditionCheck(@PathVariable id: Long): PreConditionCheckResultDTO
 
     @ApiOperation("Submit project application")
     @PutMapping("submit")
@@ -62,6 +67,10 @@ interface ProjectStatusApi {
     @ApiOperation("Return project application to applicant")
     @PutMapping("return-to-applicant")
     fun returnApplicationToApplicant(@PathVariable id: Long): ApplicationStatusDTO
+
+    @ApiOperation("Start second step")
+    @PutMapping("start-second-step")
+    fun startSecondStep(@PathVariable id: Long): ApplicationStatusDTO
 
     @ApiOperation("Set quality assessment result to project application")
     @PostMapping("assessment/quality", consumes = [MediaType.APPLICATION_JSON_VALUE])

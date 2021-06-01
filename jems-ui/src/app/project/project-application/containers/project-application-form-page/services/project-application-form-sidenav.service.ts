@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
+import {Injectable, TemplateRef} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
-import {mergeMap, map, tap, switchMap} from 'rxjs/operators';
+import {catchError, map, mergeMap, switchMap, tap} from 'rxjs/operators';
 import {ProjectPartnerService, ProjectStatusDTO, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '../../../../../common/utils/log';
@@ -9,28 +9,27 @@ import {TranslateService} from '@ngx-translate/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
-import {RoutingService} from '../../../../../common/services/routing.service';
-import {filter} from 'rxjs/internal/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ProjectUtil} from '../../../../project-util';
+import {filter} from 'rxjs/internal/operators';
+import {RoutingService} from '../../../../../common/services/routing.service';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 
 @Injectable()
 @UntilDestroy()
 export class ProjectApplicationFormSidenavService {
   private static readonly PROJECT_DETAIL_URL = '/app/project/detail';
 
-  private projectId$ = this.projectStore.getProject()
-    .pipe(
-      map(project => project.id)
-    );
+  versionSelectTemplate$ = new Subject<TemplateRef<any>>();
   private fetchPartners$ = new Subject<number>();
   private fetchPackages$ = new Subject<number>();
 
   private partners$: Observable<HeadlineRoute[]> =
-    merge(this.projectId$, this.fetchPartners$)
+    combineLatest([merge(this.projectStore.projectId$, this.fetchPartners$), this.projectVersionStore.currentRouteVersion$])
       .pipe(
-        mergeMap(projectId => forkJoin([
+        mergeMap(([projectId, version]) => forkJoin([
             of(projectId),
-            this.projectPartnerService.getProjectPartners(projectId, 0, 100, ['sortNumber,asc'])
+            this.projectPartnerService.getProjectPartners(projectId, 0, 100, undefined, version)
           ])
         ),
         tap(([projectId, partners]) => Log.info('Fetched the project partners:', this, partners.content)),
@@ -38,7 +37,7 @@ export class ProjectApplicationFormSidenavService {
           .map(partner => ({
               headline: {
                 i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
-                i18nArguments: {partner: `${partner.sortNumber} ${partner.abbreviation}`}
+                i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
               },
               route: `/app/project/detail/${projectId}/applicationFormPartner/detail/${partner.id}`,
             }
@@ -47,7 +46,7 @@ export class ProjectApplicationFormSidenavService {
       );
 
   private packages$: Observable<HeadlineRoute[]> =
-    merge(this.projectId$, this.fetchPackages$)
+    merge(this.projectStore.projectId$, this.fetchPackages$)
       .pipe(
         mergeMap(projectId => forkJoin([
             of(projectId),
@@ -60,6 +59,7 @@ export class ProjectApplicationFormSidenavService {
               headline: {
                 i18nKey: 'common.label.workpackage.shortcut',
                 i18nArguments: {workpackage: `${workPackage.number}`},
+                disabled: true
               },
               route: `/app/project/detail/${projectId}/applicationFormWorkPackage/detail/${workPackage.id}`,
             }
@@ -76,26 +76,28 @@ export class ProjectApplicationFormSidenavService {
               private projectPartnerService: ProjectPartnerService,
               private workPackageService: WorkPackageService,
               private projectStore: ProjectStore,
+              private projectVersionStore: ProjectVersionStore,
               private translate: TranslateService,
               private permissionService: PermissionService,
               private routingService: RoutingService) {
 
     const headlines$ = combineLatest([
       this.isNotApplicant$,
-      this.projectStore.getProject(),
+      this.projectStore.project$,
       this.partners$,
-      this.packages$
+      this.packages$,
+      this.versionSelectTemplate$,
+      this.projectStore.currentVersionIsLatest$
     ])
       .pipe(
-        tap(([isNotApplicant, project, partners, packages]) => {
-          if (!project) {
-            return;
-          }
+        filter(([isNotApplicant, project]) => !!project),
+        tap(([isNotApplicant, project, partners, packages, versionTemplate, currentVersionIsLatest]) => {
           const status = project.projectStatus.status;
-          const isNotOpen = status !== ProjectStatusDTO.StatusEnum.DRAFT
+          const isNotOpen = !ProjectUtil.isDraft(project)
             && status !== ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
-          this.setHeadlines(isNotApplicant && isNotOpen, project.id, partners, packages);
-        })
+          this.setHeadlines(isNotApplicant && isNotOpen, project.id, partners, packages, versionTemplate, currentVersionIsLatest);
+        }),
+        catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
       );
 
     this.routingService.routeChanges(ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL)
@@ -114,7 +116,12 @@ export class ProjectApplicationFormSidenavService {
     this.fetchPackages$.next(projectId);
   }
 
-  private setHeadlines(showAssessment: boolean, projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[]): void {
+  private setHeadlines(showAssessment: boolean,
+                       projectId: number,
+                       partners: HeadlineRoute[],
+                       packages: HeadlineRoute[],
+                       versionTemplate: TemplateRef<any>,
+                       currentVersionIsLatest: boolean): void {
     // extracted this because Assessment is now on the same level with other headlines
     const applicationTreeHeadlines = {
       headline: {i18nKey: 'project.application.form.tree.title'},
@@ -151,6 +158,9 @@ export class ProjectApplicationFormSidenavService {
         headline: {i18nKey: 'project.application.form.title'},
         bullets: [
           {
+            headlineTemplate: versionTemplate
+          },
+          {
             headline: {i18nKey: 'project.application.form.section.part.a'},
             bullets: [
               {
@@ -175,6 +185,7 @@ export class ProjectApplicationFormSidenavService {
           },
           {
             headline: {i18nKey: 'project.application.form.section.part.c'},
+            disabled: !currentVersionIsLatest,
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.one'},
@@ -213,6 +224,7 @@ export class ProjectApplicationFormSidenavService {
           },
           {
             headline: {i18nKey: 'project.application.form.section.part.d'},
+            disabled: !currentVersionIsLatest,
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.d.subsection.one'},

@@ -4,16 +4,18 @@ import {
   InputProjectData,
   InputProjectEligibilityAssessment,
   InputProjectQualityAssessment,
+  ProjectDecisionDTO,
   ProjectDetailDTO,
   ProjectPartnerBudgetCoFinancingDTO,
   ProjectService,
   ProjectStatusDTO,
-  ProjectStatusService
+  ProjectStatusService,
+  ProjectVersionDTO,
+  UserRoleCreateDTO,
 } from '@cat/api';
 import {distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectCallSettings} from '../../../../model/projectCallSettings';
 import {CallFlatRateSetting} from '../../../../model/call-flat-rate-setting';
 import {ProgrammeLumpSum} from '../../../../model/lump-sums/programmeLumpSum';
@@ -21,6 +23,10 @@ import {ProgrammeUnitCost} from '../../../../model/programmeUnitCost';
 import {LumpSumPhaseEnumUtils} from '../../../../model/lump-sums/LumpSumPhaseEnum';
 import {BudgetCostCategoryEnumUtils} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
 import {RoutingService} from '../../../../../common/services/routing.service';
+import {ProjectUtil} from '../../../../project-util';
+import {SecurityService} from '../../../../../security/security.service';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 /**
  * Stores project related information.
@@ -34,7 +40,11 @@ export class ProjectStore {
 
   projectStatus$: Observable<ProjectStatusDTO.StatusEnum>;
   project$: Observable<ProjectDetailDTO>;
+  currentVersionIsLatest$: Observable<boolean>;
   projectEditable$: Observable<boolean>;
+  projectTitle$: Observable<string>;
+  callHasTwoSteps$: Observable<boolean>;
+  projectCurrentDecisions$: Observable<ProjectDecisionDTO>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -60,21 +70,29 @@ export class ProjectStore {
       tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
     );
 
-
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
               private router: RoutingService,
-              private permissionService: PermissionService) {
+              private securityService: SecurityService,
+              private permissionService: PermissionService,
+              private projectVersionStore: ProjectVersionStore) {
     this.router.routeParameterChanges(ProjectStore.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
-        tap(id => this.projectId$.next(Number(id)))
+        tap(id => this.projectId$.next(id as number))
       ).subscribe();
 
     this.project$ = this.project();
+    this.currentVersionIsLatest$ = this.currentVersionIsLatest();
     this.projectEditable$ = this.projectEditable();
     this.projectStatus$ = this.projectStatus();
     this.projectCall$ = this.projectCallSettings();
+    this.projectTitle$ = this.project$
+      .pipe(
+        map(project => `${project.id} – ${project.acronym}`)
+      );
+    this.callHasTwoSteps$ = this.callHasTwoSteps();
+    this.projectCurrentDecisions$ = this.projectCurrentDecisions();
   }
 
   /**
@@ -110,10 +128,6 @@ export class ProjectStore {
     this.newQualityAssessment$.next(assessment);
   }
 
-  getAcronym(): Observable<string> {
-    return this.projectAcronym$.asObservable();
-  }
-
   private projectStatus(): Observable<ProjectStatusDTO.StatusEnum> {
     return this.project$
       .pipe(
@@ -123,10 +137,10 @@ export class ProjectStore {
   }
 
   private project(): Observable<ProjectDetailDTO> {
-    const byId$ = this.projectId$
+    const byId$ = combineLatest([this.projectId$, this.projectVersionStore.currentRouteVersion$])
       .pipe(
-        filter(id => !!id),
-        switchMap(id => this.projectService.getProjectById(id)),
+        filter(([id]) => !!id),
+        switchMap(([id, version]) => this.projectService.getProjectById(id, version)),
         tap(project => Log.info('Fetched project:', this, project))
       );
 
@@ -151,17 +165,22 @@ export class ProjectStore {
   }
 
   private projectEditable(): Observable<boolean> {
-    return combineLatest([this.project$, this.permissionService.permissionsChanged()])
+    return combineLatest([
+      this.project$,
+      this.permissionService.permissionsChanged(),
+      this.securityService.currentUser,
+      this.currentVersionIsLatest$
+    ])
       .pipe(
-        map(([project, permissions]) => {
-            if (permissions.some(perm => perm === Permission.PROGRAMME_USER)) {
-              // programme users cannot edit projects
-              return false;
-            }
-            return project.projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT
-              || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
+        map(([project, permissions, currentUser, currentVersionIsLatest]) => {
+          if (!currentVersionIsLatest) {
+            return false;
           }
-        ),
+          if (permissions.includes(PermissionsEnum.ProjectUpdate)) {
+            return true;
+          }
+          return ProjectUtil.isOpenForModifications(project) && currentUser?.id === project.applicant.id;
+        }),
         shareReplay(1)
       );
   }
@@ -175,6 +194,7 @@ export class ProjectStore {
           callSetting.callName,
           callSetting.startDate,
           callSetting.endDate,
+          callSetting.endDateStep1,
           callSetting.lengthOfPeriod,
           new CallFlatRateSetting(callSetting.flatRates.staffCostFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup),
           callSetting.lumpSums.map(lumpSum =>
@@ -185,5 +205,53 @@ export class ProjectStore {
         )),
         shareReplay(1)
       );
+  }
+
+  private callHasTwoSteps(): Observable<boolean> {
+    return this.projectCall$
+      .pipe(
+        map(call => !!call.endDateStep1)
+      );
+  }
+
+  private projectCurrentDecisions(): Observable<ProjectDecisionDTO> {
+    return this.project$
+      .pipe(
+        map(project => project.step2Active ? project.secondStepDecision : project.firstStepDecision),
+      );
+  }
+
+  projectDecisions(step: number | undefined): Observable<ProjectDecisionDTO> {
+    return this.project$
+      .pipe(
+        map(project => step && Number(step) === 2 ? project.secondStepDecision : project.firstStepDecision)
+      );
+  }
+
+  private currentVersionIsLatest(): Observable<boolean> {
+    return combineLatest([
+      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.versions$,
+      this.project$.pipe(
+        distinctUntilChanged((o, n) => o.projectStatus.status === n.projectStatus.status)
+      )
+    ])
+      .pipe(
+        map(([currentVersion, versions, project]) => {
+            if (!currentVersion) {
+              return true;
+            }
+            const latest = this.latestVersion(versions);
+            const current = Number(currentVersion);
+            // if project is editable the current version is the next one
+            return ProjectUtil.isOpenForModifications(project) ? latest < current : latest === current;
+          }
+        ),
+        shareReplay(1)
+      );
+  }
+
+  private latestVersion(versions?: ProjectVersionDTO[]): number {
+    return versions?.length ? Number(versions[0].version) : 1;
   }
 }

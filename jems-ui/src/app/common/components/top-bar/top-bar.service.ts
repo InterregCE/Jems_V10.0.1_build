@@ -3,9 +3,10 @@ import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Permission} from '../../../security/permissions/permission';
-import {filter, take} from 'rxjs/operators';
+import {map, take} from 'rxjs/operators';
 import {SecurityService} from '../../../security/security.service';
-import {OutputCurrentUser} from '@cat/api';
+import {OutputCurrentUser, UserRoleDTO} from '@cat/api';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable()
 export class TopBarService {
@@ -37,7 +38,6 @@ export class TopBarService {
     isInternal: true,
     route: '/app/system',
   };
-  private auditItem: MenuItemConfiguration;
   private editUserItem: MenuItemConfiguration;
 
   constructor(private permissionService: PermissionService,
@@ -61,44 +61,52 @@ export class TopBarService {
       return;
     }
     this.editUserItem = {
-      name: `${currentUser?.name} (${currentUser?.role})`,
+      name: `${currentUser?.name} (${currentUser?.role.name})`,
       isInternal: true,
       route: `/app/profile`,
     };
   }
 
   assingMenuItemsToUser(): void {
-    this.permissionService.hasPermission(Permission.APPLICANT_USER)
-      .pipe(
-        take(1),
-        filter(canSee => canSee),
-      )
-      .subscribe(() => this.menuItems$.next([this.dashboardItem, this.editUserItem]));
+    combineLatest([
+      this.permissionService.hasPermission(Permission.SYSTEM_MODULE_PERMISSIONS),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectRetrieve),
+      this.securityService.currentUser.pipe(map(currentUser => currentUser?.role)),
+      // TODO remove when all permissions implemented
+      this.permissionService.hasPermission(Permission.APPLICANT_USER),
+      this.permissionService.hasPermission(Permission.PROGRAMME_USER),
+      this.permissionService.hasPermission(Permission.ADMINISTRATOR),
+    ]).pipe(
+      take(1),
+    ).subscribe(([systemEnabled, applicationsEnabled, role, isApplicant, isProgrammeUser, isAdmin]) => {
+      const menuItems: MenuItemConfiguration[] = [];
 
-    this.permissionService.hasPermission(Permission.PROGRAMME_USER)
-      .pipe(
-        take(1),
-        filter(canSee => canSee),
-      )
-      .subscribe(() => this.menuItems$.next([
-        this.applicationsItem,
-        this.callsItem,
-        this.programmItem,
-        this.systemItem,
-        this.editUserItem,
-      ]));
+      if (isApplicant) {
+        menuItems.push(this.dashboardItem);
+      }
+      if (applicationsEnabled) {
+        menuItems.push(this.applicationsItem);
+      }
+      if (isProgrammeUser || isAdmin) {
+        menuItems.push(this.callsItem);
+      }
+      if (isProgrammeUser || isAdmin) {
+        menuItems.push(this.programmItem);
+      }
+      if (systemEnabled) {
+        if (role?.permissions.includes(PermissionsEnum.AuditRetrieve)) {
+          this.systemItem.route = '/app/system/audit';
+        } else if (role?.permissions.includes(PermissionsEnum.UserRetrieve)) {
+          this.systemItem.route = '/app/system/user';
+        } else if (role?.permissions.includes(PermissionsEnum.RoleRetrieve)) {
+          this.systemItem.route = '/app/system/userRole';
+        }
+        menuItems.push(this.systemItem);
+      }
 
-    this.permissionService.hasPermission(Permission.ADMINISTRATOR)
-      .pipe(
-        take(1),
-        filter(canSee => canSee),
-      )
-      .subscribe(() => this.menuItems$.next([
-        this.applicationsItem,
-        this.callsItem,
-        this.programmItem,
-        this.systemItem,
-        this.editUserItem,
-      ]));
+      menuItems.push(this.editUserItem);
+
+      this.menuItems$.next(menuItems);
+    });
   }
 }

@@ -3,20 +3,20 @@ package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofin
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.AutomaticPublic
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
-import io.mockk.MockKAnnotations
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
-internal class GetCoFinancingInteractorTest {
+internal class GetCoFinancingInteractorTest: UnitTest() {
 
     companion object {
         private val fund = ProgrammeFund(id = 1, selected = true)
@@ -25,13 +25,8 @@ internal class GetCoFinancingInteractorTest {
     @MockK
     lateinit var persistence: ProjectPartnerCoFinancingPersistence
 
-    lateinit var getInteractor: GetCoFinancingInteractor
-
-    @BeforeEach
-    fun setup() {
-        MockKAnnotations.init(this)
-        getInteractor = GetCoFinancing(persistence)
-    }
+    @InjectMockKs
+    lateinit var getInteractor: GetCoFinancing
 
     @Test
     fun `test get cofinancing`() {
@@ -64,7 +59,7 @@ internal class GetCoFinancingInteractorTest {
             )
         )
 
-        every { persistence.getCoFinancingAndContributions(1) } returns
+        every { persistence.getCoFinancingAndContributions(1, null) } returns
             ProjectPartnerCoFinancingAndContribution(
                 finances = finances,
                 partnerContributions = contributions,

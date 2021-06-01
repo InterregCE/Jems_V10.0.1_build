@@ -86,7 +86,7 @@
                     </div>
                 </div>
 
-                <button *ngIf="multipleFundsAllowed && !hasASecondFundBeenAdded && !additionalFundId.value"
+                <button *ngIf="editable && multipleFundsAllowed && !hasASecondFundBeenAdded && !additionalFundId.value"
                         mat-icon-button type="button" class="mt-2 co-financing-button"
                         (click)="addAdditionalFund()">
                     <mat-icon>add</mat-icon>
@@ -189,7 +189,7 @@
                         [messages]="constants.FORM_ERRORS.partnerContributionErrors">
                 </app-form-field-errors>
             </mat-error>
-            <button *ngIf="coFinancingForm.enabled" type="button" mat-stroked-button
+            <button *ngIf="partnerContributions.length < 10 && coFinancingForm.enabled" type="button" mat-stroked-button
                     (click)="addNewPartnerContribution()">
                 <mat-icon>add</mat-icon>
                 <span>{{ 'project.partner.coFinancing.contribution.add.contribution.origin' | translate }}</span>

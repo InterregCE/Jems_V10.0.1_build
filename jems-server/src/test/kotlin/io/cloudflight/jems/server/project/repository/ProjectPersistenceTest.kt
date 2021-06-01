@@ -17,23 +17,39 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostB
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
+import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
+import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
+import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
+import io.cloudflight.jems.server.project.entity.ProjectRow
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.toProjectStatus
+import io.cloudflight.jems.server.user.repository.user.toUserSummary
+import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.Optional
 
+/**
+ * tests implementation of ProjectPersistenceProvider including mappings and projectVersionUtils
+ */
 internal class ProjectPersistenceTest : UnitTest() {
 
     companion object {
@@ -126,36 +142,41 @@ internal class ProjectPersistenceTest : UnitTest() {
                         start = 1,
                         end = 2,
                     )
-                )
+                ),
+                step2Active = false
             )
         }
     }
 
     @MockK
-    lateinit var projectRepository: ProjectRepository
+    lateinit var projectVersionRepo: ProjectVersionRepository
 
-    @MockK
+    private lateinit var projectVersionUtils: ProjectVersionUtils
+
+    @RelaxedMockK
+    lateinit var projectRepository: ProjectRepository
+    @RelaxedMockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
 
-    @InjectMockKs
     private lateinit var persistence: ProjectPersistenceProvider
 
-    @Test
-    fun `getProjectSummary - not existing`() {
-        every { projectRepository.findById(-1) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getProjectSummary(-1) }
-        assertThat(ex.entity).isEqualTo("project")
+    @BeforeEach
+    fun setup() {
+        MockKAnnotations.init(this)
+        projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
+        persistence = ProjectPersistenceProvider(projectVersionUtils, projectRepository, projectPartnerRepository)
     }
 
     @Test
     fun `getProjectSummary - everything OK`() {
         val project = dummyProject()
-        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        every { projectRepository.getOne(PROJECT_ID) } returns project
         assertThat(persistence.getProjectSummary(PROJECT_ID)).isEqualTo(
             ProjectSummary(
                 id = PROJECT_ID,
+                callName = "call name",
                 acronym = project.acronym,
-                status = project.currentStatus.status
+                status = project.currentStatus.status,
             )
         )
     }
@@ -198,5 +219,72 @@ internal class ProjectPersistenceTest : UnitTest() {
         assertThat(persistence.getProjectPeriods(PROJECT_ID)).isEqualTo(
             project.periods.toProjectPeriods()
         )
+    }
+
+    @Test
+    fun `get Project without version`() {
+        val project = dummyProject()
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+
+        assertThat(persistence.getProject(PROJECT_ID))
+            .isEqualTo(
+                Project(
+                    id = project.id,
+                    intro = null,
+                    title = null,
+                    acronym = project.acronym,
+                    duration = project.projectData?.duration,
+                    step2Active = project.step2Active,
+                    periods = listOf(ProjectPeriod(1, 1, 2)),
+                    applicant = project.applicant.toUserSummary(),
+                    projectStatus = project.currentStatus.toProjectStatus(),
+                    firstSubmission = project.firstSubmission?.toProjectStatus(),
+                    lastResubmission = project.lastResubmission?.toProjectStatus(),
+                    callSettings = project.call.toSettingsModel(),
+                    programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
+                    specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
+                ))
+    }
+
+    @Test
+    fun `get Project with previous version`() {
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val project = dummyProject()
+        val version = "3.0"
+        val mockRow: ProjectRow = mockk()
+        val mockPeriodRow: ProjectPeriodRow = mockk()
+        every { mockRow.id } returns 1L
+        every { mockRow.language } returns SystemLanguage.EN
+        every { mockRow.intro } returns "intro"
+        every { mockRow.title } returns "title"
+        every { mockRow.acronym } returns "acronym"
+        every { mockRow.duration } returns 12
+        every { mockRow.step2Active } returns false
+        every { mockPeriodRow.periodNumber } returns 1
+        every { mockPeriodRow.periodStart } returns 1
+        every { mockPeriodRow.periodEnd } returns 12
+        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+
+        every { projectRepository.findByIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+        every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockPeriodRow)
+        assertThat(persistence.getProject(PROJECT_ID, version))
+            .isEqualTo(
+                Project(
+                    id = mockRow.id,
+                    intro = setOf(InputTranslation(mockRow.language!!, mockRow.intro)),
+                    title = setOf(InputTranslation(mockRow.language!!, mockRow.title)),
+                    acronym = mockRow.acronym,
+                    duration = mockRow.duration,
+                    step2Active = mockRow.step2Active,
+                    periods = listOf(ProjectPeriod(mockPeriodRow.periodNumber!!, mockPeriodRow.periodStart!!, mockPeriodRow.periodEnd!!)),
+                    applicant = project.applicant.toUserSummary(),
+                    projectStatus = project.currentStatus.toProjectStatus(),
+                    firstSubmission = project.firstSubmission?.toProjectStatus(),
+                    lastResubmission = project.lastResubmission?.toProjectStatus(),
+                    callSettings = project.call.toSettingsModel(),
+                    programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
+                    specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
+                ))
     }
 }

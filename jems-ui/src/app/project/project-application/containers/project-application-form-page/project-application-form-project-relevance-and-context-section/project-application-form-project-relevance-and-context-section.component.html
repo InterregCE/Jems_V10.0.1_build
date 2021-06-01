@@ -1,5 +1,5 @@
-<app-main-page-template
-        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+<app-project-page-template
+        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.c">
     <app-project-application-form-project-relevance-and-context-detail
             *ngIf="details$ | async as details"
@@ -11,4 +11,4 @@
             (updateData)="updateProjectRelevance$.next($event)"
             (deleteData)="deleteEntriesFromTables$.next($event)">
     </app-project-application-form-project-relevance-and-context-detail>
-</app-main-page-template>
+</app-project-page-template>

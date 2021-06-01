@@ -1,0 +1,98 @@
+<app-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
+                        titleKey="topbar.main.user.role.management"
+                        [subTitleKey]="roleId ? 'userRole.detail.short' : 'userRole.breadcrumb.create'">
+    <app-form (save)="save(data.role)"
+              (discard)="discard(data.role, data.isUpdateAllowed)">
+
+        <form appFormLayout [formGroup]="userRoleForm">
+            <div appMultiColumnRow>
+                <mat-form-field appFormFieldWidth="xx-large">
+                    <mat-label>{{ 'userRole.table.column.name.name' | translate }}</mat-label>
+                    <input formControlName="name" matInput required>
+                    <mat-error>
+                        <app-form-field-errors [errors]="name?.errors"></app-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="permission-tree">
+
+                <mat-tree-node *matTreeNodeDef="let node"
+                               matTreeNodePadding
+                               [class.bg-dark]="node.parentIndex % 2 === 0">
+                    <div class="permission-row-wrapper">
+                        <button mat-icon-button disabled></button>
+                        <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
+
+                        <div class="controls">
+                            <div class="controls-wrapper">
+                                <div>
+                                    <mat-button-toggle-group
+                                            [disabled]="node.disabled || !data.isUpdateAllowed"
+                                            *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.HIDDEN_VIEW"
+                                            class="small-toggle-group">
+                                        <mat-button-toggle
+                                                [checked]="state(node.form)?.value === PermissionState.HIDDEN"
+                                                (click)="$event.stopPropagation()"
+                                                (change)="changeState(node.form, PermissionState.HIDDEN);">
+                                <span>
+                                    <mat-icon>visibility_off</mat-icon>
+                                    {{'common.permission.hide' | translate}}
+                                </span>
+                                        </mat-button-toggle>
+                                        <mat-button-toggle
+                                                [checked]="state(node.form)?.value === PermissionState.VIEW"
+                                                (click)="$event.stopPropagation()"
+                                                (change)="changeState(node.form, PermissionState.VIEW)">
+                                <span>
+                                    <mat-icon>visibility</mat-icon>
+                                    {{'common.permission.view' | translate}}
+                                </span>
+                                        </mat-button-toggle>
+                                        <mat-button-toggle
+                                                *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT"
+                                                [checked]="state(node.form)?.value === PermissionState.EDIT"
+                                                (click)="$event.stopPropagation()"
+                                                (change)="changeState(node.form, PermissionState.EDIT)">
+                                <span>
+                                    <mat-icon>edit</mat-icon>
+                                    {{'common.permission.edit' | translate}}
+                                </span>
+                                        </mat-button-toggle>
+                                    </mat-button-toggle-group>
+                                    <span *ngIf="node.mode === PermissionMode.TOGGLE_EDIT" class="slide-toggle-wrapper">
+                                        {{ 'common.permission.hide' | translate}}
+                                        <mat-slide-toggle color="primary"
+                                                          [disabled]="node.disabled || !data.isUpdateAllowed"
+                                                          (click)="$event.stopPropagation()"
+                                                          (change)="changeStateOfToggle(node.form)"
+                                                          [checked]="state(node.form)?.value === PermissionState.EDIT">
+                                        </mat-slide-toggle>
+                                        {{ 'common.permission.active' | translate}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-tree-node>
+
+                <mat-tree-node *matTreeNodeDef="let node; when: hasChild"
+                               matTreeNodePadding
+                               [class.bg-dark]="node.parentIndex % 2 === 0">
+                    <div class="permission-row-wrapper">
+                        <button mat-icon-button matTreeNodeToggle
+                                [attr.aria-label]="'Toggle ' + node.name">
+                            <mat-icon class="mat-icon-rtl-mirror">
+                                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                            </mat-icon>
+                        </button>
+                        <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
+                        <div class="controls">
+                            <div class="controls-wrapper"></div>
+                        </div>
+                    </div>
+                </mat-tree-node>
+
+            </mat-tree>
+        </form>
+    </app-form>
+</app-main-page-template>

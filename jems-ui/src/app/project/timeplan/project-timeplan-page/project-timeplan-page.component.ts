@@ -9,14 +9,13 @@ import {map, tap} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
 
 import {ProjectTimeplanPageStore} from './project-timeplan-page-store.service';
-import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {
   Content,
   getEndDateFromPeriod,
   getGroups,
+  getInputTranslations,
   getItems,
   getOptions,
-  getInputTranslations,
   isResult,
   RESULT_GROUP_TITLE_ID,
   START_DATE,
@@ -43,8 +42,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
     dataAvailable: boolean,
   }>;
 
-  constructor(private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
-              private translateService: TranslateService,
+  constructor(private translateService: TranslateService,
               private multiLanguageGlobalService: MultiLanguageGlobalService,
               private router: Router,
               private activatedRoute: ActivatedRoute,

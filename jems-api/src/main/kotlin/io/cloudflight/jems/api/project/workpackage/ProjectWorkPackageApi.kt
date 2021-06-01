@@ -38,14 +38,14 @@ interface ProjectWorkPackageApi {
     @GetMapping("/perProject/{projectId}")
     fun getWorkPackagesByProjectId(@PathVariable projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple>
 
-    @ApiOperation("Returns all work packages for a project including activities")
+    @ApiOperation("Returns all work packages for a project including outputs and activities")
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("/perProject/{projectId}/full")
-    fun getFullWorkPackagesByProjectId(@PathVariable projectId: Long, pageable: Pageable): Page<ProjectWorkPackageDTO>
+    @GetMapping("/perProject/{projectId}/withOutputsAndActivities")
+    fun getWorkPackagesForTimePlanByProjectId(@PathVariable projectId: Long, pageable: Pageable): Page<ProjectWorkPackageDTO>
 
     @ApiOperation("Create work package")
     @PostMapping("/forProject/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])

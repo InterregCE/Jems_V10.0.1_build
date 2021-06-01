@@ -16,6 +16,8 @@ import {CallListStore} from '@common/components/call-list/call-list-store.servic
 export class CallListComponent implements OnInit {
   @ViewChild('callActionsCell', {static: true})
   actionsCell: TemplateRef<any>;
+  @ViewChild('endDateCell', {static: true})
+  endDateCell: TemplateRef<any>;
 
   @Input()
   isApplicant: boolean;
@@ -55,9 +57,8 @@ export class CallListComponent implements OnInit {
         },
         {
           displayedColumn: 'call.table.column.name.end',
-          columnType: ColumnType.DateColumn,
-          elementProperty: 'endDateTime',
-          sortProperty: 'endDate'
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.endDateCell
         }
       ]
     });
@@ -75,7 +76,8 @@ export class CallListComponent implements OnInit {
 
   isOpen(call: CallDTO): boolean {
     const currentDate = moment(new Date());
-    return currentDate.isBefore(call.endDateTime) && currentDate.isAfter(call.startDateTime);
+    const endDateTime = call.endDateTimeStep1 || call.endDateTime;
+    return currentDate.isBefore(endDateTime) && currentDate.isAfter(call.startDateTime);
   }
 
 }

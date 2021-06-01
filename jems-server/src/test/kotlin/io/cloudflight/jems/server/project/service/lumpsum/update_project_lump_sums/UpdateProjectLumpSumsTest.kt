@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
-import io.cloudflight.jems.server.project.service.model.ProjectPeriods
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.mockk.every
@@ -39,6 +38,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             callName = "call 7",
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),
+            endDateStep1 = null,
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
             flatRates = emptySet(),
@@ -66,7 +66,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
     lateinit var updateProjectLumpSums: UpdateProjectLumpSums
 
     @Test
-    fun `updateLumpSums - everything OK`() {
+    fun `updateLumpSums - everything OK - splitting allowed`() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
@@ -75,6 +75,22 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         every { persistence.updateLumpSums(PROJECT_ID, any()) } returnsArgument 1
 
         assertThat(updateProjectLumpSums.updateLumpSums(PROJECT_ID, listOf(lumpSum))).containsExactly(lumpSum.copy())
+    }
+
+    @Test
+    fun `updateLumpSums - everything OK - splitting not allowed`() {
+        val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = false)
+        val lumpSumNonSplittable = lumpSum.copy(lumpSumContributions = listOf(
+            ProjectPartnerLumpSum(partnerId = 1, amount = BigDecimal.ZERO),
+            ProjectPartnerLumpSum(partnerId = 2, amount = BigDecimal.TEN),
+        ))
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
+            callSettings(lumpSums = listOf(programmeLumpSum))
+        every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns periods
+
+        every { persistence.updateLumpSums(PROJECT_ID, any()) } returnsArgument 1
+
+        assertThat(updateProjectLumpSums.updateLumpSums(PROJECT_ID, listOf(lumpSumNonSplittable))).containsExactly(lumpSumNonSplittable.copy())
     }
 
     @Test

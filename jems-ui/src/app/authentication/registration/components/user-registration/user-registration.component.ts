@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputUserRegistration} from '@cat/api';
+import {UserRegistrationDTO} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
 import {UserPasswordComponent} from '../../../../system/user-page/user-detail-page/user-password/user-password.component';
 
@@ -13,7 +13,7 @@ import {UserPasswordComponent} from '../../../../system/user-page/user-detail-pa
 })
 export class UserRegistrationComponent extends AbstractForm implements OnInit {
   @Output()
-  submitUser: EventEmitter<InputUserRegistration> = new EventEmitter<InputUserRegistration>();
+  submitUser: EventEmitter<UserRegistrationDTO> = new EventEmitter<UserRegistrationDTO>();
   @Output()
   loginRedirect: EventEmitter<null> = new EventEmitter<null>();
 

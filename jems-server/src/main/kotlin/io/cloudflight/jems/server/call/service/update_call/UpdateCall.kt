@@ -79,6 +79,6 @@ class UpdateCall(
 
     private fun List<ProgrammePriority>.mergeAllSpecificObjectives(): Set<ProgrammeObjectivePolicy> =
         map { it.specificObjectives.map { it.programmeObjectivePolicy }.toSet() }
-            .reduce { first, second -> first union second }
+            .fold(emptySet()) { first, second -> first union second }
 
 }

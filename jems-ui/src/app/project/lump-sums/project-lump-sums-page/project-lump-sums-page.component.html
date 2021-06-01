@@ -1,7 +1,7 @@
-<app-main-page-template *ngIf="(data$ | async) as data"
-                        [titleText]="'project.application.form.acronym' | translate : {acronym: data.projectAcronym} "
-                        subTitleKey="project.application.form.section.part.e"
-                        descriptionKey="project.application.form.section.part.e.description">
+<app-project-page-template *ngIf="(data$ | async) as data"
+                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
+                           subTitleKey="project.application.form.section.part.e"
+                           descriptionKey="project.application.form.section.part.e.description">
 
     <app-form (save)="updateLumpSums()">
         <form appFormLayout [formGroup]="lumpSumsForm">
@@ -232,4 +232,4 @@
             </button>
         </ng-container>
     </ng-template>
-</app-main-page-template>
+</app-project-page-template>

@@ -14,7 +14,7 @@ class ProgrammeUnitCostPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getUnitCosts(): List<ProgrammeUnitCost> =
-        repository.findTop25ByOrderById().toProgrammeUnitCost()
+        repository.findTop100ByOrderById().toProgrammeUnitCost()
 
     @Transactional(readOnly = true)
     override fun getUnitCost(unitCostId: Long): ProgrammeUnitCost =

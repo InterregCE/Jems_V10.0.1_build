@@ -1,19 +1,20 @@
 package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.project.ProjectApi
-import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
-import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
+import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
+import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
-import io.cloudflight.jems.server.project.authorization.CanReadProject
 import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing.GetProjectBudgetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
+import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toProjectPartnerBudgetDTO
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -26,19 +27,17 @@ class ProjectController(
     private val getProjectBudgetInteractor: GetProjectBudgetInteractor,
     private val getProjectBudgetCoFinancingInteractor: GetProjectBudgetCoFinancingInteractor,
     private val getProjectInteractor: GetProjectInteractor,
+    private val getProjectVersionsInteractor: GetProjectVersionsInteractor
 ) : ProjectApi {
 
-    /**
-     * Here the @PreAuthorize annotation is missing because list is filtered based on restrictions inside the service
-     */
-    override fun getProjects(pageable: Pageable): Page<OutputProjectSimple> {
-        return projectService.findAll(pageable)
-    }
+    override fun getAllProjects(pageable: Pageable): Page<OutputProjectSimple> =
+        getProjectInteractor.getAllProjects(pageable).toDto()
 
-    @CanReadProject
-    override fun getProjectById(projectId: Long): ProjectDetailDTO {
-        return projectService.getById(projectId)
-    }
+    override fun getMyProjects(pageable: Pageable): Page<OutputProjectSimple> =
+        getProjectInteractor.getMyProjects(pageable).toDto()
+
+    override fun getProjectById(projectId: Long, version: String?): ProjectDetailDTO =
+        getProjectInteractor.getProject(projectId, version).toDto()
 
     override fun getProjectCallSettingsById(projectId: Long): ProjectCallSettingsDTO =
         getProjectInteractor.getProjectCallSettings(projectId).toDto()
@@ -54,8 +53,11 @@ class ProjectController(
     }
 
     override fun getProjectBudget(projectId: Long): List<ProjectPartnerBudgetDTO> =
-        getProjectBudgetInteractor.getBudget(projectId = projectId).toProjectPartnerBudgetDTO()
+        getProjectBudgetInteractor.getBudget(projectId = projectId).toDTO()
 
     override fun getProjectCoFinancing(projectId: Long): List<ProjectPartnerBudgetCoFinancingDTO> =
         getProjectBudgetCoFinancingInteractor.getBudgetCoFinancing(projectId = projectId).toProjectPartnerBudgetDTO()
+
+    override fun getProjectVersions(projectId: Long): Collection<ProjectVersionDTO> =
+        getProjectVersionsInteractor.getProjectVersions(projectId).toDTOs()
 }

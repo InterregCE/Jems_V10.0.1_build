@@ -1,142 +1,142 @@
-<app-main-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
-                        titleKey="project.application.form.section.part.c"
-                        subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
-<app-form *ngIf="workPackageInvestment$ | async as investment"
-          (save)="onSubmit()">
-    <form appFormLayout [formGroup]="workPackageInvestmentForm">
+<app-project-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
+                           titleKey="project.application.form.section.part.c"
+                           subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
+    <app-form *ngIf="workPackageInvestment$ | async as investment"
+              (save)="onSubmit()">
+        <form appFormLayout [formGroup]="workPackageInvestmentForm">
 
-        <h3>{{'project.application.form.workpackage.investment.form.title' | translate}}
-            <span *ngIf="investment.investmentNumber">
+            <h3>{{'project.application.form.workpackage.investment.form.title' | translate}}
+                <span *ngIf="investment.investmentNumber">
                     {{workPackageNumber}}.{{investment.investmentNumber}}
             </span>
-        </h3>
+            </h3>
 
-        <mat-form-field>
-            <mat-label>{{'project.application.form.workpackage.investment.number' | translate}}</mat-label>
-            <input name="number" formControlName="number" matInput>
-        </mat-form-field>
+            <mat-form-field>
+                <mat-label>{{'project.application.form.workpackage.investment.number' | translate}}</mat-label>
+                <input name="number" formControlName="number" matInput>
+            </mat-form-field>
 
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    label="project.application.form.workpackage.investment.title"
-                    [formControlName]="constants.TITLE.name"
-                    [maxLength]="constants.TITLE.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
-
-
-        <h4>{{'project.application.form.workpackage.investment.justification' | translate}}</h4>
-
-        <p>{{'project.application.form.workpackage.investment.justification.explanation' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.JUSTIFICATION_EXPLANATION.name"
-                    [maxLength]="constants.JUSTIFICATION_EXPLANATION.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        label="project.application.form.workpackage.investment.title"
+                        [formControlName]="constants.TITLE.name"
+                        [maxLength]="constants.TITLE.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
 
 
-        <p>{{'project.application.form.workpackage.investment.justification.transactional.relevance' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.name"
-                    [maxLength]="constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            <h4>{{'project.application.form.workpackage.investment.justification' | translate}}</h4>
+
+            <p>{{'project.application.form.workpackage.investment.justification.explanation' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.JUSTIFICATION_EXPLANATION.name"
+                        [maxLength]="constants.JUSTIFICATION_EXPLANATION.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
 
 
-        <p>{{'project.application.form.workpackage.investment.justification.benefits' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.JUSTIFICATION_BENEFITS.name"
-                    [maxLength]="constants.JUSTIFICATION_BENEFITS.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            <p>{{'project.application.form.workpackage.investment.justification.transactional.relevance' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.name"
+                        [maxLength]="constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
 
 
-        <p>{{'project.application.form.workpackage.investment.justification.pilot' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.JUSTIFICATION_PILOT.name"
-                    [maxLength]="constants.JUSTIFICATION_PILOT.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            <p>{{'project.application.form.workpackage.investment.justification.benefits' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.JUSTIFICATION_BENEFITS.name"
+                        [maxLength]="constants.JUSTIFICATION_BENEFITS.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
 
 
-        <h4>{{'project.application.form.workpackage.investment.location' | translate}}</h4>
-        <p>{{'project.application.form.workpackage.investment.location.description' | translate}}</p>
-
-        <app-project-application-form-address
-                *ngIf="nuts$ | async as nuts"
-                [addressForm]="workPackageInvestmentForm.controls.address"
-                [nuts]="nuts">
-        </app-project-application-form-address>
-
-        <h4>{{'project.application.form.workpackage.investment.risk' | translate}}</h4>
-
-        <p>{{'project.application.form.workpackage.investment.risk.description' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.RISK.name"
-                    [maxLength]="constants.RISK.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
-
-        <h4>{{'project.application.form.workpackage.investment.documentation' | translate}}</h4>
-
-        <p>{{'project.application.form.workpackage.investment.documentation.description' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.DOCUMENTATION.name"
-                    [maxLength]="constants.DOCUMENTATION.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
-
-        <h4>{{'project.application.form.workpackage.investment.ownership' | translate}}</h4>
-
-        <p>{{'project.application.form.workpackage.investment.ownership.site.location' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.OWNERSHIP_SITE_LOCATION.name"
-                    [maxLength]="constants.OWNERSHIP_SITE_LOCATION.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            <p>{{'project.application.form.workpackage.investment.justification.pilot' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.JUSTIFICATION_PILOT.name"
+                        [maxLength]="constants.JUSTIFICATION_PILOT.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
 
 
-        <p>{{'project.application.form.workpackage.investment.ownership.retain' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.OWNERSHIP_RETAIN.name"
-                    [maxLength]="constants.OWNERSHIP_RETAIN.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            <h4>{{'project.application.form.workpackage.investment.location' | translate}}</h4>
+            <p>{{'project.application.form.workpackage.investment.location.description' | translate}}</p>
 
-        <p>{{'project.application.form.workpackage.investment.ownership.maintenance' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="constants.OWNERSHIP_MAINTENANCE.name"
-                    [maxLength]="constants.OWNERSHIP_MAINTENANCE.maxLength">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            <app-project-application-form-address
+                    *ngIf="nuts$ | async as nuts"
+                    [addressForm]="workPackageInvestmentForm.controls.address"
+                    [nuts]="nuts">
+            </app-project-application-form-address>
 
-    </form>
-</app-form>
-</app-main-page-template>
+            <h4>{{'project.application.form.workpackage.investment.risk' | translate}}</h4>
+
+            <p>{{'project.application.form.workpackage.investment.risk.description' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.RISK.name"
+                        [maxLength]="constants.RISK.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+
+            <h4>{{'project.application.form.workpackage.investment.documentation' | translate}}</h4>
+
+            <p>{{'project.application.form.workpackage.investment.documentation.description' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.DOCUMENTATION.name"
+                        [maxLength]="constants.DOCUMENTATION.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+
+            <h4>{{'project.application.form.workpackage.investment.ownership' | translate}}</h4>
+
+            <p>{{'project.application.form.workpackage.investment.ownership.site.location' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.OWNERSHIP_SITE_LOCATION.name"
+                        [maxLength]="constants.OWNERSHIP_SITE_LOCATION.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+
+
+            <p>{{'project.application.form.workpackage.investment.ownership.retain' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.OWNERSHIP_RETAIN.name"
+                        [maxLength]="constants.OWNERSHIP_RETAIN.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+
+            <p>{{'project.application.form.workpackage.investment.ownership.maintenance' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="constants.OWNERSHIP_MAINTENANCE.name"
+                        [maxLength]="constants.OWNERSHIP_MAINTENANCE.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+
+        </form>
+    </app-form>
+</app-project-page-template>

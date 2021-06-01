@@ -1,0 +1,76 @@
+@import "../../../theme/custom-styles/custom-buttons-styles";
+
+$toggle-btn-width: 7rem;
+$margin_from_side: 1rem;
+$row-height: 2.5rem;
+
+.permission-row-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  .controls {
+    margin-left: auto;
+
+    .controls-wrapper {
+      align-items: center;
+      display: flex;
+      border-left: 1px solid var(--table-border-color);
+      height: $row-height;
+      width: calc(3 * #{$toggle-btn-width} + 4px + 2 * #{$margin_from_side});
+
+      > * {
+        margin: 0 auto;
+        width: calc(3 * #{$toggle-btn-width} + 4px);
+      }
+
+      .slide-toggle-wrapper {
+        display: flex;
+        align-items: center;
+
+        mat-slide-toggle {
+          margin: 0 .5rem;
+        }
+      }
+    }
+
+    mat-button-toggle {
+      width: $toggle-btn-width;
+    }
+  }
+
+}
+
+::ng-deep {
+  .small-toggle-group {
+    overflow: visible;
+    @include customize-toggle-button-size('small');
+
+    mat-icon {
+      vertical-align: middle;
+      font-size: 1.375em;
+      height: 1.25rem;
+    }
+  }
+}
+
+.mat-tree-node {
+  min-height: $row-height;
+}
+
+.bg-dark {
+  background-color: var(--table-highlight-color);
+}
+
+.permission-tree {
+  > :first-child {
+    border-top: 1px solid var(--table-border-color);
+  }
+
+  > * {
+    border-bottom: 1px solid var(--table-border-color);
+    border-right: 1px solid var(--table-border-color);
+    border-left: 1px solid var(--table-border-color);
+  }
+
+}

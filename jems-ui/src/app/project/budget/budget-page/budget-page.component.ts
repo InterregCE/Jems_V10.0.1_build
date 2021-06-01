@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectCallSettingsDTO, ProjectPartnerBudgetDTO, ProjectService} from '@cat/api';
 import {map, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
@@ -45,7 +44,6 @@ export class BudgetPageComponent {
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectService: ProjectService) {
   }
 

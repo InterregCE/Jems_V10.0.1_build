@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing
 
-import io.cloudflight.jems.server.project.authorization.CanReadProject
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
@@ -17,7 +17,7 @@ class GetProjectBudgetCoFinancing(
 ) : GetProjectBudgetCoFinancingInteractor {
 
     @Transactional(readOnly = true)
-    @CanReadProject
+    @CanRetrieveProject
     override fun getBudgetCoFinancing(projectId: Long): List<PartnerBudgetCoFinancing> {
         val partners = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId).associateBy { it.id!! }
 
@@ -25,7 +25,7 @@ class GetProjectBudgetCoFinancing(
 
         partners.keys.forEach {
             budgetCoFinancingContributions.put(it,
-                projectPartnerCoFinancingPersistenceProvider.getCoFinancingAndContributions(it)
+                projectPartnerCoFinancingPersistenceProvider.getCoFinancingAndContributions(it, null)
             )
         }
 

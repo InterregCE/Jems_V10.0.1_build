@@ -47,8 +47,6 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   @Input()
   projectId: number;
   @Input()
-  editable: boolean;
-  @Input()
   legalStatuses: ProgrammeLegalStatusDTO[];
 
   @Output()
@@ -76,21 +74,11 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     vatRecovery: ['']
   });
 
-  abbreviationErrors = {
-    maxlength: 'project.partner.name.size.too.long',
-    required: 'project.partner.name.should.not.be.empty'
-  };
   roleErrors = {
     required: 'project.partner.role.should.not.be.empty',
   };
-  nameInOriginalLanguageErrors = {
-    maxlength: 'project.organization.original.name.size.too.long'
-  };
   legalStatusErrors = {
     required: 'project.partner.legal.status.should.not.be.empty'
-  };
-  vatErrors = {
-    maxlength: 'project.partner.vat.size.too.long'
   };
 
   partnerTypeEnums = [
@@ -121,8 +109,8 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   }
 
   ngOnInit(): void {
+    this.formService.init(this.partnerForm, this.partnerStore.isProjectEditable$);
     this.resetForm();
-    this.formService.init(this.partnerForm);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -216,7 +204,6 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   }
 
   private resetForm(): void {
-    this.formService.setEditable(this.editable);
     if (!this.partnerId) {
       this.formService.setCreation(true);
     }
@@ -233,6 +220,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     this.controls.legalStatusId.setValue(this.partner?.legalStatusId);
     this.controls.vat.setValue(this.partner?.vat);
     this.controls.vatRecovery.setValue(this.partner?.vatRecovery);
+    this.controls.sortNumber.setValue(this.partner?.sortNumber);
   }
 
   private handleLeadAlreadyExisting(controls: any, error: APIError): void {

@@ -5,7 +5,6 @@ import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
-import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 
@@ -43,7 +42,6 @@ export class ProjectApplicationFormFuturePlansSectionComponent {
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectDescriptionService: ProjectDescriptionService,
               private projectApplicationFormStore: ProjectApplicationFormStore) {
     this.projectApplicationFormStore.init(this.projectId);

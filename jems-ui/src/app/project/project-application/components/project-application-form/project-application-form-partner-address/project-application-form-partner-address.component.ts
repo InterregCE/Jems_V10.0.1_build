@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnChanges, OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {OutputNuts, ProjectPartnerAddressDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
@@ -25,8 +19,6 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
   nuts: OutputNuts[];
   @Input()
   organizationDetails: ProjectPartnerAddressDTO[];
-  @Input()
-  editable: boolean;
 
   partnerAddressForm: FormGroup = this.formBuilder.group({
     organization: this.formBuilder.group({
@@ -74,12 +66,12 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
   }
 
   ngOnInit(): void {
-    this.formService.init(this.partnerAddressForm);
+    this.formService.init(this.partnerAddressForm, this.partnerStore.isProjectEditable$);
     this.resetForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.partnerId) {
+    if (changes.partnerId || changes.organizationDetails) {
       this.resetForm();
       this.formService.setDirty(false);
     }
@@ -94,7 +86,6 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
   }
 
   resetForm(): void {
-    this.formService.setEditable(this.editable);
     this.initPartnerOrganizationMainAddressFields();
     this.initPartnerOrganizationDepartmentAddressFields();
   }

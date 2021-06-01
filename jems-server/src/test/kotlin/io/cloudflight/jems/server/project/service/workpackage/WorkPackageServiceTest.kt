@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.workpackage
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
@@ -15,12 +14,13 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -42,12 +42,12 @@ class WorkPackageServiceTest {
     private val TEST_DATE: LocalDate = LocalDate.now()
     private val TEST_DATE_TIME = ZonedDateTime.of(TEST_DATE, LocalTime.of(10, 0), ZoneId.of("Europe/Bratislava"))
 
-    private val account = User(
+    private val account = UserEntity(
         id = 1,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
-        userRole = UserRole(id = 1, name = "ADMIN"),
+        userRole = UserRoleEntity(id = 1, name = "ADMIN"),
         password = "hash_pass"
     )
 
@@ -79,7 +79,8 @@ class WorkPackageServiceTest {
         call = call,
         acronym = "test",
         applicant = account,
-        currentStatus = statusDraft
+        currentStatus = statusDraft,
+        step2Active = false
     )
 
     private val translatedNameInEntity = WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test")
@@ -142,8 +143,9 @@ class WorkPackageServiceTest {
 
     @Test
     fun getProjectIdForWorkPackageId() {
-        every { workPackageRepository.findById(18L) } returns Optional.of(mockWorkPackage.copy(project = project.copy(id = 9465)))
-        assertThat(workPackageService.getProjectIdForWorkPackageId(18L)).isEqualTo(9465)
+        every { workPackageRepository.findById(18L) } returns Optional.of(mockWorkPackage)
+        assertThat(workPackageService.getProjectForWorkPackageId(18L))
+            .isEqualTo(ProjectApplicantAndStatus(applicantId = account.id, projectStatus = ApplicationStatus.DRAFT))
     }
 
     @Test
@@ -180,13 +182,19 @@ class WorkPackageServiceTest {
             1,
             project,
             1,
-            mutableSetOf(WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test", "Specific Objective"))
+            mutableSetOf(
+                WorkPackageTransl(
+                    TranslationWorkPackageId(1, SystemLanguage.EN),
+                    "Test",
+                    "Specific Objective"
+                )
+            )
         )
 
         every { workPackageRepository.findById(1L) } returns Optional.of(workPackageUpdated)
         every { workPackageRepository.save(any<WorkPackageEntity>()) } returnsArgument 0
 
-        val expectedData = OutputWorkPackage (
+        val expectedData = OutputWorkPackage(
             id = 1,
             number = 1,
             name = setOf(InputTranslation(SystemLanguage.EN, "Test")),

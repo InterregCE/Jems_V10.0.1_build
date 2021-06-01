@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLu
 interface ProgrammeLumpSumPersistence {
 
     fun getLumpSums(): List<ProgrammeLumpSum>
+    fun getLumpSums(lumpSumIds: List<Long>): List<ProgrammeLumpSum>
     fun getLumpSum(lumpSumId: Long): ProgrammeLumpSum
     fun getCount(): Long
     fun createLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum

@@ -5,6 +5,8 @@ import {MenuItemConfiguration} from '@common/components/menu/model/menu-item.con
 import {Permission} from '../../../security/permissions/permission';
 import {SecurityService} from '../../../security/security.service';
 import {RouterTestingModule} from '@angular/router/testing';
+import {UserRoleDTO} from '@cat/api';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 describe('TopBarService', () => {
   let service: TopBarService;
@@ -37,7 +39,10 @@ describe('TopBarService', () => {
     service.menuItems()
       .subscribe((items: MenuItemConfiguration[]) => menuItems = items);
 
-    (securityService as any).myCurrentUser.next({name: 'user', role: Permission.ADMINISTRATOR});
+    (securityService as any).myCurrentUser.next({
+      name: 'user',
+      role: {name: Permission.ADMINISTRATOR, permissions: [PermissionsEnum.ProjectRetrieve, PermissionsEnum.AuditRetrieve]}
+    });
     tick();
     expect(menuItems.length).toBe(5);
     expect(menuItems[0].name).toBe('topbar.main.project');
@@ -46,7 +51,10 @@ describe('TopBarService', () => {
     expect(menuItems[3].name).toBe('topbar.main.system');
     expect(menuItems[4].name).toBe('user (administrator)');
 
-    (securityService as any).myCurrentUser.next({name: 'user', role: Permission.PROGRAMME_USER});
+    (securityService as any).myCurrentUser.next({
+      name: 'user',
+      role: {name: Permission.PROGRAMME_USER, permissions: [PermissionsEnum.ProjectRetrieve, PermissionsEnum.UserRetrieve]}
+    });
     tick();
     expect(menuItems.length).toBe(5);
     expect(menuItems[0].name).toBe('topbar.main.project');
@@ -56,7 +64,7 @@ describe('TopBarService', () => {
     expect(menuItems[4].name).toBe('user (programme user)');
 
 
-    (securityService as any).myCurrentUser.next({name: 'user', role: Permission.APPLICANT_USER});
+    (securityService as any).myCurrentUser.next({name: 'user', role: {name: Permission.APPLICANT_USER, permissions: []}});
     tick();
     expect(menuItems.length).toBe(2);
     expect(menuItems[0].name).toBe('topbar.main.dashboard');

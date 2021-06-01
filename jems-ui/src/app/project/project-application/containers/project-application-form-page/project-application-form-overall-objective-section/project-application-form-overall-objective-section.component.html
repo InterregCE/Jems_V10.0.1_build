@@ -1,5 +1,5 @@
-<app-main-page-template
-        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
+<app-project-page-template
+        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.c">
     <app-project-application-form-overall-objective-detail
             *ngIf="details$ | async as details"
@@ -10,4 +10,4 @@
             [error$]="saveError$"
             (updateData)="updateProjectDescription$.next($event)">
     </app-project-application-form-overall-objective-detail>
-</app-main-page-template>
+</app-project-page-template>

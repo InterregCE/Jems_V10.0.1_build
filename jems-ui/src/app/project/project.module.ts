@@ -1,20 +1,18 @@
 import {NgModule} from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {routes} from './project-routing.module';
-import {ProjectApplicationSubmissionComponent} from './project-application/components/project-application-submission/project-application-submission.component';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
 import {SharedModule} from '../common/shared-module';
 import {ProjectApplicationFilesListComponent} from './project-application/components/project-application-detail/project-application-files-list/project-application-files-list.component';
 import {ProjectApplicationInformationComponent} from './project-application/components/project-application-detail/project-application-information/project-application-information.component';
 import {ProjectApplicationFileUploadComponent} from './project-application/components/project-application-detail/project-application-file-upload/project-application-file-upload.component';
-import {ProjectApplicationAssessmentsComponent} from './project-application/components/project-application-detail/project-application-assessments/project-application-assessments.component';
+import {ProjectApplicationAssessmentsComponent} from './project-detail-page/project-application-assessments/project-application-assessments.component';
 import {ProjectApplicationFilesComponent} from './project-application/containers/project-application-detail/project-application-files/project-application-files.component';
 import {DescriptionCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/description-cell/description-cell.component';
-import {ProjectApplicationEligibilityCheckComponent} from './project-application/components/project-application-detail/project-application-eligibility-check/project-application-eligibility-check.component';
-import {ProjectApplicationQualityCheckComponent} from './project-application/components/project-application-detail/project-application-quality-check/project-application-quality-check.component';
-import {ProjectStore} from './project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectApplicationEligibilityCheckComponent} from './project-detail-page/project-application-eligibility-check/project-application-eligibility-check.component';
+import {ProjectApplicationQualityCheckComponent} from './project-detail-page/project-application-quality-check/project-application-quality-check.component';
 import {ActionsCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/actions-cell/actions-cell.component';
-import {ProjectApplicationDecisionsComponent} from './project-application/components/project-application-detail/project-application-decisions/project-application-decisions.component';
+import {ProjectApplicationDecisionsComponent} from './project-detail-page/project-application-decisions/project-application-decisions.component';
 import {ProjectApplicationActionsComponent} from './project-detail-page/project-application-actions/project-application-actions.component';
 import {ProjectApplicationFundingPageComponent} from './project-detail-page/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationFundingDecisionComponent} from './project-detail-page/project-application-funding-page/project-application-funding-decision/project-application-funding-decision.component';
@@ -32,7 +30,6 @@ import {ProjectApplicationFormManagementDetailComponent} from './project-applica
 import {ProjectApplicationFormFuturePlansDetailComponent} from './project-application/components/project-application-form/project-application-form-future-plans-detail/project-application-form-future-plans-detail.component';
 import {ContributionRadioColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-radio-column/contribution-radio-column.component';
 import {ProjectApplicationFormPartnerContactComponent} from './project-application/components/project-application-form/project-application-form-partner-contact/project-application-form-partner-contact.component';
-import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
 import {RouterModule} from '@angular/router';
 import {ProjectApplyToCallComponent} from './project-application/containers/project-application-page/project-apply-to-call.component';
 import {ProjectApplicationFormOverallObjectiveSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-overall-objective-section/project-application-form-overall-objective-section.component';
@@ -55,8 +52,6 @@ import {ProjectPartnerStore} from './project-application/containers/project-appl
 import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
 import {ProjectApplicationFormAssociatedOrganizationsListComponent} from './project-application/components/project-application-form/project-application-form-associated-organizations-list/project-application-form-associated-organizations-list.component';
 import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
-import {ProjectApplicationFormAssociatedOrganizationEditComponent} from './project-application/components/project-application-form/project-application-form-associated-organization-edit/project-application-form-associated-organization-edit.component';
-import {ProjectAssociatedOrganizationStore} from './project-application/containers/project-application-form-page/services/project-associated-organization-store.service';
 import {ProjectPartnerBudgetOptionsComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-options/project-partner-budget-options.component';
 import {ContributionToggleColumnComponent} from './project-application/components/project-application-form/project-application-form-management-detail/contribution-toggle-column/contribution-toggle-column.component';
 import {ProjectApplicationFormIdentificationPageComponent} from './project-application/containers/project-application-form-page/project-application-form-identification-page/project-application-form-identification-page.component';
@@ -86,13 +81,17 @@ import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/bu
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
 import {FilterUnitCostsPipe} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
+import {ProjectApplicationPreConditionCheckResultComponent} from './project-detail-page/project-application-pre-condition-check-result/project-application-pre-condition-check-result.component';
+import {ProjectStore} from './project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
+import {ProjectVersionStore} from './services/project-version-store.service';
+import {ProjectPageTemplateComponent} from './project-page-template/project-page-template.component';
 
 @NgModule({
   declarations: [
     DescriptionCellComponent,
     ProjectApplicationComponent,
     ProjectApplyToCallComponent,
-    ProjectApplicationSubmissionComponent,
     ProjectDetailPageComponent,
     ProjectApplicationFilesListComponent,
     ProjectApplicationInformationComponent,
@@ -103,6 +102,7 @@ import {ProjectDetailPageComponent} from './project-detail-page/project-detail-p
     ProjectApplicationActionsComponent,
     ProjectApplicationQualityCheckComponent,
     ProjectApplicationEligibilityCheckComponent,
+    ProjectApplicationPreConditionCheckResultComponent,
     ActionsCellComponent,
     ProjectApplicationFundingPageComponent,
     ProjectApplicationFundingDecisionComponent,
@@ -147,7 +147,6 @@ import {ProjectDetailPageComponent} from './project-detail-page/project-detail-p
     ProjectPartnerCoFinancingTabComponent,
     ProjectPartnerBudgetOptionsComponent,
     ProjectApplicationPartnerIdentityComponent,
-    ProjectApplicationFormAssociatedOrganizationEditComponent,
     ProjectApplicationFormIdentificationPageComponent,
     ProjectApplicationFormAssociatedOrgPageComponent,
     ProjectApplicationFormAddressComponent,
@@ -166,6 +165,8 @@ import {ProjectDetailPageComponent} from './project-detail-page/project-detail-p
     ProjectTimeplanPageComponent,
     FilterUnitCostsPipe,
     ProjectDetailPageComponent,
+    ProjectApplicationPreConditionCheckResultComponent,
+    ProjectPageTemplateComponent,
   ],
   imports: [
     SharedModule,
@@ -177,11 +178,11 @@ import {ProjectDetailPageComponent} from './project-detail-page/project-detail-p
   providers: [
     DatePipe,
     ProjectStore,
+    ProjectVersionStore,
     ProjectApplicationFormSidenavService,
     ProjectApplicationFormStore,
     ProjectAcronymResolver,
     ProjectPartnerStore,
-    ProjectAssociatedOrganizationStore,
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,
     ProjectLumpSumsPageStore

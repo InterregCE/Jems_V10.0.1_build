@@ -44,6 +44,9 @@ import {LocaleDatePipe} from './pipe/locale-date.pipe';
 import {DateFormatInfoPipe} from './pipe/date-format-info.pipe';
 import {CustomTranslatePipe} from './pipe/custom-translate-pipe';
 import {PendingButtonComponent} from '@common/components/section/form/pending-button/pending-button.component';
+import {HasPermissionDirective} from './directives/has-permission.directive';
+import {HintDirective} from './directives/hint.directive';
+import {TextHintComponent} from '@common/components/forms/text-hint/text-hint.component';
 
 const modules = [
   CommonModule,
@@ -85,6 +88,7 @@ const declarations = [
   ContextInfoComponent,
   FormFieldWidthDirective,
   CurrencyDirective,
+  HasPermissionDirective,
   TableConfigDirective,
   MultiLanguageFormFieldComponent,
   FormLayoutDirective,
@@ -94,7 +98,9 @@ const declarations = [
   MainPageTemplateComponent,
   ApiErrorContentComponent,
   InlineEditableFieldComponent,
-  CustomTranslatePipe
+  CustomTranslatePipe,
+  HintDirective,
+  TextHintComponent
 ];
 
 const providers = [

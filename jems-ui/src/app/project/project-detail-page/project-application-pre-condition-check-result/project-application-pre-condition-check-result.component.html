@@ -1,0 +1,41 @@
+<mat-accordion *ngIf="preConditionCheckResult">
+    <ng-container *ngFor="let item of preConditionCheckResult.messages; let index=index"
+                  [ngTemplateOutlet]="item.subSectionMessages?.length ? parent : leaf"
+                  [ngTemplateOutletContext]="{item:item, level:1, index:index}"
+    ></ng-container>
+</mat-accordion>
+
+<ng-template let-item="item" let-level="level" let-index="index" #parent>
+    <mat-expansion-panel [class.alternative]="index%2==0">
+        <mat-expansion-panel-header [expandedHeight]="'48px'">
+            <mat-panel-title [class.mat-body]="level>1" class="text-overflow-ellipsis"
+                             [matTooltip]="item.message.i18nKey | translate: item.message.i18nArguments"
+                             [matTooltipShowDelay]="1000">
+                <ng-container [ngTemplateOutlet]="icon"
+                              [ngTemplateOutletContext]="{type:item.messageType}"></ng-container>
+                {{item.message.i18nKey | translate: item.message.i18nArguments}}
+            </mat-panel-title>
+            <mat-panel-description class="mat-body">
+                {{item.issueCount}} {{'project.detail.pre.condition.check.result.issues.count' | translate}}
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <ng-container
+                *ngFor="let subItem of item.subSectionMessages"
+                [ngTemplateOutlet]="subItem.subSectionMessages?.length ?  parent : leaf"
+                [ngTemplateOutletContext]="{item:subItem, level:level+1, index: index}"
+        ></ng-container>
+    </mat-expansion-panel>
+</ng-template>
+
+<ng-template let-item="item" let-level="level" let-index="index" #leaf>
+    <div class="leaf" [class.alternative]="index%2==0">
+        <ng-container [ngTemplateOutlet]="icon" [ngTemplateOutletContext]="{type:item.messageType}"></ng-container>
+        {{item.message.i18nKey | translate: item.message.i18nArguments}}
+    </div>
+</ng-template>
+
+<ng-template let-type="type" #icon>
+    <mat-icon *ngIf="type==PluginMessageType.ERROR" class="error mr-2">error</mat-icon>
+    <mat-icon *ngIf="type==PluginMessageType.WARNING" class="warning mr-2">warning</mat-icon>
+    <mat-icon *ngIf="type==PluginMessageType.INFO" class="info mr-2">check_circle</mat-icon>
+</ng-template>

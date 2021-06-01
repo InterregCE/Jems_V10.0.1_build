@@ -1,21 +1,23 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
-import io.cloudflight.jems.api.user.dto.OutputUserRole
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.authorization.CallAuthorization
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
-import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.userApplicant
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.user.service.model.UserRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -23,9 +25,11 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
-internal class ProjectAuthorizationTest {
+internal class ProjectAuthorizationTest : UnitTest() {
 
     companion object {
         private val ownerApplicant = OutputUser(
@@ -35,15 +39,15 @@ internal class ProjectAuthorizationTest {
             surname = userApplicant.surname
         )
 
-        private val notOwnerApplicant = OutputUserWithRole(
+        private val notOwnerApplicant = User(
             id = 256,
             name = "not-owner",
             email = "not-owner@applicant",
             surname = "applicant",
-            userRole = OutputUserRole(id = 1, name = "applicant")
+            userRole = UserRole(id = 1, name = "applicant", permissions = emptySet())
         )
 
-        private fun testProject(status: ApplicationStatusDTO) = ProjectApplicantAndStatus(
+        private fun testProject(status: ApplicationStatus) = ProjectApplicantAndStatus(
             applicantId = ownerApplicant.id!!,
             projectStatus = status
         )
@@ -51,24 +55,21 @@ internal class ProjectAuthorizationTest {
 
     @MockK
     lateinit var securityService: SecurityService
+
     @MockK
-    lateinit var projectService: ProjectService
+    lateinit var projectPersistence: ProjectPersistence
+
     @MockK
     lateinit var callAuthorization: CallAuthorization
 
+    @InjectMockKs
     lateinit var projectAuthorization: ProjectAuthorization
-
-    @BeforeEach
-    fun setup() {
-        MockKAnnotations.init(this)
-        projectAuthorization = ProjectAuthorization(securityService, projectService, callAuthorization)
-    }
 
     @Test
     fun `admin canReadProject`() {
         every { securityService.currentUser } returns adminUser
-        ApplicationStatusDTO.values().forEach {
-            every { projectService.getApplicantAndStatusById(eq(1)) } returns testProject(it)
+        ApplicationStatus.values().forEach {
+            every { projectPersistence.getApplicantAndStatusById(eq(1)) } returns testProject(it)
             assertTrue(
                 projectAuthorization.canReadProject(1),
                 "admin is able to read Project anytime (also $it)"
@@ -79,8 +80,8 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `owner canReadProject`() {
         every { securityService.currentUser } returns applicantUser
-        ApplicationStatusDTO.values().forEach {
-            every { projectService.getApplicantAndStatusById(eq(2)) } returns testProject(it)
+        ApplicationStatus.values().forEach {
+            every { projectPersistence.getApplicantAndStatusById(eq(2)) } returns testProject(it)
             assertTrue(
                 projectAuthorization.canReadProject(2),
                 "applicant who is owner of Project is able to read Project anytime (also $it)"
@@ -92,9 +93,10 @@ internal class ProjectAuthorizationTest {
     fun `not-owner canReadProject`() {
         every { securityService.currentUser } returns LocalCurrentUser(
             notOwnerApplicant, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
-        ))
-        every { projectService.getApplicantAndStatusById(eq(3)) } returns testProject(ApplicationStatusDTO.DRAFT)
+                SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
+            )
+        )
+        every { projectPersistence.getApplicantAndStatusById(eq(3)) } returns testProject(ApplicationStatus.DRAFT)
 
         val exception = assertThrows<ResourceNotFoundException>(
             "applicant cannot find project when he is not an owner"
@@ -105,22 +107,25 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `programmeUser canReadProject DRAFT`() {
         every { securityService.currentUser } returns programmeUser
-        every { projectService.getApplicantAndStatusById(eq(4)) } returns testProject(ApplicationStatusDTO.DRAFT)
+        every { projectPersistence.getApplicantAndStatusById(eq(4)) } returns testProject(ApplicationStatus.DRAFT)
 
-        val exception = assertThrows<ResourceNotFoundException>(
-            "programme user cannot find project in ${ApplicationStatusDTO.DRAFT}"
-        ) { projectAuthorization.canReadProject(4) }
-        assertThat(exception.entity).isEqualTo("project")
+        ApplicationStatus.values().forEach {
+            assertTrue(
+                projectAuthorization.canReadProject(4),
+                "programme user is able to read Project anytime (also $it)"
+            )
+        }
     }
 
     @Test
     fun `programmeUser canReadProject non-DRAFT`() {
         every { securityService.currentUser } returns programmeUser
-        val possibleStatuses = ApplicationStatusDTO.values().toMutableSet()
-        possibleStatuses.remove(ApplicationStatusDTO.DRAFT)
+        val possibleStatuses = ApplicationStatus.values()
+            .filter { it != ApplicationStatus.DRAFT && it != ApplicationStatus.STEP1_DRAFT }
+            .toMutableSet()
 
         possibleStatuses.forEach {
-            every { projectService.getApplicantAndStatusById(eq(5)) } returns testProject(it)
+            every { projectPersistence.getApplicantAndStatusById(eq(5)) } returns testProject(it)
             assertTrue(projectAuthorization.canReadProject(5), "Programme user can read project in $it")
         }
     }
@@ -128,7 +133,7 @@ internal class ProjectAuthorizationTest {
     @Test
     fun `user without role canReadProject`() {
         every { securityService.currentUser } returns LocalCurrentUser(notOwnerApplicant, "hash_pass", emptyList())
-        every { projectService.getApplicantAndStatusById(eq(6)) } returns testProject(ApplicationStatusDTO.DRAFT)
+        every { projectPersistence.getApplicantAndStatusById(eq(6)) } returns testProject(ApplicationStatus.DRAFT)
         assertFalse(projectAuthorization.canReadProject(6), "Fallback - user without role should get 'false'")
     }
 
@@ -174,89 +179,36 @@ internal class ProjectAuthorizationTest {
         }
     }
 
-    @Test
-    fun `admin canUpdateProject - NOT`() {
+    @ParameterizedTest(name = "admin canUpdateProject should throw 404 not found, because he is not owner (status {0})")
+    @EnumSource(value = ApplicationStatus::class)
+    fun `admin canUpdateProject should return false, because he is not owner`(status: ApplicationStatus) {
         every { securityService.currentUser } returns adminUser
-        val impossibleStatuses = ApplicationStatusDTO.values().toMutableSet()
-        impossibleStatuses.removeAll(listOf(
-            ApplicationStatusDTO.DRAFT,
-            ApplicationStatusDTO.RETURNED_TO_APPLICANT
-        ))
-
-        impossibleStatuses.forEach {
-            every { projectService.getApplicantAndStatusById(eq(1)) } returns testProject(it)
-            assertFalse(
-                projectAuthorization.canUpdateProject(1),
-                "admin is NOT able to update Project when $it"
-            )
-        }
+        every { projectPersistence.getApplicantAndStatusById(eq(1)) } returns testProject(status)
+        assertThrows<ResourceNotFoundException> { projectAuthorization.canOwnerUpdateProject(1) }
     }
 
-    @Test
-    fun `admin canUpdateProject`() {
-        every { securityService.currentUser } returns adminUser
-        val possibleStatuses = listOf(
-            ApplicationStatusDTO.DRAFT,
-            ApplicationStatusDTO.RETURNED_TO_APPLICANT
-        )
-
-        possibleStatuses.forEach {
-            every { projectService.getApplicantAndStatusById(eq(2)) } returns testProject(it)
-            assertTrue(
-                projectAuthorization.canUpdateProject(2),
-                "admin is able to update Project when $it"
-            )
-        }
-    }
-
-    @Test
-    fun `programmeUser canUpdateProject`() {
+    @ParameterizedTest(name = "programme user canUpdateProject should throw 404 not found, because he is not owner (status {0})")
+    @EnumSource(value = ApplicationStatus::class)
+    fun `programmeUser canUpdateProject should return false, because he is not owner`(status: ApplicationStatus) {
         every { securityService.currentUser } returns programmeUser
-        val impossibleStatuses = ApplicationStatusDTO.values().toMutableSet()
-        impossibleStatuses.removeAll(listOf(
-            ApplicationStatusDTO.DRAFT
-        ))
-
-        impossibleStatuses.forEach {
-            every { projectService.getApplicantAndStatusById(eq(3)) } returns testProject(it)
-            assertFalse(
-                projectAuthorization.canUpdateProject(3),
-                "programmeUser is NOT able to update Project anytime (tested with $it)"
-            )
-        }
+        every { projectPersistence.getApplicantAndStatusById(eq(2)) } returns testProject(status)
+        assertThrows<ResourceNotFoundException> { projectAuthorization.canOwnerUpdateProject(2) }
     }
 
-    @Test
-    fun `programmeUser canUpdateProject - DRAFT`() {
-        every { securityService.currentUser } returns programmeUser
-        every { projectService.getApplicantAndStatusById(eq(4)) } returns testProject(ApplicationStatusDTO.DRAFT)
-
-        val exception = assertThrows<ResourceNotFoundException>(
-            "programmeUser cannot find project when he is in ${ApplicationStatusDTO.DRAFT}"
-        ) { projectAuthorization.canUpdateProject(4) }
-        assertThat(exception.entity).isEqualTo("project")
+    @ParameterizedTest(name = "owner canUpdateProject should return false, because {0} is not valid status for change)")
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    fun `owner canUpdateProject should return false, status is wrong`(status: ApplicationStatus) {
+        every { securityService.currentUser } returns applicantUser
+        every { projectPersistence.getApplicantAndStatusById(eq(3)) } returns testProject(status)
+        assertFalse(projectAuthorization.canOwnerUpdateProject(3))
     }
 
-    @Test
-    fun `not-owner canUpdateProject`() {
-        every { securityService.currentUser } returns LocalCurrentUser(
-            notOwnerApplicant, "hash_pass", listOf(
-            SimpleGrantedAuthority("ROLE_" + userApplicant.userRole.name)
-        ))
-        ApplicationStatusDTO.values().forEach {
-            every { projectService.getApplicantAndStatusById(eq(5)) } returns testProject(it)
-            val exception = assertThrows<ResourceNotFoundException>(
-                "applicant, who is not an owner of project can never find project ($it)"
-            ) { projectAuthorization.canReadProject(5) }
-            assertThat(exception.entity).isEqualTo("project")
-        }
-    }
-
-    @Test
-    fun `user without role canUpdateProject`() {
-        every { securityService.currentUser } returns LocalCurrentUser(notOwnerApplicant, "hash_pass", emptyList())
-        every { projectService.getApplicantAndStatusById(eq(6)) } returns testProject(ApplicationStatusDTO.DRAFT)
-        assertFalse(projectAuthorization.canUpdateProject(6), "Fallback - user without role should get 'false'")
+    @ParameterizedTest(name = "owner canUpdateProject should return TRUE, because {0} is valid status for change)")
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"])
+    fun `owner canUpdateProject should return true, status is OK`(status: ApplicationStatus) {
+        every { securityService.currentUser } returns applicantUser
+        every { projectPersistence.getApplicantAndStatusById(eq(3)) } returns testProject(status)
+        assertTrue(projectAuthorization.canOwnerUpdateProject(3))
     }
 
 }

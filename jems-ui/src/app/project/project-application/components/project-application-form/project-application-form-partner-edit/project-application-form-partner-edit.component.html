@@ -3,18 +3,18 @@
     <form appFormLayout id="partner-form" [formGroup]="partnerForm">
         <h3>{{'project.partner.detail.title' | translate}}</h3>
 
-        <mat-form-field *ngIf="!editable && partner.sortNumber">
+        <mat-form-field *ngIf="!partnerForm.enabled && partner.sortNumber">
             <mat-label>{{'project.application.form.partner.table.number' | translate}}</mat-label>
             <input name="sortNumber" formControlName="sortNumber" matInput>
         </mat-form-field>
 
-        <mat-form-field *ngIf="!editable">
+        <mat-form-field *ngIf="!partnerForm.enabled">
             <mat-label>{{'project.partner.role.label' | translate}}</mat-label>
             <input ngModel="{{('common.label.project.partner.role.' + controls?.role?.value) | translate}}"
                    name="role" formControlName="fakeRole" matInput>
         </mat-form-field>
 
-        <div *ngIf="editable">
+        <div *ngIf="partnerForm.enabled">
             <div appLabel>{{'project.partner.role.label' | translate}} *</div>
             <mat-button-toggle-group>
                 <mat-button-toggle
@@ -38,24 +38,31 @@
             </mat-error>
         </div>
 
-        <mat-form-field>
+        <mat-form-field class="w-100">
             <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
-            <input name="abbreviation" formControlName="abbreviation" matInput required>
+            <input #abbreviationInput name="abbreviation" formControlName="abbreviation" matInput required>
+            <mat-hint [appHintFor]="abbreviationInput" [hide]="controls?.abbreviation?.errors !== null">
+                <app-text-hint [currentLength]="abbreviationInput?.value?.length" [maxLength]="15"></app-text-hint>
+            </mat-hint>
             <mat-error>
                 <app-form-field-errors
-                        [errors]="controls?.name?.errors"
-                        [messages]="abbreviationErrors">
+                        [errors]="controls?.abbreviation?.errors">
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field>
+        <mat-form-field class="w-100">
             <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
-            <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput>
+            <input #nameInOriginalLanguageInput name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage"
+                   matInput>
+            <mat-hint [appHintFor]="nameInOriginalLanguageInput"
+                      [hide]="controls?.nameInOriginalLanguage?.errors !== null">
+                <app-text-hint [currentLength]="nameInOriginalLanguageInput?.value?.length"
+                               [maxLength]="100"></app-text-hint>
+            </mat-hint>
             <mat-error>
                 <app-form-field-errors
-                        [errors]="controls?.nameInOriginalLanguage?.errors"
-                        [messages]="nameInOriginalLanguageErrors">
+                        [errors]="controls?.nameInOriginalLanguage?.errors">
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
@@ -103,18 +110,21 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field>
+        <mat-form-field class="w-100">
             <mat-label>{{'project.partner.vat' | translate}}</mat-label>
-            <input name="vat" formControlName="vat" matInput>
+            <input #vatInput name="vat" formControlName="vat" matInput>
+            <mat-hint [appHintFor]="vatInput" [hide]="controls?.vat?.errors !== null">
+                <app-text-hint [currentLength]="vatInput?.value?.length" [maxLength]="50"></app-text-hint>
+            </mat-hint>
             <mat-error>
                 <app-form-field-errors
-                        [errors]="controls?.vat?.errors"
-                        [messages]="vatErrors">
+                        [errors]="controls?.vat?.errors">
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
         <p>{{'project.partner.recoverVat.intro.text' | translate}}</p>
-        <mat-button-toggle-group [disabled]="!editable">
+
+        <mat-button-toggle-group [disabled]="!partnerForm.enabled">
             <mat-button-toggle
                     [checked]="controls?.vatRecovery.value === VatRecoveryEnum.Yes"
                     (change)="setVat(VatRecoveryEnum.Yes)"

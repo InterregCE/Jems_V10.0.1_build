@@ -2,16 +2,16 @@
     <div>
         <div>
             <span class="mat-body-strong">
-                {{error?.i18nMessage?.i18nKey ? (error?.i18nMessage?.i18nKey | translate) : error?.message}}
+                {{error?.i18nMessage?.i18nKey ? (error?.i18nMessage?.i18nKey | translate: $any(error)?.i18nMessage?.i18nArguments) : error?.message}}
             </span>
-            <span *ngIf="error?.code" class="ml-1 mat-body-strong">(error code: {{error?.code | translate}})
+            <span *ngIf="error?.code" class="ml-1 mat-body-strong">(error code: {{error?.code}})
             </span>
         </div>
         <div class="detail-error ml-3 mt-1" *ngFor="let detail of error?.details as any">
             <span>
-                {{$any(detail).i18nMessage?.i18nKey ? ($any(detail)?.i18nMessage?.i18nKey | translate) : $any(detail)?.message}}
+                {{$any(detail).i18nMessage?.i18nKey ? ($any(detail)?.i18nMessage?.i18nKey | translate: $any(detail)?.i18nMessage?.i18nArguments) : $any(detail)?.message}}
             </span>
-            <span *ngIf="detail?.code" class="ml-1">(error code: {{detail?.code | translate}})
+            <span *ngIf="detail?.code" class="ml-1">(error code: {{detail?.code}})
             </span>
         </div>
     </div>

@@ -3,13 +3,14 @@ package io.cloudflight.jems.server.project.service.create_new_project_version
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -19,38 +20,38 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
-import java.sql.Timestamp
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 internal class CreateNewProjectVersionTest : UnitTest() {
 
     private val projectId = 11L
     private val userId = 1L
-    private val user = User(
+    private val user = UserEntity(
         id = userId,
         email = "admin@admin.dev",
         name = "Name",
         surname = "Surname",
-        userRole = UserRole(id = 1, name = "ADMIN"),
+        userRole = UserRoleEntity(id = 1, name = "ADMIN"),
         password = "hash_pass"
     )
     private val currentProjectVersion = ProjectVersion(
-        1,
+        "1.0",
         projectId,
-        createdAt = Timestamp.valueOf(LocalDateTime.now()),
+        createdAt = ZonedDateTime.now(),
         user,
         ApplicationStatus.RETURNED_TO_APPLICANT
     )
     private val newProjectVersion = ProjectVersion(
-        2,
+        "2.0",
         projectId,
-        createdAt = Timestamp.valueOf(LocalDateTime.now()),
+        createdAt = ZonedDateTime.now(),
         user,
         ApplicationStatus.SUBMITTED
     )
 
     private val projectSummary = ProjectSummary(
         id = projectId,
+        callName = "",
         acronym = "Gleason Inc",
         status = ApplicationStatus.SUBMITTED
     )
@@ -76,7 +77,10 @@ internal class CreateNewProjectVersionTest : UnitTest() {
         every { projectVersionPersistence.getLatestVersionOrNull(projectId) } returns currentProjectVersion
         every {
             projectVersionPersistence.createNewVersion(
-                projectId, currentProjectVersion.version + 1, ApplicationStatus.SUBMITTED, userId
+                projectId,
+                ProjectVersionUtils.increaseMajor(currentProjectVersion.version),
+                ApplicationStatus.SUBMITTED,
+                userId
             )
         } returns newProjectVersion
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary

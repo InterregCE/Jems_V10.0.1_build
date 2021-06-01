@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {OutputCurrentUser} from '@cat/api';
+import {OutputCurrentUser, UserRoleDTO} from '@cat/api';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
@@ -17,7 +17,9 @@ export class PermissionGuard implements CanActivate {
     let allowed = true;
     const permissionsOnly = childRoute?.data?.permissionsOnly;
     if (permissionsOnly) {
-      allowed = permissionsOnly.some((only: string) => user?.role === only);
+      // TODO after switching all use cases to Permissions, remove 'role name' check
+      allowed = permissionsOnly.some((only: string) => user?.role?.name === only)
+        || permissionsOnly.some((only: string) => user?.role?.permissions.includes(only as UserRoleDTO.PermissionsEnum));
     }
     if (!allowed) {
       Log.info('Current user role cannot access this route:', this, user?.role);

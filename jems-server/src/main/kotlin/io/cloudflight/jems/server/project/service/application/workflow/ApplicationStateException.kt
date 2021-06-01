@@ -94,3 +94,11 @@ class ReturnToApplicantIsNotPossibleException(fromStatus: ApplicationStatus, toS
         mapOf("fromStatus" to fromStatus.name, "toStatus" to toStatus.name )
     )
 )
+
+class StartSecondStepIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-012",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.start.second.step.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)

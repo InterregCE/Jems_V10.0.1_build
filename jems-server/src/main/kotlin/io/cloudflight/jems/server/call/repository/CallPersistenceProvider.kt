@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpS
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -46,8 +46,11 @@ class CallPersistenceProvider(
         callRepo.findFirstByName(name)?.id
 
     @Transactional
-    override fun createCall(call: Call, userId: Long): CallDetail =
-        callRepo.save(
+    override fun createCall(call: Call, userId: Long): CallDetail {
+
+        adjustTimeToLastNanoSec(call)
+
+        return callRepo.save(
             call.toEntity(
                 user = userRepo.getOne(userId),
                 retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getOne(it) },
@@ -55,10 +58,13 @@ class CallPersistenceProvider(
                 retrieveFunds = { programmeFundRepo.getTop20ByIdInAndSelectedTrue(it).toSet() },
             )
         ).toDetailModel()
+    }
 
     @Transactional
     override fun updateCall(call: Call): CallDetail {
         val existingCall = callRepo.findById(call.id).orElseThrow { CallNotFound() }
+
+        adjustTimeToLastNanoSec(call)
 
         return callRepo.save(
             call.toEntity(
@@ -112,4 +118,12 @@ class CallPersistenceProvider(
     override fun hasAnyCallPublished() =
         callRepo.existsByStatus(CallStatus.PUBLISHED)
 
+
+    private fun adjustTimeToLastNanoSec(call: Call) {
+
+        call.startDate = call.startDate.withSecond(0).withNano(0)
+        call.endDateStep1 = call.endDateStep1?.withSecond(0)?.withNano(0)?.plusMinutes(1)?.minusNanos(1)
+        call.endDate = call.endDate.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
+
+    }
 }

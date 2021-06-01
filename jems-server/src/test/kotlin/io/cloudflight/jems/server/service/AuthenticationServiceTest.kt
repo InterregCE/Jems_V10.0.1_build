@@ -1,14 +1,15 @@
 package io.cloudflight.jems.server.service
 
 import io.cloudflight.jems.api.authentication.dto.LoginRequest
-import io.cloudflight.jems.api.user.dto.OutputUserRole
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
+import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.service.AuthenticationServiceImpl
+import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.user.service.model.UserRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -47,9 +48,9 @@ class AuthenticationServiceTest {
     @Test
     fun `logging in is audited`() {
         every { securityService.currentUser } returns LocalCurrentUser(
-            OutputUserWithRole(
+            User(
                 1, "admin@test.net", "test", "test",
-                OutputUserRole(1, "Role")
+                UserRole(1, "Role", emptySet())
             ), "", Collections.emptyList()
         )
 
@@ -74,23 +75,24 @@ class AuthenticationServiceTest {
     @Test
     fun `current user is returned`() {
         every { securityService.currentUser } returns LocalCurrentUser(
-            OutputUserWithRole(
+            User(
                 1, "test@test.net", "test", "test",
-                OutputUserRole(1, "Role")
+                UserRole(1, "Role", emptySet())
             ), "", Collections.emptyList()
         )
 
         val currentUser = authenticationService.getCurrentUser()
 
         assertThat(currentUser.name).isEqualTo("test@test.net")
-        assertThat(currentUser.role).isEqualTo("Role")
+        assertThat(currentUser.role.name).isEqualTo("Role")
     }
 
     @Test
     fun `current user is null`() {
+        every { securityService.currentUser } returns null
         val currentUser = authenticationService.getCurrentUser()
 
         assertThat(currentUser.name).isEqualTo("")
-        assertThat(currentUser.role).isEqualTo("")
+        assertThat(currentUser.role).isEqualTo(UserRoleDTO(name = "", permissions = emptyList()))
     }
 }

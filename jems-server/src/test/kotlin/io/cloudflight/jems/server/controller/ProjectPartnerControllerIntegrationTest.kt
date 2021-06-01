@@ -5,7 +5,9 @@ import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.factory.CallFactory
 import io.cloudflight.jems.server.factory.ProgrammeDataFactory
+import io.cloudflight.jems.server.factory.ProjectFactory
 import io.cloudflight.jems.server.factory.ProjectFileFactory
+import io.cloudflight.jems.server.factory.ProjectPartnerFactory
 import io.cloudflight.jems.server.factory.UserFactory
 import io.cloudflight.jems.server.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
 import net.bytebuddy.utility.RandomString
@@ -16,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithUserDetails
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -35,6 +38,12 @@ class ProjectPartnerControllerIntegrationTest {
 
     @Autowired
     private lateinit var projectFileFactory: ProjectFileFactory
+
+    @Autowired
+    private lateinit var projectFactory: ProjectFactory
+
+    @Autowired
+    private lateinit var projectPartnerFactory: ProjectPartnerFactory
 
     @Autowired
     private lateinit var programmeDataFactory: ProgrammeDataFactory
@@ -91,6 +100,68 @@ class ProjectPartnerControllerIntegrationTest {
             .andExpect(
                 jsonPath("$.formErrors.abbreviation.i18nKey")
                     .value("project.partner.name.size.too.long")
+            )
+    }
+
+    @Test
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
+    fun `project partner get list`() {
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
+        val project = projectFactory.saveProject(userFactory.adminUser, call)
+        val projectPartner = projectPartnerFactory.saveProjectPartner(userFactory.adminUser, project)
+
+        mockMvc.perform(
+            get("/api/project/${project.id}/partner")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.numberOfElements").value(1))
+            .andExpect(jsonPath("$.content[0].id").value(projectPartner.id))
+            .andExpect(jsonPath("$.content[0].abbreviation").value(projectPartner.abbreviation))
+    }
+
+    @Test
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
+    fun `project partner get list by ids`() {
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
+        val project = projectFactory.saveProject(userFactory.adminUser, call)
+        val projectPartner = projectPartnerFactory.saveProjectPartner(userFactory.adminUser, project)
+
+        mockMvc.perform(
+            get("/api/project/${project.id}/partner/ids")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].id").value(projectPartner.id))
+    }
+
+    @Test
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
+    fun `project partner get`() {
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
+        val project = projectFactory.saveProject(userFactory.adminUser, call)
+        val projectPartner = projectPartnerFactory.saveProjectPartner(userFactory.adminUser, project)
+
+        mockMvc.perform(
+            get("/api/project/${project.id}/partner/${projectPartner.id}")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(projectPartner.id))
+            .andExpect(jsonPath("$.abbreviation").value(projectPartner.abbreviation))
+    }
+
+    @Test
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
+    fun `project partner not found`() {
+        mockMvc.perform(
+            get("/api/project/1/partner/0")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isInternalServerError)
+            .andExpect(
+                jsonPath("$.i18nMessage.i18nKey")
+                    .value("use.case.get.project.partner.by.id.failed")
             )
     }
 }

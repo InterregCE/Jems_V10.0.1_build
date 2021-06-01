@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "941b2481-3022-4d74-9c0d-4ff1ea45a1b7",
+		"_postman_id": "90c0abd9-b128-4ee0-9d3d-9b622e700817",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -1739,15 +1739,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('should fail with 400', function () {",
-									"    pm.response.to.have.status(400);",
+									"pm.test('should fail with 422', function () {",
+									"    pm.response.to.have.status(422);",
 									"});",
 									"",
 									"pm.test('should return validation errors', function () {",
 									"    const response = pm.response.json();",
-									"    pm.expect(response.formErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
-									"    pm.expect(response.formErrors.name.i18nKey).to.contain('user.name.wrong.size');",
-									"    pm.expect(response.formErrors.userRoleId.i18nKey).to.contain('user.userRoleId.should.not.be.empty');",
+									"    pm.expect(response.formErrors.surname.i18nKey).to.contain('common.error.field.blank');",
+									"    pm.expect(response.formErrors.name.i18nKey).to.contain('common.error.field.blank');",
 									"    pm.expect(response.formErrors.email.i18nKey).to.contain('user.email.wrong.format');",
 									"});",
 									""
@@ -1801,16 +1800,15 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('should fail with 400', function () {",
-									"    pm.response.to.have.status(400);",
+									"pm.test('should fail with 422', function () {",
+									"    pm.response.to.have.status(422);",
 									"});",
 									"",
 									"pm.test('should return validation errors', function () {",
 									"    const response = pm.response.json();",
-									"    pm.expect(response.formErrors.surname.i18nKey).to.contain('user.surname.wrong.size');",
-									"    pm.expect(response.formErrors.name.i18nKey).to.contain('user.name.wrong.size');",
-									"    pm.expect(response.formErrors.userRoleId.i18nKey).to.contain('user.userRoleId.should.not.be.empty');",
-									"    pm.expect(response.formErrors.email.i18nKey).to.contain('user.email.should.not.be.empty');",
+									"    pm.expect(response.formErrors.surname.i18nKey).to.contain('common.error.field.blank');",
+									"    pm.expect(response.formErrors.name.i18nKey).to.contain('common.error.field.blank');",
+									"    pm.expect(response.formErrors.email.i18nKey).to.contain('user.email.wrong.format');",
 									"});",
 									""
 								],
@@ -1841,7 +1839,66 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"userRoleId\": null\n}"
+							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"userRoleId\": -1\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user invalid role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('should fail with 404 role not found', function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test('should return error role not found', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.details[0].i18nMessage.i18nKey).to.contain('use.case.create.user.user.role.not.found');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"his.user@shouldnot.exist\",\n\t\"name\": \"This user\",\n\t\"surname\": \"should not exist\",\n    \"userRoleId\": -1\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/user",
@@ -2789,7 +2846,7 @@
 					"response": []
 				},
 				{
-					"name": "programme user cannot see list of files",
+					"name": "programme user NOW CAN see list of all files",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -2804,14 +2861,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('programme user should not be able to see files when application is DRAFT', function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									"\r",
-									"pm.test('programme user should not be able to see files because he cannot see project in DRAFT', function() {\r",
-									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"i18nMessage\");\r",
-									"    pm.expect(response.i18nMessage.i18nKey).to.equal(\"project.not.exists\");\r",
+									"pm.test('programme user is now able to see project in DRAFT, so he can also see applicant files', function() {\r",
+									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									""
 								],
@@ -2874,14 +2925,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('programme user should not be able to upload APPLICANT file when he cannot read project itself', function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									"\r",
-									"pm.test('programme user can see the error - he cannot see project itself', function() {\r",
-									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"i18nMessage\");\r",
-									"    pm.expect(response.i18nMessage.i18nKey).to.equal(\"project.not.exists\");\r",
+									"pm.test('programme user should not be able to upload APPLICANT file', function() {\r",
+									"    pm.response.to.have.status(403);\r",
 									"});\r",
 									""
 								],
@@ -2960,14 +3005,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('programme user should not be able to set description, when he cannot see DRAFT project', function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									"\r",
-									"pm.test('programme user can see the error - he cannot find project itself', function() {\r",
-									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"i18nMessage\");\r",
-									"    pm.expect(response.i18nMessage.i18nKey).to.equal(\"project.not.exists\");\r",
+									"pm.test('programme user should not be able to set description, although he can see DRAFT project', function() {\r",
+									"    pm.response.to.have.status(403);\r",
 									"});\r",
 									""
 								],
@@ -3020,7 +3059,7 @@
 					"response": []
 				},
 				{
-					"name": "programme user cannot download file",
+					"name": "programme user NOW CAN download applicant file",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -3035,14 +3074,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('programme user should not be able to download file, cause he cannot see application in DRAFT', function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									"\r",
-									"pm.test('programme user can see the error - he cannot find project itself', function() {\r",
-									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"i18nMessage\");\r",
-									"    pm.expect(response.i18nMessage.i18nKey).to.equal(\"project.not.exists\");\r",
+									"pm.test('programme user is able to download also APPLICANT file, cause he can see application in DRAFT', function() {\r",
+									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									""
 								],
@@ -3079,6 +3112,73 @@
 								"{{application_id}}",
 								"file",
 								"{{file_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Disable standard-pre-condition-check-plugin",
+			"item": [
+				{
+					"name": "Disable standard-pre-condition-check-plugin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\r",
+									"    'pluginKey',\r",
+									"    'standard-pre-condition-check-plugin'\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('standard-pre-condition-check-plugin should be disabled', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{admin_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{admin_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/plugin/{{pluginKey}}/disable",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"plugin",
+								"{{pluginKey}}",
+								"disable"
 							]
 						}
 					},
@@ -3161,6 +3261,83 @@
 							"path": [
 								"api",
 								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "fill in project title",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+									"pm.variables.set(\r",
+									"    'project_title',\r",
+									"    projectName.substr(0,250)\r",
+									");\r",
+									"pm.variables.set(\r",
+									"    'project_acronym_to_create',\r",
+									"    projectName.substr(0,25)\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('project title should be saved', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}"
 							]
 						}
 					},
@@ -3945,6 +4122,83 @@
 					"response": []
 				},
 				{
+					"name": "fill in project title",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+									"pm.variables.set(\r",
+									"    'project_title',\r",
+									"    projectName.substr(0,250)\r",
+									");\r",
+									"pm.variables.set(\r",
+									"    'project_acronym_to_create',\r",
+									"    projectName.substr(0,25)\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('project title should be saved', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "submit application",
 					"event": [
 						{
@@ -4091,7 +4345,7 @@
 									"});\r",
 									"\r",
 									"pm.test('EA is part of the application detail', function() {\r",
-									"    const application = pm.response.json();\r",
+									"    const application = pm.response.json().decision;\r",
 									"    pm.expect(application).to.have.property(\"eligibilityAssessment\");\r",
 									"    pm.expect(application.eligibilityAssessment).not.eql(null);\r",
 									"});\r",
@@ -4103,13 +4357,13 @@
 									"\r",
 									"pm.test('EA result is properly saved', function() {\r",
 									"    const application = pm.response.json();\r",
-									"    pm.expect(application.eligibilityAssessment.result)\r",
+									"    pm.expect(application.decision.eligibilityAssessment.result)\r",
 									"        .to.eql(\"PASSED\");\r",
 									"});\r",
 									"\r",
 									"pm.test('EA note is properly saved', function() {\r",
 									"    const application = pm.response.json();\r",
-									"    pm.expect(application.eligibilityAssessment.note)\r",
+									"    pm.expect(application.decision.eligibilityAssessment.note)\r",
 									"        .to.eql(\"status set to passed\");\r",
 									"});\r",
 									""
@@ -4249,8 +4503,13 @@
 									"    pm.response.to.have.status(422);\r",
 									"});\r",
 									"\r",
-									"pm.test('correct translation key returned for this error', function() {\r",
-									"    pm.expect(pm.response.json().formErrors['decisionDate'].i18nKey).to.eql('common.error.field.required')\r",
+									"pm.test('correct error returned', function() {\r",
+									"    pm.expect(pm.response.json().code).to.eql('S-PA-SAAE');\r",
+									"    pm.expect(pm.response.json().i18nMessage.i18nKey).to.eql('use.case.set.application.as.eligible.failed');\r",
+									"});\r",
+									"\r",
+									"pm.test('correct error detail translation key returned', function() {\r",
+									"    pm.expect(pm.response.json().formErrors.decisionDate.i18nKey).to.eql('common.error.field.required');\r",
 									"});\r",
 									""
 								],
@@ -4323,9 +4582,13 @@
 									"    pm.response.to.have.status(422);\r",
 									"});\r",
 									"\r",
-									"pm.test('correct translation key returned for this error', function() {\r",
-									"    pm.expect(pm.response.json().formErrors.decisionDate.i18nKey)\r",
-									"        .to.eql('common.error.date.is.in.future')\r",
+									"pm.test('correct error returned', function() {\r",
+									"    pm.expect(pm.response.json().code).to.eql('S-PA-SAAE');\r",
+									"    pm.expect(pm.response.json().i18nMessage.i18nKey).to.eql('use.case.set.application.as.eligible.failed');\r",
+									"});\r",
+									"\r",
+									"pm.test('correct error detail translation key returned', function() {\r",
+									"    pm.expect(pm.response.json().formErrors.decisionDate.i18nKey).to.eql('common.error.date.is.in.future');\r",
 									"});\r",
 									""
 								],
@@ -4734,6 +4997,83 @@
 							"response": []
 						},
 						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "submit application",
 							"event": [
 								{
@@ -4879,24 +5219,26 @@
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
 											"\r",
-											"const application = pm.response.json();\r",
-											"\r",
 											"pm.test('QA is part of the application detail', function() {\r",
-											"    pm.expect(application).to.have.property(\"qualityAssessment\");\r",
-											"    pm.expect(application.qualityAssessment).not.eql(null);\r",
+											"    const application = pm.response.json();\r",
+											"    pm.expect(application.decision).to.have.property(\"qualityAssessment\");\r",
+											"    pm.expect(application.decision.qualityAssessment).not.eql(null);\r",
 											"});\r",
 											"\r",
 											"pm.test('status of the application is not changed', function() {\r",
+											"    const application = pm.response.json();\r",
 											"    pm.expect(application.projectStatus.status).to.eql('SUBMITTED');\r",
 											"});\r",
 											"\r",
 											"pm.test('QA result is properly saved', function() {\r",
-											"    pm.expect(application.qualityAssessment.result)\r",
+											"    const application = pm.response.json();\r",
+											"    pm.expect(application.decision.qualityAssessment.result)\r",
 											"        .to.eql(\"RECOMMENDED_FOR_FUNDING\");\r",
 											"});\r",
 											"\r",
 											"pm.test('QA note is properly saved', function() {\r",
-											"    pm.expect(application.qualityAssessment.note)\r",
+											"    const application = pm.response.json();\r",
+											"    pm.expect(application.decision.qualityAssessment.note)\r",
 											"        .to.eql(\"status set to recommended for funding\");\r",
 											"});\r",
 											""
@@ -5093,6 +5435,83 @@
 									"path": [
 										"api",
 										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
 									]
 								}
 							},
@@ -5448,6 +5867,83 @@
 									"path": [
 										"api",
 										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
 									]
 								}
 							},
@@ -5831,8 +6327,9 @@
 											"\r",
 											"pm.test('funding decision is part of the project object', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application).to.have.property('fundingDecision');\r",
-											"    pm.expect(application.fundingDecision)\r",
+											"    const decision = application.decision;\r",
+											"    pm.expect(decision).to.have.property('fundingDecision');\r",
+											"    pm.expect(decision.fundingDecision)\r",
 											"        .deep.equal(application.projectStatus);\r",
 											"});\r",
 											""
@@ -5950,6 +6447,83 @@
 									"path": [
 										"api",
 										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
 									]
 								}
 							},
@@ -6097,10 +6671,10 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-                                          "var date = new Date();\r",
-                                          "date.setDate(date.getDate() - 5);\r",
-                                          "pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
-                                          ""
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() - 5);\r",
+											"pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -6136,21 +6710,21 @@
 								},
 								"method": "PUT",
 								"header": [
-                                  {
-                                    "key": "Content-Type",
-                                    "type": "text",
-                                    "value": "application/json"
-                                  }
-                                ],
-                              "body": {
-                                "mode": "raw",
-                                "raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
-                                "options": {
-                                  "raw": {
-                                    "language": "json"
-                                  }
-                                }
-                              },
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}/approve",
 									"host": [
@@ -6243,6 +6817,83 @@
 									"path": [
 										"api",
 										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
 									]
 								}
 							},
@@ -6451,10 +7102,10 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-                                          "var date = new Date();\r",
-                                          "date.setDate(date.getDate() - 5);\r",
-                                          "pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
-                                          ""
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() - 5);\r",
+											"pm.variables.set('funding_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -6490,21 +7141,21 @@
 								},
 								"method": "PUT",
 								"header": [
-                                  {
-                                    "key": "Content-Type",
-                                    "type": "text",
-                                    "value": "application/json"
-                                  }
-                                ],
-                                "body": {
-                                  "mode": "raw",
-                                  "raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
-                                  "options": {
-                                    "raw": {
-                                      "language": "json"
-                                    }
-                                  }
-                                },
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_5}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}/approve",
 									"host": [
@@ -6597,6 +7248,83 @@
 									"path": [
 										"api",
 										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in project title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const projectName = pm.variables.replaceIn('{{$randomBs}}')\r",
+											"pm.variables.set(\r",
+											"    'project_title',\r",
+											"    projectName.substr(0,250)\r",
+											");\r",
+											"pm.variables.set(\r",
+											"    'project_acronym_to_create',\r",
+											"    projectName.substr(0,25)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('project title should be saved', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"acronym\": \"{{project_acronym_to_create}}\",\n\t    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ]\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}"
 									]
 								}
 							},
@@ -6985,8 +7713,9 @@
 											"\r",
 											"pm.test('funding decision is part of the project object', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application).to.have.property('fundingDecision');\r",
-											"    pm.expect(application.fundingDecision)\r",
+											"    const decision = application.decision;\r",
+											"    pm.expect(decision).to.have.property('fundingDecision');\r",
+											"    pm.expect(decision.fundingDecision)\r",
 											"        .deep.equal(application.projectStatus);\r",
 											"});\r",
 											""
@@ -7324,10 +8053,11 @@
 											"\r",
 											"pm.test('project status should refer to this change', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application.fundingDecision).to.have.property('id');\r",
+											"    const decision = application.decision;\r",
+											"    pm.expect(decision.fundingDecision).to.have.property('id');\r",
 											"    pm.expect(application.projectStatus).to.have.property('id');\r",
 											"    // fundingDecision is still referring to the first funding attempt\r",
-											"    pm.expect(application.fundingDecision.id)\r",
+											"    pm.expect(decision.fundingDecision.id)\r",
 											"        .not.eql(application.projectStatus.id);\r",
 											"});\r",
 											""
@@ -7688,15 +8418,14 @@
 									"pm.test('applicant cannot update Partner B to be LEAD when A already is', function() {\r",
 									"    const error = pm.response.json();\r",
 									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.i18nMessage.i18nKey).to.eql(\"project.partner.role.lead.already.existing\");\r",
+									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.update.project.partner.role.lead.already.existing\");\r",
 									"});\r",
 									"\r",
 									"pm.test('correct id is sent to FE in error response', function() {\r",
 									"    const error = pm.response.json();\r",
-									"    pm.expect(error.i18nMessage.i18nArguments[0]).to.eql(pm.variables.get('partnerIdA') + \"\",);\r",
-									"    pm.expect(error.i18nMessage.i18nArguments[1]).to.eql(pm.variables.get('partnerAbbreviationALead') + \"\");\r",
-									"});\r",
-									""
+									"    pm.expect(error.details[0].i18nMessage.i18nArguments.currentLeadId).to.eql(pm.variables.get('partnerIdA') + \"\",);\r",
+									"    pm.expect(error.details[0].i18nMessage.i18nArguments.currentLeadAbbreviation).to.eql(pm.variables.get('partnerAbbreviationALead') + \"\");\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -7834,7 +8563,7 @@
 									"\r",
 									"pm.test('applicant cannot create LeadPartner C cause B is now LeadPartner', function() {\r",
 									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.i18nMessage.i18nKey).to.eql(\"project.partner.role.lead.already.existing\");\r",
+									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.create.project.partner.role.lead.already.existing\");\r",
 									"});\r",
 									""
 								],
@@ -7904,7 +8633,7 @@
 									"\r",
 									"pm.test('applicant cannot override LeadPartner A cause B is now LeadPartner', function() {\r",
 									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.i18nMessage.i18nKey).to.eql(\"project.partner.oldLeadPartnerId.is.not.lead\");\r",
+									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.create.project.partner.oldLeadPartnerId.is.not.lead\");\r",
 									"});\r",
 									""
 								],
@@ -8457,6 +9186,21 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "PUT",
 								"header": [
 									{
@@ -10508,6 +11252,21 @@
 								}
 							],
 							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "PUT",
 								"header": [
 									{
@@ -11221,6 +11980,73 @@
 								"output",
 								"forWorkPackage",
 								"{{workPackage_id_2}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Enable standard-pre-condition-check-plugin",
+			"item": [
+				{
+					"name": "Enable standard-pre-condition-check-plugin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\r",
+									"    'pluginKey',\r",
+									"    'standard-pre-condition-check-plugin'\r",
+									");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('standard-pre-condition-check-plugin should be enabled', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{admin_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{admin_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/plugin/{{pluginKey}}/enable",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"plugin",
+								"{{pluginKey}}",
+								"enable"
 							]
 						}
 					},

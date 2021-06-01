@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import {Observable} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {InputUserRegistration} from '@cat/api';
+import {UserRegistrationDTO} from '@cat/api';
 import {RegistrationPageService} from '../../services/registration-page.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class RegistrationPageComponent{
     this.saveError$ = this.userRegistrationService.saveError();
   }
 
-  registerApplicant(user: InputUserRegistration): void {
+  registerApplicant(user: UserRegistrationDTO): void {
     this.userRegistrationService.registerApplicant(user);
   }
 

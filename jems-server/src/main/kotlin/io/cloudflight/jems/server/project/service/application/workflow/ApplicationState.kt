@@ -2,9 +2,11 @@ package io.cloudflight.jems.server.project.service.application.workflow
 
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.callAlreadyEnded
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import java.time.LocalDate
 
@@ -12,7 +14,8 @@ abstract class ApplicationState(
     protected open val projectSummary: ProjectSummary,
     protected open val projectWorkflowPersistence: ProjectWorkflowPersistence,
     protected open val auditService: AuditService,
-    protected open val securityService: SecurityService
+    protected open val securityService: SecurityService,
+    protected open val projectPersistence: ProjectPersistence
 ) {
 
     open fun submit(): ApplicationStatus =
@@ -45,6 +48,11 @@ abstract class ApplicationState(
             projectSummary.status
         )
 
+    open fun startSecondStep(): ApplicationStatus =
+        throw StartSecondStepIsNotAllowedException(
+            projectSummary.status
+        )
+
     open fun revertDecision(): ApplicationStatus =
         throw RevertLastActionOnApplicationIsNotAllowedException(
             projectSummary.status
@@ -61,7 +69,7 @@ abstract class ApplicationState(
 
     protected fun getPossibleStatusToRevertToDefaultImpl(validRevertStatuses: Set<ApplicationStatus>) =
         projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).let { previousStatus ->
-            validRevertStatuses.firstOrNull { it === previousStatus }
+            validRevertStatuses.firstOrNull { it === previousStatus.status }
         }
 
     protected fun returnToApplicantDefaultImpl(): ApplicationStatus =
@@ -71,15 +79,23 @@ abstract class ApplicationState(
             status = ApplicationStatus.RETURNED_TO_APPLICANT
         )
 
+    protected fun startSecondStepDefaultImpl(): ApplicationStatus =
+        isCallStep2Open().run {
+            projectWorkflowPersistence.startSecondStep(
+                projectId = projectSummary.id,
+                userId = securityService.getUserIdOrThrow(),
+            )
+        }
+
     protected fun revertCurrentStatusToPreviousStatus(validRevertStatuses: Set<ApplicationStatus>): ApplicationStatus =
         projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).also { previousStatus ->
 
-            if (!validRevertStatuses.contains(previousStatus))
-                throw DecisionReversionIsNotPossibleException(projectSummary.status, previousStatus)
+            if (!validRevertStatuses.contains(previousStatus.status))
+                throw DecisionReversionIsNotPossibleException(projectSummary.status, previousStatus.status)
 
             projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(projectSummary.id)
 
-        }
+        }.status
 
     protected fun ifFundingDecisionDateIsValid(fundingDecisionDate: LocalDate?) {
         projectWorkflowPersistence.getProjectEligibilityDecisionDate(projectSummary.id).let { decisionDate ->
@@ -88,4 +104,39 @@ abstract class ApplicationState(
         }
     }
 
+    protected fun updateEligibilityDecision(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
+        projectWorkflowPersistence.updateProjectEligibilityDecision(
+            projectId = projectSummary.id,
+            userId = securityService.getUserIdOrThrow(),
+            status = targetStatus,
+            actionInfo = actionInfo
+        )
+
+    protected fun updateFundingDecision(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
+        ifFundingDecisionDateIsValid(actionInfo.date).run {
+            projectWorkflowPersistence.updateProjectFundingDecision(
+                projectSummary.id,
+                securityService.getUserIdOrThrow(),
+                targetStatus,
+                actionInfo
+            )
+        }
+
+    protected fun isCallStep1Open() =
+        projectPersistence.getProjectCallSettings(projectSummary.id).also { projectCallSettings ->
+            if (projectCallSettings.isCallStep1Closed()) {
+                auditService.logEvent(callAlreadyEnded(projectCallSettings.callId))
+
+                throw CallIsNotOpenException()
+            }
+        }
+
+    protected fun isCallStep2Open() =
+        projectPersistence.getProjectCallSettings(projectSummary.id).also { projectCallSettings ->
+            if (projectCallSettings.isCallStep2Closed()) {
+                auditService.logEvent(callAlreadyEnded(projectCallSettings.callId))
+
+                throw CallIsNotOpenException()
+            }
+        }
 }

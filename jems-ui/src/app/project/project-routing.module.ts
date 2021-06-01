@@ -1,7 +1,7 @@
 import {Routes} from '@angular/router';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
-import {ProjectApplicationQualityCheckComponent} from './project-application/components/project-application-detail/project-application-quality-check/project-application-quality-check.component';
-import {ProjectApplicationEligibilityCheckComponent} from './project-application/components/project-application-detail/project-application-eligibility-check/project-application-eligibility-check.component';
+import {ProjectApplicationQualityCheckComponent} from './project-detail-page/project-application-quality-check/project-application-quality-check.component';
+import {ProjectApplicationEligibilityCheckComponent} from './project-detail-page/project-application-eligibility-check/project-application-eligibility-check.component';
 import {ProjectApplicationFundingPageComponent} from './project-detail-page/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-detail-page/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
 import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
@@ -28,6 +28,7 @@ import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/p
 import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/budget-page-per-partner.component';
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
+import {UserRoleDTO} from '@cat/api';
 
 export const routes: Routes = [
   {
@@ -37,6 +38,8 @@ export const routes: Routes = [
       {
         path: '',
         component: ProjectApplicationComponent,
+        canActivate: [PermissionGuard],
+        data: {permissionsOnly: [UserRoleDTO.PermissionsEnum.ProjectRetrieve]},
       },
       {
         path: 'applyTo/:callId',
@@ -61,7 +64,7 @@ export const routes: Routes = [
             canActivate: [PermissionGuard],
             children: [
               {
-                path: 'eligibilityDecision',
+                path: 'eligibilityDecision/:step',
                 component: ProjectApplicationEligibilityDecisionPageComponent,
                 data: {
                   breadcrumb: 'project.breadcrumb.eligibilityDecision',
@@ -70,7 +73,7 @@ export const routes: Routes = [
                 canActivate: [PermissionGuard]
               },
               {
-                path: 'qualityCheck',
+                path: 'qualityCheck/:step',
                 component: ProjectApplicationQualityCheckComponent,
                 data: {
                   breadcrumb: 'project.breadcrumb.qualityCheck',
@@ -78,7 +81,7 @@ export const routes: Routes = [
                 },
               },
               {
-                path: 'eligibilityCheck',
+                path: 'eligibilityCheck/:step',
                 component: ProjectApplicationEligibilityCheckComponent,
                 data: {
                   breadcrumb: 'project.breadcrumb.eligibilityCheck',
@@ -87,7 +90,7 @@ export const routes: Routes = [
                 canActivate: [PermissionGuard]
               },
               {
-                path: 'fundingDecision',
+                path: 'fundingDecision/:step',
                 component: ProjectApplicationFundingPageComponent,
                 data: {
                   breadcrumb: 'project.breadcrumb.fundingDecision',

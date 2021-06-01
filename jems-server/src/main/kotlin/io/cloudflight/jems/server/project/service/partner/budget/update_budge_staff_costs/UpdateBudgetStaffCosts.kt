@@ -54,7 +54,7 @@ class UpdateBudgetStaffCosts(
                     this.truncateBaseEntryNumbers()
                     this.pricePerUnit.truncate()
                 }
-            }.toSet()
+            }.toList()
         )
     }
 

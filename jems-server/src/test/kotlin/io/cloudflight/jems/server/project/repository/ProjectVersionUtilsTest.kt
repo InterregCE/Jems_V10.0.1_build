@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 internal class ProjectVersionUtilsTest : UnitTest() {
 
     private val projectId = 11L
-    private val version = 1
+    private val version = "1.0"
     private val timestamp = Timestamp.valueOf(LocalDateTime.now())
     private val currentVersionFetcher = { "currentVersion" }
     private val previousVersionFetcher = { timestamp: Timestamp -> "previousVersion for timestamp: $timestamp" }
@@ -38,15 +38,5 @@ internal class ProjectVersionUtilsTest : UnitTest() {
         every { projectVersionRepository.findTimestampByVersion(projectId, version) } returns timestamp
         val result = projectVersionUtils.fetch(version, projectId, currentVersionFetcher, previousVersionFetcher)
         assertThat(result).isEqualTo("previousVersion for timestamp: $timestamp")
-    }
-
-    @Test
-    fun `should throw ApplicationVersionNotFoundException when version is not exist`() {
-
-        every { projectVersionRepository.findTimestampByVersion(projectId, version) } returns null
-
-        assertThrows<ApplicationVersionNotFoundException> {
-            projectVersionUtils.fetch(version, projectId, currentVersionFetcher, previousVersionFetcher)
-        }
     }
 }

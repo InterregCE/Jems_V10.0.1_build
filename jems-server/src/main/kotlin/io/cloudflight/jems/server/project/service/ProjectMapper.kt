@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEnt
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.jems.server.project.controller.toDto
-import io.cloudflight.jems.server.project.dto.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.entity.ProjectData
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
@@ -21,18 +21,19 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.ProjectTransl
 import io.cloudflight.jems.server.project.entity.TranslationId
 import io.cloudflight.jems.server.project.repository.toSettingsModel
-import io.cloudflight.jems.server.user.entity.User
+import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.toOutputUser
 
 fun InputProject.toEntity(
     call: CallEntity,
-    applicant: User,
+    applicant: UserEntity,
     statusHistoryEntity: ProjectStatusHistoryEntity
 ) = ProjectEntity(
     call = call,
     acronym = this.acronym!!,
     applicant = applicant,
-    currentStatus = statusHistoryEntity
+    currentStatus = statusHistoryEntity,
+    step2Active = false
 )
 
 fun ProjectEntity.toOutputProject() = ProjectDetailDTO(
@@ -43,10 +44,9 @@ fun ProjectEntity.toOutputProject() = ProjectDetailDTO(
     projectStatus = currentStatus.toOutputProjectStatus(),
     firstSubmission = firstSubmission?.toOutputProjectStatus(),
     lastResubmission = lastResubmission?.toOutputProjectStatus(),
-    qualityAssessment = qualityAssessment?.toOutputProjectQualityAssessment(),
-    eligibilityAssessment = eligibilityAssessment?.toOutputProjectEligibilityAssessment(),
-    eligibilityDecision = eligibilityDecision?.toOutputProjectStatus(),
-    fundingDecision = fundingDecision?.toOutputProjectStatus(),
+    step2Active = step2Active,
+    firstStepDecision = firstStepDecision?.toProjectDecisionDTO(),
+    secondStepDecision = secondStepDecision?.toProjectDecisionDTO(),
     projectData = projectData?.toOutputProjectData(priorityPolicy),
     periods = periods.map { it.toOutputPeriod() }
 )
@@ -64,7 +64,7 @@ fun ProjectEntity.toOutputProjectSimple() = OutputProjectSimple(
 
 fun ProjectEntity.toApplicantAndStatus() = ProjectApplicantAndStatus(
     applicantId = applicant.id,
-    projectStatus = ApplicationStatusDTO.valueOf(currentStatus.status.name)
+    projectStatus = currentStatus.status,
 )
 
 fun InputProjectData.toEntity(projectId: Long) = ProjectData(

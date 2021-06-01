@@ -2,7 +2,7 @@
           (discard)="resetForm()">
     <form appFormLayout [formGroup]="applicationForm">
         <h3>{{'project.application.form.section.part.a.subsection.one' | translate}}</h3>
-        <mat-form-field  appFormFieldWidth="xx-large">
+        <mat-form-field appFormFieldWidth="xx-large">
             <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
             <input name="projectId" formControlName="projectId" matInput>
         </mat-form-field>
@@ -10,7 +10,7 @@
         <mat-form-field>
             <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
             <input name="acronym" formControlName="acronym" matInput>
-            <app-context-info *ngIf="editable"
+            <app-context-info *ngIf="applicationForm.enabled"
                               infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
             </app-context-info>
             <mat-error>
@@ -61,7 +61,7 @@
 
 
         <h4>{{'project.application.project.priority.title' | translate}}</h4>
-        <mat-form-field *ngIf="editable">
+        <mat-form-field *ngIf="applicationForm.enabled">
             <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
             <mat-select (selectionChange)="changeCurrentPriority($event.value)" required [(value)]=currentPriority
                         formControlName="programmePriority">
@@ -77,7 +77,7 @@
             </mat-error>
         </mat-form-field>
 
-        <ng-container *ngIf="editable && currentPriority">
+        <ng-container *ngIf="applicationForm.enabled && currentPriority">
             <h4>{{'programme.priority.objective.title' | translate}}</h4>
             <mat-radio-group
                     formControlName="specificObjective"
@@ -97,7 +97,7 @@
             </mat-error>
         </ng-container>
 
-        <div *ngIf="!editable">
+        <div *ngIf="!applicationForm.enabled">
             <div>{{'project.application.form.field.project.priority' | translate}}</div>
             <div *ngIf="previousObjective">
                 {{project.projectData.programmePriority.code + ' - '}}

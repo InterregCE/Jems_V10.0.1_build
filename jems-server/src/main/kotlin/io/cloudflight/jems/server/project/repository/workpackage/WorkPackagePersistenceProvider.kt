@@ -10,9 +10,12 @@ import io.cloudflight.jems.server.project.repository.workpackage.investment.Work
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.toIndexedEntity
 import io.cloudflight.jems.server.project.repository.workpackage.output.toModel
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import org.springframework.data.domain.Page
@@ -31,7 +34,7 @@ class WorkPackagePersistenceProvider(
 ) : WorkPackagePersistence {
 
     @Transactional(readOnly = true)
-    override fun getRichWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackage> {
+    override fun getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackage> {
         // fetch all work packages in 1 request
         val workPackagesPaged = workPackageRepository.findAllByProjectId(projectId, pageable)
         val workPackageIds = workPackagesPaged.content.mapTo(HashSet()) { it.id }
@@ -48,6 +51,34 @@ class WorkPackagePersistenceProvider(
             wp.toModel(
                 getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
                 getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
+            )
+        }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getWorkPackagesWithAllDataByProjectId(projectId: Long): List<ProjectWorkPackageFull> {
+        // fetch all work packages in 1 request
+        val sort = Sort.by(Sort.Direction.ASC, "id")
+        val workPackages = workPackageRepository.findAllByProjectId(projectId, sort)
+        val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
+
+        // fetch all activities and deliverables in 1 request
+        val activitiesByWorkPackages = workPackageActivityRepository.findAllByActivityIdWorkPackageIdIn(workPackageIds)
+            .groupBy { it.activityId.workPackageId }
+
+        // fetch all outputs in 1 request
+        val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
+            .groupBy { it.outputId.workPackageId }
+
+        // fetch all investments
+        val investmentsByWorkPackages = workPackageInvestmentRepository.findInvestmentsByProjectId(projectId)
+            .groupBy { it.workPackage.id }
+
+        return workPackages.map { wp ->
+            wp.toModelFull(
+                getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
+                getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
+                getInvestmentsForWorkPackageId = { id -> investmentsByWorkPackages[id] }
             )
         }
     }
@@ -131,8 +162,8 @@ class WorkPackagePersistenceProvider(
         ).activities.toModel()
 
     @Transactional(readOnly = true)
-    override fun getProjectIdFromWorkPackageInvestment(workPackageInvestmentId: Long): Long =
-        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.id
+    override fun getProjectFromWorkPackageInvestment(workPackageInvestmentId: Long): ProjectApplicantAndStatus =
+        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.toApplicantAndStatus()
 
     private fun getWorkPackageOrThrow(workPackageId: Long): WorkPackageEntity =
         workPackageRepository.findById(workPackageId).orElseThrow { ResourceNotFoundException("workPackage") }

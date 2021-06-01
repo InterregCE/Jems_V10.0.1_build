@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {mergeMap, map, shareReplay, tap} from 'rxjs/operators';
-import {OutputUserRole, UserRoleService} from '@cat/api';
+import {UserRoleDTO, UserRoleService, UserRoleSummaryDTO} from '@cat/api';
 import {Observable, of} from 'rxjs';
 import {Log} from '../../common/utils/log';
-import {Permission} from '../../security/permissions/permission';
 import {PermissionService} from '../../security/permissions/permission.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 
 @Injectable({providedIn: 'root'})
@@ -13,7 +13,7 @@ export class RolePageService {
   private userRoles$ = this.permissionService.permissionsChanged()
     .pipe(
       mergeMap(permissions => {
-        if (permissions.includes(Permission.ADMINISTRATOR)) {
+        if (permissions.includes(PermissionsEnum.RoleRetrieve)) {
           return this.userRoleService.list();
         }
         return of(null);
@@ -34,7 +34,7 @@ export class RolePageService {
    * The list is refreshed when:
    * - the permissions change
    */
-  userRoles(): Observable<OutputUserRole[]> {
+  userRoles(): Observable<UserRoleSummaryDTO[]> {
     return this.userRoles$;
   }
 }

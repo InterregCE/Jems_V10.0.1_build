@@ -1,12 +1,11 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {RolePageService} from './role-page.service';
-import {OutputUserRole} from '@cat/api';
+import {UserRoleDTO, UserRoleSummaryDTO} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {SystemModule} from '../system.module';
 import {TestModule} from '../../common/test-module';
 import {PermissionService} from '../../security/permissions/permission.service';
-import {Permission} from '../../security/permissions/permission';
 
 describe('RolePageService', () => {
   let service: RolePageService;
@@ -28,7 +27,7 @@ describe('RolePageService', () => {
   });
 
   it('should list empty user roles for regular user', fakeAsync(() => {
-    let results: OutputUserRole[] = [];
+    let results: UserRoleSummaryDTO[] = [];
     service.userRoles().subscribe(result => results = result);
 
     tick();
@@ -38,14 +37,15 @@ describe('RolePageService', () => {
 
   it('should list user roles for admin', fakeAsync(() => {
     const permissionService = TestBed.inject(PermissionService);
-    permissionService.setPermissions([Permission.ADMINISTRATOR]);
-    let results: OutputUserRole[] = [];
+    const role: UserRoleDTO = {id: 0, name: 'administrator', permissions: [UserRoleDTO.PermissionsEnum.RoleRetrieve]} as UserRoleDTO;
+    permissionService.setPermissions([role]);
+    let results: UserRoleSummaryDTO[] = [];
     service.userRoles().subscribe(result => results = result);
 
     httpTestingController.match({method: 'GET', url: `//api/auth/current`});
     const roles = [
-      {name: 'role1'} as OutputUserRole,
-      {name: '2@role1'} as OutputUserRole
+      {name: 'role1'} as UserRoleSummaryDTO,
+      {name: '2@role1'} as UserRoleSummaryDTO
     ];
     httpTestingController.expectOne({
       method: 'GET',

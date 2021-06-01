@@ -10,6 +10,7 @@ data class OutputProjectSimple(
     val projectStatus: ApplicationStatusDTO,
     val firstSubmissionDate: ZonedDateTime?,
     val lastResubmissionDate: ZonedDateTime?,
+    val step2Active: Boolean? = false,
     val specificObjectiveCode: String?,
     val programmePriorityCode: String?
 )

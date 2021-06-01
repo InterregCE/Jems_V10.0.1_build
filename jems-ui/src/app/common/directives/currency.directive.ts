@@ -1,4 +1,4 @@
-import {Directive, Host, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Directive, ElementRef, Host, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {CurrencyMaskConfig, CurrencyMaskDirective} from 'ngx-currency';
 import {NumberService} from '../services/number.service';
 
@@ -16,11 +16,17 @@ export class CurrencyDirective implements OnInit, OnChanges {
   type: 'decimal' | 'integer';
 
   constructor(@Host() public currencyMaskDirective: CurrencyMaskDirective,
-              private numberService: NumberService) {
+              private numberService: NumberService,
+              private el: ElementRef) {
   }
 
   ngOnInit(): void {
+    this.el.nativeElement.addEventListener('focus', this.onFocus.bind(this));
     this.refreshOptions();
+  }
+
+  onFocus(): void {
+    this.el.nativeElement.select();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

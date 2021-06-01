@@ -4,10 +4,10 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {tap} from 'rxjs/operators';
 import {ProjectFundingDecisionStore} from '../project-funding-decision-store.service';
 import {RoutingService} from '../../../../common/services/routing.service';
-import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/internal/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {ProjectStepStatus} from '../../project-step-status';
 
 @Component({
   selector: 'app-project-application-funding-decision',
@@ -21,6 +21,12 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   project: ProjectDetailDTO;
   @Input()
   status: ProjectStatusDTO;
+  @Input()
+  fundingDecision: ProjectStatusDTO;
+  @Input()
+  stepStatus: ProjectStepStatus;
+  @Input()
+  eligibilityDecisionDate: string;
   @Input()
   options: ProjectStatusDTO.StatusEnum[];
   @Input()
@@ -47,8 +53,7 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
 
   constructor(private fundingDecisionStore: ProjectFundingDecisionStore,
               private formBuilder: FormBuilder,
-              private router: RoutingService,
-              private sidenavService: ProjectApplicationFormSidenavService) {
+              private router: RoutingService) {
   }
 
   ngOnInit(): void {
@@ -58,6 +63,7 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.actionPending = true;
     this.getDecisionAction()
       .pipe(
         take(1),
@@ -76,9 +82,9 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
       date: this.decisionForm?.controls?.decisionDate?.value?.format('YYYY-MM-DD')
     };
 
-    if (this.decisionForm?.controls?.status?.value === ProjectStatusDTO.StatusEnum.APPROVED) {
+    if (this.decisionForm?.controls?.status?.value === this.stepStatus.approved) {
       return this.fundingDecisionStore.approveApplication(this.project.id, statusInfo);
-    } else if (this.decisionForm?.controls?.status?.value === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS) {
+    } else if (this.decisionForm?.controls?.status?.value === this.stepStatus.approvedWithConditions) {
       return this.fundingDecisionStore.approveApplicationWithCondition(this.project.id, statusInfo);
     }
     return this.fundingDecisionStore.refuseApplication(this.project.id, statusInfo);

@@ -17,7 +17,7 @@ data class Audit(
 
     companion object {
         fun getTimeFromString(timeString: String?): ZonedDateTime? =
-            timeString?.let { ZonedDateTime.parse(it!!, DateTimeFormatter.ISO_DATE_TIME) }
+            timeString?.let { ZonedDateTime.parse(it, DateTimeFormatter.ISO_DATE_TIME) }
     }
 
     fun getTimestampString(): String? = timestamp?.format(DateTimeFormatter.ISO_DATE_TIME)

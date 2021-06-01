@@ -15,6 +15,11 @@ open class ApplicationNotFoundException(
     override val cause: Throwable? = null, override val message: String = ""
 ) : ApplicationException(code, i18nMessage, HttpStatus.NOT_FOUND, cause, message)
 
+open class ApplicationFailedDependencyException(
+    override val code: String, override val i18nMessage: I18nMessage,
+    override val cause: Throwable? = null, override val message: String = ""
+) : ApplicationException(code, i18nMessage, HttpStatus.FAILED_DEPENDENCY, cause, message)
+
 open class ApplicationUnprocessableException(
     override val code: String, override val i18nMessage: I18nMessage,
     override val cause: Throwable? = null, override val message: String = "",

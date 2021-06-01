@@ -3,19 +3,21 @@ import {
   InputProjectContact,
   InputProjectPartnerCreate,
   InputProjectPartnerUpdate,
+  OutputProjectPartner,
   OutputProjectPartnerDetail,
   ProjectPartnerAddressDTO,
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject} from 'rxjs';
-import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectPartner} from '../../../../model/ProjectPartner';
 import {ProjectPartnerRoleEnumUtil} from '../../../../model/ProjectPartnerRoleEnum';
 import {RoutingService} from '../../../../../common/services/routing.service';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 
 @Injectable()
 export class ProjectPartnerStore {
@@ -28,29 +30,45 @@ export class ProjectPartnerStore {
   isProjectEditable$: Observable<boolean>;
   partner$ = new ReplaySubject<OutputProjectPartnerDetail | any>(1);
   partners$: Observable<ProjectPartner[]>;
+  dropdownPartners$: Observable<OutputProjectPartner[]>;
 
   constructor(private partnerService: ProjectPartnerService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectStore: ProjectStore,
-              private routingService: RoutingService) {
+              private routingService: RoutingService,
+              private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
+    this.dropdownPartners$ = this.dropdownPartners();
 
-    this.partners$ = combineLatest([this.projectStore.getProject(), this.partnerUpdateEvent$]).pipe(
-      switchMap(([project]) => this.partnerService.getProjectPartnersForDropdown(project.id, ['sortNumber,asc'])),
-      map(projectPartners => projectPartners.map(projectPartner => new ProjectPartner(projectPartner.id, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
+    this.partners$ = combineLatest([
+      this.projectStore.getProject(),
+      this.projectVersionStore.currentRouteVersion$,
+      this.partnerUpdateEvent$
+    ]).pipe(
+      switchMap(([project, version]) => this.partnerService.getProjectPartnersForDropdown(project.id, undefined, version)),
+      map(projectPartners => projectPartners.map((projectPartner, index) =>
+        new ProjectPartner(projectPartner.id, index, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
       shareReplay(1)
     );
 
     combineLatest([
       this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
-      this.projectStore.projectId$
+      this.projectStore.projectId$,
+      this.projectVersionStore.currentRouteVersion$
     ]).pipe(
       tap(([partnerId, projectId]) => {
         this.partnerId = Number(partnerId);
         this.projectId = projectId;
       }),
-      switchMap(([partnerId, projectId]) =>
-        partnerId && projectId ? this.partnerService.getProjectPartnerById(Number(partnerId), projectId) : of({})
+      switchMap(([partnerId, projectId, version]) => partnerId && projectId
+        ? this.partnerService.getProjectPartnerById(Number(partnerId), projectId, version)
+          .pipe(
+            catchError(err => {
+              this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
+              return of({});
+            })
+          )
+        : of({})
       ),
       tap(partner => this.partner$.next(partner)),
       tap(partner => Log.info('Fetched the programme partner:', this, partner)),
@@ -97,6 +115,13 @@ export class ProjectPartnerStore {
       .pipe(
         tap(saved => this.partner$.next(saved)),
         tap(saved => Log.info('Updated partner motivation:', this, saved)),
+      );
+  }
+
+  private dropdownPartners(): Observable<OutputProjectPartner[]> {
+    return this.projectVersionStore.currentRouteVersion$
+      .pipe(
+        switchMap(version => this.partnerService.getProjectPartnersForDropdown(this.projectId, undefined, version))
       );
   }
 }

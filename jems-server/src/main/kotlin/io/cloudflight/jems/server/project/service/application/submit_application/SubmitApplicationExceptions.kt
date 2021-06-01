@@ -11,3 +11,8 @@ class SubmitApplicationException(cause: Throwable) : ApplicationException(
     code = SUBMIT_APPLICATION_ERROR_CODE_PREFIX,
     i18nMessage = I18nMessage("$SUBMIT_APPLICATION_ERROR_KEY_PREFIX.failed"), cause = cause
 )
+
+class SubmitApplicationPreConditionCheckFailedException : ApplicationBadRequestException(
+    code = "$SUBMIT_APPLICATION_ERROR_CODE_PREFIX-001",
+    i18nMessage = I18nMessage("$SUBMIT_APPLICATION_ERROR_KEY_PREFIX.pre.condition.check.failed")
+)

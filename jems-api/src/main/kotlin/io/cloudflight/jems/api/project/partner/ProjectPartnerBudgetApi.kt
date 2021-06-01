@@ -26,7 +26,8 @@ interface ProjectPartnerBudgetApi {
     @ApiOperation("Get project partner Budget Options")
     @GetMapping("/options")
     fun getBudgetOptions(
-        @PathVariable partnerId: Long
+        @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: String? = null
     ): ProjectPartnerBudgetOptionsDto?
 
     @ApiOperation("Update project partner Budget Options")
@@ -40,7 +41,7 @@ interface ProjectPartnerBudgetApi {
     @GetMapping("/costs")
     fun getBudgetCosts(
         @PathVariable partnerId: Long,
-        @RequestParam(required = false) version: Int? = null
+        @RequestParam(required = false) version: String? = null
     ): BudgetCostsDTO
 
 
@@ -95,13 +96,15 @@ interface ProjectPartnerBudgetApi {
     @ApiOperation("Get project partner Budget: total")
     @GetMapping("/total")
     fun getTotal(
-        @PathVariable partnerId: Long
+        @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: String? = null
     ): BigDecimal
 
     @ApiOperation("Get project partner Co-Financing")
     @GetMapping("/cofinancing")
     fun getProjectPartnerCoFinancing(
-        @PathVariable partnerId: Long
+        @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: String? = null
     ): ProjectPartnerCoFinancingAndContributionOutputDTO
 
     @ApiOperation("Update project partner co-financing")

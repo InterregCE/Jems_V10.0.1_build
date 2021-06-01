@@ -9,9 +9,14 @@ class ProjectVersionUtils(
     private val projectVersionRepository: ProjectVersionRepository
 ) {
 
+    companion object {
+        const val DEFAULT_VERSION = "1.0"
+        fun increaseMajor(version: String?) = (version?.toFloatOrNull()?.plus(1) ?: 1.0).toString()
+    }
+
     @Transactional(readOnly = true)
     fun <T> fetch(
-        version: Int?,
+        version: String?,
         projectId: Long,
         currentVersionFetcher: () -> T,
         previousVersionFetcher: (timestamp: Timestamp) -> T
@@ -21,6 +26,6 @@ class ProjectVersionUtils(
         } else {
             projectVersionRepository.findTimestampByVersion(projectId, version)?.let {
                 previousVersionFetcher.invoke(it)
-            } ?: throw ApplicationVersionNotFoundException()
+            }
         }
 }

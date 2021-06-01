@@ -304,7 +304,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
 
     @Test
     fun getProjectPartnerCoFinancing() {
-        every { getCoFinancing.getCoFinancing(PARTNER_ID) } returns modelMock
+        every { getCoFinancing.getCoFinancing(PARTNER_ID, null) } returns modelMock
 
         assertThat(controller.getProjectPartnerCoFinancing(PARTNER_ID))
             .isEqualTo(expectedDto)
@@ -312,7 +312,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
 
     @Test
     fun `getProjectPartnerCoFinancing - empty contributions`() {
-        every { getCoFinancing.getCoFinancing(PARTNER_ID) } returns ProjectPartnerCoFinancingAndContribution(
+        every { getCoFinancing.getCoFinancing(PARTNER_ID, null) } returns ProjectPartnerCoFinancingAndContribution(
             finances = emptyList(),
             partnerContributions = emptyList(),
             partnerAbbreviation = "test abbr"

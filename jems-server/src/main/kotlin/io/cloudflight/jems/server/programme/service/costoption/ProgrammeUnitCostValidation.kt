@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 
 private val MAX_COST = BigDecimal.valueOf(999_999_999_99, 2)
-private const val MAX_ALLOWED_UNIT_COSTS = 25
+private const val MAX_ALLOWED_UNIT_COSTS = 100
 
 fun validateCreateUnitCost(unitCostToValidate: ProgrammeUnitCost, currentCount: Long) {
     if (unitCostToValidate.id != 0L)
@@ -30,17 +30,8 @@ fun validateUpdateUnitCost(unitCost: ProgrammeUnitCost) {
 private fun validateCommonUnitCost(unitCost: ProgrammeUnitCost) {
     val errors = mutableMapOf<String, I18nFieldError>()
 
-    if (unitCost.name.any { it.translation != null && it.translation!!.length > 50 })
-        errors.put("name", I18nFieldError(i18nKey = "programme.unitCost.name.too.long"))
-
-    if (unitCost.description.any { it.translation != null && it.translation!!.length > 500 })
-        errors.put("description", I18nFieldError(i18nKey = "programme.unitCost.description.too.long"))
-
-    if (unitCost.type.any { it.translation != null && it.translation!!.length > 25 })
-        errors.put("type", I18nFieldError(i18nKey = "programme.unitCost.type.too.long"))
-
     val costPerUnit = unitCost.costPerUnit
-    if (costPerUnit == null || costPerUnit < BigDecimal.ZERO || costPerUnit > MAX_COST || costPerUnit.scale() > 2)
+    if (costPerUnit == null || costPerUnit <= BigDecimal.ZERO || costPerUnit > MAX_COST || costPerUnit.scale() > 2)
         errors.put("costPerUnit", I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"))
 
     validateOneCostCategory(unitCost = unitCost, errors = errors)

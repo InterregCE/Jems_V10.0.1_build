@@ -8,6 +8,7 @@ import {ActivatedRoute} from '@angular/router';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {of} from 'rxjs';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
@@ -30,6 +31,12 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {params: {projectId: 1}}
+          }
+        },
+        {
+          provide: ProjectVersionStore,
+          useValue: {
+            currentRouteVersion$: of('1.0')
           }
         },
         {
@@ -65,11 +72,11 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
 
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/partner/2/budget/costs'
+      url: '//api/project/partner/2/budget/costs?version=1.0'
     });
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/partner/2/budget/options'
+      url: '//api/project/partner/2/budget/options?version=1.0'
     });
 
     component.updateBudgets();
@@ -102,15 +109,15 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   }));
 
   it('should fetch and save budgets with other costs option', fakeAsync(() => {
-    partnerDetailPageStore.budgetOptions$ = of({ otherCostsOnStaffCostsFlatRate: 10 } as any);
+    partnerDetailPageStore.budgetOptions$ = of({otherCostsOnStaffCostsFlatRate: 10} as any);
 
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/partner/2/budget/costs'
+      url: '//api/project/partner/2/budget/costs?version=1.0'
     });
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/partner/2/budget/options'
+      url: '//api/project/partner/2/budget/options?version=1.0'
     });
 
     component.updateBudgets();

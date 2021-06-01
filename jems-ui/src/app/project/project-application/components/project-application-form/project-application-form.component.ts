@@ -1,4 +1,12 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectData, InputTranslation, OutputProgrammePrioritySimple, ProjectDetailDTO} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
@@ -16,7 +24,7 @@ import {LanguageStore} from '../../../../common/services/language-store.service'
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormComponent extends BaseComponent implements OnInit {
+export class ProjectApplicationFormComponent extends BaseComponent implements OnInit, OnChanges {
   Permission = Permission;
   tools = Tools;
   LANGUAGE = InputTranslation.LanguageEnum;
@@ -24,15 +32,12 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   @Input()
   project: ProjectDetailDTO;
   @Input()
-  editable: boolean;
-  @Input()
   priorities: OutputProgrammePrioritySimple[];
   @Input()
   objectivesWithPolicies: { [key: string]: InputProjectData.SpecificObjectiveEnum[] };
 
   currentPriority?: string;
   previousObjective: InputProjectData.SpecificObjectiveEnum;
-  currentObjectives: any = [];
   selectedSpecificObjective: InputProjectData.SpecificObjectiveEnum;
 
   applicationForm: FormGroup = this.formBuilder.group({
@@ -78,15 +83,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   }
 
   ngOnInit(): void {
-    this.formService.init(this.applicationForm);
+    this.formService.init(this.applicationForm, this.projectStore.projectEditable$);
     this.resetForm();
-    if (this.editable) {
-      this.applicationForm.controls.projectId.disable();
-      this.applicationForm.controls.projectPeriodLength.disable();
-      this.applicationForm.controls.projectPeriodCount.disable();
-    } else {
-      this.applicationForm.disable();
-    }
 
     this.applicationForm.controls.duration?.valueChanges
       .pipe(
@@ -96,6 +94,10 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       .subscribe(duration =>
         this.applicationForm.controls.projectPeriodCount.setValue(this.projectPeriodCount(duration))
       );
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.resetForm();
   }
 
   save(): void {
@@ -142,6 +144,9 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       this.applicationForm.controls.programmePriority.setValue(null);
       this.applicationForm.controls.specificObjective.setValue(null);
     }
+    this.applicationForm.controls.projectId.disable();
+    this.applicationForm.controls.projectPeriodLength.disable();
+    this.applicationForm.controls.projectPeriodCount.disable();
   }
 
   private projectPeriodCount(projectDuration: number): number {

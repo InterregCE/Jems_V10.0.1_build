@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost
 
-import io.cloudflight.jems.server.project.authorization.CanReadProjectPartner
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
@@ -16,21 +16,24 @@ class GetBudgetTotalCost(
 ) : GetBudgetTotalCostInteractor {
 
     @Transactional(readOnly = true)
-    @CanReadProjectPartner
-    override fun getBudgetTotalCost(partnerId: Long): BigDecimal {
+    @CanRetrieveProjectPartner
+    override fun getBudgetTotalCost(partnerId: Long, version: String?): BigDecimal {
 
         val budgetOptions = getBudgetOptions.getBudgetOptions(partnerId)
 
-        val unitCostTotal = budgetCostsPersistence.getBudgetUnitCostTotal(partnerId)
-        val lumpSumsTotal = budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId)
-        val equipmentCostTotal = budgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId)
-        val externalCostTotal = budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId)
-        val infrastructureCostTotal = budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId)
+        val unitCostTotal = budgetCostsPersistence.getBudgetUnitCostTotal(partnerId, version)
+
+        val lumpSumsTotal = budgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId, version)
+        val equipmentCostTotal = budgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId, version)
+        val externalCostTotal =
+            budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId, version)
+        val infrastructureCostTotal =
+            budgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId, version)
 
         val travelCostTotal =
-            fetchTravelCostsOrZero(partnerId, budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate)
+            fetchTravelCostsOrZero(partnerId, budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate, version)
 
-        val staffCostTotal = fetchStaffCostsOrZero(partnerId, budgetOptions?.staffCostsFlatRate,)
+        val staffCostTotal = fetchStaffCostsOrZero(partnerId, budgetOptions?.staffCostsFlatRate, version)
 
         return budgetCostsCalculator.calculateCosts(
             budgetOptions,
@@ -44,15 +47,17 @@ class GetBudgetTotalCost(
         ).totalCosts
     }
 
-    private fun fetchTravelCostsOrZero(partnerId: Long, travelAndAccommodationOnStaffCostsFlatRate: Int?) =
+    private fun fetchTravelCostsOrZero(
+        partnerId: Long, travelAndAccommodationOnStaffCostsFlatRate: Int?, version: String?
+    ) =
         if (travelAndAccommodationOnStaffCostsFlatRate == null)
-            budgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId)
+            budgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId, version)
         else
             BigDecimal.ZERO
 
-    private fun fetchStaffCostsOrZero(partnerId: Long, staffCostsFlatRate: Int?, ) =
+    private fun fetchStaffCostsOrZero(partnerId: Long, staffCostsFlatRate: Int?, version: String?) =
         if (staffCostsFlatRate == null)
-            budgetCostsPersistence.getBudgetStaffCostTotal(partnerId)
+            budgetCostsPersistence.getBudgetStaffCostTotal(partnerId, version)
         else
             BigDecimal.ZERO
 }

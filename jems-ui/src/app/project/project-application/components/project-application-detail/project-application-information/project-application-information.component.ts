@@ -3,6 +3,7 @@ import {ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import moment from 'moment/moment';
 import {CallStore} from '../../../../../call/services/call-store.service';
 import {LocaleDatePipe} from '../../../../../common/pipe/locale-date.pipe';
+import {ProjectUtil} from '../../../../project-util';
 
 @Component({
   selector: 'app-project-application-information',
@@ -11,8 +12,8 @@ import {LocaleDatePipe} from '../../../../../common/pipe/locale-date.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationInformationComponent {
-  STATUS = ProjectStatusDTO.StatusEnum;
   CALL_PATH = CallStore.CALL_DETAIL_PATH;
+  ProjectUtil = ProjectUtil;
 
   @Input()
   project: ProjectDetailDTO;
@@ -37,17 +38,51 @@ export class ProjectApplicationInformationComponent {
   }
 
   getCallInfo(): { [key: string]: string | number } {
-    const endDate = moment(this.project?.callSettings.endDate);
+    const isInStepOne = this.project?.callSettings.endDateStep1 && !this.project.step2Active;
+    const endDate = isInStepOne ? this.project?.callSettings.endDateStep1 : this.project?.callSettings.endDate;
     const now = moment(new Date());
-    const diff = moment.duration(endDate.diff(now));
+    const diff = moment.duration(moment(endDate).diff(now));
     const daysLeft = Math.floor(diff.asDays());
 
     return {
       call: this.project?.callSettings.callName,
-      date: this.localeDatePipe.transform(this.project?.callSettings.endDate),
+      date: this.localeDatePipe.transform(endDate),
       days: daysLeft > 0 ? daysLeft : 0,
       hours: diff.hours() > 0 ? diff.hours() : 0,
       minutes: diff.minutes() > 0 ? diff.minutes() : 0
     };
+  }
+
+  hasDraftStatusColor(): boolean {
+    return ProjectUtil.isDraft(this.project)
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
+  }
+
+  hasSubmittedStatusColor(): boolean {
+    return this.projectStatus === ProjectStatusDTO.StatusEnum.SUBMITTED
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.ELIGIBLE
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1SUBMITTED
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1ELIGIBLE;
+  }
+
+  hasApprovedStatusColor(): boolean {
+    return this.projectStatus === ProjectStatusDTO.StatusEnum.APPROVED
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1APPROVED;
+  }
+
+  hasDeclinedStatusColor(): boolean {
+    return this.projectStatus === ProjectStatusDTO.StatusEnum.INELIGIBLE
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.NOTAPPROVED
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1INELIGIBLE
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1NOTAPPROVED;
+  }
+
+  hasApprovedWithConditionsStatusColor(): boolean {
+    return this.projectStatus === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1APPROVEDWITHCONDITIONS;
+  }
+
+  private get projectStatus(): ProjectStatusDTO.StatusEnum {
+    return this.project?.projectStatus.status;
   }
 }

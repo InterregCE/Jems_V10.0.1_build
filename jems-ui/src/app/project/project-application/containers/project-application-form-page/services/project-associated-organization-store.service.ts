@@ -2,108 +2,88 @@ import {Injectable} from '@angular/core';
 import {
   InputProjectAssociatedOrganizationCreate,
   InputProjectAssociatedOrganizationUpdate,
+  OutputNuts,
   OutputProjectAssociatedOrganizationDetail,
+  OutputProjectPartner,
   ProjectAssociatedOrganizationService,
 } from '@cat/api';
-import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {
-  catchError,
-  distinctUntilChanged,
-  map,
-  mergeMap,
-  shareReplay,
-  switchMap,
-  tap,
-  withLatestFrom
-} from 'rxjs/operators';
+import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {catchError, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
-import {HttpErrorResponse} from '@angular/common/http';
-import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
-import {Router} from '@angular/router';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {ProjectPartnerStore} from './project-partner-store.service';
+import {RoutingService} from '../../../../../common/services/routing.service';
+import {NutsStore} from '../../../../../common/services/nuts.store';
 
 @Injectable()
 export class ProjectAssociatedOrganizationStore {
+  public static ORGANIZATION_DETAIL_PATH = '/applicationFormAssociatedOrganization/detail/';
 
-  private associatedOrganizationId$ = new ReplaySubject<number | null>(1);
-  private projectId$ = this.projectStore.getProject()
-    .pipe(
-      map(project => project.id),
-      shareReplay(1)
-    );
+  associatedOrganization$: Observable<OutputProjectAssociatedOrganizationDetail | {}>;
+  nuts$: Observable<OutputNuts[]>;
+  dropdownPartners$: Observable<OutputProjectPartner[]>;
+  organizationEditable$: Observable<boolean>;
+  projectTitle$: Observable<string>;
 
-  saveAssociatedOrganization$ = new Subject<InputProjectAssociatedOrganizationUpdate>();
-  createAssociatedOrganization$ = new Subject<InputProjectAssociatedOrganizationCreate>();
-  associatedOrganizationSaveSuccess$ = new Subject<boolean>();
-  associatedOrganizationSaveError$ = new Subject<HttpErrorResponse | null>();
-
-  private associatedOrganizationById$ = combineLatest([this.associatedOrganizationId$, this.projectId$])
-    .pipe(
-      distinctUntilChanged(),
-      mergeMap(([associatedOrganizationId, projectId]) => associatedOrganizationId
-        ? this.associatedOrganizationService.getAssociatedOrganizationById(associatedOrganizationId, projectId)
-        : of({})
-      ),
-      tap(projectAssociatedOrganization => Log.info('Fetched project associatedOrganization:', this, projectAssociatedOrganization)),
-    );
-
-
-  private savedAssociatedOrganization$ = this.saveAssociatedOrganization$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      switchMap(([associatedOrganizationUpdate, projectId]) =>
-        this.associatedOrganizationService.updateAssociatedOrganization(projectId, associatedOrganizationUpdate)
-          .pipe(
-            catchError((error: HttpErrorResponse) => {
-              this.associatedOrganizationSaveError$.next(error);
-              return of();
-            })
-          )
-      ),
-      tap(() => this.associatedOrganizationSaveError$.next(null)),
-      tap(() => this.associatedOrganizationSaveSuccess$.next(true)),
-      tap(saved => Log.info('Updated associatedOrganization:', this, saved))
-    );
-
-  private createdAssociatedOrganization$ = this.createAssociatedOrganization$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      switchMap(([associatedOrganizationCreate, projectId]) =>
-        this.associatedOrganizationService.createAssociatedOrganization(projectId, associatedOrganizationCreate)
-          .pipe(
-            map(created => ({projectId, associatedOrganization: created})),
-            catchError((error: HttpErrorResponse) => {
-              this.associatedOrganizationSaveError$.next(error.error);
-              return of();
-            })
-          )
-      ),
-      tap(saved => Log.info('Created associatedOrganization:', this, saved)),
-      tap((created: any) => this.router.navigate([
-        'app', 'project', 'detail', created.projectId, 'applicationFormAssociatedOrganization', 'detail', created.associatedOrganization.id
-      ])),
-    );
-
-  private associatedOrganization$ = merge(
-    this.associatedOrganizationById$,
-    this.savedAssociatedOrganization$,
-    this.createdAssociatedOrganization$,
-  )
-    .pipe(
-      shareReplay(1)
-    );
+  private savedAssociatedOrganization$ = new Subject<OutputProjectAssociatedOrganizationDetail>();
+  private projectId: number;
 
   constructor(private associatedOrganizationService: ProjectAssociatedOrganizationService,
               private projectStore: ProjectStore,
-              private router: Router,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
+              private projectVersionStore: ProjectVersionStore,
+              private partnerStore: ProjectPartnerStore,
+              private router: RoutingService,
+              private nutsStore: NutsStore) {
+    this.associatedOrganization$ = this.associatedOrganization();
+    this.nuts$ = this.nutsStore.getNuts();
+    this.dropdownPartners$ = this.partnerStore.dropdownPartners$;
+    this.organizationEditable$ = this.projectStore.projectEditable$;
+    this.projectTitle$ = this.projectStore.projectTitle$;
   }
 
-  init(associatedOrganizationId: number | string | null): void {
-    this.associatedOrganizationId$.next(Number(associatedOrganizationId));
+  createAssociatedOrganization(create: InputProjectAssociatedOrganizationCreate): Observable<void> {
+    return this.associatedOrganizationService.createAssociatedOrganization(this.projectId, create)
+      .pipe(
+        tap(saved => this.savedAssociatedOrganization$.next(saved)),
+        tap(saved => Log.info('Created associatedOrganization:', this, saved)),
+        tap((created: any) => this.router.navigate([
+          'app', 'project', 'detail', this.projectId, 'applicationFormAssociatedOrganization', 'detail', created.id
+        ])),
+      );
   }
 
-  getProjectAssociatedOrganization(): Observable<OutputProjectAssociatedOrganizationDetail | any> {
-    return this.associatedOrganization$;
+  updateAssociatedOrganization(update: InputProjectAssociatedOrganizationUpdate): Observable<OutputProjectAssociatedOrganizationDetail> {
+    return this.associatedOrganizationService.updateAssociatedOrganization(this.projectId, update)
+      .pipe(
+        tap(saved => this.savedAssociatedOrganization$.next(saved)),
+        tap(saved => Log.info('Updated associatedOrganization:', this, saved))
+      );
+  }
+
+  private associatedOrganization(): Observable<OutputProjectAssociatedOrganizationDetail | {}> {
+    const organizationById$ = combineLatest([
+      this.router.routeParameterChanges(ProjectAssociatedOrganizationStore.ORGANIZATION_DETAIL_PATH, 'associatedOrganizationId'),
+      this.projectStore.projectId$,
+      this.projectVersionStore.currentRouteVersion$
+    ]).pipe(
+      tap(([organizationId, projectId]) => {
+        // this.organizationId = Number(organizationId);
+        this.projectId = Number(projectId);
+      }),
+      switchMap(([organizationId, projectId, version]) => organizationId
+        ? this.associatedOrganizationService.getAssociatedOrganizationById(organizationId as number, projectId, version)
+          .pipe(
+            catchError(err => {
+              this.router.navigate([ProjectStore.PROJECT_DETAIL_PATH, projectId]);
+              return of({});
+            })
+          )
+        : of({})
+      ),
+      tap(partner => Log.info('Fetched project associatedOrganization:', this, partner)),
+    );
+
+    return merge(organizationById$, this.savedAssociatedOrganization$);
   }
 }

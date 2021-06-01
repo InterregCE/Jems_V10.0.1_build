@@ -1,10 +1,18 @@
 plugins {
-    id "cloudflight-gradle-plugin" version "5.15.2"
+    id "cloudflight-gradle-plugin" version "5.15.3"
+}
+
+// add version-postfix if build was triggered by customer
+// no postfix if built within teamcity or with system property flag set to REMOVE
+def customerPostfix = ""
+if (!(System.getenv("TEAMCITY_BUILD") != null && System.getenv("TEAMCITY_BUILD").toBoolean())
+        && (!System.getProperty("CUSTOMER_VERSION_POSTFIX") || System.getProperty("CUSTOMER_VERSION_POSTFIX") != "REMOVE")) {
+    customerPostfix = System.getProperty("CUSTOMER_VERSION_POSTFIX") ? "-" + System.getProperty("CUSTOMER_VERSION_POSTFIX") : "-P"
 }
 
 description "Jems Project"
 group "io.cloudflight.jems"
-version "2.0.0"
+version "2.1.0$customerPostfix"
 
 cloudflight {
     softwareProjectKey = "interact/ems"
@@ -20,6 +28,15 @@ subprojects {
 
             constraints {
                 implementation "com.github.doyaaaaaken:kotlin-csv-jvm:0.15.0"
+                implementation "org.mapstruct:mapstruct:1.4.2.Final"
+                kapt 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+            }
+        }
+    }
+    if (isServerProject(it) && (isCloudflightBuild(it) || System.getProperty("CUSTOMER_VERSION_POSTFIX"))) {
+        bootJar {
+            manifest {
+                attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
             }
         }
     }

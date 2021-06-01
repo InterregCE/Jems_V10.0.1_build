@@ -1,12 +1,11 @@
 package io.cloudflight.jems.server.project.service.budget.get_project_budget
 
-import io.cloudflight.jems.server.project.authorization.CanReadProject
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
-import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import org.springframework.stereotype.Service
@@ -17,12 +16,11 @@ import java.math.BigDecimal
 class GetProjectBudget(
     private val persistence: ProjectBudgetPersistence,
     private val optionPersistence: ProjectPartnerBudgetOptionsPersistence,
-    private val lumpSumPersistence: ProjectLumpSumPersistence,
     private val budgetCostsCalculator: BudgetCostsCalculatorService
 ) : GetProjectBudgetInteractor {
 
     @Transactional(readOnly = true)
-    @CanReadProject
+    @CanRetrieveProject
     override fun getBudget(projectId: Long): List<PartnerBudget> {
         val partners = persistence.getPartnersForProjectId(projectId = projectId).associateBy { it.id!! }
 

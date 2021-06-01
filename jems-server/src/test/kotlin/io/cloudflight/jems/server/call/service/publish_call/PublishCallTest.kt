@@ -31,6 +31,7 @@ class PublishCallTest {
             status = CallStatus.DRAFT,
             startDate = ZonedDateTime.now().minusDays(1),
             endDate = ZonedDateTime.now().plusDays(1),
+            endDateStep1 = null
         )
     }
 

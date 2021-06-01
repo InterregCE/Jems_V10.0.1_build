@@ -1,9 +1,9 @@
 package io.cloudflight.jems.api.user
 
-import io.cloudflight.jems.api.user.dto.InputPassword
-import io.cloudflight.jems.api.user.dto.InputUserCreate
-import io.cloudflight.jems.api.user.dto.InputUserUpdate
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
+import io.cloudflight.jems.api.user.dto.PasswordDTO
+import io.cloudflight.jems.api.user.dto.UserChangeDTO
+import io.cloudflight.jems.api.user.dto.UserDTO
+import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import javax.validation.Valid
 
 @Api("User")
 @RequestMapping("/api/user")
@@ -30,26 +29,26 @@ interface UserApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
     @GetMapping
-    fun list(pageable: Pageable): Page<OutputUserWithRole>
+    fun list(pageable: Pageable): Page<UserSummaryDTO>
 
     @ApiOperation("Creates new User")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createUser(@Valid @RequestBody user: InputUserCreate): OutputUserWithRole
+    fun createUser(@RequestBody user: UserChangeDTO): UserDTO
 
     @ApiOperation("Updates a User")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun update(@Valid @RequestBody user: InputUserUpdate): OutputUserWithRole
+    fun updateUser(@RequestBody user: UserChangeDTO): UserDTO
 
     @ApiOperation("Returns a user by id")
-    @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): OutputUserWithRole
+    @GetMapping("/byId/{id}")
+    fun getById(@PathVariable id: Long): UserDTO
 
     @ApiOperation("Changes password of any user (admin only)")
-    @PutMapping("/password/{userId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun changePassword(@PathVariable userId: Long, @Valid @RequestBody passwordData: InputPassword)
+    @PutMapping("/byId/{userId}/password", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun resetPassword(@PathVariable userId: Long, @RequestBody newPassword: String)
 
     @ApiOperation("Changes my password")
-    @PutMapping("/mypassword", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun changeMyPassword(@Valid @RequestBody passwordData: InputPassword)
+    @PutMapping("/changeMyPassword", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun changeMyPassword(@RequestBody passwordData: PasswordDTO)
 
 }

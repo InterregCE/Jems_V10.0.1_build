@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Input, TemplateRef, ViewChild} from '@angular/core';
 
 @Component({
   selector: 'app-main-page-template',
@@ -9,6 +9,8 @@ import {ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild} from '
 export class MainPageTemplateComponent {
 
   @Input() needsCard = false;
+
+  @Input() headerTemplate: TemplateRef<any>;
 
   @Input() titleText: string;
   @Input() titleKey: string;

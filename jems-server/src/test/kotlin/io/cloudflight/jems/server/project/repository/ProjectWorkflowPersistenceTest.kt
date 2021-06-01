@@ -17,19 +17,24 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostB
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
+import io.cloudflight.jems.server.project.entity.ProjectDecisionEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.workflow.states.ProjectStatusTestUtil.Companion.userSummary
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.Optional
 
@@ -109,7 +114,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
         private fun dummyProject(): ProjectEntity {
             val call = dummyCall()
-            return ProjectEntity(
+            val project = ProjectEntity(
                 id = PROJECT_ID,
                 call = dummyCall(),
                 acronym = "Test Project",
@@ -119,6 +124,9 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                     status = ApplicationStatus.SUBMITTED,
                     user = call.creator
                 ),
+                step2Active = false
+            );
+            val firstStepDecision = ProjectDecisionEntity(
                 eligibilityDecision = ProjectStatusHistoryEntity(
                     id = 2,
                     status = ApplicationStatus.ELIGIBLE,
@@ -130,15 +138,20 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                     status = ApplicationStatus.APPROVED_WITH_CONDITIONS,
                     user = call.creator,
                     decisionDate = endDate.toLocalDate()
-                )
-            )
+                ),
+                project = project
+            );
+            project.firstStepDecision = firstStepDecision;
+            return project;
         }
     }
 
     @MockK
     lateinit var projectRepository: ProjectRepository
+
     @MockK
     lateinit var userRepository: UserRepository
+
     @MockK
     lateinit var projectStatusHistoryRepository: ProjectStatusHistoryRepository
 
@@ -157,31 +170,60 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         val project = dummyProject()
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
         assertThat(persistence.getProjectEligibilityDecisionDate(PROJECT_ID)).isEqualTo(
-            project.eligibilityDecision?.decisionDate
+            project.firstStepDecision?.eligibilityDecision?.decisionDate
         )
     }
 
     @Test
     fun `get Project previous Status`() {
         val statusHistories = listOf(
-            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = ProjectPartnerTestUtil.user, updated = startDate),
-            ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.INELIGIBLE, user = ProjectPartnerTestUtil.user, updated = endDate))
+            ProjectStatusHistoryEntity(
+                id = 1,
+                status = ApplicationStatus.DRAFT,
+                user = ProjectPartnerTestUtil.user,
+                updated = startDate
+            ),
+            ProjectStatusHistoryEntity(
+                id = 2,
+                status = ApplicationStatus.INELIGIBLE,
+                user = ProjectPartnerTestUtil.user,
+                updated = endDate,
+                decisionDate = LocalDate.of(2021, 5, 19),
+                note = "explanatory note"
+            )
+        )
         every { projectStatusHistoryRepository.findTop2ByProjectIdOrderByUpdatedDesc(PROJECT_ID) } returns statusHistories
-        assertThat(persistence.getApplicationPreviousStatus(PROJECT_ID)).isEqualTo(ApplicationStatus.INELIGIBLE)
+        assertThat(persistence.getApplicationPreviousStatus(PROJECT_ID)).isEqualTo(
+            ProjectStatus(
+                id = 2,
+                status = ApplicationStatus.INELIGIBLE,
+                user = ProjectPartnerTestUtil.userSummary,
+                updated = endDate,
+                decisionDate = LocalDate.of(2021, 5, 19),
+                note = "explanatory note",
+            )
+        )
     }
 
     @Test
     fun `get Project previous Status - Error`() {
         val statusHistories = listOf(
-            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = ProjectPartnerTestUtil.user))
+            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = ProjectPartnerTestUtil.user)
+        )
         every { projectStatusHistoryRepository.findTop2ByProjectIdOrderByUpdatedDesc(PROJECT_ID) } returns statusHistories
         assertThrows<PreviousApplicationStatusNotFoundException> { persistence.getApplicationPreviousStatus(PROJECT_ID) }
     }
 
     @Test
     fun `get latest Application Status NotEqual`() {
-        val status = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.SUBMITTED, user = ProjectPartnerTestUtil.user)
-        every { projectStatusHistoryRepository.findFirstByProjectIdAndStatusNotOrderByUpdatedDesc(PROJECT_ID, ApplicationStatus.APPROVED) } returns status
+        val status =
+            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.SUBMITTED, user = ProjectPartnerTestUtil.user)
+        every {
+            projectStatusHistoryRepository.findFirstByProjectIdAndStatusNotOrderByUpdatedDesc(
+                PROJECT_ID,
+                ApplicationStatus.APPROVED
+            )
+        } returns status
         assertThat(persistence.getLatestApplicationStatusNotEqualTo(PROJECT_ID, ApplicationStatus.APPROVED))
             .isEqualTo(ApplicationStatus.SUBMITTED)
     }
@@ -192,11 +234,12 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         val project = dummyProject()
         every { projectRepository.getOne(PROJECT_ID) } returns project
         every { userRepository.getOne(user.id) } returns user
-        val status = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.SUBMITTED, user = user, updated = startDate)
+        val status =
+            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.SUBMITTED, user = user, updated = startDate)
         // any because of auto set updated timestamp
         every { projectStatusHistoryRepository.save(any()) } returns status
 
-        assertThat(persistence.updateApplicationFirstSubmission(PROJECT_ID, user.id))
+        assertThat(persistence.updateApplicationFirstSubmission(PROJECT_ID, user.id, ApplicationStatus.SUBMITTED))
             .isEqualTo(ApplicationStatus.SUBMITTED)
     }
 
@@ -206,12 +249,27 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         val project = dummyProject()
         every { projectRepository.getOne(PROJECT_ID) } returns project
         every { userRepository.getOne(user.id) } returns user
-        val status = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.APPROVED, user = user, updated = endDate)
+        val status =
+            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.APPROVED, user = user, updated = endDate)
         // any because of auto set updated timestamp
-        every { projectStatusHistoryRepository.save(any()) } returns status
+        val slot = slot<ProjectStatusHistoryEntity>()
+        every { projectStatusHistoryRepository.save(capture(slot)) } returns status
 
-        assertThat(persistence.updateProjectLastResubmission(PROJECT_ID, user.id, ApplicationStatus.APPROVED))
+        val toClone = ProjectStatus(
+            status = ApplicationStatus.APPROVED,
+            user = userSummary,
+            updated = ZonedDateTime.now(),
+            decisionDate = LocalDate.of(2021, 5, 19),
+            note = "note to be persisted",
+        )
+
+        assertThat(persistence.updateProjectLastResubmission(PROJECT_ID, user.id, toClone))
             .isEqualTo(ApplicationStatus.APPROVED)
+        with(slot.captured) {
+            assertThat(this.status).isEqualTo(ApplicationStatus.APPROVED)
+            assertThat(decisionDate).isEqualTo(LocalDate.of(2021, 5, 19))
+            assertThat(note).isEqualTo("note to be persisted")
+        }
     }
 
     @Test
@@ -220,11 +278,19 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         val project = dummyProject()
         every { projectRepository.getOne(PROJECT_ID) } returns project
         every { userRepository.getOne(user.id) } returns user
-        val status = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.SUBMITTED, user = user, updated = endDate)
+        val status =
+            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.SUBMITTED, user = user, updated = endDate)
         // any because of auto set updated timestamp
         every { projectStatusHistoryRepository.save(any()) } returns status
 
-        assertThat(persistence.updateProjectCurrentStatus(PROJECT_ID, user.id, ApplicationStatus.SUBMITTED, ApplicationActionInfo("note", null)))
+        assertThat(
+            persistence.updateProjectCurrentStatus(
+                PROJECT_ID,
+                user.id,
+                ApplicationStatus.SUBMITTED,
+                ApplicationActionInfo("note", null)
+            )
+        )
             .isEqualTo(ApplicationStatus.SUBMITTED)
     }
 
@@ -235,7 +301,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         every { projectRepository.getOne(PROJECT_ID) } returns project
         val statusHistories = listOf(
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = user, updated = startDate),
-            ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.SUBMITTED, user = user, updated = endDate))
+            ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.SUBMITTED, user = user, updated = endDate)
+        )
         every { projectStatusHistoryRepository.findTop2ByProjectIdOrderByUpdatedDesc(PROJECT_ID) } returns statusHistories
         every { projectStatusHistoryRepository.delete(project.currentStatus) } returns Unit
         // any because of auto set updated timestamp
@@ -260,11 +327,19 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         every { userRepository.getOne(user.id) } returns user
         val statusHistories = listOf(
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = user, updated = startDate),
-            ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.APPROVED, user = user, updated = endDate))
+            ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.APPROVED, user = user, updated = endDate)
+        )
         // any because of auto set updated timestamp
         every { projectStatusHistoryRepository.save(any()) } returns statusHistories[1]
 
-        assertThat(persistence.updateProjectEligibilityDecision(PROJECT_ID, user.id, ApplicationStatus.APPROVED, ApplicationActionInfo("note", null)))
+        assertThat(
+            persistence.updateProjectEligibilityDecision(
+                PROJECT_ID,
+                user.id,
+                ApplicationStatus.APPROVED,
+                ApplicationActionInfo("note", null)
+            )
+        )
             .isEqualTo(ApplicationStatus.APPROVED)
     }
 
@@ -276,11 +351,19 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         every { userRepository.getOne(user.id) } returns user
         val statusHistories = listOf(
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = user, updated = startDate),
-            ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.APPROVED, user = user, updated = endDate))
+            ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.APPROVED, user = user, updated = endDate)
+        )
         // any because of auto set updated timestamp
         every { projectStatusHistoryRepository.save(any()) } returns statusHistories[1]
 
-        assertThat(persistence.updateProjectFundingDecision(PROJECT_ID, user.id, ApplicationStatus.APPROVED, ApplicationActionInfo("note", null)))
+        assertThat(
+            persistence.updateProjectFundingDecision(
+                PROJECT_ID,
+                user.id,
+                ApplicationStatus.APPROVED,
+                ApplicationActionInfo("note", null)
+            )
+        )
             .isEqualTo(ApplicationStatus.APPROVED)
     }
 

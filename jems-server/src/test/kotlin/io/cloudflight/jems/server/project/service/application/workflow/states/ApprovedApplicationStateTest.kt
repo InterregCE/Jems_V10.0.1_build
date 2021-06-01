@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.application.workflow.states
 
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -12,6 +13,7 @@ import io.cloudflight.jems.server.project.service.application.workflow.RefuseIsN
 import io.cloudflight.jems.server.project.service.application.workflow.SetAsEligibleIsNotAllowedException
 import io.cloudflight.jems.server.project.service.application.workflow.SetAsIneligibleIsNotAllowedException
 import io.cloudflight.jems.server.project.service.application.workflow.SubmitIsNotAllowedException
+import io.cloudflight.jems.server.project.service.application.workflow.states.ProjectStatusTestUtil.Companion.getStatusModelForStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -53,6 +55,9 @@ class ApprovedApplicationStateTest {
     @MockK
     lateinit var securityService: SecurityService
 
+    @MockK
+    lateinit var projectPersistence: ProjectPersistence
+
     @InjectMockKs
     private lateinit var approvedApplicationState: ApprovedApplicationState
 
@@ -74,7 +79,7 @@ class ApprovedApplicationStateTest {
     @Test
     fun `revertDecision to APPROVED_WITH_CONDITIONS`() {
         val status = ApplicationStatus.APPROVED_WITH_CONDITIONS
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns status
+        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         every { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID) } returns status
         every { projectWorkflowPersistence.resetProjectFundingDecisionToCurrentStatus(PROJECT_ID) } returns status
 
@@ -85,7 +90,7 @@ class ApprovedApplicationStateTest {
 
     @Test
     fun `revertDecision to ELIGIBLE`() {
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns ApplicationStatus.ELIGIBLE
+        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(ApplicationStatus.ELIGIBLE)
         every { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID) } returns ApplicationStatus.ELIGIBLE
         every { projectWorkflowPersistence.clearProjectFundingDecision(PROJECT_ID) } answers { }
 
@@ -97,21 +102,21 @@ class ApprovedApplicationStateTest {
     @ParameterizedTest(name = "revertDecision to {0} - invalid")
     @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "APPROVED_WITH_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
     fun revertDecision(status: ApplicationStatus) {
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns status
+        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         assertThrows<DecisionReversionIsNotPossibleException> { approvedApplicationState.revertDecision() }
     }
 
     @ParameterizedTest(name = "get possible status to revert to {0}")
     @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "APPROVED_WITH_CONDITIONS"])
     fun getPossibleStatusToRevertTo(status: ApplicationStatus) {
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns status
+        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         assertThat(approvedApplicationState.getPossibleStatusToRevertTo()).isEqualTo(status)
     }
 
     @ParameterizedTest(name = "getPossibleStatusToRevertTo {0} - invalid")
     @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "APPROVED_WITH_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
     fun `getPossibleStatusToRevertTo - invalid`(status: ApplicationStatus) {
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns status
+        every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         assertThat(approvedApplicationState.getPossibleStatusToRevertTo()).isNull()
     }
 

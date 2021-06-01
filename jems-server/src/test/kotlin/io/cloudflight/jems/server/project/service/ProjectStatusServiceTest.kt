@@ -9,8 +9,6 @@ import io.cloudflight.jems.api.project.dto.status.InputProjectEligibilityAssessm
 import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
 import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
-import io.cloudflight.jems.api.user.dto.OutputUserRole
-import io.cloudflight.jems.api.user.dto.OutputUserWithRole
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
@@ -19,14 +17,18 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
+import io.cloudflight.jems.server.project.entity.ProjectDecisionEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
+import io.cloudflight.jems.server.project.repository.ProjectDecisionRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.user.entity.User
-import io.cloudflight.jems.server.user.entity.UserRole
-import io.cloudflight.jems.server.user.repository.UserRepository
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.user.service.model.UserRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -56,6 +58,9 @@ internal class ProjectStatusServiceTest {
     @MockK
     lateinit var projectRepository: ProjectRepository
 
+    @RelaxedMockK
+    lateinit var projectDecisionRepository: ProjectDecisionRepository
+
     @MockK
     lateinit var userRepository: UserRepository
 
@@ -70,16 +75,16 @@ internal class ProjectStatusServiceTest {
 
     lateinit var projectStatusService: ProjectStatusService
 
-    private val user = User(
+    private val user = UserEntity(
         id = 1,
         email = "applicant@programme.dev",
         name = "applicant",
         surname = "",
-        userRole = UserRole(id = 3, name = "applicant user"),
+        userRole = UserRoleEntity(id = 3, name = "applicant user"),
         password = "hash_pass"
     )
 
-    private val userProgramme = OutputUserWithRole(16, "programme@email", "", "", OutputUserRole(7, "programme"))
+    private val userProgramme = User(16, "programme@email", "", "", UserRole(7, "programme", emptySet()))
 
     private val dummyCall = CallEntity(
         id = 5,
@@ -102,7 +107,7 @@ internal class ProjectStatusServiceTest {
     fun setup() {
         MockKAnnotations.init(this)
         projectStatusService = ProjectStatusServiceImpl(
-            projectRepository, userRepository, auditService, securityService
+            projectRepository, userRepository, projectDecisionRepository, auditService, securityService
         )
     }
 
@@ -133,23 +138,25 @@ internal class ProjectStatusServiceTest {
                 submitTime,
                 null,
                 note
-            ) else null
+            ) else null,
+            step2Active = false
         )
     }
 
     @Test
     fun `set quality assessment`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(any()) } returns User(
+        every { userRepository.findByIdOrNull(any()) } returns UserEntity(
             1,
             "programme@email",
             "",
             "",
-            UserRole(7, "programme"),
+            UserRoleEntity(7, "programme"),
             "hash_pass"
         )
         every { projectRepository.findById(16) } returns Optional.of(projectSubmitted.copy(id = 16))
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
+        every { projectDecisionRepository.save(any<ProjectDecisionEntity>()) } returnsArgument 0
 
         val inputData = InputProjectQualityAssessment(
             result = ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING,
@@ -157,7 +164,7 @@ internal class ProjectStatusServiceTest {
         )
 
         val result = projectStatusService.setQualityAssessment(16, inputData)
-        assertThat(result.qualityAssessment!!.result).isEqualTo(ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING)
+        assertThat(result.firstStepDecision?.qualityAssessment!!.result).isEqualTo(ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING)
         assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.SUBMITTED)
 
         val event = slot<AuditCandidate>()
@@ -180,12 +187,12 @@ internal class ProjectStatusServiceTest {
     @Test
     fun `set QA no project`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(any()) } returns User(
+        every { userRepository.findByIdOrNull(any()) } returns UserEntity(
             1,
             "programme@email",
             "",
             "",
-            UserRole(7, "programme"),
+            UserRoleEntity(7, "programme"),
             "hash_pass"
         )
         every { projectRepository.findById(-51) } returns Optional.empty()
@@ -197,16 +204,17 @@ internal class ProjectStatusServiceTest {
     @Test
     fun `set eligibility assessment`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(any()) } returns User(
+        every { userRepository.findByIdOrNull(any()) } returns UserEntity(
             1,
             "programme@email",
             "",
             "",
-            UserRole(7, "programme"),
+            UserRoleEntity(7, "programme"),
             "hash_pass"
         )
         every { projectRepository.findById(79) } returns Optional.of(projectSubmitted.copy(id = 79))
         every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
+        every { projectDecisionRepository.save(any<ProjectDecisionEntity>()) } returnsArgument 0
 
         val inputData = InputProjectEligibilityAssessment(
             result = ProjectEligibilityAssessmentResult.PASSED,
@@ -214,7 +222,9 @@ internal class ProjectStatusServiceTest {
         )
 
         val result = projectStatusService.setEligibilityAssessment(79, inputData)
-        assertThat(result.eligibilityAssessment!!.result).isEqualTo(ProjectEligibilityAssessmentResult.PASSED)
+        assertThat(result.firstStepDecision?.eligibilityAssessment!!.result).isEqualTo(
+            ProjectEligibilityAssessmentResult.PASSED
+        )
         assertThat(result.projectStatus.status).isEqualTo(ApplicationStatusDTO.SUBMITTED)
 
         val event = slot<AuditCandidate>()
@@ -236,12 +246,12 @@ internal class ProjectStatusServiceTest {
     @Test
     fun `set EA no project`() {
         every { securityService.currentUser } returns LocalCurrentUser(userProgramme, "hash_pass", emptyList())
-        every { userRepository.findByIdOrNull(any()) } returns User(
+        every { userRepository.findByIdOrNull(any()) } returns UserEntity(
             1,
             "programme@email",
             "",
             "",
-            UserRole(7, "programme"),
+            UserRoleEntity(7, "programme"),
             "hash_pass"
         )
         every { projectRepository.findById(-22) } returns Optional.empty()

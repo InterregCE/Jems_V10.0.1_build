@@ -14,6 +14,8 @@ export class ActionsCellComponent {
   @Input()
   project: ProjectDetailDTO;
   @Input()
+  fundingDecisionDefined: boolean;
+  @Input()
   permission: Permission;
 
   @Output()
@@ -48,6 +50,6 @@ export class ActionsCellComponent {
 
   private canChangeAssessmentFile(): boolean {
     return this.permission !== Permission.APPLICANT_USER
-      && (!this.project.fundingDecision || this.file.updated > this.project.projectStatus.updated);
+      && (!this.fundingDecisionDefined || this.file.updated > this.project.projectStatus.updated);
   }
 }

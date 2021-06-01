@@ -5,11 +5,16 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
-import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetUnitCostEntities
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetEquipmentEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetExternalEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetInfrastructureEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetStaffCostEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetTravelEntity
 import io.cloudflight.jems.server.project.service.partner.model.*
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -18,7 +23,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.util.*
+import java.util.Optional
 
 
 class ProjectPartnerBudgetPersistenceTest: UnitTest() {
@@ -192,7 +197,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         ){projectPeriodEntity}
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetStaffCostRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
-        val result = persistence.createOrUpdateBudgetStaffCosts(projectId, partnerId, setOf(staffCostEntry))
+        val result = persistence.createOrUpdateBudgetStaffCosts(projectId, partnerId, listOf(staffCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
@@ -204,7 +209,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         ){projectPeriodEntity}
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetEquipmentRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
-        val result = persistence.createOrUpdateBudgetEquipmentCosts(projectId, partnerId, setOf(generalCostEntry))
+        val result = persistence.createOrUpdateBudgetEquipmentCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
@@ -217,7 +222,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetExternalRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
-            persistence.createOrUpdateBudgetExternalExpertiseAndServicesCosts(projectId, partnerId, setOf(generalCostEntry))
+            persistence.createOrUpdateBudgetExternalExpertiseAndServicesCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
@@ -230,7 +235,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetInfrastructureRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
-            persistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, setOf(generalCostEntry))
+            persistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
@@ -243,7 +248,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetTravelRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result =
-            persistence.createOrUpdateBudgetTravelAndAccommodationCosts(projectId, partnerId, setOf(travelCostEntry))
+            persistence.createOrUpdateBudgetTravelAndAccommodationCosts(projectId, partnerId, listOf(travelCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }
@@ -254,7 +259,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
             programmeUnitCostEntity
         )
         val partnerBudgetEntities =
-            setOf(unitCostEntry).toBudgetUnitCostEntities(
+            listOf(unitCostEntry).toBudgetUnitCostEntities(
                 partnerId,
                 { programmeUnitCostEntity },
                 { projectPeriodEntity }
@@ -263,7 +268,7 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         every {  projectPeriodRepository.getOne(projectPeriodId)} returns projectPeriodEntity
         every { budgetUnitCostRepository.saveAll(partnerBudgetEntities) } returns partnerBudgetEntities
 
-        val result = persistence.createOrUpdateBudgetUnitCosts(projectId, partnerId, setOf(unitCostEntry))
+        val result = persistence.createOrUpdateBudgetUnitCosts(projectId, partnerId, listOf(unitCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
     }

@@ -1,5 +1,6 @@
-<app-main-page-template [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} "
-                        subTitleKey="project.application.form.section.part.c">
+<app-project-page-template
+        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
+        subTitleKey="project.application.form.section.part.c">
     <app-project-application-form-future-plans-detail
             *ngIf="futurePlans$ | async as plans"
             [success$]="saveSuccess$"
@@ -8,4 +9,4 @@
             [error$]="saveError$"
             (updateData)="updateFuturePlans$.next($event)">
     </app-project-application-form-future-plans-detail>
-</app-main-page-template>
+</app-project-page-template>

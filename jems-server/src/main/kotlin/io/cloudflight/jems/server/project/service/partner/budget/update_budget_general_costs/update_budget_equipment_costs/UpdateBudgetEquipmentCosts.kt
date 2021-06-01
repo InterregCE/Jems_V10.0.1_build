@@ -26,7 +26,7 @@ class UpdateBudgetEquipmentCosts(
 
     @Transactional
     @CanUpdateProjectPartner
-    override fun createOrUpdateBudgetGeneralCosts(partnerId: Long, budgetGeneralCosts: Set<BudgetGeneralCostEntry>) =
+    override fun createOrUpdateBudgetGeneralCosts(partnerId: Long, budgetGeneralCosts: List<BudgetGeneralCostEntry>) =
         persistence.createOrUpdateBudgetEquipmentCosts(
             projectPersistence.getProjectIdForPartner(partnerId),
             partnerId,

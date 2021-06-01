@@ -2,21 +2,27 @@ import {Routes} from '@angular/router';
 import {UserPageComponent} from './user-page/user-page.component';
 import {UserNameResolver} from './user-page/user-detail-page/user-name.resolver';
 import {PermissionGuard} from '../security/permission.guard';
-import {Permission} from '../security/permissions/permission';
 import {AuditLogComponent} from './audit-log/audit-log.component';
 import {UserDetailPageComponent} from './user-page/user-detail-page/user-detail-page.component';
+import {UserRoleDTO} from '@cat/api';
+import {UserPageRoleComponent} from './user-page-role/user-page-role.component';
+import {UserRoleDetailPageComponent} from './user-page-role/user-role-detail-page/user-role-detail-page.component';
+import {UserRoleNameResolver} from './user-page-role/user-role-detail-page/user-role-name.resolver';
 
 export const routes: Routes = [
   {
     path: '',
+    data: {
+      breadcrumb: 'system.page.title',
+    },
     children: [
       {
-        path: '',
+        path: 'audit',
         component: AuditLogComponent,
         canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'audit.list.title',
-          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+          permissionsOnly: [UserRoleDTO.PermissionsEnum.AuditRetrieve],
         },
       },
       {
@@ -24,7 +30,7 @@ export const routes: Routes = [
         canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'user.breadcrumb.create',
-          permissionsOnly: [Permission.ADMINISTRATOR],
+          permissionsOnly: [UserRoleDTO.PermissionsEnum.UserRetrieve],
         },
         children: [
           {
@@ -37,7 +43,9 @@ export const routes: Routes = [
             canActivate: [PermissionGuard],
             data: {
               breadcrumb: 'user.create.header',
-              permissionsOnly: [Permission.ADMINISTRATOR],
+              permissionsOnly: [
+                UserRoleDTO.PermissionsEnum.UserCreate,
+              ],
             },
           },
           {
@@ -48,6 +56,39 @@ export const routes: Routes = [
           },
         ]
       },
+      {
+        path: 'userRole',
+        canActivate: [PermissionGuard],
+        data: {
+          breadcrumb: 'userRole.breadcrumb.list',
+          permissionsOnly: [
+            UserRoleDTO.PermissionsEnum.RoleRetrieve,
+          ]
+        },
+        children: [
+          {
+            path: '',
+            component: UserPageRoleComponent,
+          },
+          {
+            path: 'create',
+            component: UserRoleDetailPageComponent,
+            canActivate: [PermissionGuard],
+            data: {
+              breadcrumb: 'userRole.breadcrumb.create',
+              permissionsOnly: [
+                UserRoleDTO.PermissionsEnum.RoleCreate,
+              ]
+            },
+          },
+          {
+            path: 'detail/:roleId',
+            component: UserRoleDetailPageComponent,
+            data: {dynamicBreadcrumb: true},
+            resolve: {breadcrumb$: UserRoleNameResolver}
+          },
+        ]
+      }
     ]
   }
 ];

@@ -48,7 +48,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   tableData: AbstractControl[] = [];
 
   data$: Observable<{
-    projectAcronym: string
+    projectTitle: string,
     columnsToDisplay: string[],
     withConfigs: TableConfig[],
     partners: ProjectPartner[],
@@ -121,7 +121,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     ).pipe(map(() => this.calculatePartnerColumnsTotal()));
 
     this.data$ = combineLatest([
-      this.pageStore.projectAcronym$,
+      this.pageStore.projectTitle$,
       this.columnsToDisplay$,
       this.withConfigs$,
       this.pageStore.partners$,
@@ -133,9 +133,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.partnerColumnsTotal$,
       this.loading
     ]).pipe(
-      map(([projectAcronym, columnsToDisplay, withConfigs, partners, lumpSums, periods, showAddButton, showGapExistsWarning, costIsNotSplittableError, partnerColumnsTotal, loading]: any) => {
+      map(([projectTitle, columnsToDisplay, withConfigs, partners, lumpSums, periods, showAddButton, showGapExistsWarning, costIsNotSplittableError, partnerColumnsTotal, loading]: any) => {
         return {
-          projectAcronym,
+          projectTitle,
           columnsToDisplay,
           withConfigs,
           partners,
@@ -207,7 +207,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   }
 
   getPeriod(itemIndex: number, periods: ProjectPeriod[]): ProjectPeriod | undefined {
-    const periodNumber = this.items.at(itemIndex).get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value;
+    const periodNumber = this.items.at(itemIndex)?.get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value;
     if (periodNumber === 0) {
       return {periodNumber: 0} as any;
     }

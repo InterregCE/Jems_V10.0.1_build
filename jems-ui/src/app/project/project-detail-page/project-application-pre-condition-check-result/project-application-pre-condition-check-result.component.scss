@@ -1,0 +1,56 @@
+.mat-accordion {
+  ::ng-deep {
+    .mat-expansion-panel {
+      box-shadow: none;
+      border-bottom: 1px solid var(--blue-gray);
+      border-radius: 0;
+
+      .mat-expansion-panel-header-title {
+        align-items: center;
+      }
+      .mat-expansion-panel-header-description{
+        justify-content: flex-end;
+        white-space: nowrap;
+      }
+      .mat-expansion-panel-body {
+        padding-right: 0;
+        padding-bottom: 0;
+      }
+
+      &.alternative, &.alternative .mat-expansion-panel {
+        background-color: var(--table-highlight-color);
+      }
+
+      :last-child {
+        border-bottom: 0;
+      }
+    }
+
+    &.leaf {
+      display: flex;
+      align-items: center;
+      min-height: 40px;
+      padding: 4px 24px;
+      border-bottom: 1px solid var(--blue-gray);
+      &.alternative {
+        background-color: var(--table-highlight-color);
+      }
+      :last-child {
+        border-bottom: 0;
+      }
+    }
+
+    .warning {
+      color: var(--warn-color);
+    }
+
+    .error {
+      color: var(--error-color);
+    }
+
+    .info {
+      color: var(--info-color);
+    }
+
+  }
+}

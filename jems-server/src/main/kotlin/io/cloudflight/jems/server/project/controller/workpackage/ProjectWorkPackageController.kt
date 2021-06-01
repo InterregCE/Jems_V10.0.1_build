@@ -24,8 +24,8 @@ class ProjectWorkPackageController(
     override fun getWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple> =
         workPackageService.getWorkPackagesByProjectId(projectId, pageable)
 
-    override fun getFullWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackageDTO> =
-        getWorkPackage.getRichWorkPackagesByProjectId(projectId, pageable).toDto()
+    override fun getWorkPackagesForTimePlanByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackageDTO> =
+        getWorkPackage.getWorkPackagesForTimePlanByProjectId(projectId, pageable).toDto()
 
     override fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage =
         workPackageService.createWorkPackage(projectId, inputWorkPackageCreate)

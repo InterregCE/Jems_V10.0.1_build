@@ -1,12 +1,11 @@
-<app-main-page-template
+<app-project-page-template
         *ngIf="partnerStore.partner$ | async as partner"
-        [titleText]="'project.application.form.acronym' | translate : {acronym: projectStore.getAcronym() | async} ">
+        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} ">
     <h2 page-sub-title *ngIf="!partner?.abbreviation">{{'project.application.form.partner.add' | translate}}</h2>
 
     <app-project-application-form-partner-edit
-        [partner]="partner"
-        [projectId]="projectId"
-        [editable]="projectStore.projectEditable$ | async"
-        [legalStatuses]="legalStatuses$ | async">
-</app-project-application-form-partner-edit>
-</app-main-page-template>
+            [partner]="partner"
+            [projectId]="projectId"
+            [legalStatuses]="legalStatuses$ | async">
+    </app-project-application-form-partner-edit>
+</app-project-page-template>

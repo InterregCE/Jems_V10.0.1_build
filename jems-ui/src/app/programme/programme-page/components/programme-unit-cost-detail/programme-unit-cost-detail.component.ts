@@ -33,6 +33,8 @@ import {TranslateService} from '@ngx-translate/core';
 export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements OnInit {
 
   Permission = Permission;
+  MIN_VALUE = 0.01;
+  MAX_VALUE =  999999999.99;
 
   @Input()
   unitCost: ProgrammeUnitCostDTO;
@@ -52,7 +54,11 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     name: [[]],
     description: [[]],
     type: [[]],
-    costPerUnit: ['', Validators.required],
+    costPerUnit: ['', Validators.compose([
+      Validators.min(this.MIN_VALUE),
+      Validators.max(this.MAX_VALUE),
+      Validators.required])
+    ],
     categories: ['', Validators.required]
   });
 
@@ -70,6 +76,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
 
   costErrors = {
     required: 'programme.unitCost.costPerUnit.invalid',
+    min: 'programme.unitCost.costPerUnit.invalid',
+    max: 'programme.unitCost.costPerUnit.invalid'
   };
 
   categoriesErrorsMultiple = {
@@ -237,7 +245,6 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
       this.validNumberOfSelections = true;
     }
     if (this.isProgrammeSetupLocked && !this.isCreate) {
-      this.unitCostForm.controls.type.disable();
       this.unitCostForm.controls.costPerUnit.disable();
     }
   }

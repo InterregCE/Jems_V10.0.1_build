@@ -2,34 +2,25 @@ package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
-import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ProjectAssociatedOrganizationServiceImpl(
-        private val projectPartnerRepo: ProjectPartnerRepository,
-        private val projectAssociatedOrganizationRepo: ProjectAssociatedOrganizationRepository
+    private val projectPartnerRepo: ProjectPartnerRepository,
+    private val projectAssociatedOrganizationRepo: ProjectAssociatedOrganizationRepository,
 ) : ProjectAssociatedOrganizationService {
 
     @Transactional(readOnly = true)
-    override fun getById(projectId: Long, id: Long): OutputProjectAssociatedOrganizationDetail {
-        return projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, id)
+    override fun findAllByProjectId(projectId: Long): Iterable<OutputProjectAssociatedOrganizationDetail> {
+        return projectAssociatedOrganizationRepo.findAllByProjectId(projectId)
             .map { it.toOutputProjectAssociatedOrganizationDetail() }
-            .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }
-    }
-
-    @Transactional(readOnly = true)
-    override fun findAllByProjectId(projectId: Long, page: Pageable): Page<OutputProjectAssociatedOrganization> {
-        return projectAssociatedOrganizationRepo.findAllByProjectId(projectId, page)
-            .map { it.toOutputProjectAssociatedOrganization() }
     }
 
     @Transactional

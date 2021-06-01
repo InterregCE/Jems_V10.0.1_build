@@ -20,7 +20,6 @@ export class CallBudgetSettingsPageComponent {
               private permissionService: PermissionService,
               private programmeCostOptionService: ProgrammeCostOptionService,
               private callNavService: CallPageSidenavService) {
-    this.callStore.init(this.callId);
     this.callNavService.init(this.callId);
   }
 }

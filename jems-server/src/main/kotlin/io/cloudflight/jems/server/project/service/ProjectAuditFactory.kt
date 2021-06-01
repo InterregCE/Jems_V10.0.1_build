@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
@@ -12,14 +13,16 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 fun projectApplicationCreated(
-    projectId: Long,
-    projectAcronym: String,
-    newStatus: ApplicationStatus,
-): AuditCandidate =
-    AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
-        .project(id = projectId, name = projectAcronym)
-        .description("Project application created with status $newStatus")
-        .build()
+    context: Any,
+    project: ProjectEntity,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
+            .project(id = project.id, name = project.acronym)
+            .description("Project application created with status ${project.currentStatus.status}")
+            .build()
+    )
 
 fun projectStatusChanged(
     context: Any, projectSummary: ProjectSummary, newStatus: ApplicationStatus
@@ -29,6 +32,17 @@ fun projectStatusChanged(
         auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
             .project(id = projectSummary.id, name = projectSummary.acronym)
             .description("Project application status changed from ${projectSummary.status} to $newStatus")
+            .build()
+    )
+
+fun unsuccessfulProjectSubmission(
+    context: Any, projectSummary: ProjectSummary
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
+            .project(id = projectSummary.id, name = projectSummary.acronym)
+            .description("Unsuccessful attempt to submit an application from ${projectSummary.status}. Verification failed.")
             .build()
     )
 
@@ -42,12 +56,13 @@ fun projectVersionSnapshotCreated(
             .project(id = projectSummary.id, name = projectSummary.acronym)
             .description(
                 "New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on " +
-                    "${projectVersion.createdAt.toLocalDateTime().withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}"
+                    "${projectVersion.createdAt.toLocalDateTime().withNano(0)
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}"
             ).build()
     )
 
 fun projectVersionRecorded(
-    context: Any, projectSummary: ProjectSummary, userEmail: String, version: Int, createdAt: ZonedDateTime
+    context: Any, projectSummary: ProjectSummary, userEmail: String, version: String, createdAt: ZonedDateTime
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
@@ -67,11 +82,11 @@ fun callAlreadyEnded(callId: Long): AuditCandidate =
 fun qualityAssessmentConcluded(projectDetailDTO: ProjectDetailDTO): AuditCandidate =
     AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
         .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
-        .description("Project application quality assessment concluded as ${projectDetailDTO.qualityAssessment?.result}")
+        .description("Project application quality assessment concluded as ${projectDetailDTO.firstStepDecision?.qualityAssessment?.result}")
         .build()
 
 fun eligibilityAssessmentConcluded(projectDetailDTO: ProjectDetailDTO): AuditCandidate =
     AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
         .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
-        .description("Project application eligibility assessment concluded as ${projectDetailDTO.eligibilityAssessment?.result}")
+        .description("Project application eligibility assessment concluded as ${projectDetailDTO.firstStepDecision?.eligibilityAssessment?.result}")
         .build()

@@ -23,6 +23,7 @@
     <app-actions-cell
             [file]="file"
             [project]="project"
+            [fundingDecisionDefined]="fundingDecisionDefined"
             [permission]="permission"
             (edit)="descriptionState.set(file.id, FormState.EDIT)"
             (download)="downloadFile.emit($event)"
