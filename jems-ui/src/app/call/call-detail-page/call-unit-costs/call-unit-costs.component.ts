@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {ProgrammeUnitCostListDTO, CallDetailDTO} from '@cat/api';
+import {CallDetailDTO, ProgrammeUnitCostListDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {SelectionModel} from '@angular/cdk/collections';
-import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {CallStore} from '../../services/call-store.service';
 
 @UntilDestroy()
 @Component({
@@ -50,18 +50,18 @@ export class CallUnitCostsComponent implements OnInit {
     this.initialSelection.clear();
     this.selection.clear();
     this.unitCostDataSource.data.forEach((unitCost: ProgrammeUnitCostListDTO) => {
-      if (this.call.unitCosts.filter(element => element.id === unitCost.id).length > 0) {
+      if (this.call.unitCosts?.filter(element => element.id === unitCost.id).length > 0) {
         this.selection.select(unitCost);
         this.initialSelection.select(unitCost);
       }
     });
     this.formService.init(this.callUnitCostForm);
     this.callStore.call$.pipe(
-        untilDestroyed(this)
+      untilDestroyed(this)
     ).subscribe((call: CallDetailDTO) => {
       this.initialSelection.clear();
       this.unitCostDataSource.data.forEach((unitCost: ProgrammeUnitCostListDTO) => {
-        if (call.unitCosts.filter(element => element.id === unitCost.id).length > 0) {
+        if (call.unitCosts?.filter(element => element.id === unitCost.id).length > 0) {
           this.initialSelection.select(unitCost);
         }
       });

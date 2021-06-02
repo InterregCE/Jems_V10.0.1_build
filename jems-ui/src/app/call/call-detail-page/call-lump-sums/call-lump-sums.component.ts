@@ -4,10 +4,10 @@ import {FormService} from '@common/components/section/form/form.service';
 import {MatTableDataSource} from '@angular/material/table';
 import {CallDetailDTO, ProgrammeLumpSumListDTO} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
-import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/internal/operators';
+import {CallStore} from '../../services/call-store.service';
 
 @UntilDestroy()
 @Component({
@@ -51,7 +51,7 @@ export class CallLumpSumsComponent implements OnInit {
     this.selection.clear();
     this.initialSelection.clear();
     this.lumpSumDataSource.data.forEach((lumpSum: ProgrammeLumpSumListDTO) => {
-      if (this.call.lumpSums.filter(element => element.id === lumpSum.id).length > 0) {
+      if (this.call?.lumpSums.filter(element => element.id === lumpSum.id).length > 0) {
         this.selection.select(lumpSum);
         this.initialSelection.select(lumpSum);
       }
@@ -63,7 +63,7 @@ export class CallLumpSumsComponent implements OnInit {
     ).subscribe((call: CallDetailDTO) => {
       this.initialSelection.clear();
       this.lumpSumDataSource.data.forEach((lumpSum: ProgrammeLumpSumListDTO) => {
-        if (call.lumpSums.filter(element => element.id === lumpSum.id).length > 0) {
+        if (call.lumpSums?.filter(element => element.id === lumpSum.id).length > 0) {
           this.initialSelection.select(lumpSum);
         }
       });
