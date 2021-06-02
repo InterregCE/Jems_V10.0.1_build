@@ -41,9 +41,6 @@ export class CallDetailPageStore {
     this.allFunds$ = this.allFunds();
     this.callIsEditable$ = this.callIsEditable();
     this.isFirstCall$ = this.isFirstCall();
-
-    // remove this
-    this.programmeEditableStateStore.init();
   }
 
   private allPriorities(): Observable<CallPriorityCheckbox[]> {
