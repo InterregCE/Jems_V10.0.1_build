@@ -1,14 +1,10 @@
-<p class="spaced-elements" *ngIf="!workPackagePage?.content.length">
+<p class="spaced-elements" *ngIf="!workPackages.length">
     {{'project.application.form.workpackage.list.empty' | translate}}
 </p>
-<app-table *ngIf="workPackagePage.content.length"
+<app-table *ngIf="workPackages.length"
            [configuration]="tableConfiguration"
-           [rows]="workPackagePage.content"
-           [totalElements]="workPackagePage?.totalElements"
-           [pageIndex]="pageIndex"
-           (newPageIndex)="newPageIndex.emit($event)"
-           (newPageSize)="newPageSize.emit($event)"
-           (sortRows)="newSort.emit($event)">
+           [rows]="workPackages"
+           [totalElements]="workPackages.length">
 </app-table>
 
 <ng-template #deletionCell let-workPackage>

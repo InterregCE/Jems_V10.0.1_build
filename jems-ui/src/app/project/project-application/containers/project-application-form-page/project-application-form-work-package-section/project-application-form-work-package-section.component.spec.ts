@@ -35,7 +35,7 @@ describe('ProjectApplicationFormWorkPackageSectionComponent', () => {
 
   it('should list work packages', fakeAsync(() => {
     let results: OutputWorkPackageSimple[] = [];
-    component.currentWorkPackagePage$.subscribe(result => results = result.content);
+    component.workPackages$.subscribe(result => results = result);
 
     const workPackages = [
       {name: [{language: InputTranslation.LanguageEnum.EN, translation: 'test1'} as InputTranslation]} as OutputWorkPackageSimple,

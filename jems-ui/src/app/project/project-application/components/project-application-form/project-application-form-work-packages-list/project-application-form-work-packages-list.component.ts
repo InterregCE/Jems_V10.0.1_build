@@ -8,9 +8,8 @@ import {
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {OutputWorkPackageSimple, PageOutputWorkPackageSimple} from '@cat/api';
+import {OutputWorkPackageSimple} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '../../../../../common/utils/forms';
@@ -27,18 +26,9 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
   projectId = this.activatedRoute.snapshot.params.projectId;
 
   @Input()
-  workPackagePage: PageOutputWorkPackageSimple;
-  @Input()
-  pageIndex: number;
+  workPackages: OutputWorkPackageSimple[];
   @Input()
   editable: boolean;
-
-  @Output()
-  newPageSize: EventEmitter<number> = new EventEmitter<number>();
-  @Output()
-  newPageIndex: EventEmitter<number> = new EventEmitter<number>();
-  @Output()
-  newSort: EventEmitter<Partial<MatSort>> = new EventEmitter<Partial<MatSort>>();
   @Output()
   deleteWorkPackage = new EventEmitter<number>();
 
@@ -57,6 +47,7 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
     this.tableConfiguration = new TableConfiguration({
       routerLink: `/app/project/detail/${this.projectId}/applicationFormWorkPackage/detail`,
       isTableClickable: true,
+      sortable: false,
       columns: [
         {
           displayedColumn: 'project.application.form.workpackage.number',

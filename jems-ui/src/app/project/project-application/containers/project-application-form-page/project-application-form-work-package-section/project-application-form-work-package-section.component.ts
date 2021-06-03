@@ -1,8 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {combineLatest, Subject} from 'rxjs';
-import {MatSort} from '@angular/material/sort';
-import {map, mergeMap, startWith, take, tap} from 'rxjs/operators';
-import {Tables} from '../../../../../common/utils/tables';
+import {Subject} from 'rxjs';
+import {startWith, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {WorkPackageService} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
@@ -19,26 +17,14 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 export class ProjectApplicationFormWorkPackageSectionComponent {
   Permission = Permission;
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
+  private refreshPackages$ = new Subject<void>();
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
-  newSort$ = new Subject<Partial<MatSort>>();
-
-  currentWorkPackagePage$ =
-    combineLatest([
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
-      this.newSort$.pipe(
-        startWith({active: 'id', direction: 'asc'}),
-        map(sort => sort?.direction ? sort : {active: 'id', direction: 'asc'}),
-        map(sort => `${sort.active},${sort.direction}`)
-      )
-    ])
-      .pipe(
-        mergeMap(([pageIndex, pageSize, sort]) =>
-          this.workPackageService.getWorkPackagesByProjectId(this.projectId, pageIndex, pageSize, sort)),
-        tap(page => Log.info('Fetched the work packages:', this, page.content)),
-      );
+  workPackages$ = this.refreshPackages$
+    .pipe(
+      startWith(null),
+      switchMap(() => this.workPackageService.getWorkPackagesByProjectId(this.projectId)),
+      tap(packages => Log.info('Fetched the work packages:', this, packages)),
+    );
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
@@ -50,7 +36,7 @@ export class ProjectApplicationFormWorkPackageSectionComponent {
     this.workPackageService.deleteWorkPackage(workPackageId)
       .pipe(
         take(1),
-        tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+        tap(() => this.refreshPackages$.next()),
         tap(() => Log.info('Deleted work package: ', this, workPackageId)),
         tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId))
       ).subscribe();

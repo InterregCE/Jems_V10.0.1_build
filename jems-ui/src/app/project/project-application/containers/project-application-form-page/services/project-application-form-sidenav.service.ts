@@ -50,11 +50,11 @@ export class ProjectApplicationFormSidenavService {
       .pipe(
         mergeMap(projectId => forkJoin([
             of(projectId),
-            this.workPackageService.getWorkPackagesByProjectId(projectId, 0, 100, 'id,asc')
+            this.workPackageService.getWorkPackagesByProjectId(projectId)
           ])
         ),
-        tap(([projectId, packages]) => Log.info('Fetched the project work packages:', this, packages.content)),
-        map(([projectId, packages]) => packages.content
+        tap(([projectId, packages]) => Log.info('Fetched the project work packages:', this, packages)),
+        map(([projectId, packages]) => packages
           .map(workPackage => ({
               headline: {
                 i18nKey: 'common.label.workpackage.shortcut',
