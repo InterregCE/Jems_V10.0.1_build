@@ -18,14 +18,14 @@ class ProjectWorkPackageController(
     private val getWorkPackage: GetWorkPackageInteractor,
 ) : ProjectWorkPackageApi {
 
-    override fun getWorkPackageById(workPackageId: Long): OutputWorkPackage =
-        workPackageService.getWorkPackageById(workPackageId)
+    override fun getWorkPackageById(workPackageId: Long, version: String?): OutputWorkPackage =
+        getWorkPackage.getWorkPackageById(workPackageId, version)
 
-    override fun getWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple> =
-        workPackageService.getWorkPackagesByProjectId(projectId, pageable)
+    override fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple> =
+        getWorkPackage.getWorkPackagesByProjectId(projectId, version)
 
-    override fun getWorkPackagesForTimePlanByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackageDTO> =
-        getWorkPackage.getWorkPackagesForTimePlanByProjectId(projectId, pageable).toDto()
+    override fun getWorkPackagesForTimePlanByProjectId(projectId: Long): List<ProjectWorkPackageDTO> =
+        getWorkPackage.getWorkPackagesForTimePlanByProjectId(projectId).toDto()
 
     override fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage =
         workPackageService.createWorkPackage(projectId, inputWorkPackageCreate)

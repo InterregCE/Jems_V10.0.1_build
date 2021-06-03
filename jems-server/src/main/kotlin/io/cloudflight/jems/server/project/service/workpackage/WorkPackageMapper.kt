@@ -1,14 +1,19 @@
 package io.cloudflight.jems.server.project.service.workpackage
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetailHistoricalData
+
 
 fun WorkPackageEntity.toOutputWorkPackageSimple() = OutputWorkPackageSimple (
     id = id,
@@ -63,3 +68,19 @@ fun InputWorkPackageUpdate.combineTranslatedValues(
         )
     }
 }
+
+fun List<WorkPackageRow>.toOutputWorkPackageHistoricalData() =
+    this.groupBy { it.id }.map { groupedRows -> OutputWorkPackage(
+        id = groupedRows.value.first().id,
+        name = groupedRows.value.extractField { it.name },
+        specificObjective = groupedRows.value.extractField { it.specificObjective },
+        objectiveAndAudience = groupedRows.value.extractField { it.objectiveAndAudience },
+        number = groupedRows.value.first().number,
+    ) }.first()
+
+fun  List<WorkPackageRow>.toOutputWorkPackageSimpleHistoricalData() =
+    this.groupBy { it.id }.map { groupedRows -> OutputWorkPackageSimple(
+        id = groupedRows.value.first().id,
+        name = groupedRows.value.extractField { it.name },
+        number = groupedRows.value.first().number,
+    ) }

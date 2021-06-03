@@ -11,11 +11,7 @@ import org.springframework.data.domain.Pageable
 
 interface WorkPackageService {
 
-    fun getWorkPackageById(workPackageId: Long): OutputWorkPackage
-
     fun getProjectForWorkPackageId(id: Long): ProjectApplicantAndStatus
-
-    fun getWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple>
 
     fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage
 

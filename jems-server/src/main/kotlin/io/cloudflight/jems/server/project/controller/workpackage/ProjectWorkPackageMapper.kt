@@ -12,4 +12,4 @@ fun ProjectWorkPackage.toDto() = ProjectWorkPackageDTO(
     outputs = outputs.toDto(),
 )
 
-fun Page<ProjectWorkPackage>.toDto() = map { it.toDto() }
+fun List<ProjectWorkPackage>.toDto() = map { it.toDto() }

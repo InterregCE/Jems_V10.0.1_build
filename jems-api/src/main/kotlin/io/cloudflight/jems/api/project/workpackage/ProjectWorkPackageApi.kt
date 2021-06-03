@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import javax.validation.Valid
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("WorkPackage")
 @RequestMapping("/api/project/workPackage")
@@ -27,25 +28,15 @@ interface ProjectWorkPackageApi {
 
     @ApiOperation("Returns a work package by id")
     @GetMapping("/{workPackageId}")
-    fun getWorkPackageById(@PathVariable workPackageId: Long): OutputWorkPackage
+    fun getWorkPackageById(@PathVariable workPackageId: Long, @RequestParam(required = false) version: String? = null): OutputWorkPackage
 
     @ApiOperation("Returns all work packages for a project")
-    @ApiImplicitParams(
-        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
-        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
-        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
-    )
     @GetMapping("/perProject/{projectId}")
-    fun getWorkPackagesByProjectId(@PathVariable projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple>
+    fun getWorkPackagesByProjectId(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<OutputWorkPackageSimple>
 
     @ApiOperation("Returns all work packages for a project including outputs and activities")
-    @ApiImplicitParams(
-        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
-        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
-        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
-    )
     @GetMapping("/perProject/{projectId}/withOutputsAndActivities")
-    fun getWorkPackagesForTimePlanByProjectId(@PathVariable projectId: Long, pageable: Pageable): Page<ProjectWorkPackageDTO>
+    fun getWorkPackagesForTimePlanByProjectId(@PathVariable projectId: Long): List<ProjectWorkPackageDTO>
 
     @ApiOperation("Create work package")
     @PostMapping("/forProject/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])

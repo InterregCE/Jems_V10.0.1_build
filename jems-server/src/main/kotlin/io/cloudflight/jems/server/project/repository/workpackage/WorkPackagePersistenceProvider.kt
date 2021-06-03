@@ -1,10 +1,18 @@
 package io.cloudflight.jems.server.project.repository.workpackage
 
+import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
+import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
+import io.cloudflight.jems.server.common.entity.TranslationView
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectWorkPackage
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
+import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
+import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerHistoricalData
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
@@ -18,6 +26,10 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackage
+import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageHistoricalData
+import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimple
+import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimpleHistoricalData
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -31,13 +43,14 @@ class WorkPackagePersistenceProvider(
     private val workPackageOutputRepository: WorkPackageOutputRepository,
     private val workPackageInvestmentRepository: WorkPackageInvestmentRepository,
     private val outputIndicatorRepository: OutputIndicatorRepository,
+    private val projectVersionUtils: ProjectVersionUtils,
 ) : WorkPackagePersistence {
 
     @Transactional(readOnly = true)
-    override fun getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId: Long, pageable: Pageable): Page<ProjectWorkPackage> {
+    override fun getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId: Long): List<ProjectWorkPackage> {
         // fetch all work packages in 1 request
-        val workPackagesPaged = workPackageRepository.findAllByProjectId(projectId, pageable)
-        val workPackageIds = workPackagesPaged.content.mapTo(HashSet()) { it.id }
+        val workPackagesPaged = workPackageRepository.findAllByProjectId(projectId)
+        val workPackageIds = workPackagesPaged.mapTo(HashSet()) { it.id }
 
         // fetch all activities and deliverables in 1 request
         val activitiesByWorkPackages = workPackageActivityRepository.findAllByActivityIdWorkPackageIdIn(workPackageIds)
@@ -81,6 +94,31 @@ class WorkPackagePersistenceProvider(
                 getInvestmentsForWorkPackageId = { id -> investmentsByWorkPackages[id] }
             )
         }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple> {
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                workPackageRepository.findAllByProjectId(projectId).map { it.toOutputWorkPackageSimple() }
+            },
+            previousVersionFetcher = { timestamp ->
+                workPackageRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp).toOutputWorkPackageSimpleHistoricalData()
+            }
+        ) ?: emptyList()
+    }
+
+    @Transactional(readOnly = true)
+    override fun getWorkPackageById(workPackageId: Long, version: String?): OutputWorkPackage {
+        val projectId = getWorkPackageOrThrow(workPackageId).project.id
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                getWorkPackageOrThrow(workPackageId).toOutputWorkPackage()
+            },
+            previousVersionFetcher = { timestamp ->
+                workPackageRepository.findByIdAsOfTimestamp(workPackageId, timestamp).toOutputWorkPackageHistoricalData()
+            }
+        ) ?: throw ApplicationVersionNotFoundException()
     }
 
     @Transactional

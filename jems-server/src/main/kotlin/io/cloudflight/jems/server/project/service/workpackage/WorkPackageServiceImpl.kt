@@ -32,20 +32,9 @@ class WorkPackageServiceImpl(
         private const val MAX_WORK_PACKAGES_PER_PROJECT = 20L
     }
 
-    @CanRetrieveProjectWorkPackage
-    @Transactional(readOnly = true)
-    override fun getWorkPackageById(workPackageId: Long): OutputWorkPackage =
-        getWorkPackageOrThrow(workPackageId).toOutputWorkPackage()
-
     @Transactional(readOnly = true)
     override fun getProjectForWorkPackageId(id: Long): ProjectApplicantAndStatus =
         getWorkPackageOrThrow(id).project.toApplicantAndStatus()
-
-    @CanRetrieveProject
-    @Transactional(readOnly = true)
-    override fun getWorkPackagesByProjectId(projectId: Long, pageable: Pageable): Page<OutputWorkPackageSimple> {
-        return workPackageRepository.findAllByProjectId(projectId, pageable).map { it.toOutputWorkPackageSimple() }
-    }
 
     @CanUpdateProject
     @Transactional
