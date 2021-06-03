@@ -148,6 +148,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         value = """
              SELECT
              entity.*,
+             entity.sort_number as sortNumber,
              (SELECT
                 addresses.country
                 from project_partner_address
