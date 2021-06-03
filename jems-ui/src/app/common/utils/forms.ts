@@ -1,6 +1,9 @@
 import {Observable} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
-import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData
+} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 
 export class Forms {
 
@@ -8,7 +11,16 @@ export class Forms {
     const dialogRef = dialog.open(ConfirmDialogComponent, {
       autoFocus: false,
       maxWidth: '30rem',
-      data: {title, message, arguments: messageArguments}
+      data: {title, message: {i18nKey: message, i18nArguments: messageArguments}}
+    });
+    return dialogRef.afterClosed();
+  }
+
+  static confirm(dialog: MatDialog, data: ConfirmDialogData): Observable<boolean> {
+    const dialogRef = dialog.open(ConfirmDialogComponent, {
+      autoFocus: false,
+      maxWidth: '30rem',
+      data
     });
     return dialogRef.afterClosed();
   }

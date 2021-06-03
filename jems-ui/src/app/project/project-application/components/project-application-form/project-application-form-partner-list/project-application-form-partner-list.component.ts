@@ -98,15 +98,16 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   }
 
   delete(partner: OutputProjectPartner): void {
-    Forms.confirmDialog(
+    Forms.confirm(
       this.dialog,
-      'project.application.form.partner.table.action.delete.dialog.header',
-      'project.application.form.partner.table.action.delete.dialog.message',
       {
-        name: partner.abbreviation,
-        boldWarningMessage: 'project.application.form.partner.table.action.delete.dialog.warning'
-      })
-      .pipe(
+        title: 'project.application.form.partner.table.action.delete.dialog.header',
+        message: {
+          i18nKey: 'project.application.form.partner.table.action.delete.dialog.message',
+          i18nArguments: {name: partner.abbreviation}
+        },
+        warnMessage: 'project.application.form.partner.table.action.delete.dialog.warning'
+      }).pipe(
         take(1),
         filter(answer => !!answer),
         map(() => this.deletePartner.emit(partner.id)),

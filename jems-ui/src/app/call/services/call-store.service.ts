@@ -97,7 +97,7 @@ export class CallStore {
       );
     return merge(initialCall$, this.savedCall$)
       .pipe(
-        shareReplay(1, 50)
+        shareReplay(1)
       );
   }
 

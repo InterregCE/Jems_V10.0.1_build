@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {Tools} from '../../../../common/utils/tools';
 import {CallDetailDTO, FlatRateSetupDTO} from '@cat/api';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {CallStore} from '../../../services/call-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
 import {CallFlatRatesConstants} from './call-flat-rates.constants';
+import {Tools} from '../../../common/utils/tools';
+import {CallStore} from '../../services/call-store.service';
 
 @Component({
   selector: 'app-call-flat-rates',

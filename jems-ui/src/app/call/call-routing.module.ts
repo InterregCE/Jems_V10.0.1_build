@@ -1,11 +1,11 @@
 import {Routes} from '@angular/router';
 import {CallPageComponent} from './containers/call-page/call-page.component';
-import {CallConfigurationComponent} from './containers/call-configuration/call-configuration.component';
 import {Permission} from '../security/permissions/permission';
 import {RouteData} from '../common/utils/route-data';
 import {PermissionGuard} from '../security/permission.guard';
 import {CallNameResolver} from './services/call-name.resolver';
 import {CallBudgetSettingsPageComponent} from './containers/call-budget-settings-page/call-budget-settings-page.component';
+import {CallDetailPageComponent} from './call-detail-page/call-detail-page.component';
 
 export const routes: Routes = [
   {
@@ -24,7 +24,7 @@ export const routes: Routes = [
       },
       {
         path: 'create',
-        component: CallConfigurationComponent,
+        component: CallDetailPageComponent,
         data: new RouteData({
           breadcrumb: 'call.breadcrumb.create',
         }),
@@ -40,7 +40,7 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            component: CallConfigurationComponent,
+            component: CallDetailPageComponent,
           },
           {
             path: 'budgetSettings',

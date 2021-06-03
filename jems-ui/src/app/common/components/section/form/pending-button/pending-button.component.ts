@@ -33,7 +33,7 @@ export class PendingButtonComponent {
       this.clicked.emit();
       return;
     }
-    Forms.confirmDialog(this.dialog, this.confirm.title, this.confirm.message, this.confirm.arguments)
+    Forms.confirm(this.dialog, this.confirm)
       .pipe(
         take(1),
         tap(confirmed => {

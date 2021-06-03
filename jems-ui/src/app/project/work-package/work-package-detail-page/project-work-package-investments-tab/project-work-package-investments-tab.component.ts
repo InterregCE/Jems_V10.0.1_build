@@ -106,25 +106,26 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   }
 
   delete(workPackageInvestment: WorkPackageInvestmentDTO, title: string): void {
-    const message = title
+    const messageKey = title
       ? 'project.application.form.workpackage.investment.table.action.delete.dialog.message'
       : 'project.application.form.workpackage.investment.table.action.delete.dialog.message.no.name';
 
-    Forms.confirmDialog(
+    Forms.confirm(
       this.dialog,
-      'project.application.form.workpackage.table.action.delete.dialog.header',
-      message,
-      {title, boldWarningMessage: 'project.application.form.workpackage.investment.table.action.delete.dialog.warning'})
-      .pipe(
-        take(1),
-        filter(answer => !!answer),
-        map(() => this.workPackageStore.deleteWorkPackageInvestment(workPackageInvestment.id)
-          .pipe(
-            take(1),
-            tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-            tap(() => Log.info('Deleted investment: ', this, workPackageInvestment.id))
-          ).subscribe()),
-      ).subscribe();
+      {
+        title: 'project.application.form.workpackage.table.action.delete.dialog.header',
+        message: {i18nKey: messageKey, i18nArguments: {title}},
+        warnMessage: 'project.application.form.workpackage.investment.table.action.delete.dialog.warning'
+      }).pipe(
+      take(1),
+      filter(answer => !!answer),
+      map(() => this.workPackageStore.deleteWorkPackageInvestment(workPackageInvestment.id)
+        .pipe(
+          take(1),
+          tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+          tap(() => Log.info('Deleted investment: ', this, workPackageInvestment.id))
+        ).subscribe()),
+    ).subscribe();
   }
 
   private setRouterLink(): void {
