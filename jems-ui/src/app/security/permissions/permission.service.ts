@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {NgxPermissionsService} from 'ngx-permissions';
-import {from, Observable, ReplaySubject} from 'rxjs';
+import {Observable, ReplaySubject} from 'rxjs';
 import {SecurityService} from '../security.service';
 import {OutputCurrentUser, UserRoleDTO} from '@cat/api';
-import {tap} from 'rxjs/operators';
+import {switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../common/utils/log';
 
 @Injectable({providedIn: 'root'})
@@ -33,7 +33,10 @@ export class PermissionService {
   }
 
   hasPermission(permission: string | string[]): Observable<boolean> {
-    return from(this.ngxPermissionsService.hasPermission(permission));
+    return this.permissionsChanged$
+      .pipe(
+        switchMap(() => this.ngxPermissionsService.hasPermission(permission)),
+      );
   }
 
   permissionsChanged(): Observable<string[]> {
