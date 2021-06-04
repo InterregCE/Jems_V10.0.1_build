@@ -234,7 +234,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                     title = null,
                     acronym = project.acronym,
                     duration = project.projectData?.duration,
-                    step2Active = project.step2Active,
+                    step2Active = true,
                     periods = listOf(ProjectPeriod(1, 1, 2)),
                     applicant = project.applicant.toUserSummary(),
                     projectStatus = project.currentStatus.toProjectStatus(),

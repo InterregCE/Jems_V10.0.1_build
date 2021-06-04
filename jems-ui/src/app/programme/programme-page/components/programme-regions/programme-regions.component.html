@@ -1,6 +1,7 @@
 <div>
     <h3>{{'programme.area.nuts.explorer.header' | translate}}
-        <button *ngIf=" formState === FormState.VIEW" mat-raised-button color="primary"
+        <button mat-raised-button color="primary"
+                *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>

@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectDetailPageStore} from './project-detail-page-store';
-import {OutputProjectFile} from '@cat/api';
+import {OutputProjectFile, ProjectStatusDTO} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {Permission} from '../../security/permissions/permission';
+import StatusEnum = ProjectStatusDTO.StatusEnum;
 
 @Component({
   selector: 'app-project-detail-page',
@@ -14,6 +15,7 @@ import {Permission} from '../../security/permissions/permission';
 export class ProjectDetailPageComponent {
   fileType = OutputProjectFile.TypeEnum;
   Permission = Permission;
+  StatusEnum = StatusEnum;
 
   projectId = this.activatedRoute.snapshot.params.projectId;
 
