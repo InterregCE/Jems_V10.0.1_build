@@ -20,7 +20,7 @@ interface WorkPackagePersistence {
     fun getWorkPackageById(workPackageId: Long, version: String?): OutputWorkPackage
 
     fun updateWorkPackageOutputs(workPackageId: Long, workPackageOutputs: List<WorkPackageOutput>): List<WorkPackageOutput>
-    fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): List<WorkPackageOutput>
+    fun getWorkPackageOutputsForWorkPackage(workPackageId: Long, version: String?): List<WorkPackageOutput>
 
     fun getWorkPackageInvestment(workPackageInvestmentId: Long): WorkPackageInvestment
     fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestment>

@@ -12,7 +12,10 @@ import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputRow
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetailHistoricalData
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 
 
 fun WorkPackageEntity.toOutputWorkPackageSimple() = OutputWorkPackageSimple (
@@ -83,4 +86,18 @@ fun  List<WorkPackageRow>.toOutputWorkPackageSimpleHistoricalData() =
         id = groupedRows.value.first().id,
         name = groupedRows.value.extractField { it.name },
         number = groupedRows.value.first().number,
+    ) }
+
+fun List<WorkPackageOutputRow>.toWorkPackageOutputsHistoricalData() =
+    this.groupBy { it.outputNumber }.map { groupedRows -> WorkPackageOutput(
+        outputNumber = groupedRows.value.first().outputNumber,
+        programmeOutputIndicatorId = groupedRows.value.first().programmeOutputIndicatorId,
+        programmeOutputIndicatorIdentifier = groupedRows.value.first().programmeOutputIndicatorIdentifier,
+        targetValue = groupedRows.value.first().targetValue,
+        periodNumber = groupedRows.value.first().periodNumber,
+        translatedValues = groupedRows.value.mapTo(HashSet()) { WorkPackageOutputTranslatedValue(
+            language = it.language!!,
+            description = it.description,
+            title = it.title
+        ) }
     ) }

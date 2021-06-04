@@ -30,6 +30,7 @@ import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackag
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimple
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimpleHistoricalData
+import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -136,8 +137,17 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long): List<WorkPackageOutput> =
-        getWorkPackageOrThrow(workPackageId).outputs.toModel()
+    override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long, version: String?): List<WorkPackageOutput>{
+        val workPackage = getWorkPackageOrThrow(workPackageId)
+        return projectVersionUtils.fetch(version, workPackage.project.id,
+            currentVersionFetcher = {
+                getWorkPackageOrThrow(workPackageId).outputs.toModel()
+            },
+            previousVersionFetcher = { timestamp ->
+                workPackageRepository.findOutputsByWorkPackageIdAsOfTimestamp(workPackageId, timestamp).toWorkPackageOutputsHistoricalData()
+            }
+        ) ?: emptyList()
+    }
 
     @Transactional(readOnly = true)
     override fun getWorkPackageInvestment(workPackageInvestmentId: Long) =

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import javax.validation.Valid
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("WorkPackageOutput")
 @RequestMapping("/api/project/workPackage/output/forWorkPackage/{workPackageId}")
@@ -17,7 +18,7 @@ interface ProjectWorkPackageOutputApi {
 
     @ApiOperation("Returns all work package outputs for a work package")
     @GetMapping
-    fun getOutputs(@PathVariable workPackageId: Long): List<WorkPackageOutputDTO>
+    fun getOutputs(@PathVariable workPackageId: Long, @RequestParam(required = false) version: String? = null): List<WorkPackageOutputDTO>
 
     @ApiOperation("Updates work packages outputs for a work package")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
