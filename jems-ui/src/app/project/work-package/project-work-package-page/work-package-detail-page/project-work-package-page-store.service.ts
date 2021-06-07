@@ -15,12 +15,13 @@ import {
   WorkPackageService,
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../../common/utils/log';
-import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
+import {catchError, filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {Log} from '../../../../common/utils/log';
 import {InvestmentSummary} from './workPackageInvestment';
-import {RoutingService} from '../../../common/services/routing.service';
+import {RoutingService} from '../../../../common/services/routing.service';
+import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectVersionStore} from '../../../services/project-version-store.service';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
@@ -29,7 +30,7 @@ export class ProjectWorkPackagePageStore {
   private workPackageId: number;
   private projectId: number;
 
-  workPackage$ = new ReplaySubject<OutputWorkPackage | any>(1);
+  workPackage$: Observable<OutputWorkPackage>;
   projectInvestmentSummaries$: Observable<InvestmentSummary[]>;
   isProjectEditable$: Observable<boolean>;
   project$: Observable<ProjectDetailDTO>;
@@ -41,6 +42,7 @@ export class ProjectWorkPackagePageStore {
 
   private savedActivities$ = new Subject<WorkPackageActivityDTO[]>();
   private savedOutputs$ = new Subject<WorkPackageOutputDTO[]>();
+  private savedWorkPackage$ = new Subject<OutputWorkPackage>();
 
   constructor(private workPackageService: WorkPackageService,
               private projectStore: ProjectStore,
@@ -49,7 +51,9 @@ export class ProjectWorkPackagePageStore {
               private workPackageInvestmentService: WorkPackageInvestmentService,
               private workPackageOutputService: WorkPackageOutputService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private projectVersionStore: ProjectVersionStore,
               private routingService: RoutingService) {
+    this.workPackage$ = this.workPackage();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.project$ = this.projectStore.getProject();
     this.activities$ = this.workPackageActivities();
@@ -62,26 +66,12 @@ export class ProjectWorkPackagePageStore {
       shareReplay(1)
     );
 
-    combineLatest([
-      this.routingService.routeParameterChanges(ProjectWorkPackagePageStore.WORK_PACKAGE_DETAIL_PATH, 'workPackageId'),
-      this.projectStore.projectId$
-    ]).pipe(
-      tap(([workPackageId, projectId]) => {
-        this.workPackageId = Number(workPackageId);
-        this.projectId = projectId;
-      }),
-      switchMap(([workPackageId, projectId]) =>
-        workPackageId && projectId ? this.workPackageService.getWorkPackageById(Number(workPackageId)) : of({})
-      ),
-      tap(workPackage => this.workPackage$.next(workPackage)),
-      tap(workPackage => Log.info('Fetched the programme work package:', this, workPackage)),
-    ).subscribe();
   }
 
   saveWorkPackage(workPackage: InputWorkPackageUpdate): Observable<OutputWorkPackage> {
     return this.workPackageService.updateWorkPackage(workPackage)
       .pipe(
-        tap(saved => this.workPackage$.next(saved)),
+        tap(saved => this.savedWorkPackage$.next(saved)),
         tap(saved => Log.info('Updated workPackage:', this, saved))
       );
   }
@@ -89,7 +79,7 @@ export class ProjectWorkPackagePageStore {
   createWorkPackage(workPackage: InputWorkPackageCreate): Observable<OutputWorkPackage> {
     return this.workPackageService.createWorkPackage(this.projectId, workPackage)
       .pipe(
-        tap(created => this.workPackage$.next(created)),
+        tap(created => this.savedWorkPackage$.next(created)),
         tap(created => Log.info('Created workPackage:', this, created)),
         tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
       );
@@ -111,10 +101,47 @@ export class ProjectWorkPackagePageStore {
       );
   }
 
+  saveWorkPackageOutputs(outputs: WorkPackageOutputDTO[]): Observable<WorkPackageOutputDTO[]> {
+    return this.workPackageOutputService.updateOutputs(this.workPackageId, outputs)
+      .pipe(
+        tap(saved => this.savedOutputs$.next(saved)),
+        tap(saved => Log.info('Saved project outputs', saved)),
+      );
+  }
+
+  private workPackage(): Observable<OutputWorkPackage> {
+    const initialPackage$ = combineLatest([
+      this.routingService.routeParameterChanges(ProjectWorkPackagePageStore.WORK_PACKAGE_DETAIL_PATH, 'workPackageId'),
+      this.projectStore.projectId$,
+      this.projectVersionStore.currentRouteVersion$,
+    ]).pipe(
+      tap(([workPackageId, projectId]) => {
+        this.workPackageId = Number(workPackageId);
+        this.projectId = projectId;
+      }),
+      switchMap(([workPackageId, projectId, version]) => workPackageId && projectId
+        ? this.workPackageService.getWorkPackageById(Number(workPackageId), version)
+          .pipe(
+            catchError(err => {
+              this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
+              return of({} as OutputWorkPackage);
+            })
+          )
+        : of({} as OutputWorkPackage)
+      ),
+      tap(workPackage => Log.info('Fetched the programme work package:', this, workPackage))
+    );
+
+    return merge(initialPackage$, this.savedWorkPackage$)
+      .pipe(
+        shareReplay(1)
+      );
+  }
+
   private workPackageActivities(): Observable<WorkPackageActivityDTO[]> {
     const initialActivities$ = this.workPackage$
       .pipe(
-        filter(workPackage => workPackage && workPackage.id),
+        filter(workPackage => !!workPackage?.id),
         switchMap(workPackage => this.workPackageActivityService.getActivities(workPackage.id)),
         tap(activities => Log.info('Fetched project activities', activities)),
       );
@@ -125,18 +152,10 @@ export class ProjectWorkPackagePageStore {
       );
   }
 
-  saveWorkPackageOutputs(outputs: WorkPackageOutputDTO[]): Observable<WorkPackageOutputDTO[]> {
-    return this.workPackageOutputService.updateOutputs(this.workPackageId, outputs)
-      .pipe(
-        tap(saved => this.savedOutputs$.next(saved)),
-        tap(saved => Log.info('Saved project outputs', saved)),
-      );
-  }
-
   private workPackageOutputs(): Observable<WorkPackageOutputDTO[]> {
     const initialOutputs$ = this.workPackage$
       .pipe(
-        filter(workPackage => workPackage && workPackage.id),
+        filter(workPackage => !!workPackage?.id),
         switchMap(workPackage => this.workPackageOutputService.getOutputs(workPackage.id)),
         tap(outputs => Log.info('Fetched project outputs', outputs)),
       );

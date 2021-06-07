@@ -4,11 +4,11 @@ import {OutputWorkPackage} from '@cat/api';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {catchError, take, tap, withLatestFrom} from 'rxjs/operators';
-import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
-import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectApplicationFormSidenavService} from '../../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ProjectStore} from '../../../../project-application/containers/project-application-detail/services/project-store.service';
 
 @UntilDestroy()
 @Component({

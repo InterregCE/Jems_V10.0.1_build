@@ -5,14 +5,14 @@ import {MatSort} from '@angular/material/sort';
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Subject} from 'rxjs';
 import {filter, map, mergeMap, startWith, take, tap} from 'rxjs/operators';
-import {Tables} from '../../../../common/utils/tables';
-import {Log} from '../../../../common/utils/log';
-import {FormService} from '@common/components/section/form/form.service';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
-import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {Forms} from '../../../../common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {Forms} from '../../../../../common/utils/forms';
+import {ColumnType} from '@common/components/table/model/column-type.enum';
+import {Log} from '../../../../../common/utils/log';
+import {ProjectApplicationFormSidenavService} from '../../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {FormService} from '@common/components/section/form/form.service';
+import {Tables} from '../../../../../common/utils/tables';
 
 @Component({
   selector: 'app-project-work-package-investments-tab',

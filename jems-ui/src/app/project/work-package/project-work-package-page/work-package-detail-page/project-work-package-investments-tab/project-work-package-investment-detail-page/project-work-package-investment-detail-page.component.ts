@@ -4,13 +4,13 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {catchError, take, tap, withLatestFrom} from 'rxjs/operators';
-import {NutsStore} from '../../../../../common/services/nuts.store';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProjectWorkPackageInvestmentDetailPageConstants} from './project-work-package-investment-detail-page.constants';
 import {Observable} from 'rxjs';
 import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
 import {ProjectWorkPackagePageStore} from '../../project-work-package-page-store.service';
 import {filter} from 'rxjs/internal/operators';
+import {NutsStore} from '../../../../../../common/services/nuts.store';
 
 @UntilDestroy()
 @Component({
@@ -82,7 +82,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
 
     this.workPackageStore.workPackage$
       .pipe(
-        filter(workPackage => workPackage && workPackage.number),
+        filter(workPackage => !!workPackage?.number),
         tap(workPackage => this.workPackageNumber = workPackage.number),
         untilDestroyed(this)
       ).subscribe();

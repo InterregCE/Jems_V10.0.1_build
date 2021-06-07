@@ -17,18 +17,18 @@ import {ProjectApplicationFormAssociatedOrgPageComponent} from './project-applic
 import {ProjectApplicationFormOverallObjectiveSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-overall-objective-section/project-application-form-overall-objective-section.component';
 import {ProjectApplicationFormProjectRelevanceAndContextSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-project-relevance-and-context-section/project-application-form-project-relevance-and-context-section.component';
 import {ProjectApplicationFormProjectPartnershipSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-project-partnership-section/project-application-form-project-partnership-section.component';
-import {ProjectApplicationFormWorkPackageSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-work-package-section/project-application-form-work-package-section.component';
 import {ProjectApplicationFormFuturePlansSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-future-plans-section/project-application-form-future-plans-section.component';
 import {ProjectApplicationFormManagementSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-management-section/project-application-form-management-section.component';
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
-import {ProjectWorkPackageDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-detail-page.component';
-import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
+import {ProjectWorkPackageDetailPageComponent} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-detail-page.component';
+import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
 import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
 import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/project-lump-sums-page.component';
 import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/budget-page-per-partner.component';
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
 import {UserRoleDTO} from '@cat/api';
+import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
 
 export const routes: Routes = [
   {
@@ -166,7 +166,7 @@ export const routes: Routes = [
             children: [
               {
                 path: '',
-                component: ProjectApplicationFormWorkPackageSectionComponent
+                component: ProjectWorkPackagePageComponent
               },
               {
                 path: 'create',

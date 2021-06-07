@@ -22,7 +22,7 @@ import {UnitCostsBudgetTableEntry} from '../../../../model/budget/unit-costs-bud
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 import {BudgetCostCategoryEnum} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
 import {ProgrammeUnitCost} from '../../../../model/programmeUnitCost';
-import {InvestmentSummary} from '../../../../work-package/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '../../../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 
 @UntilDestroy()
 @Component({

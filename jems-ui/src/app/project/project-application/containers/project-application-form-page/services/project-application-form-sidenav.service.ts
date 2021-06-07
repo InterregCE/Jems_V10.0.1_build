@@ -46,11 +46,11 @@ export class ProjectApplicationFormSidenavService {
       );
 
   private packages$: Observable<HeadlineRoute[]> =
-    merge(this.projectStore.projectId$, this.fetchPackages$)
+    combineLatest([merge(this.projectStore.projectId$, this.fetchPackages$), this.projectVersionStore.currentRouteVersion$])
       .pipe(
-        mergeMap(projectId => forkJoin([
+        mergeMap(([projectId, version]) => forkJoin([
             of(projectId),
-            this.workPackageService.getWorkPackagesByProjectId(projectId)
+            this.workPackageService.getWorkPackagesByProjectId(projectId, version)
           ])
         ),
         tap(([projectId, packages]) => Log.info('Fetched the project work packages:', this, packages)),
@@ -185,7 +185,6 @@ export class ProjectApplicationFormSidenavService {
           },
           {
             headline: {i18nKey: 'project.application.form.section.part.c'},
-            disabled: !currentVersionIsLatest,
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.c.subsection.one'},

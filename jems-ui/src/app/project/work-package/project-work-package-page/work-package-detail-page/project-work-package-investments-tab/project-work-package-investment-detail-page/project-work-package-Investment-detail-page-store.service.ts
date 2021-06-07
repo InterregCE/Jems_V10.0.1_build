@@ -2,9 +2,9 @@ import {Injectable} from '@angular/core';
 import {WorkPackageInvestmentDTO, WorkPackageInvestmentService} from '@cat/api';
 import {merge, Observable, of, Subject} from 'rxjs';
 import {shareReplay, tap} from 'rxjs/operators';
-import {ProjectStore} from '../../../../project-application/containers/project-application-detail/services/project-store.service';
-import {Log} from '../../../../../common/utils/log';
 import {ProjectWorkPackagePageStore} from '../../project-work-package-page-store.service';
+import {ProjectStore} from '../../../../../project-application/containers/project-application-detail/services/project-store.service';
+import {Log} from '../../../../../../common/utils/log';
 
 @Injectable()
 export class ProjectWorkPackageInvestmentDetailPageStore {

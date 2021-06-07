@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {WorkPackageService} from '@cat/api';
-import {TabService} from '../../../common/services/tab.service';
 import {ProjectWorkPackagePageStore} from './project-work-package-page-store.service';
+import {TabService} from '../../../../common/services/tab.service';
 
 @Component({
   selector: 'app-project-work-package-detail-page',

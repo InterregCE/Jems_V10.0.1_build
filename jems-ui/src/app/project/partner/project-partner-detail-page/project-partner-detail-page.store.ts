@@ -29,10 +29,10 @@ import {StaffCostsBudgetTableEntry} from '../../model/budget/staff-costs-budget-
 import {GeneralBudgetTableEntry} from '../../model/budget/general-budget-table-entry';
 import {TravelAndAccommodationCostsBudgetTable} from '../../model/budget/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../model/budget/travel-and-accommodation-costs-budget-table-entry';
-import {ProjectWorkPackagePageStore} from '../../work-package/work-package-detail-page/project-work-package-page-store.service';
+import {ProjectWorkPackagePageStore} from '../../work-package/project-work-package-page/work-package-detail-page/project-work-package-page-store.service';
 import {UnitCostsBudgetTable} from '../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-table-entry';
-import {InvestmentSummary} from '../../work-package/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
 import {ProjectVersionStore} from '../../services/project-version-store.service';
 import {Log} from '../../../common/utils/log';

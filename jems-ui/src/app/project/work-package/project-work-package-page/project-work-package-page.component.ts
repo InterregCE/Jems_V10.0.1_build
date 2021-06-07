@@ -1,46 +1,53 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  TemplateRef,
-  ViewChild
-} from '@angular/core';
-import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {OutputWorkPackageSimple} from '@cat/api';
-import {ActivatedRoute} from '@angular/router';
+import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import { Permission } from 'src/app/security/permissions/permission';
+import {Forms} from '../../../common/utils/forms';
+import {map, switchMap, tap} from 'rxjs/operators';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {Forms} from '../../../../../common/utils/forms';
-import {filter, map, take} from 'rxjs/operators';
+import {OutputWorkPackageSimple} from '@cat/api';
+import {combineLatest, Observable} from 'rxjs';
+import {filter, take} from 'rxjs/internal/operators';
 import {MatDialog} from '@angular/material/dialog';
+import {ActivatedRoute} from '@angular/router';
+import {ProjectWorkPackagePageStore} from './project-work-package-page-store.service';
+import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {TableConfiguration} from '@common/components/table/model/table.configuration';
 
 @Component({
-  selector: 'app-project-application-form-work-packages-list',
-  templateUrl: './project-application-form-work-packages-list.component.html',
-  styleUrls: ['./project-application-form-work-packages-list.component.scss'],
+  selector: 'app-project-work-package-page',
+  templateUrl: './project-work-package-page.component.html',
+  styleUrls: ['./project-work-package-page.component.scss'],
+  providers: [ProjectWorkPackagePageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
-  projectId = this.activatedRoute.snapshot.params.projectId;
+export class ProjectWorkPackagePageComponent implements OnInit {
 
-  @Input()
-  workPackages: OutputWorkPackageSimple[];
-  @Input()
-  editable: boolean;
-  @Output()
-  deleteWorkPackage = new EventEmitter<number>();
+  Permission = Permission;
 
   @ViewChild('deletionCell', {static: true})
   deletionCell: TemplateRef<any>;
   @ViewChild('titleCell', {static: true})
   titleCell: TemplateRef<any>;
 
+  projectId = this.activatedRoute.snapshot.params.projectId;
   tableConfiguration: TableConfiguration;
 
-  constructor(private activatedRoute: ActivatedRoute,
+  data$: Observable<{
+    workPackages: OutputWorkPackageSimple[],
+    projectEditable: boolean,
+    projectTitle: string
+  }>;
+
+  constructor(private pageStore: ProjectWorkPackagePageStore,
+              private activatedRoute: ActivatedRoute,
+              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private dialog: MatDialog) {
+    this.data$ = combineLatest([
+      this.pageStore.workPackages$,
+      this.pageStore.projectEditable$,
+      this.pageStore.projectTitle$
+    ]).pipe(
+      map(([workPackages, projectEditable, projectTitle]) => ({workPackages, projectEditable, projectTitle}))
+    );
   }
 
   ngOnInit(): void {
@@ -86,7 +93,9 @@ export class ProjectApplicationFormWorkPackagesListComponent implements OnInit {
       }).pipe(
       take(1),
       filter(answer => !!answer),
-      map(() => this.deleteWorkPackage.emit(workPackage.id)),
+      switchMap(() => this.pageStore.deleteWorkPackage(workPackage.id)),
+      tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId))
     ).subscribe();
   }
+
 }
