@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {map, shareReplay, tap} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
+import {map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ProgrammeDataService, UserRoleCreateDTO} from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
@@ -12,6 +12,8 @@ export class ProgrammeEditableStateStore {
   hasOnlyViewPermission$: Observable<boolean>;
   hasEditPermission$: Observable<boolean>;
 
+  firstCallPublished$ = new Subject<void>();
+
   constructor(
     private programmeDataService: ProgrammeDataService,
     private permissionService: PermissionService,
@@ -22,8 +24,10 @@ export class ProgrammeEditableStateStore {
   }
 
   private isProgrammeEditable(): Observable<boolean> {
-    return this.programmeDataService.isProgrammeSetupLocked()
+    return this.firstCallPublished$
       .pipe(
+        startWith(null),
+        switchMap(() => this.programmeDataService.isProgrammeSetupLocked()),
         tap(flag => Log.info('Fetched programme is locked:', flag)),
         shareReplay(1),
       );

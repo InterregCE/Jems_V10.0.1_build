@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Log} from 'src/app/common/utils/log';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  CallDetailDTO,
+  CallDetailDTO, CallDTO, CallService, CallUpdateRequestDTO,
   OutputProgrammeStrategy,
   ProgrammeFundDTO,
   ProgrammeFundService,
@@ -10,7 +10,7 @@ import {
   ProgrammeStrategyService
 } from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
-import {map, shareReplay, tap} from 'rxjs/operators';
+import {map, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {ActivatedRoute} from '@angular/router';
 import {CallStore} from '../services/call-store.service';
@@ -33,7 +33,8 @@ export class CallDetailPageStore {
               private programmeEditableStateStore: ProgrammeEditableStateStore,
               private programmePriorityService: ProgrammePriorityService,
               private programmeStrategyService: ProgrammeStrategyService,
-              private programmeFundService: ProgrammeFundService) {
+              private programmeFundService: ProgrammeFundService,
+              private callService: CallService) {
     this.call$ = this.callStore.call$;
     this.isApplicant$ = this.callStore.isApplicant$;
     this.allPriorities$ = this.allPriorities();
@@ -41,6 +42,36 @@ export class CallDetailPageStore {
     this.allFunds$ = this.allFunds();
     this.callIsEditable$ = this.callIsEditable();
     this.isFirstCall$ = this.isFirstCall();
+  }
+
+  saveCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
+    return this.callService.updateCall(call)
+      .pipe(
+        tap(saved => this.callStore.savedCall$.next(saved)),
+        tap(saved => Log.info('Updated call:', this, saved))
+      );
+  }
+
+  createCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
+    return this.callService.createCall(call)
+      .pipe(
+        tap(created => this.callStore.savedCall$.next(created)),
+        tap(created => Log.info('Created call:', this, created)),
+      );
+  }
+
+  publishCall(callId: number): Observable<CallDTO> {
+    return this.callService.publishCall(callId)
+      .pipe(
+        withLatestFrom(this.isFirstCall$),
+        tap(([call, isFirstCall]) => {
+          if (isFirstCall) {
+            this.programmeEditableStateStore.firstCallPublished$.next();
+          }
+        }),
+        map(([call, isFirstCall]) => call),
+        tap(saved => Log.info('Published call:', this, saved)),
+      );
   }
 
   private allPriorities(): Observable<CallPriorityCheckbox[]> {

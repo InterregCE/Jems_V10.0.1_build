@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
 import {
   CallDetailDTO,
-  CallDTO,
   CallService,
-  CallUpdateRequestDTO,
   FlatRateSetupDTO,
   ProgrammeCostOptionService,
   ProgrammeLumpSumListDTO,
@@ -25,7 +23,7 @@ export class CallStore {
   lumpSums$: Observable<ProgrammeLumpSumListDTO[]>;
   isApplicant$: Observable<boolean>;
 
-  private savedCall$ = new Subject<CallDetailDTO>();
+  savedCall$ = new Subject<CallDetailDTO>();
 
   constructor(private callService: CallService,
               private programmeCostOptionService: ProgrammeCostOptionService,
@@ -39,29 +37,6 @@ export class CallStore {
     this.call$ = this.call();
     this.unitCosts$ = this.unitCosts();
     this.lumpSums$ = this.lumpSums();
-  }
-
-  saveCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
-    return this.callService.updateCall(call)
-      .pipe(
-        tap(saved => this.savedCall$.next(saved)),
-        tap(saved => Log.info('Updated call:', this, saved))
-      );
-  }
-
-  createCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
-    return this.callService.createCall(call)
-      .pipe(
-        tap(created => this.savedCall$.next(created)),
-        tap(created => Log.info('Created call:', this, created)),
-      );
-  }
-
-  publishCall(callId: number): Observable<CallDTO> {
-    return this.callService.publishCall(callId)
-      .pipe(
-        tap(saved => Log.info('Published call:', this, saved))
-      );
   }
 
   saveFlatRates(flatRates: FlatRateSetupDTO): Observable<CallDetailDTO> {

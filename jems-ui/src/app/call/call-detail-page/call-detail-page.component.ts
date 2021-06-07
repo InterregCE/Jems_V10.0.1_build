@@ -29,7 +29,6 @@ export class CallDetailPageComponent {
   tools = Tools;
 
   callId = this.activatedRoute?.snapshot?.params?.callId;
-  isFirstCall: boolean;
   publishPending = false;
   published = false;
 
@@ -72,7 +71,6 @@ export class CallDetailPageComponent {
 
   constructor(private router: Router,
               private formBuilder: FormBuilder,
-              private callStore: CallStore,
               private pageStore: CallDetailPageStore,
               private formService: FormService,
               private activatedRoute: ActivatedRoute,
@@ -127,7 +125,7 @@ export class CallDetailPageComponent {
   }
 
   private createCall(call: CallUpdateRequestDTO): void {
-    this.callStore.createCall(call)
+    this.pageStore.createCall(call)
       .pipe(
         take(1),
         tap(created => this.callNavService.redirectToCallDetail(
@@ -143,7 +141,7 @@ export class CallDetailPageComponent {
 
   private updateCall(call: CallUpdateRequestDTO): void {
     call.id = this.callId;
-    this.callStore.saveCall(call)
+    this.pageStore.saveCall(call)
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('call.detail.save.success')),
@@ -161,7 +159,7 @@ export class CallDetailPageComponent {
 
   publishCall(): void {
     this.publishPending = true;
-    this.callStore.publishCall(this.callId)
+    this.pageStore.publishCall(this.callId)
       .pipe(
         take(1),
         tap(() => this.publishPending = false),
@@ -205,12 +203,15 @@ export class CallDetailPageComponent {
     }
   }
 
-  confirmData(): ConfirmDialogData {
-    return {
-      title: 'call.dialog.title',
-      message: 'call.dialog.message',
-      warnMessage: this.isFirstCall ? 'call.dialog.message.and.additional.message' : undefined
-    };
+  confirmData(): Observable<ConfirmDialogData> {
+    return this.pageStore.isFirstCall$
+      .pipe(
+        map(isFirstCall => ({
+          title: 'call.dialog.title',
+          message: 'call.dialog.message',
+          warnMessage: isFirstCall ? 'call.dialog.message.and.additional.message' : undefined
+        }))
+      );
   }
 
   isOpen(call: CallDTO): boolean {
