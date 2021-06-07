@@ -33,9 +33,9 @@ export class ProjectWorkPackagePageComponent implements OnInit {
 
   data$: Observable<{
     workPackages: OutputWorkPackageSimple[],
-    projectEditable: boolean,
     projectTitle: string
   }>;
+  projectEditable$: Observable<boolean>;
 
   constructor(private pageStore: ProjectWorkPackagePageStore,
               private activatedRoute: ActivatedRoute,
@@ -43,11 +43,11 @@ export class ProjectWorkPackagePageComponent implements OnInit {
               private dialog: MatDialog) {
     this.data$ = combineLatest([
       this.pageStore.workPackages$,
-      this.pageStore.projectEditable$,
       this.pageStore.projectTitle$
     ]).pipe(
-      map(([workPackages, projectEditable, projectTitle]) => ({workPackages, projectEditable, projectTitle}))
+      map(([workPackages, projectTitle]) => ({workPackages, projectTitle}))
     );
+    this.projectEditable$ = this.pageStore.projectEditable$;
   }
 
   ngOnInit(): void {

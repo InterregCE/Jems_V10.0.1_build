@@ -6,7 +6,7 @@
     <h3>{{'project.application.form.section.part.c.subsection.four' | translate}}</h3>
 
     <ng-container *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button *ngIf="data.projectEditable"
+        <button *ngIf="projectEditable$ | async"
                 mat-stroked-button class="mb-3"
                 [routerLink]="'/app/project/detail/' + projectId + '/applicationFormWorkPackage/create'">
             + {{'project.application.form.add.workpackage' | translate}}
@@ -22,17 +22,19 @@
                [totalElements]="data.workPackages.length">
     </app-table>
 
-    <ng-template #deletionCell let-workPackage>
-        <ng-container *ngIf="(workPackage.name | translateContainerLessInputsBySystemLanguage | async) as name">
-            <button *ngIf="data.projectEditable" mat-icon-button color="accent"
-                    (click)="$event.stopPropagation(); delete(workPackage, name)"
-                    matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
-                <em class="fas fa-trash"></em>
-            </button>
-        </ng-container>
-    </ng-template>
 
-    <ng-template #titleCell let-workPackage>
-        {{workPackage.name | translateContainerLessInputsBySystemLanguage | async}}
-    </ng-template>
 </app-project-page-template>
+
+<ng-template #deletionCell let-workPackage>
+    <ng-container *ngIf="(workPackage.name | translateContainerLessInputsBySystemLanguage | async) as name">
+        <button *ngIf="projectEditable$ | async" mat-icon-button color="accent"
+                (click)="$event.stopPropagation(); delete(workPackage, name)"
+                matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
+            <em class="fas fa-trash"></em>
+        </button>
+    </ng-container>
+</ng-template>
+
+<ng-template #titleCell let-workPackage>
+    {{workPackage.name | translateContainerLessInputsBySystemLanguage | async}}
+</ng-template>
