@@ -8,8 +8,6 @@ import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
 import io.cloudflight.jems.api.project.dto.workpackage.ProjectWorkPackageDTO
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackageService
 import io.cloudflight.jems.server.project.service.workpackage.get_workpackage.GetWorkPackageInteractor
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController

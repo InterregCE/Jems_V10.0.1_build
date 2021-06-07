@@ -6,12 +6,7 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
-import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackage
-import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimple
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetWorkPackage(private val persistence: WorkPackagePersistence) : GetWorkPackageInteractor {

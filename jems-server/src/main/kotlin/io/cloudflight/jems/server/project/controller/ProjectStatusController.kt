@@ -38,7 +38,7 @@ class ProjectStatusController(
     private val refuseApplication: RefuseApplicationInteractor
 ) : ProjectStatusApi {
     override fun preConditionCheck(id: Long): PreConditionCheckResultDTO =
-        PreConditionCheckResultDTO(emptyList(), true)
+        executePreConditionCheck.execute(id).toDTO()
 
     override fun submitApplication(id: Long) =
         submitApplication.submit(id).toDTO()
