@@ -19,12 +19,6 @@ class FirstStepApprovedApplicationWithConditionsState (
 
     private val canBeRevertTo = setOf(ApplicationStatus.STEP1_ELIGIBLE)
 
-    override fun approve(actionInfo: ApplicationActionInfo): ApplicationStatus =
-        updateCurrentStatus(ApplicationStatus.STEP1_APPROVED, actionInfo)
-
-    override fun refuse(actionInfo: ApplicationActionInfo): ApplicationStatus =
-        updateCurrentStatus(ApplicationStatus.STEP1_NOT_APPROVED, actionInfo)
-
     override fun startSecondStep(): ApplicationStatus =
         startSecondStepDefaultImpl()
 

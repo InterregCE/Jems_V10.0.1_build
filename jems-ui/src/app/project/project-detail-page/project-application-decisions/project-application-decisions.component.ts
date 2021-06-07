@@ -4,6 +4,7 @@ import {ProjectStepStatus} from '../project-step-status';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectDetailPageStore} from '../project-detail-page-store';
 import {map} from 'rxjs/operators';
+import StatusEnum = ProjectStatusDTO.StatusEnum;
 
 @Component({
   selector: 'app-project-application-decisions',
@@ -12,41 +13,61 @@ import {map} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationDecisionsComponent implements OnChanges {
-  STATUS = ProjectStatusDTO.StatusEnum;
+  STATUS = StatusEnum;
 
   @Input()
   step: number;
   @Input()
   decisions: ProjectDecisionDTO;
-  @Input()
-  projectStatus: ProjectStatusDTO;
 
   stepStatus: ProjectStepStatus;
 
   data$: Observable<{
+    projectStatus: ProjectStatusDTO,
     isProjectLatestVersion: boolean,
-    callHasTwoSteps: boolean
+    callHasTwoSteps: boolean,
+    isStep2Now: boolean,
+    fundingDecisionResult: ProjectStatusDTO,
+    isDecisionFinal: boolean,
   }>;
 
   constructor(private projectDetailPageStore: ProjectDetailPageStore) {
     this.data$ = combineLatest([
       this.projectDetailPageStore.isProjectLatestVersion$,
-      this.projectDetailPageStore.callHasTwoSteps$
+      this.projectDetailPageStore.callHasTwoSteps$,
+      this.projectDetailPageStore.project$,
     ])
       .pipe(
-        map(([isProjectLatestVersion, callHasTwoSteps]) => ({isProjectLatestVersion, callHasTwoSteps}))
+        map(([isProjectLatestVersion, callHasTwoSteps, project]) => (
+          {
+            projectStatus: project.projectStatus,
+            isProjectLatestVersion,
+            callHasTwoSteps,
+            isStep2Now: [
+              StatusEnum.DRAFT,
+              StatusEnum.SUBMITTED,
+              StatusEnum.RETURNEDTOAPPLICANT,
+              StatusEnum.ELIGIBLE,
+              StatusEnum.INELIGIBLE,
+              StatusEnum.APPROVED,
+              StatusEnum.APPROVEDWITHCONDITIONS,
+              StatusEnum.NOTAPPROVED,
+            ].includes(project.projectStatus.status),
+            fundingDecisionResult: this.extractFundingDecisionResult(project.projectStatus),
+            isDecisionFinal: [
+              StatusEnum.STEP1APPROVED,
+              StatusEnum.STEP1APPROVEDWITHCONDITIONS,
+              StatusEnum.STEP1NOTAPPROVED,
+              StatusEnum.APPROVED,
+              StatusEnum.NOTAPPROVED,
+            ].includes(this.extractFundingDecisionResult(project.projectStatus)?.status),
+          }
+        ))
       );
   }
 
   ngOnChanges(): void {
     this.stepStatus = new ProjectStepStatus(this.step);
-  }
-
-  updateOrViewFundingLabel(): string {
-    return this.decisions?.fundingDecision?.status === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS
-    && this.projectStatus.status !== this.STATUS.RETURNEDTOAPPLICANT
-      ? 'project.assessment.fundingDecision.assessment.update'
-      : 'project.assessment.fundingDecision.assessment.view';
   }
 
   fundingDecisionEnabled(): boolean {
@@ -55,17 +76,24 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
       && !!this.decisions?.qualityAssessment;
   }
 
-  isDecisionEditable(decision: any, isProjectLatestVersion: boolean): boolean {
-    return !decision && isProjectLatestVersion && this.projectStatus.status !== this.STATUS.RETURNEDTOAPPLICANT;
+  isDecisionEditable(projectStatus: ProjectStatusDTO, decision: any, isProjectLatestVersion: boolean): boolean {
+    return !decision && isProjectLatestVersion && projectStatus.status !== this.STATUS.RETURNEDTOAPPLICANT;
   }
 
-  isPanelVisible(callHasTwoSteps: boolean): boolean {
-    const isDraft = this.projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT;
-    const isStep1Draft = this.projectStatus.status === ProjectStatusDTO.StatusEnum.STEP1DRAFT;
+  isPanelVisible(projectStatus: ProjectStatusDTO, callHasTwoSteps: boolean): boolean {
+    const isDraft = projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT;
+    const isStep1Draft = projectStatus.status === ProjectStatusDTO.StatusEnum.STEP1DRAFT;
     if (callHasTwoSteps) {
       return !isStep1Draft && !(this.step === 2 && isDraft);
     } else {
       return !isDraft && !isStep1Draft;
     }
+  }
+
+  private extractFundingDecisionResult(projectStatus: ProjectStatusDTO): ProjectStatusDTO {
+    if ((projectStatus.status === StatusEnum.APPROVED || projectStatus.status === StatusEnum.NOTAPPROVED) && Number(this.step) === 2) {
+      return projectStatus;
+    }
+    return this.decisions?.fundingDecision;
   }
 }

@@ -20,8 +20,7 @@
             <ng-container *ngIf="projectDetailStore.callHasTwoSteps$ | async">
                 <app-project-application-decisions appNoWidthLimit
                                                    step="1"
-                                                   [decisions]="project.firstStepDecision"
-                                                   [projectStatus]="project.projectStatus">
+                                                   [decisions]="project.firstStepDecision">
                 </app-project-application-decisions>
                 <app-project-application-assessments appNoWidthLimit
                                                      step="1"
@@ -32,8 +31,7 @@
 
             <ng-container *ngIf="project.step2Active && project.projectStatus.status !== StatusEnum.DRAFT">
                 <app-project-application-decisions appNoWidthLimit step="2"
-                                                   [decisions]="project.secondStepDecision"
-                                                   [projectStatus]="project.projectStatus">
+                                                   [decisions]="project.secondStepDecision">
                 </app-project-application-decisions>
                 <app-project-application-assessments appNoWidthLimit step="2"
                                                      [decisions]="project.secondStepDecision"
