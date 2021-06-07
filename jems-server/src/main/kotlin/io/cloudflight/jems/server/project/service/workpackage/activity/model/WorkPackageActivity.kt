@@ -5,5 +5,5 @@ data class WorkPackageActivity(
     val translatedValues: Set<WorkPackageActivityTranslatedValue> = emptySet(),
     val startPeriod: Int? = null,
     val endPeriod: Int? = null,
-    val deliverables: List<WorkPackageActivityDeliverable> = emptyList(),
+    var deliverables: List<WorkPackageActivityDeliverable> = emptyList(),
 )

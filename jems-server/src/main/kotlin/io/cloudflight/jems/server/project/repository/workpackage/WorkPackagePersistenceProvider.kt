@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackag
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimple
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimpleHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
+import java.sql.Timestamp
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -106,10 +107,10 @@ class WorkPackagePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getWorkPackageById(workPackageId: Long, version: String?): OutputWorkPackage {
-        val projectId = getWorkPackageOrThrow(workPackageId).project.id
-        return projectVersionUtils.fetch(version, projectId,
+        val workPackage = getWorkPackageOrThrow(workPackageId)
+        return projectVersionUtils.fetch(version, workPackage.project.id,
             currentVersionFetcher = {
-                getWorkPackageOrThrow(workPackageId).toOutputWorkPackage()
+                workPackage.toOutputWorkPackage()
             },
             previousVersionFetcher = { timestamp ->
                 workPackageRepository.findByIdAsOfTimestamp(workPackageId, timestamp).toOutputWorkPackageHistoricalData()
@@ -136,7 +137,7 @@ class WorkPackagePersistenceProvider(
         val workPackage = getWorkPackageOrThrow(workPackageId)
         return projectVersionUtils.fetch(version, workPackage.project.id,
             currentVersionFetcher = {
-                getWorkPackageOrThrow(workPackageId).outputs.toModel()
+                workPackage.outputs.toModel()
             },
             previousVersionFetcher = { timestamp ->
                 workPackageRepository.findOutputsByWorkPackageIdAsOfTimestamp(workPackageId, timestamp).toWorkPackageOutputsHistoricalData()
@@ -190,8 +191,17 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long): List<WorkPackageActivity> =
-        getWorkPackageOrThrow(workPackageId).activities.toModel()
+    override fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long, version: String?): List<WorkPackageActivity> {
+        val workPackage = getWorkPackageOrThrow(workPackageId)
+        return projectVersionUtils.fetch(version, workPackage.project.id,
+            currentVersionFetcher = {
+                workPackage.activities.toModel()
+            },
+            previousVersionFetcher = { timestamp ->
+                getActivitiesAndDeliverablesByWorkPackageId(workPackageId, timestamp)
+            }
+        ) ?: emptyList()
+    }
 
     @Transactional
     override fun updateWorkPackageActivities(
@@ -227,6 +237,16 @@ class WorkPackagePersistenceProvider(
         val workPackageInvestments = workPackageInvestmentRepository.findAllByWorkPackageId(workPackageId, sort)
             .mapIndexed { index, old -> old.copy(investmentNumber = index.plus(1)) }
         workPackageInvestmentRepository.saveAll(workPackageInvestments)
+    }
+
+    private fun getActivitiesAndDeliverablesByWorkPackageId(workPackageId: Long, timestamp: Timestamp): List<WorkPackageActivity> {
+        val activities = workPackageActivityRepository.findAllActivitiesByWorkPackageIdAsOfTimestamp(workPackageId, timestamp).toActivityHistoricalData()
+
+        activities.forEach{
+            it.deliverables = workPackageActivityRepository.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(workPackageId, it.activityNumber, timestamp).toDeliverableHistoricalData()
+        }
+
+        return activities
     }
 
 }

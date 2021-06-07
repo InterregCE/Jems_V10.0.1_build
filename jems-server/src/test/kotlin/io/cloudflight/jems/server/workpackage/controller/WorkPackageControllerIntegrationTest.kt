@@ -78,7 +78,7 @@ class WorkPackageControllerIntegrationTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
 
         mockMvc.perform(
-            get("/api/project/workPackage/perProject/${project.id}?page=0")
+            get("/api/project/workPackage/perProject/${project.id}")
         )
             .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(1))
     }

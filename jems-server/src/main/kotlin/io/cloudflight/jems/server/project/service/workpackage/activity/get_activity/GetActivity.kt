@@ -13,7 +13,7 @@ class GetActivity(
 
     @CanRetrieveProjectWorkPackage
     @Transactional(readOnly = true)
-    override fun getActivitiesForWorkPackage(workPackageId: Long): List<WorkPackageActivity> =
-        persistence.getWorkPackageActivitiesForWorkPackage(workPackageId)
+    override fun getActivitiesForWorkPackage(workPackageId: Long, version: String?): List<WorkPackageActivity> =
+        persistence.getWorkPackageActivitiesForWorkPackage(workPackageId, version)
 
 }

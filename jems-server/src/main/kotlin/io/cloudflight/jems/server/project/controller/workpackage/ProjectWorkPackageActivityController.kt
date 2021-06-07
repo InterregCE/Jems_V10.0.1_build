@@ -12,8 +12,8 @@ class ProjectWorkPackageActivityController(
     private val updateActivityInteractor: UpdateActivityInteractor,
 ) : ProjectWorkPackageActivityApi {
 
-    override fun getActivities(workPackageId: Long): List<WorkPackageActivityDTO> =
-        getActivityInteractor.getActivitiesForWorkPackage(workPackageId).toDto()
+    override fun getActivities(workPackageId: Long, version: String?): List<WorkPackageActivityDTO> =
+        getActivityInteractor.getActivitiesForWorkPackage(workPackageId, version).toDto()
 
     override fun updateActivities(
         workPackageId: Long,

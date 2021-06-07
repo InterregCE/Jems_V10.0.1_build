@@ -4,6 +4,6 @@ import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkP
 
 interface GetWorkPackageOutputInteractor {
 
-    fun getOutputsForWorkPackage(workPackageId: Long, version: String?): List<WorkPackageOutput>
+    fun getOutputsForWorkPackage(workPackageId: Long, version: String? = null): List<WorkPackageOutput>
 
 }

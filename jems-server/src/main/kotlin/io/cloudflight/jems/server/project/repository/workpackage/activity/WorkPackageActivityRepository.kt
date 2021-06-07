@@ -1,14 +1,53 @@
 package io.cloudflight.jems.server.project.repository.workpackage.activity
 
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
+import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageDeliverableRow
+import java.sql.Timestamp
 import org.springframework.data.jpa.repository.EntityGraph
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface WorkPackageActivityRepository: PagingAndSortingRepository<WorkPackageActivityEntity, Long> {
+interface WorkPackageActivityRepository : PagingAndSortingRepository<WorkPackageActivityEntity, Long> {
 
     @EntityGraph(value = "WorkPackageActivityEntity.full")
     fun findAllByActivityIdWorkPackageIdIn(workPackageIds: Collection<Long>): Iterable<WorkPackageActivityEntity>
+
+    @Query(
+        """
+            SELECT
+                entity.activity_number as activityNumber,
+                CONVERT(entity.start_period, INT) as startPeriod,
+                CONVERT(entity.end_period, INT) as endPeriod,
+                translation.*
+                FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+                LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation 
+                    ON entity.work_package_id = translation.work_package_id
+                    AND entity.activity_number = translation.activity_number
+                WHERE entity.work_package_id = :workPackageId
+             """,
+        nativeQuery = true
+    )
+    fun findAllActivitiesByWorkPackageIdAsOfTimestamp(workPackageId: Long, timestamp: Timestamp): List<WorkPackageActivityRow>
+
+    @Query(
+        """
+            SELECT
+                entity.deliverable_number as deliverableNumber,
+                CONVERT(entity.start_period, INT) as startPeriod,
+                translation.*
+                FROM project_work_package_activity_deliverable FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+                LEFT JOIN project_work_package_activity_deliverable_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation 
+                    ON entity.work_package_id = translation.work_package_id 
+                    AND entity.activity_number = translation.activity_number 
+                    AND entity.deliverable_number = translation.deliverable_number
+                WHERE entity.work_package_id = :workPackageId
+                        AND entity.activity_number = :activityNumber
+        """,
+        nativeQuery = true
+    )
+    fun findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(workPackageId: Long, activityNumber: Int, timestamp: Timestamp): List<WorkPackageDeliverableRow>
 
 }

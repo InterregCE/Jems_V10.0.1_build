@@ -20,7 +20,7 @@ interface WorkPackagePersistence {
     fun getWorkPackageById(workPackageId: Long, version: String?): OutputWorkPackage
 
     fun updateWorkPackageOutputs(workPackageId: Long, workPackageOutputs: List<WorkPackageOutput>): List<WorkPackageOutput>
-    fun getWorkPackageOutputsForWorkPackage(workPackageId: Long, version: String?): List<WorkPackageOutput>
+    fun getWorkPackageOutputsForWorkPackage(workPackageId: Long, version: String? = null): List<WorkPackageOutput>
 
     fun getWorkPackageInvestment(workPackageInvestmentId: Long): WorkPackageInvestment
     fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable): Page<WorkPackageInvestment>
@@ -30,7 +30,7 @@ interface WorkPackagePersistence {
     fun getProjectInvestmentSummaries(projectId: Long): List<InvestmentSummary>
     fun countWorkPackageInvestments(workPackageId: Long): Long
 
-    fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long): List<WorkPackageActivity>
+    fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long, version: String? = null): List<WorkPackageActivity>
     fun updateWorkPackageActivities(workPackageId: Long, workPackageActivities: List<WorkPackageActivity>): List<WorkPackageActivity>
     fun getProjectFromWorkPackageInvestment(workPackageInvestmentId: Long): ProjectApplicantAndStatus
 }

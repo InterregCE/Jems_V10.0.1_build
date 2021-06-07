@@ -122,24 +122,24 @@ class WorkPackageServiceTest {
         )
     }
 
-    @Test
-    fun getWorkPackageById() {
-        every { workPackageRepository.findById(1L) } returns Optional.of(mockWorkPackage)
-
-        val result = workPackageService.getWorkPackageById(1L)
-
-        assertThat(result).isNotNull
-        assertThat(result.name).isEqualTo(setOf(translatedNameInModel))
-    }
-
-    @Test
-    fun getWorkPackagesByProjectId() {
-        every { workPackageRepository.findById(1L) } returns Optional.of(mockWorkPackage)
-
-        val result = workPackageService.getWorkPackageById(1L)
-
-        assertThat(result).isNotNull
-    }
+//    @Test
+//    fun getWorkPackageById() {
+//        every { workPackageRepository.findById(1L) } returns Optional.of(mockWorkPackage)
+//
+//        val result = workPackageService.getWorkPackageById(1L)
+//
+//        assertThat(result).isNotNull
+//        assertThat(result.name).isEqualTo(setOf(translatedNameInModel))
+//    }
+//
+//    @Test
+//    fun getWorkPackagesByProjectId() {
+//        every { workPackageRepository.findById(1L) } returns Optional.of(mockWorkPackage)
+//
+//        val result = workPackageService.getWorkPackageById(1L)
+//
+//        assertThat(result).isNotNull
+//    }
 
     @Test
     fun getProjectIdForWorkPackageId() {

@@ -4,14 +4,19 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverabl
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityId
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationId
+import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageDeliverableRow
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverableTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
+import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
 
 fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageActivityEntity {
     val activityId = WorkPackageActivityId(workPackageId, index)
@@ -27,14 +32,20 @@ fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageAc
 fun List<WorkPackageActivity>.toIndexedEntity(workPackageId: Long) =
     mapIndexed { index, activity -> activity.toEntity(workPackageId, index.plus(1)) }
 
-fun WorkPackageActivityTranslatedValue.toEntity(activityId: WorkPackageActivityId) = WorkPackageActivityTranslationEntity(
-    translationId = WorkPackageActivityTranslationId(activityId = activityId, language = language),
-    title = title,
-    description = description,
-)
-fun Set<WorkPackageActivityTranslatedValue>.toEntity(activityId: WorkPackageActivityId) = mapTo(HashSet()) { it.toEntity(activityId) }
+fun WorkPackageActivityTranslatedValue.toEntity(activityId: WorkPackageActivityId) =
+    WorkPackageActivityTranslationEntity(
+        translationId = WorkPackageActivityTranslationId(activityId = activityId, language = language),
+        title = title,
+        description = description,
+    )
 
-fun WorkPackageActivityDeliverable.toEntity(activityId: WorkPackageActivityId, index: Int): WorkPackageActivityDeliverableEntity {
+fun Set<WorkPackageActivityTranslatedValue>.toEntity(activityId: WorkPackageActivityId) =
+    mapTo(HashSet()) { it.toEntity(activityId) }
+
+fun WorkPackageActivityDeliverable.toEntity(
+    activityId: WorkPackageActivityId,
+    index: Int
+): WorkPackageActivityDeliverableEntity {
     val deliverableId = WorkPackageActivityDeliverableId(activityId = activityId, deliverableNumber = index)
     return WorkPackageActivityDeliverableEntity(
         deliverableId = deliverableId,
@@ -46,11 +57,14 @@ fun WorkPackageActivityDeliverable.toEntity(activityId: WorkPackageActivityId, i
 fun List<WorkPackageActivityDeliverable>.toIndexedEntity(activityId: WorkPackageActivityId) =
     mapIndexedTo(HashSet()) { index, deliverable -> deliverable.toEntity(activityId, index.plus(1)) }
 
-fun WorkPackageActivityDeliverableTranslatedValue.toEntity(deliverableId: WorkPackageActivityDeliverableId) = WorkPackageActivityDeliverableTranslationEntity(
-    translationId = WorkPackageActivityDeliverableTranslationId(deliverableId = deliverableId, language = language),
-    description = description,
-)
-fun Set<WorkPackageActivityDeliverableTranslatedValue>.toEntity(deliverableId: WorkPackageActivityDeliverableId) = mapTo(HashSet()) { it.toEntity(deliverableId) }
+fun WorkPackageActivityDeliverableTranslatedValue.toEntity(deliverableId: WorkPackageActivityDeliverableId) =
+    WorkPackageActivityDeliverableTranslationEntity(
+        translationId = WorkPackageActivityDeliverableTranslationId(deliverableId = deliverableId, language = language),
+        description = description,
+    )
+
+fun Set<WorkPackageActivityDeliverableTranslatedValue>.toEntity(deliverableId: WorkPackageActivityDeliverableId) =
+    mapTo(HashSet()) { it.toEntity(deliverableId) }
 
 fun WorkPackageActivityEntity.toModel() = WorkPackageActivity(
     activityNumber = activityId.activityNumber,
@@ -75,9 +89,40 @@ fun Set<WorkPackageActivityTranslationEntity>.toModel() = mapTo(HashSet()) {
         description = it.description,
     )
 }
+
 fun Set<WorkPackageActivityDeliverableTranslationEntity>.toDeliverableModel() = mapTo(HashSet()) {
     WorkPackageActivityDeliverableTranslatedValue(
         language = it.translationId.language,
         description = it.description,
     )
 }
+
+fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
+    this.groupBy { it.activityNumber }.map { groupedRows ->
+        WorkPackageActivity(
+            activityNumber = groupedRows.value.first().activityNumber,
+            startPeriod = groupedRows.value.first().startPeriod,
+            endPeriod = groupedRows.value.first().endPeriod,
+            translatedValues = groupedRows.value.mapTo(HashSet()) {
+                WorkPackageActivityTranslatedValue(
+                    language = it.language!!,
+                    description = it.description,
+                    title = it.title
+                )
+            }
+        )
+    }
+
+fun List<WorkPackageDeliverableRow>.toDeliverableHistoricalData() =
+    this.groupBy { it.deliverableNumber }.map { groupedRows ->
+        WorkPackageActivityDeliverable(
+            deliverableNumber = groupedRows.value.first().deliverableNumber,
+            period = groupedRows.value.first().startPeriod,
+            translatedValues = groupedRows.value.mapTo(HashSet()) {
+                WorkPackageActivityDeliverableTranslatedValue(
+                    language = it.language!!,
+                    description = it.description,
+                )
+            }
+        )
+    }
