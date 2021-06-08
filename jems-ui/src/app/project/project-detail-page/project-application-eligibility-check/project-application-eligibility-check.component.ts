@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {InputProjectEligibilityAssessment, OutputProjectEligibilityAssessment, ProjectDetailDTO} from '@cat/api';
+import {ProjectAssessmentEligibilityDTO, OutputProjectEligibilityAssessment, ProjectDetailDTO} from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
@@ -78,14 +78,14 @@ export class ProjectApplicationEligibilityCheckComponent {
     this.actionPending = false;
   }
 
-  private getEligibilityCheckValue(): InputProjectEligibilityAssessment.ResultEnum {
+  private getEligibilityCheckValue(): ProjectAssessmentEligibilityDTO.ResultEnum {
     return this.selectedAssessment === this.stepStatus.ineligible
-      ? InputProjectEligibilityAssessment.ResultEnum.FAILED
-      : InputProjectEligibilityAssessment.ResultEnum.PASSED;
+      ? ProjectAssessmentEligibilityDTO.ResultEnum.FAILED
+      : ProjectAssessmentEligibilityDTO.ResultEnum.PASSED;
   }
 
   private setEligibilityCheckValue(eligibilityAssessment: OutputProjectEligibilityAssessment): void {
-    if (eligibilityAssessment.result === InputProjectEligibilityAssessment.ResultEnum.FAILED) {
+    if (eligibilityAssessment.result === ProjectAssessmentEligibilityDTO.ResultEnum.FAILED) {
       this.notesForm.controls.assessment.setValue(this.stepStatus.ineligible);
       return;
     }

@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.HealthyAgeing
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SocialInfrastructure
@@ -11,8 +10,6 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputProject
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.ProjectDataDTO
-import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
@@ -31,11 +28,18 @@ import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
+import io.cloudflight.jems.server.project.entity.ProjectData
 import io.cloudflight.jems.server.project.entity.ProjectEntity
+import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
+import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
+import io.cloudflight.jems.server.project.entity.ProjectTransl
+import io.cloudflight.jems.server.project.entity.TranslationId
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.projectWithId
+import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -45,6 +49,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertIterableEquals
@@ -173,6 +178,9 @@ class ProjectServiceTest : UnitTest() {
     lateinit var projectRepository: ProjectRepository
 
     @MockK
+    lateinit var getProjectInteractor: GetProjectInteractor
+
+    @MockK
     lateinit var projectStatusHistoryRepository: ProjectStatusHistoryRepository
 
     @MockK
@@ -211,7 +219,6 @@ class ProjectServiceTest : UnitTest() {
             applicant = account,
             currentStatus = statusSubmitted,
             firstSubmission = statusSubmitted,
-            step2Active = false
         )
         every { projectRepository.findAll(UNPAGED) } returns PageImpl(listOf(projectToReturn))
 
@@ -248,7 +255,6 @@ class ProjectServiceTest : UnitTest() {
             applicant = account,
             currentStatus = statusSubmitted,
             firstSubmission = statusSubmitted,
-            step2Active = false
         )
         every { projectRepository.findAll(UNPAGED) } returns PageImpl(listOf(projectToReturn))
 
@@ -292,7 +298,6 @@ class ProjectServiceTest : UnitTest() {
             acronym = "test",
             applicant = account,
             currentStatus = statusDraft,
-            step2Active = false
         )
         val slotAudit = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) } answers {}
@@ -340,37 +345,6 @@ class ProjectServiceTest : UnitTest() {
     }
 
     @Test
-    fun projectGet_OK() {
-        every { projectRepository.findById(eq(1)) } returns
-            Optional.of(
-                ProjectEntity(
-                    id = 1,
-                    call = dummyCall,
-                    acronym = "test",
-                    applicant = account,
-                    currentStatus = statusSubmitted,
-                    firstSubmission = statusSubmitted,
-                    step2Active = false
-                )
-            )
-
-        val result = projectService.getById(1)
-
-        assertThat(result).isNotNull()
-        assertThat(result.id).isEqualTo(1)
-        assertThat(result.acronym).isEqualTo("test")
-        assertThat(result.projectStatus.id).isEqualTo(11)
-        assertThat(result.firstSubmission?.id).isEqualTo(11)
-        assertThat(result.firstSubmission?.updated).isEqualTo(TEST_DATE_TIME)
-    }
-
-    @Test
-    fun projectGet_notExisting() {
-        every { projectRepository.findById(eq(-1)) } returns Optional.empty()
-        assertThrows<ResourceNotFoundException> { projectService.getById(-1) }
-    }
-
-    @Test
     fun projectCreation_beforeEndDateStep1() {
         every { userRepository.findByIdOrNull(eq(user.id)) } returns account
         every { callRepository.findById(eq(dummyCall2Step.id)) } returns Optional.of(dummyCall2Step)
@@ -380,7 +354,6 @@ class ProjectServiceTest : UnitTest() {
             acronym = "test",
             applicant = account,
             currentStatus = statusStep1Draft,
-            step2Active = false
         )
 
         val slotAudit = mutableListOf<AuditCandidateEvent>()
@@ -471,25 +444,20 @@ class ProjectServiceTest : UnitTest() {
             applicant = account,
             currentStatus = statusSubmitted,
             firstSubmission = statusSubmitted,
-            step2Active = false
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
-        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
+        val slot = slot<ProjectEntity>()
+        every { projectRepository.save(capture(slot)) } returnsArgument 0
 
-        val result = projectService.update(1, projectData.copy(specificObjective = HealthyAgeing))
+        projectService.update(1, projectData.copy(specificObjective = HealthyAgeing))
 
-        val expectedData = ProjectDataDTO(
-            title = projectData.title,
+        assertThat(slot.captured.projectData).isEqualTo(ProjectData(
             duration = projectData.duration,
-            intro = projectData.intro,
-            specificObjective = OutputProgrammePriorityPolicySimpleDTO(
-                programmeObjectivePolicy = HealthyAgeing,
-                code = "HAB"
+            translatedValues = setOf(
+                ProjectTransl(TranslationId(1, SystemLanguage.EN), title = "title", intro = "intro"),
             ),
-            programmePriority = null
-        )
-        assertThat(result.projectData).isEqualTo(expectedData)
-        assertThat(result.acronym).isEqualTo(projectData.acronym)
+        ))
+        assertThat(slot.captured.acronym).isEqualTo(projectData.acronym)
     }
 
     @Test
@@ -501,7 +469,6 @@ class ProjectServiceTest : UnitTest() {
             applicant = account,
             currentStatus = statusSubmitted,
             firstSubmission = statusSubmitted,
-            step2Active = false
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
 
@@ -534,26 +501,28 @@ class ProjectServiceTest : UnitTest() {
             acronym = "acronym",
             applicant = account,
             currentStatus = statusDraft,
-            step2Active = false
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
-        every { projectRepository.save(any<ProjectEntity>()) } returnsArgument 0
+        val slot = slot<ProjectEntity>()
+        every { projectRepository.save(capture(slot)) } returnsArgument 0
+        every { getProjectInteractor.getProject(1L) } returns projectWithId(1L).copy(
+            acronym = "acronym",
+            title = emptySet(),
+            duration = 13,
+            intro = emptySet(),
+            periods = listOf(
 
-        val result = projectService.update(1, projectData)
-
-        val expectedData = ProjectDataDTO(
-            title = projectData.title,
-            duration = projectData.duration,
-            intro = projectData.intro,
-            specificObjective = null,
-            programmePriority = null
+            )
         )
-        assertThat(result.projectData).isEqualTo(expectedData)
-        assertThat(result.acronym).isEqualTo(projectData.acronym)
-        assertThat(result.periods).containsExactly(
-            ProjectPeriodDTO(1, 1, 1, 6),
-            ProjectPeriodDTO(1, 2, 7, 12),
-            ProjectPeriodDTO(1, 3, 13, 13)
+
+        projectService.update(1, projectData)
+
+        assertThat(slot.captured.projectData).isEqualTo(ProjectData(duration = projectData.duration))
+        assertThat(slot.captured.acronym).isEqualTo(projectData.acronym)
+        assertThat(slot.captured.periods).containsExactly(
+            ProjectPeriodEntity(ProjectPeriodId(1, 1), 1, 6),
+            ProjectPeriodEntity(ProjectPeriodId(1, 2), 7, 12),
+            ProjectPeriodEntity(ProjectPeriodId(1, 3), 13, 13),
         )
     }
 }

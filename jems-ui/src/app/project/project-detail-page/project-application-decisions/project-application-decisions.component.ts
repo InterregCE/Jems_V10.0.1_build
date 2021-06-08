@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges} from '@angular/core';
-import {ProjectDecisionDTO, ProjectStatusDTO} from '@cat/api';
+import {ProjectDecisionDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import {ProjectStepStatus} from '../project-step-status';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectDetailPageStore} from '../project-detail-page-store';
@@ -18,7 +18,7 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
   @Input()
   step: number;
   @Input()
-  decisions: ProjectDecisionDTO;
+  collapsed = false;
 
   stepStatus: ProjectStepStatus;
 
@@ -27,8 +27,11 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
     isProjectLatestVersion: boolean,
     callHasTwoSteps: boolean,
     isStep2Now: boolean,
+    decision: ProjectDecisionDTO,
     fundingDecisionResult: ProjectStatusDTO,
     isDecisionFinal: boolean,
+    isReturnedNow: boolean,
+    isFundingDecisionPreconditionOk: boolean,
   }>;
 
   constructor(private projectDetailPageStore: ProjectDetailPageStore) {
@@ -53,27 +56,24 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
               StatusEnum.APPROVEDWITHCONDITIONS,
               StatusEnum.NOTAPPROVED,
             ].includes(project.projectStatus.status),
-            fundingDecisionResult: this.extractFundingDecisionResult(project.projectStatus),
-            isDecisionFinal: [
-              StatusEnum.STEP1APPROVED,
-              StatusEnum.STEP1APPROVEDWITHCONDITIONS,
-              StatusEnum.STEP1NOTAPPROVED,
-              StatusEnum.APPROVED,
-              StatusEnum.NOTAPPROVED,
-            ].includes(this.extractFundingDecisionResult(project.projectStatus)?.status),
+            decision: this.getDecision(project),
+            fundingDecisionResult: this.getDecision(project)?.finalFundingDecision || this.getDecision(project)?.preFundingDecision,
+            isDecisionFinal: !!this.getDecision(project)?.finalFundingDecision?.status,
+            isReturnedNow: project.projectStatus.status === StatusEnum.RETURNEDTOAPPLICANT,
+            isFundingDecisionPreconditionOk: Number(this.step) === 2
+              ? project.secondStepDecision?.eligibilityDecision?.status === StatusEnum.ELIGIBLE && !!project.secondStepDecision?.qualityAssessment
+              : project.firstStepDecision?.eligibilityDecision?.status === StatusEnum.STEP1ELIGIBLE && !!project.firstStepDecision?.qualityAssessment,
           }
         ))
       );
   }
 
-  ngOnChanges(): void {
-    this.stepStatus = new ProjectStepStatus(this.step);
+  private getDecision(project: ProjectDetailDTO): ProjectDecisionDTO {
+    return Number(this.step) === 2 ? project.secondStepDecision : project.firstStepDecision;
   }
 
-  fundingDecisionEnabled(): boolean {
-    return (this.decisions?.eligibilityDecision?.status === this.STATUS.ELIGIBLE
-      || this.decisions?.eligibilityDecision?.status === this.STATUS.STEP1ELIGIBLE)
-      && !!this.decisions?.qualityAssessment;
+  ngOnChanges(): void {
+    this.stepStatus = new ProjectStepStatus(this.step);
   }
 
   isDecisionEditable(projectStatus: ProjectStatusDTO, decision: any, isProjectLatestVersion: boolean): boolean {
@@ -90,10 +90,4 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
     }
   }
 
-  private extractFundingDecisionResult(projectStatus: ProjectStatusDTO): ProjectStatusDTO {
-    if ((projectStatus.status === StatusEnum.APPROVED || projectStatus.status === StatusEnum.NOTAPPROVED) && Number(this.step) === 2) {
-      return projectStatus;
-    }
-    return this.decisions?.fundingDecision;
-  }
 }

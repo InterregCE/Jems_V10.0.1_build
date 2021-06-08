@@ -80,7 +80,6 @@ class WorkPackageServiceTest {
         acronym = "test",
         applicant = account,
         currentStatus = statusDraft,
-        step2Active = false
     )
 
     private val translatedNameInEntity = WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test")

@@ -3,6 +3,10 @@ package io.cloudflight.jems.server.project.repository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentId
+import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentEligibilityRepository
+import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentQualityRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.Project
@@ -20,19 +24,36 @@ import org.springframework.transaction.annotation.Transactional
 class ProjectPersistenceProvider(
     private val projectVersionUtils: ProjectVersionUtils,
     private val projectRepository: ProjectRepository,
-    private val projectPartnerRepository: ProjectPartnerRepository
+    private val projectPartnerRepository: ProjectPartnerRepository,
+    private val projectAssessmentQualityRepository: ProjectAssessmentQualityRepository,
+    private val projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository,
 ) : ProjectPersistence {
 
     @Transactional(readOnly = true)
     override fun getProject(projectId: Long, version: String?): Project {
         val project = getProjectOrThrow(projectId)
+
+        val assessmentStep1 = ProjectAssessmentEntity(
+            assessmentQuality = projectAssessmentQualityRepository.findById(project.idInStep(1)).orElse(null),
+            assessmentEligibility = projectAssessmentEligibilityRepository.findById(project.idInStep(1)).orElse(null),
+            eligibilityDecision = project.decisionEligibilityStep1,
+            fundingDecision = project.decisionFundingStep1,
+        )
+        val assessmentStep2 = ProjectAssessmentEntity(
+            assessmentQuality = projectAssessmentQualityRepository.findById(project.idInStep(2)).orElse(null),
+            assessmentEligibility = projectAssessmentEligibilityRepository.findById(project.idInStep(2)).orElse(null),
+            eligibilityDecision = project.decisionEligibilityStep2,
+            preFundingDecision = project.decisionPreFundingStep2,
+            fundingDecision = project.decisionFundingStep2,
+        )
+
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                project.toModel()
+                project.toModel(assessmentStep1 = assessmentStep1, assessmentStep2 = assessmentStep2)
             },
             // grouped this will be only one result
             previousVersionFetcher = { timestamp ->
-                getProjectHistoricalData(projectId, timestamp, project)
+                getProjectHistoricalData(projectId, timestamp, project, assessmentStep1, assessmentStep2)
             }
         ) ?: throw ApplicationVersionNotFoundException()
     }
@@ -71,9 +92,17 @@ class ProjectPersistenceProvider(
     private fun getProjectOrThrow(projectId: Long) =
         projectRepository.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
 
-    private fun getProjectHistoricalData(projectId: Long, timestamp: Timestamp, project: ProjectEntity): Project {
+    private fun getProjectHistoricalData(
+        projectId: Long,
+        timestamp: Timestamp,
+        project: ProjectEntity,
+        assessmentStep1: ProjectAssessmentEntity,
+        assessmentStep2: ProjectAssessmentEntity,
+    ): Project {
         val periods = projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData();
-        return projectRepository.findByIdAsOfTimestamp(projectId, timestamp).toProjectEntryWithDetailData(project, periods)
+        return projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
+            .toProjectEntryWithDetailData(project, periods, assessmentStep1, assessmentStep2)
     }
 
+    private fun ProjectEntity.idInStep(step: Int) = ProjectAssessmentId(this, step)
 }

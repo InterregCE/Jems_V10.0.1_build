@@ -2,11 +2,14 @@ package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import java.time.ZonedDateTime
@@ -79,38 +82,38 @@ fun callAlreadyEnded(callId: Long): AuditCandidate =
     AuditBuilder(AuditAction.CALL_ALREADY_ENDED)
         .description("Attempted unsuccessfully to submit or to apply for call '$callId' that has already ended").build()
 
-fun qualityAssessmentStep1Concluded(context: Any, projectDetailDTO: ProjectDetailDTO): AuditCandidateEvent =
+fun qualityAssessmentStep1Concluded(context: Any, project: ProjectSummary, result: ProjectAssessmentQualityResult): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
-        .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
-        .description("Project application quality assessment (step 1) concluded as ${projectDetailDTO.firstStepDecision?.qualityAssessment?.result}")
+        .project(id = project.id, name = project.acronym)
+        .description("Project application quality assessment (step 1) concluded as $result")
         .build()
     )
 
-fun qualityAssessmentStep2Concluded(context: Any, projectDetailDTO: ProjectDetailDTO): AuditCandidateEvent =
+fun qualityAssessmentStep2Concluded(context: Any, project: ProjectSummary, result: ProjectAssessmentQualityResult): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
-            .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
-            .description("Project application quality assessment concluded as ${projectDetailDTO.secondStepDecision?.qualityAssessment?.result}")
+            .project(id = project.id, name = project.acronym)
+            .description("Project application quality assessment concluded as $result")
             .build()
     )
 
-fun eligibilityAssessmentStep1Concluded(context: Any, projectDetailDTO: ProjectDetailDTO): AuditCandidateEvent =
+fun eligibilityAssessmentStep1Concluded(context: Any, project: ProjectSummary, result: ProjectAssessmentEligibilityResult): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
-            .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
-            .description("Project application eligibility assessment (step 1) concluded as ${projectDetailDTO.firstStepDecision?.eligibilityAssessment?.result}")
+            .project(id = project.id, name = project.acronym)
+            .description("Project application eligibility assessment (step 1) concluded as $result")
             .build()
     )
 
-fun eligibilityAssessmentStep2Concluded(context: Any, projectDetailDTO: ProjectDetailDTO): AuditCandidateEvent =
+fun eligibilityAssessmentStep2Concluded(context: Any, project: ProjectSummary, result: ProjectAssessmentEligibilityResult): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
-            .project(id = projectDetailDTO.id!!, name = projectDetailDTO.acronym)
-            .description("Project application eligibility assessment concluded as ${projectDetailDTO.secondStepDecision?.eligibilityAssessment?.result}")
+            .project(id = project.id, name = project.acronym)
+            .description("Project application eligibility assessment concluded as $result")
             .build()
     )

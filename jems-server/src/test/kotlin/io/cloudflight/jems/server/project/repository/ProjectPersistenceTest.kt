@@ -4,13 +4,18 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
@@ -25,13 +30,23 @@ import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.ProjectRow
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEligibilityEntity
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentId
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentQualityEntity
+import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentEligibilityRepository
+import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentQualityRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.toProjectStatus
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
+import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -143,7 +158,6 @@ internal class ProjectPersistenceTest : UnitTest() {
                         end = 2,
                     )
                 ),
-                step2Active = false
             )
         }
     }
@@ -153,10 +167,14 @@ internal class ProjectPersistenceTest : UnitTest() {
 
     private lateinit var projectVersionUtils: ProjectVersionUtils
 
-    @RelaxedMockK
+    @MockK
     lateinit var projectRepository: ProjectRepository
-    @RelaxedMockK
+    @MockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
+    @MockK
+    lateinit var projectAssessmentQualityRepository: ProjectAssessmentQualityRepository
+    @MockK
+    lateinit var projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository
 
     private lateinit var persistence: ProjectPersistenceProvider
 
@@ -164,12 +182,35 @@ internal class ProjectPersistenceTest : UnitTest() {
     fun setup() {
         MockKAnnotations.init(this)
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
-        persistence = ProjectPersistenceProvider(projectVersionUtils, projectRepository, projectPartnerRepository)
+        persistence = ProjectPersistenceProvider(projectVersionUtils, projectRepository, projectPartnerRepository, projectAssessmentQualityRepository, projectAssessmentEligibilityRepository)
     }
 
     @Test
     fun `getProjectSummary - everything OK`() {
-        val project = dummyProject()
+        val statusChange = ZonedDateTime.now()
+        val project = dummyProject().copy(
+            firstSubmission = ProjectStatusHistoryEntity(
+                id = 669L,
+                status = ApplicationStatus.SUBMITTED,
+                user = dummyCall().creator,
+                updated = statusChange,
+            ),
+            lastResubmission = ProjectStatusHistoryEntity(
+                id = 670L,
+                status = ApplicationStatus.SUBMITTED,
+                user = dummyCall().creator,
+                updated = statusChange,
+            ),
+            priorityPolicy = ProgrammeSpecificObjectiveEntity(
+                programmeObjectivePolicy = ProgrammeObjectivePolicy.CrossBorderMobility,
+                code = "SO2.4",
+                programmePriority = ProgrammePriorityEntity(
+                    id = 589L,
+                    code = "SO2",
+                    objective = ProgrammeObjectivePolicy.CrossBorderMobility.objective
+                ),
+            ),
+        )
         every { projectRepository.getOne(PROJECT_ID) } returns project
         assertThat(persistence.getProjectSummary(PROJECT_ID)).isEqualTo(
             ProjectSummary(
@@ -177,6 +218,10 @@ internal class ProjectPersistenceTest : UnitTest() {
                 callName = "call name",
                 acronym = project.acronym,
                 status = project.currentStatus.status,
+                firstSubmissionDate = statusChange,
+                lastResubmissionDate = statusChange,
+                specificObjectiveCode = "SO2.4",
+                programmePriorityCode = "SO2",
             )
         )
     }
@@ -223,8 +268,32 @@ internal class ProjectPersistenceTest : UnitTest() {
 
     @Test
     fun `get Project without version`() {
-        val project = dummyProject()
+        val statusChange = ZonedDateTime.now()
+        val user = dummyCall().creator
+        val project = dummyProject().copy(
+            decisionFundingStep1 = ProjectStatusHistoryEntity(
+                id = 896L,
+                status = ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS,
+                user = user,
+                updated = statusChange,
+            ),
+            decisionEligibilityStep2 = ProjectStatusHistoryEntity(
+                id = 897L,
+                status = ApplicationStatus.ELIGIBLE,
+                user = user,
+                updated = statusChange,
+            ),
+        )
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        every { projectAssessmentQualityRepository.findById(ProjectAssessmentId(project, 1)) } returns Optional.of(
+            ProjectAssessmentQualityEntity(ProjectAssessmentId(project, 1), result = ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING, user = user, updated = statusChange)
+        )
+        every { projectAssessmentQualityRepository.findById(ProjectAssessmentId(project, 2)) } returns Optional.empty()
+
+        every { projectAssessmentEligibilityRepository.findById(ProjectAssessmentId(project, 1)) } returns Optional.empty()
+        every { projectAssessmentEligibilityRepository.findById(ProjectAssessmentId(project, 2)) } returns Optional.of(
+            ProjectAssessmentEligibilityEntity(ProjectAssessmentId(project, 1), result = ProjectAssessmentEligibilityResult.PASSED, user = user, updated = statusChange)
+        )
 
         assertThat(persistence.getProject(PROJECT_ID))
             .isEqualTo(
@@ -234,7 +303,6 @@ internal class ProjectPersistenceTest : UnitTest() {
                     title = null,
                     acronym = project.acronym,
                     duration = project.projectData?.duration,
-                    step2Active = true,
                     periods = listOf(ProjectPeriod(1, 1, 2)),
                     applicant = project.applicant.toUserSummary(),
                     projectStatus = project.currentStatus.toProjectStatus(),
@@ -242,8 +310,37 @@ internal class ProjectPersistenceTest : UnitTest() {
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
                     callSettings = project.call.toSettingsModel(),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
-                    specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
-                ))
+                    specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy(),
+                    assessmentStep1 = ProjectAssessment(
+                        assessmentQuality = ProjectAssessmentQuality(
+                            projectId = project.id,
+                            step = 1,
+                            result = ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING,
+                            updated = statusChange,
+                        ),
+                        fundingDecision = ProjectStatus(
+                            id = 896L,
+                            status = ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS,
+                            user = UserSummary(id = user.id, email = user.email, name = user.name, surname = user.surname, userRole = UserRoleSummary(id = 1, name = "ADMIN")),
+                            updated = statusChange,
+                        )
+                    ),
+                    assessmentStep2 = ProjectAssessment(
+                        assessmentEligibility = ProjectAssessmentEligibility(
+                            projectId = project.id,
+                            step = 1,
+                            result = ProjectAssessmentEligibilityResult.PASSED,
+                            updated = statusChange,
+                        ),
+                        eligibilityDecision = ProjectStatus(
+                            id = 897L,
+                            status = ApplicationStatus.ELIGIBLE,
+                            user = UserSummary(id = user.id, email = user.email, name = user.name, surname = user.surname, userRole = UserRoleSummary(id = 1, name = "ADMIN")),
+                            updated = statusChange,
+                        )
+                    ),
+                )
+            )
     }
 
     @Test
@@ -255,19 +352,23 @@ internal class ProjectPersistenceTest : UnitTest() {
         val mockPeriodRow: ProjectPeriodRow = mockk()
         every { mockRow.id } returns 1L
         every { mockRow.language } returns SystemLanguage.EN
-        every { mockRow.intro } returns "intro"
-        every { mockRow.title } returns "title"
         every { mockRow.acronym } returns "acronym"
         every { mockRow.duration } returns 12
-        every { mockRow.step2Active } returns false
+        every { mockRow.title } returns "title"
+        every { mockRow.intro } returns "intro"
         every { mockPeriodRow.periodNumber } returns 1
         every { mockPeriodRow.periodStart } returns 1
         every { mockPeriodRow.periodEnd } returns 12
-        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
-        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
 
-        every { projectRepository.findByIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
+
+        every { projectAssessmentQualityRepository.findById(any()) } returns Optional.empty()
+        every { projectAssessmentEligibilityRepository.findById(any()) } returns Optional.empty()
+
         every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockPeriodRow)
+        every { projectRepository.findByIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+
         assertThat(persistence.getProject(PROJECT_ID, version))
             .isEqualTo(
                 Project(
@@ -276,7 +377,6 @@ internal class ProjectPersistenceTest : UnitTest() {
                     title = setOf(InputTranslation(mockRow.language!!, mockRow.title)),
                     acronym = mockRow.acronym,
                     duration = mockRow.duration,
-                    step2Active = mockRow.step2Active,
                     periods = listOf(ProjectPeriod(mockPeriodRow.periodNumber!!, mockPeriodRow.periodStart!!, mockPeriodRow.periodEnd!!)),
                     applicant = project.applicant.toUserSummary(),
                     projectStatus = project.currentStatus.toProjectStatus(),
@@ -286,5 +386,19 @@ internal class ProjectPersistenceTest : UnitTest() {
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
                 ))
+    }
+
+    @Test
+    fun `get Project without versions`() {
+        val project = dummyProject()
+        val notExistingVersion = "3.0"
+
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, notExistingVersion) } returns null
+
+        every { projectAssessmentQualityRepository.findById(any()) } returns Optional.empty()
+        every { projectAssessmentEligibilityRepository.findById(any()) } returns Optional.empty()
+
+        assertThrows<ApplicationVersionNotFoundException> { persistence.getProject(PROJECT_ID, notExistingVersion) }
     }
 }

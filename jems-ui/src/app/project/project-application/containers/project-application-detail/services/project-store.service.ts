@@ -2,8 +2,9 @@ import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {
   InputProjectData,
-  InputProjectEligibilityAssessment,
-  InputProjectQualityAssessment, InvestmentSummaryDTO,
+  ProjectAssessmentEligibilityDTO,
+  ProjectAssessmentQualityDTO,
+  InvestmentSummaryDTO,
   ProjectDecisionDTO,
   ProjectDetailDTO,
   ProjectPartnerBudgetCoFinancingDTO,
@@ -64,8 +65,8 @@ export class ProjectStore {
   investmentChangeEvent$ = new Subject<void>();
 
   private projectAcronym$ = new ReplaySubject<string>(1);
-  private newEligibilityAssessment$ = new Subject<InputProjectEligibilityAssessment>();
-  private newQualityAssessment$ = new Subject<InputProjectQualityAssessment>();
+  private newEligibilityAssessment$ = new Subject<ProjectAssessmentEligibilityDTO>();
+  private newQualityAssessment$ = new Subject<ProjectAssessmentQualityDTO>();
   private updatedProjectData$ = new Subject<ProjectDetailDTO>();
 
   private changedEligibilityAssessment$ = this.newEligibilityAssessment$
@@ -135,11 +136,11 @@ export class ProjectStore {
       );
   }
 
-  setEligibilityAssessment(assessment: InputProjectEligibilityAssessment): void {
+  setEligibilityAssessment(assessment: ProjectAssessmentEligibilityDTO): void {
     this.newEligibilityAssessment$.next(assessment);
   }
 
-  setQualityAssessment(assessment: InputProjectQualityAssessment): void {
+  setQualityAssessment(assessment: ProjectAssessmentQualityDTO): void {
     this.newQualityAssessment$.next(assessment);
   }
 

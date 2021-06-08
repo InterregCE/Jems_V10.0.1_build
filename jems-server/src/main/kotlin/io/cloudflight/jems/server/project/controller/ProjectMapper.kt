@@ -76,9 +76,9 @@ fun Project.toDto() = ProjectDetailDTO(
     projectStatus = projectStatus.toDto(),
     firstSubmission = firstSubmission?.toDto(),
     lastResubmission = lastResubmission?.toDto(),
-    step2Active = step2Active,
-    firstStepDecision = firstStepDecision?.toDto(),
-    secondStepDecision = secondStepDecision?.toDto(),
+    step2Active = projectStatus.status.isInStep2(),
+    firstStepDecision = assessmentStep1?.toDto(),
+    secondStepDecision = assessmentStep2?.toDto(),
     // projectData
     projectData = ProjectDataDTO(
         title = title ?: emptySet(),

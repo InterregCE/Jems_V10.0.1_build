@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
+import io.cloudflight.jems.server.project.controller.toDto
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
@@ -24,6 +25,7 @@ import io.cloudflight.jems.server.project.repository.ProjectStatusHistoryReposit
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.toSummaryModel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
@@ -40,6 +42,7 @@ import kotlin.math.ceil
 @Service
 class ProjectServiceImpl(
     private val projectRepo: ProjectRepository,
+    private val getProjectInteractor: GetProjectInteractor,
     private val projectStatusHistoryRepo: ProjectStatusHistoryRepository,
     private val callRepository: CallRepository,
     private val userRepository: UserRepository,
@@ -47,12 +50,6 @@ class ProjectServiceImpl(
     private val auditPublisher: ApplicationEventPublisher,
     private val securityService: SecurityService
 ) : ProjectService {
-
-    @Transactional(readOnly = true)
-    override fun getById(id: Long): ProjectDetailDTO {
-        return projectRepo.findById(id).map { it.toOutputProject() }
-            .orElseThrow { ResourceNotFoundException("project") }
-    }
 
     @Transactional(readOnly = true)
     override fun findAll(page: Pageable): Page<OutputProjectSimple> {
@@ -94,7 +91,7 @@ class ProjectServiceImpl(
             version = ProjectVersionUtils.DEFAULT_VERSION,
             createdAt = ZonedDateTime.now(ZoneOffset.UTC)))
 
-        return createdProject.toOutputProject()
+        return createdProject.toOutputProject(null, null)
     }
 
     fun projectStatusDraft(user: UserEntity, step2Active: Boolean): ProjectStatusHistoryEntity {
@@ -139,14 +136,15 @@ class ProjectServiceImpl(
             if (project.projectData?.duration == projectData.duration) project.periods
             else calculatePeriods(id, project.call.lengthOfPeriod, projectData.duration)
 
-        return projectRepo.save(
+        projectRepo.save(
             project.copy(
                 acronym = projectData.acronym!!,
                 projectData = projectData.toEntity(project.id),
                 priorityPolicy = policyToEntity(projectData.specificObjective, project.call.prioritySpecificObjectives),
                 periods = periods
             )
-        ).toOutputProject()
+        )
+        return getProjectInteractor.getProject(projectId = project.id).toDto()
     }
 
     /**

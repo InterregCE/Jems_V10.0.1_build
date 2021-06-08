@@ -100,7 +100,7 @@ export class ProjectApplicationActionsComponent {
     this.actionPending = true;
     this.projectDetailStore.returnApplicationToApplicant(projectId)
       .pipe(
-        tap(() => this.actionPending = false),
+        finalize(() => this.actionPending = false),
         tap(() => this.showSuccessMessage())
       ).subscribe();
   }
@@ -109,7 +109,7 @@ export class ProjectApplicationActionsComponent {
     this.actionPending = true;
     this.projectDetailStore.revertApplicationDecision(projectId)
       .pipe(
-        tap(() => this.actionPending = false),
+        finalize(() => this.actionPending = false),
       ).subscribe();
   }
 

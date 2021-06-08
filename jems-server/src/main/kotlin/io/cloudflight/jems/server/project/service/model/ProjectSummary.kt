@@ -12,4 +12,7 @@ data class ProjectSummary(
     val lastResubmissionDate: ZonedDateTime? = null,
     val specificObjectiveCode: String? = null,
     val programmePriorityCode: String? = null,
-)
+) {
+    fun isInStep2() = status.isInStep2()
+}
+

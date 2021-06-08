@@ -13,14 +13,20 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.ProjectRow
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.ProjectVersionEntity
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEligibilityEntity
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentQualityEntity
 import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
-import io.cloudflight.jems.server.project.service.toProjectDecision
-import io.cloudflight.jems.server.project.service.toProjectStatus
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import org.springframework.data.domain.Page
 
@@ -48,7 +54,7 @@ fun CallEntity.toSettingsModel() = ProjectCallSettings(
     unitCosts = unitCosts.toProgrammeUnitCost()
 )
 
-fun ProjectEntity.toModel() = Project(
+fun ProjectEntity.toModel(assessmentStep1: ProjectAssessmentEntity?, assessmentStep2: ProjectAssessmentEntity?) = Project(
     id = id,
     callSettings = call.toSettingsModel(),
     acronym = acronym,
@@ -56,9 +62,8 @@ fun ProjectEntity.toModel() = Project(
     projectStatus = currentStatus.toProjectStatus(),
     firstSubmission = firstSubmission?.toProjectStatus(),
     lastResubmission = lastResubmission?.toProjectStatus(),
-    step2Active = currentStatus.status.isInStep2(),
-    firstStepDecision = firstStepDecision?.toProjectDecision(),
-    secondStepDecision = secondStepDecision?.toProjectDecision(),
+    assessmentStep1 = assessmentStep1?.toModel(),
+    assessmentStep2 = assessmentStep2?.toModel(),
     title = projectData?.translatedValues?.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.title)
     },
@@ -84,7 +89,12 @@ fun ProjectEntity.toSummaryModel() = ProjectSummary(
 
 fun Page<ProjectEntity>.toModel() = map { it.toSummaryModel() }
 
-fun List<ProjectRow>.toProjectEntryWithDetailData(project: ProjectEntity, periods: List<ProjectPeriod>) =
+fun List<ProjectRow>.toProjectEntryWithDetailData(
+    project: ProjectEntity,
+    periods: List<ProjectPeriod>,
+    assessmentStep1: ProjectAssessmentEntity,
+    assessmentStep2: ProjectAssessmentEntity,
+) =
     this.groupBy { it.id }.map { groupedRows ->
         Project(
             id = groupedRows.key,
@@ -92,7 +102,6 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(project: ProjectEntity, period
             title = groupedRows.value.extractField { it.title },
             intro = groupedRows.value.extractField { it.intro },
             duration = groupedRows.value.first().duration,
-            step2Active = groupedRows.value.first().step2Active,
             periods = periods,
             // map non historic data
             callSettings = project.call.toSettingsModel(),
@@ -102,11 +111,49 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(project: ProjectEntity, period
             projectStatus = project.currentStatus.toProjectStatus(),
             firstSubmission = project.firstSubmission?.toProjectStatus(),
             lastResubmission = project.lastResubmission?.toProjectStatus(),
-            firstStepDecision = project.firstStepDecision?.toProjectDecision(),
-            secondStepDecision = project.secondStepDecision?.toProjectDecision()
+            assessmentStep1 = assessmentStep1.toModel(),
+            assessmentStep2 = assessmentStep2.toModel(),
         )
     }.first()
 
 fun List<ProjectPeriodRow>.toProjectPeriodHistoricalData() = map {
     ProjectPeriod(it.periodNumber!!, it.periodStart!!, it.periodEnd!!)
 }.toList()
+
+fun ProjectAssessmentEntity.toModel(): ProjectAssessment? {
+    if (getOrNull() == null)
+        return null
+
+    return ProjectAssessment(
+        assessmentQuality = assessmentQuality?.toModel(),
+        assessmentEligibility = assessmentEligibility?.toModel(),
+        eligibilityDecision = eligibilityDecision?.toProjectStatus(),
+        preFundingDecision = preFundingDecision?.toProjectStatus(),
+        fundingDecision = fundingDecision?.toProjectStatus(),
+    )
+}
+
+private fun ProjectAssessmentQualityEntity.toModel() = ProjectAssessmentQuality(
+    projectId = id.project.id,
+    step = id.step,
+    result = result,
+    updated = updated,
+    note = note,
+)
+
+private fun ProjectAssessmentEligibilityEntity.toModel() = ProjectAssessmentEligibility(
+    projectId = id.project.id,
+    step = id.step,
+    result = result,
+    updated = updated,
+    note = note,
+)
+
+fun ProjectStatusHistoryEntity.toProjectStatus() = ProjectStatus(
+    id = id,
+    status = status,
+    user = user.toUserSummary(),
+    updated = updated,
+    decisionDate = decisionDate,
+    note = note
+)

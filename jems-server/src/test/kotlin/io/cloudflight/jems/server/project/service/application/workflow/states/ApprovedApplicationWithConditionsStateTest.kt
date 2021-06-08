@@ -70,10 +70,10 @@ class ApprovedApplicationWithConditionsStateTest {
     @Test
     fun approve() {
         every { projectWorkflowPersistence.getProjectEligibilityDecisionDate(PROJECT_ID) } returns LocalDate.now().minusDays(1)
-        every { projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, any()) } returns ApplicationStatus.APPROVED
+        every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, any()) } returns ApplicationStatus.APPROVED
 
         assertThat(approvedApplicationWithConditionsState.approve(actionInfo)).isEqualTo(ApplicationStatus.APPROVED)
-        verify(exactly = 1) { projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, actionInfo)  }
+        verify(exactly = 1) { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, actionInfo)  }
     }
 
     @Test

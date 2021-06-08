@@ -1,20 +1,13 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
-import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
-import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
-import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
-import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
-import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
-import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
-import io.cloudflight.jems.api.user.dto.OutputUser
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.service.strategy.strategyChanged
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
@@ -24,8 +17,10 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
-import io.cloudflight.jems.server.project.service.model.ProjectDecision
+import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.MockKAnnotations
@@ -79,12 +74,16 @@ internal class ProjectStatusAuthorizationTestOld {
         userRole = UserRoleSummary(id = 3L, name = "applicant"),
     )
 
-    private val eligibilityAssessment = OutputProjectEligibilityAssessment(
-        result = ProjectEligibilityAssessmentResult.PASSED,
+    private fun eligibilityAssessment(projectId: Long, step: Int) = ProjectAssessmentEligibility(
+        projectId = projectId,
+        step = step,
+        result = ProjectAssessmentEligibilityResult.PASSED,
         updated = ZonedDateTime.now()
     )
-    private val qualityAssessment = OutputProjectQualityAssessment(
-        result = ProjectQualityAssessmentResult.RECOMMENDED_FOR_FUNDING,
+    private fun qualityAssessment(projectId: Long, step: Int) = ProjectAssessmentQuality(
+        projectId = projectId,
+        step = step,
+        result = ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING,
         updated = ZonedDateTime.now()
     )
 
@@ -93,21 +92,21 @@ internal class ProjectStatusAuthorizationTestOld {
     private val projectReturned = createProject(PID_RETURNED, ApplicationStatus.RETURNED_TO_APPLICANT)
     private val projectSubmittedWithEa = projectSubmitted.copy(
         id = PID_SUBMITTED_WITH_EA,
-        secondStepDecision = ProjectDecision(eligibilityAssessment = eligibilityAssessment)
+        assessmentStep2 = ProjectAssessment(assessmentEligibility = eligibilityAssessment(PID_SUBMITTED_WITH_EA, 1))
     )
     private val projectEligible = createProject(PID_ELIGIBLE, ApplicationStatus.ELIGIBLE).copy(
-        secondStepDecision = ProjectDecision(eligibilityAssessment = eligibilityAssessment)
+        assessmentStep2 = ProjectAssessment(assessmentEligibility = eligibilityAssessment(PID_ELIGIBLE, 1))
     )
     private val projectIneligible = createProject(PID_INELIGIBLE, ApplicationStatus.INELIGIBLE).copy(
-        secondStepDecision = ProjectDecision(eligibilityAssessment = eligibilityAssessment)
+        assessmentStep2 = ProjectAssessment(assessmentEligibility = eligibilityAssessment(PID_INELIGIBLE, 1))
     )
     private val projectEligibleWithQA = createProject(PID_ELIGIBLE_WITH_QA, ApplicationStatus.ELIGIBLE).copy(
-        secondStepDecision = ProjectDecision(qualityAssessment = qualityAssessment)
+        assessmentStep2 = ProjectAssessment(assessmentQuality = qualityAssessment(PID_ELIGIBLE_WITH_QA, 1))
     )
     private val projectNotApproved = createProject(PID_NOT_APPROVED, ApplicationStatus.NOT_APPROVED)
     private val projectApprovedWithConditions =
         createProject(PID_APPROVED_WITH_CONDITIONS, ApplicationStatus.APPROVED_WITH_CONDITIONS).copy(
-            secondStepDecision = ProjectDecision(qualityAssessment = qualityAssessment)
+            assessmentStep2 = ProjectAssessment(assessmentQuality = qualityAssessment(PID_APPROVED_WITH_CONDITIONS, 1))
         )
     private val projectApproved = createProject(PID_APPROVED, ApplicationStatus.APPROVED)
 
@@ -351,7 +350,6 @@ internal class ProjectStatusAuthorizationTestOld {
             acronym = "acronym",
             applicant = userApplicantWithoutRole,
             projectStatus = ProjectStatus(1, status, userApplicantWithoutRole, ZonedDateTime.now(), null),
-            step2Active = true,
             duration = 12,
         )
     }

@@ -20,7 +20,7 @@ class ApprovedApplicationWithConditionsState(
     private val canBeRevertTo = setOf(ApplicationStatus.ELIGIBLE)
 
     override fun approve(actionInfo: ApplicationActionInfo): ApplicationStatus =
-        updateCurrentStatus(ApplicationStatus.APPROVED, actionInfo)
+        updateFundingDecision(ApplicationStatus.APPROVED, actionInfo)
 
     override fun refuse(actionInfo: ApplicationActionInfo): ApplicationStatus =
         updateCurrentStatus(ApplicationStatus.NOT_APPROVED, actionInfo)

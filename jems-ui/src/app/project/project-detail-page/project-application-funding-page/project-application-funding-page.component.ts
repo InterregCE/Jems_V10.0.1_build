@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {ProjectFundingDecisionStore} from './project-funding-decision-store.service';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
@@ -22,22 +21,21 @@ export class ProjectApplicationFundingPageComponent {
 
   details$ = combineLatest([
     this.fundingDecisionStore.project$,
-    this.fundingDecisionStore.fundingDecision(this.step),
+    this.fundingDecisionStore.preFundingDecision(this.step),
+    this.fundingDecisionStore.finalFundingDecision(this.step),
     this.fundingDecisionStore.eligibilityDecisionDate(this.step),
   ])
     .pipe(
-      map(([project, fundingDecision, eligibilityDecisionDate]) => ({
+      map(([project, preFundingDecision, finalFundingDecision, eligibilityDecisionDate]) => ({
         project,
-        fundingDecision,
+        preFundingDecision,
+        finalFundingDecision,
         eligibilityDecisionDate,
-        acronym: project.acronym,
-        statusOptions: [this.stepStatus.approved, this.stepStatus.approvedWithConditions, this.stepStatus.notApproved],
-        showWithConditions: fundingDecision?.status === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS,
-        withConditionsStatus: this.getApprovedWithConditionsStatus(project),
-        withConditionsStatusOptions: [this.stepStatus.approved, this.stepStatus.notApproved],
-        submitLabel: 'project.assessment.fundingDecision.submit.label',
-        withConditionsSubmitLabel: 'project.assessment.fundingDecision.submit.finalize.label',
-      }))
+        isStep2: project.step2Active,
+        isThisFirstDecision: !project.secondStepDecision?.preFundingDecision,
+        fullOptions: [this.stepStatus.approved, this.stepStatus.approvedWithConditions, this.stepStatus.notApproved],
+        optionsForSecondDecision: [this.stepStatus.approved, this.stepStatus.notApproved],
+      })),
     )
   ;
 
@@ -47,8 +45,4 @@ export class ProjectApplicationFundingPageComponent {
               public fundingDecisionStore: ProjectFundingDecisionStore) {
   }
 
-  private getApprovedWithConditionsStatus(project: ProjectDetailDTO): ProjectStatusDTO | null {
-    return [this.stepStatus.approved, this.stepStatus.notApproved]
-      .some(stat => stat === project.projectStatus.status) ? project.projectStatus : null;
-  }
 }

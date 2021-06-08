@@ -8,10 +8,8 @@ import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
-import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
-import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
-import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
-import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
@@ -57,8 +55,8 @@ import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersiste
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
-import io.cloudflight.jems.server.project.service.model.ProjectDecision
 import io.cloudflight.jems.server.project.service.model.ProjectDescription
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
@@ -71,6 +69,8 @@ import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCostsInteractor
@@ -157,15 +157,18 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             programmePriority = null,
             specificObjective = null,
             projectStatus = projectStatus,
-            step2Active = false,
             periods = listOf(ProjectPeriod(1, 1, 1), ProjectPeriod(2, 2, 2)),
-            firstStepDecision = ProjectDecision(
-                OutputProjectQualityAssessment(
-                    ProjectQualityAssessmentResult.NOT_RECOMMENDED,
+            assessmentStep1 = ProjectAssessment(
+                ProjectAssessmentQuality(
+                    projectId = 1L,
+                    step = 1,
+                    ProjectAssessmentQualityResult.NOT_RECOMMENDED,
                     updated = startDate
                 ),
-                OutputProjectEligibilityAssessment(
-                    ProjectEligibilityAssessmentResult.FAILED,
+                ProjectAssessmentEligibility(
+                    projectId = 1L,
+                    step = 1,
+                    ProjectAssessmentEligibilityResult.FAILED,
                     updated = startDate
                 ),
                 projectStatus

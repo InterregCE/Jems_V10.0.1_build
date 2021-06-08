@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.entity
 
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -54,18 +55,25 @@ data class ProjectEntity(
     @JoinColumn(name = "last_resubmission_id")
     var lastResubmission: ProjectStatusHistoryEntity? = null,
 
-    @Column(name = "step2_active")
-    @field:NotNull
-    @Deprecated("This flag is about to be removed", replaceWith = ReplaceWith("status.isStep2Active()"))
-    var step2Active: Boolean,
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "eligibility_decision_step1_id")
+    var decisionEligibilityStep1: ProjectStatusHistoryEntity? = null,
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name="first_step_decision_id")
-    var firstStepDecision: ProjectDecisionEntity? = null,
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "funding_decision_step1_id")
+    var decisionFundingStep1: ProjectStatusHistoryEntity? = null,
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name="second_step_decision_id")
-    var secondStepDecision: ProjectDecisionEntity? = null,
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "eligibility_decision_id")
+    var decisionEligibilityStep2: ProjectStatusHistoryEntity? = null,
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "funding_pre_decision_id")
+    var decisionPreFundingStep2: ProjectStatusHistoryEntity? = null,
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "funding_final_decision_id")
+    var decisionFundingStep2: ProjectStatusHistoryEntity? = null,
 
     @Embedded
     val projectData: ProjectData? = null,

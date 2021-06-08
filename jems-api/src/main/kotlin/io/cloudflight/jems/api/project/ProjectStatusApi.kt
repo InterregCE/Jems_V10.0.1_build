@@ -1,10 +1,10 @@
 package io.cloudflight.jems.api.project
 
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
-import io.cloudflight.jems.api.project.dto.status.InputProjectEligibilityAssessment
-import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityDTO
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import javax.validation.Valid
 
 @Api("Project Status")
 @RequestMapping("/api/project/{id}/")
@@ -76,14 +75,14 @@ interface ProjectStatusApi {
     @PostMapping("assessment/quality", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setQualityAssessment(
         @PathVariable id: Long,
-        @Valid @RequestBody data: InputProjectQualityAssessment
+        @RequestBody data: ProjectAssessmentQualityDTO
     ): ProjectDetailDTO
 
     @ApiOperation("Set eligibility assessment result to project application")
     @PostMapping("assessment/eligibility", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setEligibilityAssessment(
         @PathVariable id: Long,
-        @Valid @RequestBody data: InputProjectEligibilityAssessment
+        @RequestBody data: ProjectAssessmentEligibilityDTO
     ): ProjectDetailDTO
 
     @ApiOperation("Recheck possibility to revert the last decision made (eligibility decision, funding decision)")

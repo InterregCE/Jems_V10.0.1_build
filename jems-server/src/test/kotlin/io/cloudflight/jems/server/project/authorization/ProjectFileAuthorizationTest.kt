@@ -7,7 +7,6 @@ import io.cloudflight.jems.api.project.dto.file.OutputProjectFile
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
-import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
@@ -17,7 +16,6 @@ import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Compan
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.file.FileStorageService
-import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED_WITH_CONDITIONS
@@ -32,7 +30,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus.
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.SUBMITTED
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
-import io.cloudflight.jems.server.project.service.model.ProjectDecision
+import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
@@ -136,7 +134,6 @@ internal class ProjectFileAuthorizationTest {
                 acronym = "",
                 applicant = UserSummary(applicantId, "", "", "", UserRoleSummary(name = "")),
                 projectStatus = ProjectStatus(null, status, UserSummary(0, "", "", "", UserRoleSummary(name = "")), ZonedDateTime.now()),
-                step2Active = false,
                 duration = 4,
             )
         }
@@ -383,7 +380,7 @@ internal class ProjectFileAuthorizationTest {
                 210,
                 42,
                 it
-            ).copy(firstStepDecision = ProjectDecision(fundingDecision = fundingDecision))
+            ).copy(assessmentStep1 = ProjectAssessment(fundingDecision = fundingDecision))
             every { projectAuthorization.canReadProject(eq(210)) } returns true
 
             var file = assessmentFile2005
@@ -412,7 +409,7 @@ internal class ProjectFileAuthorizationTest {
                 220,
                 42,
                 it
-            ).copy(firstStepDecision = ProjectDecision(eligibilityDecision = eligibilityDecision))
+            ).copy(assessmentStep1 = ProjectAssessment(eligibilityDecision = eligibilityDecision))
             every { projectAuthorization.canReadProject(eq(220)) } returns true
 
             var file = assessmentFile2005

@@ -19,8 +19,8 @@ import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
-import io.cloudflight.jems.api.project.dto.status.ProjectEligibilityAssessmentResult
-import io.cloudflight.jems.api.project.dto.status.ProjectQualityAssessmentResult
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -34,10 +34,12 @@ import io.cloudflight.jems.server.project.service.get_project.GetProjectInteract
 import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
-import io.cloudflight.jems.server.project.service.model.ProjectDecision
+import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries.GetProjectInvestmentSummariesInteractor
 import io.cloudflight.jems.server.toScaledBigDecimal
@@ -266,12 +268,11 @@ class ProjectControllerTest {
             programmePriority = null,
             specificObjective = null,
             projectStatus = projectStatus,
-            step2Active = true,
             periods = listOf(ProjectPeriod(1, 1, 1), ProjectPeriod(2, 2, 2)),
-            firstStepDecision = ProjectDecision(
-                OutputProjectQualityAssessment(ProjectQualityAssessmentResult.NOT_RECOMMENDED, updated = startDate),
-                OutputProjectEligibilityAssessment(ProjectEligibilityAssessmentResult.FAILED, updated = startDate),
-                projectStatus
+            assessmentStep1 = ProjectAssessment(
+                ProjectAssessmentQuality(pId, 1, ProjectAssessmentQualityResult.NOT_RECOMMENDED, updated = startDate),
+                ProjectAssessmentEligibility(pId, 1, ProjectAssessmentEligibilityResult.FAILED, updated = startDate),
+                eligibilityDecision = projectStatus
             )
         )
         every { getProjectInteractor.getProject(pId, null) } returns project
@@ -310,8 +311,8 @@ class ProjectControllerTest {
                     ProjectPeriodDTO(pId, 2, 2, 2)
                 ),
                 firstStepDecision = ProjectDecisionDTO(
-                    OutputProjectQualityAssessment(ProjectQualityAssessmentResult.NOT_RECOMMENDED, startDate),
-                    OutputProjectEligibilityAssessment(ProjectEligibilityAssessmentResult.FAILED, startDate),
+                    OutputProjectQualityAssessment(ProjectAssessmentQualityResult.NOT_RECOMMENDED, startDate),
+                    OutputProjectEligibilityAssessment(ProjectAssessmentEligibilityResult.FAILED, startDate),
                     ProjectStatusDTO(projectStatus.id, ApplicationStatusDTO.APPROVED, user.toDto(), startDate)
                 )
             )

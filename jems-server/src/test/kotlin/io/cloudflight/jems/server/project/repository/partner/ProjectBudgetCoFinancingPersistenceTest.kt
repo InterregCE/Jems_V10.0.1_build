@@ -65,7 +65,6 @@ class ProjectBudgetCoFinancingPersistenceTest {
                     status = ApplicationStatus.DRAFT,
                     user = call.creator
                 ),
-                step2Active = false
             )
         }
 

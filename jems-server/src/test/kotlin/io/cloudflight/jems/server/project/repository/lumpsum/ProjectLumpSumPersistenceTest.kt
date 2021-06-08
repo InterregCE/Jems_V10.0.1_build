@@ -53,7 +53,6 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
                 status = ApplicationStatus.DRAFT,
                 user = dummyCall.creator
             ),
-            step2Active = false
         )
 
         private fun partner(sortNumber: Int, id: Long) = ProjectPartnerEntity(

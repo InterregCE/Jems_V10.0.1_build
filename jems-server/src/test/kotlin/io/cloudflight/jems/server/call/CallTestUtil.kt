@@ -62,7 +62,6 @@ private val dummyProject = ProjectEntity(
     acronym = "Test Project",
     applicant = account,
     currentStatus = ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = account),
-    step2Active = false
 )
 
 fun partnerWithId(id: Long) = ProjectPartnerEntity(

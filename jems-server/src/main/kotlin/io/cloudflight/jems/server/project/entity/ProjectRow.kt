@@ -14,7 +14,6 @@ interface ProjectRow: TranslationView {
     // applicant - account
     // firstStepDecision - project_decision
     // secondStepDecision - project_decision
-    val step2Active: Boolean
 
     val acronym: String
     val duration: Int?

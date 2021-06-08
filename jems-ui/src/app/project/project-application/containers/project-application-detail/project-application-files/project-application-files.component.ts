@@ -62,7 +62,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
       map(([page, project, decisions, isProjectLatestVersion, permissions]) => ({
         page,
         project,
-        fundingDecisionDefined: !!decisions?.fundingDecision,
+        fundingDecisionDefined: !!decisions?.finalFundingDecision || !!decisions?.preFundingDecision,
         permission: permissions[0],
         uploadPossible: this.canUploadFiles(project, permissions[0], isProjectLatestVersion)
       }))

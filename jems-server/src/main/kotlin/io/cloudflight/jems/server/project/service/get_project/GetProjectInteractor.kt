@@ -10,7 +10,7 @@ interface GetProjectInteractor {
 
     fun getProjectCallSettings(projectId: Long): ProjectCallSettings
 
-    fun getProject(projectId: Long, version: String?): Project
+    fun getProject(projectId: Long, version: String? = null): Project
 
     fun getAllProjects(pageable: Pageable): Page<ProjectSummary>
 

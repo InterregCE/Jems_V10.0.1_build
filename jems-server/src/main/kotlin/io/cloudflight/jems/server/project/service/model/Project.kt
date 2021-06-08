@@ -13,9 +13,8 @@ data class Project(
     val projectStatus: ProjectStatus,
     val firstSubmission: ProjectStatus? = null,
     val lastResubmission: ProjectStatus? = null,
-    val step2Active: Boolean,
-    val firstStepDecision: ProjectDecision? = null,
-    val secondStepDecision: ProjectDecision? = null,
+    val assessmentStep1: ProjectAssessment? = null,
+    val assessmentStep2: ProjectAssessment? = null,
 
     // projectData
     val title: Set<InputTranslation>? = emptySet(),
@@ -25,4 +24,6 @@ data class Project(
     val programmePriority: OutputProgrammePrioritySimple? = null,
 
     val periods: List<ProjectPeriod> = emptyList()
-)
+) {
+    fun isInStep2() = projectStatus.status.isInStep2()
+}

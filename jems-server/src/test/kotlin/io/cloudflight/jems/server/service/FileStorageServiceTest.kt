@@ -105,7 +105,6 @@ class FileStorageServiceTest {
             user = account,
             updated = ZonedDateTime.now()
         ),
-        step2Active = false
     )
 
     @RelaxedMockK

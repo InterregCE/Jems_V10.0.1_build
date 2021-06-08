@@ -15,10 +15,17 @@ export class ProjectFundingDecisionStore {
     this.project$ = this.projectStore.project$;
   }
 
-  fundingDecision(step: number | undefined): Observable<ProjectStatusDTO> {
+  finalFundingDecision(step: number | undefined): Observable<ProjectStatusDTO> {
     return this.projectStore.projectDecisions(step)
       .pipe(
-        map(decisions => decisions?.fundingDecision)
+        map(decisions => decisions?.finalFundingDecision)
+      );
+  }
+
+  preFundingDecision(step: number | undefined): Observable<ProjectStatusDTO> {
+    return this.projectStore.projectDecisions(step)
+      .pipe(
+        map(decisions => decisions?.preFundingDecision)
       );
   }
 

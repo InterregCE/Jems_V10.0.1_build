@@ -28,7 +28,6 @@ class ProjectFactory(
                 applicant = author,
                 currentStatus = projectStatus,
                 firstSubmission = projectStatus,
-                step2Active = false
             )
         )
     }

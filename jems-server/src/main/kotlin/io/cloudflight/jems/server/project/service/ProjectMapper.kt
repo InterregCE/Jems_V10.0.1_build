@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.project.dto.ProjectDataDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
@@ -33,10 +34,9 @@ fun InputProject.toEntity(
     acronym = this.acronym!!,
     applicant = applicant,
     currentStatus = statusHistoryEntity,
-    step2Active = false
 )
 
-fun ProjectEntity.toOutputProject() = ProjectDetailDTO(
+fun ProjectEntity.toOutputProject(decisionStep1: ProjectDecisionDTO?, decisionStep2: ProjectDecisionDTO?) = ProjectDetailDTO(
     id = id,
     callSettings = call.toSettingsModel().toDto(),
     acronym = acronym,
@@ -45,8 +45,8 @@ fun ProjectEntity.toOutputProject() = ProjectDetailDTO(
     firstSubmission = firstSubmission?.toOutputProjectStatus(),
     lastResubmission = lastResubmission?.toOutputProjectStatus(),
     step2Active = currentStatus.status.isInStep2(),
-    firstStepDecision = firstStepDecision?.toProjectDecisionDTO(),
-    secondStepDecision = secondStepDecision?.toProjectDecisionDTO(),
+    firstStepDecision = decisionStep1,
+    secondStepDecision = decisionStep2,
     projectData = projectData?.toOutputProjectData(priorityPolicy),
     periods = periods.map { it.toOutputPeriod() }
 )

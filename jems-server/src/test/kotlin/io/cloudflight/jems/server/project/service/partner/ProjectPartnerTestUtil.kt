@@ -50,7 +50,6 @@ class ProjectPartnerTestUtil {
             call = call,
             applicant = user,
             currentStatus = projectStatus,
-            step2Active = false
         )
 
         val userSummary = UserSummary(

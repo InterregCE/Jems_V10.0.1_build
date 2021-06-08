@@ -77,9 +77,9 @@ class ProjectStatusAuthorization(
         if (!isProgrammeUser() && ! isAdmin())
             throw ResourceNotFoundException("project")
 
-        val decisions = if (oldStatus.isInStep2()) project.secondStepDecision else project.firstStepDecision
+        val decisions = if (oldStatus.isInStep2()) project.assessmentStep2 else project.assessmentStep1
 
-        return oldPossibilities.contains(oldStatus) && decisions?.qualityAssessment != null
+        return oldPossibilities.contains(oldStatus) && decisions?.assessmentQuality != null
     }
 
     fun canApproveWithConditions(projectId: Long): Boolean {
@@ -94,9 +94,9 @@ class ProjectStatusAuthorization(
         if (!isProgrammeUser() && ! isAdmin())
             throw ResourceNotFoundException("project")
 
-        val decisions = if (oldStatus.isInStep2()) project.secondStepDecision else project.firstStepDecision
+        val decisions = if (oldStatus.isInStep2()) project.assessmentStep2 else project.assessmentStep1
 
-        return oldStatus.isSubmitted() && decisions?.eligibilityAssessment != null
+        return oldStatus.isSubmitted() && decisions?.assessmentEligibility != null
     }
 
     fun canReturnToApplicant(projectId: Long): Boolean {
@@ -124,9 +124,9 @@ class ProjectStatusAuthorization(
         if (!isProgrammeUser() && ! isAdmin())
             throw ResourceNotFoundException("project")
 
-        val decision = if (project.projectStatus.status.isInStep2()) project.secondStepDecision else project.firstStepDecision
+        val decision = if (project.projectStatus.status.isInStep2()) project.assessmentStep2 else project.assessmentStep1
 
-        return allowedStatuses.contains(project.projectStatus.status) && decision?.qualityAssessment == null
+        return allowedStatuses.contains(project.projectStatus.status) && decision?.assessmentQuality == null
     }
 
     fun canSetEligibilityAssessment(projectId: Long): Boolean {
@@ -136,9 +136,9 @@ class ProjectStatusAuthorization(
         if (!isProgrammeUser() && ! isAdmin())
             throw ResourceNotFoundException("project")
 
-        val decision = if (status.isInStep2()) project.secondStepDecision else project.firstStepDecision
+        val decision = if (status.isInStep2()) project.assessmentStep2 else project.assessmentStep1
 
-        return decision?.eligibilityAssessment == null && status.isSubmitted()
+        return decision?.assessmentEligibility == null && status.isSubmitted()
     }
 
 }

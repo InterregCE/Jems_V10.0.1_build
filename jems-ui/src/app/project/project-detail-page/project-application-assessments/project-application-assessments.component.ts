@@ -19,6 +19,8 @@ export class ProjectApplicationAssessmentsComponent implements OnChanges {
   decisions: ProjectDecisionDTO;
   @Input()
   projectStatus: ProjectStatusDTO;
+  @Input()
+  collapsed = false;
 
   stepStatus: ProjectStepStatus;
 

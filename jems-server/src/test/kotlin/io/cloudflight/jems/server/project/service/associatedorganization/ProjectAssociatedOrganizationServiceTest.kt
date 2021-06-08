@@ -88,7 +88,6 @@ internal class ProjectAssociatedOrganizationServiceTest {
         call = call,
         applicant = user,
         currentStatus = projectStatus,
-        step2Active = false
     )
 
     private val projectPartner = ProjectPartnerEntity(

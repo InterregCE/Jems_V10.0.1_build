@@ -4,5 +4,6 @@ data class ProjectDecisionDTO(
     val qualityAssessment: OutputProjectQualityAssessment? = null,
     val eligibilityAssessment: OutputProjectEligibilityAssessment? = null,
     val eligibilityDecision: ProjectStatusDTO? = null,
-    val fundingDecision: ProjectStatusDTO? = null,
+    val preFundingDecision: ProjectStatusDTO? = null,
+    val finalFundingDecision: ProjectStatusDTO? = null,
 )

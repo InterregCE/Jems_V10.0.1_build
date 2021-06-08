@@ -1,5 +1,5 @@
 <ng-container *ngIf="data$ | async as data">
-    <mat-expansion-panel *ngIf="isPanelVisible(data.callHasTwoSteps)" [expanded]="true">
+    <mat-expansion-panel *ngIf="isPanelVisible(data.callHasTwoSteps)" [expanded]="!collapsed">
         <mat-expansion-panel-header>
             <mat-panel-title>{{'project.assessment.check.header' | translate}}</mat-panel-title>
         </mat-expansion-panel-header>

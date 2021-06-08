@@ -9,9 +9,6 @@ import org.springframework.data.domain.Pageable
 
 interface ProjectService {
 
-    @Deprecated("use Interactor", replaceWith = ReplaceWith("GetProjectInteractor.getProject"))
-    fun getById(id: Long): ProjectDetailDTO
-
     /**
      * List of projects is restricted based on actual user role.
      */
