@@ -28,7 +28,6 @@ import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackag
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimpleHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
 import java.sql.Timestamp
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.data.domain.Sort
@@ -146,12 +145,31 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestment(workPackageInvestmentId: Long) =
-        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).toWorkPackageInvestment()
+    override fun getWorkPackageInvestment(workPackageInvestmentId: Long, version: String?): WorkPackageInvestment {
+        val workPackageInvestment = getWorkPackageInvestmentOrThrow(workPackageInvestmentId)
+        return projectVersionUtils.fetch(version, workPackageInvestment.workPackage.project.id,
+            currentVersionFetcher = {
+                workPackageInvestment.toWorkPackageInvestment()
+            },
+            previousVersionFetcher = { timestamp ->
+                workPackageInvestmentRepository.findByIdAsOfTimestamp(workPackageInvestmentId, timestamp).toWorkPackageInvestmentHistoricalData()
+            }
+        ) ?: throw ApplicationVersionNotFoundException()
+    }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable) =
-        workPackageInvestmentRepository.findAllByWorkPackageId(workPackageId, pageable).toWorkPackageInvestmentPage()
+    override fun getWorkPackageInvestments(workPackageId: Long, version: String?): List<WorkPackageInvestment> {
+        val workPackage = getWorkPackageOrThrow(workPackageId)
+        return projectVersionUtils.fetch(version, workPackage.project.id,
+            currentVersionFetcher = {
+                workPackageInvestmentRepository.findAllByWorkPackageId(workPackageId).toWorkPackageInvestmentList()
+            },
+            previousVersionFetcher = { timestamp ->
+                workPackageInvestmentRepository.findAllByWorkPackageIdAsOfTimestamp(workPackageId, timestamp).toWorkPackageInvestmentHistoricalList()
+            }
+        ) ?: emptyList()
+    }
+
 
     @Transactional(readOnly = true)
     override fun getProjectInvestmentSummaries(projectId: Long) =

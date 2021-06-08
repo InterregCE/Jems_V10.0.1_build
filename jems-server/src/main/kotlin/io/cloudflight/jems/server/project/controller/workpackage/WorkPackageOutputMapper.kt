@@ -10,9 +10,8 @@ import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSu
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
-import org.springframework.data.domain.Page
 
-fun Page<WorkPackageInvestment>.toWorkPackageInvestmentDTOPage() = this.map { it.toWorkPackageInvestmentDTO() }
+fun List<WorkPackageInvestment>.toWorkPackageInvestmentDTOList() = this.map { it.toWorkPackageInvestmentDTO() }
 fun WorkPackageInvestment.toWorkPackageInvestmentDTO() = WorkPackageInvestmentDTO(
     id = id,
     investmentNumber = investmentNumber,

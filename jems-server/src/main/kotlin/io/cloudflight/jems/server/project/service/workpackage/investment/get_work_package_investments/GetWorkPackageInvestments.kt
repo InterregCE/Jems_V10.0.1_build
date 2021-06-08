@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.service.workpackage.investment.get_wo
 
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,6 +12,6 @@ class GetWorkPackageInvestments(
 
     @CanRetrieveProjectWorkPackage
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable) =
-        workPackagePersistence.getWorkPackageInvestments(workPackageId, pageable)
+    override fun getWorkPackageInvestments(workPackageId: Long, version: String?) =
+        workPackagePersistence.getWorkPackageInvestments(workPackageId, version)
 }

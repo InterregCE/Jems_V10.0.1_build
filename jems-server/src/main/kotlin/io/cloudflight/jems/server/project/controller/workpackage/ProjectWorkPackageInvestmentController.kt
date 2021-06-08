@@ -8,7 +8,6 @@ import io.cloudflight.jems.server.project.service.workpackage.investment.get_wor
 import io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries.GetProjectInvestmentSummariesInteractor
 import io.cloudflight.jems.server.project.service.workpackage.investment.get_work_package_investments.GetWorkPackageInvestmentsInteractor
 import io.cloudflight.jems.server.project.service.workpackage.investment.update_work_package_investment.UpdateWorkPackageInvestment
-import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -22,11 +21,11 @@ class ProjectWorkPackageInvestmentController(
 
 ) : ProjectWorkPackageInvestmentApi {
 
-    override fun getWorkPackageInvestment(investmentId: Long) =
-        getWorkPackageInvestment.getWorkPackageInvestment(investmentId).toWorkPackageInvestmentDTO()
+    override fun getWorkPackageInvestment(investmentId: Long, version: String?) =
+        getWorkPackageInvestment.getWorkPackageInvestment(investmentId, version).toWorkPackageInvestmentDTO()
 
-    override fun getWorkPackageInvestments(workPackageId: Long, pageable: Pageable) =
-        getWorkPackageInvestments.getWorkPackageInvestments(workPackageId, pageable).toWorkPackageInvestmentDTOPage()
+    override fun getWorkPackageInvestments(workPackageId: Long, version: String?) =
+        getWorkPackageInvestments.getWorkPackageInvestments(workPackageId, version).toWorkPackageInvestmentDTOList()
 
     override fun getProjectInvestmentSummaries(projectId: Long) =
         getProjectInvestmentSummaries.getProjectInvestmentSummaries(projectId).toInvestmentSummaryDTOs()

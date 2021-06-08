@@ -1,17 +1,18 @@
 package io.cloudflight.jems.server.project.repository.workpackage
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
+import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentRow
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentTransl
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentTranslation
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
-import org.springframework.data.domain.Page
 
-fun Page<WorkPackageInvestmentEntity>.toWorkPackageInvestmentPage() = this.map { it.toWorkPackageInvestment() }
+fun List<WorkPackageInvestmentEntity>.toWorkPackageInvestmentList() = this.map { it.toWorkPackageInvestment() }
 
 fun List<WorkPackageInvestmentEntity>.toInvestmentSummaryList() =
     this.map { it.toInvestmentSummary() }
@@ -115,3 +116,53 @@ fun Address.toAddressEntity() = AddressEntity(
 
 fun AddressEntity.toAddress() =
     Address(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)
+
+fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalData() =
+    this.groupBy { it.id }.map { groupedRows -> WorkPackageInvestment(
+        id = groupedRows.value.first().id,
+        investmentNumber = groupedRows.value.first().investmentNumber,
+        title = groupedRows.value.extractField { it.title },
+        justificationExplanation = groupedRows.value.extractField { it.justificationExplanation },
+        justificationTransactionalRelevance = groupedRows.value.extractField { it.justificationTransactionalRelevance },
+        justificationBenefits = groupedRows.value.extractField { it.justificationBenefits },
+        justificationPilot = groupedRows.value.extractField { it.justificationPilot },
+        address = Address(
+            country = groupedRows.value.first().country,
+            nutsRegion2 = groupedRows.value.first().nutsRegion2,
+            nutsRegion3 = groupedRows.value.first().nutsRegion3,
+            street = groupedRows.value.first().street,
+            houseNumber = groupedRows.value.first().houseNumber,
+            postalCode = groupedRows.value.first().postalCode,
+            city = groupedRows.value.first().city
+        ),
+        risk = groupedRows.value.extractField { it.risk },
+        documentation = groupedRows.value.extractField { it.documentation },
+        ownershipSiteLocation = groupedRows.value.extractField { it.ownershipSiteLocation },
+        ownershipRetain = groupedRows.value.extractField { it.ownershipRetain },
+        ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance }
+    ) }.first()
+
+fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalList() =
+    this.groupBy { it.id }.map { groupedRows -> WorkPackageInvestment(
+        id = groupedRows.value.first().id,
+        investmentNumber = groupedRows.value.first().investmentNumber,
+        title = groupedRows.value.extractField { it.title },
+        justificationExplanation = groupedRows.value.extractField { it.justificationExplanation },
+        justificationTransactionalRelevance = groupedRows.value.extractField { it.justificationTransactionalRelevance },
+        justificationBenefits = groupedRows.value.extractField { it.justificationBenefits },
+        justificationPilot = groupedRows.value.extractField { it.justificationPilot },
+        address = Address(
+            country = groupedRows.value.first().country,
+            nutsRegion2 = groupedRows.value.first().nutsRegion2,
+            nutsRegion3 = groupedRows.value.first().nutsRegion3,
+            street = groupedRows.value.first().street,
+            houseNumber = groupedRows.value.first().houseNumber,
+            postalCode = groupedRows.value.first().postalCode,
+            city = groupedRows.value.first().city
+        ),
+        risk = groupedRows.value.extractField { it.risk },
+        documentation = groupedRows.value.extractField { it.documentation },
+        ownershipSiteLocation = groupedRows.value.extractField { it.ownershipSiteLocation },
+        ownershipRetain = groupedRows.value.extractField { it.ownershipRetain },
+        ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance }
+    ) }.sortedBy { it.investmentNumber }
