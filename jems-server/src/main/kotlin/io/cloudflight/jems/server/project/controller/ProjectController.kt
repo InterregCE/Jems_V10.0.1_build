@@ -10,12 +10,14 @@ import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
 import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.controller.workpackage.toInvestmentSummaryDTOs
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing.GetProjectBudgetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toProjectPartnerBudgetDTO
+import io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries.GetProjectInvestmentSummariesInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.prepost.PreAuthorize
@@ -27,7 +29,8 @@ class ProjectController(
     private val getProjectBudgetInteractor: GetProjectBudgetInteractor,
     private val getProjectBudgetCoFinancingInteractor: GetProjectBudgetCoFinancingInteractor,
     private val getProjectInteractor: GetProjectInteractor,
-    private val getProjectVersionsInteractor: GetProjectVersionsInteractor
+    private val getProjectVersionsInteractor: GetProjectVersionsInteractor,
+    private val getProjectInvestmentSummaries: GetProjectInvestmentSummariesInteractor
 ) : ProjectApi {
 
     override fun getAllProjects(pageable: Pageable): Page<OutputProjectSimple> =
@@ -60,4 +63,7 @@ class ProjectController(
 
     override fun getProjectVersions(projectId: Long): Collection<ProjectVersionDTO> =
         getProjectVersionsInteractor.getProjectVersions(projectId).toDTOs()
+
+    override fun getProjectInvestmentSummaries(projectId: Long, version: String?) =
+        getProjectInvestmentSummaries.getProjectInvestmentSummaries(projectId, version).toInvestmentSummaryDTOs()
 }

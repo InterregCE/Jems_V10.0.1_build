@@ -347,14 +347,14 @@ class ProjectWorkPackagePersistenceTest {
     @Test
     fun `get work package activities - not-existing work package`() {
         every { repository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getWorkPackageActivitiesForWorkPackage(-1) }
+        val ex = assertThrows<ResourceNotFoundException> { persistence.getWorkPackageActivitiesForWorkPackage(-1, 1L) }
         assertThat(ex.entity).isEqualTo("workPackage")
     }
 
     @Test
     fun `work package activities and deliverables are correctly mapped and sorted`() {
         every { repository.findById(eq(1)) } returns Optional.of(workPackageWithActivities)
-        assertThat(persistence.getWorkPackageActivitiesForWorkPackage(1)).containsExactly(
+        assertThat(persistence.getWorkPackageActivitiesForWorkPackage(1, 1L)).containsExactly(
             activity1_model, activity2_model,
         )
     }
@@ -498,14 +498,14 @@ class ProjectWorkPackagePersistenceTest {
     @Test
     fun `getWorkPackageOutputs - not-existing work package`() {
         every { repository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getWorkPackageOutputsForWorkPackage(-1) }
+        val ex = assertThrows<ResourceNotFoundException> { persistence.getWorkPackageOutputsForWorkPackage(-1, 1L) }
         assertThat(ex.entity).isEqualTo("workPackage")
     }
 
     @Test
     fun `getWorkPackageOutputs are correctly mapped and sorted`() {
         every { repository.findById(eq(1)) } returns Optional.of(workPackageWithOutputs)
-        assertThat(persistence.getWorkPackageOutputsForWorkPackage(1)).containsExactly(
+        assertThat(persistence.getWorkPackageOutputsForWorkPackage(1, 1L)).containsExactly(
             output1_model, output2_model
         )
     }

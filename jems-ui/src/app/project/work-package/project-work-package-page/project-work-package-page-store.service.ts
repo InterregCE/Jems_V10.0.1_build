@@ -5,7 +5,7 @@ import {startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from 'src/app/common/utils/log';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '../../services/project-version-store.service';
-import {filter} from 'rxjs/internal/operators';
+import {filter, take} from 'rxjs/internal/operators';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
@@ -25,8 +25,9 @@ export class ProjectWorkPackagePageStore {
   }
 
   deleteWorkPackage(workPackageId: number): Observable<void> {
-    return this.workPackageService.deleteWorkPackage(workPackageId)
-      .pipe(
+    return this.projectStore.projectId$.pipe(
+        take(1),
+        switchMap(projectId => this.workPackageService.deleteWorkPackage(projectId, workPackageId)),
         tap(() => this.refreshPackages$.next()),
         tap(() => Log.info('Deleted work package: ', this, workPackageId))
       );

@@ -63,7 +63,7 @@ export class ProjectPartnerDetailPageStore {
               private projectPartnerBudgetService: ProjectPartnerBudgetService,
               private projectVersionStore: ProjectVersionStore
   ) {
-    this.investmentSummaries$ = this.projectWorkPackagePageStore.projectInvestmentSummaries$.pipe(shareReplay(1));
+    this.investmentSummaries$ = this.projectStore.investmentSummaries$;
     this.unitCosts$ = this.projectStore.projectCall$.pipe(
       map(projectCall => projectCall.unitCosts),
       shareReplay(1)

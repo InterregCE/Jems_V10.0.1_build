@@ -54,9 +54,9 @@ class ProjectWorkPackageOutputControllerTest {
 
     @Test
     fun getOutputs() {
-        every { getOutputInteractor.getOutputsForWorkPackage(1L) } returns listOf(output1, output2)
+        every { getOutputInteractor.getOutputsForWorkPackage(1L, 1L) } returns listOf(output1, output2)
 
-        assertThat(controller.getOutputs(1L)).containsExactly(
+        assertThat(controller.getOutputs(1L, 1L)).containsExactly(
             WorkPackageOutputDTO(
                 outputNumber = 1,
                 title = setOf(InputTranslation(SK, "sk_title")),
@@ -76,7 +76,7 @@ class ProjectWorkPackageOutputControllerTest {
     @Test
     fun `updateOutputs - test if persistence method is called with correct arguments`() {
         val outputsSlot = slot<List<WorkPackageOutput>>()
-        every { updateOutputInteractor.updateOutputsForWorkPackage(1L, capture(outputsSlot)) } returnsArgument 1
+        every { updateOutputInteractor.updateOutputsForWorkPackage(1L, 1L, capture(outputsSlot)) } returnsArgument 1
 
         val outputDto1 = WorkPackageOutputDTO(
             title = setOf(InputTranslation(EN, null), InputTranslation(CS, ""), InputTranslation(SK, "sk_title")),
@@ -90,7 +90,7 @@ class ProjectWorkPackageOutputControllerTest {
             targetValue = null,
         )
 
-        controller.updateOutputs(1L, listOf(outputDto1, outputDto2))
+        controller.updateOutputs(1L, 1L, listOf(outputDto1, outputDto2))
 
         assertThat(outputsSlot.captured).containsExactly(
             WorkPackageOutput(

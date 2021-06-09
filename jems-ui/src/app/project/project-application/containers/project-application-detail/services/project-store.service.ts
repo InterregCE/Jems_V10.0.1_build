@@ -3,7 +3,7 @@ import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {
   InputProjectData,
   InputProjectEligibilityAssessment,
-  InputProjectQualityAssessment,
+  InputProjectQualityAssessment, InvestmentSummaryDTO,
   ProjectDecisionDTO,
   ProjectDetailDTO,
   ProjectPartnerBudgetCoFinancingDTO,
@@ -13,7 +13,17 @@ import {
   ProjectVersionDTO,
   UserRoleCreateDTO,
 } from '@cat/api';
-import {distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMap,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import {Log} from '../../../../../common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectCallSettings} from '../../../../model/projectCallSettings';
@@ -27,6 +37,7 @@ import {ProjectUtil} from '../../../../project-util';
 import {SecurityService} from '../../../../../security/security.service';
 import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {InvestmentSummary} from '../../../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 
 /**
  * Stores project related information.
@@ -45,9 +56,12 @@ export class ProjectStore {
   projectTitle$: Observable<string>;
   callHasTwoSteps$: Observable<boolean>;
   projectCurrentDecisions$: Observable<ProjectDecisionDTO>;
+  investmentSummaries$: Observable<InvestmentSummary[]>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
+
+  investmentChangeEvent$ = new Subject<void>();
 
   private projectAcronym$ = new ReplaySubject<string>(1);
   private newEligibilityAssessment$ = new Subject<InputProjectEligibilityAssessment>();
@@ -93,6 +107,7 @@ export class ProjectStore {
       );
     this.callHasTwoSteps$ = this.callHasTwoSteps();
     this.projectCurrentDecisions$ = this.projectCurrentDecisions();
+    this.investmentSummaries$ = this.investmentSummaries();
   }
 
   /**
@@ -253,5 +268,17 @@ export class ProjectStore {
 
   private latestVersion(versions?: ProjectVersionDTO[]): number {
     return versions?.length ? Number(versions[0].version) : 1;
+  }
+
+  private investmentSummaries(): Observable<InvestmentSummary[]> {
+    return combineLatest([
+      this.project$,
+      this.projectVersionStore.currentRouteVersion$,
+      this.investmentChangeEvent$.pipe(startWith(null))])
+      .pipe(
+        switchMap(([project, version]) => this.projectService.getProjectInvestmentSummaries(project.id, version)),
+        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
+        shareReplay(1)
+      );
   }
 }

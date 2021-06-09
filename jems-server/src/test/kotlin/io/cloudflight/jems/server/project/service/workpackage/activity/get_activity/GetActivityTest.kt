@@ -46,9 +46,9 @@ internal class GetActivityTest {
 
     @Test
     fun getActivitiesForWorkPackage() {
-        every { persistence.getWorkPackageActivitiesForWorkPackage(1L) } returns listOf(activity1)
+        every { persistence.getWorkPackageActivitiesForWorkPackage(1L, 1L) } returns listOf(activity1)
 
-        assertThat(getActivity.getActivitiesForWorkPackage(1L)).containsExactly(activity1)
+        assertThat(getActivity.getActivitiesForWorkPackage(1L, 1L)).containsExactly(activity1)
     }
 
 }

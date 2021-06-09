@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {
   InputWorkPackageCreate,
   InputWorkPackageUpdate,
-  InvestmentSummaryDTO,
   OutputIndicatorSummaryDTO,
   ProjectDetailDTO,
   OutputWorkPackage,
@@ -14,11 +13,10 @@ import {
   WorkPackageOutputService,
   WorkPackageService,
 } from '@cat/api';
-import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {catchError, filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Log} from '../../../../common/utils/log';
-import {InvestmentSummary} from './workPackageInvestment';
 import {RoutingService} from '../../../../common/services/routing.service';
 import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '../../../services/project-version-store.service';
@@ -31,14 +29,13 @@ export class ProjectWorkPackagePageStore {
   private projectId: number;
 
   workPackage$: Observable<OutputWorkPackage>;
-  projectInvestmentSummaries$: Observable<InvestmentSummary[]>;
   isProjectEditable$: Observable<boolean>;
   project$: Observable<ProjectDetailDTO>;
   activities$: Observable<WorkPackageActivityDTO[]>;
   outputs$: Observable<WorkPackageOutputDTO[]>;
   outputIndicators$: Observable<OutputIndicatorSummaryDTO[]>;
 
-  investmentChangeEvent$ = new Subject<void>();
+
 
   private savedActivities$ = new Subject<WorkPackageActivityDTO[]>();
   private savedOutputs$ = new Subject<WorkPackageOutputDTO[]>();
@@ -59,18 +56,6 @@ export class ProjectWorkPackagePageStore {
     this.activities$ = this.workPackageActivities();
     this.outputs$ = this.workPackageOutputs();
     this.outputIndicators$ = this.outputIndicators();
-
-    this.projectInvestmentSummaries$ = combineLatest([
-      this.project$,
-      this.workPackage$,
-      this.projectVersionStore.currentRouteVersion$,
-      this.investmentChangeEvent$.pipe(startWith(null))])
-      .pipe(
-        switchMap(([project, workPackage, version]) => this.workPackageInvestmentService.getProjectInvestmentSummaries(project.id, workPackage.id, version)),
-        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
-        shareReplay(1)
-    );
-
   }
 
   saveWorkPackage(workPackage: InputWorkPackageUpdate): Observable<OutputWorkPackage> {
@@ -94,7 +79,7 @@ export class ProjectWorkPackagePageStore {
     return this.workPackageInvestmentService.deleteWorkPackageInvestment(investmentId, this.projectId, this.workPackageId)
       .pipe(
         tap(deleted => Log.info('Deleted work package investment:', this, deleted)),
-        tap(() => this.investmentChangeEvent$.next())
+        tap(() => this.projectStore.investmentChangeEvent$.next())
       );
   }
 

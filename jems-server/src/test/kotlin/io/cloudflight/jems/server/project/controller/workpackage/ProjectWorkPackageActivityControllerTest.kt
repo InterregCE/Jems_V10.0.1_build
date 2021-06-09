@@ -66,9 +66,9 @@ class ProjectWorkPackageActivityControllerTest {
 
     @Test
     fun getActivities() {
-        every { getActivityInteractor.getActivitiesForWorkPackage(1L) } returns listOf(activity1, activity2)
+        every { getActivityInteractor.getActivitiesForWorkPackage(1L, 1L) } returns listOf(activity1, activity2)
 
-        assertThat(controller.getActivities(1L)).containsExactly(
+        assertThat(controller.getActivities(1L, 1L)).containsExactly(
             WorkPackageActivityDTO(
                 activityNumber = 1,
                 title = setOf(InputTranslation(SK, "sk_title")),
@@ -94,7 +94,7 @@ class ProjectWorkPackageActivityControllerTest {
     fun updateActivities() {
         val activitiesSlot = slot<List<WorkPackageActivity>>()
         // we test retrieval login in getActivities test
-        every { updateActivityInteractor.updateActivitiesForWorkPackage(1L, capture(activitiesSlot)) } returns emptyList()
+        every { updateActivityInteractor.updateActivitiesForWorkPackage(1L, 1L, capture(activitiesSlot)) } returns emptyList()
 
         val activityDto1 = WorkPackageActivityDTO(
                 title = setOf(InputTranslation(EN, null), InputTranslation(CS, ""), InputTranslation(SK, "sk_title")),
@@ -118,7 +118,7 @@ class ProjectWorkPackageActivityControllerTest {
                 deliverables = emptyList(),
         )
 
-        controller.updateActivities(1L, listOf(activityDto1, activityDto2))
+        controller.updateActivities(1L, 1L, listOf(activityDto1, activityDto2))
 
         assertThat(activitiesSlot.captured).containsExactly(
             WorkPackageActivity(

@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.project.workpackage;
 
 import io.cloudflight.jems.api.project.dto.workpackage.investment.WorkPackageInvestmentDTO
-import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -35,13 +34,6 @@ interface ProjectWorkPackageInvestmentApi {
         @PathVariable workPackageId: Long,
         @RequestParam(required = false) version: String? = null
     ): List<WorkPackageInvestmentDTO>
-
-    @GetMapping("/summaries")
-    fun getProjectInvestmentSummaries(
-        @PathVariable projectId: Long,
-        @PathVariable workPackageId: Long,
-        @RequestParam(required = false) version: String? = null
-    ): List<InvestmentSummaryDTO>
 
     @ApiOperation("Adds Investment to the work package")
     @PostMapping( consumes = [MediaType.APPLICATION_JSON_VALUE])

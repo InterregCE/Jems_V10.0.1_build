@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
+import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -76,4 +77,10 @@ interface ProjectApi {
     @ApiOperation("Returns project versions")
     @GetMapping("/{projectId}/versions")
     fun getProjectVersions(@PathVariable projectId: Long): Collection<ProjectVersionDTO>
+
+    @GetMapping("/{projectId}/summaries")
+    fun getProjectInvestmentSummaries(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<InvestmentSummaryDTO>
 }

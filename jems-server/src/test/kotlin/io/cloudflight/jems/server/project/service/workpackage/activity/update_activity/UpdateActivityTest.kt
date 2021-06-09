@@ -59,26 +59,27 @@ internal class UpdateActivityTest {
     @Test
     fun updateActivitiesForWorkPackage() {
         every { persistence.updateWorkPackageActivities(1L, any()) } returnsArgument 1
-        assertThat(updateActivity.updateActivitiesForWorkPackage(1L, listOf(activity1))).containsExactly(activity1)
+        assertThat(updateActivity.updateActivitiesForWorkPackage(1L, 1L, listOf(activity1))).containsExactly(activity1)
     }
 
     @Test
     fun `update activities when max allowed activities amount reached`() {
         every { veryBigActivitiesList.size } returns 21
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(2L, veryBigActivitiesList) }
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 2L, veryBigActivitiesList) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.max.allowed.reached")
     }
 
     @Test
     fun `update activities - empty activities should pass`() {
         every { persistence.updateWorkPackageActivities(3L, any()) } returns emptyList()
-        assertDoesNotThrow { updateActivity.updateActivitiesForWorkPackage(3L, emptyList()) }
+        assertDoesNotThrow { updateActivity.updateActivitiesForWorkPackage(1L, 3L, emptyList()) }
     }
 
     @Test
     fun `update activities - empty deliverables should pass`() {
         every { persistence.updateWorkPackageActivities(4L, any()) } returns emptyList()
         assertDoesNotThrow { updateActivity.updateActivitiesForWorkPackage(
+            1L,
             4L,
             listOf(WorkPackageActivity(deliverables = emptyList()))
         ) }
@@ -88,7 +89,7 @@ internal class UpdateActivityTest {
     fun `update activities when max allowed deliverables amount reached`() {
         every { veryBigDeliverablesList.size } returns 21
         val toBeSaved = listOf(WorkPackageActivity(deliverables = veryBigDeliverablesList))
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(5L, toBeSaved) }
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 5L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.deliverables.max.allowed.reached")
     }
 

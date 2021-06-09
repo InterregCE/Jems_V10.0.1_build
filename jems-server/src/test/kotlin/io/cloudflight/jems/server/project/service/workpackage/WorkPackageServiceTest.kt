@@ -142,13 +142,6 @@ class WorkPackageServiceTest {
 //    }
 
     @Test
-    fun getProjectIdForWorkPackageId() {
-        every { workPackageRepository.findById(18L) } returns Optional.of(mockWorkPackage)
-        assertThat(workPackageService.getProjectForWorkPackageId(18L))
-            .isEqualTo(ProjectApplicantAndStatus(applicantId = account.id, projectStatus = ApplicationStatus.DRAFT))
-    }
-
-    @Test
     fun `createWorkPackage - valid`() {
         every { projectRepository.findById(1L) } returns Optional.of(project)
         every { workPackageRepository.countAllByProjectId(1L) } returns 7
@@ -202,7 +195,7 @@ class WorkPackageServiceTest {
             objectiveAndAudience = setOf()
         )
 
-        val result = workPackageService.updateWorkPackage(mockWorkPackageToUpdate)
+        val result = workPackageService.updateWorkPackage(1L, mockWorkPackageToUpdate)
 
         assertThat(result).isNotNull
         assertThat(result.number).isEqualTo(expectedData.number)
@@ -214,7 +207,7 @@ class WorkPackageServiceTest {
         every { workPackageRepository.findAllByProjectId(project.id, any<Sort>()) } returns emptySet()
         every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
 
-        assertDoesNotThrow { workPackageService.deleteWorkPackage(mockWorkPackage.id) }
+        assertDoesNotThrow { workPackageService.deleteWorkPackage(1L, mockWorkPackage.id) }
     }
 
     @Test
@@ -224,7 +217,7 @@ class WorkPackageServiceTest {
         every { workPackageRepository.findAllByProjectId(project.id, any<Sort>()) } returns emptySet()
         every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
 
-        assertDoesNotThrow { workPackageService.deleteWorkPackage(100) }
+        assertDoesNotThrow { workPackageService.deleteWorkPackage(1L, 100) }
     }
 
 }
