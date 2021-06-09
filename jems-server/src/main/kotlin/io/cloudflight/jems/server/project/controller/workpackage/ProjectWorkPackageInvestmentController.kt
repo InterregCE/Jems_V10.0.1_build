@@ -27,8 +27,8 @@ class ProjectWorkPackageInvestmentController(
     override fun getWorkPackageInvestments(workPackageId: Long, version: String?) =
         getWorkPackageInvestments.getWorkPackageInvestments(workPackageId, version).toWorkPackageInvestmentDTOList()
 
-    override fun getProjectInvestmentSummaries(projectId: Long) =
-        getProjectInvestmentSummaries.getProjectInvestmentSummaries(projectId).toInvestmentSummaryDTOs()
+    override fun getProjectInvestmentSummaries(projectId: Long, version: String?) =
+        getProjectInvestmentSummaries.getProjectInvestmentSummaries(projectId, version).toInvestmentSummaryDTOs()
 
     override fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestmentDTO: WorkPackageInvestmentDTO) =
         addWorkPackageInvestment.addWorkPackageInvestment(workPackageId, workPackageInvestmentDTO.toWorkPackageInvestment())

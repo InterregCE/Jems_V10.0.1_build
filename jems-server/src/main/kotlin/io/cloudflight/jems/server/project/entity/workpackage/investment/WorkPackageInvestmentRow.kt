@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.entity.workpackage.investment
 import io.cloudflight.jems.server.common.entity.TranslationView
 
 interface WorkPackageInvestmentRow: TranslationView {
-    val id: Long?
+    val id: Long
     val investmentNumber: Int
     val title: String?
     val justificationExplanation: String?

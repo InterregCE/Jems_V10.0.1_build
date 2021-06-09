@@ -12,6 +12,6 @@ class GetProjectInvestmentSummaries(
 
     @CanRetrieveProject
     @Transactional(readOnly = true)
-    override fun getProjectInvestmentSummaries(projectId: Long) =
-        workPackagePersistence.getProjectInvestmentSummaries(projectId)
+    override fun getProjectInvestmentSummaries(projectId: Long, version: String?) =
+        workPackagePersistence.getProjectInvestmentSummaries(projectId, version)
 }

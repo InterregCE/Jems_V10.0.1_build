@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatu
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
+import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
@@ -172,8 +173,16 @@ class WorkPackagePersistenceProvider(
 
 
     @Transactional(readOnly = true)
-    override fun getProjectInvestmentSummaries(projectId: Long) =
-        workPackageInvestmentRepository.findInvestmentsByProjectId(projectId).toInvestmentSummaryList()
+    override fun getProjectInvestmentSummaries(projectId: Long, version: String?): List<InvestmentSummary> {
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                workPackageInvestmentRepository.findInvestmentsByProjectId(projectId).toInvestmentSummaryList()
+            },
+            previousVersionFetcher = { timestamp ->
+                getWorkPackageInvestmentSummaryHistoricalData(projectId, timestamp)
+            }
+        ) ?: emptyList()
+    }
 
     @Transactional(readOnly = true)
     override fun countWorkPackageInvestments(workPackageId: Long): Long =
@@ -267,4 +276,16 @@ class WorkPackagePersistenceProvider(
         return activities
     }
 
+    private fun getWorkPackageInvestmentSummaryHistoricalData(projectId: Long, timestamp: Timestamp): List<InvestmentSummary> {
+        val workPackages = workPackageRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp)
+            .toOutputWorkPackageSimpleHistoricalData()
+        var investments = mutableListOf<InvestmentSummary>()
+
+        workPackages.forEach {
+            val investmentsForWorkPackage = workPackageInvestmentRepository.findAllSummariesByWorkPackageIdAsOfTimestamp(it.id, timestamp).toWorkPackageInvestmentSummaryList(it.number)
+            investments = investments.plus(investmentsForWorkPackage) as MutableList<InvestmentSummary>
+        }
+
+        return investments.toList()
+    }
 }

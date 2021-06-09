@@ -25,7 +25,7 @@ interface WorkPackagePersistence {
     fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment): Long
     fun updateWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment)
     fun deleteWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long)
-    fun getProjectInvestmentSummaries(projectId: Long): List<InvestmentSummary>
+    fun getProjectInvestmentSummaries(projectId: Long, version: String? = null): List<InvestmentSummary>
     fun countWorkPackageInvestments(workPackageId: Long): Long
 
     fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long, version: String? = null): List<WorkPackageActivity>

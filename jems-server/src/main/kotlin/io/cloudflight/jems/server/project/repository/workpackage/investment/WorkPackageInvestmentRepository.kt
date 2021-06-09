@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.workpackage.investment
 
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentRow
+import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageSummaryRow
 import java.sql.Timestamp
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.Query
@@ -71,4 +72,16 @@ interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPacka
         nativeQuery = true
     )
     fun findAllByWorkPackageIdAsOfTimestamp(workPackageId: Long, timestamp: Timestamp): List<WorkPackageInvestmentRow>
+
+    @Query(
+        value ="""
+             SELECT
+             entity.*,
+             entity.investment_number as investmentNumber,
+             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+             WHERE entity.work_package_id = :workPackageId
+             """,
+        nativeQuery = true
+    )
+    fun findAllSummariesByWorkPackageIdAsOfTimestamp(workPackageId: Long, timestamp: Timestamp): List<WorkPackageSummaryRow>
 }

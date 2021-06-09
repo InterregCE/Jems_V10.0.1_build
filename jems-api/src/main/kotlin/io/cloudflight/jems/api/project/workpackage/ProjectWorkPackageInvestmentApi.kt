@@ -28,7 +28,7 @@ interface ProjectWorkPackageInvestmentApi {
     fun getWorkPackageInvestments(@PathVariable workPackageId: Long, @RequestParam(required = false) version: String? = null): List<WorkPackageInvestmentDTO>
 
     @GetMapping("/forProject/{projectId}")
-    fun getProjectInvestmentSummaries(@PathVariable projectId: Long): List<InvestmentSummaryDTO>
+    fun getProjectInvestmentSummaries(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<InvestmentSummaryDTO>
 
     @ApiOperation("Adds Investment to the work package")
     @PostMapping("/forWorkPackage/{workPackageId}", consumes = [MediaType.APPLICATION_JSON_VALUE])

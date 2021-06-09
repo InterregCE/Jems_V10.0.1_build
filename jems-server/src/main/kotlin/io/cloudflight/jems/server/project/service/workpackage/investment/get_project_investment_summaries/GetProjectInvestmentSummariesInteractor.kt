@@ -3,5 +3,5 @@ package io.cloudflight.jems.server.project.service.workpackage.investment.get_pr
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 
 interface GetProjectInvestmentSummariesInteractor {
-    fun getProjectInvestmentSummaries(projectId: Long): List<InvestmentSummary>
+    fun getProjectInvestmentSummaries(projectId: Long, version: String? = null): List<InvestmentSummary>
 }

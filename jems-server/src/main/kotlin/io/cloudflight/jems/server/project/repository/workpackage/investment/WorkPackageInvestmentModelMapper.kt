@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPack
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentRow
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentTransl
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentTranslation
+import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageSummaryRow
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
@@ -166,3 +167,12 @@ fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalList() =
         ownershipRetain = groupedRows.value.extractField { it.ownershipRetain },
         ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance }
     ) }.sortedBy { it.investmentNumber }
+
+fun List<WorkPackageSummaryRow>.toWorkPackageInvestmentSummaryList(workPackageNumber: Int?) =
+    this.map {
+        InvestmentSummary(
+            id = it.id,
+            investmentNumber = it.investmentNumber,
+            workPackageNumber = workPackageNumber
+        )
+    }
