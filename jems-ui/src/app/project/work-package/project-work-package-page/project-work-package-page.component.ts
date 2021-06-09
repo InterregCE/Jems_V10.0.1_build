@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import { Permission } from 'src/app/security/permissions/permission';
-import {Forms} from '../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {OutputWorkPackageSimple} from '@cat/api';

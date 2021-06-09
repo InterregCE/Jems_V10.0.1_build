@@ -1,13 +1,14 @@
-<app-project-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
-                           titleKey="project.application.form.section.part.c"
-                           subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
-    <app-form *ngIf="workPackageInvestment$ | async as investment"
-              (save)="onSubmit()">
+<app-project-page-template
+        *ngIf="data$ | async as data"
+        titleKey="project.application.form.section.part.c"
+        subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{data.workPackageNumber}}">
+    <app-form (save)="onSubmit()"
+              (discard)="discard(data.investment, data.workPackageNumber)">
         <form appFormLayout [formGroup]="workPackageInvestmentForm">
 
             <h3>{{'project.application.form.workpackage.investment.form.title' | translate}}
-                <span *ngIf="investment.investmentNumber">
-                    {{workPackageNumber}}.{{investment.investmentNumber}}
+                <span *ngIf="data.investment.investmentNumber">
+                    {{data.workPackageNumber}}.{{data.investment.investmentNumber}}
             </span>
             </h3>
 
@@ -75,9 +76,8 @@
             <p>{{'project.application.form.workpackage.investment.location.description' | translate}}</p>
 
             <app-project-application-form-address
-                    *ngIf="nuts$ | async as nuts"
                     [addressForm]="workPackageInvestmentForm.controls.address"
-                    [nuts]="nuts">
+                    [nuts]="data.nuts">
             </app-project-application-form-address>
 
             <h4>{{'project.application.form.workpackage.investment.risk' | translate}}</h4>

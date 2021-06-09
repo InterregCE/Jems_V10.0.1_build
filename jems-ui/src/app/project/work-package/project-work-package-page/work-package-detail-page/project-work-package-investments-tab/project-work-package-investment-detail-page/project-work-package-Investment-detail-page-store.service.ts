@@ -1,58 +1,72 @@
 import {Injectable} from '@angular/core';
-import {WorkPackageInvestmentDTO, WorkPackageInvestmentService} from '@cat/api';
+import {OutputNuts, WorkPackageInvestmentDTO, WorkPackageInvestmentService} from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectWorkPackagePageStore} from '../../project-work-package-page-store.service';
-import {ProjectStore} from '../../../../../project-application/containers/project-application-detail/services/project-store.service';
-import {Log} from '../../../../../../common/utils/log';
-import {ProjectVersionStore} from '../../../../../services/project-version-store.service';
-import {RoutingService} from '../../../../../../common/services/routing.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {Log} from '@common/utils/log';
+import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {RoutingService} from '@common/services/routing.service';
+import {NutsStore} from '@common/services/nuts.store';
+import {filter, take} from 'rxjs/internal/operators';
 
 @Injectable()
 export class ProjectWorkPackageInvestmentDetailPageStore {
-
-  private projectId: number;
-  private workPackageId: number;
-  private investmentId: number;
-  private savedInvestment$ = new Subject<WorkPackageInvestmentDTO>();
-
+  public static INVESTMENT_DETAIL_PATH = 'investment/'
+  investment$: Observable<WorkPackageInvestmentDTO>;
   isProjectEditable$: Observable<boolean>;
+  workPackageNumber$: Observable<number>;
+  nuts$: Observable<OutputNuts[]>
+
+  private savedInvestment$ = new Subject<WorkPackageInvestmentDTO>();
 
   constructor(private workPackagePageStore: ProjectWorkPackagePageStore,
               private projectStore: ProjectStore,
               private projectVersionStore: ProjectVersionStore,
               private workPackageInvestmentService: WorkPackageInvestmentService,
-              private routingService: RoutingService) {
+              private routingService: RoutingService,
+              private nutsStore: NutsStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
+    this.investment$ = this.workPackageInvestment();
+    this.nuts$ = this.nutsStore.getNuts();
+    this.workPackageNumber$ = this.workPackageNumber();
   }
 
   createWorkPackageInvestment(workPackageInvestment: WorkPackageInvestmentDTO): Observable<number> {
-    return this.workPackageInvestmentService.addWorkPackageInvestment(this.projectId, this.workPackageId, workPackageInvestment)
+    return combineLatest([
+      this.projectStore.projectId$,
+      this.workPackagePageStore.workPackage$
+    ])
       .pipe(
+        take(1),
+        switchMap(([projectId, workPackage]) => this.workPackageInvestmentService.addWorkPackageInvestment(projectId, workPackage.id, workPackageInvestment)),
         tap(created => Log.info('Created work package investment:', this, created)),
         tap(() => this.projectStore.investmentChangeEvent$.next()),
       );
   }
 
   updateWorkPackageInvestment(workPackageInvestment: WorkPackageInvestmentDTO): Observable<number> {
-    return this.workPackageInvestmentService.updateWorkPackageInvestment(this.projectId, this.workPackageId, workPackageInvestment)
+    return combineLatest([
+      this.projectStore.projectId$,
+      this.workPackagePageStore.workPackage$
+    ])
       .pipe(
+        take(1),
+        switchMap(([projectId, workPackage]) => this.workPackageInvestmentService.updateWorkPackageInvestment(projectId, workPackage.id, workPackageInvestment)),
         tap(updated => Log.info('Updated work package investment:', this, updated)),
         tap(() => this.savedInvestment$.next(workPackageInvestment)),
       );
   }
 
-  workPackageInvestment(projectId: number, workPackageId: number, investmentId: number | string | null): Observable<WorkPackageInvestmentDTO | any> {
-    this.projectId = projectId;
-    this.workPackageId = workPackageId;
-    this.investmentId = Number(investmentId);
-
+  private workPackageInvestment(): Observable<WorkPackageInvestmentDTO | any> {
     const initialInvestment$ = combineLatest([
       this.projectStore.projectId$,
+      this.workPackagePageStore.workPackage$,
+      this.routingService.routeParameterChanges(ProjectWorkPackageInvestmentDetailPageStore.INVESTMENT_DETAIL_PATH, 'workPackageInvestmentId'),
       this.projectVersionStore.currentRouteVersion$
     ]).pipe(
-        switchMap(([projectId, version]) => this.investmentId
-          ? this.workPackageInvestmentService.getWorkPackageInvestment(this.investmentId, this.projectId, this.workPackageId, version)
+        switchMap(([projectId, workPackage, investmentId, version]) => investmentId
+          ? this.workPackageInvestmentService.getWorkPackageInvestment(Number(investmentId), projectId, workPackage.id, version)
             .pipe(
               catchError(() => {
                 this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, projectId]);
@@ -68,6 +82,14 @@ export class ProjectWorkPackageInvestmentDetailPageStore {
       .pipe(
         tap(investment => Log.info('Fetched work package investment', this, investment)),
         shareReplay(1)
+      );
+  }
+
+  private workPackageNumber(): Observable<number> {
+    return this.workPackagePageStore.workPackage$
+      .pipe(
+        filter(workPackage => !!workPackage.number),
+        map(workPackage => workPackage.number)
       );
   }
 }

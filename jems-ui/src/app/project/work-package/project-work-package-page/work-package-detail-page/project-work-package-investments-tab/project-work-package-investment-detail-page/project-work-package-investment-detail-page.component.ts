@@ -1,18 +1,15 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {WorkPackageInvestmentDTO} from '@cat/api';
+import {OutputNuts, WorkPackageInvestmentDTO} from '@cat/api';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {catchError, take, tap, withLatestFrom} from 'rxjs/operators';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {ProjectWorkPackageInvestmentDetailPageConstants} from './project-work-package-investment-detail-page.constants';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
 import {ProjectWorkPackagePageStore} from '../../project-work-package-page-store.service';
-import {filter} from 'rxjs/internal/operators';
-import {NutsStore} from '../../../../../../common/services/nuts.store';
+import {NutsStore} from '@common/services/nuts.store';
 
-@UntilDestroy()
 @Component({
   selector: 'app-project-work-package-investment-detail-page',
   templateUrl: './project-work-package-investment-detail-page.component.html',
@@ -26,10 +23,13 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   private projectId = this.activatedRoute?.snapshot?.params?.projectId;
   private workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
   private workPackageInvestmentId = this.activatedRoute?.snapshot?.params?.workPackageInvestmentId;
-  workPackageNumber: number;
 
-  nuts$ = this.nutsStore.getNuts();
-  workPackageInvestment$: Observable<WorkPackageInvestmentDTO>;
+  data$: Observable<{
+    investment: WorkPackageInvestmentDTO,
+    workPackageNumber: number,
+    nuts: OutputNuts[]
+  }>
+
 
   workPackageInvestmentForm: FormGroup = this.formBuilder.group({
     number: [''],
@@ -65,43 +65,17 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formService.init(this.workPackageInvestmentForm);
+    this.formService.init(this.workPackageInvestmentForm, this.investmentPageStore.isProjectEditable$);
     this.formService.setCreation(!this.workPackageInvestmentId);
 
-    this.investmentPageStore.isProjectEditable$
-      .pipe(
-        take(1),
-        tap(editable => this.formService.setEditable(editable)),
-        tap(() => this.workPackageInvestmentForm.controls.number.disable())
-      ).subscribe();
-
-    this.workPackageInvestment$ = this.investmentPageStore.workPackageInvestment(
-      this.projectId,
-      this.workPackageId,
-      this.workPackageInvestmentId
-    ).pipe(
-      tap(investment => this.resetForm(investment)),
-    );
-
-    this.workPackageStore.workPackage$
-      .pipe(
-        filter(workPackage => !!workPackage?.number),
-        tap(workPackage => this.workPackageNumber = workPackage.number),
-        untilDestroyed(this)
-      ).subscribe();
-
-    this.formService.reset$
-      .pipe(
-        withLatestFrom(this.workPackageInvestment$),
-        tap(([reset, investment]) => {
-          if (this.workPackageInvestmentId) {
-            this.resetForm(investment);
-            return;
-          }
-          this.redirectToWorkPackageDetail();
-        }),
-        untilDestroyed(this)
-      ).subscribe();
+    this.data$ = combineLatest([
+      this.investmentPageStore.investment$,
+      this.investmentPageStore.workPackageNumber$,
+      this.investmentPageStore.nuts$
+    ]).pipe(
+      map(([investment, workPackageNumber, nuts]) => ({investment, workPackageNumber, nuts})),
+      tap(data => this.resetForm(data.investment, data.workPackageNumber))
+    )
   }
 
   onSubmit(): void {
@@ -127,8 +101,17 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
       ).subscribe();
   }
 
-  private resetForm(investment: WorkPackageInvestmentDTO): void {
-    this.workPackageInvestmentForm.controls.number?.setValue(investment?.investmentNumber ? `${this.workPackageNumber}.${investment?.investmentNumber}` : '');
+  discard(investment: WorkPackageInvestmentDTO, workPackageNumber: number): void {
+    if (!this.workPackageInvestmentId) {
+      this.redirectToWorkPackageDetail();
+      return;
+    }
+    this.resetForm(investment, workPackageNumber);
+  }
+
+  private resetForm(investment: WorkPackageInvestmentDTO, workPackageNumber: number): void {
+    this.workPackageInvestmentForm.controls.number?.setValue(investment?.investmentNumber ? `${workPackageNumber}.${investment?.investmentNumber}` : '');
+    this.workPackageInvestmentForm.controls.number.disable()
     this.workPackageInvestmentForm.controls.title?.setValue(investment?.title || []);
     this.workPackageInvestmentForm.controls.justificationExplanation?.setValue(investment?.justificationExplanation || []);
     this.workPackageInvestmentForm.controls.justificationTransactionalRelevance?.setValue(investment?.justificationTransactionalRelevance || []);

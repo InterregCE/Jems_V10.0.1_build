@@ -16,8 +16,8 @@ import {
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {Log} from '../../../../common/utils/log';
-import {RoutingService} from '../../../../common/services/routing.service';
+import {Log} from '@common/utils/log';
+import {RoutingService} from '@common/services/routing.service';
 import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '../../../services/project-version-store.service';
 
@@ -34,8 +34,6 @@ export class ProjectWorkPackagePageStore {
   activities$: Observable<WorkPackageActivityDTO[]>;
   outputs$: Observable<WorkPackageOutputDTO[]>;
   outputIndicators$: Observable<OutputIndicatorSummaryDTO[]>;
-
-
 
   private savedActivities$ = new Subject<WorkPackageActivityDTO[]>();
   private savedOutputs$ = new Subject<WorkPackageOutputDTO[]>();

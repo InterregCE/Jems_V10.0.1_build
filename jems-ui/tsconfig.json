@@ -25,11 +25,11 @@
       "@cat/api": [
         "./build/generated-sources/openapi/index.ts"
       ],
-      "@common/components/*": [
-        "src/app/common/components/*"
+      "@common/*": [
+        "src/app/common/*"
       ],
-      "@common/validation/*": [
-        "src/app/common/validation/*"
+      "@project/*": [
+        "src/app/project/*"
       ]
     }
   },
