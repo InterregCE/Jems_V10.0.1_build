@@ -139,10 +139,10 @@ export class ProjectWorkPackagePageStore {
   }
 
   private workPackageActivities(): Observable<WorkPackageActivityDTO[]> {
-    const initialActivities$ = this.workPackage$
+    const initialActivities$ = combineLatest([this.workPackage$, this.projectVersionStore.currentRouteVersion$])
       .pipe(
-        filter(workPackage => !!workPackage?.id),
-        switchMap(workPackage => this.workPackageActivityService.getActivities(workPackage.id)),
+        filter(([workPackage]) => !!workPackage?.id),
+        switchMap(([workPackage, version]) => this.workPackageActivityService.getActivities(workPackage.id, version)),
         tap(activities => Log.info('Fetched project activities', activities)),
       );
 
@@ -153,10 +153,10 @@ export class ProjectWorkPackagePageStore {
   }
 
   private workPackageOutputs(): Observable<WorkPackageOutputDTO[]> {
-    const initialOutputs$ = this.workPackage$
+    const initialOutputs$ = combineLatest([this.workPackage$, this.projectVersionStore.currentRouteVersion$])
       .pipe(
-        filter(workPackage => !!workPackage?.id),
-        switchMap(workPackage => this.workPackageOutputService.getOutputs(workPackage.id)),
+        filter(([workPackage]) => !!workPackage?.id),
+        switchMap(([workPackage, version]) => this.workPackageOutputService.getOutputs(workPackage.id, version)),
         tap(outputs => Log.info('Fetched project outputs', outputs)),
       );
 

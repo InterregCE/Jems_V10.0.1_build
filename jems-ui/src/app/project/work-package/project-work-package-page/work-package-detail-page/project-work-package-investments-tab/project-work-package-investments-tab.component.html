@@ -1,4 +1,4 @@
-<ng-container *ngIf="currentPage$ | async as workPackageInvestmentsPage">
+<ng-container *ngIf="investments$ | async as investments">
     <app-form>
         <div appFormLayout>
             <h3>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h3>
@@ -11,14 +11,10 @@
             </button>
 
             <app-table appNoWidthLimit
-                       *ngIf="workPackageInvestmentsPage.content.length"
+                       *ngIf="investments.length"
                        [configuration]="tableConfiguration"
-                       [rows]="workPackageInvestmentsPage.content"
-                       [totalElements]="workPackageInvestmentsPage?.totalElements"
-                       [pageIndex]="pageIndex"
-                       (newPageIndex)="newPageIndex$.next($event)"
-                       (newPageSize)="newPageSize$.next($event)"
-                       (sortRows)="newSort$.next($event)">
+                       [rows]="investments"
+                       [totalElements]="investments.length">
             </app-table>
         </div>
     </app-form>

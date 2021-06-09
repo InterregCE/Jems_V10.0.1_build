@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {WorkPackageInvestmentDTO, WorkPackageInvestmentService} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {MatSort} from '@angular/material/sort';
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Subject} from 'rxjs';
 import {filter, map, mergeMap, startWith, take, tap} from 'rxjs/operators';
@@ -12,7 +11,7 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Log} from '../../../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from '../../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {Tables} from '../../../../../common/utils/tables';
+import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 
 @Component({
   selector: 'app-project-work-package-investments-tab',
@@ -39,37 +38,31 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   @ViewChild('titleCell', {static: true})
   titleCell: TemplateRef<any>;
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
-  newSort$ = new Subject<Partial<MatSort>>();
+  investmentsChanged$ = new Subject<void>();
 
-  currentPage$ =
+  investments$ =
     combineLatest([
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
-      this.newSort$.pipe(
-        startWith({active: 'id', direction: 'asc'}),
-        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
-        map(sort => `${sort.active},${sort.direction}`)
-      ),
+      this.projectVersionStore.currentRouteVersion$,
       this.workPackageStore.workPackage$
         .pipe(
           tap(workPackage => this.workPackageId = workPackage.id),
           tap(workPackage => this.workPackageNumber = workPackage.number),
           tap(() => this.setRouterLink())
-        )
+        ),
+      this.investmentsChanged$.pipe(startWith(null))
     ])
       .pipe(
-        filter(() => !!this.workPackageId),
-        mergeMap(([pageIndex, pageSize, sort]) =>
-          this.workPackageInvestmentService.getWorkPackageInvestments(this.workPackageId, pageIndex, pageSize, sort)),
-        tap(page => Log.info('Fetched the work package investments:', this, page.content)),
+        filter(([version, workPackage]) => !!workPackage.id),
+        mergeMap(([version]) =>
+          this.workPackageInvestmentService.getWorkPackageInvestments(this.workPackageId, version)),
+        tap(investments => Log.info('Fetched the work package investments:', this, investments)),
       );
 
   constructor(private activatedRoute: ActivatedRoute,
               public workPackageStore: ProjectWorkPackagePageStore,
               private workPackageInvestmentService: WorkPackageInvestmentService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private projectVersionStore: ProjectVersionStore,
               private dialog: MatDialog) {
   }
 
@@ -122,7 +115,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
       map(() => this.workPackageStore.deleteWorkPackageInvestment(workPackageInvestment.id)
         .pipe(
           take(1),
-          tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+          tap(() => this.investmentsChanged$.next()),
           tap(() => Log.info('Deleted investment: ', this, workPackageInvestment.id))
         ).subscribe()),
     ).subscribe();
