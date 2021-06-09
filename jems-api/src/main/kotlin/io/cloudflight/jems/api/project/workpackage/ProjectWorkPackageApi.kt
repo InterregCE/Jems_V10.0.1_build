@@ -24,7 +24,7 @@ interface ProjectWorkPackageApi {
 
     @ApiOperation("Returns a work package by id")
     @GetMapping("/{workPackageId}")
-    fun getWorkPackageById(@PathVariable workPackageId: Long, @RequestParam(required = false) version: String? = null): OutputWorkPackage
+    fun getWorkPackageById(@PathVariable workPackageId: Long, @RequestParam projectId: Long, @RequestParam(required = false) version: String? = null): OutputWorkPackage
 
     @ApiOperation("Returns all work packages for a project")
     @GetMapping("/perProject/{projectId}")

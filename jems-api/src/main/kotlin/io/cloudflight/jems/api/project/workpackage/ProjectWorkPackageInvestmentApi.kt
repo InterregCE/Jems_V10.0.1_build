@@ -21,11 +21,11 @@ interface ProjectWorkPackageInvestmentApi {
 
     @ApiOperation("Returns investment for the work package")
     @GetMapping("/{investmentId}")
-    fun getWorkPackageInvestment(@PathVariable investmentId: Long, @RequestParam(required = false) version: String? = null): WorkPackageInvestmentDTO
+    fun getWorkPackageInvestment(@PathVariable investmentId: Long, @RequestParam projectId: Long, @RequestParam(required = false) version: String? = null): WorkPackageInvestmentDTO
 
     @ApiOperation("Returns one page of investments for the work package")
     @GetMapping("/forWorkPackage/{workPackageId}")
-    fun getWorkPackageInvestments(@PathVariable workPackageId: Long, @RequestParam(required = false) version: String? = null): List<WorkPackageInvestmentDTO>
+    fun getWorkPackageInvestments(@PathVariable workPackageId: Long, @RequestParam projectId: Long, @RequestParam(required = false) version: String? = null): List<WorkPackageInvestmentDTO>
 
     @GetMapping("/forProject/{projectId}")
     fun getProjectInvestmentSummaries(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<InvestmentSummaryDTO>

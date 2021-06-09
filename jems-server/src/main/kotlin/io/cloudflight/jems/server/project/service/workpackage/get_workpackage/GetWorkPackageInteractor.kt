@@ -9,5 +9,5 @@ interface GetWorkPackageInteractor {
 
     fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple>
 
-    fun getWorkPackageById(workPackageId: Long, version: String?): OutputWorkPackage
+    fun getWorkPackageById(workPackageId: Long, projectId: Long, version: String?): OutputWorkPackage
 }

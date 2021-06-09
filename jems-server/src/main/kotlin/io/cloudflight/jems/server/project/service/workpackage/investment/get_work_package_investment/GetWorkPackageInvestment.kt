@@ -12,6 +12,6 @@ class GetWorkPackageInvestment(
 
     @CanRetrieveProjectWorkPackageInvestment
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestment(investmentId: Long, version: String?) =
-        workPackagePersistence.getWorkPackageInvestment(investmentId, version)
+    override fun getWorkPackageInvestment(investmentId: Long, projectId: Long, version: String?) =
+        workPackagePersistence.getWorkPackageInvestment(investmentId, projectId, version)
 }

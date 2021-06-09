@@ -15,20 +15,20 @@ interface WorkPackagePersistence {
     fun getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId: Long): List<ProjectWorkPackage>
     fun getWorkPackagesWithAllDataByProjectId(projectId: Long): List<ProjectWorkPackageFull>
     fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple>
-    fun getWorkPackageById(workPackageId: Long, version: String?): OutputWorkPackage
+    fun getWorkPackageById(workPackageId: Long, projectId: Long, version: String?): OutputWorkPackage
 
     fun updateWorkPackageOutputs(workPackageId: Long, workPackageOutputs: List<WorkPackageOutput>): List<WorkPackageOutput>
-    fun getWorkPackageOutputsForWorkPackage(workPackageId: Long, version: String? = null): List<WorkPackageOutput>
+    fun getWorkPackageOutputsForWorkPackage(workPackageId: Long, projectId: Long, version: String? = null): List<WorkPackageOutput>
 
-    fun getWorkPackageInvestment(workPackageInvestmentId: Long, version: String? = null): WorkPackageInvestment
-    fun getWorkPackageInvestments(workPackageId: Long, version: String? = null): List<WorkPackageInvestment>
+    fun getWorkPackageInvestment(workPackageInvestmentId: Long, projectId: Long, version: String? = null): WorkPackageInvestment
+    fun getWorkPackageInvestments(workPackageId: Long, projectId: Long, version: String? = null): List<WorkPackageInvestment>
     fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment): Long
     fun updateWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment)
     fun deleteWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long)
     fun getProjectInvestmentSummaries(projectId: Long, version: String? = null): List<InvestmentSummary>
     fun countWorkPackageInvestments(workPackageId: Long): Long
 
-    fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long, version: String? = null): List<WorkPackageActivity>
+    fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long, projectId: Long, version: String? = null): List<WorkPackageActivity>
     fun updateWorkPackageActivities(workPackageId: Long, workPackageActivities: List<WorkPackageActivity>): List<WorkPackageActivity>
     fun getProjectFromWorkPackageInvestment(workPackageInvestmentId: Long): ProjectApplicantAndStatus
 }

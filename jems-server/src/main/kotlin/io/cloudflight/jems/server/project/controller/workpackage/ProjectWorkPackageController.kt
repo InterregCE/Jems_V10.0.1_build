@@ -16,8 +16,8 @@ class ProjectWorkPackageController(
     private val getWorkPackage: GetWorkPackageInteractor,
 ) : ProjectWorkPackageApi {
 
-    override fun getWorkPackageById(workPackageId: Long, version: String?): OutputWorkPackage =
-        getWorkPackage.getWorkPackageById(workPackageId, version)
+    override fun getWorkPackageById(workPackageId: Long, projectId: Long, version: String?): OutputWorkPackage =
+        getWorkPackage.getWorkPackageById(workPackageId, projectId, version)
 
     override fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple> =
         getWorkPackage.getWorkPackagesByProjectId(projectId, version)

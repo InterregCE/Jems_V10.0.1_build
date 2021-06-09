@@ -106,11 +106,10 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageById(workPackageId: Long, version: String?): OutputWorkPackage {
-        val workPackage = getWorkPackageOrThrow(workPackageId)
-        return projectVersionUtils.fetch(version, workPackage.project.id,
+    override fun getWorkPackageById(workPackageId: Long, projectId: Long, version: String?): OutputWorkPackage {
+        return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                workPackage.toOutputWorkPackage()
+                getWorkPackageOrThrow(workPackageId).toOutputWorkPackage()
             },
             previousVersionFetcher = { timestamp ->
                 workPackageRepository.findByIdAsOfTimestamp(workPackageId, timestamp).toOutputWorkPackageHistoricalData()
@@ -133,11 +132,10 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long, version: String?): List<WorkPackageOutput>{
-        val workPackage = getWorkPackageOrThrow(workPackageId)
-        return projectVersionUtils.fetch(version, workPackage.project.id,
+    override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long, projectId: Long, version: String?): List<WorkPackageOutput>{
+        return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                workPackage.outputs.toModel()
+                getWorkPackageOrThrow(workPackageId).outputs.toModel()
             },
             previousVersionFetcher = { timestamp ->
                 workPackageRepository.findOutputsByWorkPackageIdAsOfTimestamp(workPackageId, timestamp).toWorkPackageOutputsHistoricalData()
@@ -146,11 +144,10 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestment(workPackageInvestmentId: Long, version: String?): WorkPackageInvestment {
-        val workPackageInvestment = getWorkPackageInvestmentOrThrow(workPackageInvestmentId)
-        return projectVersionUtils.fetch(version, workPackageInvestment.workPackage.project.id,
+    override fun getWorkPackageInvestment(workPackageInvestmentId: Long, projectId: Long, version: String?): WorkPackageInvestment {
+        return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                workPackageInvestment.toWorkPackageInvestment()
+                getWorkPackageInvestmentOrThrow(workPackageInvestmentId).toWorkPackageInvestment()
             },
             previousVersionFetcher = { timestamp ->
                 workPackageInvestmentRepository.findByIdAsOfTimestamp(workPackageInvestmentId, timestamp).toWorkPackageInvestmentHistoricalData()
@@ -159,9 +156,8 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestments(workPackageId: Long, version: String?): List<WorkPackageInvestment> {
-        val workPackage = getWorkPackageOrThrow(workPackageId)
-        return projectVersionUtils.fetch(version, workPackage.project.id,
+    override fun getWorkPackageInvestments(workPackageId: Long, projectId: Long, version: String?): List<WorkPackageInvestment> {
+        return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 workPackageInvestmentRepository.findAllByWorkPackageId(workPackageId).toWorkPackageInvestmentList()
             },
@@ -218,11 +214,10 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long, version: String?): List<WorkPackageActivity> {
-        val workPackage = getWorkPackageOrThrow(workPackageId)
-        return projectVersionUtils.fetch(version, workPackage.project.id,
+    override fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long, projectId: Long, version: String?): List<WorkPackageActivity> {
+        return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                workPackage.activities.toModel()
+                getWorkPackageOrThrow(workPackageId).activities.toModel()
             },
             previousVersionFetcher = { timestamp ->
                 getActivitiesAndDeliverablesByWorkPackageId(workPackageId, timestamp)

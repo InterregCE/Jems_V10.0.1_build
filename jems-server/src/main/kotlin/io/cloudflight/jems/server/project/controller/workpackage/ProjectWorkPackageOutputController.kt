@@ -12,8 +12,8 @@ class ProjectWorkPackageOutputController(
     private val updateOutputInteractor: UpdateWorkPackageOutputInteractor,
 ) : ProjectWorkPackageOutputApi {
 
-    override fun getOutputs(workPackageId: Long, version: String?): List<WorkPackageOutputDTO> =
-        getOutputInteractor.getOutputsForWorkPackage(workPackageId, version).toDto()
+    override fun getOutputs(workPackageId: Long, projectId: Long, version: String?): List<WorkPackageOutputDTO> =
+        getOutputInteractor.getOutputsForWorkPackage(workPackageId, projectId, version).toDto()
 
     override fun updateOutputs(
         workPackageId: Long,

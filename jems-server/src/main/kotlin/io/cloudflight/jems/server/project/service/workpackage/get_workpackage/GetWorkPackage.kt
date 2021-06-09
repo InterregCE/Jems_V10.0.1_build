@@ -20,6 +20,6 @@ class GetWorkPackage(private val persistence: WorkPackagePersistence) : GetWorkP
         persistence.getWorkPackagesByProjectId(projectId, version)
 
     @CanRetrieveProjectWorkPackage
-    override fun getWorkPackageById(workPackageId: Long, version: String?): OutputWorkPackage =
-        persistence.getWorkPackageById(workPackageId, version)
+    override fun getWorkPackageById(workPackageId: Long, projectId: Long, version: String?): OutputWorkPackage =
+        persistence.getWorkPackageById(workPackageId, projectId, version)
 }

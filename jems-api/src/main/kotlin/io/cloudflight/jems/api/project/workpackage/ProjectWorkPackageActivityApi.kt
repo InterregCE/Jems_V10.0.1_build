@@ -19,6 +19,7 @@ interface ProjectWorkPackageActivityApi {
     @GetMapping
     fun getActivities(
         @PathVariable workPackageId: Long,
+        @RequestParam projectId: Long,
         @RequestParam(required = false) version: String? = null
     ): List<WorkPackageActivityDTO>
 

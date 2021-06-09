@@ -21,11 +21,11 @@ class ProjectWorkPackageInvestmentController(
 
 ) : ProjectWorkPackageInvestmentApi {
 
-    override fun getWorkPackageInvestment(investmentId: Long, version: String?) =
-        getWorkPackageInvestment.getWorkPackageInvestment(investmentId, version).toWorkPackageInvestmentDTO()
+    override fun getWorkPackageInvestment(investmentId: Long, projectId: Long, version: String?) =
+        getWorkPackageInvestment.getWorkPackageInvestment(investmentId, projectId, version).toWorkPackageInvestmentDTO()
 
-    override fun getWorkPackageInvestments(workPackageId: Long, version: String?) =
-        getWorkPackageInvestments.getWorkPackageInvestments(workPackageId, version).toWorkPackageInvestmentDTOList()
+    override fun getWorkPackageInvestments(workPackageId: Long, projectId: Long, version: String?) =
+        getWorkPackageInvestments.getWorkPackageInvestments(workPackageId, projectId, version).toWorkPackageInvestmentDTOList()
 
     override fun getProjectInvestmentSummaries(projectId: Long, version: String?) =
         getProjectInvestmentSummaries.getProjectInvestmentSummaries(projectId, version).toInvestmentSummaryDTOs()
