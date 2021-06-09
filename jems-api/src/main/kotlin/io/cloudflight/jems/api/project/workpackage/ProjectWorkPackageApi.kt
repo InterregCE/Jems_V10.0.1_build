@@ -19,31 +19,31 @@ import javax.validation.Valid
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("WorkPackage")
-@RequestMapping("/api/project/workPackage")
+@RequestMapping("/api/project/{projectId}/workPackage")
 interface ProjectWorkPackageApi {
 
     @ApiOperation("Returns a work package by id")
     @GetMapping("/{workPackageId}")
-    fun getWorkPackageById(@PathVariable workPackageId: Long, @RequestParam projectId: Long, @RequestParam(required = false) version: String? = null): OutputWorkPackage
+    fun getWorkPackageById(@PathVariable projectId: Long, @PathVariable workPackageId: Long, @RequestParam(required = false) version: String? = null): OutputWorkPackage
 
     @ApiOperation("Returns all work packages for a project")
-    @GetMapping("/perProject/{projectId}")
+    @GetMapping
     fun getWorkPackagesByProjectId(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<OutputWorkPackageSimple>
 
     @ApiOperation("Returns all work packages for a project including outputs and activities")
-    @GetMapping("/perProject/{projectId}/withOutputsAndActivities")
+    @GetMapping("/withOutputsAndActivities")
     fun getWorkPackagesForTimePlanByProjectId(@PathVariable projectId: Long): List<ProjectWorkPackageDTO>
 
     @ApiOperation("Create work package")
-    @PostMapping("/forProject/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createWorkPackage(@PathVariable projectId: Long, @Valid @RequestBody inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage
 
     @ApiOperation("Update work package")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateWorkPackage(@Valid @RequestBody inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
+    fun updateWorkPackage(@PathVariable projectId: Long, @Valid @RequestBody inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
 
     @ApiOperation("Delete a work package")
     @DeleteMapping("/{workPackageId}")
-    fun deleteWorkPackage(@PathVariable workPackageId: Long)
+    fun deleteWorkPackage(@PathVariable projectId: Long, @PathVariable workPackageId: Long)
 
 }

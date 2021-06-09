@@ -12,6 +12,7 @@ import {Log} from '../../../../../common/utils/log';
 import {ProjectApplicationFormSidenavService} from '../../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {ProjectStore} from '../../../../project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-work-package-investments-tab',
@@ -42,6 +43,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
 
   investments$ =
     combineLatest([
+      this.projectStore.projectId$,
       this.projectVersionStore.currentRouteVersion$,
       this.workPackageStore.workPackage$
         .pipe(
@@ -52,9 +54,9 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
       this.investmentsChanged$.pipe(startWith(null))
     ])
       .pipe(
-        filter(([version, workPackage]) => !!workPackage.id),
-        mergeMap(([version]) =>
-          this.workPackageInvestmentService.getWorkPackageInvestments(this.workPackageId, version)),
+        filter(([projectId, version, workPackage]) => !!workPackage.id),
+        mergeMap(([projectId, version]) =>
+          this.workPackageInvestmentService.getWorkPackageInvestments(projectId, this.workPackageId, version)),
         tap(investments => Log.info('Fetched the work package investments:', this, investments)),
       );
 
@@ -63,6 +65,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
               private workPackageInvestmentService: WorkPackageInvestmentService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectVersionStore: ProjectVersionStore,
+              private projectStore: ProjectStore,
               private dialog: MatDialog) {
   }
 

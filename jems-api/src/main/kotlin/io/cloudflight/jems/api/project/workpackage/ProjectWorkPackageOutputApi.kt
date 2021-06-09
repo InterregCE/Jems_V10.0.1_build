@@ -13,16 +13,17 @@ import javax.validation.Valid
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("WorkPackageOutput")
-@RequestMapping("/api/project/workPackage/output/forWorkPackage/{workPackageId}")
+@RequestMapping("/api/project/{projectId}/workPackage/{workPackageId}/output")
 interface ProjectWorkPackageOutputApi {
 
     @ApiOperation("Returns all work package outputs for a work package")
     @GetMapping
-    fun getOutputs(@PathVariable workPackageId: Long, @RequestParam projectId: Long, @RequestParam(required = false) version: String? = null): List<WorkPackageOutputDTO>
+    fun getOutputs(@PathVariable projectId: Long, @PathVariable workPackageId: Long, @RequestParam(required = false) version: String? = null): List<WorkPackageOutputDTO>
 
     @ApiOperation("Updates work packages outputs for a work package")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateOutputs(
+        @PathVariable projectId: Long,
         @PathVariable workPackageId: Long,
         @Valid @RequestBody outputs: List<WorkPackageOutputDTO>
     ): List<WorkPackageOutputDTO>

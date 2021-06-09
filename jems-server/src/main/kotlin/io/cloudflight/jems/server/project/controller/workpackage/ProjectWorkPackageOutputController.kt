@@ -12,13 +12,14 @@ class ProjectWorkPackageOutputController(
     private val updateOutputInteractor: UpdateWorkPackageOutputInteractor,
 ) : ProjectWorkPackageOutputApi {
 
-    override fun getOutputs(workPackageId: Long, projectId: Long, version: String?): List<WorkPackageOutputDTO> =
-        getOutputInteractor.getOutputsForWorkPackage(workPackageId, projectId, version).toDto()
+    override fun getOutputs(projectId: Long, workPackageId: Long, version: String?): List<WorkPackageOutputDTO> =
+        getOutputInteractor.getOutputsForWorkPackage(projectId, workPackageId, version).toDto()
 
     override fun updateOutputs(
+        projectId: Long,
         workPackageId: Long,
         outputs: List<WorkPackageOutputDTO>
     ): List<WorkPackageOutputDTO> =
-        updateOutputInteractor.updateOutputsForWorkPackage(workPackageId, outputs.toModel()).toDto()
+        updateOutputInteractor.updateOutputsForWorkPackage(projectId, workPackageId, outputs.toModel()).toDto()
 
 }

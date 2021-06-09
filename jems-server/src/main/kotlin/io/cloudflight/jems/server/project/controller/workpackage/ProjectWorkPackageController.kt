@@ -16,8 +16,8 @@ class ProjectWorkPackageController(
     private val getWorkPackage: GetWorkPackageInteractor,
 ) : ProjectWorkPackageApi {
 
-    override fun getWorkPackageById(workPackageId: Long, projectId: Long, version: String?): OutputWorkPackage =
-        getWorkPackage.getWorkPackageById(workPackageId, projectId, version)
+    override fun getWorkPackageById(projectId: Long, workPackageId: Long, version: String?): OutputWorkPackage =
+        getWorkPackage.getWorkPackageById(projectId, workPackageId, version)
 
     override fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple> =
         getWorkPackage.getWorkPackagesByProjectId(projectId, version)
@@ -28,11 +28,11 @@ class ProjectWorkPackageController(
     override fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage =
         workPackageService.createWorkPackage(projectId, inputWorkPackageCreate)
 
-    override fun updateWorkPackage(inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage =
-        workPackageService.updateWorkPackage(inputWorkPackageUpdate)
+    override fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage =
+        workPackageService.updateWorkPackage(projectId, inputWorkPackageUpdate)
 
-    override fun deleteWorkPackage(workPackageId: Long) {
-        return workPackageService.deleteWorkPackage(workPackageId)
+    override fun deleteWorkPackage(projectId: Long, workPackageId: Long) {
+        return workPackageService.deleteWorkPackage(projectId, workPackageId)
     }
 
 }

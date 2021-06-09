@@ -60,16 +60,21 @@ export class ProjectWorkPackagePageStore {
     this.outputs$ = this.workPackageOutputs();
     this.outputIndicators$ = this.outputIndicators();
 
-    this.projectInvestmentSummaries$ = combineLatest([this.project$, this.investmentChangeEvent$.pipe(startWith(null))]).pipe(
-      switchMap(([project]) => this.workPackageInvestmentService.getProjectInvestmentSummaries(project.id)),
-      map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
-      shareReplay(1)
+    this.projectInvestmentSummaries$ = combineLatest([
+      this.project$,
+      this.workPackage$,
+      this.projectVersionStore.currentRouteVersion$,
+      this.investmentChangeEvent$.pipe(startWith(null))])
+      .pipe(
+        switchMap(([project, workPackage, version]) => this.workPackageInvestmentService.getProjectInvestmentSummaries(project.id, workPackage.id, version)),
+        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
+        shareReplay(1)
     );
 
   }
 
   saveWorkPackage(workPackage: InputWorkPackageUpdate): Observable<OutputWorkPackage> {
-    return this.workPackageService.updateWorkPackage(workPackage)
+    return this.workPackageService.updateWorkPackage(this.projectId, workPackage)
       .pipe(
         tap(saved => this.savedWorkPackage$.next(saved)),
         tap(saved => Log.info('Updated workPackage:', this, saved))
@@ -86,7 +91,7 @@ export class ProjectWorkPackagePageStore {
   }
 
   deleteWorkPackageInvestment(investmentId: number): Observable<void> {
-    return this.workPackageInvestmentService.deleteWorkPackageInvestment(investmentId, this.workPackageId)
+    return this.workPackageInvestmentService.deleteWorkPackageInvestment(investmentId, this.projectId, this.workPackageId)
       .pipe(
         tap(deleted => Log.info('Deleted work package investment:', this, deleted)),
         tap(() => this.investmentChangeEvent$.next())
@@ -94,7 +99,7 @@ export class ProjectWorkPackagePageStore {
   }
 
   saveWorkPackageActivities(activities: WorkPackageActivityDTO[]): Observable<WorkPackageActivityDTO[]> {
-    return this.workPackageActivityService.updateActivities(this.workPackageId, activities)
+    return this.workPackageActivityService.updateActivities(this.projectId, this.workPackageId, activities)
       .pipe(
         tap(saved => this.savedActivities$.next(saved)),
         tap(saved => Log.info('Saved project activities', saved)),
@@ -102,7 +107,7 @@ export class ProjectWorkPackagePageStore {
   }
 
   saveWorkPackageOutputs(outputs: WorkPackageOutputDTO[]): Observable<WorkPackageOutputDTO[]> {
-    return this.workPackageOutputService.updateOutputs(this.workPackageId, outputs)
+    return this.workPackageOutputService.updateOutputs(this.projectId, this.workPackageId, outputs)
       .pipe(
         tap(saved => this.savedOutputs$.next(saved)),
         tap(saved => Log.info('Saved project outputs', saved)),
@@ -119,8 +124,9 @@ export class ProjectWorkPackagePageStore {
         this.workPackageId = Number(workPackageId);
         this.projectId = projectId;
       }),
-      switchMap(([workPackageId, projectId, version]) => workPackageId && projectId
-        ? this.workPackageService.getWorkPackageById(Number(workPackageId), version)
+      filter(([workPackageId, projectId]) => !!projectId),
+      switchMap(([workPackageId, projectId, version]) => workPackageId
+        ? this.workPackageService.getWorkPackageById(projectId, Number(workPackageId), version)
           .pipe(
             catchError(err => {
               this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
@@ -139,10 +145,16 @@ export class ProjectWorkPackagePageStore {
   }
 
   private workPackageActivities(): Observable<WorkPackageActivityDTO[]> {
-    const initialActivities$ = combineLatest([this.workPackage$, this.projectVersionStore.currentRouteVersion$])
+    const initialActivities$ = combineLatest([
+      this.workPackage$,
+      this.projectStore.projectId$,
+      this.projectVersionStore.currentRouteVersion$
+    ])
       .pipe(
         filter(([workPackage]) => !!workPackage?.id),
-        switchMap(([workPackage, version]) => this.workPackageActivityService.getActivities(workPackage.id, version)),
+        switchMap(([workPackage, projectId, version]) =>
+          this.workPackageActivityService.getActivities(projectId, workPackage.id, version)
+        ),
         tap(activities => Log.info('Fetched project activities', activities)),
       );
 
@@ -153,10 +165,16 @@ export class ProjectWorkPackagePageStore {
   }
 
   private workPackageOutputs(): Observable<WorkPackageOutputDTO[]> {
-    const initialOutputs$ = combineLatest([this.workPackage$, this.projectVersionStore.currentRouteVersion$])
+    const initialOutputs$ = combineLatest([
+      this.workPackage$,
+      this.projectStore.projectId$,
+      this.projectVersionStore.currentRouteVersion$
+    ])
       .pipe(
         filter(([workPackage]) => !!workPackage?.id),
-        switchMap(([workPackage, version]) => this.workPackageOutputService.getOutputs(workPackage.id, version)),
+        switchMap(([workPackage, projectId, version]) =>
+          this.workPackageOutputService.getOutputs(projectId, workPackage.id, version)
+        ),
         tap(outputs => Log.info('Fetched project outputs', outputs)),
       );
 

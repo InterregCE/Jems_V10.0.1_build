@@ -4,6 +4,6 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 
 interface GetActivityInteractor {
 
-    fun getActivitiesForWorkPackage(workPackageId: Long, projectId: Long, version: String? = null): List<WorkPackageActivity>
+    fun getActivitiesForWorkPackage(projectId: Long, workPackageId: Long, version: String? = null): List<WorkPackageActivity>
 
 }

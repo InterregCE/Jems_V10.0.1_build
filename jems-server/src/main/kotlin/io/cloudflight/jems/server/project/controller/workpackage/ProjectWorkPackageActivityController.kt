@@ -12,13 +12,14 @@ class ProjectWorkPackageActivityController(
     private val updateActivityInteractor: UpdateActivityInteractor,
 ) : ProjectWorkPackageActivityApi {
 
-    override fun getActivities(workPackageId: Long, projectId: Long, version: String?): List<WorkPackageActivityDTO> =
-        getActivityInteractor.getActivitiesForWorkPackage(workPackageId, projectId, version).toDto()
+    override fun getActivities(projectId: Long, workPackageId: Long, version: String?): List<WorkPackageActivityDTO> =
+        getActivityInteractor.getActivitiesForWorkPackage(projectId, workPackageId, version).toDto()
 
     override fun updateActivities(
+        projectId: Long,
         workPackageId: Long,
         activities: List<WorkPackageActivityDTO>
     ): List<WorkPackageActivityDTO> =
-        updateActivityInteractor.updateActivitiesForWorkPackage(workPackageId, activities.toModel()).toDto()
+        updateActivityInteractor.updateActivitiesForWorkPackage(projectId, workPackageId, activities.toModel()).toDto()
 
 }

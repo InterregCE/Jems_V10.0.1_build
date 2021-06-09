@@ -3,5 +3,5 @@ package io.cloudflight.jems.server.project.service.workpackage.investment.get_wo
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 
 interface GetWorkPackageInvestmentInteractor {
-    fun getWorkPackageInvestment(investmentId: Long, projectId: Long, version: String? = null): WorkPackageInvestment
+    fun getWorkPackageInvestment(projectId: Long, investmentId: Long, version: String? = null): WorkPackageInvestment
 }

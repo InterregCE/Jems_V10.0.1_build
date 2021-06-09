@@ -21,25 +21,26 @@ class ProjectWorkPackageInvestmentController(
 
 ) : ProjectWorkPackageInvestmentApi {
 
-    override fun getWorkPackageInvestment(investmentId: Long, projectId: Long, version: String?) =
-        getWorkPackageInvestment.getWorkPackageInvestment(investmentId, projectId, version).toWorkPackageInvestmentDTO()
+    override fun getWorkPackageInvestment(investmentId: Long, projectId: Long, workPackageId: Long, version: String?) =
+        getWorkPackageInvestment.getWorkPackageInvestment(projectId, investmentId, version).toWorkPackageInvestmentDTO()
 
-    override fun getWorkPackageInvestments(workPackageId: Long, projectId: Long, version: String?) =
-        getWorkPackageInvestments.getWorkPackageInvestments(workPackageId, projectId, version).toWorkPackageInvestmentDTOList()
+    override fun getWorkPackageInvestments(projectId: Long, workPackageId: Long, version: String?) =
+        getWorkPackageInvestments.getWorkPackageInvestments(projectId, workPackageId, version).toWorkPackageInvestmentDTOList()
 
-    override fun getProjectInvestmentSummaries(projectId: Long, version: String?) =
+    override fun getProjectInvestmentSummaries(projectId: Long, workPackageId: Long, version: String?) =
         getProjectInvestmentSummaries.getProjectInvestmentSummaries(projectId, version).toInvestmentSummaryDTOs()
 
-    override fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestmentDTO: WorkPackageInvestmentDTO) =
-        addWorkPackageInvestment.addWorkPackageInvestment(workPackageId, workPackageInvestmentDTO.toWorkPackageInvestment())
+    override fun addWorkPackageInvestment(projectId: Long, workPackageId: Long, workPackageInvestmentDTO: WorkPackageInvestmentDTO) =
+        addWorkPackageInvestment.addWorkPackageInvestment(projectId, workPackageId, workPackageInvestmentDTO.toWorkPackageInvestment())
 
-    override fun updateWorkPackageInvestment(workPackageId: Long, workPackageInvestmentDTO: WorkPackageInvestmentDTO) =
+    override fun updateWorkPackageInvestment(projectId: Long, workPackageId: Long, workPackageInvestmentDTO: WorkPackageInvestmentDTO) =
         updateWorkPackageInvestment.updateWorkPackageInvestment(
+            projectId,
             workPackageId,
             workPackageInvestmentDTO.toWorkPackageInvestment()
         )
 
-    override fun deleteWorkPackageInvestment(workPackageId: Long, investmentId: Long) =
-        deleteWorkPackageInvestment.deleteWorkPackageInvestment(workPackageId, investmentId)
+    override fun deleteWorkPackageInvestment(investmentId: Long, projectId: Long, workPackageId: Long) =
+        deleteWorkPackageInvestment.deleteWorkPackageInvestment(projectId, workPackageId, investmentId)
 
 }

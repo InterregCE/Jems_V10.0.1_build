@@ -16,39 +16,55 @@ import javax.validation.Valid
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("WorkPackageInvestment")
-@RequestMapping("/api/project/workPackage/investment")
+@RequestMapping("/api/project/{projectId}/workPackage/{workPackageId}/investment")
 interface ProjectWorkPackageInvestmentApi {
 
     @ApiOperation("Returns investment for the work package")
     @GetMapping("/{investmentId}")
-    fun getWorkPackageInvestment(@PathVariable investmentId: Long, @RequestParam projectId: Long, @RequestParam(required = false) version: String? = null): WorkPackageInvestmentDTO
+    fun getWorkPackageInvestment(
+        @PathVariable investmentId: Long,
+        @PathVariable projectId: Long,
+        @PathVariable workPackageId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): WorkPackageInvestmentDTO
 
     @ApiOperation("Returns one page of investments for the work package")
-    @GetMapping("/forWorkPackage/{workPackageId}")
-    fun getWorkPackageInvestments(@PathVariable workPackageId: Long, @RequestParam projectId: Long, @RequestParam(required = false) version: String? = null): List<WorkPackageInvestmentDTO>
+    @GetMapping
+    fun getWorkPackageInvestments(
+        @PathVariable projectId: Long,
+        @PathVariable workPackageId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<WorkPackageInvestmentDTO>
 
-    @GetMapping("/forProject/{projectId}")
-    fun getProjectInvestmentSummaries(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<InvestmentSummaryDTO>
+    @GetMapping("/summaries")
+    fun getProjectInvestmentSummaries(
+        @PathVariable projectId: Long,
+        @PathVariable workPackageId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<InvestmentSummaryDTO>
 
     @ApiOperation("Adds Investment to the work package")
-    @PostMapping("/forWorkPackage/{workPackageId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping( consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun addWorkPackageInvestment(
+        @PathVariable projectId: Long,
         @PathVariable workPackageId: Long,
         @Valid @RequestBody workPackageInvestmentDTO: WorkPackageInvestmentDTO
     ): Long
 
     @ApiOperation("Update Investment of the work package")
-    @PutMapping("/forWorkPackage/{workPackageId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping( consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateWorkPackageInvestment(
+        @PathVariable projectId: Long,
         @PathVariable workPackageId: Long,
         @Valid @RequestBody workPackageInvestmentDTO: WorkPackageInvestmentDTO
     )
 
     @ApiOperation("Delete Investment of the work package")
-    @DeleteMapping("/forWorkPackage/{workPackageId}/{investmentId}")
+    @DeleteMapping("/{investmentId}")
     fun deleteWorkPackageInvestment(
-        @PathVariable workPackageId: Long,
-        @PathVariable investmentId: Long
+        @PathVariable investmentId: Long,
+        @PathVariable projectId: Long,
+        @PathVariable workPackageId: Long
     )
 
 }

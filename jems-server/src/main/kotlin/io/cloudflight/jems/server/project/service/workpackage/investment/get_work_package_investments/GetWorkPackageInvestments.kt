@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.workpackage.investment.get_work_package_investments
 
-import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectWorkPackage
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,8 +10,8 @@ class GetWorkPackageInvestments(
     private val workPackagePersistence: WorkPackagePersistence
 ) : GetWorkPackageInvestmentsInteractor {
 
-    @CanRetrieveProjectWorkPackage
+    @CanRetrieveProject
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestments(workPackageId: Long, projectId: Long, version: String?) =
+    override fun getWorkPackageInvestments(projectId: Long, workPackageId: Long, version: String?) =
         workPackagePersistence.getWorkPackageInvestments(workPackageId, projectId, version)
 }
