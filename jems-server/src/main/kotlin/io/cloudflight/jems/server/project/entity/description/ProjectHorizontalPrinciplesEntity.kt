@@ -7,7 +7,7 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 
 @Embeddable
-data class ProjectHorizontalPrinciples(
+data class ProjectHorizontalPrinciplesEntity(
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -22,7 +22,7 @@ data class ProjectHorizontalPrinciples(
     val sexualEqualityEffect: ProjectHorizontalPrinciplesEffect? = null
 
 ) {
-    fun ifNotEmpty(): ProjectHorizontalPrinciples? {
+    fun ifNotEmpty(): ProjectHorizontalPrinciplesEntity? {
         if (sustainableDevelopmentCriteriaEffect != null
             || equalOpportunitiesEffect != null
             || sexualEqualityEffect != null

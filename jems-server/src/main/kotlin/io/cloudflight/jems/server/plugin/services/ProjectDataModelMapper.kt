@@ -9,14 +9,6 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.description.InputProjectCooperationCriteria
-import io.cloudflight.jems.api.project.dto.description.InputProjectHorizontalPrinciples
-import io.cloudflight.jems.api.project.dto.description.InputProjectOverallObjective
-import io.cloudflight.jems.api.project.dto.description.InputProjectPartnership
-import io.cloudflight.jems.api.project.dto.description.InputProjectRelevance
-import io.cloudflight.jems.api.project.dto.description.OutputProjectDescription
-import io.cloudflight.jems.api.project.dto.description.OutputProjectLongTermPlans
-import io.cloudflight.jems.api.project.dto.description.OutputProjectManagement
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
@@ -87,6 +79,14 @@ import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
+import io.cloudflight.jems.server.project.service.model.ProjectDescription
+import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
+import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
+import io.cloudflight.jems.server.project.service.model.ProjectManagement
+import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
+import io.cloudflight.jems.server.project.service.model.ProjectPartnership
+import io.cloudflight.jems.server.project.service.model.ProjectRelevance
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
@@ -123,7 +123,7 @@ fun OutputProgrammePrioritySimple.toDataModel() = ProgrammePriorityDataSimple(
     title = title.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet()
 )
 
-fun OutputProjectDescription.toDataModel(workPackages: List<ProjectWorkPackageData>, results: List<ProjectResultData>) =
+fun ProjectDescription.toDataModel(workPackages: List<ProjectWorkPackageData>, results: List<ProjectResultData>) =
     ProjectDataSectionC(
         projectOverallObjective = projectOverallObjective?.toDataModel(),
         projectRelevance = projectRelevance?.toDataModel(),
@@ -134,7 +134,7 @@ fun OutputProjectDescription.toDataModel(workPackages: List<ProjectWorkPackageDa
         projectLongTermPlans = projectLongTermPlans?.toDataModel()
     )
 
-fun InputProjectOverallObjective.toDataModel() = ProjectOverallObjectiveData(
+fun ProjectOverallObjective.toDataModel() = ProjectOverallObjectiveData(
     overallObjective = overallObjective.map {
         InputTranslationData(
             SystemLanguageData.valueOf(it.language.name),
@@ -143,7 +143,7 @@ fun InputProjectOverallObjective.toDataModel() = ProjectOverallObjectiveData(
     }.toSet()
 )
 
-fun InputProjectRelevance.toDataModel() = ProjectRelevanceData(
+fun ProjectRelevance.toDataModel() = ProjectRelevanceData(
     territorialChallenge = territorialChallenge.map {
         InputTranslationData(
             SystemLanguageData.valueOf(it.language.name),
@@ -175,7 +175,7 @@ fun InputProjectRelevance.toDataModel() = ProjectRelevanceData(
     }?.toList(),
     projectStrategies = projectStrategies?.map {
         ProjectRelevanceStrategyData(
-            strategy = if(it.strategy != null) ProgrammeStrategyData.valueOf(it.strategy!!.name) else ProgrammeStrategyData.Other,
+            strategy = if(it.strategy != null) ProgrammeStrategyData.valueOf(it.strategy.name) else ProgrammeStrategyData.Other,
             specification = it.specification.map {
                 InputTranslationData(
                     SystemLanguageData.valueOf(it.language.name),
@@ -208,12 +208,12 @@ fun InputProjectRelevance.toDataModel() = ProjectRelevanceData(
     }.toSet(),
 )
 
-fun InputProjectPartnership.toDataModel() = ProjectPartnershipData(
+fun ProjectPartnership.toDataModel() = ProjectPartnershipData(
     partnership = partnership.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }
         .toSet(),
 )
 
-fun OutputProjectManagement.toDataModel() = ProjectManagementData(
+fun ProjectManagement.toDataModel() = ProjectManagementData(
     projectCoordination = projectCoordination?.map {
         InputTranslationData(
             SystemLanguageData.valueOf(it.language.name),
@@ -288,14 +288,14 @@ fun OutputProjectManagement.toDataModel() = ProjectManagementData(
     }?.toSet()
 )
 
-fun InputProjectCooperationCriteria.toDataModel() = ProjectCooperationCriteriaData(
+fun ProjectCooperationCriteria.toDataModel() = ProjectCooperationCriteriaData(
     projectJointDevelopment = projectJointDevelopment,
     projectJointImplementation = projectJointImplementation,
     projectJointStaffing = projectJointStaffing,
     projectJointFinancing = projectJointFinancing
 )
 
-fun InputProjectHorizontalPrinciples.toDataModel() = ProjectHorizontalPrinciplesData(
+fun ProjectHorizontalPrinciples.toDataModel() = ProjectHorizontalPrinciplesData(
     sustainableDevelopmentCriteriaEffect = if (sustainableDevelopmentCriteriaEffect != null) ProjectHorizontalPrinciplesEffectData.valueOf(
         sustainableDevelopmentCriteriaEffect!!.name
     ) else null,
@@ -307,7 +307,7 @@ fun InputProjectHorizontalPrinciples.toDataModel() = ProjectHorizontalPrinciples
     ) else null
 )
 
-fun OutputProjectLongTermPlans.toDataModel() = ProjectLongTermPlansData(
+fun ProjectLongTermPlans.toDataModel() = ProjectLongTermPlansData(
     projectOwnership = projectOwnership.map {
         InputTranslationData(
             SystemLanguageData.valueOf(it.language.name),

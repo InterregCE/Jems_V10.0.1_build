@@ -6,7 +6,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
-import io.cloudflight.jems.server.project.service.ProjectDescriptionService
+import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional
 class ProjectDataProviderImpl(
     private val projectPersistence: ProjectPersistence,
     private val programmeLumpSumPersistence: ProgrammeLumpSumPersistence,
-    private val projectDescriptionService: ProjectDescriptionService,
+    private val projectDescriptionPersistence: ProjectDescriptionPersistence,
     private val workPackagePersistence: WorkPackagePersistence,
     private val resultPersistence: ProjectResultPersistence,
     private val partnerPersistence: PartnerPersistence,
@@ -61,8 +61,7 @@ class ProjectDataProviderImpl(
 
         val workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId).toDataModel()
         val results = resultPersistence.getResultsForProject(projectId).toResultDataModel()
-        val sectionC = projectDescriptionService.getProjectDescription(projectId).toDataModel(workPackages, results)
-
+        val sectionC = projectDescriptionPersistence.getProjectDescription(projectId).toDataModel(workPackages, results)
 
         val projectLumpSums = projectLumpSumPersistence.getLumpSums(projectId)
         val lumpSumsDetail = programmeLumpSumPersistence.getLumpSums(projectLumpSums.map { it.programmeLumpSumId })

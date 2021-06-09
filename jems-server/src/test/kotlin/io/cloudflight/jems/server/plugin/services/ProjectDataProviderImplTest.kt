@@ -3,17 +3,6 @@ package io.cloudflight.jems.server.plugin.services
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.description.InputProjectCooperationCriteria
-import io.cloudflight.jems.api.project.dto.description.InputProjectHorizontalPrinciples
-import io.cloudflight.jems.api.project.dto.description.InputProjectOverallObjective
-import io.cloudflight.jems.api.project.dto.description.InputProjectPartnership
-import io.cloudflight.jems.api.project.dto.description.InputProjectRelevance
-import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceBenefit
-import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceStrategy
-import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceSynergy
-import io.cloudflight.jems.api.project.dto.description.OutputProjectDescription
-import io.cloudflight.jems.api.project.dto.description.OutputProjectLongTermPlans
-import io.cloudflight.jems.api.project.dto.description.OutputProjectManagement
 import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
@@ -60,7 +49,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSe
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
-import io.cloudflight.jems.server.project.service.ProjectDescriptionService
+import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
@@ -68,8 +57,19 @@ import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersiste
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
 import io.cloudflight.jems.server.project.service.model.ProjectDecision
+import io.cloudflight.jems.server.project.service.model.ProjectDescription
+import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
+import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
+import io.cloudflight.jems.server.project.service.model.ProjectManagement
+import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
+import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectRelevance
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -105,7 +105,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
     @RelaxedMockK
-    lateinit var projectDescriptionService: ProjectDescriptionService
+    lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence
     @RelaxedMockK
     lateinit var workPackagePersistence: WorkPackagePersistence
     @RelaxedMockK
@@ -172,37 +172,37 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             ),
             title = setOf(InputTranslation(SystemLanguage.EN, "title"))
         )
-        private val projectDescription = OutputProjectDescription(
-            projectOverallObjective = InputProjectOverallObjective(
+        private val projectDescription = ProjectDescription(
+            projectOverallObjective = ProjectOverallObjective(
                 overallObjective = setOf(InputTranslation(SystemLanguage.EN, "overallObjective"))
             ),
-            projectRelevance = InputProjectRelevance(
+            projectRelevance = ProjectRelevance(
                 territorialChallenge = setOf(InputTranslation(SystemLanguage.EN, "territorialChallenge")),
                 commonChallenge = setOf(InputTranslation(SystemLanguage.EN, "commonChallenge")),
                 transnationalCooperation = setOf(InputTranslation(SystemLanguage.EN, "transnationalCooperation")),
-                projectBenefits = listOf(InputProjectRelevanceBenefit(
+                projectBenefits = listOf(ProjectRelevanceBenefit(
                     group = ProjectTargetGroup.LocalPublicAuthority,
-                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
-                )),
-                projectStrategies = listOf(InputProjectRelevanceStrategy(
+                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification")))
+                ),
+                projectStrategies = listOf(ProjectRelevanceStrategy(
                     strategy = ProgrammeStrategy.AtlanticStrategy,
-                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
-                )),
-                projectSynergies = listOf(InputProjectRelevanceSynergy(
+                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification")))
+                ),
+                projectSynergies = listOf(ProjectRelevanceSynergy(
                     synergy = setOf(InputTranslation(SystemLanguage.EN, "synergy")),
-                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
-                )),
+                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification")))
+                ),
                 availableKnowledge = setOf(InputTranslation(SystemLanguage.EN, "availableKnowledge"))
             ),
-            projectPartnership = InputProjectPartnership(
+            projectPartnership = ProjectPartnership(
                 partnership = setOf(InputTranslation(SystemLanguage.EN, "partnership"))
             ),
-            projectManagement = OutputProjectManagement(
+            projectManagement = ProjectManagement(
                 projectCoordination = setOf(InputTranslation(SystemLanguage.EN, "projectCoordination")),
                 projectQualityAssurance = setOf(InputTranslation(SystemLanguage.EN, "projectQualityAssurance")),
                 projectCommunication = setOf(InputTranslation(SystemLanguage.EN, "projectCommunication")),
                 projectFinancialManagement = setOf(InputTranslation(SystemLanguage.EN, "projectFinancialManagement")),
-                projectCooperationCriteria = InputProjectCooperationCriteria(
+                projectCooperationCriteria = ProjectCooperationCriteria(
                     projectJointDevelopment = true,
                     projectJointFinancing = true,
                     projectJointImplementation = true,
@@ -212,7 +212,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 projectJointImplementationDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointImplementationDescription")),
                 projectJointStaffingDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointStaffingDescription")),
                 projectJointFinancingDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointFinancingDescription")),
-                projectHorizontalPrinciples = InputProjectHorizontalPrinciples(
+                projectHorizontalPrinciples = ProjectHorizontalPrinciples(
                     sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffect.PositiveEffects,
                     equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffect.Neutral,
                     sexualEqualityEffect = ProjectHorizontalPrinciplesEffect.NegativeEffects
@@ -221,7 +221,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 equalOpportunitiesDescription = setOf(InputTranslation(SystemLanguage.EN, "equalOpportunitiesDescription")),
                 sexualEqualityDescription = setOf(InputTranslation(SystemLanguage.EN, "sexualEqualityDescription"))
             ),
-            projectLongTermPlans = OutputProjectLongTermPlans(
+            projectLongTermPlans = ProjectLongTermPlans(
                 projectOwnership = setOf(InputTranslation(SystemLanguage.EN, "projectOwnership")),
                 projectDurability = setOf(InputTranslation(SystemLanguage.EN, "projectDurability")),
                 projectTransferability = setOf(InputTranslation(SystemLanguage.EN, "projectTransferability"))
@@ -299,7 +299,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         val id = project.id!!
         val totalCost = BigDecimal.TEN
         every { projectPersistence.getProject(id) } returns project
-        every { projectDescriptionService.getProjectDescription(id) } returns projectDescription
+        every { projectDescriptionPersistence.getProjectDescription(id) } returns projectDescription
         every { partnerPersistence.findAllByProjectId(id) } returns listOf(projectPartner)
         every { budgetOptionsPersistence.getBudgetOptions(projectPartner.id!!) } returns partnerBudgetOptions
         every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id!!, null) } returns partnerCoFinancing

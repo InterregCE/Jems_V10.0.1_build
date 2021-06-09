@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import javax.validation.Valid
-import javax.validation.constraints.Size
 
 @Api("Project Description")
 @RequestMapping("/api/project/{projectId}/description")
@@ -25,7 +25,10 @@ interface ProjectDescriptionApi {
 
     @ApiOperation("Retrieve all project description sections")
     @GetMapping
-    fun getProjectDescription(@PathVariable projectId: Long): OutputProjectDescription
+    fun getProjectDescription(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): OutputProjectDescription
 
     @ApiOperation("Update project overall objective")
     @PutMapping("/c1", consumes = [MediaType.APPLICATION_JSON_VALUE])
@@ -38,28 +41,28 @@ interface ProjectDescriptionApi {
     @PutMapping("/c2", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectRelevance(
         @PathVariable projectId: Long,
-        @Valid @RequestBody project: InputProjectRelevance
+        @Valid @RequestBody projectRelevance: InputProjectRelevance
     ): InputProjectRelevance
 
     @ApiOperation("Update project partnership")
     @PutMapping("/c3", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnership(
         @PathVariable projectId: Long,
-        @Valid @RequestBody partnership: InputProjectPartnership
+        @Valid @RequestBody projectPartnership: InputProjectPartnership
     ): InputProjectPartnership?
 
     @ApiOperation("Update project management data")
     @PutMapping("/c7", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectManagement(
         @PathVariable projectId: Long,
-        @Valid @RequestBody project: InputProjectManagement
+        @Valid @RequestBody projectManagement: InputProjectManagement
     ): OutputProjectManagement
 
     @ApiOperation("Update project long term plans")
     @PutMapping("/c8", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectLongTermPlans(
         @PathVariable projectId: Long,
-        @Valid @RequestBody project: InputProjectLongTermPlans
+        @Valid @RequestBody projectLongTermPlans: InputProjectLongTermPlans
     ): OutputProjectLongTermPlans
 
 }

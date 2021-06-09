@@ -9,7 +9,7 @@ import javax.persistence.OneToMany
  * C1
  */
 @Entity(name = "project_description_c1_overall_objective")
-data class ProjectOverallObjective(
+data class ProjectOverallObjectiveEntity(
 
     @Id
     val projectId: Long,

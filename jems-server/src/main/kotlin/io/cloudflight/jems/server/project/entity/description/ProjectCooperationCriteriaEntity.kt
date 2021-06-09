@@ -4,7 +4,7 @@ import javax.persistence.Embeddable
 import javax.validation.constraints.NotNull
 
 @Embeddable
-data class ProjectCooperationCriteria(
+data class ProjectCooperationCriteriaEntity(
 
     @field:NotNull
     val projectJointDevelopment: Boolean = false,
@@ -19,7 +19,7 @@ data class ProjectCooperationCriteria(
     val projectJointFinancing: Boolean = false
 
 ) {
-    fun ifNotEmpty(): ProjectCooperationCriteria? {
+    fun ifNotEmpty(): ProjectCooperationCriteriaEntity? {
         if (projectJointDevelopment
             || projectJointImplementation
             || projectJointStaffing

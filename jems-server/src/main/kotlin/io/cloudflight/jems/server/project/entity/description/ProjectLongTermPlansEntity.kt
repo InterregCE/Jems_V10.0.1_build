@@ -8,18 +8,16 @@ import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 /**
- * C3
+ * C8
  */
-@Entity(name = "project_description_c3_partnership")
-data class ProjectPartnership(
+@Entity(name = "project_description_c8_long_term_plans")
+data class ProjectLongTermPlansEntity(
 
     @Id
     @Column(name = "project_id")
     @field:NotNull
     val projectId: Long,
 
-    // projectPartnership
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.projectId")
-    val translatedValues: Set<ProjectPartnershipTransl> = emptySet()
-
+    val translatedValues: Set<ProjectLongTermPlansTransl> = emptySet()
 )

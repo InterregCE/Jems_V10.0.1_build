@@ -57,11 +57,11 @@ class ProjectDescriptionControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.projectOverallObjective").isEmpty()) // c1
-            .andExpect(jsonPath("$.projectRelevance").isEmpty()) // c2
-            .andExpect(jsonPath("$.projectPartnership").isEmpty()) // c3
-            .andExpect(jsonPath("$.projectManagement").isEmpty()) // c7
-            .andExpect(jsonPath("$.projectLongTermPlans").isEmpty()) // c8
+            .andExpect(jsonPath("$.projectOverallObjective").isEmpty) // c1
+            .andExpect(jsonPath("$.projectRelevance").isEmpty) // c2
+            .andExpect(jsonPath("$.projectPartnership").isEmpty) // c3
+            .andExpect(jsonPath("$.projectManagement").isEmpty) // c7
+            .andExpect(jsonPath("$.projectLongTermPlans").isEmpty) // c8
     }
 
     @Test

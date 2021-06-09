@@ -1,45 +1,51 @@
 package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.description.InputProjectCooperationCriteria
-import io.cloudflight.jems.api.project.dto.description.InputProjectHorizontalPrinciples
-import io.cloudflight.jems.api.project.dto.description.InputProjectLongTermPlans
-import io.cloudflight.jems.api.project.dto.description.InputProjectManagement
-import io.cloudflight.jems.api.project.dto.description.InputProjectOverallObjective
-import io.cloudflight.jems.api.project.dto.description.InputProjectPartnership
-import io.cloudflight.jems.api.project.dto.description.InputProjectRelevance
-import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceBenefit
-import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceStrategy
-import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceSynergy
-import io.cloudflight.jems.api.project.dto.description.OutputProjectLongTermPlans
-import io.cloudflight.jems.api.project.dto.description.OutputProjectManagement
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.TranslationId
 import io.cloudflight.jems.server.project.entity.TranslationUuId
-import io.cloudflight.jems.server.project.entity.description.ProjectCooperationCriteria
-import io.cloudflight.jems.server.project.entity.description.ProjectHorizontalPrinciples
-import io.cloudflight.jems.server.project.entity.description.ProjectLongTermPlans
+import io.cloudflight.jems.server.project.entity.description.ProjectCooperationCriteriaEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectHorizontalPrinciplesEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectLongTermPlansEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectLongTermPlansRow
 import io.cloudflight.jems.server.project.entity.description.ProjectLongTermPlansTransl
-import io.cloudflight.jems.server.project.entity.description.ProjectManagement
+import io.cloudflight.jems.server.project.entity.description.ProjectManagementEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectManagementRow
 import io.cloudflight.jems.server.project.entity.description.ProjectManagementTransl
-import io.cloudflight.jems.server.project.entity.description.ProjectOverallObjective
+import io.cloudflight.jems.server.project.entity.description.ProjectOverallObjectiveEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectOverallObjectiveRow
 import io.cloudflight.jems.server.project.entity.description.ProjectOverallObjectiveTransl
-import io.cloudflight.jems.server.project.entity.description.ProjectPartnership
+import io.cloudflight.jems.server.project.entity.description.ProjectPartnershipEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectPartnershipRow
 import io.cloudflight.jems.server.project.entity.description.ProjectPartnershipTransl
-import io.cloudflight.jems.server.project.entity.description.ProjectRelevance
-import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceBenefit
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceBenefitEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceBenefitRow
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceBenefitTransl
-import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStrategy
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceRow
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStrategyEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStrategyRow
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStrategyTransl
-import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSynergy
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSynergyEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSynergyRow
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSynergyTransl
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceTransl
+import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
+import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
+import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
+import io.cloudflight.jems.server.project.service.model.ProjectManagement
+import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
+import io.cloudflight.jems.server.project.service.model.ProjectPartnership
+import io.cloudflight.jems.server.project.service.model.ProjectRelevance
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
 import java.util.UUID
-import kotlin.collections.HashSet
 
 // region Project Relevance
 
-fun InputProjectRelevance.toEntity(projectId: Long) =
-    ProjectRelevance(
+fun ProjectRelevance.toEntity(projectId: Long) =
+    ProjectRelevanceEntity(
         projectId = projectId,
         translatedValues = combineTranslatedValuesRelevance(
             projectId,
@@ -81,23 +87,61 @@ fun combineTranslatedValuesRelevance(
     }
 }
 
-fun ProjectRelevance.toOutputProjectRelevance() =
-    InputProjectRelevance(
+fun List<ProjectRelevanceRow>.toProjectRelevance(
+    projectBenefits: List<ProjectRelevanceBenefit>,
+    projectStrategies: List<ProjectRelevanceStrategy>,
+    projectSynergies: List<ProjectRelevanceSynergy>
+) = this.groupBy { it.projectId }.map { groupedRows ->
+        ProjectRelevance(
+            territorialChallenge = groupedRows.value.extractField { it.territorialChallenge } ,
+            commonChallenge = groupedRows.value.extractField { it.commonChallenge } ,
+            transnationalCooperation = groupedRows.value.extractField { it.transnationalCooperation },
+            projectBenefits = projectBenefits,
+            projectStrategies = projectStrategies,
+            projectSynergies = projectSynergies,
+            availableKnowledge = groupedRows.value.extractField { it.availableKnowledge }
+        )
+    }.first()
+
+fun List<ProjectRelevanceBenefitRow>.toRelevanceBenefits() =
+    this.groupBy { it.id }.map { groupedRows ->
+        ProjectRelevanceBenefit(
+            group = groupedRows.value.first().targetGroup,
+            specification = groupedRows.value.extractField { it.specification }
+        )
+    }
+fun List<ProjectRelevanceStrategyRow>.toRelevanceStrategies() =
+    this.groupBy { it.id }.map { groupedRows ->
+        ProjectRelevanceStrategy(
+            strategy = groupedRows.value.first().strategy,
+            specification = groupedRows.value.extractField { it.specification }
+        )
+    }
+fun List<ProjectRelevanceSynergyRow>.toRelevanceSynergies() =
+    this.groupBy { it.id }.map { groupedRows ->
+        ProjectRelevanceSynergy(
+            synergy = groupedRows.value.extractField { it.synergy },
+            specification = groupedRows.value.extractField { it.specification }
+        )
+    }
+
+fun ProjectRelevanceEntity.toProjectRelevance() =
+    ProjectRelevance(
         territorialChallenge = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.territorialChallenge) },
         commonChallenge = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.commonChallenge) },
         transnationalCooperation = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.transnationalCooperation) },
         availableKnowledge = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.availableKnowledge) },
-        projectBenefits = projectBenefits.map { it.toOutputProjectBenefit() },
-        projectStrategies = projectStrategies.map { it.toOutputProjectStrategy() },
-        projectSynergies = projectSynergies.map { it.toOutputProjectSynergy() }
+        projectBenefits = projectBenefits.map { it.toProjectBenefit() },
+        projectStrategies = projectStrategies.map { it.toProjectStrategy() },
+        projectSynergies = projectSynergies.map { it.toProjectSynergy() }
     )
 // endregion Project Relevance
 
 // region Project Relevance Benefit
 
-fun InputProjectRelevanceBenefit.toEntity(): ProjectRelevanceBenefit {
+fun ProjectRelevanceBenefit.toEntity(): ProjectRelevanceBenefitEntity {
     val id = UUID.randomUUID()
-    return ProjectRelevanceBenefit(
+    return ProjectRelevanceBenefitEntity(
         id = id,
         targetGroup = group,
         translatedValues = combineTranslatedValuesBenefit(id, specification)
@@ -116,7 +160,7 @@ fun combineTranslatedValuesBenefit(uuid: UUID, specification: Set<InputTranslati
     }
 }
 
-fun ProjectRelevanceBenefit.toOutputProjectBenefit() = InputProjectRelevanceBenefit(
+fun ProjectRelevanceBenefitEntity.toProjectBenefit() = ProjectRelevanceBenefit(
     group = targetGroup,
     specification = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.specification) }
 )
@@ -124,9 +168,9 @@ fun ProjectRelevanceBenefit.toOutputProjectBenefit() = InputProjectRelevanceBene
 
 // region Project Relevance Strategy
 
-fun InputProjectRelevanceStrategy.toEntity(): ProjectRelevanceStrategy {
+fun ProjectRelevanceStrategy.toEntity(): ProjectRelevanceStrategyEntity {
     val id = UUID.randomUUID()
-    return ProjectRelevanceStrategy(
+    return ProjectRelevanceStrategyEntity(
         id = id,
         strategy = strategy,
         translatedValues = combineTranslatedValuesStrategy(id, specification)
@@ -145,7 +189,7 @@ fun combineTranslatedValuesStrategy(uuid: UUID, specification: Set<InputTranslat
     }
 }
 
-fun ProjectRelevanceStrategy.toOutputProjectStrategy() = InputProjectRelevanceStrategy(
+fun ProjectRelevanceStrategyEntity.toProjectStrategy() = ProjectRelevanceStrategy(
     strategy = strategy,
     specification = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.specification) }
 )
@@ -153,9 +197,9 @@ fun ProjectRelevanceStrategy.toOutputProjectStrategy() = InputProjectRelevanceSt
 
 // region Project Relevance Synergy
 
-fun InputProjectRelevanceSynergy.toEntity(): ProjectRelevanceSynergy {
+fun ProjectRelevanceSynergy.toEntity(): ProjectRelevanceSynergyEntity {
     val id = UUID.randomUUID()
-    return ProjectRelevanceSynergy(
+    return ProjectRelevanceSynergyEntity(
         id = id,
         translatedValues = combineTranslatedValuesSynergy(id, synergy, specification)
     )
@@ -181,28 +225,28 @@ fun combineTranslatedValuesSynergy(
     }
 }
 
-fun ProjectRelevanceSynergy.toOutputProjectSynergy() = InputProjectRelevanceSynergy(
+fun ProjectRelevanceSynergyEntity.toProjectSynergy() = ProjectRelevanceSynergy(
     synergy = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.synergy) },
     specification = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.specification) }
 )
 // endregion Project Relevance Synergy
 
-fun InputProjectManagement.toEntity(projectId: Long) =
-    ProjectManagement(
+fun ProjectManagement.toEntity(projectId: Long) =
+    ProjectManagementEntity(
         projectId = projectId,
         translatedValues = combineTranslatedValuesManagement(
             projectId,
-            projectCoordination,
-            projectQualityAssurance,
-            projectCommunication,
-            projectFinancialManagement,
-            projectJointDevelopmentDescription,
-            projectJointImplementationDescription,
-            projectJointStaffingDescription,
-            projectJointFinancingDescription,
-            sustainableDevelopmentDescription,
-            equalOpportunitiesDescription,
-            sexualEqualityDescription,
+            projectCoordination ?: emptySet(),
+            projectQualityAssurance ?: emptySet(),
+            projectCommunication ?: emptySet(),
+            projectFinancialManagement ?: emptySet(),
+            projectJointDevelopmentDescription ?: emptySet(),
+            projectJointImplementationDescription ?: emptySet(),
+            projectJointStaffingDescription ?: emptySet(),
+            projectJointFinancingDescription ?: emptySet(),
+            sustainableDevelopmentDescription ?: emptySet(),
+            equalOpportunitiesDescription ?: emptySet(),
+            sexualEqualityDescription ?: emptySet()
         ),
         projectCooperationCriteria = projectCooperationCriteria?.toEntity(),
         projectHorizontalPrinciples = projectHorizontalPrinciples?.toEntity()
@@ -270,7 +314,35 @@ fun combineTranslatedValuesManagement(
     }
 }
 
-fun ProjectManagement.toOutputProjectManagement() = OutputProjectManagement(
+fun List<ProjectManagementRow>.toProjectManagement() =
+    this.groupBy { it.projectId }.map { groupedRows ->
+        ProjectManagement(
+            projectCoordination = groupedRows.value.extractField { it.projectCoordination },
+            projectQualityAssurance = groupedRows.value.extractField { it.projectQualityAssurance },
+            projectCommunication = groupedRows.value.extractField { it.projectCommunication },
+            projectFinancialManagement = groupedRows.value.extractField { it.projectFinancialManagement },
+            projectCooperationCriteria = ProjectCooperationCriteria(
+                projectJointDevelopment = groupedRows.value.first().projectJointDevelopment ?: false,
+                projectJointImplementation = groupedRows.value.first().projectJointImplementation ?: false,
+                projectJointStaffing = groupedRows.value.first().projectJointStaffing ?: false,
+                projectJointFinancing = groupedRows.value.first().projectJointFinancing ?: false
+            ),
+            projectJointDevelopmentDescription = groupedRows.value.extractField { it.projectJointDevelopmentDescription },
+            projectJointImplementationDescription = groupedRows.value.extractField { it.projectJointImplementationDescription },
+            projectJointStaffingDescription = groupedRows.value.extractField { it.projectJointStaffingDescription },
+            projectJointFinancingDescription = groupedRows.value.extractField { it.projectJointFinancingDescription },
+            projectHorizontalPrinciples = ProjectHorizontalPrinciples(
+                sustainableDevelopmentCriteriaEffect = groupedRows.value.first().sustainableDevelopmentCriteriaEffect,
+                equalOpportunitiesEffect = groupedRows.value.first().equalOpportunitiesEffect,
+                sexualEqualityEffect = groupedRows.value.first().sexualEqualityEffect
+            ),
+            sustainableDevelopmentDescription = groupedRows.value.extractField { it.sustainableDevelopmentDescription },
+            equalOpportunitiesDescription = groupedRows.value.extractField { it.equalOpportunitiesDescription },
+            sexualEqualityDescription = groupedRows.value.extractField { it.sexualEqualityDescription }
+        )
+    }.first()
+
+fun ProjectManagementEntity.toProjectManagement() = ProjectManagement(
     projectCoordination = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.projectCoordination)
     },
@@ -283,7 +355,7 @@ fun ProjectManagement.toOutputProjectManagement() = OutputProjectManagement(
     projectFinancialManagement = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.projectFinancialManagement)
     },
-    projectCooperationCriteria = projectCooperationCriteria?.ifNotEmpty()?.toOutputCooperationCriteria(),
+    projectCooperationCriteria = projectCooperationCriteria?.ifNotEmpty()?.toCooperationCriteria(),
     projectJointDevelopmentDescription = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.projectJointDevelopmentDescription)
     },
@@ -296,7 +368,7 @@ fun ProjectManagement.toOutputProjectManagement() = OutputProjectManagement(
     projectJointFinancingDescription = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.projectJointFinancingDescription)
     },
-    projectHorizontalPrinciples = projectHorizontalPrinciples?.ifNotEmpty()?.toOutputHorizontalPrinciples(),
+    projectHorizontalPrinciples = projectHorizontalPrinciples?.ifNotEmpty()?.toHorizontalPrinciples(),
     sustainableDevelopmentDescription = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.sustainableDevelopmentDescription)
     },
@@ -308,8 +380,8 @@ fun ProjectManagement.toOutputProjectManagement() = OutputProjectManagement(
     },
 )
 
-fun InputProjectLongTermPlans.toEntity(projectId: Long) =
-    ProjectLongTermPlans(
+fun ProjectLongTermPlans.toEntity(projectId: Long) =
+    ProjectLongTermPlansEntity(
         projectId = projectId,
         translatedValues = combineTranslatedValuesLongTermPlans(
             projectId,
@@ -343,7 +415,16 @@ fun combineTranslatedValuesLongTermPlans(
     }
 }
 
-fun ProjectLongTermPlans.toOutputProjectLongTermPlans() = OutputProjectLongTermPlans(
+fun List<ProjectLongTermPlansRow>.toProjectLongTermPlans() =
+    this.groupBy { it.projectId }.map { groupedRows ->
+        ProjectLongTermPlans(
+            projectOwnership = groupedRows.value.extractField { it.projectOwnership },
+            projectDurability = groupedRows.value.extractField { it.projectDurability },
+            projectTransferability = groupedRows.value.extractField { it.projectTransferability }
+        )
+    }.first()
+
+fun ProjectLongTermPlansEntity.toProjectLongTermPlans() = ProjectLongTermPlans(
     projectOwnership = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.translationId.language, it.projectOwnership)
     },
@@ -355,26 +436,26 @@ fun ProjectLongTermPlans.toOutputProjectLongTermPlans() = OutputProjectLongTermP
     },
 )
 
-fun InputProjectHorizontalPrinciples.toEntity() = ProjectHorizontalPrinciples(
+fun ProjectHorizontalPrinciples.toEntity() = ProjectHorizontalPrinciplesEntity(
     sustainableDevelopmentCriteriaEffect = sustainableDevelopmentCriteriaEffect,
     equalOpportunitiesEffect = equalOpportunitiesEffect,
     sexualEqualityEffect = sexualEqualityEffect
 )
 
-fun ProjectHorizontalPrinciples.toOutputHorizontalPrinciples() = InputProjectHorizontalPrinciples(
+fun ProjectHorizontalPrinciplesEntity.toHorizontalPrinciples() = ProjectHorizontalPrinciples(
     sustainableDevelopmentCriteriaEffect = sustainableDevelopmentCriteriaEffect,
     equalOpportunitiesEffect = equalOpportunitiesEffect,
     sexualEqualityEffect = sexualEqualityEffect
 )
 
-fun InputProjectCooperationCriteria.toEntity() = ProjectCooperationCriteria(
+fun ProjectCooperationCriteria.toEntity() = ProjectCooperationCriteriaEntity(
     projectJointDevelopment = projectJointDevelopment,
     projectJointImplementation = projectJointImplementation,
     projectJointStaffing = projectJointStaffing,
     projectJointFinancing = projectJointFinancing
 )
 
-fun ProjectCooperationCriteria.toOutputCooperationCriteria() = InputProjectCooperationCriteria(
+fun ProjectCooperationCriteriaEntity.toCooperationCriteria() = ProjectCooperationCriteria(
     projectJointDevelopment = projectJointDevelopment,
     projectJointImplementation = projectJointImplementation,
     projectJointStaffing = projectJointStaffing,
@@ -383,8 +464,8 @@ fun ProjectCooperationCriteria.toOutputCooperationCriteria() = InputProjectCoope
 
 // region Project Overall Objective
 
-fun InputProjectOverallObjective.toEntity(projectId: Long) =
-    ProjectOverallObjective(
+fun ProjectOverallObjective.toEntity(projectId: Long) =
+    ProjectOverallObjectiveEntity(
         projectId = projectId,
         translatedValues = combineTranslatedValuesOverallObjective(
             projectId,
@@ -407,8 +488,15 @@ fun combineTranslatedValuesOverallObjective(
     }
 }
 
-fun ProjectOverallObjective.toOutputProjectOverallObjective() =
-    InputProjectOverallObjective(
+fun List<ProjectOverallObjectiveRow>.toProjectOverallObjective() =
+    this.groupBy { it.projectId }.map { groupedRows ->
+        ProjectOverallObjective(
+            overallObjective = groupedRows.value.extractField { it.overallObjective }
+        )
+    }.first()
+
+fun ProjectOverallObjectiveEntity.toProjectOverallObjective() =
+    ProjectOverallObjective(
         overallObjective = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.overallObjective) }
     )
 
@@ -416,8 +504,8 @@ fun ProjectOverallObjective.toOutputProjectOverallObjective() =
 
 // region Project Partnership
 
-fun InputProjectPartnership.toEntity(projectId: Long) =
-    ProjectPartnership(
+fun ProjectPartnership.toEntity(projectId: Long) =
+    ProjectPartnershipEntity(
         projectId = projectId,
         translatedValues = combineTranslatedValuesPartnership(
             projectId,
@@ -440,8 +528,15 @@ fun combineTranslatedValuesPartnership(
     }
 }
 
-fun ProjectPartnership.toOutputProjectPartnership() =
-    InputProjectPartnership(
+fun List<ProjectPartnershipRow>.toProjectPartnership() =
+    this.groupBy { it.projectId }.map { groupedRows ->
+        ProjectPartnership(
+            partnership = groupedRows.value.extractField { it.projectPartnership }
+        )
+    }.first()
+
+fun ProjectPartnershipEntity.toProjectPartnership() =
+    ProjectPartnership(
         partnership = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.projectPartnership) }
     )
 

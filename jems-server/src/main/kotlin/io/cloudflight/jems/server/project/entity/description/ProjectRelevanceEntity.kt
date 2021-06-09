@@ -11,7 +11,7 @@ import javax.persistence.OneToMany
  * C2
  */
 @Entity(name = "project_description_c2_relevance")
-data class ProjectRelevance(
+data class ProjectRelevanceEntity(
 
     @Id
     @Column(name = "project_id")
@@ -24,17 +24,17 @@ data class ProjectRelevance(
     // C2.4
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "project_relevance_id", nullable = false, insertable = true)
-    val projectBenefits: Set<ProjectRelevanceBenefit> = emptySet(),
+    val projectBenefits: Set<ProjectRelevanceBenefitEntity> = emptySet(),
 
     // C2.5
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "project_relevance_id", nullable = false, insertable = true)
-    val projectStrategies: Set<ProjectRelevanceStrategy> = emptySet(),
+    val projectStrategies: Set<ProjectRelevanceStrategyEntity> = emptySet(),
 
     // C2.6
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "project_relevance_id", nullable = false, insertable = true)
-    val projectSynergies: Set<ProjectRelevanceSynergy> = emptySet()
+    val projectSynergies: Set<ProjectRelevanceSynergyEntity> = emptySet()
 
 ) {
 
