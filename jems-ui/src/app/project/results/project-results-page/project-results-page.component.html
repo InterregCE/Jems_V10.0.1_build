@@ -1,7 +1,8 @@
 <app-project-page-template *ngIf="data$ | async as data"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle}"
                            subTitleKey="project.application.form.section.part.c">
-    <app-form (save)="updateResults()">
+    <app-form (save)="updateResults()"
+              (discard)="resetForm(data.results)">
         <form appFormLayout [formGroup]="form">
             <h3>{{'project.application.form.section.part.c.subsection.five' | translate}}</h3>
             <p>{{'project.results.intro' | translate}}</p>

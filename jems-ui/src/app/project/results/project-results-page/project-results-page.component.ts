@@ -4,13 +4,11 @@ import {ProjectResultsPageStore} from './project-results-page-store.service';
 import {ProjectResultsPageConstants} from './project-results-page.constants';
 import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {catchError, map, startWith, tap} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {InputTranslation, ProjectPeriodDTO, ProjectResultDTO, ResultIndicatorSummaryDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 import {ActivatedRoute} from '@angular/router';
 
-@UntilDestroy()
 @Component({
   selector: 'app-project-results-page',
   templateUrl: './project-results-page.component.html',
@@ -43,14 +41,6 @@ export class ProjectResultsPageComponent implements OnInit {
 
   ngOnInit(): void {
 
-    combineLatest([
-      this.projectResultsPageStore.results$, this.formService.reset$.pipe(startWith(null))
-    ])
-      .pipe(
-        map(([results]) => this.resetForm(results)),
-        untilDestroyed(this)
-      ).subscribe();
-
     this.data$ = combineLatest([
       this.projectResultsPageStore.results$,
       this.projectResultsPageStore.resultIndicators$,
@@ -61,7 +51,8 @@ export class ProjectResultsPageComponent implements OnInit {
       .pipe(
         map(([results, resultIndicators, periods, projectId, projectTitle]) => (
           {results, resultIndicators, periods, projectId, projectTitle})
-        )
+        ),
+        tap(data => this.resetForm(data.results))
       );
   }
 
@@ -99,7 +90,7 @@ export class ProjectResultsPageComponent implements OnInit {
     return indicators.find(indicator => indicator.id === indicatorId)?.measurementUnit || [];
   }
 
-  private resetForm(results: ProjectResultDTO[]): void {
+  resetForm(results: ProjectResultDTO[]): void {
     this.results.clear();
     results.forEach((result) => this.addResult(result));
     this.formService.resetEditable();
