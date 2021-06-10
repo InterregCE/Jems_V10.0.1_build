@@ -60,8 +60,8 @@
       [
         "src",
         "@cat/api",
-        "@common/components",
-        "@common/validation"
+        "@project",
+        "@common"
       ],
       "dev"
     ],

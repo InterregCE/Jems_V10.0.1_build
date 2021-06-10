@@ -28,7 +28,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     investment: WorkPackageInvestmentDTO,
     workPackageNumber: number,
     nuts: OutputNuts[]
-  }>
+  }>;
 
 
   workPackageInvestmentForm: FormGroup = this.formBuilder.group({
@@ -75,7 +75,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     ]).pipe(
       map(([investment, workPackageNumber, nuts]) => ({investment, workPackageNumber, nuts})),
       tap(data => this.resetForm(data.investment, data.workPackageNumber))
-    )
+    );
   }
 
   onSubmit(): void {
@@ -111,7 +111,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
 
   private resetForm(investment: WorkPackageInvestmentDTO, workPackageNumber: number): void {
     this.workPackageInvestmentForm.controls.number?.setValue(investment?.investmentNumber ? `${workPackageNumber}.${investment?.investmentNumber}` : '');
-    this.workPackageInvestmentForm.controls.number.disable()
+    this.workPackageInvestmentForm.controls.number.disable();
     this.workPackageInvestmentForm.controls.title?.setValue(investment?.title || []);
     this.workPackageInvestmentForm.controls.justificationExplanation?.setValue(investment?.justificationExplanation || []);
     this.workPackageInvestmentForm.controls.justificationTransactionalRelevance?.setValue(investment?.justificationTransactionalRelevance || []);

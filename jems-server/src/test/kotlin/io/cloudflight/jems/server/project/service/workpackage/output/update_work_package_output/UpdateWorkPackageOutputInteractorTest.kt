@@ -37,13 +37,13 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
     @Test
     fun `delete work package outputs from a work package`() {
         every { persistence.updateWorkPackageOutputs(1L, any()) } returns emptyList()
-        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(1L, emptyList())).isEmpty()
+        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(1L, 1L, emptyList())).isEmpty()
     }
 
     @Test
     fun `update - valid`() {
         every { persistence.updateWorkPackageOutputs(2L, any()) } returnsArgument 1
-        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(2L, listOf(testOutput)))
+        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(1L, 2L, listOf(testOutput)))
             .containsExactly(testOutput)
     }
 
@@ -51,7 +51,7 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
     fun `update - too many outputs`() {
         every { mockedList.size } returns 11
         val ex = assertThrows<I18nValidationException> {
-            updateOutputInteractor.updateOutputsForWorkPackage(3L, mockedList)
+            updateOutputInteractor.updateOutputsForWorkPackage(1L, 3L, mockedList)
         }
         assertThat(ex.i18nKey).isEqualTo("project.workPackage.outputs.max.allowed.reached")
     }
@@ -66,7 +66,7 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
 
     private fun assertTargetValueThrowException(value: BigDecimal) {
         val toBeSaved = listOf(testOutput.copy(targetValue = value))
-        val exception = assertThrows<I18nValidationException> { updateOutputInteractor.updateOutputsForWorkPackage(10L, toBeSaved) }
+        val exception = assertThrows<I18nValidationException> { updateOutputInteractor.updateOutputsForWorkPackage(1L, 10L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("project.workPackage.targetValue.not.valid")
     }
 

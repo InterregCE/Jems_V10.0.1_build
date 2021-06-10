@@ -76,7 +76,7 @@ class ProjectWorkPackageOutputControllerTest {
     @Test
     fun `updateOutputs - test if persistence method is called with correct arguments`() {
         val outputsSlot = slot<List<WorkPackageOutput>>()
-        every { updateOutputInteractor.updateOutputsForWorkPackage(1L, 1L, capture(outputsSlot)) } returnsArgument 1
+        every { updateOutputInteractor.updateOutputsForWorkPackage(1L, 1L, capture(outputsSlot)) } returnsArgument 2
 
         val outputDto1 = WorkPackageOutputDTO(
             title = setOf(InputTranslation(EN, null), InputTranslation(CS, ""), InputTranslation(SK, "sk_title")),

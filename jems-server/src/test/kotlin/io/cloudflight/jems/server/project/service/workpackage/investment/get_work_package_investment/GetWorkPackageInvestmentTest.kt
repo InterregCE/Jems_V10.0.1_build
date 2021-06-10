@@ -16,11 +16,11 @@ internal class GetWorkPackageInvestmentTest : UnitTestWorkPackageInvestmentBase(
     @Test
     fun `should return the workPackageInvestment when workPackageInvestment already exists`() {
         val workPackageInvestment = createWorkPackageInvestment(workPackageInvestmentId)
-        every { persistence.getWorkPackageInvestment(workPackageInvestmentId) } returns workPackageInvestment
+        every { persistence.getWorkPackageInvestment(workPackageInvestmentId, 1L) } returns workPackageInvestment
 
-        val createdWorkPackageInvestment = getWorkPackageInvestment.getWorkPackageInvestment(workPackageInvestmentId)
+        val createdWorkPackageInvestment = getWorkPackageInvestment.getWorkPackageInvestment(1L, workPackageInvestmentId)
 
-        verify(exactly = 1) { persistence.getWorkPackageInvestment(workPackageInvestmentId) }
+        verify(exactly = 1) { persistence.getWorkPackageInvestment(workPackageInvestmentId, 1L) }
         confirmVerified(persistence)
 
         Assertions.assertEquals(workPackageInvestment, createdWorkPackageInvestment)

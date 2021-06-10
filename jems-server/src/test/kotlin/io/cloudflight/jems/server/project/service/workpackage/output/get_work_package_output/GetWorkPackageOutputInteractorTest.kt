@@ -41,14 +41,14 @@ class GetWorkPackageOutputInteractorTest {
 
     @Test
     fun `get work package outputs returns empty list`() {
-        every { persistence.getWorkPackageOutputsForWorkPackage(10L) } returns emptyList()
-        assertThat(getWorkPackageOutputInteractor.getOutputsForWorkPackage(10L)).isEmpty()
+        every { persistence.getWorkPackageOutputsForWorkPackage(10L, 1L) } returns emptyList()
+        assertThat(getWorkPackageOutputInteractor.getOutputsForWorkPackage(1L, 10L)).isEmpty()
     }
 
     @Test
     fun `get work package outputs`() {
-        every { persistence.getWorkPackageOutputsForWorkPackage(1L) } returns listOf(testOutput1, testOutput2)
-        assertThat(getWorkPackageOutputInteractor.getOutputsForWorkPackage(1L))
+        every { persistence.getWorkPackageOutputsForWorkPackage(1L, 1L) } returns listOf(testOutput1, testOutput2)
+        assertThat(getWorkPackageOutputInteractor.getOutputsForWorkPackage(1L, 1L))
             .containsExactly(testOutput1, testOutput2)
     }
 }

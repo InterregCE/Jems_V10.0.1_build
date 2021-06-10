@@ -18,7 +18,7 @@ internal class UpdateWorkPackageInvestmentTest : UnitTestWorkPackageInvestmentBa
 
         every { persistence.updateWorkPackageInvestment(workPackageId, workPackageInvestment) } returns Unit
 
-        updateWorkPackageInvestment.updateWorkPackageInvestment(workPackageId, workPackageInvestment)
+        updateWorkPackageInvestment.updateWorkPackageInvestment(1L, workPackageId, workPackageInvestment)
 
         verify(exactly = 1) { persistence.updateWorkPackageInvestment(workPackageId, workPackageInvestment) }
         confirmVerified(persistence)

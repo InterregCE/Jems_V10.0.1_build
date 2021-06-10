@@ -39,6 +39,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries.GetProjectInvestmentSummariesInteractor
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.cloudflight.jems.server.user.controller.toDto
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
@@ -116,6 +117,9 @@ class ProjectControllerTest {
 
     @MockK
     lateinit var getProjectInteractor: GetProjectInteractor
+
+    @MockK
+    lateinit var getProjectInvestmentSummariesInteractor: GetProjectInvestmentSummariesInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectController

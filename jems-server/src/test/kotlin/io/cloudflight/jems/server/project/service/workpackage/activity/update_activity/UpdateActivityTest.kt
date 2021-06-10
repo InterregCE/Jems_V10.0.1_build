@@ -96,7 +96,7 @@ internal class UpdateActivityTest {
     @Test
     fun `update activities when start period is after end period`() {
         val toBeSaved = listOf(WorkPackageActivity(startPeriod = 2568, endPeriod = 2567))
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(6L, toBeSaved) }
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 6L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.startPeriod.is.after.endPeriod")
     }
 
@@ -107,7 +107,7 @@ internal class UpdateActivityTest {
             title = getStringOfLength(201)
         )
         val toBeSaved = listOf(WorkPackageActivity(translatedValues = setOf(translation)))
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(7L, toBeSaved) }
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 7L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.title.size.too.long")
     }
 
@@ -118,7 +118,7 @@ internal class UpdateActivityTest {
             description = getStringOfLength(501)
         )
         val toBeSaved = listOf(WorkPackageActivity(translatedValues = setOf(translation)))
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(8L, toBeSaved) }
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 8L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.description.size.too.long")
     }
 
@@ -129,7 +129,7 @@ internal class UpdateActivityTest {
             description = getStringOfLength(201)
         )
         val toBeSaved = listOf(WorkPackageActivity(deliverables = listOf(WorkPackageActivityDeliverable(translatedValues = setOf(translation)))))
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(9L, toBeSaved) }
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 9L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.deliverable.description.size.too.long")
     }
 
