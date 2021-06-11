@@ -27,6 +27,8 @@ import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackag
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimple
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimpleHistoricalData
+import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageHistoricalData
+import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageOutputHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
 import java.sql.Timestamp
 import org.springframework.stereotype.Repository
@@ -44,25 +46,15 @@ class WorkPackagePersistenceProvider(
 ) : WorkPackagePersistence {
 
     @Transactional(readOnly = true)
-    override fun getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId: Long): List<ProjectWorkPackage> {
-        // fetch all work packages in 1 request
-        val workPackagesPaged = workPackageRepository.findAllByProjectId(projectId)
-        val workPackageIds = workPackagesPaged.mapTo(HashSet()) { it.id }
-
-        // fetch all activities and deliverables in 1 request
-        val activitiesByWorkPackages = workPackageActivityRepository.findAllByActivityIdWorkPackageIdIn(workPackageIds)
-            .groupBy { it.activityId.workPackageId }
-
-        // fetch all outputs in 1 request
-        val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
-            .groupBy { it.outputId.workPackageId }
-
-        return workPackagesPaged.map { wp ->
-            wp.toModel(
-                getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
-                getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
-            )
-        }
+    override fun getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId: Long, version: String?): List<ProjectWorkPackage> {
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                getWorkPackagesForTimePlanInCurrentVersion(projectId)
+            },
+            previousVersionFetcher = { timestamp ->
+                getWorkPackagesForTimePlanInPreviousVersion(projectId, timestamp)
+            }
+        ) ?: emptyList()
     }
 
     @Transactional(readOnly = true)
@@ -282,5 +274,48 @@ class WorkPackagePersistenceProvider(
         }
 
         return investments.toList()
+    }
+
+    private fun getWorkPackagesForTimePlanInCurrentVersion(projectId: Long): List<ProjectWorkPackage> {
+        // fetch all work packages in 1 request
+        val workPackages = workPackageRepository.findAllByProjectId(projectId)
+        val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
+
+        // fetch all activities and deliverables in 1 request
+        val activitiesByWorkPackages = workPackageActivityRepository.findAllByActivityIdWorkPackageIdIn(workPackageIds)
+            .groupBy { it.activityId.workPackageId }
+
+        // fetch all outputs in 1 request
+        val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
+            .groupBy { it.outputId.workPackageId }
+
+        return workPackages.map { wp ->
+            wp.toModel(
+                getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
+                getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
+            )
+        }
+    }
+
+    private fun getWorkPackagesForTimePlanInPreviousVersion(projectId: Long, timestamp: Timestamp): List<ProjectWorkPackage> {
+        // fetch all work packages in 1 request
+        val workPackages = workPackageRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp).toTimePlanWorkPackageHistoricalData()
+        val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
+
+        val activities = workPackageActivityRepository.findAllByActivityIdWorkPackageIdAsOfTimestamp(workPackageIds, timestamp).toTimePlanActivityHistoricalData()
+        activities.forEach{
+            it.deliverables = workPackageActivityRepository.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(it.workPackageId, it.activityNumber, timestamp).toDeliverableHistoricalData()
+        }
+        val activitiesByWorkPackages = activities.groupBy { it.workPackageId }
+
+        // fetch all outputs in 1 request
+        val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdAsOfTimestamp(workPackageIds, timestamp).toTimePlanWorkPackageOutputHistoricalData()
+            .groupBy { it.workPackageId }
+
+        workPackages.forEach {
+            it.activities = activitiesByWorkPackages[it.id]!!
+            it.outputs = outputsByWorkPackages[it.id]!!
+        }
+        return workPackages
     }
 }

@@ -32,7 +32,7 @@ interface ProjectWorkPackageApi {
 
     @ApiOperation("Returns all work packages for a project including outputs and activities")
     @GetMapping("/withOutputsAndActivities")
-    fun getWorkPackagesForTimePlanByProjectId(@PathVariable projectId: Long): List<ProjectWorkPackageDTO>
+    fun getWorkPackagesForTimePlanByProjectId(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<ProjectWorkPackageDTO>
 
     @ApiOperation("Create work package")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

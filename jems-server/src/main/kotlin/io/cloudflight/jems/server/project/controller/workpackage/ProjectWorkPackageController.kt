@@ -22,8 +22,8 @@ class ProjectWorkPackageController(
     override fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple> =
         getWorkPackage.getWorkPackagesByProjectId(projectId, version)
 
-    override fun getWorkPackagesForTimePlanByProjectId(projectId: Long): List<ProjectWorkPackageDTO> =
-        getWorkPackage.getWorkPackagesForTimePlanByProjectId(projectId).toDto()
+    override fun getWorkPackagesForTimePlanByProjectId(projectId: Long, version: String?): List<ProjectWorkPackageDTO> =
+        getWorkPackage.getWorkPackagesForTimePlanByProjectId(projectId, version).toDto()
 
     override fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage =
         workPackageService.createWorkPackage(projectId, inputWorkPackageCreate)

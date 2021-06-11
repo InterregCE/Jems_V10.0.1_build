@@ -54,6 +54,7 @@ fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(
 )
 
 fun WorkPackageOutputDTO.toModel() = WorkPackageOutput(
+    workPackageId = workPackageId,
     translatedValues = combineOutputTranslations(title, description),
     periodNumber = periodNumber,
     programmeOutputIndicatorId = programmeOutputIndicatorId,
@@ -64,6 +65,7 @@ fun List<WorkPackageOutputDTO>.toModel() = map { it.toModel() }.toList()
 
 fun List<WorkPackageOutput>.toDto() = map {
     WorkPackageOutputDTO(
+        workPackageId = it.workPackageId,
         outputNumber = it.outputNumber,
         programmeOutputIndicatorId = it.programmeOutputIndicatorId,
         programmeOutputIndicatorIdentifier = it.programmeOutputIndicatorIdentifier,

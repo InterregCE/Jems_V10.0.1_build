@@ -18,6 +18,7 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
 
     companion object {
         private val testOutput = WorkPackageOutput(
+            workPackageId = 1L,
             translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test")),
             periodNumber = 10,
             programmeOutputIndicatorId = 7L,

@@ -31,7 +31,7 @@ class GetProjectResultTest: UnitTest() {
 
     @Test
     fun getResultsForProject() {
-        every { persistence.getResultsForProject(1L) } returns listOf(result1)
-        assertThat(getProjectResult.getResultsForProject(1L)).containsExactly(result1.copy())
+        every { persistence.getResultsForProject(1L, null) } returns listOf(result1)
+        assertThat(getProjectResult.getResultsForProject(1L, null)).containsExactly(result1.copy())
     }
 }

@@ -10,14 +10,15 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Project Result")
-@RequestMapping("/api/project/result/perProject/{projectId}")
+@RequestMapping("/api/project/{projectId}/result")
 interface ProjectResultApi {
 
     @ApiOperation("Returns all project results")
     @GetMapping
-    fun getProjectResults(@PathVariable projectId: Long): List<ProjectResultDTO>
+    fun getProjectResults(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<ProjectResultDTO>
 
     @ApiOperation("Creates or updates project results")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

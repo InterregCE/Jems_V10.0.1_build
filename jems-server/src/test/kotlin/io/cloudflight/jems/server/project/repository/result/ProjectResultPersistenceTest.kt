@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultId
 import io.cloudflight.jems.server.project.entity.result.ProjectResultTransl
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.result.model.ProjectResultTranslatedValue
@@ -94,13 +95,19 @@ class ProjectResultPersistenceTest: UnitTest() {
     @RelaxedMockK
     lateinit var indicatorRepository: ResultIndicatorRepository
 
+    @RelaxedMockK
+    lateinit var projectVersionUtils: ProjectVersionUtils
+
+    @RelaxedMockK
+    lateinit var projectResultRepository: ProjectResultRepository
+
     @InjectMockKs
     private lateinit var persistence: ProjectResultPersistenceProvider
 
     @Test
     fun `get project results - not-existing project`() {
         every { projectRepository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getResultsForProject(-1) }
+        val ex = assertThrows<ResourceNotFoundException> { persistence.getResultsForProject(-1, null) }
         assertThat(ex.entity).isEqualTo("project")
     }
 
@@ -109,7 +116,7 @@ class ProjectResultPersistenceTest: UnitTest() {
         every { projectRepository.findById(eq(1)) } returns Optional.of(project.copy(
             results = setOf(result2, result1)
         ))
-        assertThat(persistence.getResultsForProject(1L)).containsExactly(
+        assertThat(persistence.getResultsForProject(1L, null)).containsExactly(
             result1_model, result2_model,
         )
     }

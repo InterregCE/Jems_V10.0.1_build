@@ -127,6 +127,7 @@ class ProjectWorkPackagePersistenceTest {
             endPeriod = 6
         )
         val activity1_model = WorkPackageActivity(
+            workPackageId = 1L,
             activityNumber = 1,
             startPeriod = 4,
             endPeriod = 6
@@ -155,6 +156,7 @@ class ProjectWorkPackagePersistenceTest {
             deliverables = setOf(deliverable2_2, deliverable2_1)
         )
         val activity2_model = WorkPackageActivity(
+            workPackageId = 1L,
             activityNumber = 2,
             translatedValues = setOf(
                 WorkPackageActivityTranslatedValue(language = SK, title = "sk_title", description = ""),
@@ -199,6 +201,7 @@ class ProjectWorkPackagePersistenceTest {
             programmeOutputIndicatorEntity = indicatorOutput,
         )
         val output1_model = WorkPackageOutput(
+            workPackageId = 1L,
             outputNumber = 1,
             periodNumber = 1,
             programmeOutputIndicatorId = INDICATOR_ID,
@@ -209,6 +212,7 @@ class ProjectWorkPackagePersistenceTest {
             periodNumber = 2,
         )
         val output2_model = WorkPackageOutput(
+            workPackageId = 1L,
             outputNumber = 2,
             periodNumber = 2,
         )
@@ -227,6 +231,7 @@ class ProjectWorkPackagePersistenceTest {
         )
 
         val activity = WorkPackageActivity(
+            workPackageId = 1L,
             translatedValues = setOf(
                 WorkPackageActivityTranslatedValue(language = EN, title = null, description = "en_desc"),
                 WorkPackageActivityTranslatedValue(language = CS, title = "", description = null),
@@ -246,6 +251,7 @@ class ProjectWorkPackagePersistenceTest {
         )
 
         val output = WorkPackageOutput(
+            workPackageId = 1L,
             outputNumber = 1,
             translatedValues = setOf(
                 WorkPackageOutputTranslatedValue(language = EN, title = null, description = "en_desc"),
@@ -335,7 +341,7 @@ class ProjectWorkPackagePersistenceTest {
             )
         } returns listOf(output2, output1)
 
-        val result = persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(1L)
+        val result = persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(1L, null)
         assertThat(result.size).isEqualTo(2)
         assertThat(result.map { it.id }).containsExactly(WORK_PACKAGE_ID, WORK_PACKAGE_ID_2)
         assertThat(result.map { it.workPackageNumber }).containsExactly(1, 2)
@@ -375,6 +381,7 @@ class ProjectWorkPackagePersistenceTest {
         val toBeSaved = listOf(
             activity,
             WorkPackageActivity(
+                workPackageId = 1L,
                 startPeriod = 4,
                 endPeriod = 6,
                 deliverables = listOf(
@@ -460,6 +467,7 @@ class ProjectWorkPackagePersistenceTest {
         val toBeSaved = listOf(
             output,
             WorkPackageOutput(
+                workPackageId = 1L,
                 periodNumber = 7,
                 programmeOutputIndicatorId = null,
             )

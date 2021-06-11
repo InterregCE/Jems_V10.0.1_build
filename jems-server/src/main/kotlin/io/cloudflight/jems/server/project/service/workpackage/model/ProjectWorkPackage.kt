@@ -7,6 +7,6 @@ data class ProjectWorkPackage(
     val id: Long,
     val workPackageNumber: Int,
     val translatedValues: Set<ProjectWorkPackageTranslatedValue> = emptySet(),
-    val activities: List<WorkPackageActivity> = emptyList(),
-    val outputs: List<WorkPackageOutput> = emptyList(),
+    var activities: List<WorkPackageActivity> = emptyList(),
+    var outputs: List<WorkPackageOutput> = emptyList(),
 )

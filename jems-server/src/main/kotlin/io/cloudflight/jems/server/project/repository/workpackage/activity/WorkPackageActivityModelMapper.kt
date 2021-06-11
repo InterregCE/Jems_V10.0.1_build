@@ -14,9 +14,6 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverableTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
-import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
-import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
 
 fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageActivityEntity {
     val activityId = WorkPackageActivityId(workPackageId, index)
@@ -67,6 +64,7 @@ fun Set<WorkPackageActivityDeliverableTranslatedValue>.toEntity(deliverableId: W
     mapTo(HashSet()) { it.toEntity(deliverableId) }
 
 fun WorkPackageActivityEntity.toModel() = WorkPackageActivity(
+    workPackageId = activityId.workPackageId,
     activityNumber = activityId.activityNumber,
     translatedValues = translatedValues.toModel(),
     startPeriod = startPeriod,
@@ -100,6 +98,7 @@ fun Set<WorkPackageActivityDeliverableTranslationEntity>.toDeliverableModel() = 
 fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
     this.groupBy { it.activityNumber }.map { groupedRows ->
         WorkPackageActivity(
+            workPackageId = groupedRows.value.first().workPackageId,
             activityNumber = groupedRows.value.first().activityNumber,
             startPeriod = groupedRows.value.first().startPeriod,
             endPeriod = groupedRows.value.first().endPeriod,
@@ -122,6 +121,23 @@ fun List<WorkPackageDeliverableRow>.toDeliverableHistoricalData() =
                 WorkPackageActivityDeliverableTranslatedValue(
                     language = it.language!!,
                     description = it.description,
+                )
+            }
+        )
+    }
+
+fun List<WorkPackageActivityRow>.toTimePlanActivityHistoricalData() =
+    this.groupBy { Pair(it.activityNumber, it.workPackageId) }.map { groupedRows ->
+        WorkPackageActivity(
+            workPackageId = groupedRows.value.first().workPackageId,
+            activityNumber = groupedRows.value.first().activityNumber,
+            startPeriod = groupedRows.value.first().startPeriod,
+            endPeriod = groupedRows.value.first().endPeriod,
+            translatedValues = groupedRows.value.mapTo(HashSet()) {
+                WorkPackageActivityTranslatedValue(
+                    language = it.language!!,
+                    description = it.description,
+                    title = it.title
                 )
             }
         )

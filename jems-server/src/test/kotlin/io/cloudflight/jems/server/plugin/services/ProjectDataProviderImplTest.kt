@@ -270,6 +270,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             ownershipMaintenance = setOf(InputTranslation(SystemLanguage.EN, "ownershipMaintenance"))
         )
         private val activity = WorkPackageActivity(
+            workPackageId = 1L,
             activityNumber = 2,
             translatedValues = setOf(WorkPackageActivityTranslatedValue(SystemLanguage.EN, "title", "description")),
             startPeriod = 3,
@@ -277,6 +278,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             deliverables = listOf(WorkPackageActivityDeliverable())
         )
         private val workPackageOutput = WorkPackageOutput(
+            workPackageId = 1L,
             outputNumber = 0,
             programmeOutputIndicatorId = null,
             programmeOutputIndicatorIdentifier = "id",

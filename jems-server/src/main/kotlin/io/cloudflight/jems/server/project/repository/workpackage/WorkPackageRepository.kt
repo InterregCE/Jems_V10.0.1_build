@@ -25,7 +25,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
     @Query(
         value ="""
              SELECT
-             entity.id AS id, 
+             entity.id AS id,
              entity.number as number,
              workPackageTransl.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
@@ -43,7 +43,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
     @Query(
         value = """
              SELECT
-             entity.id AS id, 
+             entity.id AS id,
              entity.number as number,
              workPackageTransl.*,
              workPackageTransl.specific_objective as specificObjective,
@@ -62,10 +62,11 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
     @Query(
         value ="""
              SELECT
-             entity.output_number AS outputNumber, 
+             entity.work_package_id AS workPackageId,
+             entity.output_number AS outputNumber,
              entity.indicator_output_id as programmeOutputIndicatorId,
-             (SELECT identifier 
-             FROM programme_indicator_output 
+             (SELECT identifier
+             FROM programme_indicator_output
              WHERE programme_indicator_output.id = entity.indicator_output_id) as programmeOutputIndicatorIdentifier,
              entity.target_value as targetValue,
              CONVERT(entity.period_number, INT) as periodNumber,

@@ -18,12 +18,13 @@ interface WorkPackageActivityRepository : PagingAndSortingRepository<WorkPackage
     @Query(
         """
             SELECT
+                entity.work_package_id as workPackageId,
                 entity.activity_number as activityNumber,
                 CONVERT(entity.start_period, INT) as startPeriod,
                 CONVERT(entity.end_period, INT) as endPeriod,
                 translation.*
                 FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-                LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation 
+                LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation
                     ON entity.work_package_id = translation.work_package_id
                     AND entity.activity_number = translation.activity_number
                 WHERE entity.work_package_id = :workPackageId
@@ -39,9 +40,9 @@ interface WorkPackageActivityRepository : PagingAndSortingRepository<WorkPackage
                 CONVERT(entity.start_period, INT) as startPeriod,
                 translation.*
                 FROM project_work_package_activity_deliverable FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-                LEFT JOIN project_work_package_activity_deliverable_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation 
-                    ON entity.work_package_id = translation.work_package_id 
-                    AND entity.activity_number = translation.activity_number 
+                LEFT JOIN project_work_package_activity_deliverable_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation
+                    ON entity.work_package_id = translation.work_package_id
+                    AND entity.activity_number = translation.activity_number
                     AND entity.deliverable_number = translation.deliverable_number
                 WHERE entity.work_package_id = :workPackageId
                         AND entity.activity_number = :activityNumber
@@ -50,4 +51,21 @@ interface WorkPackageActivityRepository : PagingAndSortingRepository<WorkPackage
     )
     fun findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(workPackageId: Long, activityNumber: Int, timestamp: Timestamp): List<WorkPackageDeliverableRow>
 
+    @Query(
+        """
+            SELECT
+                entity.work_package_id as workPackageId,
+                entity.activity_number as activityNumber,
+                CONVERT(entity.start_period, INT) as startPeriod,
+                CONVERT(entity.end_period, INT) as endPeriod,
+                translation.*
+                FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+                LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation
+                    ON entity.work_package_id = translation.work_package_id
+                    AND entity.activity_number = translation.activity_number
+                WHERE entity.work_package_id IN :workPackageIds
+             """,
+        nativeQuery = true
+    )
+    fun findAllByActivityIdWorkPackageIdAsOfTimestamp(workPackageIds: Collection<Long>, timestamp: Timestamp): List<WorkPackageActivityRow>
 }

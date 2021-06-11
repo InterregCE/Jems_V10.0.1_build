@@ -19,6 +19,7 @@ internal class GetActivityTest {
 
     companion object {
         val activity1 = WorkPackageActivity(
+            workPackageId = 1L,
             translatedValues = setOf(
                 WorkPackageActivityTranslatedValue(language = SystemLanguage.EN, title = null, description = "en_desc"),
                 WorkPackageActivityTranslatedValue(language = SystemLanguage.CS, title = "", description = null),

@@ -12,6 +12,8 @@ import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputRow
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 
@@ -88,6 +90,34 @@ fun  List<WorkPackageRow>.toOutputWorkPackageSimpleHistoricalData() =
 
 fun List<WorkPackageOutputRow>.toWorkPackageOutputsHistoricalData() =
     this.groupBy { it.outputNumber }.map { groupedRows -> WorkPackageOutput(
+        workPackageId = groupedRows.value.first().workPackageId,
+        outputNumber = groupedRows.value.first().outputNumber,
+        programmeOutputIndicatorId = groupedRows.value.first().programmeOutputIndicatorId,
+        programmeOutputIndicatorIdentifier = groupedRows.value.first().programmeOutputIndicatorIdentifier,
+        targetValue = groupedRows.value.first().targetValue,
+        periodNumber = groupedRows.value.first().periodNumber,
+        translatedValues = groupedRows.value.mapTo(HashSet()) { WorkPackageOutputTranslatedValue(
+            language = it.language!!,
+            description = it.description,
+            title = it.title
+        ) }
+    ) }
+
+fun  List<WorkPackageRow>.toTimePlanWorkPackageHistoricalData() =
+    this.groupBy { it.id }.map { groupedRows -> ProjectWorkPackage(
+        id = groupedRows.value.first().id,
+        workPackageNumber = groupedRows.value.first().number!!,
+        translatedValues = groupedRows.value.mapTo(HashSet()) { ProjectWorkPackageTranslatedValue(
+            language = it.language!!,
+            name = it.name,
+            specificObjective = it.specificObjective,
+            objectiveAndAudience = it.objectiveAndAudience
+        ) },
+    ) }.toList()
+
+fun List<WorkPackageOutputRow>.toTimePlanWorkPackageOutputHistoricalData() =
+    this.groupBy { Pair(it.outputNumber, it.workPackageId) }.map { groupedRows -> WorkPackageOutput(
+        workPackageId = groupedRows.value.first().workPackageId,
         outputNumber = groupedRows.value.first().outputNumber,
         programmeOutputIndicatorId = groupedRows.value.first().programmeOutputIndicatorId,
         programmeOutputIndicatorIdentifier = groupedRows.value.first().programmeOutputIndicatorIdentifier,

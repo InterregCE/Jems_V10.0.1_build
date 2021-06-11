@@ -31,6 +31,7 @@ fun List<WorkPackageOutput>.toIndexedEntity(
 
 fun Iterable<WorkPackageOutputEntity>.toModel() = map {
     WorkPackageOutput(
+        workPackageId = it.outputId.workPackageId,
         outputNumber = it.outputId.outputNumber,
         translatedValues = it.translatedValues.toModel(),
         periodNumber = it.periodNumber,

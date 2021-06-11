@@ -26,6 +26,7 @@ class ProjectWorkPackageActivityControllerTest {
 
     companion object {
         val activity1 = WorkPackageActivity(
+            workPackageId = 1L,
             activityNumber = 1,
             translatedValues = setOf(
                 WorkPackageActivityTranslatedValue(language = EN, title = null, description = "en_desc"),
@@ -46,6 +47,7 @@ class ProjectWorkPackageActivityControllerTest {
             ),
         )
         val activity2 = WorkPackageActivity(
+            workPackageId = 1L,
             activityNumber = 2,
             translatedValues = emptySet(),
             startPeriod = 4,
@@ -70,6 +72,7 @@ class ProjectWorkPackageActivityControllerTest {
 
         assertThat(controller.getActivities(1L, 1L)).containsExactly(
             WorkPackageActivityDTO(
+                workPackageId = 1L,
                 activityNumber = 1,
                 title = setOf(InputTranslation(SK, "sk_title")),
                 startPeriod = 1,
@@ -80,6 +83,7 @@ class ProjectWorkPackageActivityControllerTest {
                 ),
             ),
             WorkPackageActivityDTO(
+                workPackageId = 1L,
                 activityNumber = 2,
                 title = emptySet(),
                 startPeriod = 4,
@@ -97,6 +101,7 @@ class ProjectWorkPackageActivityControllerTest {
         every { updateActivityInteractor.updateActivitiesForWorkPackage(1L, 1L, capture(activitiesSlot)) } returns emptyList()
 
         val activityDto1 = WorkPackageActivityDTO(
+                workPackageId = 1L,
                 title = setOf(InputTranslation(EN, null), InputTranslation(CS, ""), InputTranslation(SK, "sk_title")),
                 startPeriod = 1,
                 endPeriod = 2,
@@ -111,6 +116,7 @@ class ProjectWorkPackageActivityControllerTest {
                 ),
         )
         val activityDto2 = WorkPackageActivityDTO(
+                workPackageId = 1L,
                 title = emptySet(),
                 startPeriod = 3,
                 endPeriod = 4,
@@ -122,6 +128,7 @@ class ProjectWorkPackageActivityControllerTest {
 
         assertThat(activitiesSlot.captured).containsExactly(
             WorkPackageActivity(
+                workPackageId = 1L,
                 translatedValues = setOf(
                     WorkPackageActivityTranslatedValue(language = EN, title = null, description = "en_desc"),
                     WorkPackageActivityTranslatedValue(language = SK, title = "sk_title", description = "sk_desc"),
@@ -139,6 +146,7 @@ class ProjectWorkPackageActivityControllerTest {
                 ),
             ),
             WorkPackageActivity(
+                workPackageId = 1L,
                 translatedValues = emptySet(),
                 startPeriod = 3,
                 endPeriod = 4,

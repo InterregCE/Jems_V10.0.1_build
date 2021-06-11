@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service
 class GetWorkPackage(private val persistence: WorkPackagePersistence) : GetWorkPackageInteractor {
 
     @CanRetrieveProject
-    override fun getWorkPackagesForTimePlanByProjectId(projectId: Long): List<ProjectWorkPackage> =
-        persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId)
+    override fun getWorkPackagesForTimePlanByProjectId(projectId: Long, version: String?): List<ProjectWorkPackage> =
+        persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId, version)
 
     @CanRetrieveProject
     override fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple> =

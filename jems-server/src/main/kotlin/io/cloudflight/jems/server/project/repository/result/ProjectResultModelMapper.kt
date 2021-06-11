@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEnti
 import io.cloudflight.jems.server.project.entity.TranslationResultId
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultId
+import io.cloudflight.jems.server.project.entity.result.ProjectResultRow
 import io.cloudflight.jems.server.project.entity.result.ProjectResultTransl
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.result.model.ProjectResultTranslatedValue
@@ -47,3 +48,20 @@ private fun Set<ProjectResultTransl>.toModel() = mapTo(HashSet()) {
         description = it.description,
     )
 }
+
+fun List<ProjectResultRow>.toProjectResultHistoricalData() =
+    this.groupBy { it.resultNumber }.map { groupedRows ->
+        ProjectResult(
+            resultNumber = groupedRows.value.first().resultNumber,
+            programmeResultIndicatorId = groupedRows.value.first().programmeResultIndicatorId,
+            programmeResultIndicatorIdentifier = groupedRows.value.first().programmeResultIndicatorIdentifier,
+            targetValue = groupedRows.value.first().targetValue,
+            periodNumber = groupedRows.value.first().periodNumber,
+            translatedValues = groupedRows.value.mapTo(HashSet()) {
+                ProjectResultTranslatedValue(
+                    language = it.language!!,
+                    description = it.description
+                )
+            }
+        )
+    }.sortedBy { it.resultNumber }

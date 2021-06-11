@@ -24,6 +24,7 @@ class ProjectWorkPackageOutputControllerTest {
 
     companion object {
         val output1 = WorkPackageOutput(
+            workPackageId = 1L,
             outputNumber = 1,
             translatedValues = setOf(
                 WorkPackageOutputTranslatedValue(language = EN, title = null, description = "en_desc"),
@@ -36,6 +37,7 @@ class ProjectWorkPackageOutputControllerTest {
             targetValue = BigDecimal.ONE,
         )
         val output2 = WorkPackageOutput(
+            workPackageId = 1L,
             outputNumber = 2,
             translatedValues = emptySet(),
             periodNumber = 3,
@@ -58,6 +60,7 @@ class ProjectWorkPackageOutputControllerTest {
 
         assertThat(controller.getOutputs(1L, 1L)).containsExactly(
             WorkPackageOutputDTO(
+                workPackageId = 1L,
                 outputNumber = 1,
                 title = setOf(InputTranslation(SK, "sk_title")),
                 periodNumber = 1,
@@ -67,6 +70,7 @@ class ProjectWorkPackageOutputControllerTest {
                 targetValue = BigDecimal.ONE,
             ),
             WorkPackageOutputDTO(
+                workPackageId = 1L,
                 outputNumber = 2,
                 periodNumber = 3,
             ),
@@ -79,6 +83,7 @@ class ProjectWorkPackageOutputControllerTest {
         every { updateOutputInteractor.updateOutputsForWorkPackage(1L, 1L, capture(outputsSlot)) } returnsArgument 2
 
         val outputDto1 = WorkPackageOutputDTO(
+            workPackageId = 1L,
             title = setOf(InputTranslation(EN, null), InputTranslation(CS, ""), InputTranslation(SK, "sk_title")),
             periodNumber = 1,
             programmeOutputIndicatorId = 15,
@@ -86,6 +91,7 @@ class ProjectWorkPackageOutputControllerTest {
             targetValue = BigDecimal.ONE,
         )
         val outputDto2 = WorkPackageOutputDTO(
+            workPackageId = 1L,
             periodNumber = 3,
             targetValue = null,
         )
@@ -94,6 +100,7 @@ class ProjectWorkPackageOutputControllerTest {
 
         assertThat(outputsSlot.captured).containsExactly(
             WorkPackageOutput(
+                workPackageId = 1L,
                 outputNumber = 0,
                 translatedValues = setOf(
                     WorkPackageOutputTranslatedValue(language = EN, title = null, description = "en_desc"),
@@ -104,6 +111,7 @@ class ProjectWorkPackageOutputControllerTest {
                 targetValue = BigDecimal.ONE,
             ),
             WorkPackageOutput(
+                workPackageId = 1L,
                 outputNumber = 0,
                 periodNumber = 3,
             )

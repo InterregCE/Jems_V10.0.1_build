@@ -16,11 +16,13 @@ class GetWorkPackageOutputInteractorTest {
     companion object {
 
         private val testOutput1 = WorkPackageOutput(
+            workPackageId = 1L,
             outputNumber = 1,
             translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test"))
         )
 
         private val testOutput2 = WorkPackageOutput(
+            workPackageId = 1L,
             outputNumber = 2,
             translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test"))
         )

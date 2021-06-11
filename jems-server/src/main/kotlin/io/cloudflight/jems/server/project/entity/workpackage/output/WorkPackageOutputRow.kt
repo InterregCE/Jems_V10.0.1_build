@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.entity.TranslationView
 import java.math.BigDecimal
 
 interface WorkPackageOutputRow: TranslationView {
+    val workPackageId: Long
     val outputNumber: Int
     val programmeOutputIndicatorId: Long?
     val programmeOutputIndicatorIdentifier: String?

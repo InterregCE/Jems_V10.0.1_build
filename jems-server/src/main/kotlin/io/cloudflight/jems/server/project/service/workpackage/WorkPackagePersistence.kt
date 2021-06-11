@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkP
 
 interface WorkPackagePersistence {
 
-    fun getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId: Long): List<ProjectWorkPackage>
+    fun getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId: Long, version: String?): List<ProjectWorkPackage>
     fun getWorkPackagesWithAllDataByProjectId(projectId: Long): List<ProjectWorkPackageFull>
     fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple>
     fun getWorkPackageById(workPackageId: Long, projectId: Long, version: String?): OutputWorkPackage

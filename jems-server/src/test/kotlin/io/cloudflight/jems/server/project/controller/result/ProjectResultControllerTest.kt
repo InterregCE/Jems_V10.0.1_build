@@ -52,7 +52,7 @@ class ProjectResultControllerTest: UnitTest() {
 
     @Test
     fun getProjectResults() {
-        every { getResult.getResultsForProject(1L) } returns listOf(result1, result2)
+        every { getResult.getResultsForProject(1L, null) } returns listOf(result1, result2)
 
         assertThat(controller.getProjectResults(1L)).containsExactly(
             ProjectResultDTO(

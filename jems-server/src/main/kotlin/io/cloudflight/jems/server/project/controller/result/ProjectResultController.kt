@@ -12,8 +12,8 @@ class ProjectResultController(
     private val getProjectResultInteractor: GetProjectResultInteractor,
     private val updateProjectResultInteractor: UpdateProjectResultInteractor
 ) : ProjectResultApi {
-    override fun getProjectResults(projectId: Long): List<ProjectResultDTO> {
-        return getProjectResultInteractor.getResultsForProject(projectId).toDto()
+    override fun getProjectResults(projectId: Long, version: String?): List<ProjectResultDTO> {
+        return getProjectResultInteractor.getResultsForProject(projectId, version).toDto()
     }
 
     override fun updateProjectResults(projectId: Long, projectResults: List<InputProjectResultDTO>): List<ProjectResultDTO> {
