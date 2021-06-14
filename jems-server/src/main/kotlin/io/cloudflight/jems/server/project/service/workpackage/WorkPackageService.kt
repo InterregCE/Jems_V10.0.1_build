@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 
 interface WorkPackageService {
+    fun getProjectForWorkPackageId(id: Long): ProjectApplicantAndStatus
 
     fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage
 

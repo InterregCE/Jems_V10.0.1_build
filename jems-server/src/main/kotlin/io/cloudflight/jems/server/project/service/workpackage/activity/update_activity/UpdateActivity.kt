@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.workpackage.activity.update_activity
 
-import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.validateWorkPackageActivities
@@ -12,7 +12,7 @@ class UpdateActivity(
     private val persistence: WorkPackagePersistence
 ) : UpdateActivityInteractor {
 
-    @CanUpdateProject
+    @CanUpdateProjectWorkPackage
     @Transactional
     override fun updateActivitiesForWorkPackage(
         projectId: Long,

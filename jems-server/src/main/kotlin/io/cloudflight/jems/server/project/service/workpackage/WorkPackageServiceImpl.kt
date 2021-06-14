@@ -6,10 +6,14 @@ import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import org.springframework.data.domain.Sort
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -22,6 +26,10 @@ class WorkPackageServiceImpl(
     companion object {
         private const val MAX_WORK_PACKAGES_PER_PROJECT = 20L
     }
+
+    @Transactional(readOnly = true)
+    override fun getProjectForWorkPackageId(id: Long): ProjectApplicantAndStatus =
+        getWorkPackageOrThrow(id).project.toApplicantAndStatus()
 
     @CanUpdateProject
     @Transactional
@@ -41,7 +49,7 @@ class WorkPackageServiceImpl(
         return workPackageSavedWithTranslations.toOutputWorkPackage()
     }
 
-    @CanUpdateProject
+    @PreAuthorize("hasAuthority('ProjectUpdate') || @projectWorkPackageAuthorization.canOwnerUpdateProjectWorkPackage(#inputWorkPackageUpdate.id)")
     @Transactional
     override fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage {
         val oldWorkPackage = getWorkPackageOrThrow(inputWorkPackageUpdate.id)
@@ -53,7 +61,7 @@ class WorkPackageServiceImpl(
         return workPackageRepository.save(toUpdate).toOutputWorkPackage()
     }
 
-    @CanUpdateProject
+    @CanUpdateProjectWorkPackage
     @Transactional
     override fun deleteWorkPackage(projectId: Long, workPackageId: Long) {
         workPackageRepository.deleteById(workPackageId)
