@@ -18,15 +18,18 @@ import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultId
 import io.cloudflight.jems.server.project.entity.result.ProjectResultTransl
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.result.model.ProjectResultTranslatedValue
+import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
@@ -96,13 +99,26 @@ class ProjectResultPersistenceTest: UnitTest() {
     lateinit var indicatorRepository: ResultIndicatorRepository
 
     @RelaxedMockK
-    lateinit var projectVersionUtils: ProjectVersionUtils
-
-    @RelaxedMockK
     lateinit var projectResultRepository: ProjectResultRepository
 
-    @InjectMockKs
+    @MockK
+    lateinit var projectVersionRepo: ProjectVersionRepository
+
+    private lateinit var projectVersionUtils: ProjectVersionUtils
+
     private lateinit var persistence: ProjectResultPersistenceProvider
+
+    @BeforeEach
+    fun setup() {
+        MockKAnnotations.init(this)
+        projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
+        persistence = ProjectResultPersistenceProvider(
+            projectRepository,
+            indicatorRepository,
+            projectVersionUtils,
+            projectResultRepository
+        )
+    }
 
     @Test
     fun `get project results - not-existing project`() {
@@ -113,7 +129,7 @@ class ProjectResultPersistenceTest: UnitTest() {
 
     @Test
     fun `project results are correctly mapped and sorted`() {
-        every { projectRepository.findById(eq(1)) } returns Optional.of(project.copy(
+        every { projectRepository.findById(eq(1L)) } returns Optional.of(project.copy(
             results = setOf(result2, result1)
         ))
         assertThat(persistence.getResultsForProject(1L, null)).containsExactly(

@@ -60,7 +60,7 @@ class ProjectDataProviderImpl(
         val sectionB = ProjectDataSectionB(partners, associatedOrganisations)
 
         val workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId).toDataModel()
-        val results = resultPersistence.getResultsForProject(projectId).toResultDataModel()
+        val results = resultPersistence.getResultsForProject(projectId, null).toResultDataModel()
         val sectionC = projectDescriptionPersistence.getProjectDescription(projectId).toDataModel(workPackages, results)
 
         val projectLumpSums = projectLumpSumPersistence.getLumpSums(projectId)

@@ -11360,16 +11360,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/forProject/{{application_id}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"workPackage",
-								"forProject",
-								"{{application_id}}"
+								"{{application_id}}",
+								"workPackage"
 							]
 						}
 					},
@@ -11510,17 +11509,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/activity/forWorkPackage/{{workPackage_id_1}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage/{{workPackage_id_1}}/activity",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"{{application_id}}",
 								"workPackage",
-								"activity",
-								"forWorkPackage",
-								"{{workPackage_id_1}}"
+								"{{workPackage_id_1}}",
+								"activity"
 							]
 						}
 					},
@@ -11615,17 +11614,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/output/forWorkPackage/{{workPackage_id_1}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage/{{workPackage_id_1}}/output",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"{{application_id}}",
 								"workPackage",
-								"output",
-								"forWorkPackage",
-								"{{workPackage_id_1}}"
+								"{{workPackage_id_1}}",
+								"output"
 							]
 						}
 					},
@@ -11696,16 +11695,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/forProject/{{application_id}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"workPackage",
-								"forProject",
-								"{{application_id}}"
+								"{{application_id}}",
+								"workPackage"
 							]
 						}
 					},
@@ -11861,17 +11859,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/activity/forWorkPackage/{{workPackage_id_2}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage/{{workPackage_id_2}}/activity",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"{{application_id}}",
 								"workPackage",
-								"activity",
-								"forWorkPackage",
-								"{{workPackage_id_2}}"
+								"{{workPackage_id_2}}",
+								"activity"
 							]
 						}
 					},
@@ -11969,17 +11967,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/output/forWorkPackage/{{workPackage_id_2}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage/{{workPackage_id_2}}/output",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"{{application_id}}",
 								"workPackage",
-								"output",
-								"forWorkPackage",
-								"{{workPackage_id_2}}"
+								"{{workPackage_id_2}}",
+								"output"
 							]
 						}
 					},

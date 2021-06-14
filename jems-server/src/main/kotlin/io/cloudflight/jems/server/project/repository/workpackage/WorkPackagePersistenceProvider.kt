@@ -313,8 +313,8 @@ class WorkPackagePersistenceProvider(
             .groupBy { it.workPackageId }
 
         workPackages.forEach {
-            it.activities = activitiesByWorkPackages[it.id]!!
-            it.outputs = outputsByWorkPackages[it.id]!!
+            it.activities = if (activitiesByWorkPackages.isNotEmpty()) activitiesByWorkPackages[it.id]!! else emptyList()
+            it.outputs = if (outputsByWorkPackages.isNotEmpty()) outputsByWorkPackages[it.id]!! else emptyList()
         }
         return workPackages
     }
