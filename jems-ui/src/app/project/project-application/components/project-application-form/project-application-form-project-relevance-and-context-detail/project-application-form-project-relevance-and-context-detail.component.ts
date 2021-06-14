@@ -1,4 +1,13 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputProjectRelevance,
@@ -20,7 +29,7 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends BaseComponent implements OnInit {
+export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends BaseComponent implements OnInit, OnChanges {
 
   // TODO: remove these and adapt the component to save independently
   @Input()
@@ -60,7 +69,6 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   }
 
   ngOnInit(): void {
-    this.resetForm();
 
     this.formService.init(this.projectRelevanceForm, this.projectStore.projectEditable$);
     this.error$
@@ -75,6 +83,12 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
         tap(() => this.formService.setSuccess('project.application.form.relevance.save.success'))
       )
       .subscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.project) {
+      this.resetForm();
+    }
   }
 
   onSubmit(): void {

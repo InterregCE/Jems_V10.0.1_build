@@ -45,7 +45,7 @@ export class ProjectApplicationFormOverallObjectiveSectionComponent {
 
   details$ = combineLatest([
     merge(this.savedDescription$, this.updatedProjectDescription$),
-    this.projectStore.getProject()
+    this.projectStore.project$
   ])
     .pipe(
       map(([description, project]) => ({

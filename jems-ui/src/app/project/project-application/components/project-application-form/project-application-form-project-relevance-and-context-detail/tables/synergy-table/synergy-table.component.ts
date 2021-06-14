@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges
 } from '@angular/core';
@@ -18,7 +17,7 @@ import {FormService} from '@common/components/section/form/form.service';
   styleUrls: ['./synergy-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SynergyTableComponent implements OnInit, OnChanges {
+export class SynergyTableComponent implements OnChanges {
 
   @Input()
   formGroup: FormGroup;
@@ -34,12 +33,8 @@ export class SynergyTableComponent implements OnInit, OnChanges {
               private formService: FormService) {
   }
 
-  ngOnInit(): void {
-    this.resetForm();
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.synergies && this.editable) {
+    if (changes.synergies) {
       this.resetForm();
     }
   }
@@ -57,6 +52,9 @@ export class SynergyTableComponent implements OnInit, OnChanges {
     this.synergiesForm.clear();
     this.synergies.forEach(synergy => this.addControl(synergy));
     this.formService.resetEditable();
+    if (!this.editable) {
+      this.formGroup.disable();
+    }
   }
 
   private addControl(synergy?: InputProjectRelevanceSynergy): void {

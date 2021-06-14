@@ -1,4 +1,13 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {InputProjectOverallObjective, OutputProgrammePriorityPolicySimpleDTO} from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -16,7 +25,7 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseComponent implements OnInit {
+export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseComponent implements OnInit, OnChanges {
 
   // TODO: remove these and adapt the component to save independently
   @Input()
@@ -46,7 +55,6 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
   }
 
   ngOnInit(): void {
-    this.resetForm();
     this.formService.init(this.overallObjectiveForm, this.projectStore.projectEditable$);
     this.error$
       .pipe(
@@ -60,6 +68,12 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
         tap(() => this.formService.setSuccess('project.application.form.overall.objective.save.success'))
       )
       .subscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.project) {
+      this.resetForm();
+    }
   }
 
   onSubmit(): void {

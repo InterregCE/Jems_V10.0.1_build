@@ -2,9 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
+  Input, OnChanges,
   OnInit,
-  Output
+  Output, SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {OutputProjectLongTermPlans, InputProjectLongTermPlans} from '@cat/api';
@@ -13,6 +13,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {takeUntil, tap} from 'rxjs/operators';
+import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-application-form-future-plans-detail',
@@ -21,8 +22,7 @@ import {takeUntil, tap} from 'rxjs/operators';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormFuturePlansDetailComponent extends BaseComponent implements OnInit {
-  private static readonly FUTURE_PLANS_MAX_LENGTH = 'project.application.form.future.plans.entered.text.size.too.long';
+export class ProjectApplicationFormFuturePlansDetailComponent extends BaseComponent implements OnInit, OnChanges {
 
   // TODO: remove these and adapt the component to save independently
   @Input()
@@ -30,8 +30,6 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends BaseCompon
   @Input()
   success$: Observable<any>;
 
-  @Input()
-  editable: boolean;
   @Input()
   project: OutputProjectLongTermPlans;
   @Output()
@@ -43,25 +41,14 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends BaseCompon
     transferability: ['', Validators.maxLength(5000)]
   });
 
-  ownershipErrors = {
-    maxlength: ProjectApplicationFormFuturePlansDetailComponent.FUTURE_PLANS_MAX_LENGTH,
-  };
-  durabilityErrors = {
-    maxlength: ProjectApplicationFormFuturePlansDetailComponent.FUTURE_PLANS_MAX_LENGTH,
-  };
-  transferabilityErrors = {
-    maxlength: ProjectApplicationFormFuturePlansDetailComponent.FUTURE_PLANS_MAX_LENGTH,
-  };
-
   constructor(private formBuilder: FormBuilder,
-              private formService: FormService) {
+              private formService: FormService,
+              private projectStore: ProjectStore) {
     super();
   }
 
   ngOnInit(): void {
-    this.formService.init(this.futurePlansForm);
-    this.resetForm();
-    this.formService.setEditable(this.editable);
+    this.formService.init(this.futurePlansForm, this.projectStore.projectEditable$);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
@@ -74,6 +61,12 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends BaseCompon
         tap(() => this.formService.setSuccess('project.application.form.future.plans.save.success'))
       )
       .subscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.project) {
+      this.resetForm();
+    }
   }
 
   onSubmit(): void {

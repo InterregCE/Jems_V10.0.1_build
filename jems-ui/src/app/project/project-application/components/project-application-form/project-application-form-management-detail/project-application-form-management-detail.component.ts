@@ -1,4 +1,13 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectHorizontalPrinciples, InputProjectManagement, OutputProjectManagement} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
@@ -7,6 +16,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {takeUntil, tap} from 'rxjs/operators';
+import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-application-form-management-detail',
@@ -15,8 +25,7 @@ import {takeUntil, tap} from 'rxjs/operators';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormManagementDetailComponent extends BaseComponent implements OnInit {
-  private static readonly TEXT_TOO_LONG = 'project.application.form.management.entered.text.size.too.long';
+export class ProjectApplicationFormManagementDetailComponent extends BaseComponent implements OnInit, OnChanges {
 
   // TODO: remove these and adapt the component to save independently
   @Input()
@@ -50,34 +59,14 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
     principles_equality: ['', Validators.maxLength(2000)]
   });
 
-  coordinationErrors = {
-    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
-  };
-  qualityErrors = {
-    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
-  };
-  communicationErrors = {
-    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
-  };
-  financialErrors = {
-    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
-  };
-  criteriaErrors = {
-    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
-  };
-  principleErrors = {
-    maxlength: ProjectApplicationFormManagementDetailComponent.TEXT_TOO_LONG
-  };
-
   constructor(private formBuilder: FormBuilder,
-              private formService: FormService) {
+              private formService: FormService,
+              private projectStore: ProjectStore) {
     super();
   }
 
   ngOnInit(): void {
-    this.formService.init(this.managementForm);
-    this.resetForm();
-    this.formService.setEditable(this.editable);
+    this.formService.init(this.managementForm, this.projectStore.projectEditable$);
     this.error$
       .pipe(
         takeUntil(this.destroyed$),
@@ -90,6 +79,12 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
         tap(() => this.formService.setSuccess('project.application.form.management.save.success'))
       )
       .subscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.project) {
+      this.resetForm();
+    }
   }
 
   onSubmit(): void {
@@ -124,38 +119,43 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
     this.managementForm.controls.quality.setValue(this.project?.projectQualityAssurance);
     this.managementForm.controls.communication.setValue(this.project?.projectCommunication);
     this.managementForm.controls.financial.setValue(this.project?.projectFinancialManagement);
+
+    this.managementForm.controls.criteria_development.setValue(this.project?.projectJointDevelopmentDescription);
     if (this.project?.projectCooperationCriteria?.projectJointDevelopment) {
       this.selection.select('criteria_development');
-      this.managementForm.controls.criteria_development.setValue(this.project?.projectJointDevelopmentDescription);
       this.enableSelection('criteria_development');
     } else {
       this.selection.deselect('criteria_development');
       this.managementForm.get('criteria_development')?.disable();
     }
+
+    this.managementForm.controls.criteria_implementation.setValue(this.project?.projectJointImplementationDescription);
     if (this.project?.projectCooperationCriteria?.projectJointImplementation) {
       this.selection.select('criteria_implementation');
-      this.managementForm.controls.criteria_implementation.setValue(this.project?.projectJointImplementationDescription);
       this.enableSelection('criteria_implementation');
     } else {
       this.selection.deselect('criteria_implementation');
       this.managementForm.get('criteria_implementation')?.disable();
     }
+
+    this.managementForm.controls.criteria_staffing.setValue(this.project?.projectJointStaffingDescription);
     if (this.project?.projectCooperationCriteria?.projectJointStaffing) {
       this.selection.select('criteria_staffing');
-      this.managementForm.controls.criteria_staffing.setValue(this.project?.projectJointStaffingDescription);
       this.enableSelection('criteria_staffing');
     } else {
       this.selection.deselect('criteria_staffing');
       this.managementForm.get('criteria_staffing')?.disable();
     }
+
+    this.managementForm.controls.criteria_financing.setValue(this.project?.projectJointFinancingDescription);
     if (this.project?.projectCooperationCriteria?.projectJointFinancing) {
       this.selection.select('criteria_financing');
-      this.managementForm.controls.criteria_financing.setValue(this.project?.projectJointFinancingDescription);
       this.enableSelection('criteria_financing');
     } else {
       this.selection.deselect('criteria_financing');
       this.managementForm.get('criteria_financing')?.disable();
     }
+
     this.selectedContributionPrincipleDevelopment = this.project?.projectHorizontalPrinciples?.sustainableDevelopmentCriteriaEffect;
     this.selectedContributionPrincipleOpportunities = this.project?.projectHorizontalPrinciples?.equalOpportunitiesEffect;
     this.selectedContributionPrincipleEquality = this.project?.projectHorizontalPrinciples?.sexualEqualityEffect;

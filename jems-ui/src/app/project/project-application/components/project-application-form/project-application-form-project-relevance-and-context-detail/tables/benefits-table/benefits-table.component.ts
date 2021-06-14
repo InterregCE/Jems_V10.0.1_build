@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges
 } from '@angular/core';
@@ -17,7 +16,7 @@ import {InputProjectRelevanceBenefit} from '@cat/api';
   styleUrls: ['./benefits-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BenefitsTableComponent implements OnInit, OnChanges {
+export class BenefitsTableComponent implements OnChanges {
 
   @Input()
   formGroup: FormGroup;
@@ -39,12 +38,8 @@ export class BenefitsTableComponent implements OnInit, OnChanges {
   constructor(private formBuilder: FormBuilder) {
   }
 
-  ngOnInit(): void {
-    this.resetForm();
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.benefits && this.editable) {
+    if (changes.benefits) {
       this.resetForm();
     }
   }
@@ -61,6 +56,9 @@ export class BenefitsTableComponent implements OnInit, OnChanges {
   private resetForm(): void {
     this.benefitsForm.clear();
     this.benefits.forEach(benefit => this.addControl(benefit));
+    if (!this.editable) {
+      this.benefitsForm.disable();
+    }
   }
 
   private addControl(benefit?: InputProjectRelevanceBenefit): void {

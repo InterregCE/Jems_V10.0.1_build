@@ -5,7 +5,6 @@
             *ngIf="futurePlans$ | async as plans"
             [success$]="saveSuccess$"
             [project]="plans"
-            [editable]="projectStore.projectEditable$ | async"
             [error$]="saveError$"
             (updateData)="updateFuturePlans$.next($event)">
     </app-project-application-form-future-plans-detail>
