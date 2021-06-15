@@ -1,5 +1,13 @@
 DROP TABLE project_quality_assessment;
 DROP TABLE project_eligibility_assessment;
+SET @@system_versioning_alter_history = 1;
+ALTER TABLE project
+    DROP SYSTEM VERSIONING,
+    DROP COLUMN step2_active,
+    DROP CONSTRAINT fk_first_step_decision_id,
+    DROP CONSTRAINT fk_second_step_decision_id,
+    DROP COLUMN first_step_decision_id,
+    DROP COLUMN second_step_decision_id;
 DROP TABLE project_decision;
 
 CREATE TABLE project_assessment_quality
@@ -40,16 +48,7 @@ CREATE TABLE project_assessment_eligibility
             ON UPDATE RESTRICT
 );
 
-SET @@system_versioning_alter_history = 1;
-
 ALTER TABLE project
-DROP SYSTEM VERSIONING,
-DROP CONSTRAINT fk_first_step_decision_id,
-DROP CONSTRAINT fk_second_step_decision_id,
-DROP COLUMN step2_active,
-DROP COLUMN first_step_decision_id,
-DROP COLUMN second_step_decision_id,
-
 ADD COLUMN eligibility_decision_step1_id INT UNSIGNED DEFAULT NULL
     AFTER last_resubmission_id,
 ADD COLUMN funding_decision_step1_id     INT UNSIGNED DEFAULT NULL
