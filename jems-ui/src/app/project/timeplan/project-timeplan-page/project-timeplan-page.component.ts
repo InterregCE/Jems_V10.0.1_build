@@ -95,6 +95,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
       this.initializeVisualization(newItems, groups, periods.length);
     } else {
       this.timeline.setItems(newItems);
+      this.timeline.setGroups(groups);
     }
   }
 
