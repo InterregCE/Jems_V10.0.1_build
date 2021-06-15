@@ -347,6 +347,63 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
     }
 
     @Test
+    fun `get ProjectDescription for previous version with empty values`() {
+        val emptyProjectDescription = ProjectDescription(
+            projectOverallObjective = ProjectOverallObjective(overallObjective = emptySet()),
+            projectRelevance = ProjectRelevance(
+                territorialChallenge = emptySet(),
+                commonChallenge = emptySet(),
+                transnationalCooperation = emptySet(),
+                projectBenefits = emptyList(),
+                projectStrategies = emptyList(),
+                projectSynergies = emptyList(),
+                availableKnowledge = emptySet()
+            ),
+            projectPartnership = ProjectPartnership(partnership = emptySet()),
+            projectManagement = ProjectManagement(
+                projectCoordination = emptySet(),
+                projectQualityAssurance = emptySet(),
+                projectCommunication = emptySet(),
+                projectFinancialManagement = emptySet(),
+                projectCooperationCriteria = ProjectCooperationCriteria(
+                    projectJointDevelopment = false,
+                    projectJointImplementation = false,
+                    projectJointStaffing = false,
+                    projectJointFinancing = false
+                ),
+                projectJointDevelopmentDescription = emptySet(),
+                projectJointImplementationDescription = emptySet(),
+                projectJointStaffingDescription = emptySet(),
+                projectJointFinancingDescription = emptySet(),
+                projectHorizontalPrinciples = ProjectHorizontalPrinciples(),
+                sustainableDevelopmentDescription = emptySet(),
+                equalOpportunitiesDescription = emptySet(),
+                sexualEqualityDescription = emptySet()
+            ),
+            projectLongTermPlans = ProjectLongTermPlans(
+                projectOwnership = emptySet(),
+                projectDurability = emptySet(),
+                projectTransferability = emptySet()
+            )
+        )
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val version = "4.0"
+
+        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
+        every { projectOverallObjectiveRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns emptyList()
+        every { projectRelevanceRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns emptyList()
+        every { projectRelevanceRepository.findBenefitsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns emptyList()
+        every { projectRelevanceRepository.findStrategiesByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns emptyList()
+        every { projectRelevanceRepository.findSynergiesByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns emptyList()
+        every { projectPartnershipRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns emptyList()
+        every { projectManagementRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns emptyList()
+        every { projectLongTermPlansRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns emptyList()
+
+        assertThat(persistence.getProjectDescription(PROJECT_ID, version))
+            .isEqualTo(emptyProjectDescription)
+    }
+
+    @Test
     fun `update ProjectDescription OverallObjective`() {
         val projectOverallObjective = modelProjectDescription().projectOverallObjective!!
         val overallObjectiveEntity = dummyProjectOverallObjective()

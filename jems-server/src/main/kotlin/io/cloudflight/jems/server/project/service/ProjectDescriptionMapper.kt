@@ -91,17 +91,15 @@ fun List<ProjectRelevanceRow>.toProjectRelevance(
     projectBenefits: List<ProjectRelevanceBenefit>,
     projectStrategies: List<ProjectRelevanceStrategy>,
     projectSynergies: List<ProjectRelevanceSynergy>
-) = this.groupBy { it.projectId }.map { groupedRows ->
-        ProjectRelevance(
-            territorialChallenge = groupedRows.value.extractField { it.territorialChallenge } ,
-            commonChallenge = groupedRows.value.extractField { it.commonChallenge } ,
-            transnationalCooperation = groupedRows.value.extractField { it.transnationalCooperation },
-            projectBenefits = projectBenefits,
-            projectStrategies = projectStrategies,
-            projectSynergies = projectSynergies,
-            availableKnowledge = groupedRows.value.extractField { it.availableKnowledge }
-        )
-    }.first()
+) = ProjectRelevance(
+    territorialChallenge = extractField { it.territorialChallenge } ,
+    commonChallenge = extractField { it.commonChallenge } ,
+    transnationalCooperation = extractField { it.transnationalCooperation },
+    projectBenefits = projectBenefits,
+    projectStrategies = projectStrategies,
+    projectSynergies = projectSynergies,
+    availableKnowledge = extractField { it.availableKnowledge }
+)
 
 fun List<ProjectRelevanceBenefitRow>.toRelevanceBenefits() =
     this.groupBy { it.id }.map { groupedRows ->
@@ -315,32 +313,30 @@ fun combineTranslatedValuesManagement(
 }
 
 fun List<ProjectManagementRow>.toProjectManagement() =
-    this.groupBy { it.projectId }.map { groupedRows ->
-        ProjectManagement(
-            projectCoordination = groupedRows.value.extractField { it.projectCoordination },
-            projectQualityAssurance = groupedRows.value.extractField { it.projectQualityAssurance },
-            projectCommunication = groupedRows.value.extractField { it.projectCommunication },
-            projectFinancialManagement = groupedRows.value.extractField { it.projectFinancialManagement },
-            projectCooperationCriteria = ProjectCooperationCriteria(
-                projectJointDevelopment = groupedRows.value.first().projectJointDevelopment ?: false,
-                projectJointImplementation = groupedRows.value.first().projectJointImplementation ?: false,
-                projectJointStaffing = groupedRows.value.first().projectJointStaffing ?: false,
-                projectJointFinancing = groupedRows.value.first().projectJointFinancing ?: false
-            ),
-            projectJointDevelopmentDescription = groupedRows.value.extractField { it.projectJointDevelopmentDescription },
-            projectJointImplementationDescription = groupedRows.value.extractField { it.projectJointImplementationDescription },
-            projectJointStaffingDescription = groupedRows.value.extractField { it.projectJointStaffingDescription },
-            projectJointFinancingDescription = groupedRows.value.extractField { it.projectJointFinancingDescription },
-            projectHorizontalPrinciples = ProjectHorizontalPrinciples(
-                sustainableDevelopmentCriteriaEffect = groupedRows.value.first().sustainableDevelopmentCriteriaEffect,
-                equalOpportunitiesEffect = groupedRows.value.first().equalOpportunitiesEffect,
-                sexualEqualityEffect = groupedRows.value.first().sexualEqualityEffect
-            ),
-            sustainableDevelopmentDescription = groupedRows.value.extractField { it.sustainableDevelopmentDescription },
-            equalOpportunitiesDescription = groupedRows.value.extractField { it.equalOpportunitiesDescription },
-            sexualEqualityDescription = groupedRows.value.extractField { it.sexualEqualityDescription }
-        )
-    }.first()
+    ProjectManagement(
+        projectCoordination = extractField { it.projectCoordination },
+        projectQualityAssurance = extractField { it.projectQualityAssurance },
+        projectCommunication = extractField { it.projectCommunication },
+        projectFinancialManagement = extractField { it.projectFinancialManagement },
+        projectCooperationCriteria = ProjectCooperationCriteria(
+            projectJointDevelopment = firstOrNull()?.projectJointDevelopment ?: false,
+            projectJointImplementation = firstOrNull()?.projectJointImplementation ?: false,
+            projectJointStaffing = firstOrNull()?.projectJointStaffing ?: false,
+            projectJointFinancing = firstOrNull()?.projectJointFinancing ?: false
+        ),
+        projectJointDevelopmentDescription = extractField { it.projectJointDevelopmentDescription },
+        projectJointImplementationDescription = extractField { it.projectJointImplementationDescription },
+        projectJointStaffingDescription = extractField { it.projectJointStaffingDescription },
+        projectJointFinancingDescription = extractField { it.projectJointFinancingDescription },
+        projectHorizontalPrinciples = ProjectHorizontalPrinciples(
+            sustainableDevelopmentCriteriaEffect = firstOrNull()?.sustainableDevelopmentCriteriaEffect,
+            equalOpportunitiesEffect = firstOrNull()?.equalOpportunitiesEffect,
+            sexualEqualityEffect = firstOrNull()?.sexualEqualityEffect
+        ),
+        sustainableDevelopmentDescription = extractField { it.sustainableDevelopmentDescription },
+        equalOpportunitiesDescription = extractField { it.equalOpportunitiesDescription },
+        sexualEqualityDescription = extractField { it.sexualEqualityDescription }
+    )
 
 fun ProjectManagementEntity.toProjectManagement() = ProjectManagement(
     projectCoordination = translatedValues.mapTo(HashSet()) {
@@ -416,13 +412,11 @@ fun combineTranslatedValuesLongTermPlans(
 }
 
 fun List<ProjectLongTermPlansRow>.toProjectLongTermPlans() =
-    this.groupBy { it.projectId }.map { groupedRows ->
-        ProjectLongTermPlans(
-            projectOwnership = groupedRows.value.extractField { it.projectOwnership },
-            projectDurability = groupedRows.value.extractField { it.projectDurability },
-            projectTransferability = groupedRows.value.extractField { it.projectTransferability }
-        )
-    }.first()
+    ProjectLongTermPlans(
+        projectOwnership = extractField { it.projectOwnership },
+        projectDurability = extractField { it.projectDurability },
+        projectTransferability = extractField { it.projectTransferability }
+    )
 
 fun ProjectLongTermPlansEntity.toProjectLongTermPlans() = ProjectLongTermPlans(
     projectOwnership = translatedValues.mapTo(HashSet()) {
@@ -489,11 +483,9 @@ fun combineTranslatedValuesOverallObjective(
 }
 
 fun List<ProjectOverallObjectiveRow>.toProjectOverallObjective() =
-    this.groupBy { it.projectId }.map { groupedRows ->
-        ProjectOverallObjective(
-            overallObjective = groupedRows.value.extractField { it.overallObjective }
-        )
-    }.first()
+    ProjectOverallObjective(
+        overallObjective = extractField { it.overallObjective }
+    )
 
 fun ProjectOverallObjectiveEntity.toProjectOverallObjective() =
     ProjectOverallObjective(
@@ -529,11 +521,9 @@ fun combineTranslatedValuesPartnership(
 }
 
 fun List<ProjectPartnershipRow>.toProjectPartnership() =
-    this.groupBy { it.projectId }.map { groupedRows ->
-        ProjectPartnership(
-            partnership = groupedRows.value.extractField { it.projectPartnership }
-        )
-    }.first()
+    ProjectPartnership(
+        partnership = extractField { it.projectPartnership }
+    )
 
 fun ProjectPartnershipEntity.toProjectPartnership() =
     ProjectPartnership(
