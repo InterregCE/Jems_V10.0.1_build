@@ -10,19 +10,22 @@ import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicator
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
-import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
-import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityId
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationId
+import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageDeliverableRow
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputRow
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTransl
-import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
@@ -33,28 +36,30 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverableTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import java.math.BigDecimal
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.Optional
-import org.junit.jupiter.api.BeforeEach
 
 @ExtendWith(MockKExtension::class)
 class ProjectWorkPackagePersistenceTest {
@@ -348,6 +353,86 @@ class ProjectWorkPackagePersistenceTest {
         assertThat(result[0].translatedValues).containsExactly(ProjectWorkPackageTranslatedValue(CS, "WP CS name"))
         assertThat(result[0].activities).containsExactly(activity1_model, activity2_model)
         assertThat(result[0].outputs).containsExactly(output1_model, output2_model)
+    }
+
+    @Test
+    fun `get full-rich work packages for previous version`() {
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val version = "3.0"
+        val id = 1L
+        val wpId = 2L
+        val mockWPRow: WorkPackageRow = mockk()
+        every { mockWPRow.id } returns wpId
+        every { mockWPRow.language } returns EN
+        every { mockWPRow.name } returns "name"
+        every { mockWPRow.number } returns 3
+        every { mockWPRow.specificObjective } returns "specificObjective"
+        every { mockWPRow.objectiveAndAudience } returns "objectiveAndAudience"
+        val mockWPARow: WorkPackageActivityRow = mockk()
+        every { mockWPARow.workPackageId } returns wpId
+        every { mockWPARow.activityNumber } returns 3
+        every { mockWPARow.language } returns EN
+        every { mockWPARow.startPeriod } returns 1
+        every { mockWPARow.endPeriod } returns 2
+        every { mockWPARow.title } returns "title"
+        every { mockWPARow.description } returns "description"
+        val mockWPDRow: WorkPackageDeliverableRow = mockk()
+        every { mockWPDRow.deliverableNumber } returns 4
+        every { mockWPDRow.language } returns EN
+        every { mockWPDRow.startPeriod } returns 1
+        every { mockWPDRow.description } returns "description"
+        val mockWPORow: WorkPackageOutputRow = mockk()
+        every { mockWPORow.workPackageId } returns wpId
+        every { mockWPORow.outputNumber } returns 5
+        every { mockWPORow.language } returns EN
+        every { mockWPORow.programmeOutputIndicatorId } returns 1L
+        every { mockWPORow.programmeOutputIndicatorIdentifier } returns "programmeOutputIndicatorIdentifier"
+        every { mockWPORow.targetValue } returns BigDecimal.TEN
+        every { mockWPORow.periodNumber } returns 1
+        every { mockWPORow.title } returns "title"
+        every { mockWPORow.description } returns "description"
+
+        every { projectVersionRepo.findTimestampByVersion(id, version) } returns timestamp
+        every { repository.findAllByProjectIdAsOfTimestamp(id, timestamp) } returns listOf(mockWPRow)
+        every { repositoryActivity.findAllByActivityIdWorkPackageIdAsOfTimestamp(setOf(wpId), timestamp) } returns listOf(mockWPARow)
+        every { repositoryActivity.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(wpId, 3, timestamp) } returns listOf(mockWPDRow)
+        every { repositoryOutput.findAllByOutputIdWorkPackageIdAsOfTimestamp(setOf(wpId), timestamp) } returns listOf(mockWPORow)
+
+        // test
+        val result = persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(id, version)
+
+        assertThat(result.size).isEqualTo(1)
+        assertThat(result[0]).isEqualTo(ProjectWorkPackage(
+            id = mockWPRow.id,
+            workPackageNumber = mockWPRow.number!!,
+            translatedValues = setOf(ProjectWorkPackageTranslatedValue(
+                language = EN,
+                name = mockWPRow.name,
+                specificObjective = mockWPRow.specificObjective,
+                objectiveAndAudience = mockWPRow.objectiveAndAudience
+            )),
+            activities = listOf(WorkPackageActivity(
+                activityNumber = mockWPARow.activityNumber,
+                workPackageId = mockWPARow.workPackageId,
+                translatedValues = setOf(WorkPackageActivityTranslatedValue(EN, mockWPARow.title, mockWPARow.description)),
+                startPeriod = mockWPARow.startPeriod,
+                endPeriod = mockWPARow.endPeriod,
+                deliverables = listOf(WorkPackageActivityDeliverable(
+                    deliverableNumber = mockWPDRow.deliverableNumber,
+                    translatedValues = setOf(WorkPackageActivityDeliverableTranslatedValue(EN, mockWPDRow.description)),
+                    period = mockWPDRow.startPeriod
+                ))
+            )),
+            outputs = listOf(WorkPackageOutput(
+                workPackageId = mockWPORow.workPackageId,
+                outputNumber = mockWPORow.outputNumber,
+                programmeOutputIndicatorId = mockWPORow.programmeOutputIndicatorId,
+                programmeOutputIndicatorIdentifier = mockWPORow.programmeOutputIndicatorIdentifier,
+                targetValue = mockWPORow.targetValue,
+                periodNumber = mockWPORow.periodNumber,
+                translatedValues = setOf(WorkPackageOutputTranslatedValue(EN, mockWPORow.title, mockWPORow.description))
+            ))
+        ))
     }
 
     @Test

@@ -24,7 +24,7 @@ import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import java.util.*
+import java.util.Optional
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
