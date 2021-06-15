@@ -5,7 +5,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {ProjectPeriodDTO} from '@cat/api';
 import {Timeline} from 'vis-timeline';
 import {DataSet} from 'vis-data/peer';
-import {map, tap} from 'rxjs/operators';
+import {map, shareReplay, tap} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
 
 import {ProjectTimeplanPageStore} from './project-timeplan-page-store.service';
@@ -30,60 +30,49 @@ import {MultiLanguageGlobalService} from '@common/components/forms/multi-languag
   providers: [ProjectTimeplanPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectTimeplanPageComponent implements OnInit {
+export class ProjectTimeplanPageComponent {
   Alert = Alert;
   timeline: Timeline;
 
   @ViewChild('visualization', {static: true})
   visualization: ElementRef;
 
-  data$: Observable<{
-    periodsUnavailable: boolean,
-    dataAvailable: boolean,
-  }>;
+  periodsUnavailable$: Observable<boolean>;
+  dataAvailable$: Observable<boolean>;
 
   constructor(private translateService: TranslateService,
               private multiLanguageGlobalService: MultiLanguageGlobalService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
               public pageStore: ProjectTimeplanPageStore) {
-  }
-
-  ngOnInit(): void {
-    const workPackagesAndResultsAndGroups$ = combineLatest([
+    const data$ = combineLatest([
       this.pageStore.workPackages$,
       this.pageStore.projectResults$,
-    ]).pipe(
-      map(([workPackages, results]) => ({
-        workPackages,
-        results,
-        timelineGroups: getGroups(workPackages, results)
-      })),
-    );
-
-    const projectData$ = combineLatest([
-      workPackagesAndResultsAndGroups$,
       this.pageStore.periods$,
+      this.multiLanguageGlobalService.activeInputLanguage$
     ])
       .pipe(
-        map(([data, periods]) => ({
-          ...data,
-          timelineItems: getItems(data.workPackages, data.results, this.translateService),
-          timelineTranslations: getInputTranslations(data.workPackages),
+        map(([workPackages, results, periods, language]) => ({
+          workPackages,
+          results,
+          timelineGroups: getGroups(workPackages, results),
+          timelineItems: getItems(workPackages, results, this.translateService),
+          timelineTranslations: getInputTranslations(workPackages)[language] || [],
           periods,
         })),
-        tap(data => this.createVisualizationOrUpdateJustTranslations(data.periods, data.timelineItems, data.timelineGroups))
+        tap(data => this.createVisualizationOrUpdateJustTranslations(data.periods, data.timelineItems, data.timelineGroups)),
+        tap((data) => this.updateLanguageSelection(data.timelineGroups, data.timelineTranslations)),
+        shareReplay(1)
       );
 
-    this.data$ = combineLatest([projectData$, this.multiLanguageGlobalService.activeInputLanguage$])
+    this.periodsUnavailable$ = data$
       .pipe(
-        map(([projectData, language]) => ({
-          timelineGroups: projectData.timelineGroups,
-          translations: projectData.timelineTranslations[language] || [],
-          periods: projectData.periods,
-        })),
-        tap((data) => this.updateLanguageSelection(data.timelineGroups, data.translations)),
-        map(data => ({periodsUnavailable: !data.periods.length, dataAvailable: !!data.timelineGroups.getIds().length})),
+        map(data => !data.periods.length)
+      );
+
+    this.dataAvailable$ = data$
+      .pipe(
+        map(data => !!data.timelineGroups.getIds().length)
       );
   }
 

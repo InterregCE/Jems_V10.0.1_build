@@ -4,20 +4,17 @@
         subTitleKey="project.application.form.section.part.c">
     <div appFormLayout>
         <h3>{{ 'project.application.form.section.part.c.subsection.six' | translate }}</h3>
-        <div *ngIf="data$ | async as data">
 
             <app-alert [closable]="false" [type]="Alert.WARNING"
-                       [show]="data.periodsUnavailable">
+                       [show]="periodsUnavailable$ | async">
                 <p>{{'project.application.form.work.package.output.delivery.period.required' | translate}}</p>
             </app-alert>
             <app-alert [closable]="false" [type]="Alert.WARNING"
-                       [show]="!data.dataAvailable">
+                       [show]="(dataAvailable$ | async) === false">
                 <p>{{'project.application.form.section.part.c.subsection.six.no.data' | translate}}</p>
             </app-alert>
-
-        </div>
         <div appNoWidthLimit>
-            <app-multi-language-container [switchButtonsVisible]="(data$ | async)?.dataAvailable">
+            <app-multi-language-container [switchButtonsVisible]="dataAvailable$ | async">
                 <div #visualization (click)="click($event)"></div>
             </app-multi-language-container>
         </div>
