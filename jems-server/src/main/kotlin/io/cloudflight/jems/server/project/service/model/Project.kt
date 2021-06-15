@@ -13,8 +13,8 @@ data class Project(
     val projectStatus: ProjectStatus,
     val firstSubmission: ProjectStatus? = null,
     val lastResubmission: ProjectStatus? = null,
-    val assessmentStep1: ProjectAssessment? = null,
-    val assessmentStep2: ProjectAssessment? = null,
+    var assessmentStep1: ProjectAssessment? = null,
+    var assessmentStep2: ProjectAssessment? = null,
 
     // projectData
     val title: Set<InputTranslation>? = emptySet(),

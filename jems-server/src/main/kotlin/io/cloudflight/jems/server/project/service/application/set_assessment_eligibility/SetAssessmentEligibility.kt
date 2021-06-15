@@ -26,7 +26,7 @@ class SetAssessmentEligibility(
     private val securityService: SecurityService,
 ) : SetAssessmentEligibilityInteractor {
 
-//    @CanSetEligibilityAssessment
+    @CanSetEligibilityAssessment
     @Transactional
     @ExceptionWrapper(SetAssessmentEligibilityException::class)
     override fun setEligibilityAssessment(projectId: Long, result: ProjectAssessmentEligibilityResult, note: String?): Project {

@@ -1,13 +1,9 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
-import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
-import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
@@ -31,10 +27,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
 import java.time.ZonedDateTime
 import java.util.stream.Stream
 
@@ -183,129 +176,6 @@ internal class ProjectStatusAuthorizationTestOld {
         every { projectPersistence.getApplicantAndStatusById(projectReturned.id!!) } returns
             ProjectApplicantAndStatus(applicantId = applicantUser.user.id, projectStatus = ApplicationStatus.RETURNED_TO_APPLICANT)
         assertFalse(projectStatusAuthorization.canReturnToApplicant(projectReturned.id!!))
-    }
-
-    @ParameterizedTest(name = "user {0} can enter eligibility decision")
-    @MethodSource("provideAdminAndProgramUsers")
-    fun `programme or admin user can enter eligibility decision`(currentUser: LocalCurrentUser) {
-        every { securityService.currentUser } returns currentUser
-//        every { projectAuthorization.canReadProject(eq(PID_SUBMITTED_WITH_EA)) } returns true
-
-        assertTrue(projectStatusAuthorization.canSetEligibility(projectSubmittedWithEa.id!!))
-    }
-
-
-    @ParameterizedTest
-    @MethodSource("provideAdminAndProgramUsers")
-    fun `programme or admin user can enter EA`(currentUser: LocalCurrentUser) {
-        every { securityService.currentUser } returns currentUser
-
-        assertTrue(
-            projectStatusAuthorization.canSetEligibilityAssessment(PID_SUBMITTED)
-        )
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideAdminAndProgramUsers")
-    fun `programme or admin user can enter QA`(currentUser: LocalCurrentUser) {
-        every { securityService.currentUser } returns currentUser
-
-        listOf(PID_SUBMITTED, PID_SUBMITTED_WITH_EA, PID_ELIGIBLE).forEach {
-            assertTrue(
-                projectStatusAuthorization.canSetQualityAssessment(it)
-            )
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideAdminAndProgramUsers")
-    fun `programme or admin user cannot enter QA when INELIGIBLE`(currentUser: LocalCurrentUser) {
-        every { securityService.currentUser } returns currentUser
-
-        assertFalse(projectStatusAuthorization.canSetQualityAssessment(PID_INELIGIBLE))
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideAdminAndProgramUsers")
-    fun `programme or admin user can enter funding decision`(currentUser: LocalCurrentUser) {
-        every { securityService.currentUser } returns currentUser
-        every { projectPersistence.getProject(projectEligibleWithQA.id!!) } returns projectEligibleWithQA
-        every { projectPersistence.getApplicantAndStatusById(projectEligibleWithQA.id!!) } returns
-            ProjectApplicantAndStatus(applicantId = 2564L, projectStatus = ApplicationStatus.ELIGIBLE)
-
-        assertTrue(projectStatusAuthorization.canApproveOrRefuse(projectEligibleWithQA.id!!))
-        assertTrue(projectStatusAuthorization.canApproveWithConditions(projectEligibleWithQA.id!!))
-    }
-
-
-    @ParameterizedTest
-    @MethodSource("provideAdminAndProgramUsers")
-    fun `programme or admin user can change funding decision`(currentUser: LocalCurrentUser) {
-        every { securityService.currentUser } returns currentUser
-        every { projectPersistence.getProject(projectApprovedWithConditions.id!!) } returns projectApprovedWithConditions
-        every { projectPersistence.getApplicantAndStatusById(projectApprovedWithConditions.id!!) } returns
-            ProjectApplicantAndStatus(applicantId = 2580L, projectStatus = ApplicationStatus.APPROVED_WITH_CONDITIONS)
-
-        assertTrue(projectStatusAuthorization.canApproveOrRefuse(projectApprovedWithConditions.id!!))
-        assertFalse(projectStatusAuthorization.canApproveWithConditions(projectApprovedWithConditions.id!!))
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideAdminAndProgramUsers")
-    fun `cannot update final funding decision`(currentUser: LocalCurrentUser) {
-        every { securityService.currentUser } returns currentUser
-
-        listOf(projectApproved, projectNotApproved).forEach {
-            every { projectPersistence.getApplicantAndStatusById(it.id!!) } returns
-                ProjectApplicantAndStatus(applicantId = applicantUser.user.id, projectStatus = it.projectStatus.status)
-
-            assertFalse(projectStatusAuthorization.canApproveWithConditions(it.id!!))
-            assertFalse(projectStatusAuthorization.canApproveOrRefuse(it.id!!))
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideAdminAndProgramUsers")
-    fun `cannot enter eligibility decision admin and programme user`(currentUser: LocalCurrentUser) {
-        every { securityService.currentUser } returns currentUser
-
-        val listOfAllowed = mutableListOf(projectSubmitted, projectReturned)
-        if (currentUser.isAdmin)
-            listOfAllowed.add(projectDraft)
-
-        listOfAllowed.forEach {
-//            every { projectAuthorization.canReadProject(eq(it.id!!)) } returns true
-            assertFalse(
-                projectStatusAuthorization.canSetEligibility(it.id!!),
-                "cannot make eligibility decision without eligibility assessment"
-            )
-        }
-    }
-
-    @ParameterizedTest(name = "cannot enter funding decision {0}")
-    @MethodSource("provideAllUsers")
-    fun `cannot enter funding decision`(currentUser: LocalCurrentUser) {
-        every { securityService.currentUser } returns currentUser
-
-        val listOfAllowed =
-            mutableListOf(projectSubmitted, projectReturned, projectDraft, projectEligible, projectIneligible)
-        if (!currentUser.isAdmin && !currentUser.isProgrammeUser)
-            listOfAllowed.remove(PID_DRAFT)
-
-        listOfAllowed.forEach {
-            if (!currentUser.isAdmin && !currentUser.isProgrammeUser)
-                assertThrows<ResourceNotFoundException> { projectStatusAuthorization.canApproveOrRefuse(it.id!!) }
-            else
-                assertFalse(projectStatusAuthorization.canApproveOrRefuse(it.id!!))
-        }
-    }
-
-    @Test
-    fun `applicant cannot enter decisions`() {
-        every { securityService.currentUser } returns applicantUser
-
-        assertThrows<ResourceNotFoundException> { projectStatusAuthorization.canSetQualityAssessment(PID_SUBMITTED) }
-        assertThrows<ResourceNotFoundException> { projectStatusAuthorization.canSetEligibilityAssessment(PID_SUBMITTED) }
     }
 
     @Test

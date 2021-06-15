@@ -26,7 +26,7 @@ class SetAssessmentQuality(
     private val securityService: SecurityService,
 ) : SetAssessmentQualityInteractor {
 
-//    @CanSetQualityAssessment
+    @CanSetQualityAssessment
     @Transactional
     @ExceptionWrapper(SetAssessmentQualityException::class)
     override fun setQualityAssessment(projectId: Long, result: ProjectAssessmentQualityResult, note: String?): Project {

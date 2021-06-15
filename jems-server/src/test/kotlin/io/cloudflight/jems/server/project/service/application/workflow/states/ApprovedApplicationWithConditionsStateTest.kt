@@ -103,10 +103,10 @@ class ApprovedApplicationWithConditionsStateTest {
     @Test
     fun refuse() {
         every { projectWorkflowPersistence.getProjectEligibilityDecisionDate(PROJECT_ID) } returns LocalDate.now().minusDays(1)
-        every { projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, any()) } returns ApplicationStatus.NOT_APPROVED
+        every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, any()) } returns ApplicationStatus.NOT_APPROVED
 
         assertThat(approvedApplicationWithConditionsState.refuse(actionInfo)).isEqualTo(ApplicationStatus.NOT_APPROVED)
-        verify(exactly = 1) { projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, actionInfo)  }
+        verify(exactly = 1) { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, actionInfo)  }
     }
 
     @Test

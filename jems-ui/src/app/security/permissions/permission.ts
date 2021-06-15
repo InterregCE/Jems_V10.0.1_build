@@ -110,9 +110,19 @@ export class Permission {
         },
         {
           name: 'project.assessment.header',
-          mode: PermissionMode.HIDDEN_VIEW,
-          viewPermissions: ['Assessment-to-be-done' as PermissionsEnum],
-          temporarilyDisabled: true,
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [
+            PermissionsEnum.ProjectAssessmentView,
+          ],
+          editPermissions: [
+            PermissionsEnum.ProjectAssessmentQualityEnter,
+            PermissionsEnum.ProjectAssessmentEligibilityEnter,
+            PermissionsEnum.ProjectStatusDecideEligible,
+            PermissionsEnum.ProjectStatusDecideIneligible,
+            PermissionsEnum.ProjectStatusDecideApproved,
+            PermissionsEnum.ProjectStatusDecideApprovedWithConditions,
+            PermissionsEnum.ProjectStatusDecideNotApproved,
+          ],
         },
         {
           name: 'file.tab.header',

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3ea2c8e9-255f-4e9c-9649-d74157e32a5b",
+		"_postman_id": "85234d9b-23d8-4ddb-acb6-2cb87549d5b2",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -4273,7 +4273,7 @@
 							"script": {
 								"exec": [
 									"pm.test('applicant should not be able to enter EA', function() {\r",
-									"    pm.response.to.have.status(404);\r",
+									"    pm.response.to.have.status(403);\r",
 									"});\r",
 									""
 								],
@@ -4432,7 +4432,12 @@
 							"script": {
 								"exec": [
 									"pm.test('program user should not be able to enter EA second time', function() {\r",
-									"    pm.response.to.have.status(403);\r",
+									"    pm.response.to.have.status(422);\r",
+									"});\r",
+									"\r",
+									"pm.test('should return error', function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.details[0].i18nMessage.i18nKey).to.contain('use.case.set.assessment.eligibility.step2.already.concluded');\r",
 									"});\r",
 									""
 								],
@@ -5148,7 +5153,7 @@
 									"script": {
 										"exec": [
 											"pm.test('applicant should not be able to enter QA', function() {\r",
-											"    pm.response.to.have.status(404);\r",
+											"    pm.response.to.have.status(403);\r",
 											"});\r",
 											""
 										],
@@ -5307,7 +5312,12 @@
 									"script": {
 										"exec": [
 											"pm.test('program user should not be able to enter QA second time', function() {\r",
-											"    pm.response.to.have.status(403);\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test('should return error', function () {\r",
+											"    const response = pm.response.json();\r",
+											"    pm.expect(response.details[0].i18nMessage.i18nKey).to.contain('use.case.set.assessment.quality.step2.already.concluded');\r",
 											"});\r",
 											""
 										],
@@ -5718,7 +5728,7 @@
 							"response": []
 						},
 						{
-							"name": "applicant cannot enter QA when INELIGIBLE already",
+							"name": "applicant cannot enter QA (when INELIGIBLE already)",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -5734,7 +5744,7 @@
 									"script": {
 										"exec": [
 											"pm.test('applicant should not be able to enter QA when INELIGIBLE state already', function() {\r",
-											"    pm.response.to.have.status(404);\r",
+											"    pm.response.to.have.status(403);\r",
 											"});\r",
 											""
 										],
@@ -6328,8 +6338,8 @@
 											"pm.test('funding decision is part of the project object', function() {\r",
 											"    const application = pm.response.json();\r",
 											"    const decision = application.secondStepDecision;\r",
-											"    pm.expect(decision).to.have.property('fundingDecision');\r",
-											"    pm.expect(decision.fundingDecision)\r",
+											"    pm.expect(decision).to.have.property('finalFundingDecision');\r",
+											"    pm.expect(decision.finalFundingDecision)\r",
 											"        .deep.equal(application.projectStatus);\r",
 											"});\r",
 											""
@@ -6684,7 +6694,12 @@
 									"script": {
 										"exec": [
 											"pm.test('program user should not be able to enter funding without ED', function() {\r",
-											"    pm.response.to.have.status(403);\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test('should return error', function () {\r",
+											"    const response = pm.response.json();\r",
+											"    pm.expect(response.details[0].i18nMessage.i18nKey).to.contain('application.action.approve.is.not.allowed');\r",
 											"});\r",
 											""
 										],
@@ -7115,7 +7130,12 @@
 									"script": {
 										"exec": [
 											"pm.test('program user should not be able to enter funding without QA', function() {\r",
-											"    pm.response.to.have.status(403);\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test('should return error', function () {\r",
+											"    const response = pm.response.json();\r",
+											"    pm.expect(response.details[0].i18nMessage.i18nKey).to.contain('use.case.approve.application.missing.quality.assessment');\r",
 											"});\r",
 											""
 										],
@@ -7714,8 +7734,8 @@
 											"pm.test('funding decision is part of the project object', function() {\r",
 											"    const application = pm.response.json();\r",
 											"    const decision = application.secondStepDecision;\r",
-											"    pm.expect(decision).to.have.property('fundingDecision');\r",
-											"    pm.expect(decision.fundingDecision)\r",
+											"    pm.expect(decision).to.have.property('preFundingDecision');\r",
+											"    pm.expect(decision.preFundingDecision)\r",
 											"        .deep.equal(application.projectStatus);\r",
 											"});\r",
 											""
@@ -8054,10 +8074,10 @@
 											"pm.test('project status should refer to this change', function() {\r",
 											"    const application = pm.response.json();\r",
 											"    const decision = application.secondStepDecision;\r",
-											"    pm.expect(decision.fundingDecision).to.have.property('id');\r",
+											"    pm.expect(decision.finalFundingDecision).to.have.property('id');\r",
 											"    pm.expect(application.projectStatus).to.have.property('id');\r",
-											"    // fundingDecision is still referring to the first funding attempt\r",
-											"    pm.expect(decision.fundingDecision.id)\r",
+											"    // preFundingDecision is still referring to the first funding attempt\r",
+											"    pm.expect(decision.preFundingDecision.id)\r",
 											"        .not.eql(application.projectStatus.id);\r",
 											"});\r",
 											""

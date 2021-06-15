@@ -13,6 +13,15 @@ enum class UserRolePermission(val key: String) {
     // Module APPLICATION LIFECYCLE
     ProjectSubmission("ProjectSubmission"),
 
+    ProjectAssessmentView("ProjectAssessmentView"),
+    ProjectAssessmentQualityEnter("ProjectAssessmentQualityEnter"),
+    ProjectAssessmentEligibilityEnter("ProjectAssessmentEligibilityEnter"),
+    ProjectStatusDecideEligible("ProjectStatusDecideEligible"),
+    ProjectStatusDecideIneligible("ProjectStatusDecideIneligible"),
+    ProjectStatusDecideApproved("ProjectStatusDecideApproved"),
+    ProjectStatusDecideApprovedWithConditions("ProjectStatusDecideApprovedWithConditions"),
+    ProjectStatusDecideNotApproved("ProjectStatusDecideNotApproved"),
+
     // Module SYSTEM
     AuditRetrieve("AuditRetrieve"),
 

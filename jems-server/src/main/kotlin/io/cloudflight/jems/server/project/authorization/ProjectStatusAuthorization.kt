@@ -23,23 +23,23 @@ import org.springframework.stereotype.Component
 annotation class CanSubmitApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canApproveOrRefuse(#projectId)")
+@PreAuthorize("hasAuthority('ProjectStatusDecideApproved')")
 annotation class CanApproveApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canApproveWithConditions(#projectId)")
+@PreAuthorize("hasAuthority('ProjectStatusDecideApprovedWithConditions')")
 annotation class CanApproveApplicationWithConditions
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canApproveOrRefuse(#projectId)")
+@PreAuthorize("hasAuthority('ProjectStatusDecideNotApproved')")
 annotation class CanRefuseApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canSetEligibility(#projectId)")
+@PreAuthorize("hasAuthority('ProjectStatusDecideEligible')")
 annotation class CanSetApplicationAsEligible
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canSetEligibility(#projectId)")
+@PreAuthorize("hasAuthority('ProjectStatusDecideIneligible')")
 annotation class CanSetApplicationAsIneligible
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -69,36 +69,6 @@ class ProjectStatusAuthorization(
             throw ResourceNotFoundException("project")
     }
 
-    fun canApproveOrRefuse(projectId: Long): Boolean {
-        val project = projectPersistence.getProject(projectId)
-        val oldStatus = project.projectStatus.status
-        val oldPossibilities = setOf(STEP1_ELIGIBLE, ELIGIBLE, APPROVED_WITH_CONDITIONS)
-
-        if (!isProgrammeUser() && ! isAdmin())
-            throw ResourceNotFoundException("project")
-
-        val decisions = if (oldStatus.isInStep2()) project.assessmentStep2 else project.assessmentStep1
-
-        return oldPossibilities.contains(oldStatus) && decisions?.assessmentQuality != null
-    }
-
-    fun canApproveWithConditions(projectId: Long): Boolean {
-        val oldStatus = projectPersistence.getApplicantAndStatusById(projectId).projectStatus
-        return oldStatus.isEligible() && (isProgrammeUser() || isAdmin())
-    }
-
-    fun canSetEligibility(projectId: Long): Boolean {
-        val project = projectPersistence.getProject(projectId)
-        val oldStatus = project.projectStatus.status
-
-        if (!isProgrammeUser() && ! isAdmin())
-            throw ResourceNotFoundException("project")
-
-        val decisions = if (oldStatus.isInStep2()) project.assessmentStep2 else project.assessmentStep1
-
-        return oldStatus.isSubmitted() && decisions?.assessmentEligibility != null
-    }
-
     fun canReturnToApplicant(projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
         val oldStatus = project.projectStatus
@@ -115,30 +85,6 @@ class ProjectStatusAuthorization(
             throw ResourceNotFoundException("project")
 
         return oldPossibilities.contains(project.projectStatus)
-    }
-
-    fun canSetQualityAssessment(projectId: Long): Boolean {
-        val project = projectPersistence.getProject(projectId)
-        val allowedStatuses = listOf(SUBMITTED, ELIGIBLE, STEP1_SUBMITTED, STEP1_ELIGIBLE)
-
-        if (!isProgrammeUser() && ! isAdmin())
-            throw ResourceNotFoundException("project")
-
-        val decision = if (project.projectStatus.status.isInStep2()) project.assessmentStep2 else project.assessmentStep1
-
-        return allowedStatuses.contains(project.projectStatus.status) && decision?.assessmentQuality == null
-    }
-
-    fun canSetEligibilityAssessment(projectId: Long): Boolean {
-        val project = projectPersistence.getProject(projectId)
-        val status = project.projectStatus.status
-
-        if (!isProgrammeUser() && ! isAdmin())
-            throw ResourceNotFoundException("project")
-
-        val decision = if (status.isInStep2()) project.assessmentStep2 else project.assessmentStep1
-
-        return decision?.assessmentEligibility == null && status.isSubmitted()
     }
 
 }

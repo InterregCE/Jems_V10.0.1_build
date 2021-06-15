@@ -23,7 +23,7 @@ class ApprovedApplicationWithConditionsState(
         updateFundingDecision(ApplicationStatus.APPROVED, actionInfo)
 
     override fun refuse(actionInfo: ApplicationActionInfo): ApplicationStatus =
-        updateCurrentStatus(ApplicationStatus.NOT_APPROVED, actionInfo)
+        updateFundingDecision(ApplicationStatus.NOT_APPROVED, actionInfo)
 
     override fun returnToApplicant(): ApplicationStatus =
         returnToApplicantDefaultImpl()

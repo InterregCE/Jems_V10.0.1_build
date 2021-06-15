@@ -3,9 +3,9 @@ package io.cloudflight.jems.server.project.authorization
 import org.springframework.security.access.prepost.PreAuthorize
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectAssessmentEligibilityUpdate')")
+@PreAuthorize("hasAuthority('ProjectAssessmentEligibilityEnter')")
 annotation class CanSetEligibilityAssessment
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectAssessmentQualityUpdate')")
+@PreAuthorize("hasAuthority('ProjectAssessmentQualityEnter')")
 annotation class CanSetQualityAssessment
