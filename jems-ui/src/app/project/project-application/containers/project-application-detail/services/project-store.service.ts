@@ -128,10 +128,9 @@ export class ProjectStore {
   }
 
   getProjectCoFinancing(): Observable<ProjectPartnerBudgetCoFinancingDTO[]> {
-    return this.projectId$
+    return combineLatest([this.projectId$, this.projectVersionStore.currentRouteVersion$])
       .pipe(
-        distinctUntilChanged(),
-        switchMap(id => this.projectService.getProjectCoFinancing(id)),
+        switchMap(([id, version]) => this.projectService.getProjectCoFinancing(id, version)),
         tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => Log.info('Fetched project co-financing:', this, data))
       );
   }

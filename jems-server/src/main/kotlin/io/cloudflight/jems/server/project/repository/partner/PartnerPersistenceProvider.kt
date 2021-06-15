@@ -80,7 +80,7 @@ class PartnerPersistenceProvider(
             },
             previousVersionFetcher = { timestamp ->
                 projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
-                    .toOutputProjectPartnerHistoricalData()
+                    .map { it.toOutputProjectPartnerHistoricalData() }
             }
         ) ?: emptyList()
     }

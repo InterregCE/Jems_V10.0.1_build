@@ -74,27 +74,27 @@ class GetProjectBudgetInteractorTest : UnitTest() {
     @Test
     fun getBudget() {
         every { persistence.getPartnersForProjectId(1) } returns listOf(partner1, partner2)
-        every { optionOptionsPersistence.getBudgetOptions(setOf(partner1Id, partner2Id)) } returns listOf(
+        every { optionOptionsPersistence.getBudgetOptions(setOf(partner1Id, partner2Id), 1L) } returns listOf(
             partner1Options
         )
-        every { persistence.getStaffCosts(setOf(partner2Id)) } returns listOf(budget(partner1Id, 50.0))
-        every { persistence.getTravelCosts(setOf(partner2Id)) } returns listOf(
+        every { persistence.getStaffCosts(setOf(partner2Id), 1L) } returns listOf(budget(partner1Id, 50.0))
+        every { persistence.getTravelCosts(setOf(partner2Id), 1L) } returns listOf(
             budget(partner1Id, 800.0),
             budget(partner2Id, 100.0)
         )
-        every { persistence.getExternalCosts(setOf(partner1Id, partner2Id)) } returns listOf(budget(partner2Id, 1000.0))
-        every { persistence.getEquipmentCosts(setOf(partner1Id, partner2Id)) } returns emptyList()
-        every { persistence.getInfrastructureCosts(setOf(partner1Id, partner2Id)) } returns listOf(
+        every { persistence.getExternalCosts(setOf(partner1Id, partner2Id), 1L) } returns listOf(budget(partner2Id, 1000.0))
+        every { persistence.getEquipmentCosts(setOf(partner1Id, partner2Id), 1L) } returns emptyList()
+        every { persistence.getInfrastructureCosts(setOf(partner1Id, partner2Id), 1L) } returns listOf(
             budget(
                 partner1Id,
                 300.0
             ), budget(partner2Id, 300.0)
         )
 
-        every {persistence.getUnitCostsPerPartner(setOf(partner1Id, partner2Id)) } returns mapOf(
+        every {persistence.getUnitCostsPerPartner(setOf(partner1Id, partner2Id), 1L) } returns mapOf(
             partner1Id to 25.0.toScaledBigDecimal()
         )
-        every { persistence.getLumpSumContributionPerPartner(setOf(partner1Id, partner2Id)) } returns mapOf(
+        every { persistence.getLumpSumContributionPerPartner(setOf(partner1Id, partner2Id), 1L) } returns mapOf(
             partner1Id to BigDecimal.ONE,
             partner2Id to BigDecimal.TEN,
         )

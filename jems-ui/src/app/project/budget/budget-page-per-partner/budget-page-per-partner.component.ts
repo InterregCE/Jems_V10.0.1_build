@@ -82,6 +82,7 @@ export class BudgetPagePerPartnerComponent {
   }
 
   private constructBudgetColumns(budgets: ProjectPartnerBudgetCoFinancingDTO[]): void {
+    this.budgetColumns = [];
     budgets.forEach((budget: ProjectPartnerBudgetCoFinancingDTO) => {
       this.budgetColumns.push({
         partnerSortNumber: budget?.partner.sortNumber,

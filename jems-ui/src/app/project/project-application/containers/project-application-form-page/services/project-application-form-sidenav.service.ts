@@ -223,7 +223,6 @@ export class ProjectApplicationFormSidenavService {
           },
           {
             headline: {i18nKey: 'project.application.form.section.part.d'},
-            disabled: !currentVersionIsLatest,
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.d.subsection.one'},

@@ -68,11 +68,17 @@ interface ProjectApi {
 
     @ApiOperation("Returns project budget for all partners")
     @GetMapping("/{projectId}/budget")
-    fun getProjectBudget(@PathVariable projectId: Long): List<ProjectPartnerBudgetDTO>
+    fun getProjectBudget(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<ProjectPartnerBudgetDTO>
 
     @ApiOperation("Returns project co-financing for all partners")
     @GetMapping("/{projectId}/coFinancing")
-    fun getProjectCoFinancing(@PathVariable projectId: Long): List<ProjectPartnerBudgetCoFinancingDTO>
+    fun getProjectCoFinancing(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<ProjectPartnerBudgetCoFinancingDTO>
 
     @ApiOperation("Returns project versions")
     @GetMapping("/{projectId}/versions")

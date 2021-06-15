@@ -11,6 +11,8 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetView
+import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.*
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
@@ -61,14 +63,20 @@ class ProjectBudgetPersistenceTest {
     @MockK
     lateinit var projectPartnerUnitCostRepository: ProjectPartnerBudgetUnitCostRepository
 
+    @MockK
+    lateinit var projectVersionRepo: ProjectVersionRepository
+
     @RelaxedMockK
     lateinit var auditService: AuditService
 
     private lateinit var projectBudgetPersistence: ProjectBudgetPersistence
 
+    private lateinit var projectVersionUtils: ProjectVersionUtils
+
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
+        projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
         projectBudgetPersistence = ProjectBudgetPersistenceProvider(
             projectPartnerRepository,
             budgetStaffCostRepository,
@@ -78,41 +86,42 @@ class ProjectBudgetPersistenceTest {
             budgetInfrastructureRepository,
             projectPartnerUnitCostRepository,
             projectPartnerLumpSumRepository,
+            projectVersionUtils
         )
     }
 
     @Test
     fun getStaffCosts() {
         every { budgetStaffCostRepository.sumForAllPartners(PARTNER_IDS) } returns testBudgets
-        assertThat(projectBudgetPersistence.getStaffCosts(PARTNER_IDS))
+        assertThat(projectBudgetPersistence.getStaffCosts(PARTNER_IDS, 1L))
             .containsExactlyInAnyOrder(expectedBudget)
     }
 
     @Test
     fun getTravelCosts() {
         every { budgetTravelRepository.sumForAllPartners(PARTNER_IDS) } returns testBudgets
-        assertThat(projectBudgetPersistence.getTravelCosts(PARTNER_IDS))
+        assertThat(projectBudgetPersistence.getTravelCosts(PARTNER_IDS, 1L))
             .containsExactlyInAnyOrder(expectedBudget)
     }
 
     @Test
     fun getExternalCosts() {
         every { budgetExternalRepository.sumForAllPartners(PARTNER_IDS) } returns testBudgets
-        assertThat(projectBudgetPersistence.getExternalCosts(PARTNER_IDS))
+        assertThat(projectBudgetPersistence.getExternalCosts(PARTNER_IDS, 1L))
             .containsExactlyInAnyOrder(expectedBudget)
     }
 
     @Test
     fun getEquipmentCosts() {
         every { budgetEquipmentRepository.sumForAllPartners(PARTNER_IDS) } returns testBudgets
-        assertThat(projectBudgetPersistence.getEquipmentCosts(PARTNER_IDS))
+        assertThat(projectBudgetPersistence.getEquipmentCosts(PARTNER_IDS, 1L))
             .containsExactlyInAnyOrder(expectedBudget)
     }
 
     @Test
     fun getInfrastructureCosts() {
         every { budgetInfrastructureRepository.sumForAllPartners(PARTNER_IDS) } returns testBudgets
-        assertThat(projectBudgetPersistence.getInfrastructureCosts(PARTNER_IDS))
+        assertThat(projectBudgetPersistence.getInfrastructureCosts(PARTNER_IDS, 1L))
             .containsExactlyInAnyOrder(expectedBudget)
     }
 
@@ -153,7 +162,7 @@ class ProjectBudgetPersistenceTest {
                 sum = BigDecimal.TEN,
             ),
         )
-        assertThat(projectBudgetPersistence.getLumpSumContributionPerPartner(setOf(PARTNER_ID))).containsExactlyInAnyOrderEntriesOf(
+        assertThat(projectBudgetPersistence.getLumpSumContributionPerPartner(setOf(PARTNER_ID), 1L)).containsExactlyInAnyOrderEntriesOf(
             mapOf(
                 PARTNER_ID to BigDecimal.TEN
             )
@@ -169,7 +178,7 @@ class ProjectBudgetPersistenceTest {
                 sum = BigDecimal.TEN,
             ),
         )
-        assertThat(projectBudgetPersistence.getUnitCostsPerPartner(setOf(id))).containsExactlyInAnyOrderEntriesOf(
+        assertThat(projectBudgetPersistence.getUnitCostsPerPartner(setOf(id), 1L)).containsExactlyInAnyOrderEntriesOf(
             mapOf(
                 PARTNER_ID to BigDecimal.TEN
             )

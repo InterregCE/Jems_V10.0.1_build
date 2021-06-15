@@ -55,11 +55,11 @@ class ProjectController(
         return projectService.update(projectId, project)
     }
 
-    override fun getProjectBudget(projectId: Long): List<ProjectPartnerBudgetDTO> =
-        getProjectBudgetInteractor.getBudget(projectId = projectId).toDTO()
+    override fun getProjectBudget(projectId: Long, version: String?): List<ProjectPartnerBudgetDTO> =
+        getProjectBudgetInteractor.getBudget(projectId = projectId, version).toDTO()
 
-    override fun getProjectCoFinancing(projectId: Long): List<ProjectPartnerBudgetCoFinancingDTO> =
-        getProjectBudgetCoFinancingInteractor.getBudgetCoFinancing(projectId = projectId).toProjectPartnerBudgetDTO()
+    override fun getProjectCoFinancing(projectId: Long, version: String?): List<ProjectPartnerBudgetCoFinancingDTO> =
+        getProjectBudgetCoFinancingInteractor.getBudgetCoFinancing(projectId = projectId, version).toProjectPartnerBudgetDTO()
 
     override fun getProjectVersions(projectId: Long): Collection<ProjectVersionDTO> =
         getProjectVersionsInteractor.getProjectVersions(projectId).toDTOs()

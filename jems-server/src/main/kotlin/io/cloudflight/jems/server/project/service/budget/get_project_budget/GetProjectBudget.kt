@@ -21,24 +21,24 @@ class GetProjectBudget(
 
     @Transactional(readOnly = true)
     @CanRetrieveProject
-    override fun getBudget(projectId: Long): List<PartnerBudget> {
-        val partners = persistence.getPartnersForProjectId(projectId = projectId).associateBy { it.id!! }
+    override fun getBudget(projectId: Long, version: String?): List<PartnerBudget> {
+        val partners = persistence.getPartnersForProjectId(projectId = projectId, version).associateBy { it.id!! }
 
         val options =
-            optionPersistence.getBudgetOptions(partners.keys).iterator().asSequence().associateBy { it.partnerId }
+            optionPersistence.getBudgetOptions(partners.keys, projectId, version).iterator().asSequence().associateBy { it.partnerId }
 
-        val lumpSumContributionPerPartner = persistence.getLumpSumContributionPerPartner(partners.keys)
-        val unitCostsPerPartner = persistence.getUnitCostsPerPartner(partners.keys)
+        val lumpSumContributionPerPartner = persistence.getLumpSumContributionPerPartner(partners.keys, projectId, version)
+        val unitCostsPerPartner = persistence.getUnitCostsPerPartner(partners.keys, projectId, version)
 
-        val externalCostsPerPartner = persistence.getExternalCosts(partners.keys).groupByPartnerId()
-        val equipmentCostsPerPartner = persistence.getEquipmentCosts(partners.keys).groupByPartnerId()
-        val infrastructureCostsPerPartner = persistence.getInfrastructureCosts(partners.keys).groupByPartnerId()
+        val externalCostsPerPartner = persistence.getExternalCosts(partners.keys, projectId, version).groupByPartnerId()
+        val equipmentCostsPerPartner = persistence.getEquipmentCosts(partners.keys, projectId, version).groupByPartnerId()
+        val infrastructureCostsPerPartner = persistence.getInfrastructureCosts(partners.keys, projectId, version).groupByPartnerId()
 
         val staffCostsPerPartner =
-            persistence.getStaffCosts(partners.filter { options[it.key]?.staffCostsFlatRate == null }.keys)
+            persistence.getStaffCosts(partners.filter { options[it.key]?.staffCostsFlatRate == null }.keys, projectId, version)
                 .groupByPartnerId()
         val travelCostsPerPartner =
-            persistence.getTravelCosts(partners.filter { options[it.key]?.travelAndAccommodationOnStaffCostsFlatRate == null }.keys)
+            persistence.getTravelCosts(partners.filter { options[it.key]?.travelAndAccommodationOnStaffCostsFlatRate == null }.keys, projectId, version)
                 .groupByPartnerId()
 
         return partners.map { (partnerId, partner) ->

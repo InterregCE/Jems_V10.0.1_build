@@ -2,10 +2,11 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectCallSettingsDTO, ProjectPartnerBudgetDTO, ProjectService} from '@cat/api';
-import {map, tap} from 'rxjs/operators';
+import {map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {combineLatest, Observable} from 'rxjs';
 import {NumberService} from '../../../common/services/number.service';
+import {ProjectVersionStore} from '@project/services/project-version-store.service';
 
 @Component({
   selector: 'app-budget-page',
@@ -32,7 +33,10 @@ export class BudgetPageComponent {
   total: number;
 
   budget$: Observable<ProjectPartnerBudgetDTO[]> = combineLatest([
-    this.projectService.getProjectBudget(this.projectId),
+    this.projectVersionStore.currentRouteVersion$
+      .pipe(
+        switchMap(version => this.projectService.getProjectBudget(this.projectId, version))
+      ),
     this.projectService.getProjectCallSettingsById(this.projectId),
   ])
     .pipe(
@@ -44,7 +48,8 @@ export class BudgetPageComponent {
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
-              private projectService: ProjectService) {
+              private projectService: ProjectService,
+              private projectVersionStore: ProjectVersionStore) {
   }
 
   private calculateFooterSums(budgets: ProjectPartnerBudgetDTO[]): void {

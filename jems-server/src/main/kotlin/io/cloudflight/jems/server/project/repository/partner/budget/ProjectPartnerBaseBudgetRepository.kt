@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetBase
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetRow
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetView
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
@@ -45,6 +46,19 @@ interface ProjectPartnerBaseBudgetRepository<T : ProjectPartnerBudgetBase> : Cru
 
     @Query("SELECT new io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetView(e.baseProperties.partnerId, SUM(e.baseProperties.rowSum)) FROM #{#entityName} e WHERE e.baseProperties.partnerId IN :ids GROUP BY e.baseProperties.partnerId")
     fun sumForAllPartners(@Param("ids") partnerIds: Set<Long>): List<ProjectPartnerBudgetView>
+
+    @Query(
+        """
+                SELECT 
+                    entity.partner_id AS partnerId,
+                    entity.row_sum AS sum
+                FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP  :timestamp AS entity
+                WHERE entity.partner_id IN :partnerIds
+                GROUP BY entity.partner_id
+            """,
+        nativeQuery = true
+    )
+    fun sumForAllPartnersAsOfTimestamp(partnerIds: Set<Long>, timestamp: Timestamp): List<ProjectPartnerBudgetRow>
 
     fun deleteAllByBasePropertiesPartnerId(partnerId: Long)
 

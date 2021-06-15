@@ -31,23 +31,24 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivatio
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 
-fun InputProjectPartnerCreate.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) = ProjectPartnerEntity(
-    project = project,
-    abbreviation = abbreviation!!,
-    role = role!!,
-    nameInOriginalLanguage = nameInOriginalLanguage,
-    nameInEnglish = nameInEnglish,
-    // translatedValues - needs partnerId
-    partnerType = partnerType,
-    legalStatus = legalStatus,
-    vat = vat,
-    vatRecovery = vatRecovery,
-)
+fun InputProjectPartnerCreate.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
+    ProjectPartnerEntity(
+        project = project,
+        abbreviation = abbreviation!!,
+        role = role!!,
+        nameInOriginalLanguage = nameInOriginalLanguage,
+        nameInEnglish = nameInEnglish,
+        // translatedValues - needs partnerId
+        partnerType = partnerType,
+        legalStatus = legalStatus,
+        vat = vat,
+        vatRecovery = vatRecovery,
+    )
 
 fun InputProjectPartnerCreate.combineTranslatedValues(
     partnerId: Long
 ): MutableSet<ProjectPartnerTranslEntity> {
-    val departmentMap = department.associateBy( { it.language }, { it.translation } )
+    val departmentMap = department.associateBy({ it.language }, { it.translation })
     val languages = departmentMap.keys.toMutableSet()
 
     return languages.mapTo(HashSet()) {
@@ -61,7 +62,7 @@ fun InputProjectPartnerCreate.combineTranslatedValues(
 fun InputProjectPartnerUpdate.combineTranslatedValues(
     partnerId: Long
 ): MutableSet<ProjectPartnerTranslEntity> {
-    val departmentMap = department.associateBy( { it.language }, { it.translation } )
+    val departmentMap = department.associateBy({ it.language }, { it.translation })
     val languages = departmentMap.keys.toMutableSet()
 
     return languages.mapTo(HashSet()) {
@@ -79,6 +80,7 @@ fun ProjectPartnerEntity.toProjectPartner() = ProjectPartner(
     sortNumber = sortNumber,
     country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
 )
+
 fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartner() }
 
 // todo remove when everything switched to Models
@@ -89,6 +91,7 @@ fun ProjectPartnerEntity.toOutputProjectPartner() = OutputProjectPartner(
     sortNumber = sortNumber,
     country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
 )
+
 fun Iterable<ProjectPartnerEntity>.toOutputProjectPartner() = map { it.toOutputProjectPartner() }
 
 fun ProjectPartnerEntity.toOutputProjectPartnerDetail() = OutputProjectPartnerDetail(
@@ -145,7 +148,12 @@ fun ProjectPartnerContact.toOutputProjectPartnerContact() = OutputProjectPartner
 fun ProjectPartnerMotivationDTO.toEntity(partnerId: Long): Set<ProjectPartnerMotivationEntity> {
     val motivation = ProjectPartnerMotivationEntity(
         partnerId = partnerId,
-        translatedValues = combineTranslatedValuesRelevance(partnerId, organizationRelevance, organizationRole, organizationExperience)
+        translatedValues = combineTranslatedValuesRelevance(
+            partnerId,
+            organizationRelevance,
+            organizationRole,
+            organizationExperience
+        )
     ).nullIfBlank() ?: return emptySet()
 
     return setOf(motivation)
@@ -157,9 +165,9 @@ fun combineTranslatedValuesRelevance(
     organizationRole: Set<InputTranslation>,
     organizationExperience: Set<InputTranslation>
 ): Set<ProjectPartnerMotivationTranslEntity> {
-    val organizationRelevanceMap = organizationRelevance.associateBy( { it.language }, { it.translation } )
-    val organizationRoleMap = organizationRole.associateBy( { it.language }, { it.translation } )
-    val organizationExperienceMap = organizationExperience.associateBy( { it.language }, { it.translation } )
+    val organizationRelevanceMap = organizationRelevance.associateBy({ it.language }, { it.translation })
+    val organizationRoleMap = organizationRole.associateBy({ it.language }, { it.translation })
+    val organizationExperienceMap = organizationExperience.associateBy({ it.language }, { it.translation })
 
     val languages = organizationRelevanceMap.keys.toMutableSet()
     languages.addAll(organizationRoleMap.keys)
@@ -176,9 +184,24 @@ fun combineTranslatedValuesRelevance(
 }
 
 fun ProjectPartnerMotivationEntity.toDto() = ProjectPartnerMotivationDTO(
-    organizationRelevance = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.organizationRelevance) },
-    organizationRole = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.organizationRole) },
-    organizationExperience = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.organizationExperience) }
+    organizationRelevance = translatedValues.mapTo(HashSet()) {
+        InputTranslation(
+            it.translationId.language,
+            it.organizationRelevance
+        )
+    },
+    organizationRole = translatedValues.mapTo(HashSet()) {
+        InputTranslation(
+            it.translationId.language,
+            it.organizationRole
+        )
+    },
+    organizationExperience = translatedValues.mapTo(HashSet()) {
+        InputTranslation(
+            it.translationId.language,
+            it.organizationExperience
+        )
+    }
 )
 
 fun ProjectPartnerAddress.toDto() = ProjectPartnerAddressDTO(
@@ -218,34 +241,45 @@ fun PartnerContactRow.toModel() = OutputProjectPartnerContact(
     telephone = telephone
 )
 
-fun List<PartnerMotivationRow>.toProjectPartnerMotivationHistoricalData() = this.groupBy { it.partnerId }.map { groupedRows -> ProjectPartnerMotivationDTO(
-    organizationRelevance = groupedRows.value.extractField { it.organizationRelevance },
-    organizationRole = groupedRows.value.extractField { it.organizationRole },
-    organizationExperience = groupedRows.value.extractField { it.organizationExperience },
-) }.firstOrNull()
+fun List<PartnerMotivationRow>.toProjectPartnerMotivationHistoricalData() =
+    this.groupBy { it.partnerId }.map { groupedRows ->
+        ProjectPartnerMotivationDTO(
+            organizationRelevance = groupedRows.value.extractField { it.organizationRelevance },
+            organizationRole = groupedRows.value.extractField { it.organizationRole },
+            organizationExperience = groupedRows.value.extractField { it.organizationExperience },
+        )
+    }.firstOrNull()
 
 fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
     addresses: List<ProjectPartnerAddressDTO>,
     contacts: List<OutputProjectPartnerContact>,
     motivation: ProjectPartnerMotivationDTO?
-) = this.groupBy { it.id }.map { groupedRows -> OutputProjectPartnerDetail(
-    id = groupedRows.value.first().id,
-    abbreviation = groupedRows.value.first().abbreviation,
-    role = groupedRows.value.first().role,
-    sortNumber = groupedRows.value.first().sortNumber,
-    nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
-    nameInEnglish = groupedRows.value.first().nameInEnglish,
-    department = groupedRows.value.extractField { it.department },
-    partnerType = groupedRows.value.first().partnerType,
-    legalStatusId = groupedRows.value.first().legalStatusId,
-    vat = groupedRows.value.first().vat,
-    vatRecovery = groupedRows.value.first().vatRecovery,
-    addresses = addresses,
-    contacts = contacts,
-    motivation = motivation
-) }.first()
+) = this.groupBy { it.id }.map { groupedRows ->
+    OutputProjectPartnerDetail(
+        id = groupedRows.value.first().id,
+        abbreviation = groupedRows.value.first().abbreviation,
+        role = groupedRows.value.first().role,
+        sortNumber = groupedRows.value.first().sortNumber,
+        nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
+        nameInEnglish = groupedRows.value.first().nameInEnglish,
+        department = groupedRows.value.extractField { it.department },
+        partnerType = groupedRows.value.first().partnerType,
+        legalStatusId = groupedRows.value.first().legalStatusId,
+        vat = groupedRows.value.first().vat,
+        vatRecovery = groupedRows.value.first().vatRecovery,
+        addresses = addresses,
+        contacts = contacts,
+        motivation = motivation
+    )
+}.first()
 
-fun Iterable<PartnerSimpleRow>.toOutputProjectPartnerHistoricalData() = map { it.toOutputProjectPartnerHistoricalData() }.toList()
+fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartner(
+    id = id,
+    abbreviation = abbreviation,
+    role = role,
+    sortNumber = sortNumber,
+    country = country
+)
 
 fun PartnerSimpleRow.toOutputProjectPartnerHistoricalData() = OutputProjectPartner(
     id = id,

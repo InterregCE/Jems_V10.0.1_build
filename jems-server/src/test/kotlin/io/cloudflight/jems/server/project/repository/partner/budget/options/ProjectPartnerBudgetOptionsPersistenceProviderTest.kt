@@ -126,7 +126,7 @@ internal class ProjectPartnerBudgetOptionsPersistenceProviderTest : UnitTest() {
     @Test
     fun `should return list of budget options for provided partnerIds`() {
         every { budgetOptionsRepository.findAllById(partnerIds) } returns listOf(currentVersionOfBudgetOptionsEntity)
-        assertThat(persistence.getBudgetOptions(partnerIds)).isEqualTo(
+        assertThat(persistence.getBudgetOptions(partnerIds, projectId)).isEqualTo(
             listOf(currentVersionOfBudgetOptionsEntity).toProjectPartnerBudgetOptions()
         )
         verify { budgetOptionsRepository.findAllById(partnerIds) }

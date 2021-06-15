@@ -6,6 +6,8 @@ import {TestModule} from '../../../common/test-module';
 import {ProjectModule} from '../../project.module';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {of} from 'rxjs';
 
 describe('BudgetPagePerPartnerComponent', () => {
   let component: BudgetPagePerPartnerComponent;
@@ -16,7 +18,15 @@ describe('BudgetPagePerPartnerComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [TestModule, ProjectModule],
-      declarations: [BudgetPagePerPartnerComponent]
+      declarations: [BudgetPagePerPartnerComponent],
+      providers: [
+        {
+          provide: ProjectVersionStore,
+          useValue: {
+            currentRouteVersion$: of('1.0')
+          }
+        }
+      ]
     })
       .compileComponents();
     const activatedRoute = TestBed.inject(ActivatedRoute);
@@ -39,7 +49,7 @@ describe('BudgetPagePerPartnerComponent', () => {
     projectStore.projectId$.next(1);
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/coFinancing'
+      url: '//api/project/1/coFinancing?version=1.0'
     });
   }));
 });

@@ -177,6 +177,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         """
              SELECT
              entity.*,
+             entity.sort_number as sortNumber,
              (SELECT
                 addresses.country
                 from project_partner_address
@@ -192,7 +193,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     fun findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
         projectId: Long,
         timestamp: Timestamp
-    ): Iterable<PartnerSimpleRow>
+    ): List<PartnerSimpleRow>
 
     @Query(
         value = """

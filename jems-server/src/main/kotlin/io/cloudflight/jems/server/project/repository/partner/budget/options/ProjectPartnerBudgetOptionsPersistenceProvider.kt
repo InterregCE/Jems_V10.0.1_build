@@ -43,8 +43,19 @@ class ProjectPartnerBudgetOptionsPersistenceProvider(
         )
 
     @Transactional(readOnly = true)
-    override fun getBudgetOptions(partnerIds: Set<Long>): List<ProjectPartnerBudgetOptions> =
-        budgetOptionsRepository.findAllById(partnerIds).toProjectPartnerBudgetOptions()
+    override fun getBudgetOptions(
+        partnerIds: Set<Long>,
+        projectId: Long,
+        version: String?
+    ): List<ProjectPartnerBudgetOptions> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                budgetOptionsRepository.findAllById(partnerIds).toProjectPartnerBudgetOptions()
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetOptionsRepository.findAllByPartnerIdsAsOfTimestamp(partnerIds, timestamp).toProjectPartnerBudgetOptions()
+            }) ?: emptyList()
+
 
     @Transactional
     override fun updateBudgetOptions(partnerId: Long, options: ProjectPartnerBudgetOptions) {

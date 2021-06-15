@@ -18,14 +18,14 @@ class GetProjectBudgetCoFinancing(
 
     @Transactional(readOnly = true)
     @CanRetrieveProject
-    override fun getBudgetCoFinancing(projectId: Long): List<PartnerBudgetCoFinancing> {
-        val partners = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId).associateBy { it.id!! }
+    override fun getBudgetCoFinancing(projectId: Long, version: String?): List<PartnerBudgetCoFinancing> {
+        val partners = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).associateBy { it.id!! }
 
         val budgetCoFinancingContributions: MutableMap<Long, ProjectPartnerCoFinancingAndContribution> = mutableMapOf()
 
         partners.keys.forEach {
             budgetCoFinancingContributions.put(it,
-                projectPartnerCoFinancingPersistenceProvider.getCoFinancingAndContributions(it, null)
+                projectPartnerCoFinancingPersistenceProvider.getCoFinancingAndContributions(it, version)
             )
         }
 
@@ -33,7 +33,7 @@ class GetProjectBudgetCoFinancing(
             PartnerBudgetCoFinancing(
                 partner = partner,
                 budgetCoFinancingContributions[partnerId],
-                total = getBudgetTotalCost.getBudgetTotalCost(partnerId)
+                total = getBudgetTotalCost.getBudgetTotalCost(partnerId, version)
             )
         }
 
