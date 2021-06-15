@@ -8,6 +8,7 @@ import {catchError, map, tap} from 'rxjs/operators';
 import {InputTranslation, ProjectPeriodDTO, ProjectResultDTO, ResultIndicatorSummaryDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 import {ActivatedRoute} from '@angular/router';
+import {ApplicationFormFieldId} from '@project/application-form-field-id';
 
 @Component({
   selector: 'app-project-results-page',
@@ -18,6 +19,7 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class ProjectResultsPageComponent implements OnInit {
   constants = ProjectResultsPageConstants;
+  ApplicationFormFieldId = ApplicationFormFieldId;
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   form = this.formBuilder.group({

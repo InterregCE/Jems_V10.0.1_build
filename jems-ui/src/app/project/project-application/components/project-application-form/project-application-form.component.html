@@ -7,7 +7,7 @@
             <input name="projectId" formControlName="projectId" matInput>
         </mat-form-field>
 
-        <mat-form-field>
+        <mat-form-field *appFormFieldVisibilityStatus="ApplicationFormFieldId.PROJECT_ACRONYM">
             <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
             <input #projectAcronym name="acronym" formControlName="acronym" matInput>
             <mat-hint [appHintFor]="projectAcronym" [hide]="applicationForm.controls?.acronym?.errors !== null">
@@ -24,7 +24,7 @@
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language-container>
+        <app-multi-language-container *appFormFieldVisibilityStatus="ApplicationFormFieldId.PROJECT_TITLE">
             <app-multi-language-form-field
                     type="textarea"
                     label="project.application.form.field.project.title"
@@ -35,7 +35,7 @@
 
         <h4>{{'project.application.project.duration.title' | translate}}</h4>
 
-        <div appMultiColumnRow stretch>
+        <div appMultiColumnRow stretch *appFormFieldVisibilityStatus="ApplicationFormFieldId.PROJECT_DURATION">
             <mat-form-field>
                 <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
                 <input type="number" name="duration" formControlName="duration" matInput
@@ -63,41 +63,45 @@
         </div>
 
 
-        <h4>{{'project.application.project.priority.title' | translate}}</h4>
-        <mat-form-field *ngIf="applicationForm.enabled">
-            <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
-            <mat-select (selectionChange)="changeCurrentPriority($event.value)" required [(value)]=currentPriority
-                        formControlName="programmePriority">
-                <mat-option *ngFor="let priority of priorities" [value]="priority.code">
-                    {{ priority.code }} - {{ priority.title | translateBySystemLanguage | async }}
-                </mat-option>
-            </mat-select>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="applicationForm?.controls?.programmePriority?.errors"
-                        [messages]="programmePriorityErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+        <ng-container *appFormFieldVisibilityStatus="ApplicationFormFieldId.PROJECT_PRIORITY">
+            <h4>{{'project.application.project.priority.title' | translate}}</h4>
+            <mat-form-field *ngIf="applicationForm.enabled">
+                <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
+                <mat-select (selectionChange)="changeCurrentPriority($event.value)" required [(value)]=currentPriority
+                            formControlName="programmePriority">
+                    <mat-option *ngFor="let priority of priorities" [value]="priority.code">
+                        {{ priority.code }} - {{ priority.title | translateBySystemLanguage | async }}
+                    </mat-option>
+                </mat-select>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="applicationForm?.controls?.programmePriority?.errors"
+                            [messages]="programmePriorityErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </ng-container>
 
-        <ng-container *ngIf="applicationForm.enabled && currentPriority">
-            <h4>{{'programme.priority.objective.title' | translate}}</h4>
-            <mat-radio-group
-                    formControlName="specificObjective"
-                    (change)="selectedSpecificObjective= $event.value">
-                <mat-radio-button
-                        *ngFor="let objective of objectivesWithPolicies[currentPriority]"
-                        [value]="objective"
+        <ng-container *appFormFieldVisibilityStatus="ApplicationFormFieldId.PROJECT_OBJECTIVE">
+            <ng-container *ngIf="applicationForm.enabled && currentPriority">
+                <h4>{{'programme.priority.objective.title' | translate}}</h4>
+                <mat-radio-group
+                        formControlName="specificObjective"
                         (change)="selectedSpecificObjective= $event.value">
-                    <div>{{'programme.policy.' + objective | translate}}</div>
-                </mat-radio-button>
-            </mat-radio-group>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="applicationForm?.controls?.specificObjective?.errors"
-                        [messages]="specificObjectiveErrors">
-                </app-form-field-errors>
-            </mat-error>
+                    <mat-radio-button
+                            *ngFor="let objective of objectivesWithPolicies[currentPriority]"
+                            [value]="objective"
+                            (change)="selectedSpecificObjective= $event.value">
+                        <div>{{'programme.policy.' + objective | translate}}</div>
+                    </mat-radio-button>
+                </mat-radio-group>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="applicationForm?.controls?.specificObjective?.errors"
+                            [messages]="specificObjectiveErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </ng-container>
         </ng-container>
 
         <div *ngIf="!applicationForm.enabled">

@@ -16,6 +16,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectStore} from '../../containers/project-application-detail/services/project-store.service';
 import {LanguageStore} from '../../../../common/services/language-store.service';
+import { ApplicationFormFieldId } from '@project/application-form-field-id';
 
 @Component({
   selector: 'app-project-application-form',
@@ -28,7 +29,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   Permission = Permission;
   tools = Tools;
   LANGUAGE = InputTranslation.LanguageEnum;
-
+  ApplicationFormFieldId = ApplicationFormFieldId;
   @Input()
   project: ProjectDetailDTO;
   @Input()

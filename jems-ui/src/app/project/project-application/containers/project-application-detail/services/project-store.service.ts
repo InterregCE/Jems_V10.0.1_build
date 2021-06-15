@@ -216,7 +216,8 @@ export class ProjectStore {
             new ProgrammeLumpSum(lumpSum.id, lumpSum.name, lumpSum.description, lumpSum.cost, lumpSum.splittingAllowed, LumpSumPhaseEnumUtils.toLumpSumPhaseEnum(lumpSum.phase), BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(lumpSum.categories))),
           callSetting.unitCosts
             .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.isOneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories))),
-          callSetting.isAdditionalFundAllowed
+          callSetting.isAdditionalFundAllowed,
+          callSetting.applicationFormConfiguration
         )),
         shareReplay(1)
       );
