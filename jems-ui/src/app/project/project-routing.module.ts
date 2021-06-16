@@ -7,7 +7,6 @@ import {ProjectApplicationEligibilityDecisionPageComponent} from './project-deta
 import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
 import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
 import {PermissionGuard} from '../security/permission.guard';
-import {Permission} from '../security/permissions/permission';
 import {ProjectApplyToCallComponent} from './project-application/containers/project-application-page/project-apply-to-call.component';
 import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
 import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
@@ -29,6 +28,7 @@ import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/pro
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
 import {UserRoleDTO} from '@cat/api';
 import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 export const routes: Routes = [
   {
@@ -39,7 +39,7 @@ export const routes: Routes = [
         path: '',
         component: ProjectApplicationComponent,
         canActivate: [PermissionGuard],
-        data: {permissionsOnly: [UserRoleDTO.PermissionsEnum.ProjectRetrieve]},
+        data: {permissionsOnly: [PermissionsEnum.ProjectRetrieve]},
       },
       {
         path: 'applyTo/:callId',
@@ -59,44 +59,29 @@ export const routes: Routes = [
             path: 'assessment',
             data: {
               skipBreadcrumb: true,
-              permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+              permissionsOnly: [PermissionsEnum.ProjectAssessmentView],
             },
             canActivate: [PermissionGuard],
             children: [
               {
                 path: 'eligibilityDecision/:step',
                 component: ProjectApplicationEligibilityDecisionPageComponent,
-                data: {
-                  breadcrumb: 'project.breadcrumb.eligibilityDecision',
-                  permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-                },
-                canActivate: [PermissionGuard]
+                data: {breadcrumb: 'project.breadcrumb.eligibilityDecision'},
               },
               {
                 path: 'qualityCheck/:step',
                 component: ProjectApplicationQualityCheckComponent,
-                data: {
-                  breadcrumb: 'project.breadcrumb.qualityCheck',
-                  permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-                },
+                data: {breadcrumb: 'project.breadcrumb.qualityCheck'},
               },
               {
                 path: 'eligibilityCheck/:step',
                 component: ProjectApplicationEligibilityCheckComponent,
-                data: {
-                  breadcrumb: 'project.breadcrumb.eligibilityCheck',
-                  permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-                },
-                canActivate: [PermissionGuard]
+                data: {breadcrumb: 'project.breadcrumb.eligibilityCheck'},
               },
               {
                 path: 'fundingDecision/:step',
                 component: ProjectApplicationFundingPageComponent,
-                data: {
-                  breadcrumb: 'project.breadcrumb.fundingDecision',
-                  permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
-                },
-                canActivate: [PermissionGuard]
+                data: {breadcrumb: 'project.breadcrumb.fundingDecision'},
               },
             ],
           },

@@ -37,7 +37,6 @@ export class ProgrammeEditableStateStore {
     return this.permissionService.hasPermission(PermissionsEnum.ProgrammeSetupUpdate)
       .pipe(
         map(hasUpdate => !hasUpdate),
-        tap(hasOnlyView => console.log('Has only view? ' + hasOnlyView)),
         shareReplay(1),
       );
   }

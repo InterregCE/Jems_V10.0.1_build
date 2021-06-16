@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges} from '@angular/core';
-import {ProjectDecisionDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import {ProjectDecisionDTO, ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {ProjectStepStatus} from '../project-step-status';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectDetailPageStore} from '../project-detail-page-store';
 import {map} from 'rxjs/operators';
 import StatusEnum = ProjectStatusDTO.StatusEnum;
+import Permissions = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-project-application-decisions',
@@ -14,11 +15,10 @@ import StatusEnum = ProjectStatusDTO.StatusEnum;
 })
 export class ProjectApplicationDecisionsComponent implements OnChanges {
   STATUS = StatusEnum;
+  Permissions = Permissions;
 
   @Input()
   step: number;
-  @Input()
-  collapsed = false;
 
   stepStatus: ProjectStepStatus;
 

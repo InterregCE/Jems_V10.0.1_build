@@ -13,7 +13,7 @@
         <h3>{{'project.assessment.fundingDecision.dialog.title' | translate}}</h3>
         <app-project-application-funding-decision
                 appNoWidthLimit
-                *ngIf="!details.isThisFirstDecision"
+                *ngIf="details.showSecondDecision"
                 [project]="details.project"
                 [status]="details.finalFundingDecision"
                 [stepStatus]="stepStatus"

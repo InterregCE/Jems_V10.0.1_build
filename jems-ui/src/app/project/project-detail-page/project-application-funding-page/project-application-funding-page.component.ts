@@ -5,6 +5,8 @@ import {ProjectFundingDecisionStore} from './project-funding-decision-store.serv
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest} from 'rxjs';
 import {ProjectStepStatus} from '../project-step-status';
+import {ProjectStatusDTO} from '@cat/api';
+import StatusEnum = ProjectStatusDTO.StatusEnum;
 
 @Component({
   selector: 'app-project-application-funding-page',
@@ -32,7 +34,7 @@ export class ProjectApplicationFundingPageComponent {
         finalFundingDecision,
         eligibilityDecisionDate,
         isStep2: project.step2Active,
-        isThisFirstDecision: !project.secondStepDecision?.preFundingDecision,
+        showSecondDecision: !!project.secondStepDecision?.preFundingDecision && project.projectStatus.status !== StatusEnum.RETURNEDTOAPPLICANT,
         fullOptions: [this.stepStatus.approved, this.stepStatus.approvedWithConditions, this.stepStatus.notApproved],
         optionsForSecondDecision: [this.stepStatus.approved, this.stepStatus.notApproved],
       })),

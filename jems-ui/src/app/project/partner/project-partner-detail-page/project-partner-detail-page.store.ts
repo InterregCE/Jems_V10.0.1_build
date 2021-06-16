@@ -97,7 +97,6 @@ export class ProjectPartnerDetailPageStore {
   }
 
   updateBudgets(budgets: PartnerBudgetTables): Observable<any> {
-    console.log(budgets);
     return of(budgets).pipe(withLatestFrom(this.partnerStore.partner$, this.budgetOptions$)).pipe(
       switchMap(([newBudgets, partner, options]: any) =>
         forkJoin(this.getBudgetsToSave(partner, newBudgets, options))),
