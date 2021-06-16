@@ -16,7 +16,7 @@
                     appNoWidthLimit></app-project-application-pre-condition-check-result>
         </ng-container>
 
-        <div appFormLayout *ngxPermissionsExcept="Permission.APPLICANT_USER" id="project-detail-container">
+        <div appFormLayout *hasPermission="PermissionsEnum.ProjectAssessmentView" id="project-detail-container">
             <ng-container *ngIf="projectDetailStore.callHasTwoSteps$ | async">
                 <app-project-application-decisions appNoWidthLimit step="1">
                 </app-project-application-decisions>
