@@ -25,9 +25,9 @@
         <app-project-application-funding-decision
                 appNoWidthLimit
                 [project]="details.project"
-                [status]="details.isStep2 ? details.preFundingDecision : details.finalFundingDecision"
+                [status]="step === '2' ? details.preFundingDecision : details.finalFundingDecision"
                 [stepStatus]="stepStatus"
-                [fundingDecision]="details.isStep2 ? details.preFundingDecision : details.finalFundingDecision"
+                [fundingDecision]="step === '2' ? details.preFundingDecision : details.finalFundingDecision"
                 [eligibilityDecisionDate]="details.eligibilityDecisionDate"
                 [options]="details.fullOptions"
                 [submitLabel]="'project.assessment.fundingDecision.submit.label'">
