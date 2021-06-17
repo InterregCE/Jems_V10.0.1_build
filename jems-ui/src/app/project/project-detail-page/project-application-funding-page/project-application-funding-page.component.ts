@@ -5,8 +5,10 @@ import {ProjectFundingDecisionStore} from './project-funding-decision-store.serv
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest} from 'rxjs';
 import {ProjectStepStatus} from '../project-step-status';
-import {ProjectStatusDTO} from '@cat/api';
+import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
+import {PermissionService} from '../../../security/permissions/permission.service';
 import StatusEnum = ProjectStatusDTO.StatusEnum;
+import Permissions = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-project-application-funding-page',
@@ -26,14 +28,17 @@ export class ProjectApplicationFundingPageComponent {
     this.fundingDecisionStore.preFundingDecision(this.step),
     this.fundingDecisionStore.finalFundingDecision(this.step),
     this.fundingDecisionStore.eligibilityDecisionDate(this.step),
+    this.permissionService.hasPermission([Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideNotApproved]),
   ])
     .pipe(
-      map(([project, preFundingDecision, finalFundingDecision, eligibilityDecisionDate]) => ({
+      map(([project, preFundingDecision, finalFundingDecision, eligibilityDecisionDate, userCanChangeFunding]) => ({
         project,
         preFundingDecision,
         finalFundingDecision,
         eligibilityDecisionDate,
-        showSecondDecision: !!project.secondStepDecision?.preFundingDecision && project.projectStatus.status !== StatusEnum.RETURNEDTOAPPLICANT,
+        showSecondDecision: !!project.secondStepDecision?.preFundingDecision
+          && project.projectStatus.status !== StatusEnum.RETURNEDTOAPPLICANT
+          && (!!finalFundingDecision || userCanChangeFunding),
         fullOptions: [this.stepStatus.approved, this.stepStatus.approvedWithConditions, this.stepStatus.notApproved],
         optionsForSecondDecision: [this.stepStatus.approved, this.stepStatus.notApproved],
       })),
@@ -43,6 +48,7 @@ export class ProjectApplicationFundingPageComponent {
   constructor(public projectStore: ProjectStore,
               private router: Router,
               private activatedRoute: ActivatedRoute,
+              private permissionService: PermissionService,
               public fundingDecisionStore: ProjectFundingDecisionStore) {
   }
 

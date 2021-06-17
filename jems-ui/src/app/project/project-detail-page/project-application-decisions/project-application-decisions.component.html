@@ -21,20 +21,20 @@
                 </span>
             </div>
             <ng-container *ngIf="isDecisionEditable(data.projectStatus, data.decision?.eligibilityDecision, data.isProjectLatestVersion)">
-                <button *hasPermission="[Permissions.ProjectStatusDecideEligible, Permissions.ProjectStatusDecideIneligible]"
-                        mat-stroked-button appFormFieldWidth="x-large"
-                        [disabled]="!data.decision?.eligibilityAssessment"
-                        [routerLink]="['./assessment/eligibilityDecision', step]" queryParamsHandling="merge">
+                <a *hasPermission="[Permissions.ProjectStatusDecideEligible, Permissions.ProjectStatusDecideIneligible]"
+                   mat-stroked-button appFormFieldWidth="x-large"
+                   [disabled]="!data.decision?.eligibilityAssessment"
+                   [routerLink]="['./assessment/eligibilityDecision', step]" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityDecision.assessment' | translate}}
-                </button>
+                </a>
             </ng-container>
             <ng-container *ngIf="!isDecisionEditable(data.projectStatus, data.decision?.eligibilityDecision, data.isProjectLatestVersion)">
-                <button *hasPermission="Permissions.ProjectAssessmentView"
-                        [disabled]="!data.decision?.eligibilityDecision"
-                        mat-stroked-button appFormFieldWidth="x-large"
-                        [routerLink]="['./assessment/eligibilityDecision', step]" queryParamsHandling="merge">
+                <a *hasPermission="Permissions.ProjectAssessmentView"
+                   [disabled]="!data.decision?.eligibilityDecision"
+                   mat-stroked-button appFormFieldWidth="x-large"
+                   [routerLink]="['./assessment/eligibilityDecision', step]" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
-                </button>
+                </a>
             </ng-container>
         </div>
         <div appMultiColumnRow stretch>
@@ -49,21 +49,21 @@
                     {{ data.fundingDecisionResult.decisionDate | localeDate }}
                 </span>
             </div>
-            <ng-container *ngIf="(data.callHasTwoSteps && data.isStep2Now && step === 1) || data.isDecisionFinal || (data.isReturnedNow && !!data.fundingDecisionResult)">
-                <button *hasPermission="Permissions.ProjectAssessmentView"
-                        mat-stroked-button appFormFieldWidth="x-large"
-                        [routerLink]="['./assessment/fundingDecision', step]" queryParamsHandling="merge">
+            <ng-container *ngIf="(data.callHasTwoSteps && data.isStep2Now && step === 1) || data.isDecisionFinal || (data.isReturnedNow && !!data.fundingDecisionResult) || (!data.isDecisionFinal && !data.userCanChangeFunding)">
+                <a *hasPermission="Permissions.ProjectAssessmentView"
+                   mat-stroked-button appFormFieldWidth="x-large"
+                   [routerLink]="['./assessment/fundingDecision', step]" queryParamsHandling="merge">
                     {{'project.assessment.fundingDecision.assessment.view' | translate}}
-                </button>
+                </a>
             </ng-container>
             <ng-container *ngIf="data.isProjectLatestVersion && !data.isDecisionFinal && !data.isReturnedNow">
-                <button *hasPermission="[Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideApprovedWithConditions, Permissions.ProjectStatusDecideNotApproved]"
-                        mat-stroked-button appFormFieldWidth="x-large"
-                        [disabled]="!data.isFundingDecisionPreconditionOk"
-                        [color]="data.projectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
-                        [routerLink]="['./assessment/fundingDecision', step]" queryParamsHandling="merge">
+                <a *hasPermission="[Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideApprovedWithConditions, Permissions.ProjectStatusDecideNotApproved]"
+                   mat-stroked-button appFormFieldWidth="x-large"
+                   [disabled]="!data.isFundingDecisionPreconditionOk"
+                   [color]="data.projectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
+                   [routerLink]="['./assessment/fundingDecision', step]" queryParamsHandling="merge">
                     {{ (data.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS ? 'project.assessment.fundingDecision.assessment.update' : 'project.assessment.fundingDecision.assessment') | translate}}
-                </button>
+                </a>
             </ng-container>
         </div>
     </mat-expansion-panel>

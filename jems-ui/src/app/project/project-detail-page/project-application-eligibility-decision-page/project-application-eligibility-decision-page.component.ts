@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Permission} from '../../../security/permissions/permission';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 import {map, tap} from 'rxjs/operators';
@@ -17,8 +16,6 @@ import {ProjectStepStatus} from '../project-step-status';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationEligibilityDecisionPageComponent {
-  Permission = Permission;
-
   projectId = this.activatedRoute.snapshot.params.projectId;
   step = this.activatedRoute.snapshot.params.step;
   stepStatus = new ProjectStepStatus(this.step);

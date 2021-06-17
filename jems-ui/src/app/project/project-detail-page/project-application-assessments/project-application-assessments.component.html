@@ -11,19 +11,19 @@
                 </span>
             </div>
             <ng-container *ngIf="isAssessmentEditable(decisions?.eligibilityAssessment, data.isProjectLatestVersion)">
-                <button *hasPermission="Permissions.ProjectAssessmentEligibilityEnter"
-                        mat-stroked-button appFormFieldWidth="x-large"
-                        [routerLink]="['./assessment/eligibilityCheck', step]" queryParamsHandling="merge">
+                <a *hasPermission="Permissions.ProjectAssessmentEligibilityEnter"
+                   mat-stroked-button appFormFieldWidth="x-large"
+                   [routerLink]="['./assessment/eligibilityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment' | translate}}
-                </button>
+                </a>
             </ng-container>
             <ng-container *ngIf="!isAssessmentEditable(decisions?.eligibilityAssessment, data.isProjectLatestVersion)">
-                <button *hasPermission="Permissions.ProjectAssessmentView"
-                        [disabled]="!decisions?.eligibilityAssessment"
-                        mat-stroked-button appFormFieldWidth="x-large"
-                        [routerLink]="['./assessment/eligibilityCheck', step]" queryParamsHandling="merge">
+                <a *hasPermission="Permissions.ProjectAssessmentView"
+                   [disabled]="!decisions?.eligibilityAssessment"
+                   mat-stroked-button appFormFieldWidth="x-large"
+                   [routerLink]="['./assessment/eligibilityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
-                </button>
+                </a>
             </ng-container>
         </div>
         <div appMultiColumnRow stretch>
@@ -34,20 +34,20 @@
                 </span>
             </div>
             <ng-container *ngIf="isAssessmentEditable(decisions?.qualityAssessment, data.isProjectLatestVersion)">
-                <button *hasPermission="Permissions.ProjectAssessmentQualityEnter"
-                        mat-stroked-button appFormFieldWidth="x-large"
-                        [disabled]="projectStatus.status === stepStatus.ineligible"
-                        [routerLink]="['./assessment/qualityCheck', step]" queryParamsHandling="merge">
+                <a *hasPermission="Permissions.ProjectAssessmentQualityEnter"
+                   mat-stroked-button appFormFieldWidth="x-large"
+                   [disabled]="projectStatus.status === stepStatus.ineligible"
+                   [routerLink]="['./assessment/qualityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment' | translate}}
-                </button>
+                </a>
             </ng-container>
             <ng-container *ngIf="!isAssessmentEditable(decisions?.qualityAssessment, data.isProjectLatestVersion)">
-                <button *hasPermission="Permissions.ProjectAssessmentView"
-                        [disabled]="!decisions?.qualityAssessment"
-                        mat-stroked-button appFormFieldWidth="x-large"
-                        [routerLink]="['./assessment/qualityCheck', step]" queryParamsHandling="merge">
+                <a *hasPermission="Permissions.ProjectAssessmentView"
+                   [disabled]="!decisions?.qualityAssessment"
+                   mat-stroked-button appFormFieldWidth="x-large"
+                   [routerLink]="['./assessment/qualityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment.view' | translate}}
-                </button>
+                </a>
             </ng-container>
         </div>
     </mat-expansion-panel>

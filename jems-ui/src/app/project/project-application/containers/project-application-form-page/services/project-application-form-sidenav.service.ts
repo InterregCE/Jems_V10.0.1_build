@@ -2,18 +2,18 @@ import {Injectable, TemplateRef} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, mergeMap, switchMap, tap} from 'rxjs/operators';
-import {ProjectPartnerService, ProjectStatusDTO, WorkPackageService} from '@cat/api';
+import {ProjectPartnerService, ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '../../../../../common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ProjectUtil} from '../../../../project-util';
 import {filter} from 'rxjs/internal/operators';
 import {RoutingService} from '../../../../../common/services/routing.service';
 import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import StatusEnum = ProjectStatusDTO.StatusEnum;
 
 @Injectable()
 @UntilDestroy()
@@ -67,10 +67,8 @@ export class ProjectApplicationFormSidenavService {
         )
       );
 
-  private isNotApplicant$: Observable<boolean> = this.permissionService.permissionsChanged()
-    .pipe(
-      map(permissions => !permissions.includes(Permission.APPLICANT_USER))
-    );
+  private canSeeAssessments$: Observable<boolean> = this.permissionService
+    .hasPermission(PermissionsEnum.ProjectAssessmentView);
 
   constructor(private sideNavService: SideNavService,
               private projectPartnerService: ProjectPartnerService,
@@ -82,7 +80,7 @@ export class ProjectApplicationFormSidenavService {
               private routingService: RoutingService) {
 
     const headlines$ = combineLatest([
-      this.isNotApplicant$,
+      this.canSeeAssessments$,
       this.projectStore.project$,
       this.partners$,
       this.packages$,
@@ -90,12 +88,12 @@ export class ProjectApplicationFormSidenavService {
       this.projectStore.currentVersionIsLatest$
     ])
       .pipe(
-        filter(([isNotApplicant, project]) => !!project),
-        tap(([isNotApplicant, project, partners, packages, versionTemplate, currentVersionIsLatest]) => {
+        filter(([canSeeAssessments, project]) => !!project),
+        tap(([canSeeAssessments, project, partners, packages, versionTemplate, currentVersionIsLatest]) => {
           const status = project.projectStatus.status;
-          const isNotOpen = !ProjectUtil.isDraft(project)
-            && status !== ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
-          this.setHeadlines(isNotApplicant && isNotOpen, project.id, partners, packages, versionTemplate, currentVersionIsLatest);
+          const callHas2Steps = !!project.callSettings.endDateStep1;
+          const showAssessments = (callHas2Steps && status !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && status !== StatusEnum.DRAFT);
+          this.setHeadlines(canSeeAssessments && showAssessments, project.id, partners, packages, versionTemplate, currentVersionIsLatest);
         }),
         catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
       );

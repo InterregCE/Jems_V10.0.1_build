@@ -1,12 +1,10 @@
 <app-project-page-template [needsCard]="true" *ngIf="data$ | async as data"
                            titleKey="project.application.form.lifecycle.title">
-    <ng-container page-sub-title *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
-        <div appFormLayout appNoWidthLimit>
-            <h2>{{data.project.id}} – {{data.project.acronym}}</h2>
-            <app-project-application-information appNoWidthLimit [project]="data.project">
-            </app-project-application-information>
-        </div>
-    </ng-container>
+    <div page-sub-title appFormLayout appNoWidthLimit>
+        <h2>{{data.project.id}} – {{data.project.acronym}}</h2>
+        <app-project-application-information appNoWidthLimit [project]="data.project">
+        </app-project-application-information>
+    </div>
 
     <form appFormLayout [formGroup]="notesForm">
         <h3>{{'project.assessment.eligibilityDecision.dialog.title' | translate}}</h3>

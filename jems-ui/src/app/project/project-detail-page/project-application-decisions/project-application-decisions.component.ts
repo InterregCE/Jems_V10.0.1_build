@@ -4,6 +4,7 @@ import {ProjectStepStatus} from '../project-step-status';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectDetailPageStore} from '../project-detail-page-store';
 import {map} from 'rxjs/operators';
+import {PermissionService} from '../../../security/permissions/permission.service';
 import StatusEnum = ProjectStatusDTO.StatusEnum;
 import Permissions = UserRoleDTO.PermissionsEnum;
 
@@ -31,17 +32,22 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
     fundingDecisionResult: ProjectStatusDTO,
     isDecisionFinal: boolean,
     isReturnedNow: boolean,
+    userCanChangeFunding: boolean,
     isFundingDecisionPreconditionOk: boolean,
   }>;
 
-  constructor(private projectDetailPageStore: ProjectDetailPageStore) {
+  constructor(
+    private projectDetailPageStore: ProjectDetailPageStore,
+    private permissionService: PermissionService,
+  ) {
     this.data$ = combineLatest([
       this.projectDetailPageStore.isProjectLatestVersion$,
       this.projectDetailPageStore.callHasTwoSteps$,
       this.projectDetailPageStore.project$,
+      this.permissionService.hasPermission([Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideApprovedWithConditions, Permissions.ProjectStatusDecideNotApproved]),
     ])
       .pipe(
-        map(([isProjectLatestVersion, callHasTwoSteps, project]) => (
+        map(([isProjectLatestVersion, callHasTwoSteps, project, userCanChangeFunding]) => (
           {
             projectStatus: project.projectStatus,
             isProjectLatestVersion,
@@ -60,6 +66,7 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
             fundingDecisionResult: this.getDecision(project)?.finalFundingDecision || this.getDecision(project)?.preFundingDecision,
             isDecisionFinal: !!this.getDecision(project)?.finalFundingDecision?.status,
             isReturnedNow: project.projectStatus.status === StatusEnum.RETURNEDTOAPPLICANT,
+            userCanChangeFunding,
             isFundingDecisionPreconditionOk: Number(this.step) === 2
               ? project.secondStepDecision?.eligibilityDecision?.status === StatusEnum.ELIGIBLE && !!project.secondStepDecision?.qualityAssessment
               : project.firstStepDecision?.eligibilityDecision?.status === StatusEnum.STEP1ELIGIBLE && !!project.firstStepDecision?.qualityAssessment,
