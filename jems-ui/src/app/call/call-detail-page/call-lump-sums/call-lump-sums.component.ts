@@ -1,13 +1,14 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {FormBuilder} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {MatTableDataSource} from '@angular/material/table';
-import {CallDetailDTO, ProgrammeLumpSumListDTO} from '@cat/api';
+import {ProgrammeLumpSumListDTO} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
-import {catchError, take, tap} from 'rxjs/operators';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {filter} from 'rxjs/internal/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
+import {UntilDestroy} from '@ngneat/until-destroy';
 import {CallStore} from '../../services/call-store.service';
+import {ActivatedRoute} from '@angular/router';
+import {combineLatest, Observable} from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -17,57 +18,56 @@ import {CallStore} from '../../services/call-store.service';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CallLumpSumsComponent implements OnInit {
-
-  @Input()
-  lumpSums: ProgrammeLumpSumListDTO[];
-  @Input()
-  call: CallDetailDTO;
-  @Input()
-  isApplicant: boolean;
-
-  callLumpSumForm: FormGroup;
-  published = false;
-  initialSelection = new SelectionModel<ProgrammeLumpSumListDTO>(true, []);
+export class CallLumpSumsComponent {
+  callId = this.activatedRoute?.snapshot?.params?.callId;
+  lumpSumDataSource = new MatTableDataSource<ProgrammeLumpSumListDTO>();
   selection = new SelectionModel<ProgrammeLumpSumListDTO>(true, []);
+  initialSelection = new SelectionModel<ProgrammeLumpSumListDTO>(true, []);
 
-  lumpSumDataSource = new MatTableDataSource();
+  data$: Observable<{
+    callLumpSums: ProgrammeLumpSumListDTO[],
+    programmeLumpSums: ProgrammeLumpSumListDTO[],
+    callIsEditable: boolean,
+    callIsPublished: boolean,
+    isApplicant: boolean
+  }>;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private callStore: CallStore,
+              private formBuilder: FormBuilder,
               private formService: FormService,
-              public callStore: CallStore) {
+              private activatedRoute: ActivatedRoute) {
+    this.formService.setCreation(!this.callId);
+    this.data$ = combineLatest([
+      this.callStore.call$,
+      this.callStore.lumpSums$,
+      this.callStore.callIsEditable$,
+      this.callStore.callIsPublished$,
+      this.callStore.isApplicant$
+    ])
+      .pipe(
+        map(([call, programmeLumpSums, callIsEditable, callIsPublished, isApplicant]) => ({
+          callLumpSums: call.lumpSums,
+          programmeLumpSums,
+          callIsEditable,
+          callIsPublished,
+          isApplicant
+        })),
+        tap(data => this.resetForm(data.programmeLumpSums, data.callLumpSums, data.callIsEditable, data.callIsPublished))
+      );
   }
 
-  ngOnInit(): void {
-    this.initForm();
-    this.formService.init(this.callLumpSumForm);
-    this.formService.setCreation(!this.call?.id);
-    this.published = this.call?.status === CallDetailDTO.StatusEnum.PUBLISHED;
-    this.formService.setEditable(!this.published);
-  }
-
-  initForm(): void {
-    this.lumpSumDataSource = new MatTableDataSource<ProgrammeLumpSumListDTO>(this.lumpSums);
+  resetForm(programmeLumpSums: ProgrammeLumpSumListDTO[], callLumpSums: ProgrammeLumpSumListDTO[],
+            callIsEditable: boolean, callIsPublished: boolean): void {
+    this.lumpSumDataSource = new MatTableDataSource<ProgrammeLumpSumListDTO>(programmeLumpSums);
     this.selection.clear();
     this.initialSelection.clear();
     this.lumpSumDataSource.data.forEach((lumpSum: ProgrammeLumpSumListDTO) => {
-      if (this.call?.lumpSums.filter(element => element.id === lumpSum.id).length > 0) {
+      if (callLumpSums.filter(element => element.id === lumpSum.id).length > 0) {
         this.selection.select(lumpSum);
         this.initialSelection.select(lumpSum);
       }
     });
-    this.formService.init(this.callLumpSumForm);
-    this.callStore.call$.pipe(
-      filter(call => !!call.id),
-      untilDestroyed(this)
-    ).subscribe((call: CallDetailDTO) => {
-      this.initialSelection.clear();
-      this.lumpSumDataSource.data.forEach((lumpSum: ProgrammeLumpSumListDTO) => {
-        if (call.lumpSums?.filter(element => element.id === lumpSum.id).length > 0) {
-          this.initialSelection.select(lumpSum);
-        }
-      });
-    });
+    this.formService.setEditable(callIsEditable && !callIsPublished);
   }
 
   onSubmit(): void {
@@ -83,6 +83,13 @@ export class CallLumpSumsComponent implements OnInit {
   toggleLumpSum(element: ProgrammeLumpSumListDTO): void {
     this.selection.toggle(element);
     this.formChanged();
+  }
+
+  disabled(element: ProgrammeLumpSumListDTO, data: {callIsEditable: boolean, callIsPublished: boolean, isApplicant: boolean}): boolean {
+    if (data.isApplicant || !data.callIsEditable) {
+      return true;
+    }
+    return this.initialSelection.isSelected(element) && data.callIsPublished;
   }
 
   formChanged(): void {

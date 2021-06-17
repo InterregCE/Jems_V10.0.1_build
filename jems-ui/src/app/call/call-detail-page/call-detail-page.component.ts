@@ -12,7 +12,6 @@ import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confir
 import moment from 'moment';
 import {Alert} from '@common/components/forms/alert';
 import {CallDetailPageStore} from './call-detail-page-store.service';
-import {CallStore} from '../services/call-store.service';
 
 @Component({
   selector: 'app-call-detail-page',
@@ -75,7 +74,7 @@ export class CallDetailPageComponent {
               private formService: FormService,
               private activatedRoute: ActivatedRoute,
               private callNavService: CallPageSidenavService) {
-    this.formService.init(this.callForm, this.pageStore.callIsEditable$);
+    this.formService.init(this.callForm);
     this.formService.setCreation(!this.callId);
     this.callNavService.init(this.callId);
 
@@ -99,7 +98,7 @@ export class CallDetailPageComponent {
           funds: this.getFunds(allFunds, call),
           initialFunds: this.getFunds(allFunds, call),
         })),
-        tap(data => this.resetForm(data.call, data.isApplicant))
+        tap(data => this.resetForm(data.call, data.callIsEditable))
       );
   }
 
@@ -149,9 +148,9 @@ export class CallDetailPageComponent {
       ).subscribe();
   }
 
-  onCancel(call: CallDetailDTO, isApplicant: boolean): void {
+  onCancel(call: CallDetailDTO, callIsEditable: boolean): void {
     if (call?.id) {
-      this.resetForm(call, isApplicant);
+      this.resetForm(call, callIsEditable);
       return;
     }
     this.callNavService.redirectToCallOverview();
@@ -184,13 +183,17 @@ export class CallDetailPageComponent {
     this.formService.setDirty(true);
   }
 
-  resetForm(call: CallDetailDTO, isApplicant: boolean): void {
+  resetForm(call: CallDetailDTO, callIsEditable: boolean): void {
     this.callForm.patchValue(call);
     if (call.endDateTimeStep1) {
       this.callForm.get('is2Step')?.setValue(true);
     }
     this.published = call?.status === CallDetailDTO.StatusEnum.PUBLISHED;
-    if (call && call.status === CallDetailDTO.StatusEnum.PUBLISHED && !isApplicant) {
+    if (this.published || !callIsEditable) {
+      this.callForm.disable();
+    }
+    if (this.published && callIsEditable) {
+      // enable some fields when call is published
       this.callForm.controls.name.enable();
       this.callForm.controls.description.enable();
       if (this.callForm.controls.is2Step) {

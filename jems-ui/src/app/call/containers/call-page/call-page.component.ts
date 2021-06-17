@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {CallService} from '@cat/api';
-import {Permission} from '../../../security/permissions/permission';
+import {CallService, UserRoleDTO} from '@cat/api';
 import {Router} from '@angular/router';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-call-page',
@@ -10,7 +10,7 @@ import {Router} from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CallPageComponent implements OnInit {
-  Permission = Permission;
+  PermissionsEnum = PermissionsEnum;
 
   success = this.router.getCurrentNavigation()?.extras?.state?.success;
 

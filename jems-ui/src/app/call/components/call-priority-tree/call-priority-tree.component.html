@@ -1,21 +1,23 @@
-<ng-container *ngFor="let priority of priorityCheckboxes">
-    <mat-checkbox
-            *ngIf="priorityVisible(priority)"
-            [disabled]="disabled && isPriorityAlreadySelected(priority)"
-            [checked]="priority.checked"
-            [indeterminate]="priority.someChecked()"
-            (change)="priority.checkOrUncheckAll(); selectionChanged.emit()">
-        {{ priority.name + (priority.translatableTitle | translateBySystemLanguage | async) }}
-    </mat-checkbox>
-    <ul class="no-bullets">
-        <li *ngFor="let policy of priority.children">
-            <mat-checkbox
-                    *ngIf="!isApplicant || policy.checked"
-                    [(ngModel)]="policy.checked"
-                    [disabled]="disabled && isPolicyAlreadySelected(priority, policy)"
-                    (ngModelChange)="priority.updateChecked(); selectionChanged.emit()">
-                {{policy.name | translate}}
-            </mat-checkbox>
-        </li>
-    </ul>
+<ng-container *ngIf="data$ | async as data">
+    <ng-container *ngFor="let priority of priorityCheckboxes">
+        <mat-checkbox
+                *ngIf="priorityVisible(priority, data.isApplicant)"
+                [disabled]="priorityDisabled(data.callIsEditable, data.callIsPublished, priority)"
+                [checked]="priority.checked"
+                [indeterminate]="priority.someChecked()"
+                (change)="priority.checkOrUncheckAll(); selectionChanged.emit()">
+            {{ priority.name + (priority.translatableTitle | translateBySystemLanguage | async) }}
+        </mat-checkbox>
+        <ul class="no-bullets">
+            <li *ngFor="let policy of priority.children">
+                <mat-checkbox
+                        *ngIf="!data.isApplicant || policy.checked"
+                        [(ngModel)]="policy.checked"
+                        [disabled]="policyDisabled(data.callIsEditable, data.callIsPublished, priority, policy)"
+                        (ngModelChange)="priority.updateChecked(); selectionChanged.emit()">
+                    {{policy.name | translate}}
+                </mat-checkbox>
+            </li>
+        </ul>
+    </ng-container>
 </ng-container>

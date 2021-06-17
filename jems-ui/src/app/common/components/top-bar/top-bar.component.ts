@@ -12,8 +12,9 @@ import {finalize, map, withLatestFrom} from 'rxjs/operators';
   selector: 'app-top-bar',
   templateUrl: './top-bar.component.html',
   styleUrls: ['./top-bar.component.scss'],
+  providers: [TopBarService]
 })
-export class TopBarComponent implements OnInit {
+export class TopBarComponent {
 
   @Input()
   currentUser: OutputCurrentUser;
@@ -21,7 +22,7 @@ export class TopBarComponent implements OnInit {
   @Input()
   isAuthenticated: boolean;
 
-  menuItems: Observable<MenuItemConfiguration[]>;
+  menuItems$: Observable<MenuItemConfiguration[]>;
   logoutOngoing = false;
   isNavBarCollapsed = true;
 
@@ -39,10 +40,7 @@ export class TopBarComponent implements OnInit {
               private topBarService: TopBarService,
               public languageStore: LanguageStore,
               public translate: TranslateService) {
-  }
-
-  ngOnInit(): void {
-    this.menuItems = this.topBarService.menuItems();
+    this.menuItems$ = this.topBarService.menuItems$;
   }
 
   logout(): void {

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.call.service.update_call_flat_rates
 
-import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
+import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callUpdated
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -17,7 +17,7 @@ class UpdateCallFlatRates(
 ) : UpdateCallFlatRatesInteractor {
 
     @Transactional
-    @CanUpdateCalls
+    @CanUpdateCall
     @ExceptionWrapper(UpdateCallFlatRatesExceptions::class)
     override fun updateFlatRateSetup(callId: Long, flatRates: Set<ProjectCallFlatRate>): CallDetail {
         validateFlatRates(flatRates)

@@ -1,11 +1,13 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {CallDetailDTO, FlatRateSetupDTO} from '@cat/api';
+import {CallDetailDTO, FlatRateDTO, FlatRateSetupDTO} from '@cat/api';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {catchError, take, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {CallFlatRatesConstants} from './call-flat-rates.constants';
-import {Tools} from '../../../common/utils/tools';
+import {Tools} from '@common/utils/tools';
 import {CallStore} from '../../services/call-store.service';
+import {combineLatest, Observable} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-call-flat-rates',
@@ -14,30 +16,34 @@ import {CallStore} from '../../services/call-store.service';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CallFlatRatesComponent implements OnInit {
-
+export class CallFlatRatesComponent {
   tools = Tools;
   constants = CallFlatRatesConstants;
 
-  @Input()
-  call: CallDetailDTO;
-  @Input()
-  isApplicant: boolean;
-
-  published = false;
-
+  callId = this.activatedRoute?.snapshot?.params?.callId;
   callFlatRateForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder,
-              private formService: FormService,
-              public callStore: CallStore) {
-  }
+  data$: Observable<{
+    call: CallDetailDTO;
+    callIsEditable: boolean,
+    callIsPublished: boolean,
+    isApplicant: boolean
+  }>;
 
-  ngOnInit(): void {
-    this.initForm(this.call.flatRates);
-    this.formService.init(this.callFlatRateForm);
-    this.formService.setCreation(!this.call?.id);
-    this.published = this.call?.status === CallDetailDTO.StatusEnum.PUBLISHED;
+  constructor(private callStore: CallStore,
+              private formBuilder: FormBuilder,
+              private formService: FormService,
+              private activatedRoute: ActivatedRoute) {
+    this.data$ = combineLatest([
+      this.callStore.call$,
+      this.callStore.callIsEditable$,
+      this.callStore.callIsPublished$,
+      this.callStore.isApplicant$
+    ])
+      .pipe(
+        map(([call, callIsEditable, callIsPublished, isApplicant]) => ({call, callIsEditable, callIsPublished, isApplicant})),
+        tap(data => this.resetForm(data.call.flatRates))
+      );
   }
 
   onSubmit(): void {
@@ -76,7 +82,7 @@ export class CallFlatRatesComponent implements OnInit {
     this.callFlatRateForm.markAsDirty();
   }
 
-  initForm(flatRateSetup: FlatRateSetupDTO): void {
+  resetForm(flatRateSetup: FlatRateSetupDTO): void {
     this.callFlatRateForm = this.formBuilder.group({
       isStaffCostFlatRateActive: [!!flatRateSetup.staffCostFlatRateSetup],
       staffCostFlatRateSetup: this.formBuilder.group({
@@ -109,10 +115,14 @@ export class CallFlatRatesComponent implements OnInit {
       })
     });
     this.formService.init(this.callFlatRateForm);
+    this.formService.setCreation(!this.callId);
   }
 
-  isCallPartiallyEditable(): boolean {
-    return !this.isApplicant && this.published;
+  disabled(flatRate: FlatRateDTO, data: {callIsEditable: boolean, callIsPublished: boolean, isApplicant: boolean}): boolean {
+    if (data.isApplicant || !data.callIsEditable) {
+      return true;
+    }
+    return !!flatRate && data.callIsPublished;
   }
 
   get isStaffCostFlatRateActive(): FormControl {

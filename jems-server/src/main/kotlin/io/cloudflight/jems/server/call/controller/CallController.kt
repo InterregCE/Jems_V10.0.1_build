@@ -30,6 +30,9 @@ class CallController(
     override fun getCalls(pageable: Pageable): Page<CallDTO> =
         getCall.getCalls(pageable).toDto()
 
+    override fun getPublishedCalls(pageable: Pageable): Page<CallDTO> =
+        getCall.getPublishedCalls(pageable).toDto()
+
     override fun getCallById(callId: Long): CallDetailDTO =
         getCall.getCallById(callId = callId).toDto()
 

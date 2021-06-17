@@ -1,14 +1,14 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {CallDetailDTO, ProgrammeUnitCostListDTO} from '@cat/api';
+import {FormBuilder} from '@angular/forms';
+import {ProgrammeUnitCostListDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {SelectionModel} from '@angular/cdk/collections';
-import {catchError, take, tap} from 'rxjs/operators';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {CallStore} from '../../services/call-store.service';
+import {combineLatest, Observable} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
 
-@UntilDestroy()
 @Component({
   selector: 'app-call-unit-costs',
   templateUrl: './call-unit-costs.component.html',
@@ -16,56 +16,57 @@ import {CallStore} from '../../services/call-store.service';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CallUnitCostsComponent implements OnInit {
+export class CallUnitCostsComponent {
+  callId = this.activatedRoute?.snapshot?.params?.callId;
 
-  @Input()
-  unitCosts: ProgrammeUnitCostListDTO[];
-  @Input()
-  call: CallDetailDTO;
-  @Input()
-  isApplicant: boolean;
-
-  callUnitCostForm: FormGroup;
-  published = false;
-  initialSelection = new SelectionModel<ProgrammeUnitCostListDTO>(true, []);
+  unitCostDataSource = new MatTableDataSource<ProgrammeUnitCostListDTO>();
   selection = new SelectionModel<ProgrammeUnitCostListDTO>(true, []);
+  initialSelection = new SelectionModel<ProgrammeUnitCostListDTO>(true, []);
 
-  unitCostDataSource = new MatTableDataSource();
+  data$: Observable<{
+    callUnitCosts: ProgrammeUnitCostListDTO[],
+    programmeUnitCosts: ProgrammeUnitCostListDTO[],
+    callIsEditable: boolean,
+    callIsPublished: boolean,
+    isApplicant: boolean
+  }>;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private callStore: CallStore,
+              private formBuilder: FormBuilder,
               private formService: FormService,
-              public callStore: CallStore) {
+              private activatedRoute: ActivatedRoute) {
+    this.formService.setCreation(!this.callId);
+    this.data$ = combineLatest([
+      this.callStore.call$,
+      this.callStore.unitCosts$,
+      this.callStore.callIsEditable$,
+      this.callStore.callIsPublished$,
+      this.callStore.isApplicant$
+    ])
+      .pipe(
+        map(([call, programmeUnitCosts, callIsEditable, callIsPublished, isApplicant]) => ({
+          callUnitCosts: call.unitCosts,
+          programmeUnitCosts,
+          callIsEditable,
+          callIsPublished,
+          isApplicant
+        })),
+        tap(data => this.resetForm(data.programmeUnitCosts, data.callUnitCosts, data.callIsEditable, data.callIsPublished))
+      );
   }
 
-  ngOnInit(): void {
-    this.initForm();
-    this.formService.init(this.callUnitCostForm);
-    this.formService.setCreation(!this.call?.id);
-    this.published = this.call?.status === CallDetailDTO.StatusEnum.PUBLISHED;
-    this.formService.setEditable(!this.published);
-  }
-
-  initForm(): void {
-    this.unitCostDataSource = new MatTableDataSource<ProgrammeUnitCostListDTO>(this.unitCosts);
-    this.initialSelection.clear();
+  resetForm(programmeUnitCosts: ProgrammeUnitCostListDTO[], callUnitCosts: ProgrammeUnitCostListDTO[],
+            callIsEditable: boolean, callIsPublished: boolean): void {
+    this.unitCostDataSource = new MatTableDataSource<ProgrammeUnitCostListDTO>(programmeUnitCosts);
     this.selection.clear();
+    this.initialSelection.clear();
     this.unitCostDataSource.data.forEach((unitCost: ProgrammeUnitCostListDTO) => {
-      if (this.call.unitCosts?.filter(element => element.id === unitCost.id).length > 0) {
+      if (callUnitCosts.filter(element => element.id === unitCost.id).length > 0) {
         this.selection.select(unitCost);
         this.initialSelection.select(unitCost);
       }
     });
-    this.formService.init(this.callUnitCostForm);
-    this.callStore.call$.pipe(
-      untilDestroyed(this)
-    ).subscribe((call: CallDetailDTO) => {
-      this.initialSelection.clear();
-      this.unitCostDataSource.data.forEach((unitCost: ProgrammeUnitCostListDTO) => {
-        if (call.unitCosts?.filter(element => element.id === unitCost.id).length > 0) {
-          this.initialSelection.select(unitCost);
-        }
-      });
-    });
+    this.formService.setEditable(callIsEditable && !callIsPublished);
   }
 
   onSubmit(): void {
@@ -85,5 +86,12 @@ export class CallUnitCostsComponent implements OnInit {
 
   formChanged(): void {
     this.formService.setDirty(true);
+  }
+
+  disabled(element: ProgrammeUnitCostListDTO, data: {callIsEditable: boolean, callIsPublished: boolean, isApplicant: boolean}): boolean {
+    if (data.isApplicant || !data.callIsEditable) {
+      return true;
+    }
+    return this.initialSelection.isSelected(element) && data.callIsPublished;
   }
 }

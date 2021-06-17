@@ -41,9 +41,8 @@ export class Permission {
     {
       name: 'Calls',
       mode: PermissionMode.HIDDEN_VIEW_EDIT,
-      viewPermissions: ['View calls-to-be-done' as PermissionsEnum],
-      editPermissions: ['Edit calls-to-be-done' as PermissionsEnum],
-      temporarilyDisabled: true,
+      viewPermissions: [PermissionsEnum.CallRetrieve],
+      editPermissions: [PermissionsEnum.CallUpdate],
     },
     {
       name: 'topbar.main.programme',

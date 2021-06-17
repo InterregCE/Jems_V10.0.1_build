@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.call.service.publish_call
 
-import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
+import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callPublished
 import io.cloudflight.jems.server.call.service.model.CallSummary
@@ -15,7 +15,7 @@ class PublishCall(
     private val auditPublisher: ApplicationEventPublisher,
 ) : PublishCallInteractor {
 
-    @CanUpdateCalls
+    @CanUpdateCall
     @Transactional
     @ExceptionWrapper(PublishCallException::class)
     override fun publishCall(callId: Long): CallSummary =

@@ -7,7 +7,7 @@ import {
   ProgrammeFundDTO,
   ProgrammeFundService,
   ProgrammePriorityService,
-  ProgrammeStrategyService
+  ProgrammeStrategyService, UserRoleDTO
 } from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
 import {map, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
@@ -18,7 +18,6 @@ import {ProgrammeEditableStateStore} from '../../programme/programme-page/servic
 
 @Injectable()
 export class CallDetailPageStore {
-
   call$: Observable<CallDetailDTO>;
   isApplicant$: Observable<boolean>;
   allPriorities$: Observable<CallPriorityCheckbox[]>;
@@ -26,6 +25,7 @@ export class CallDetailPageStore {
   allFunds$: Observable<ProgrammeFundDTO[]>;
   callIsEditable$: Observable<boolean>;
   isFirstCall$: Observable<boolean>;
+  callIsPublished$: Observable<boolean>;
 
   constructor(public callStore: CallStore,
               private activatedRoute: ActivatedRoute,
@@ -40,8 +40,9 @@ export class CallDetailPageStore {
     this.allPriorities$ = this.allPriorities();
     this.allActiveStrategies$ = this.allActiveStrategies();
     this.allFunds$ = this.allFunds();
-    this.callIsEditable$ = this.callIsEditable();
+    this.callIsEditable$ = this.callStore.callIsEditable$;
     this.isFirstCall$ = this.isFirstCall();
+    this.callIsPublished$ = this.callStore.callIsPublished$;
   }
 
   saveCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
@@ -96,18 +97,11 @@ export class CallDetailPageStore {
       );
   }
 
-  private callIsEditable(): Observable<boolean> {
-    return combineLatest([this.call$, this.isApplicant$])
-      .pipe(
-        map(([call, isApplicant]) => call?.status !== CallDetailDTO.StatusEnum.PUBLISHED && !isApplicant),
-        shareReplay(1)
-      );
-  }
-
   private isFirstCall(): Observable<boolean> {
     return this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$
       .pipe(
         map(isProgrammeEditingLimited => !isProgrammeEditingLimited),
       );
   }
+
 }

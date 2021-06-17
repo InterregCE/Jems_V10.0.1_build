@@ -98,30 +98,17 @@ class GetCallTest: UnitTest() {
     private lateinit var getCall: GetCall
 
     @Test
-    fun `getCalls - applicant`() {
+    fun `get published calls`() {
         every { securityService.currentUser } returns applicantUser
         every { persistence.getPublishedAndOpenCalls(any()) } returns PageImpl(listOf(call))
-        assertThat(getCall.getCalls(Pageable.unpaged()).content).containsExactly(call)
+        assertThat(getCall.getPublishedCalls(Pageable.unpaged()).content).containsExactly(call)
     }
 
     @Test
-    fun `getCalls - admin user`() {
-        every { securityService.currentUser } returns adminUser
+    fun `get calls`() {
+        every { securityService.currentUser } returns applicantUser
         every { persistence.getCalls(any()) } returns PageImpl(listOf(call))
         assertThat(getCall.getCalls(Pageable.unpaged()).content).containsExactly(call)
-    }
-
-    @Test
-    fun `getCalls - programme user`() {
-        every { securityService.currentUser } returns programmeUser
-        every { persistence.getCalls(any()) } returns PageImpl(listOf(call))
-        assertThat(getCall.getCalls(Pageable.unpaged()).content).containsExactly(call)
-    }
-
-    @Test
-    fun `getCalls - no role`() {
-        every { securityService.currentUser } returns LocalCurrentUser(user = userApplicant, password = "hash_pass", authorities = emptyList())
-        assertThat(getCall.getCalls(Pageable.unpaged())).isEqualTo(Page.empty<CallSummary>())
     }
 
     @Test

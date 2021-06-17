@@ -2,9 +2,10 @@ import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChil
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {Router} from '@angular/router';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {CallDTO} from '@cat/api';
+import {CallDTO, PageCallDTO} from '@cat/api';
 import moment from 'moment/moment';
 import {CallListStore} from '@common/components/call-list/call-list-store.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-call-list',
@@ -23,12 +24,14 @@ export class CallListComponent implements OnInit {
   isApplicant: boolean;
 
   tableConfiguration: TableConfiguration;
+  page$: Observable<PageCallDTO>;
 
   constructor(private router: Router,
               public listStore: CallListStore) {
   }
 
   ngOnInit(): void {
+    this.page$ = this.isApplicant ? this.listStore.publishedCallPage$ : this.listStore.callPage$;
     this.tableConfiguration = new TableConfiguration({
       routerLink: '/app/call/detail',
       isTableClickable: true,

@@ -6,6 +6,10 @@ enum class UserRolePermission(val key: String) {
     ProgrammeSetupRetrieve("ProgrammeSetupRetrieve"),
     ProgrammeSetupUpdate("ProgrammeSetupUpdate"),
 
+    // Module CALL
+    CallRetrieve("CallRetrieve"),
+    CallUpdate("CallUpdate"),
+
     // Module APPLICATIONS
     ProjectRetrieve("ProjectRetrieve"),
     ProjectUpdate("ProjectUpdate"),

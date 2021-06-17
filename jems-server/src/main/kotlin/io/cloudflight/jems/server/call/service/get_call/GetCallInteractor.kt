@@ -9,6 +9,8 @@ interface GetCallInteractor {
 
     fun getCalls(pageable: Pageable): Page<CallSummary>
 
+    fun getPublishedCalls(pageable: Pageable): Page<CallSummary>
+
     fun getCallById(callId: Long): CallDetail
 
 }

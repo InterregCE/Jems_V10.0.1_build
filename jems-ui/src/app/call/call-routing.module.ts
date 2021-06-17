@@ -6,6 +6,7 @@ import {PermissionGuard} from '../security/permission.guard';
 import {CallNameResolver} from './services/call-name.resolver';
 import {CallBudgetSettingsPageComponent} from './containers/call-budget-settings-page/call-budget-settings-page.component';
 import {CallDetailPageComponent} from './call-detail-page/call-detail-page.component';
+import {UserRoleDTO} from '@cat/api';
 
 export const routes: Routes = [
   {
@@ -19,7 +20,7 @@ export const routes: Routes = [
         component: CallPageComponent,
         canActivate: [PermissionGuard],
         data: {
-          permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+          permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
         }
       },
       {
@@ -27,6 +28,7 @@ export const routes: Routes = [
         component: CallDetailPageComponent,
         data: new RouteData({
           breadcrumb: 'call.breadcrumb.create',
+          permissionsOnly: [UserRoleDTO.PermissionsEnum.CallUpdate],
         }),
         canActivate: [PermissionGuard],
       },
@@ -46,7 +48,7 @@ export const routes: Routes = [
             path: 'budgetSettings',
             data: {
               breadcrumb: 'call.detail.budget.settings',
-              permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
+              permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
             },
             canActivate: [PermissionGuard],
             component: CallBudgetSettingsPageComponent,

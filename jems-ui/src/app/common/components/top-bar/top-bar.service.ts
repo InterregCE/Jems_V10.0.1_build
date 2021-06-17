@@ -1,17 +1,17 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, Observable, ReplaySubject} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Permission} from '../../../security/permissions/permission';
-import {map, take} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {SecurityService} from '../../../security/security.service';
-import {OutputCurrentUser, UserRoleDTO} from '@cat/api';
+import {UserRoleDTO} from '@cat/api';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable()
 export class TopBarService {
 
-  private menuItems$ = new ReplaySubject<MenuItemConfiguration[]>(1);
+  menuItems$: Observable<MenuItemConfiguration[]>;
 
   private dashboardItem: MenuItemConfiguration = {
     name: 'topbar.main.dashboard',
@@ -38,77 +38,67 @@ export class TopBarService {
     isInternal: true,
     route: '/app/system',
   };
-  private editUserItem: MenuItemConfiguration;
 
   constructor(private permissionService: PermissionService,
               private securityService: SecurityService) {
-    this.securityService.currentUser.subscribe((currentUser) => {
-      this.adaptMenuItems(currentUser);
-      this.assingMenuItemsToUser();
-    });
-  }
-
-  menuItems(): Observable<MenuItemConfiguration[]> {
-    return this.menuItems$.asObservable();
+    this.menuItems$ = this.menuItems();
   }
 
   logout(): Observable<any> {
     return this.securityService.logout();
   }
 
-  private adaptMenuItems(currentUser: OutputCurrentUser | null): void {
-    if (!currentUser) {
-      return;
-    }
-    this.editUserItem = {
-      name: `${currentUser?.name} (${currentUser?.role.name})`,
-      isInternal: true,
-      route: `/app/profile`,
-    };
+  private editUserItem(): Observable<MenuItemConfiguration | null> {
+    return this.securityService.currentUser
+      .pipe(
+        map(currentUser => currentUser
+          ? {
+            name: `${currentUser?.name} (${currentUser?.role.name})`,
+            isInternal: true,
+            route: `/app/profile`,
+          }
+          : null
+        )
+      );
   }
 
-  assingMenuItemsToUser(): void {
-    combineLatest([
-      this.permissionService.hasPermission(Permission.SYSTEM_MODULE_PERMISSIONS),
-      this.permissionService.hasPermission(PermissionsEnum.ProjectRetrieve),
-      this.permissionService.hasPermission(Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS),
-      this.securityService.currentUser.pipe(map(currentUser => currentUser?.role)),
-      // TODO remove when all permissions implemented
-      // this.permissionService.hasPermission(Permission.APPLICANT_USER),
-      this.permissionService.hasPermission(Permission.PROGRAMME_USER),
-      this.permissionService.hasPermission(Permission.ADMINISTRATOR),
-    ]).pipe(
-      take(1),
-    ).subscribe(([
-      systemEnabled, applicationsEnabled, programmeSetupEnabled, role, isProgrammeUser, isAdmin]) => {
-      const menuItems: MenuItemConfiguration[] = [];
+  private menuItems(): Observable<MenuItemConfiguration[]> {
+    return combineLatest([
+      this.permissionService.permissionsChanged(),
+      this.editUserItem()
+    ])
+      .pipe(
+        map(([permissions, editUserItem]) => {
+          const menuItems: MenuItemConfiguration[] = [];
 
-      if (!isProgrammeUser && !isAdmin) {
-        menuItems.push(this.dashboardItem);
-      }
-      if (applicationsEnabled) {
-        menuItems.push(this.applicationsItem);
-      }
-      if (isProgrammeUser || isAdmin) {
-        menuItems.push(this.callsItem);
-      }
-      if (programmeSetupEnabled) {
-        menuItems.push(this.programmeItem);
-      }
-      if (systemEnabled) {
-        if (role?.permissions.includes(PermissionsEnum.AuditRetrieve)) {
-          this.systemItem.route = '/app/system/audit';
-        } else if (role?.permissions.includes(PermissionsEnum.UserRetrieve)) {
-          this.systemItem.route = '/app/system/user';
-        } else if (role?.permissions.includes(PermissionsEnum.RoleRetrieve)) {
-          this.systemItem.route = '/app/system/userRole';
-        }
-        menuItems.push(this.systemItem);
-      }
+          if (!permissions.includes(Permission.PROGRAMME_USER) && !permissions.includes(Permission.ADMINISTRATOR)) {
+            menuItems.push(this.dashboardItem);
+          }
+          if (permissions.includes(PermissionsEnum.ProjectRetrieve)) {
+            menuItems.push(this.applicationsItem);
+          }
+          if (permissions.includes(PermissionsEnum.CallRetrieve)) {
+            menuItems.push(this.callsItem);
+          }
+          if (Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS.every(perm => permissions.includes(perm))) {
+            menuItems.push(this.programmeItem);
+          }
+          if (Permission.SYSTEM_MODULE_PERMISSIONS.every(perm => permissions.includes(perm))) {
+            if (permissions.includes(PermissionsEnum.AuditRetrieve)) {
+              this.systemItem.route = '/app/system/audit';
+            } else if (permissions.includes(PermissionsEnum.UserRetrieve)) {
+              this.systemItem.route = '/app/system/user';
+            } else if (permissions.includes(PermissionsEnum.RoleRetrieve)) {
+              this.systemItem.route = '/app/system/userRole';
+            }
+            menuItems.push(this.systemItem);
+          }
+          if (editUserItem) {
+            menuItems.push(editUserItem);
+          }
 
-      menuItems.push(this.editUserItem);
-
-      this.menuItems$.next(menuItems);
-    });
+          return menuItems;
+        })
+      );
   }
 }

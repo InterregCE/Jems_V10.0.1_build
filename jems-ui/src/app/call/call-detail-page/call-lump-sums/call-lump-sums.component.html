@@ -1,4 +1,6 @@
-<app-form (discard)="initForm()" (save)="onSubmit()">
+<app-form *ngIf="data$ | async as data"
+          (discard)="resetForm(data.programmeLumpSums, data.callLumpSums, data.callIsEditable, data.callIsPublished)"
+          (save)="onSubmit()">
     <h3>{{'lump.sums.table.title' | translate}}</h3>
     <app-multi-language-container>
         <div *ngIf="lumpSumDataSource.data.length"
@@ -10,7 +12,7 @@
             </div>
             <div *ngFor="let element of lumpSumDataSource.data">
                 <mat-checkbox
-                        [disabled]="isApplicant || initialSelection.isSelected(element) && published"
+                        [disabled]="disabled(element, data)"
                         (click)="$event.stopPropagation()"
                         (change)="toggleLumpSum(element)"
                         [checked]="selection.isSelected(element)">

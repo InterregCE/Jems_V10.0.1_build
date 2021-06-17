@@ -1,4 +1,5 @@
-<app-form (discard)="initForm()"
+<app-form *ngIf="data$ | async as data"
+          (discard)="resetForm(data.programmeUnitCosts, data.callUnitCosts, data.callIsEditable, data.callIsPublished)"
           (save)="onSubmit()">
     <h3>{{'unit.cost.table.title' | translate}}</h3>
     <app-multi-language-container>
@@ -13,7 +14,7 @@
             </div>
             <span *ngFor="let element of unitCostDataSource.data">
                 <mat-checkbox
-                        [disabled]="isApplicant || initialSelection.isSelected(element) && published"
+                        [disabled]="disabled(element, data)"
                         (click)="$event.stopPropagation()"
                         (change)="toggleUnitCost(element)"
                         [checked]="selection.isSelected(element)">

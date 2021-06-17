@@ -140,7 +140,7 @@ internal class ProjectAuthorizationTest : UnitTest() {
     @Test
     fun `admin canCreateProjectForCall`() {
         every { securityService.currentUser } returns adminUser
-        every { callAuthorization.canReadCall(eq(1)) } returns true
+        every { callAuthorization.canRetrieveCall(eq(1)) } returns true
         assertTrue(
             projectAuthorization.canCreateProjectForCall(1),
             "admin is able to create call when he can read call"
@@ -150,7 +150,7 @@ internal class ProjectAuthorizationTest : UnitTest() {
     @Test
     fun `applicant canCreateProjectForCall`() {
         every { securityService.currentUser } returns applicantUser
-        every { callAuthorization.canReadCall(eq(2)) } returns true
+        every { callAuthorization.canRetrieveCall(eq(2)) } returns true
         assertTrue(
             projectAuthorization.canCreateProjectForCall(2),
             "applicant is able to create call when he can read call"
@@ -158,18 +158,8 @@ internal class ProjectAuthorizationTest : UnitTest() {
     }
 
     @Test
-    fun `programmeUser canCreateProjectForCall`() {
-        every { securityService.currentUser } returns programmeUser
-        every { callAuthorization.canReadCall(eq(3)) } returns true
-        assertFalse(
-            projectAuthorization.canCreateProjectForCall(3),
-            "programmeUser is NOT able to create call"
-        )
-    }
-
-    @Test
     fun `anyone canCreateProjectForCall when cannot read`() {
-        every { callAuthorization.canReadCall(eq(4)) } returns false
+        every { callAuthorization.canRetrieveCall(eq(4)) } returns false
         listOf(applicantUser, adminUser, programmeUser).forEach {
             every { securityService.currentUser } returns it
             assertFalse(

@@ -2,7 +2,7 @@
 
     <h2 page-sub-title> {{'call.list.header' | translate}}</h2>
 
-    <button *ngxPermissionsExcept="Permission.APPLICANT_USER" mat-raised-button color="primary"
+    <button *hasPermission="PermissionsEnum.CallUpdate" mat-raised-button color="primary"
             [routerLink]="'/app/call/create'">
         + {{'call.add.new' | translate}}
     </button>

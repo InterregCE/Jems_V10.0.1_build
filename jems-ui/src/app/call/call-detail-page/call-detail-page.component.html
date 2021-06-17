@@ -1,18 +1,18 @@
 <app-main-page-template *ngIf="data$ | async as data" titleKey="call.detail.title"
                         subTitleKey="call.general.settings">
-    <app-form (discard)="onCancel(data.call, data.isApplicant)"
+    <app-form (discard)="onCancel(data.call, data.callIsEditable)"
               (save)="onSubmit(data.call, data.priorityCheckboxes, data.strategies, data.funds)">
         <app-alert [show]="published && !data.isApplicant"
                    [type]="Alert.WARNING">
             <span>{{'call.detail.edit.published.warning' | translate}}</span>
         </app-alert>
-        <app-alert [show]="data.isApplicant && !isOpen(data.call)"
+        <app-alert [show]="published && data.isApplicant && !isOpen(data.call)"
                    [type]="Alert.WARNING">
             <span>{{'call.table.column.action.apply.inactive.note' | translate}}</span>
         </app-alert>
         <form appFormLayout [formGroup]="callForm">
             <app-pending-button
-                    *ngIf="data.call?.id && data.callIsEditable"
+                    *ngIf="data.call?.id && data.callIsEditable && !published"
                     [confirm]="confirmData() | async"
                     [disabled]="publishingRequirementsNotAchieved(data.priorityCheckboxes, data.funds)"
                     [pending]="publishPending"
@@ -120,8 +120,6 @@
                     *ngIf="data.priorityCheckboxes"
                     [priorityCheckboxes]="data.priorityCheckboxes"
                     [initialPriorityCheckboxes]="data.initialPriorityCheckboxes"
-                    [disabled]="published || data.isApplicant"
-                    [isApplicant]="data.isApplicant"
                     (selectionChanged)="formChanged()">
             </app-call-priority-tree>
 
@@ -129,8 +127,6 @@
             <app-call-strategies
                     [strategies]="data.strategies"
                     [initialStrategies]="data.initialStrategies"
-                    [disabled]="!data.callIsEditable"
-                    [isApplicant]="data.isApplicant"
                     (selectionChanged)="formChanged()">
             </app-call-strategies>
 
@@ -151,14 +147,12 @@
             <app-call-funds
                     [funds]="data.funds"
                     [initialFunds]="data.initialFunds"
-                    [disabled]="!data.callIsEditable"
-                    [isApplicant]="data.isApplicant"
                     (selectionChanged)="formChanged()">
             </app-call-funds>
         </form>
     </app-form>
 
-    <mat-card-footer *ngIf="data.isApplicant && isOpen(data.call)" class="footer">
+    <mat-card-footer *ngIf="published && data.isApplicant && isOpen(data.call)" class="footer">
         <button mat-raised-button color="primary"
                 class="action-button"
                 (click)="applyToCall(data.call.id)">

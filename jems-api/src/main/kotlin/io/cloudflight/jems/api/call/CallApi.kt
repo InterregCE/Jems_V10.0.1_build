@@ -31,6 +31,15 @@ interface CallApi {
     @GetMapping
     fun getCalls(pageable: Pageable): Page<CallDTO>
 
+    @ApiOperation("Returns all published calls")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
+    @GetMapping("/published")
+    fun getPublishedCalls(pageable: Pageable): Page<CallDTO>
+
     @ApiOperation("Returns a call by call id")
     @GetMapping("/byId/{callId}")
     fun getCallById(@PathVariable callId: Long): CallDetailDTO

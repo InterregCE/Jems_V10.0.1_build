@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.call.service.create_call
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
+import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callCreated
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -21,7 +21,7 @@ class CreateCall(
     private val auditPublisher: ApplicationEventPublisher,
 ) : CreateCallInteractor {
 
-    @CanUpdateCalls
+    @CanUpdateCall
     @Transactional
     @ExceptionWrapper(CreateCallException::class)
     override fun createCallInDraft(call: Call): CallDetail {

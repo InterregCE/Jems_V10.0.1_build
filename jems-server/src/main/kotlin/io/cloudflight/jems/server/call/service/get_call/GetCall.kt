@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.service.get_call
 
-import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.call.authorization.CanReadCall
+import io.cloudflight.jems.server.call.authorization.CanRetrieveCall
+import io.cloudflight.jems.server.call.authorization.CanRetrieveCalls
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -12,23 +12,20 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class GetCall(
-    private val persistence: CallPersistence,
-    private val securityService: SecurityService,
-) : GetCallInteractor {
+class GetCall(private val persistence: CallPersistence) : GetCallInteractor {
 
+    @CanRetrieveCalls
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetCallException::class)
     override fun getCalls(pageable: Pageable): Page<CallSummary> =
-        with(securityService.currentUser!!) {
-            when {
-                isAdmin || isProgrammeUser -> persistence.getCalls(pageable)
-                isApplicant -> persistence.getPublishedAndOpenCalls(pageable)
-                else -> Page.empty()
-            }
-        }
+        persistence.getCalls(pageable)
 
-    @CanReadCall
+    @Transactional(readOnly = true)
+    @ExceptionWrapper(GetCallException::class)
+    override fun getPublishedCalls(pageable: Pageable): Page<CallSummary> =
+        persistence.getPublishedAndOpenCalls(pageable)
+
+    @CanRetrieveCall
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetCallException::class)
     override fun getCallById(callId: Long): CallDetail =

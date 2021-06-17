@@ -5,14 +5,13 @@ import {
   FlatRateSetupDTO,
   ProgrammeCostOptionService,
   ProgrammeLumpSumListDTO,
-  ProgrammeUnitCostListDTO
+  ProgrammeUnitCostListDTO, UserRoleDTO
 } from '@cat/api';
-import {merge, Observable, of, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {PermissionService} from '../../security/permissions/permission.service';
-import {Permission} from '../../security/permissions/permission';
-import {RoutingService} from '../../common/services/routing.service';
+import {RoutingService} from '@common/services/routing.service';
 
 @Injectable()
 export class CallStore {
@@ -22,6 +21,8 @@ export class CallStore {
   unitCosts$: Observable<ProgrammeUnitCostListDTO[]>;
   lumpSums$: Observable<ProgrammeLumpSumListDTO[]>;
   isApplicant$: Observable<boolean>;
+  callIsEditable$: Observable<boolean>;
+  callIsPublished$: Observable<boolean>;
 
   savedCall$ = new Subject<CallDetailDTO>();
 
@@ -29,14 +30,12 @@ export class CallStore {
               private programmeCostOptionService: ProgrammeCostOptionService,
               private permissionService: PermissionService,
               private router: RoutingService) {
-    this.isApplicant$ = this.permissionService.permissionsChanged()
-      .pipe(
-        map(permissions => permissions.some(perm => perm === Permission.APPLICANT_USER)),
-        shareReplay(1)
-      );
     this.call$ = this.call();
     this.unitCosts$ = this.unitCosts();
     this.lumpSums$ = this.lumpSums();
+    this.isApplicant$ = this.isApplicant();
+    this.callIsEditable$ = this.callIsEditable();
+    this.callIsPublished$ = this.callIsPublished();
   }
 
   saveFlatRates(flatRates: FlatRateSetupDTO): Observable<CallDetailDTO> {
@@ -87,6 +86,34 @@ export class CallStore {
     return this.programmeCostOptionService.getProgrammeLumpSums()
       .pipe(
         tap(list => Log.info('Fetched the Lump Sums:', this, list))
+      );
+  }
+
+  private callIsEditable(): Observable<boolean> {
+    return combineLatest([this.isApplicant$, this.permissionService.permissionsChanged()])
+      .pipe(
+        map(([isApplicant, permissions]) =>
+          permissions.includes(UserRoleDTO.PermissionsEnum.CallUpdate)
+        ),
+        shareReplay(1)
+      );
+  }
+
+  private isApplicant(): Observable<boolean> {
+    return this.permissionService.permissionsChanged()
+      .pipe(
+        map(permissions => permissions.every(perm =>
+          perm !== UserRoleDTO.PermissionsEnum.CallUpdate && perm !== UserRoleDTO.PermissionsEnum.CallRetrieve
+          )
+        ),
+        shareReplay(1)
+      );
+  }
+
+  private callIsPublished(): Observable<boolean> {
+    return this.call$
+      .pipe(
+        map(call => call?.status === CallDetailDTO.StatusEnum.PUBLISHED)
       );
   }
 }

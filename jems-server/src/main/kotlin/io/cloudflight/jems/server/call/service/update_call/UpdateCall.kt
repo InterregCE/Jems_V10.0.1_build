@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.service.update_call
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
+import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callUpdated
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -21,7 +21,7 @@ class UpdateCall(
     private val auditPublisher: ApplicationEventPublisher,
 ) : UpdateCallInteractor {
 
-    @CanUpdateCalls
+    @CanUpdateCall
     @Transactional
     @ExceptionWrapper(UpdateCallException::class)
     override fun updateCall(call: Call): CallDetail {

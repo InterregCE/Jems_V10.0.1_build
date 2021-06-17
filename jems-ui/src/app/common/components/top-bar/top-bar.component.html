@@ -15,7 +15,7 @@
         <ul class="navbar-nav ml-auto">
 
             <ng-container *ngIf="currentUser">
-                <li class="nav-item" *ngFor="let item of menuItems | async"
+                <li class="nav-item" *ngFor="let item of menuItems$ | async"
                     [ngClass]="{
                          'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
                          'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
