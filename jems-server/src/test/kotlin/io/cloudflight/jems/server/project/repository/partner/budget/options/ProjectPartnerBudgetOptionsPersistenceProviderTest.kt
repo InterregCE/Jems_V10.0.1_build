@@ -116,7 +116,7 @@ internal class ProjectPartnerBudgetOptionsPersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun `should return previous version of budget options when version is null`() {
+    fun `should return previous version of budget options when version is not null`() {
         assertThat(persistence.getBudgetOptions(partnerId, version)).isEqualTo(
             previousVersionOfBudgetOptionsEntity.toProjectPartnerBudgetOptions()
         )
@@ -126,6 +126,9 @@ internal class ProjectPartnerBudgetOptionsPersistenceProviderTest : UnitTest() {
     @Test
     fun `should return list of budget options for provided partnerIds`() {
         every { budgetOptionsRepository.findAllById(partnerIds) } returns listOf(currentVersionOfBudgetOptionsEntity)
+        every {
+            projectVersionUtils.fetch<List<ProjectPartnerBudgetOptions>>(null, projectId, any(), any())
+        } answers { thirdArg<() -> List<ProjectPartnerBudgetOptions>>().invoke() }
         assertThat(persistence.getBudgetOptions(partnerIds, projectId)).isEqualTo(
             listOf(currentVersionOfBudgetOptionsEntity).toProjectPartnerBudgetOptions()
         )

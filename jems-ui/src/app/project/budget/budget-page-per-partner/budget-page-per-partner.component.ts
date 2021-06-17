@@ -35,7 +35,6 @@ export class BudgetPagePerPartnerComponent {
       tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => this.calculateTotal(data)),
       tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => this.constructBudgetColumns(data)),
       tap(() => this.calculateContributionSums(this.budgetColumns)),
-      take(1)
     );
 
   budgetColumns: ProjectPartnerBudgetAndContribution[] = [];
@@ -132,6 +131,7 @@ export class BudgetPagePerPartnerComponent {
   }
 
   private getColumnsToDisplay(funds: ProgrammeFundDTO[]): void {
+    this.displayedColumns = [];
     this.displayedColumns.push('partner', 'country');
     funds.forEach(fund => {
       this.displayedColumns.push('budget' + fund.id, 'percentage' + fund.id);

@@ -49,12 +49,11 @@ interface ProjectPartnerBaseBudgetRepository<T : ProjectPartnerBudgetBase> : Cru
 
     @Query(
         """
-                SELECT 
+                SELECT
                     entity.partner_id AS partnerId,
                     entity.row_sum AS sum
                 FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP  :timestamp AS entity
                 WHERE entity.partner_id IN :partnerIds
-                GROUP BY entity.partner_id
             """,
         nativeQuery = true
     )
