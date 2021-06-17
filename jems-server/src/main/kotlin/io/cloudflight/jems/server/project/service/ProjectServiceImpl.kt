@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.call.repository.CallPersistenceProvider
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.project.controller.toDto
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
@@ -50,7 +51,8 @@ class ProjectServiceImpl(
     private val auditService: AuditService,
     private val auditPublisher: ApplicationEventPublisher,
     private val securityService: SecurityService,
-    private val callPersistenceProvider: CallPersistenceProvider
+    private val callPersistenceProvider: CallPersistenceProvider,
+    private val generalValidator: GeneralValidatorService
 ) : ProjectService {
 
     @Transactional(readOnly = true)
@@ -68,6 +70,7 @@ class ProjectServiceImpl(
 
     @Transactional
     override fun createProject(project: InputProject): ProjectDetailDTO {
+        validateProject(project)
         val applicant = userRepository.findByIdOrNull(securityService.currentUser?.user?.id!!)
             ?: throw ResourceNotFoundException()
 
@@ -144,6 +147,7 @@ class ProjectServiceImpl(
 
     @Transactional
     override fun update(id: Long, projectData: InputProjectData): ProjectDetailDTO {
+        validateProjectData(projectData)
         val project = projectRepo.findById(id).orElseThrow { ResourceNotFoundException("project") }
         val periods =
             if (project.projectData?.duration == projectData.duration) project.periods
@@ -196,4 +200,19 @@ class ProjectServiceImpl(
             ?: throw ResourceNotFoundException("programmeSpecificObjective")
     }
 
+    private fun validateProjectData(inputProjectData: InputProjectData) =
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.notBlank(inputProjectData.acronym, "acronym"),
+            generalValidator.maxLength(inputProjectData.acronym, 25, "acronym"),
+            generalValidator.maxLength(inputProjectData.title, 250, "title"),
+            generalValidator.numberBetween(inputProjectData.duration, 1, 999, "duration"),
+            generalValidator.maxLength(inputProjectData.intro, 2000, "intro"),
+        )
+
+    private fun validateProject(inputProject: InputProject) =
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.notBlank(inputProject.acronym, "acronym"),
+            generalValidator.maxLength(inputProject.acronym, 25, "acronym"),
+            generalValidator.notNull(inputProject.projectCallId, "projectCallId"),
+        )
 }

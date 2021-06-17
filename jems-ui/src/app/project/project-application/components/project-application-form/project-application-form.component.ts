@@ -63,7 +63,6 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     required: 'project.objective.should.not.be.empty'
   };
   projectAcronymErrors = {
-    maxlength: 'project.acronym.size.too.long',
     required: 'project.acronym.should.not.be.empty'
   };
   projectDurationErrors = {

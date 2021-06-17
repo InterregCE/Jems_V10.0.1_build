@@ -9,7 +9,10 @@
 
         <mat-form-field>
             <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
-            <input name="acronym" formControlName="acronym" matInput>
+            <input #projectAcronym name="acronym" formControlName="acronym" matInput>
+            <mat-hint [appHintFor]="projectAcronym" [hide]="applicationForm.controls?.acronym?.errors !== null">
+                <app-text-hint [currentLength]="projectAcronym?.value?.length" [maxLength]="25"></app-text-hint>
+            </mat-hint>
             <app-context-info *ngIf="applicationForm.enabled"
                               infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
             </app-context-info>

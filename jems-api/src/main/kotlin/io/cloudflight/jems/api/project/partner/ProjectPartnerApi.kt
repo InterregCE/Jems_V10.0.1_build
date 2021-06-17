@@ -57,14 +57,14 @@ interface ProjectPartnerApi {
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProjectPartner(
         @PathVariable projectId: Long,
-        @Valid @RequestBody projectPartner: InputProjectPartnerCreate
+        @RequestBody projectPartner: InputProjectPartnerCreate
     ): OutputProjectPartnerDetail
 
     @ApiOperation("Update project partner")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartner(
         @PathVariable projectId: Long,
-        @Valid @RequestBody projectPartner: InputProjectPartnerUpdate
+        @RequestBody projectPartner: InputProjectPartnerUpdate
     ): OutputProjectPartnerDetail
 
     @ApiOperation("Update project partner addresses")

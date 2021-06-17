@@ -1,10 +1,9 @@
 package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
 import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
@@ -23,11 +22,10 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationTransl
-import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
 
-fun InputProjectAssociatedOrganizationCreate.toEntity(
+fun InputProjectAssociatedOrganization.toEntity(
     partner: ProjectPartnerEntity
 ) = ProjectAssociatedOrganization(
     project = partner.project,
@@ -39,21 +37,7 @@ fun InputProjectAssociatedOrganizationCreate.toEntity(
     // contacts - need organization Id
 )
 
-fun InputProjectAssociatedOrganizationCreate.combineTranslatedValues(
-    organizationId: Long
-): MutableSet<ProjectAssociatedOrganizationTransl> {
-    val roleDescriptionMap = roleDescription.associateBy( { it.language }, { it.translation } )
-    val languages = roleDescriptionMap.keys.toMutableSet()
-
-    return languages.mapTo(HashSet()) {
-        ProjectAssociatedOrganizationTransl(
-            TranslationOrganizationId(organizationId, it),
-            roleDescriptionMap[it]
-        )
-    }
-}
-
-fun InputProjectAssociatedOrganizationUpdate.combineTranslatedValues(
+fun InputProjectAssociatedOrganization.combineTranslatedValues(
     organizationId: Long
 ): MutableSet<ProjectAssociatedOrganizationTransl> {
     val roleDescriptionMap = roleDescription.associateBy( { it.language }, { it.translation } )

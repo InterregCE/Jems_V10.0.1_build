@@ -39,9 +39,9 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
             }
         }
 
-    override fun numberBetween(number: Int, minValue: Int, maxValue: Int, fieldName: String) =
+    override fun numberBetween(number: Int?, minValue: Int, maxValue: Int, fieldName: String) =
         mutableMapOf<String, I18nMessage>().apply {
-            if (number < minValue || number > maxValue)
+            if (number != null && (number < minValue || number > maxValue))
                 this[fieldName] = I18nMessage(
                     i18nKey = "common.error.field.number.out.of.range",
                     i18nArguments = mapOf(

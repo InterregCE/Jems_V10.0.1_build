@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.project
 
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.swagger.annotations.Api
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import javax.validation.Valid
 
 @Api("Project Associated Organization")
 @RequestMapping("/api/project/{projectId}/organization")
@@ -48,14 +46,14 @@ interface ProjectAssociatedOrganizationApi {
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createAssociatedOrganization(
         @PathVariable projectId: Long,
-        @Valid @RequestBody associatedOrganization: InputProjectAssociatedOrganizationCreate
+        @RequestBody associatedOrganization: InputProjectAssociatedOrganization
     ): OutputProjectAssociatedOrganizationDetail
 
     @ApiOperation("Update an associated organization")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateAssociatedOrganization(
         @PathVariable projectId: Long,
-        @Valid @RequestBody associatedOrganization: InputProjectAssociatedOrganizationUpdate
+        @RequestBody associatedOrganization: InputProjectAssociatedOrganization
     ): OutputProjectAssociatedOrganizationDetail
 
     @ApiOperation("Delete an associated organization")

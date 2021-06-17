@@ -1,11 +1,10 @@
 package io.cloudflight.jems.server.project.service.associatedorganization
 
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
-import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 class ProjectAssociatedOrganizationServiceImpl(
     private val projectPartnerRepo: ProjectPartnerRepository,
     private val projectAssociatedOrganizationRepo: ProjectAssociatedOrganizationRepository,
+    private val generalValidator: GeneralValidatorService
 ) : ProjectAssociatedOrganizationService {
 
     @Transactional(readOnly = true)
@@ -24,7 +24,8 @@ class ProjectAssociatedOrganizationServiceImpl(
     }
 
     @Transactional
-    override fun create(projectId: Long, associatedOrganization: InputProjectAssociatedOrganizationCreate): OutputProjectAssociatedOrganizationDetail {
+    override fun create(projectId: Long, associatedOrganization: InputProjectAssociatedOrganization): OutputProjectAssociatedOrganizationDetail {
+        validateAssociatedOrganization(associatedOrganization)
         val partner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
 
@@ -42,8 +43,9 @@ class ProjectAssociatedOrganizationServiceImpl(
     }
 
     @Transactional
-    override fun update(projectId: Long, associatedOrganization: InputProjectAssociatedOrganizationUpdate): OutputProjectAssociatedOrganizationDetail {
-        val oldAssociatedOrganisation = projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.id)
+    override fun update(projectId: Long, associatedOrganization: InputProjectAssociatedOrganization): OutputProjectAssociatedOrganizationDetail {
+        validateAssociatedOrganization(associatedOrganization)
+        val oldAssociatedOrganisation = projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.id!!)
             .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }
         val projectPartner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
@@ -79,4 +81,14 @@ class ProjectAssociatedOrganizationServiceImpl(
             .mapIndexed { index, old -> old.copy(sortNumber = index.plus(1)) }
         projectAssociatedOrganizationRepo.saveAll(projectAssociatedOrganisations)
     }
+
+    private fun validateAssociatedOrganization(inputAssociatedOrganizaion: InputProjectAssociatedOrganization) =
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.notNull(inputAssociatedOrganizaion.partnerId, "partnerId"),
+            generalValidator.notNull(inputAssociatedOrganizaion.nameInOriginalLanguage, "nameInOriginalLanguage"),
+            generalValidator.maxLength(inputAssociatedOrganizaion.nameInOriginalLanguage, 100, "nameInOriginalLanguage"),
+            generalValidator.notNull(inputAssociatedOrganizaion.nameInEnglish, "nameInOriginalLanguage"),
+            generalValidator.maxLength(inputAssociatedOrganizaion.nameInEnglish, 100, "nameInOriginalLanguage"),
+            generalValidator.maxSize(inputAssociatedOrganizaion.contacts, 2, "contacts"),
+        )
 }

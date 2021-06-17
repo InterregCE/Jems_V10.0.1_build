@@ -11,6 +11,8 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
@@ -40,6 +42,8 @@ internal class CreateProjectPartnerInteractorTest: UnitTest() {
 
     @InjectMockKs
     lateinit var createInteractor: CreateProjectPartner
+
+    val generalValidator: GeneralValidatorService = GeneralValidatorDefaultImpl()
 
     private val projectPartner = ProjectPartnerEntity(
         id = 1,

@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartnerBase
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -20,12 +21,14 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateProjectPartner(
     private val persistence: PartnerPersistence,
     private val projectPartnerRepository: ProjectPartnerRepository,
+    private val generalValidator: GeneralValidatorService
 ) : UpdateProjectPartnerInteractor {
 
     @CanUpdateProjectPartnerBase
     @Transactional
     @ExceptionWrapper(UpdateProjectPartnerException::class)
     override fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
+        validatePartner(projectPartner)
         val oldProjectPartner = getPartnerOrThrow(projectPartner.id)
         val projectId = oldProjectPartner.project.id
         val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
@@ -96,4 +99,15 @@ class UpdateProjectPartner(
         else
             throw PartnerIsNotLead()
     }
+
+    private fun validatePartner(inputPartner: InputProjectPartnerUpdate) =
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.notNull(inputPartner.role, "role"),
+            generalValidator.notBlank(inputPartner.abbreviation, "abbreviation"),
+            generalValidator.maxLength(inputPartner.abbreviation, 15, "abbreviation"),
+            generalValidator.maxLength(inputPartner.nameInOriginalLanguage, 100, "nameInOriginalLanguage"),
+            generalValidator.maxLength(inputPartner.nameInEnglish, 100, "nameInOriginalLanguage"),
+            generalValidator.notNull(inputPartner.legalStatusId, "legalStatusId"),
+            generalValidator.maxLength(inputPartner.vat, 50, "vat"),
+        )
 }

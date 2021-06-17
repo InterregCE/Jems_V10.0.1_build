@@ -1,14 +1,13 @@
 package io.cloudflight.jems.server.project.service.associatedorganization
 
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 
 interface ProjectAssociatedOrganizationService {
 
-    fun create(projectId: Long, associatedOrganization: InputProjectAssociatedOrganizationCreate): OutputProjectAssociatedOrganizationDetail
+    fun create(projectId: Long, associatedOrganization: InputProjectAssociatedOrganization): OutputProjectAssociatedOrganizationDetail
 
-    fun update(projectId: Long, associatedOrganization: InputProjectAssociatedOrganizationUpdate): OutputProjectAssociatedOrganizationDetail
+    fun update(projectId: Long, associatedOrganization: InputProjectAssociatedOrganization): OutputProjectAssociatedOrganizationDetail
 
     fun delete(projectId: Long, associatedOrganizationId: Long)
 

@@ -4,8 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.InputProjectContact
 import io.cloudflight.jems.api.project.dto.ProjectContactType
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
@@ -13,6 +12,9 @@ import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.AppInputValidationException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
@@ -50,6 +52,8 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
     @MockK
     lateinit var projectAssociatedOrganizationRepository: ProjectAssociatedOrganizationRepository
+
+    lateinit var generalValidator: GeneralValidatorService
 
     lateinit var projectAssociatedOrganizationService: ProjectAssociatedOrganizationService
 
@@ -128,10 +132,12 @@ internal class ProjectAssociatedOrganizationServiceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
+        generalValidator = GeneralValidatorDefaultImpl()
         projectAssociatedOrganizationService =
             ProjectAssociatedOrganizationServiceImpl(
                 projectPartnerRepository,
-                projectAssociatedOrganizationRepository
+                projectAssociatedOrganizationRepository,
+                generalValidator
             )
     }
 
@@ -186,7 +192,8 @@ internal class ProjectAssociatedOrganizationServiceTest {
         every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
 
         // test create
-        val toCreate = InputProjectAssociatedOrganizationCreate(
+        val toCreate = InputProjectAssociatedOrganization(
+            id = null,
             partnerId = projectPartner.id,
             nameInOriginalLanguage = "to create",
             nameInEnglish = "to create",
@@ -244,9 +251,9 @@ internal class ProjectAssociatedOrganizationServiceTest {
     fun `create associated organization not-existing partner`() {
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.empty()
 
-        val toCreate = InputProjectAssociatedOrganizationCreate(partnerId = projectPartner.id)
-        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.create(1, toCreate) }
-        assertThat(ex.entity).isEqualTo("projectPartner")
+        val toCreate = InputProjectAssociatedOrganization(id = null, partnerId = projectPartner.id)
+        val ex = assertThrows<AppInputValidationException> { projectAssociatedOrganizationService.create(1, toCreate) }
+        assertThat(ex.i18nMessage.i18nKey).isEqualTo("common.error.input.invalid")
     }
 
     @Test
@@ -263,7 +270,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(oldOrganization.partner)
         every { projectAssociatedOrganizationRepository.save(any<ProjectAssociatedOrganization>()) } returnsArgument 0
 
-        val newValues = InputProjectAssociatedOrganizationUpdate(
+        val newValues = InputProjectAssociatedOrganization(
             id = oldOrganization.id,
             partnerId = oldOrganization.partner.id,
             nameInOriginalLanguage = "new name",

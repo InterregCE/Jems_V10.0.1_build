@@ -79,10 +79,10 @@ class ProjectPartnerControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(inputProjectPartner))
         )
-            .andExpect(status().isBadRequest)
+            .andExpect(status().isUnprocessableEntity)
             .andExpect(
-                jsonPath("$.formErrors.abbreviation.i18nKey")
-                    .value("project.partner.name.should.not.be.empty")
+                jsonPath("$.i18nMessage.i18nKey")
+                    .value("use.case.create.project.partner.failed")
             )
     }
 
@@ -96,10 +96,10 @@ class ProjectPartnerControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(inputProjectPartner))
         )
-            .andExpect(status().isBadRequest)
+            .andExpect(status().isUnprocessableEntity)
             .andExpect(
-                jsonPath("$.formErrors.abbreviation.i18nKey")
-                    .value("project.partner.name.size.too.long")
+                jsonPath("$.i18nMessage.i18nKey")
+                    .value("use.case.create.project.partner.failed")
             )
     }
 

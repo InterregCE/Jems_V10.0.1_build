@@ -12,7 +12,7 @@ interface GeneralValidatorService {
 
     fun maxLength(translations: Set<InputTranslation>, maxLength: Int, fieldName: String): Map<String, I18nMessage>
 
-    fun numberBetween(number: Int, minValue: Int, maxValue: Int, fieldName: String): Map<String, I18nMessage>
+    fun numberBetween(number: Int?, minValue: Int, maxValue: Int, fieldName: String): Map<String, I18nMessage>
 
     fun notBlank(input: String?, fieldName: String): Map<String, I18nMessage>
 

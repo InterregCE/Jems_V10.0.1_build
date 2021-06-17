@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import javax.validation.Valid
 
 @Api("Project")
 @RequestMapping("/api/project")
@@ -60,11 +59,11 @@ interface ProjectApi {
 
     @ApiOperation("Creates new project application")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createProject(@Valid @RequestBody project: InputProject): ProjectDetailDTO
+    fun createProject(@RequestBody project: InputProject): ProjectDetailDTO
 
     @ApiOperation("Update project-related data")
     @PutMapping("/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectData(@PathVariable projectId: Long, @Valid @RequestBody project: InputProjectData): ProjectDetailDTO
+    fun updateProjectData(@PathVariable projectId: Long, @RequestBody project: InputProjectData): ProjectDetailDTO
 
     @ApiOperation("Returns project budget for all partners")
     @GetMapping("/{projectId}/budget")

@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
-  InputProjectAssociatedOrganizationCreate,
-  InputProjectAssociatedOrganizationUpdate,
+  InputProjectAssociatedOrganization,
   OutputNuts,
   OutputProjectAssociatedOrganizationDetail,
   OutputProjectPartner,
@@ -42,7 +41,7 @@ export class ProjectAssociatedOrganizationStore {
     this.projectTitle$ = this.projectStore.projectTitle$;
   }
 
-  createAssociatedOrganization(create: InputProjectAssociatedOrganizationCreate): Observable<void> {
+  createAssociatedOrganization(create: InputProjectAssociatedOrganization): Observable<void> {
     return this.associatedOrganizationService.createAssociatedOrganization(this.projectId, create)
       .pipe(
         tap(saved => this.savedAssociatedOrganization$.next(saved)),
@@ -53,7 +52,7 @@ export class ProjectAssociatedOrganizationStore {
       );
   }
 
-  updateAssociatedOrganization(update: InputProjectAssociatedOrganizationUpdate): Observable<OutputProjectAssociatedOrganizationDetail> {
+  updateAssociatedOrganization(update: InputProjectAssociatedOrganization): Observable<OutputProjectAssociatedOrganizationDetail> {
     return this.associatedOrganizationService.updateAssociatedOrganization(this.projectId, update)
       .pipe(
         tap(saved => this.savedAssociatedOrganization$.next(saved)),

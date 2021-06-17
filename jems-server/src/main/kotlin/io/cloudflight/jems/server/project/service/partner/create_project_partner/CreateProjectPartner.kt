@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProject
 import io.cloudflight.jems.server.project.repository.partner.PartnerPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
@@ -16,12 +17,14 @@ import org.springframework.transaction.annotation.Transactional
 class CreateProjectPartner(
     private val persistence: PartnerPersistence,
     private val projectPartnerRepository: ProjectPartnerRepository,
+    private val generalValidator: GeneralValidatorService
 ) : CreateProjectPartnerInteractor {
 
     @CanUpdateProject
     @Transactional
     @ExceptionWrapper(CreateProjectPartnerException::class)
     override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
+        validatePartner(projectPartner)
         // to be possible to list all partners for dropdowns we decided to limit total amount of them
         if (projectPartnerRepository.countByProjectId(projectId) >= PartnerPersistenceProvider.MAX_PROJECT_PARTNERS)
             throw MaximumNumberOfPartnersReached()
@@ -69,4 +72,15 @@ class CreateProjectPartner(
         else
             throw PartnerIsNotLead()
     }
+
+    private fun validatePartner(inputPartner: InputProjectPartnerCreate) =
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.notNull(inputPartner.role, "role"),
+            generalValidator.notBlank(inputPartner.abbreviation, "abbreviation"),
+            generalValidator.maxLength(inputPartner.abbreviation, 15, "abbreviation"),
+            generalValidator.maxLength(inputPartner.nameInOriginalLanguage, 100, "nameInOriginalLanguage"),
+            generalValidator.maxLength(inputPartner.nameInEnglish, 100, "nameInOriginalLanguage"),
+            generalValidator.notNull(inputPartner.legalStatusId, "legalStatusId"),
+            generalValidator.maxLength(inputPartner.vat, 50, "vat"),
+        )
 }

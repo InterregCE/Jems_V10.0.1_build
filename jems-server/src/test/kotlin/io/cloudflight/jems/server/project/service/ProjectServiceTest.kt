@@ -29,6 +29,8 @@ import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.project.entity.ProjectData
@@ -207,6 +209,8 @@ class ProjectServiceTest : UnitTest() {
 
     @InjectMockKs
     lateinit var projectService: ProjectServiceImpl
+
+    val generalValidator: GeneralValidatorService = GeneralValidatorDefaultImpl()
 
     @BeforeAll
     fun setup() {

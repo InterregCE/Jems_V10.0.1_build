@@ -105,7 +105,7 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
     };
 
     if (!this.controls?.id?.value) {
-      this.associatedOrganizationStore.createAssociatedOrganization(toSave)
+      this.associatedOrganizationStore.createAssociatedOrganization({id: 0, ...toSave})
         .pipe(
           take(1)
         ).subscribe();

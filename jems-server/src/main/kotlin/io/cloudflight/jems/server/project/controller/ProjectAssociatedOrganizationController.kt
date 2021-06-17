@@ -1,8 +1,7 @@
 package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.project.ProjectAssociatedOrganizationApi
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
@@ -38,7 +37,7 @@ class ProjectAssociatedOrganizationController(
     @PreAuthorize("@projectAuthorization.canOwnerUpdateProject(#projectId)")
     override fun createAssociatedOrganization(
         projectId: Long,
-        associatedOrganization: InputProjectAssociatedOrganizationCreate
+        associatedOrganization: InputProjectAssociatedOrganization
     ): OutputProjectAssociatedOrganizationDetail {
         return associatedOrganizationService.create(
             projectId = projectId,
@@ -49,7 +48,7 @@ class ProjectAssociatedOrganizationController(
     @PreAuthorize("@projectAuthorization.canOwnerUpdateProject(#projectId)")
     override fun updateAssociatedOrganization(
         projectId: Long,
-        associatedOrganization: InputProjectAssociatedOrganizationUpdate
+        associatedOrganization: InputProjectAssociatedOrganization
     ): OutputProjectAssociatedOrganizationDetail {
         return associatedOrganizationService.update(projectId, associatedOrganization)
     }

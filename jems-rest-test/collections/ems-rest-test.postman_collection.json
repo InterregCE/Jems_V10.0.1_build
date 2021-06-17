@@ -2012,12 +2012,12 @@
 							"script": {
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.have.status(422);\r",
 									"});\r",
 									"\r",
 									"pm.test('should return validation errors', function () {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response.formErrors.acronym.i18nKey).to.contain('project.acronym.size.too.long');\r",
+									"    pm.expect(response.formErrors.acronym.i18nKey).to.contain('common.error.field.max.length');\r",
 									"});\r",
 									""
 								],
@@ -2036,7 +2036,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"test-proj-this-is-a-very-long-name\"\n}\n"
+							"raw": "{\n    \"projectCallId\": {{callId}},\n\t\"acronym\": \"test-proj-this-is-a-very-long-name\"\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/project",
@@ -2068,12 +2068,12 @@
 							"script": {
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.have.status(422);\r",
 									"});\r",
 									"\r",
 									"pm.test('should return validation errors', function () {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response.formErrors.acronym.i18nKey).to.contain('project.acronym.should.not.be.empty');\r",
+									"    pm.expect(response.formErrors.acronym.i18nKey).to.contain('common.error.field.blank');\r",
 									"});\r",
 									""
 								],
@@ -2092,7 +2092,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"\",\n\t\"projectCallId\": null\n}\n"
+							"raw": "{\n\t\"acronym\": \"\",\n\t\"projectCallId\": {{callId}}\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/project",
