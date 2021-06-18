@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.service.model
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormConfigurationDTO
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum

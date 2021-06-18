@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.repository.CallPersistenceProvider
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -48,7 +49,8 @@ class ProjectServiceImpl(
     private val userRepository: UserRepository,
     private val auditService: AuditService,
     private val auditPublisher: ApplicationEventPublisher,
-    private val securityService: SecurityService
+    private val securityService: SecurityService,
+    private val callPersistenceProvider: CallPersistenceProvider
 ) : ProjectService {
 
     @Transactional(readOnly = true)
@@ -84,14 +86,21 @@ class ProjectServiceImpl(
         projectStatusHistoryRepo.save(projectStatus.copy(project = createdProject))
 
         auditPublisher.publishEvent(projectApplicationCreated(this, createdProject))
-        auditPublisher.publishEvent(projectVersionRecorded(
-            context = this,
-            projectSummary = createdProject.toSummaryModel(),
-            userEmail = applicant.email,
-            version = ProjectVersionUtils.DEFAULT_VERSION,
-            createdAt = ZonedDateTime.now(ZoneOffset.UTC)))
+        auditPublisher.publishEvent(
+            projectVersionRecorded(
+                context = this,
+                projectSummary = createdProject.toSummaryModel(),
+                userEmail = applicant.email,
+                version = ProjectVersionUtils.DEFAULT_VERSION,
+                createdAt = ZonedDateTime.now(ZoneOffset.UTC)
+            )
+        )
 
-        return createdProject.toOutputProject(null, null)
+        //todo id should come from callEntity after #1642
+        return createdProject.toOutputProject(
+            null, null,
+            callPersistenceProvider.getApplicationFormConfiguration(id = 1L)
+        )
     }
 
     fun projectStatusDraft(user: UserEntity, step2Active: Boolean): ProjectStatusHistoryEntity {
@@ -113,7 +122,11 @@ class ProjectServiceImpl(
     private fun getCallIfOpen(callId: Long): CallEntity {
         val call = callRepository.findById(callId)
             .orElseThrow { ResourceNotFoundException("call") }
-        val callApplyDeadline = if (call.endDateStep1 != null) { call.endDateStep1 } else { call.endDate }
+        val callApplyDeadline = if (call.endDateStep1 != null) {
+            call.endDateStep1
+        } else {
+            call.endDate
+        }
         if (call.status == CallStatus.PUBLISHED
             && ZonedDateTime.now().isBefore(callApplyDeadline)
             && ZonedDateTime.now().isAfter(call.startDate)

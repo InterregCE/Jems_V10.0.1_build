@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.application.execute_pre_condi
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.entity.PluginStatusEntity
@@ -113,7 +114,8 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     ) =
         ProjectCallSettings(
             callId, callName, startDate, endDate, endDateStep1,
-            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts
+            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts,
+            applicationFormConfiguration= ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
         )
 
     private fun buildProjectSummary(

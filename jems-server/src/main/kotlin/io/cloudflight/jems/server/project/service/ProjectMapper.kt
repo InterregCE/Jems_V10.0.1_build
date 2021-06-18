@@ -10,6 +10,7 @@ import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
@@ -36,9 +37,9 @@ fun InputProject.toEntity(
     currentStatus = statusHistoryEntity,
 )
 
-fun ProjectEntity.toOutputProject(decisionStep1: ProjectDecisionDTO?, decisionStep2: ProjectDecisionDTO?) = ProjectDetailDTO(
+fun ProjectEntity.toOutputProject(decisionStep1: ProjectDecisionDTO?, decisionStep2: ProjectDecisionDTO?, applicationFormConfiguration: ApplicationFormConfiguration) = ProjectDetailDTO(
     id = id,
-    callSettings = call.toSettingsModel().toDto(),
+    callSettings = call.toSettingsModel(applicationFormConfiguration).toDto(),
     acronym = acronym,
     applicant = applicant.toOutputUser(),
     projectStatus = currentStatus.toOutputProjectStatus(),

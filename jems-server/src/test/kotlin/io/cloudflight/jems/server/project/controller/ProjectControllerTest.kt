@@ -22,6 +22,8 @@ import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
+import io.cloudflight.jems.server.call.controller.toDTO
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -103,7 +105,10 @@ class ProjectControllerTest {
             specificObjectiveCode = "SO1.1",
             programmePriorityCode = "P1",
         )
+
+        private val applicationFormConfiguration = ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
     }
+
 
     @RelaxedMockK
     lateinit var projectService: ProjectService
@@ -173,6 +178,7 @@ class ProjectControllerTest {
                     categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                 ),
             ),
+            applicationFormConfiguration = applicationFormConfiguration
         )
         every { getProjectInteractor.getProjectCallSettings(1L) } returns callSettings
         assertThat(controller.getProjectCallSettingsById(1L)).isEqualTo(
@@ -209,6 +215,7 @@ class ProjectControllerTest {
                         categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                     )
                 ),
+                applicationFormConfiguration = applicationFormConfiguration.toDTO()
             )
         )
     }
@@ -257,7 +264,8 @@ class ProjectControllerTest {
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
-            isAdditionalFundAllowed = false
+            isAdditionalFundAllowed = false,
+            applicationFormConfiguration = applicationFormConfiguration
         )
         val project = Project(
             id = pId,
@@ -290,7 +298,8 @@ class ProjectControllerTest {
                     callSettings.isAdditionalFundAllowed,
                     FlatRateSetupDTO(),
                     emptyList(),
-                    emptyList()
+                    emptyList(),
+                    callSettings.applicationFormConfiguration.toDTO()
                 ),
                 acronym = project.acronym,
                 applicant = project.applicant.toDto(),

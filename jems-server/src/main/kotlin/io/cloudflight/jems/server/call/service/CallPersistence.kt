@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.call.service
 
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfigurationSummary
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -24,4 +26,8 @@ interface CallPersistence {
 
     fun publishCall(callId: Long): CallSummary
     fun hasAnyCallPublished(): Boolean
+
+    fun getApplicationFormConfiguration(id: Long): ApplicationFormConfiguration
+    fun listApplicationFormConfigurations(): List<ApplicationFormConfigurationSummary>
+    fun updateApplicationFormConfigurations(applicationFormConfiguration: ApplicationFormConfiguration)
 }

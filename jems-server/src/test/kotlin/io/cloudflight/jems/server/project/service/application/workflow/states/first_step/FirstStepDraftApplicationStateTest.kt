@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.application.workflow.states.f
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
@@ -47,6 +48,7 @@ class FirstStepDraftApplicationStateTest : UnitTest() {
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
+            applicationFormConfiguration= ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
         )
 
         private val actionInfo = ApplicationActionInfo(

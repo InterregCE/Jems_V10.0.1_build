@@ -10,3 +10,8 @@ class CallNotFound : ApplicationNotFoundException(
     i18nMessage = I18nMessage("programme.specific.objective.not.found"), cause = null
 )
 
+class ApplicationFormConfigurationNotFound : ApplicationNotFoundException(
+    code = "$CALL_PERSISTENCE_ERROR_CODE-002",
+    i18nMessage = I18nMessage("application.form.configuration.not.found"), cause = null
+)
+

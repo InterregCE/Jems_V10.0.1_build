@@ -13,6 +13,8 @@ import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
+import io.cloudflight.jems.server.call.repository.CallPersistenceProvider
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -161,6 +163,7 @@ internal class ProjectPersistenceTest : UnitTest() {
             )
         }
     }
+    private val applicationFormConfiguration = ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
 
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
@@ -175,6 +178,8 @@ internal class ProjectPersistenceTest : UnitTest() {
     lateinit var projectAssessmentQualityRepository: ProjectAssessmentQualityRepository
     @MockK
     lateinit var projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository
+    @MockK
+    lateinit var callPersistence: CallPersistenceProvider
 
     private lateinit var persistence: ProjectPersistenceProvider
 
@@ -182,7 +187,8 @@ internal class ProjectPersistenceTest : UnitTest() {
     fun setup() {
         MockKAnnotations.init(this)
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
-        persistence = ProjectPersistenceProvider(projectVersionUtils, projectRepository, projectPartnerRepository, projectAssessmentQualityRepository, projectAssessmentEligibilityRepository)
+        persistence = ProjectPersistenceProvider(projectVersionUtils, projectRepository, projectPartnerRepository, projectAssessmentQualityRepository, projectAssessmentEligibilityRepository, callPersistence)
+        every { callPersistence.getApplicationFormConfiguration(1) } returns ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
     }
 
     @Test
@@ -231,7 +237,7 @@ internal class ProjectPersistenceTest : UnitTest() {
         val project = dummyProject()
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
         assertThat(persistence.getProjectCallSettings(PROJECT_ID)).isEqualTo(
-            project.call.toSettingsModel()
+            project.call.toSettingsModel(applicationFormConfiguration)
         )
     }
 
@@ -308,7 +314,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
-                    callSettings = project.call.toSettingsModel(),
+                    callSettings = project.call.toSettingsModel(applicationFormConfiguration),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy(),
                     assessmentStep1 = ProjectAssessment(
@@ -382,7 +388,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
-                    callSettings = project.call.toSettingsModel(),
+                    callSettings = project.call.toSettingsModel(applicationFormConfiguration),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
                 ))

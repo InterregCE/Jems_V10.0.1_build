@@ -3,13 +3,19 @@ package io.cloudflight.jems.server.call.repository
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.call.entity.ApplicationFormConfigurationEntity
+import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
+import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
-import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfigurationSummary
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
@@ -22,6 +28,9 @@ import io.cloudflight.jems.server.programme.repository.priority.toModel
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.user.entity.UserEntity
+import org.mapstruct.Mapper
+import org.mapstruct.Mapping
+import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 import java.util.TreeSet
 import kotlin.collections.HashSet
@@ -120,4 +129,58 @@ fun Set<ProjectCallFlatRate>.toEntity(call: CallEntity) = mapTo(HashSet()) {
         rate = it.rate,
         isAdjustable = it.isAdjustable
     )
+}
+
+
+fun List<ApplicationFormConfigurationEntity>.toModel() =
+    map { it.toApplicationFormConfigurationSummary() }
+
+fun MutableSet<ApplicationFormFieldConfigurationEntity>.toModel() =
+    callEntityMapper.map(this)
+
+fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(applicationFormConfigurationEntity: ApplicationFormConfigurationEntity) =
+    map { callEntityMapper.map(applicationFormConfigurationEntity, it) }.toMutableSet()
+
+
+fun ApplicationFormConfigurationEntity.toApplicationFormConfigurationSummary() =
+    callEntityMapper.mapToApplicationFormConfigurationSummary(this)
+
+fun ApplicationFormConfigurationEntity.toModel(fieldConfigurations: MutableSet<ApplicationFormFieldConfigurationEntity>) =
+    callEntityMapper.map(this, fieldConfigurations)
+
+fun ApplicationFormConfiguration.toEntity() =
+    callEntityMapper.map(this)
+
+
+private val callEntityMapper = Mappers.getMapper(CallEntityMapper::class.java)
+
+@Mapper
+abstract class CallEntityMapper {
+
+    abstract fun mapToApplicationFormConfigurationSummary(applicationFormConfigurationEntity: ApplicationFormConfigurationEntity): ApplicationFormConfigurationSummary
+
+
+    abstract fun map(
+        applicationFormConfigurationEntity: ApplicationFormConfigurationEntity,
+        fieldConfigurations: MutableSet<ApplicationFormFieldConfigurationEntity>
+    ): ApplicationFormConfiguration
+
+    @Mapping(source = "id.id", target = "id")
+    abstract fun map(applicationFormFieldConfigurationEntity: ApplicationFormFieldConfigurationEntity): ApplicationFormFieldConfiguration
+
+    abstract fun map(applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>): MutableSet<ApplicationFormFieldConfiguration>
+
+    fun map(applicationFormConfiguration: ApplicationFormConfiguration): ApplicationFormConfigurationEntity =
+        ApplicationFormConfigurationEntity(applicationFormConfiguration.id, applicationFormConfiguration.name)
+
+
+    fun map(
+        formConfigurationEntity: ApplicationFormConfigurationEntity,
+        fieldConfiguration: ApplicationFormFieldConfiguration
+    ): ApplicationFormFieldConfigurationEntity =
+        ApplicationFormFieldConfigurationEntity(
+            ApplicationFormFieldConfigurationId(fieldConfiguration.id, formConfigurationEntity),
+            fieldConfiguration.visibilityStatus
+        )
+
 }

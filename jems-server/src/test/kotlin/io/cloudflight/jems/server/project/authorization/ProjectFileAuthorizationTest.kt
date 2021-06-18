@@ -11,6 +11,8 @@ import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.call.controller.toDTO
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
@@ -101,6 +103,7 @@ internal class ProjectFileAuthorizationTest {
             )
         }
 
+        private val applicationFormConfiguration = ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
         private val dummyCall = ProjectCallSettings(
             callId = 1,
             callName = "call",
@@ -112,6 +115,7 @@ internal class ProjectFileAuthorizationTest {
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
+            applicationFormConfiguration = applicationFormConfiguration
         )
 
         private val dummyCallDto = ProjectCallSettingsDTO(
@@ -125,6 +129,7 @@ internal class ProjectFileAuthorizationTest {
             flatRates = FlatRateSetupDTO(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
+            applicationFormConfiguration = applicationFormConfiguration.toDTO()
         )
 
         private fun getProject(id: Long, applicantId: Long, status: ApplicationStatus): Project {

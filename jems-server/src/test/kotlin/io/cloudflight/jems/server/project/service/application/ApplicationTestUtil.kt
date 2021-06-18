@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.application
 
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
@@ -18,6 +19,7 @@ val callSettings = ProjectCallSettings(
     flatRates = emptySet(),
     lumpSums = emptyList(),
     unitCosts = emptyList(),
+    applicationFormConfiguration= ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
 )
 
 fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMITTED) = Project(

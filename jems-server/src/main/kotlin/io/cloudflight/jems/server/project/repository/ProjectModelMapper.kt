@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.project.repository
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.call.entity.ApplicationFormConfigurationEntity
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.repository.toModel
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.toModel
@@ -41,7 +43,8 @@ fun ProjectVersionEntity.toProjectVersion() =
 
 fun List<ProjectVersionEntity>.toProjectVersions() = map { it.toProjectVersion() }
 
-fun CallEntity.toSettingsModel() = ProjectCallSettings(
+// todo applicationFormConfiguration should come from callEntity after #1642
+fun CallEntity.toSettingsModel(applicationFormConfiguration: ApplicationFormConfiguration) = ProjectCallSettings(
     callId = id,
     callName = name,
     startDate = startDate,
@@ -51,12 +54,13 @@ fun CallEntity.toSettingsModel() = ProjectCallSettings(
     isAdditionalFundAllowed = isAdditionalFundAllowed,
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.map { it.toModel() }.sortedBy { it.id },
-    unitCosts = unitCosts.toProgrammeUnitCost()
+    unitCosts = unitCosts.toProgrammeUnitCost(),
+    applicationFormConfiguration = applicationFormConfiguration
 )
 
-fun ProjectEntity.toModel(assessmentStep1: ProjectAssessmentEntity?, assessmentStep2: ProjectAssessmentEntity?) = Project(
+fun ProjectEntity.toModel(assessmentStep1: ProjectAssessmentEntity?, assessmentStep2: ProjectAssessmentEntity?, applicationFormConfiguration: ApplicationFormConfiguration) = Project(
     id = id,
-    callSettings = call.toSettingsModel(),
+    callSettings = call.toSettingsModel(applicationFormConfiguration),
     acronym = acronym,
     applicant = applicant.toUserSummary(),
     projectStatus = currentStatus.toProjectStatus(),
@@ -94,6 +98,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
     periods: List<ProjectPeriod>,
     assessmentStep1: ProjectAssessmentEntity,
     assessmentStep2: ProjectAssessmentEntity,
+    applicationFormConfiguration: ApplicationFormConfiguration
 ) =
     this.groupBy { it.id }.map { groupedRows ->
         Project(
@@ -104,7 +109,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
             duration = groupedRows.value.first().duration,
             periods = periods,
             // map non historic data
-            callSettings = project.call.toSettingsModel(),
+            callSettings = project.call.toSettingsModel(applicationFormConfiguration),
             applicant = project.applicant.toUserSummary(),
             specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy(),
             programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),

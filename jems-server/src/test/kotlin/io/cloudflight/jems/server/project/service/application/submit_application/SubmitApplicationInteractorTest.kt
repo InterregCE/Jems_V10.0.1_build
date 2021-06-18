@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.entity.PluginStatusEntity
@@ -165,7 +166,8 @@ class SubmitApplicationInteractorTest : UnitTest() {
     ) =
         ProjectCallSettings(
             callId, callName, startDate, endDate, endDateStep1,
-            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts
+            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts,
+            applicationFormConfiguration= ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
         )
 
     private fun buildProjectSummary(

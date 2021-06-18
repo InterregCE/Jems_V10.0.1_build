@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.jems.api.project.dto.file.InputProjectFileDescription
+import io.cloudflight.jems.server.call.entity.ApplicationFormConfigurationEntity
+import io.cloudflight.jems.server.call.repository.ApplicationFormConfigurationRepository
 import io.cloudflight.jems.server.factory.CallFactory
 import io.cloudflight.jems.server.factory.ProjectFileFactory
 import io.cloudflight.jems.server.factory.UserFactory
@@ -39,6 +41,10 @@ class ProjectFileControllerIntegrationTest {
 
     @Autowired
     private lateinit var userFactory: UserFactory
+
+    @Autowired
+    private lateinit var applicationFormConfigurationRepository: ApplicationFormConfigurationRepository
+
 
     @Test
     @Transactional
@@ -111,9 +117,9 @@ class ProjectFileControllerIntegrationTest {
     @Transactional
     @WithUserDetails(value = APPLICANT_USER_EMAIL)
     fun `project file access allowed for owner applicants`() {
+        applicationFormConfigurationRepository.save(ApplicationFormConfigurationEntity(1L,"test configuration"))
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFileFactory.saveProject(userFactory.applicantUser, call)
-
         mockMvc.perform(
             get("/api/project/${project.id}")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

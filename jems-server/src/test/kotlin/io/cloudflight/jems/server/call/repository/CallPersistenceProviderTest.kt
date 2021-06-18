@@ -262,6 +262,12 @@ internal class CallPersistenceProviderTest {
     private lateinit var programmeStrategyRepo: StrategyRepository
 
     @MockK
+    private lateinit var applicationFormConfigurationRepository: ApplicationFormConfigurationRepository
+
+    @MockK
+    private lateinit var applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository
+
+    @MockK
     private lateinit var programmeFundRepo: ProgrammeFundRepository
 
     @InjectMockKs

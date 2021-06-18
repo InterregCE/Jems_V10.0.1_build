@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.repository
 
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -14,11 +16,13 @@ import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatu
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
-import java.sql.Timestamp
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.sql.Timestamp
+
+private const val defaultApplicationFormConfigurationId = 1L
 
 @Repository
 class ProjectPersistenceProvider(
@@ -27,6 +31,7 @@ class ProjectPersistenceProvider(
     private val projectPartnerRepository: ProjectPartnerRepository,
     private val projectAssessmentQualityRepository: ProjectAssessmentQualityRepository,
     private val projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository,
+    private val callPersistence: CallPersistence
 ) : ProjectPersistence {
 
     @Transactional(readOnly = true)
@@ -49,7 +54,7 @@ class ProjectPersistenceProvider(
 
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                project.toModel(assessmentStep1 = assessmentStep1, assessmentStep2 = assessmentStep2)
+                project.toModel(assessmentStep1 = assessmentStep1, assessmentStep2 = assessmentStep2, applicationFormConfiguration = getApplicationFormConfiguration())
             },
             // grouped this will be only one result
             previousVersionFetcher = { timestamp ->
@@ -68,7 +73,7 @@ class ProjectPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectCallSettings(projectId: Long): ProjectCallSettings =
-        getProjectOrThrow(projectId).call.toSettingsModel()
+        getProjectOrThrow(projectId).call.toSettingsModel(getApplicationFormConfiguration())
 
     @Transactional(readOnly = true)
     override fun getProjects(pageable: Pageable, filterByOwnerId: Long?): Page<ProjectSummary> =
@@ -101,8 +106,14 @@ class ProjectPersistenceProvider(
     ): Project {
         val periods = projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData();
         return projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
-            .toProjectEntryWithDetailData(project, periods, assessmentStep1, assessmentStep2)
+            .toProjectEntryWithDetailData(project, periods, assessmentStep1, assessmentStep2, getApplicationFormConfiguration())
     }
 
     private fun ProjectEntity.idInStep(step: Int) = ProjectAssessmentId(this, step)
+
+
+    // todo should come from callEntity - after #1642
+    private fun getApplicationFormConfiguration(): ApplicationFormConfiguration =
+        callPersistence.getApplicationFormConfiguration(defaultApplicationFormConfigurationId)
+
 }

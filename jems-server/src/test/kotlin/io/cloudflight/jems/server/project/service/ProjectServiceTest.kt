@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -13,7 +14,6 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -22,8 +22,11 @@ import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.call.controller.toDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.repository.CallPersistenceProvider
 import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -60,14 +63,14 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.Optional
+import java.util.*
 import java.util.stream.Collectors
-import org.springframework.http.HttpStatus
 
 class ProjectServiceTest : UnitTest() {
 
@@ -173,6 +176,7 @@ class ProjectServiceTest : UnitTest() {
         status = CallStatus.PUBLISHED,
         lengthOfPeriod = 1
     )
+    private val applicationFormConfiguration = ApplicationFormConfiguration(1, "test configuration", mutableSetOf())
 
     @RelaxedMockK
     lateinit var projectRepository: ProjectRepository
@@ -198,6 +202,9 @@ class ProjectServiceTest : UnitTest() {
     @MockK
     lateinit var securityService: SecurityService
 
+    @MockK
+    lateinit var  callPersistenceProvider: CallPersistenceProvider
+
     @InjectMockKs
     lateinit var projectService: ProjectServiceImpl
 
@@ -205,6 +212,7 @@ class ProjectServiceTest : UnitTest() {
     fun setup() {
         every { securityService.currentUser } returns LocalCurrentUser(user, "hash_pass", emptyList())
         every { projectStatusHistoryRepository.save(any<ProjectStatusHistoryEntity>()) } returnsArgument 0
+        every { callPersistenceProvider.getApplicationFormConfiguration(1L) } returns ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
     }
 
     @Test
@@ -246,7 +254,7 @@ class ProjectServiceTest : UnitTest() {
     @Test
     fun projectRetrieval_programme_user() {
         every { securityService.currentUser } returns
-                LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$PROGRAMME_USER")))
+            LocalCurrentUser(user, "hash_pass", listOf(SimpleGrantedAuthority("ROLE_$PROGRAMME_USER")))
 
         val projectToReturn = ProjectEntity(
             id = 25,
@@ -316,6 +324,7 @@ class ProjectServiceTest : UnitTest() {
                 flatRates = FlatRateSetupDTO(),
                 lumpSums = emptyList(),
                 unitCosts = emptyList(),
+                applicationFormConfiguration = applicationFormConfiguration.toDTO()
             ), result.callSettings
         )
         assertEquals(result.acronym, "test")
@@ -373,6 +382,7 @@ class ProjectServiceTest : UnitTest() {
                 flatRates = FlatRateSetupDTO(),
                 lumpSums = emptyList(),
                 unitCosts = emptyList(),
+                applicationFormConfiguration = applicationFormConfiguration.toDTO()
             ), result.callSettings
         )
         assertEquals(result.acronym, "test")
@@ -401,11 +411,20 @@ class ProjectServiceTest : UnitTest() {
         every { userRepository.findByIdOrNull(eq(user.id)) } returns account
         every { callRepository.findById(eq(dummyCall2StepExpired.id)) } returns Optional.of(dummyCall2StepExpired)
 
-        val ex = assertThrows<I18nValidationException> { projectService.createProject(InputProject("test", dummyCall2StepExpired.id)) }
-        assertThat(ex).isEqualTo(I18nValidationException(
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            i18nKey = "call.not.open"
-        ))
+        val ex = assertThrows<I18nValidationException> {
+            projectService.createProject(
+                InputProject(
+                    "test",
+                    dummyCall2StepExpired.id
+                )
+            )
+        }
+        assertThat(ex).isEqualTo(
+            I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "call.not.open"
+            )
+        )
     }
 
     @Test
@@ -413,11 +432,20 @@ class ProjectServiceTest : UnitTest() {
         every { userRepository.findByIdOrNull(eq(user.id)) } returns account
         every { callRepository.findById(eq(dummyCallExpired.id)) } returns Optional.of(dummyCallExpired)
 
-        val ex = assertThrows<I18nValidationException> { projectService.createProject(InputProject("test", dummyCallExpired.id)) }
-        assertThat(ex).isEqualTo(I18nValidationException(
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            i18nKey = "call.not.open"
-        ))
+        val ex = assertThrows<I18nValidationException> {
+            projectService.createProject(
+                InputProject(
+                    "test",
+                    dummyCallExpired.id
+                )
+            )
+        }
+        assertThat(ex).isEqualTo(
+            I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = "call.not.open"
+            )
+        )
     }
 
     private val projectData = InputProjectData(
@@ -451,12 +479,14 @@ class ProjectServiceTest : UnitTest() {
 
         projectService.update(1, projectData.copy(specificObjective = HealthyAgeing))
 
-        assertThat(slot.captured.projectData).isEqualTo(ProjectData(
-            duration = projectData.duration,
-            translatedValues = setOf(
-                ProjectTransl(TranslationId(1, SystemLanguage.EN), title = "title", intro = "intro"),
-            ),
-        ))
+        assertThat(slot.captured.projectData).isEqualTo(
+            ProjectData(
+                duration = projectData.duration,
+                translatedValues = setOf(
+                    ProjectTransl(TranslationId(1, SystemLanguage.EN), title = "title", intro = "intro"),
+                ),
+            )
+        )
         assertThat(slot.captured.acronym).isEqualTo(projectData.acronym)
     }
 

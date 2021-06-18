@@ -2,10 +2,12 @@ package io.cloudflight.jems.server.call.repository
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfigurationSummary
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallSummary
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
@@ -27,6 +29,8 @@ class CallPersistenceProvider(
     private val programmeSpecificObjectiveRepo: ProgrammeSpecificObjectiveRepository,
     private val programmeStrategyRepo: StrategyRepository,
     private val programmeFundRepo: ProgrammeFundRepository,
+    private val applicationFormConfigurationRepository: ApplicationFormConfigurationRepository,
+    private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
 ) : CallPersistence {
 
     @Transactional(readOnly = true)
@@ -118,6 +122,23 @@ class CallPersistenceProvider(
     override fun hasAnyCallPublished() =
         callRepo.existsByStatus(CallStatus.PUBLISHED)
 
+    @Transactional
+    override fun getApplicationFormConfiguration(id: Long): ApplicationFormConfiguration =
+        applicationFormConfigurationRepository.findById(id)
+            .orElseThrow { ApplicationFormConfigurationNotFound() }.toModel(
+                applicationFormFieldConfigurationRepository.findAllByApplicationFormConfigurationId(id)
+            )
+
+    @Transactional(readOnly = true)
+    override fun listApplicationFormConfigurations(): List<ApplicationFormConfigurationSummary> =
+        applicationFormConfigurationRepository.findAll().toModel()
+
+    @Transactional
+    override fun updateApplicationFormConfigurations(applicationFormConfiguration: ApplicationFormConfiguration) {
+        applicationFormConfigurationRepository.save(applicationFormConfiguration.toEntity()).also {
+            applicationFormFieldConfigurationRepository.saveAll(applicationFormConfiguration.fieldConfigurations.toEntities(it))
+        }
+    }
 
     private fun adjustTimeToLastNanoSec(call: Call) {
 

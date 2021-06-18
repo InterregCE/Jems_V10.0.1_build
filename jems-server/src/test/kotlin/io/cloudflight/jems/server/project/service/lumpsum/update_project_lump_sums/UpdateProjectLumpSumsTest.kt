@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.lumpsum.update_project_lump_sums
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -44,6 +45,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             flatRates = emptySet(),
             lumpSums = lumpSums,
             unitCosts = listOf(),
+            applicationFormConfiguration= ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
         )
 
         private val periods = listOf(
