@@ -26,10 +26,10 @@
         <app-project-application-funding-decision
                 appNoWidthLimit
                 [project]="details.project"
-                [status]="step === '2' ? details.preFundingDecision : details.finalFundingDecision"
+                [status]="step === '2' ? (details.preFundingDecision || details.finalFundingDecision) : details.finalFundingDecision"
                 [userCanChangeFunding]="details.userCanChangeFunding"
                 [stepStatus]="stepStatus"
-                [fundingDecision]="step === '2' ? details.preFundingDecision : details.finalFundingDecision"
+                [fundingDecision]="step === '2' ? (details.preFundingDecision || details.finalFundingDecision) : details.finalFundingDecision"
                 [eligibilityDecisionDate]="details.eligibilityDecisionDate"
                 [options]="details.fullOptions"
                 [submitLabel]="'project.assessment.fundingDecision.submit.label'">
