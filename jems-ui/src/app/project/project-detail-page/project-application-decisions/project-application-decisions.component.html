@@ -49,7 +49,7 @@
                     {{ data.fundingDecisionResult.decisionDate | localeDate }}
                 </span>
             </div>
-            <ng-container *ngIf="(data.callHasTwoSteps && data.isStep2Now && step === 1) || data.isDecisionFinal || (data.isReturnedNow && !!data.fundingDecisionResult) || (!data.isDecisionFinal && !data.userCanChangeFunding)">
+            <ng-container *ngIf="(data.callHasTwoSteps && data.isStep2Now && step === 1) || data.isDecisionFinal || (data.isReturnedNow && !!data.fundingDecisionResult) || (!data.isDecisionFinal && !data.userCanChangeFunding && !!data.preFundingDecision)">
                 <a *hasPermission="Permissions.ProjectAssessmentView"
                    mat-stroked-button appFormFieldWidth="x-large"
                    [routerLink]="['./assessment/fundingDecision', step]" queryParamsHandling="merge">

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {FormBuilder, Validators} from '@angular/forms';
 import {tap} from 'rxjs/operators';
 import {ProjectFundingDecisionStore} from '../project-funding-decision-store.service';
@@ -8,6 +8,7 @@ import {Observable} from 'rxjs';
 import {take} from 'rxjs/internal/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {ProjectStepStatus} from '../../project-step-status';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-project-application-funding-decision',
@@ -16,6 +17,7 @@ import {ProjectStepStatus} from '../../project-step-status';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFundingDecisionComponent implements OnInit {
+  PermissionsEnum = PermissionsEnum;
 
   @Input()
   project: ProjectDetailDTO;

@@ -34,20 +34,22 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <div appMultiColumnRow *ngIf="!status">
-        <button mat-stroked-button
-                (click)="redirectToProject()">
-            {{'project.assessment.fundingDecision.dialog.button.cancel' | translate}}
-        </button>
+    <ng-container *ngIf="!status">
+        <div appMultiColumnRow *hasPermission="[PermissionsEnum.ProjectStatusDecideApproved, PermissionsEnum.ProjectStatusDecideApprovedWithConditions, PermissionsEnum.ProjectStatusDecideNotApproved]">
+            <button mat-stroked-button
+                    (click)="redirectToProject()">
+                {{'project.assessment.fundingDecision.dialog.button.cancel' | translate}}
+            </button>
 
-        <app-pending-button
-                [confirm]="getFundingConfirmation()"
-                [pending]="actionPending"
-                [disabled]="decisionForm.invalid || decisionForm.disabled"
-                (clicked)="onSubmit()">
-            {{submitLabel | translate}}
-        </app-pending-button>
-    </div>
+            <app-pending-button
+                    [confirm]="getFundingConfirmation()"
+                    [pending]="actionPending"
+                    [disabled]="decisionForm.invalid || decisionForm.disabled"
+                    (clicked)="onSubmit()">
+                {{submitLabel | translate}}
+            </app-pending-button>
+        </div>
+    </ng-container>
 </form>
 
 

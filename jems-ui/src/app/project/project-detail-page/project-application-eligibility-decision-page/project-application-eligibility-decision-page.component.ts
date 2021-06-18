@@ -1,12 +1,13 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, Validators} from '@angular/forms';
-import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {map, tap} from 'rxjs/operators';
 import {ProjectEligibilityDecisionStore} from './project-eligibility-decision-store.service';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {combineLatest} from 'rxjs';
 import {ProjectStepStatus} from '../project-step-status';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-project-application-eligibility-decision-page',
@@ -16,6 +17,8 @@ import {ProjectStepStatus} from '../project-step-status';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationEligibilityDecisionPageComponent {
+  PermissionsEnum = PermissionsEnum;
+
   projectId = this.activatedRoute.snapshot.params.projectId;
   step = this.activatedRoute.snapshot.params.step;
   stepStatus = new ProjectStepStatus(this.step);

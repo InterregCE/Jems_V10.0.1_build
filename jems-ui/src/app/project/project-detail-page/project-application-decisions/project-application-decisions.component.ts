@@ -33,6 +33,7 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
     isDecisionFinal: boolean,
     isReturnedNow: boolean,
     userCanChangeFunding: boolean,
+    preFundingDecision: ProjectStatusDTO,
     isFundingDecisionPreconditionOk: boolean,
   }>;
 
@@ -47,7 +48,7 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
       this.permissionService.hasPermission([Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideApprovedWithConditions, Permissions.ProjectStatusDecideNotApproved]),
     ])
       .pipe(
-        map(([isProjectLatestVersion, callHasTwoSteps, project, userCanChangeFunding]) => (
+        map(([isProjectLatestVersion, callHasTwoSteps, project, userCanEditFunding]) => (
           {
             projectStatus: project.projectStatus,
             isProjectLatestVersion,
@@ -66,7 +67,8 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
             fundingDecisionResult: this.getDecision(project)?.finalFundingDecision || this.getDecision(project)?.preFundingDecision,
             isDecisionFinal: !!this.getDecision(project)?.finalFundingDecision?.status,
             isReturnedNow: project.projectStatus.status === StatusEnum.RETURNEDTOAPPLICANT,
-            userCanChangeFunding,
+            userCanChangeFunding: userCanEditFunding,
+            preFundingDecision: this.getDecision(project)?.preFundingDecision,
             isFundingDecisionPreconditionOk: Number(this.step) === 2
               ? project.secondStepDecision?.eligibilityDecision?.status === StatusEnum.ELIGIBLE && !!project.secondStepDecision?.qualityAssessment
               : project.firstStepDecision?.eligibilityDecision?.status === StatusEnum.STEP1ELIGIBLE && !!project.firstStepDecision?.qualityAssessment,
