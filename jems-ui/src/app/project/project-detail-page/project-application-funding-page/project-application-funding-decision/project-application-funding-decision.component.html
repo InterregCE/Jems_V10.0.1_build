@@ -1,7 +1,7 @@
 <form appFormLayout [formGroup]="decisionForm">
     <mat-radio-group required formControlName="status"
                      name="status-{{status?.status}}"
-                     [disabled]="!!status">
+                     [disabled]="!!status || !userCanChangeFunding">
         <mat-radio-button *ngFor="let option of options" [value]="option">
             {{'project.assessment.fundingDecision.' + option | translate}}
         </mat-radio-button>
@@ -11,20 +11,20 @@
                              [messages]="noteErrors"
                              [characterLimit]="10000"
                              [label]="'project.assessment.fundingDecision.dialog.field.note'"
-                             [disabled]="!!status"
+                             [disabled]="!!status || !userCanChangeFunding"
                              [customStyle]="'outline'">
     </app-expandable-textarea>
     <mat-form-field appFormFieldWidth="xx-large">
         <mat-label>{{'project.assessment.fundingDecision.dialog.field.date' | translate | dateFormatInfo}}</mat-label>
         <input required formControlName="decisionDate" matInput
                name="decisionDate-{{status?.status}}"
-               [readonly]="!!fundingDecision"
+               [readonly]="!!fundingDecision || !userCanChangeFunding"
                [matDatepicker]="picker"
                [max]="today"
                [min]="eligibilityDecisionDate">
         <mat-datepicker-toggle
                 matSuffix
-                [disabled]="!!status"
+                [disabled]="!!status || !userCanChangeFunding"
                 [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
         <mat-error>

@@ -12,7 +12,7 @@
                 required
                 name="assessment"
                 formControlName="assessment"
-                [disabled]="!!data.eligibilityDecision">
+                [disabled]="!!data.eligibilityDecision || !data.canSetEligibleDecision">
             <mat-radio-button *ngFor="let option of options" [value]="option">
                 <div>{{'project.assessment.eligibilityDecision.dialog.select.' + option | translate}}</div>
             </mat-radio-button>
@@ -23,7 +23,7 @@
                 [messages]="notesErrors"
                 [characterLimit]="1000"
                 [label]="'project.assessment.eligibilityDecision.dialog.field.note'"
-                [disabled]="!!data.eligibilityDecision"
+                [disabled]="!!data.eligibilityDecision || !data.canSetEligibleDecision"
                 [customStyle]="'outline'">
         </app-expandable-textarea>
         <mat-form-field appFormFieldWidth="x-large">
@@ -32,9 +32,9 @@
             </mat-label>
             <input name="decisionDate" formControlName="decisionDate" matInput required
                    [matDatepicker]="picker"
-                   [readonly]="!!data.eligibilityDecision"
+                   [readonly]="!!data.eligibilityDecision || !data.canSetEligibleDecision"
                    [max]="today">
-            <mat-datepicker-toggle [disabled]="!!data.eligibilityDecision" matSuffix
+            <mat-datepicker-toggle [disabled]="!!data.eligibilityDecision || !data.canSetEligibleDecision" matSuffix
                                    [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
             <mat-error>

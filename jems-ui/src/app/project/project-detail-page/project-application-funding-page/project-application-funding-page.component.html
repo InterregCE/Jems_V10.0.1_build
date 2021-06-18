@@ -16,6 +16,7 @@
                 *ngIf="details.showSecondDecision"
                 [project]="details.project"
                 [status]="details.finalFundingDecision"
+                [userCanChangeFunding]="details.userCanChangeFunding"
                 [stepStatus]="stepStatus"
                 [fundingDecision]="details.finalFundingDecision"
                 [eligibilityDecisionDate]="details.eligibilityDecisionDate"
@@ -26,6 +27,7 @@
                 appNoWidthLimit
                 [project]="details.project"
                 [status]="step === '2' ? details.preFundingDecision : details.finalFundingDecision"
+                [userCanChangeFunding]="details.userCanChangeFunding"
                 [stepStatus]="stepStatus"
                 [fundingDecision]="step === '2' ? details.preFundingDecision : details.finalFundingDecision"
                 [eligibilityDecisionDate]="details.eligibilityDecisionDate"

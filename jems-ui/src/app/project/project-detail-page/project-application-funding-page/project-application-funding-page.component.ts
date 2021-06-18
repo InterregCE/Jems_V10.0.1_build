@@ -41,6 +41,7 @@ export class ProjectApplicationFundingPageComponent {
           && (!!finalFundingDecision || userCanChangeFunding),
         fullOptions: [this.stepStatus.approved, this.stepStatus.approvedWithConditions, this.stepStatus.notApproved],
         optionsForSecondDecision: [this.stepStatus.approved, this.stepStatus.notApproved],
+        userCanChangeFunding,
       })),
     )
   ;

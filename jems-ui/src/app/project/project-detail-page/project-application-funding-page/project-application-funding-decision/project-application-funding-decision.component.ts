@@ -24,6 +24,8 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   @Input()
   status: ProjectStatusDTO;
   @Input()
+  userCanChangeFunding = false;
+  @Input()
   fundingDecision: ProjectStatusDTO;
   @Input()
   stepStatus: ProjectStepStatus;

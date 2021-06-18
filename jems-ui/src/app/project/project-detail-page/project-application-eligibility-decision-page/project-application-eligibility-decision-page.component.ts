@@ -7,6 +7,7 @@ import {ProjectEligibilityDecisionStore} from './project-eligibility-decision-st
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {combineLatest} from 'rxjs';
 import {ProjectStepStatus} from '../project-step-status';
+import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
@@ -25,11 +26,12 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
 
   data$ = combineLatest([
     this.eligibilityPageStore.project$,
-    this.eligibilityPageStore.eligibilityDecision(this.step)]
-  )
+    this.eligibilityPageStore.eligibilityDecision(this.step),
+    this.permissionService.hasPermission([PermissionsEnum.ProjectStatusDecideEligible, PermissionsEnum.ProjectStatusDecideIneligible]),
+  ])
     .pipe(
-      tap(([project, eligibilityDecision]) => this.resetForm(project, eligibilityDecision)),
-      map(([project, eligibilityDecision]) => ({project, eligibilityDecision}))
+      tap(([project, eligibilityDecision, canSetEligibleDecision]) => this.resetForm(project, eligibilityDecision)),
+      map(([project, eligibilityDecision, canSetEligibleDecision]) => ({project, eligibilityDecision, canSetEligibleDecision}))
     );
 
   options: string[] = [this.stepStatus.eligible, this.stepStatus.ineligible];
@@ -55,6 +57,7 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
 
   constructor(public eligibilityPageStore: ProjectEligibilityDecisionStore,
               private router: Router,
+              private permissionService: PermissionService,
               private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder) {
   }
