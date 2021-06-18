@@ -5,7 +5,7 @@ spring:
   flyway:
     out-of-order: true
   messages:
-    basename: classpath:/messages, classpath:/plugin_messages
+    basename: file:${RESOURCES_FOLDER:resources}/Application, file:${RESOURCES_FOLDER:resources}/System, classpath:/Application, classpath:/System, classpath:/messages, classpath:/plugin_messages
   datasource:
     url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/jemsdb}"
     username: root
