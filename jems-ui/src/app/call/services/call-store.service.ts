@@ -20,7 +20,7 @@ export class CallStore {
   call$: Observable<CallDetailDTO>;
   unitCosts$: Observable<ProgrammeUnitCostListDTO[]>;
   lumpSums$: Observable<ProgrammeLumpSumListDTO[]>;
-  isApplicant$: Observable<boolean>;
+  userCannotAccessCalls$: Observable<boolean>;
   callIsEditable$: Observable<boolean>;
   callIsPublished$: Observable<boolean>;
 
@@ -33,7 +33,7 @@ export class CallStore {
     this.call$ = this.call();
     this.unitCosts$ = this.unitCosts();
     this.lumpSums$ = this.lumpSums();
-    this.isApplicant$ = this.isApplicant();
+    this.userCannotAccessCalls$ = this.userCannotAccessCalls();
     this.callIsEditable$ = this.callIsEditable();
     this.callIsPublished$ = this.callIsPublished();
   }
@@ -90,7 +90,7 @@ export class CallStore {
   }
 
   private callIsEditable(): Observable<boolean> {
-    return combineLatest([this.isApplicant$, this.permissionService.permissionsChanged()])
+    return combineLatest([this.userCannotAccessCalls$, this.permissionService.permissionsChanged()])
       .pipe(
         map(([isApplicant, permissions]) =>
           permissions.includes(UserRoleDTO.PermissionsEnum.CallUpdate)
@@ -99,7 +99,7 @@ export class CallStore {
       );
   }
 
-  private isApplicant(): Observable<boolean> {
+  private userCannotAccessCalls(): Observable<boolean> {
     return this.permissionService.permissionsChanged()
       .pipe(
         map(permissions => permissions.every(perm =>

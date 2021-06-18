@@ -28,7 +28,7 @@ export class CallStrategiesComponent {
     this.data$ = combineLatest([
       this.callDetailPageStore.callIsEditable$,
       this.callDetailPageStore.callIsPublished$,
-      this.callDetailPageStore.isApplicant$
+      this.callDetailPageStore.userCannotAccessCalls$
     ])
       .pipe(
         map(([callIsEditable, callIsPublished, isApplicant]) => ({callIsEditable, callIsPublished, isApplicant}))

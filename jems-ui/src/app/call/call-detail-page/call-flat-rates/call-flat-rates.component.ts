@@ -38,7 +38,7 @@ export class CallFlatRatesComponent {
       this.callStore.call$,
       this.callStore.callIsEditable$,
       this.callStore.callIsPublished$,
-      this.callStore.isApplicant$
+      this.callStore.userCannotAccessCalls$
     ])
       .pipe(
         map(([call, callIsEditable, callIsPublished, isApplicant]) => ({call, callIsEditable, callIsPublished, isApplicant})),

@@ -80,7 +80,7 @@ export class CallDetailPageComponent {
 
     this.data$ = combineLatest([
       this.pageStore.call$,
-      this.pageStore.isApplicant$,
+      this.pageStore.userCannotAccessCalls$,
       this.pageStore.callIsEditable$,
       this.pageStore.allPriorities$,
       this.pageStore.allActiveStrategies$,

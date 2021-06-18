@@ -1,16 +1,16 @@
 import {Injectable} from '@angular/core';
 import {Log} from 'src/app/common/utils/log';
-import {combineLatest, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {
   CallDetailDTO, CallDTO, CallService, CallUpdateRequestDTO,
   OutputProgrammeStrategy,
   ProgrammeFundDTO,
   ProgrammeFundService,
   ProgrammePriorityService,
-  ProgrammeStrategyService, UserRoleDTO
+  ProgrammeStrategyService,
 } from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
-import {map, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
+import {map, tap, withLatestFrom} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {ActivatedRoute} from '@angular/router';
 import {CallStore} from '../services/call-store.service';
@@ -19,7 +19,7 @@ import {ProgrammeEditableStateStore} from '../../programme/programme-page/servic
 @Injectable()
 export class CallDetailPageStore {
   call$: Observable<CallDetailDTO>;
-  isApplicant$: Observable<boolean>;
+  userCannotAccessCalls$: Observable<boolean>;
   allPriorities$: Observable<CallPriorityCheckbox[]>;
   allActiveStrategies$: Observable<OutputProgrammeStrategy[]>;
   allFunds$: Observable<ProgrammeFundDTO[]>;
@@ -36,7 +36,7 @@ export class CallDetailPageStore {
               private programmeFundService: ProgrammeFundService,
               private callService: CallService) {
     this.call$ = this.callStore.call$;
-    this.isApplicant$ = this.callStore.isApplicant$;
+    this.userCannotAccessCalls$ = this.callStore.userCannotAccessCalls$;
     this.allPriorities$ = this.allPriorities();
     this.allActiveStrategies$ = this.allActiveStrategies();
     this.allFunds$ = this.allFunds();

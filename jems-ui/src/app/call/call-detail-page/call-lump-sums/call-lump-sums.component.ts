@@ -42,7 +42,7 @@ export class CallLumpSumsComponent {
       this.callStore.lumpSums$,
       this.callStore.callIsEditable$,
       this.callStore.callIsPublished$,
-      this.callStore.isApplicant$
+      this.callStore.userCannotAccessCalls$
     ])
       .pipe(
         map(([call, programmeLumpSums, callIsEditable, callIsPublished, isApplicant]) => ({

@@ -41,7 +41,7 @@ export class CallUnitCostsComponent {
       this.callStore.unitCosts$,
       this.callStore.callIsEditable$,
       this.callStore.callIsPublished$,
-      this.callStore.isApplicant$
+      this.callStore.userCannotAccessCalls$
     ])
       .pipe(
         map(([call, programmeUnitCosts, callIsEditable, callIsPublished, isApplicant]) => ({
