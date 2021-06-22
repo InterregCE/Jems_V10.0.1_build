@@ -1,5 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ApplicantDashboardPageStore} from './applicant-dashboard-page-store.service';
+import {UserRoleDTO} from '@cat/api';
+import Permissions = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-applicant-dashboard-page',
@@ -9,6 +11,7 @@ import {ApplicantDashboardPageStore} from './applicant-dashboard-page-store.serv
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ApplicantDashboardPageComponent {
+  Permissions = Permissions;
 
   constructor(public pageStore: ApplicantDashboardPageStore) {
   }

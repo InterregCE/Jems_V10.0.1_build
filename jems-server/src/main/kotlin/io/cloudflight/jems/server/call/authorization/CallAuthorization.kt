@@ -1,8 +1,8 @@
+
 package io.cloudflight.jems.server.call.authorization
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.authorization.Authorization
-import io.cloudflight.jems.server.call.repository.CallNotFound
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
@@ -15,6 +15,10 @@ annotation class CanRetrieveCall
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('CallRetrieve')")
 annotation class CanRetrieveCalls
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('CallPublishedRetrieve')")
+annotation class CanRetrievePublishedCalls
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('CallUpdate')")

@@ -32,6 +32,25 @@ export class Permission {
       mode: PermissionMode.HIDDEN_VIEW,
       viewPermissions: ['Dashboard-to-be-done' as PermissionsEnum],
       temporarilyDisabled: true,
+      children: [
+        {
+          name: 'call.applications.title',
+          mode: PermissionMode.HIDDEN_VIEW,
+          viewPermissions: [
+            PermissionsEnum.ProjectsWithOwnershipRetrieve,
+          ],
+        },
+        {
+          name: 'call.list.open.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [
+            PermissionsEnum.CallPublishedRetrieve,
+          ],
+          editPermissions: [
+            PermissionsEnum.ProjectCreate,
+          ],
+        },
+      ],
     },
     {
       name: 'topbar.main.project',

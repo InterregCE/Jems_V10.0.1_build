@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.controller
 
 import io.cloudflight.jems.api.project.ProjectApi
-import io.cloudflight.jems.api.project.dto.InputProject
+import io.cloudflight.jems.api.project.dto.ProjectCreateDTO
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.controller.workpackage.toInvestmentSum
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing.GetProjectBudgetCoFinancingInteractor
+import io.cloudflight.jems.server.project.service.create_project.CreateProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toProjectPartnerBudgetDTO
@@ -29,6 +30,7 @@ class ProjectController(
     private val getProjectBudgetInteractor: GetProjectBudgetInteractor,
     private val getProjectBudgetCoFinancingInteractor: GetProjectBudgetCoFinancingInteractor,
     private val getProjectInteractor: GetProjectInteractor,
+    private val createProjectInteractor: CreateProjectInteractor,
     private val getProjectVersionsInteractor: GetProjectVersionsInteractor,
     private val getProjectInvestmentSummaries: GetProjectInvestmentSummariesInteractor
 ) : ProjectApi {
@@ -45,10 +47,8 @@ class ProjectController(
     override fun getProjectCallSettingsById(projectId: Long): ProjectCallSettingsDTO =
         getProjectInteractor.getProjectCallSettings(projectId).toDto()
 
-    @PreAuthorize("@projectAuthorization.canCreateProjectForCall(#project.projectCallId)")
-    override fun createProject(project: InputProject): ProjectDetailDTO {
-        return projectService.createProject(project)
-    }
+    override fun createProject(project: ProjectCreateDTO): ProjectDetailDTO =
+        createProjectInteractor.createProject(project.acronym, project.projectCallId).toDto()
 
     @CanUpdateProject
     override fun updateProjectData(projectId: Long, project: InputProjectData): ProjectDetailDTO {

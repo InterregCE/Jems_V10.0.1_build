@@ -59,9 +59,6 @@ internal class ProjectAuthorizationTest : UnitTest() {
     @MockK
     lateinit var projectPersistence: ProjectPersistence
 
-    @MockK
-    lateinit var callAuthorization: CallAuthorization
-
     @InjectMockKs
     lateinit var projectAuthorization: ProjectAuthorization
 
@@ -135,38 +132,6 @@ internal class ProjectAuthorizationTest : UnitTest() {
         every { securityService.currentUser } returns LocalCurrentUser(notOwnerApplicant, "hash_pass", emptyList())
         every { projectPersistence.getApplicantAndStatusById(eq(6)) } returns testProject(ApplicationStatus.DRAFT)
         assertFalse(projectAuthorization.canReadProject(6), "Fallback - user without role should get 'false'")
-    }
-
-    @Test
-    fun `admin canCreateProjectForCall`() {
-        every { securityService.currentUser } returns adminUser
-        every { callAuthorization.canRetrieveCall(eq(1)) } returns true
-        assertTrue(
-            projectAuthorization.canCreateProjectForCall(1),
-            "admin is able to create call when he can read call"
-        )
-    }
-
-    @Test
-    fun `applicant canCreateProjectForCall`() {
-        every { securityService.currentUser } returns applicantUser
-        every { callAuthorization.canRetrieveCall(eq(2)) } returns true
-        assertTrue(
-            projectAuthorization.canCreateProjectForCall(2),
-            "applicant is able to create call when he can read call"
-        )
-    }
-
-    @Test
-    fun `anyone canCreateProjectForCall when cannot read`() {
-        every { callAuthorization.canRetrieveCall(eq(4)) } returns false
-        listOf(applicantUser, adminUser, programmeUser).forEach {
-            every { securityService.currentUser } returns it
-            assertFalse(
-                projectAuthorization.canCreateProjectForCall(4),
-                "user is NOT able to create call, when he cannot read call details"
-            )
-        }
     }
 
     @ParameterizedTest(name = "admin canUpdateProject should throw 404 not found, because he is not owner (status {0})")

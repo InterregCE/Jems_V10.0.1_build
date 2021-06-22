@@ -67,7 +67,7 @@ internal class CreateOutputIndicatorTest : IndicatorsBaseTest() {
             IdentifierIsUsedException::class.java
         )
 
-        assertThat(exception.formErrors["identifier"]).isEqualTo(I18nMessage("$CREATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.identifier.is.used"))
+        assertThat(exception.formErrors["identifier"]).isEqualTo(I18nMessage("use.case.create.output.indicator.identifier.is.used"))
     }
 
     @Test
@@ -92,7 +92,7 @@ internal class CreateOutputIndicatorTest : IndicatorsBaseTest() {
             InvalidResultIndicatorException::class.java
         )
 
-        assertThat(exception.formErrors["resultIndicatorId"]).isEqualTo(I18nMessage("$CREATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.invalid.result.indicator"))
+        assertThat(exception.formErrors["resultIndicatorId"]).isEqualTo(I18nMessage("use.case.create.output.indicator.invalid.result.indicator"))
     }
 
     @Test

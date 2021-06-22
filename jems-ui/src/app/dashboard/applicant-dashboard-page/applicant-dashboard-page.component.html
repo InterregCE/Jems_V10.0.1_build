@@ -3,10 +3,14 @@
         <h1>{{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h1>
     </ng-container>
 
-    <h2>{{'call.applications.title' | translate}}</h2>
-    <app-project-application-list appNoWidthLimit filterByOwner="true"></app-project-application-list>
+    <ng-container *hasPermission="Permissions.ProjectsWithOwnershipRetrieve">
+        <h2>{{'call.applications.title' | translate}}</h2>
+        <app-project-application-list appNoWidthLimit filterByOwner="true"></app-project-application-list>
+    </ng-container>
 
-    <h2>{{'call.list.open.title' | translate}}</h2>
-    <app-call-list appNoWidthLimit [isApplicant]="true"></app-call-list>
+    <ng-container *hasPermission="Permissions.CallPublishedRetrieve">
+        <h2>{{'call.list.open.title' | translate}}</h2>
+        <app-call-list appNoWidthLimit [isApplicant]="true"></app-call-list>
+    </ng-container>
 
 </app-main-page-template>

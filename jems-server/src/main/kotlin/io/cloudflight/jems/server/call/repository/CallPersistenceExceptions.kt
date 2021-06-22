@@ -7,7 +7,7 @@ private const val CALL_PERSISTENCE_ERROR_CODE = "R-CP"
 
 class CallNotFound : ApplicationNotFoundException(
     code = "$CALL_PERSISTENCE_ERROR_CODE-001",
-    i18nMessage = I18nMessage("programme.specific.objective.not.found"), cause = null
+    i18nMessage = I18nMessage("call.not.found"),
 )
 
 class ApplicationFormConfigurationNotFound : ApplicationNotFoundException(

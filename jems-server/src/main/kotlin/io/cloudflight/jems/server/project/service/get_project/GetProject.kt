@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjects
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectsWithOwnership
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -41,6 +42,7 @@ class GetProject(
     override fun getAllProjects(pageable: Pageable): Page<ProjectSummary> =
         persistence.getProjects(pageable)
 
+    @CanRetrieveProjectsWithOwnership
     override fun getMyProjects(pageable: Pageable): Page<ProjectSummary> =
         persistence.getProjects(
             pageable = pageable,

@@ -1,21 +1,25 @@
 package io.cloudflight.jems.server.project.repository
 
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentId
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentEligibilityRepository
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentQualityRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -31,6 +35,9 @@ class ProjectPersistenceProvider(
     private val projectPartnerRepository: ProjectPartnerRepository,
     private val projectAssessmentQualityRepository: ProjectAssessmentQualityRepository,
     private val projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository,
+    private val projectStatusHistoryRepo: ProjectStatusHistoryRepository,
+    private val userRepository: UserRepository,
+    private val callRepository: CallRepository,
     private val callPersistence: CallPersistence
 ) : ProjectPersistence {
 
@@ -87,12 +94,39 @@ class ProjectPersistenceProvider(
         getProjectOrThrow(projectId).call.unitCosts.toModel()
 
     @Transactional(readOnly = true)
+    override fun getProjectPeriods(projectId: Long) =
+        getProjectOrThrow(projectId).periods.toProjectPeriods()
+
+    @Transactional(readOnly = true)
     override fun getProjectIdForPartner(partnerId: Long) =
         projectPartnerRepository.getProjectIdForPartner(partnerId) ?: throw ResourceNotFoundException("ProjectPartner")
 
-    @Transactional(readOnly = true)
-    override fun getProjectPeriods(projectId: Long) =
-        getProjectOrThrow(projectId).periods.toProjectPeriods()
+    @Transactional
+    override fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): Project {
+        val user = userRepository.findById(userId).orElseThrow { ResourceNotFoundException("user") }
+        val projectStatus = projectStatusHistoryRepo.save(
+            ProjectStatusHistoryEntity(
+                status = status,
+                user = user,
+            )
+        )
+
+        val createdProject = projectRepository.save(
+            ProjectEntity(
+                acronym = acronym,
+                applicant = user,
+                call = callRepository.findById(callId).orElseThrow { ResourceNotFoundException("call") },
+                currentStatus = projectStatus,
+            )
+        )
+        projectStatus.project = createdProject
+
+        return createdProject.toModel(
+            assessmentStep1 = null,
+            assessmentStep2 = null,
+            applicationFormConfiguration = getApplicationFormConfiguration()
+        )
+    }
 
     private fun getProjectOrThrow(projectId: Long) =
         projectRepository.findById(projectId).orElseThrow { ResourceNotFoundException("project") }

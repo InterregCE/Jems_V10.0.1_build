@@ -45,11 +45,11 @@ export const routes: Routes = [
       {
         path: 'programme',
         loadChildren: () => import('./programme/programme.module').then(m => m.ProgrammeModule),
+        canActivate: [PermissionGuard],
         data: {
           skipBreadcrumb: true,
           permissionsOnly: Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS,
         },
-        canActivate: [PermissionGuard]
       },
       {
         path: 'profile',

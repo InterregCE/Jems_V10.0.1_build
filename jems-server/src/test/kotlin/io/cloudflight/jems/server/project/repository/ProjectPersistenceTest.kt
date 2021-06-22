@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.repository.CallPersistenceProvider
+import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
@@ -46,6 +47,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
@@ -58,6 +60,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -179,6 +183,12 @@ internal class ProjectPersistenceTest : UnitTest() {
     @MockK
     lateinit var projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository
     @MockK
+    lateinit var projectStatusHistoryRepo: ProjectStatusHistoryRepository
+    @MockK
+    lateinit var userRepository: UserRepository
+    @MockK
+    lateinit var callRepository: CallRepository
+    @MockK
     lateinit var callPersistence: CallPersistenceProvider
 
     private lateinit var persistence: ProjectPersistenceProvider
@@ -187,7 +197,7 @@ internal class ProjectPersistenceTest : UnitTest() {
     fun setup() {
         MockKAnnotations.init(this)
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
-        persistence = ProjectPersistenceProvider(projectVersionUtils, projectRepository, projectPartnerRepository, projectAssessmentQualityRepository, projectAssessmentEligibilityRepository, callPersistence)
+        persistence = ProjectPersistenceProvider(projectVersionUtils, projectRepository, projectPartnerRepository, projectAssessmentQualityRepository, projectAssessmentEligibilityRepository, projectStatusHistoryRepo, userRepository, callRepository, callPersistence)
         every { callPersistence.getApplicationFormConfiguration(1) } returns ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
     }
 
@@ -406,5 +416,39 @@ internal class ProjectPersistenceTest : UnitTest() {
         every { projectAssessmentEligibilityRepository.findById(any()) } returns Optional.empty()
 
         assertThrows<ApplicationVersionNotFoundException> { persistence.getProject(PROJECT_ID, notExistingVersion) }
+    }
+
+    @Test
+    fun `getProjects - not owner`() {
+        every { projectRepository.findAll(Pageable.unpaged()) } returns PageImpl(listOf(dummyProject()))
+
+        val result = persistence.getProjects(Pageable.unpaged(), null)
+
+        assertThat(result.numberOfElements).isEqualTo(1)
+        assertThat(result.elementAt(0)).isEqualTo(
+            ProjectSummary(
+                id = PROJECT_ID,
+                callName = "call name",
+                acronym = "Test Project",
+                status = ApplicationStatus.DRAFT,
+            )
+        )
+    }
+
+    @Test
+    fun `getProjects - owner`() {
+        every { projectRepository.findAllByApplicantId(7006L, Pageable.unpaged()) } returns PageImpl(listOf(dummyProject()))
+
+        val result = persistence.getProjects(Pageable.unpaged(), 7006L)
+
+        assertThat(result.numberOfElements).isEqualTo(1)
+        assertThat(result.elementAt(0)).isEqualTo(
+            ProjectSummary(
+                id = PROJECT_ID,
+                callName = "call name",
+                acronym = "Test Project",
+                status = ApplicationStatus.DRAFT,
+            )
+        )
     }
 }

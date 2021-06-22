@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.call.authorization.CallAuthorization
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import org.springframework.security.access.prepost.PreAuthorize
@@ -17,6 +16,14 @@ annotation class CanRetrieveProject
 annotation class CanRetrieveProjects
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectsWithOwnershipRetrieve')")
+annotation class CanRetrieveProjectsWithOwnership
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectCreate')")
+annotation class CanCreateProject
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('ProjectUpdate') || @projectAuthorization.canOwnerUpdateProject(#projectId)")
 annotation class CanUpdateProject
 
@@ -24,7 +31,6 @@ annotation class CanUpdateProject
 class ProjectAuthorization(
     override val securityService: SecurityService,
     val projectPersistence: ProjectPersistence,
-    val callAuthorization: CallAuthorization
 ) : Authorization(securityService) {
 
     fun isUserOwnerOfProject(projectId: Long): Boolean {
@@ -43,10 +49,6 @@ class ProjectAuthorization(
             throw ResourceNotFoundException("project")
 
         return false
-    }
-
-    fun canCreateProjectForCall(callId: Long): Boolean {
-        return callAuthorization.canRetrieveCall(callId)
     }
 
     fun canOwnerUpdateProject(projectId: Long): Boolean {

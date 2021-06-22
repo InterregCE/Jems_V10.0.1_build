@@ -4,8 +4,8 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationBadRequestException
 import io.cloudflight.jems.server.common.exception.ApplicationException
 
-const val CREATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX = "S-IND-COI"
-const val CREATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX = "use.case.create.output.indicator"
+private const val CREATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX = "S-IND-COI"
+private const val CREATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX = "use.case.create.output.indicator"
 
 class CreateOutputIndicatorException(cause: Throwable) : ApplicationException(
     code = CREATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX,

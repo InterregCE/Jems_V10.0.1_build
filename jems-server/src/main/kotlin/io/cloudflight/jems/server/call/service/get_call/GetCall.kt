@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.call.service.get_call
 
 import io.cloudflight.jems.server.call.authorization.CanRetrieveCall
 import io.cloudflight.jems.server.call.authorization.CanRetrieveCalls
+import io.cloudflight.jems.server.call.authorization.CanRetrievePublishedCalls
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -20,6 +21,7 @@ class GetCall(private val persistence: CallPersistence) : GetCallInteractor {
     override fun getCalls(pageable: Pageable): Page<CallSummary> =
         persistence.getCalls(pageable)
 
+    @CanRetrievePublishedCalls
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetCallException::class)
     override fun getPublishedCalls(pageable: Pageable): Page<CallSummary> =

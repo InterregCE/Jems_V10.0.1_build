@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.jems.api.project.dto.InputProject
+import io.cloudflight.jems.api.project.dto.ProjectCreateDTO
 import io.cloudflight.jems.server.call.entity.ApplicationFormConfigurationEntity
 import io.cloudflight.jems.server.call.repository.ApplicationFormConfigurationRepository
 import io.cloudflight.jems.server.factory.CallFactory
@@ -44,7 +44,7 @@ class ProjectControllerIntegrationTest {
     fun `project created`() {
         applicationFormConfigurationRepository.save(ApplicationFormConfigurationEntity(1L, "test configuration"))
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
-        val inputProject = InputProject(acronym = "acronym", projectCallId = call.id)
+        val inputProject = ProjectCreateDTO(acronym = "acronym", projectCallId = call.id)
         mockMvc.perform(
             post("/api/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -59,7 +59,7 @@ class ProjectControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project create fails with missing required fields`() {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
-        val inputProject = InputProject(null, call.id)
+        val inputProject = ProjectCreateDTO("", call.id)
 
         mockMvc.perform(
             post("/api/project")
@@ -77,7 +77,7 @@ class ProjectControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project create fails with invalid fields`() {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
-        val inputProject = InputProject(RandomString.make(26), call.id)
+        val inputProject = ProjectCreateDTO(RandomString.make(26), call.id)
 
         mockMvc.perform(
             post("/api/project")

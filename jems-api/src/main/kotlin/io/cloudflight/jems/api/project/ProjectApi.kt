@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project
 
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
-import io.cloudflight.jems.api.project.dto.InputProject
+import io.cloudflight.jems.api.project.dto.ProjectCreateDTO
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
@@ -59,7 +59,7 @@ interface ProjectApi {
 
     @ApiOperation("Creates new project application")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createProject(@RequestBody project: InputProject): ProjectDetailDTO
+    fun createProject(@RequestBody project: ProjectCreateDTO): ProjectDetailDTO
 
     @ApiOperation("Update project-related data")
     @PutMapping("/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])

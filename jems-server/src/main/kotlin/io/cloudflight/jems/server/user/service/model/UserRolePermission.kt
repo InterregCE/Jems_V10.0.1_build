@@ -8,10 +8,13 @@ enum class UserRolePermission(val key: String) {
 
     // Module CALL
     CallRetrieve("CallRetrieve"),
+    CallPublishedRetrieve("CallPublishedRetrieve"),
     CallUpdate("CallUpdate"),
 
     // Module APPLICATIONS
     ProjectRetrieve("ProjectRetrieve"),
+    ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
+    ProjectCreate("ProjectCreate"),
     ProjectUpdate("ProjectUpdate"),
 
     // Module APPLICATION LIFECYCLE

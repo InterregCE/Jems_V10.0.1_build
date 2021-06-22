@@ -31,6 +31,10 @@ data class CallDetail (
 ) {
     fun isPublished() = status == CallStatus.PUBLISHED
 
+    fun getCallApplyDeadline(): ZonedDateTime = endDateStep1 ?: endDate
+
+    fun is2StepCall(): Boolean = endDateStep1 != null
+
     fun getAllSpecificObjectives() = objectives
         .map { it.specificObjectives.map { it.programmeObjectivePolicy }.toSet() }
         .takeIf { it.isNotEmpty() }
