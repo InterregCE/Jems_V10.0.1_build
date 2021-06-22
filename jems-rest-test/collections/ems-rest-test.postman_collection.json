@@ -4528,7 +4528,7 @@
 									"});\r",
 									"\r",
 									"pm.test('correct error detail translation key returned', function() {\r",
-									"    pm.expect(pm.response.json().formErrors.decisionDate.i18nKey).to.eql('common.error.date.is.in.future');\r",
+									"    pm.expect(pm.response.json().formErrors.decisionDate.i18nKey).to.eql('common.error.field.date.is.in.future');\r",
 									"});\r",
 									""
 								],

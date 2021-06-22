@@ -8,7 +8,6 @@
     </mat-radio-group>
     <app-expandable-textarea [control]="decisionForm?.controls?.notes"
                              [errors]="decisionForm?.controls?.notes?.errors"
-                             [messages]="noteErrors"
                              [characterLimit]="10000"
                              [label]="'project.assessment.fundingDecision.dialog.field.note'"
                              [disabled]="!!status || !userCanChangeFunding"

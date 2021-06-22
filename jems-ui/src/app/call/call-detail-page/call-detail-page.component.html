@@ -26,7 +26,9 @@
                 <mat-error>
                     <app-form-field-errors
                             [errors]="callForm?.controls?.name?.errors"
-                            [messages]="inputErrorMessages">
+                            [messages]="inputErrorMessages"
+                            [args]="dateNameArgs"
+                    >
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -50,7 +52,9 @@
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="callForm?.controls?.startDateTime?.errors"
-                                [messages]="inputErrorMessages">
+                                [messages]="inputErrorMessages"
+                                [args]="dateNameArgs"
+                        >
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>
@@ -84,7 +88,9 @@
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="callForm?.controls?.endDateTime?.errors"
-                                [messages]="inputErrorMessages">
+                                [messages]="inputErrorMessages"
+                                [args]="dateNameArgs"
+                        >
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>
@@ -98,7 +104,9 @@
                 <mat-error>
                     <app-form-field-errors
                             [errors]="callForm?.controls?.lengthOfPeriod?.errors"
-                            [messages]="inputErrorMessages">
+                            [messages]="inputErrorMessages"
+                            [args]="dateNameArgs"
+                    >
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>

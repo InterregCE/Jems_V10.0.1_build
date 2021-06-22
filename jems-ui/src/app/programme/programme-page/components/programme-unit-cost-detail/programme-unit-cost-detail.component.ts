@@ -60,18 +60,6 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     categories: ['', Validators.required]
   });
 
-  nameErrors = {
-    maxlength: 'unit.cost.name.size.too.long',
-  };
-
-  descriptionErrors = {
-    maxlength: 'unit.cost.description.size.too.long',
-  };
-
-  typeErrors = {
-    maxlength: 'unit.cost.type.size.too.long',
-  };
-
   costErrors = {
     required: 'programme.unitCost.costPerUnit.invalid',
     min: 'programme.unitCost.costPerUnit.invalid',

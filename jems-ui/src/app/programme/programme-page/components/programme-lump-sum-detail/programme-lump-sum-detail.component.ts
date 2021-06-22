@@ -59,15 +59,6 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnI
     phase: ['', Validators.required],
     categories: ['', Validators.required]
   });
-
-  nameErrors = {
-    maxlength: 'lump.sum.name.size.too.long',
-  };
-
-  descriptionErrors = {
-    maxlength: 'lump.sum.description.size.too.long',
-  };
-
   costErrors = {
     required: 'lump.sum.out.of.range',
     min: 'lump.sum.out.of.range',

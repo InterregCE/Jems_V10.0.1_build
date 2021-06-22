@@ -11,10 +11,7 @@
         <mat-label>{{'programme.data.field.cci' | translate}}</mat-label>
         <input name="cci" formControlName="cci" matInput>
         <mat-error>
-            <app-form-field-errors
-                    [errors]="programmeForm?.controls?.cci?.errors"
-                    [messages]="cciErrors">
-            </app-form-field-errors>
+            <app-form-field-errors [errors]="programmeForm?.controls?.cci?.errors"></app-form-field-errors>
         </mat-error>
     </mat-form-field>
     <div appMultiColumnRow stretch>
@@ -22,20 +19,14 @@
             <mat-label>{{'programme.data.field.title' | translate}}</mat-label>
             <input [title]="programme.title" name="title" formControlName="title" matInput>
             <mat-error>
-                <app-form-field-errors
-                        [errors]="programmeForm?.controls?.title?.errors"
-                        [messages]="titleErrors">
-                </app-form-field-errors>
+                <app-form-field-errors [errors]="programmeForm?.controls?.title?.errors"></app-form-field-errors>
             </mat-error>
         </mat-form-field>
         <mat-form-field>
             <mat-label>{{'programme.data.field.version' | translate}}</mat-label>
             <input [title]="programme.version" name="version" formControlName="version" matInput>
             <mat-error>
-                <app-form-field-errors
-                        [errors]="programmeForm?.controls?.version?.errors"
-                        [messages]="versionErrors">
-                </app-form-field-errors>
+                <app-form-field-errors [errors]="programmeForm?.controls?.version?.errors"></app-form-field-errors>
             </mat-error>
         </mat-form-field>
     </div>
@@ -48,7 +39,8 @@
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.firstYear?.errors"
-                        [messages]="firstYearErrors">
+                        [messages]="firstYearErrors"
+                        [args]="yearErrorsArgs">
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
@@ -60,14 +52,18 @@
             <mat-error>
                 <app-form-field-errors
                         [errors]="programmeForm?.controls?.lastYear?.errors"
-                        [messages]="lastYearErrors">
+                        [messages]="lastYearErrors"
+                        [args]="yearErrorsArgs"
+                >
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
     </div>
     <mat-error *ngIf="programmeForm.errors?.lastYearBeforeFirstYear">
-        {{'programme.lastYear.before.firstYear' | translate}}
-    </mat-error>
+        {{'common.error.field.end.after.start' | translate : {
+        startDate: "first year",
+        endDate: "Last year"
+    } }}    </mat-error>
     <div appMultiColumnRow stretch>
         <mat-form-field>
             <mat-label>{{'programme.data.field.eligible.from' | translate | dateFormatInfo}}</mat-label>
@@ -105,9 +101,7 @@
                    formControlName="commissionDecisionNumber" matInput>
             <mat-error>
                 <app-form-field-errors
-                        [errors]="programmeForm?.controls?.commissionDecisionNumber?.errors"
-                        [messages]="commissionDecisionNumberErrors">
-                </app-form-field-errors>
+                        [errors]="programmeForm?.controls?.commissionDecisionNumber?.errors"></app-form-field-errors>
             </mat-error>
         </mat-form-field>
         <mat-form-field>
@@ -131,9 +125,7 @@
                    formControlName="programmeAmendingDecisionNumber" matInput>
             <mat-error>
                 <app-form-field-errors
-                        [errors]="programmeForm?.controls?.programmeAmendingDecisionNumber?.errors"
-                        [messages]="programmeAmendingDecisionNumberErrors">
-                </app-form-field-errors>
+                        [errors]="programmeForm?.controls?.programmeAmendingDecisionNumber?.errors"></app-form-field-errors>
             </mat-error>
         </mat-form-field>
         <mat-form-field>

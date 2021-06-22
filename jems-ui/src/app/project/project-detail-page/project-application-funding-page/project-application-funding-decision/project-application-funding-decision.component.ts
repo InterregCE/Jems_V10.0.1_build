@@ -45,9 +45,6 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
     matDatepickerMin: 'project.decision.date.must.be.after.eligibility.date',
     matDatepickerParse: 'common.date.should.be.valid'
   };
-  noteErrors = {
-    maxlength: 'project.decision.notes.too.long'
-  };
 
   decisionForm = this.formBuilder.group({
     status: ['', Validators.required],

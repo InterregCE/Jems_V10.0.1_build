@@ -51,34 +51,19 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     validator: this.firstYearBeforeLastYear
   });
 
-  cciErrors = {
-    maxlength: 'programme.cci.size.too.long',
-  };
-
-  titleErrors = {
-    maxlength: 'programme.title.size.too.long',
-  };
-
-  versionErrors = {
-    maxlength: 'programme.version.size.too.long',
+  yearErrorsArgs = {
+    min: {min: 1000, max: 9999},
+    max: {min: 1000, max: 9999}
   };
 
   firstYearErrors = {
-    max: 'programme.firstYear.invalid.year',
-    min: 'programme.firstYear.invalid.year',
+    max: 'common.error.field.number.out.of.range',
+    min: 'common.error.field.number.out.of.range',
   };
 
   lastYearErrors = {
-    max: 'programme.lastYear.invalid.year',
-    min: 'programme.lastYear.invalid.year',
-  };
-
-  commissionDecisionNumberErrors = {
-    maxlength: 'programme.commissionDecisionNumber.size.too.long',
-  };
-
-  programmeAmendingDecisionNumberErrors = {
-    maxlength: 'programme.programmeAmendingDecisionNumber.size.too.long',
+    max: 'common.error.field.number.out.of.range',
+    min: 'common.error.field.number.out.of.range',
   };
 
   dateErrors = {

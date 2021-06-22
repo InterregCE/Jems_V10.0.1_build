@@ -13,7 +13,10 @@
         <div appMultiColumnRow stretch>
             <mat-form-field appFormFieldWidth="large">
                 <mat-label>{{'programme.priority.field.code' | translate}}</mat-label>
-                <input [formControlName]="constants.CODE.name" matInput required>
+                <input #codeInput [formControlName]="constants.CODE.name" matInput required>
+                <mat-hint [appHintFor]="codeInput" [hide]="form.get(constants.CODE.name)?.errors !== null">
+                    <app-text-hint [currentLength]="codeInput?.value?.length" [maxLength]="50"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="form.get(constants.CODE.name)?.errors"
@@ -70,7 +73,10 @@
                         <div>
                             <mat-form-field appFormFieldWidth="full" extendError>
                                 <mat-label>{{'programme.priority.objective.table.field.code' | translate}}</mat-label>
-                                <input [formControlName]="constants.POLICY_CODE.name" [required]="control.get(constants.POLICY_SELECTED.name).value" matInput>
+                                <input #policyCode [formControlName]="constants.POLICY_CODE.name" [required]="control.get(constants.POLICY_SELECTED.name).value" matInput>
+                                <mat-hint [appHintFor]="policyCode" [hide]="control.get(constants.POLICY_CODE.name)?.errors !== null">
+                                    <app-text-hint [currentLength]="policyCode?.value?.length" [maxLength]="50"></app-text-hint>
+                                </mat-hint>
                                 <mat-error>
                                     <app-form-field-errors
                                             [errors]="control.get(constants.POLICY_CODE.name)?.errors"

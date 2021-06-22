@@ -11,15 +11,10 @@
     <app-context-info *ngIf="contextInfoText"
                       [infoText]="contextInfoText">
     </app-context-info>
-    <mat-hint *ngIf="!disabled">
-        {{inputText.value.length}} / {{characterLimit}} {{'common.textarea.hint' | translate}}
+    <mat-hint *ngIf="!disabled" [appHintFor]="inputText" [hide]="errors != null">
+        <app-text-hint [currentLength]="inputText.value.length" [maxLength]="characterLimit"></app-text-hint>
     </mat-hint>
     <mat-error>
-        <div *ngIf="inputText.value.length > characterLimit">
-            {{ 'common.error.field.max.length' | translate : {
-            actualLength: inputText.value.length,
-            requiredLength: characterLimit
-        } }}
-        </div>
+        <app-form-field-errors [errors]="errors"></app-form-field-errors>
     </mat-error>
 </mat-form-field>

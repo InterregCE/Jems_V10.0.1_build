@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.common.entity
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 inline fun <T : TranslationEntity> Set<T>.extractField(extractFunction: (T) -> String?) =
     map { InputTranslation(it.language(), extractFunction.invoke(it)) }
@@ -24,3 +26,10 @@ fun <T : TranslationEntity> MutableSet<T>.addTranslationEntities(
 
 fun Set<InputTranslation>.extractTranslation(language: SystemLanguage) =
     firstOrNull { it.language == language }?.translation ?: ""
+
+
+fun Int?.toYear(): ZonedDateTime? {
+    if (this == null)
+        return null
+    return ZonedDateTime.of(this, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC").normalized())
+}

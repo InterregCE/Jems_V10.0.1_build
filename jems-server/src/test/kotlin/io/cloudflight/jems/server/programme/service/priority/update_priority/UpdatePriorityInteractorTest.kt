@@ -10,29 +10,38 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.R
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.WaterManagement
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.AppInputValidationException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.cloudflight.jems.server.programme.service.priority.testPriority
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
 class UpdatePriorityInteractorTest {
+
+    private val inputErrorMap = mapOf("error" to I18nMessage("error.key"))
 
     companion object {
         private val ID = 3L
@@ -58,8 +67,20 @@ class UpdatePriorityInteractorTest {
     @MockK
     lateinit var auditService: AuditService
 
+    @RelaxedMockK
+    lateinit var generalValidator: GeneralValidatorService
+
     @InjectMockKs
     private lateinit var updatePriority: UpdatePriority
+
+    @BeforeEach
+    fun reset() {
+        clearMocks(generalValidator)
+        every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
+        every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws AppInputValidationException(
+            inputErrorMap
+        )
+    }
 
     @Test
     fun `updatePriority - valid`() {
@@ -103,24 +124,17 @@ class UpdatePriorityInteractorTest {
     }
 
     @Test
-    fun `updatePriority - long code or long title`() {
-        every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
-
-        val priorityWithLongCode = toUpdatePriority.copy(code = getStringOfLength(51))
-        var ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priorityWithLongCode) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.code.size.too.long")
-
-        val priorityWithLongTitle = toUpdatePriority.copy(
-            title = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(301)))
-        )
-        ex = assertThrows { updatePriority.updatePriority(ID, priorityWithLongTitle) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.title.size.too.long")
+    fun `updatePriority - wrong code (long)`() {
+        val code = getStringOfLength(51)
+        val priority = toUpdatePriority.copy(code = code)
+        every { generalValidator.maxLength(code, 50, "code") } returns inputErrorMap
+        assertThrows<AppInputValidationException> { updatePriority.updatePriority(ID, priority) }
+        verify(exactly = 1) { generalValidator.maxLength(code, 50, "code") }
     }
 
     @Test
-    fun `updatePriority - wrong code (long or empty)`() {
+    fun `updatePriority - wrong code (empty)`() {
         every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
-        testWrongCode(getStringOfLength(51))
         testWrongCode(" ")
         testWrongCode("")
         testWrongCode("\t")
@@ -128,8 +142,9 @@ class UpdatePriorityInteractorTest {
 
     private fun testWrongCode(code: String) {
         val priority = toUpdatePriority.copy(code = code)
-        val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priority) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.code.size.too.long")
+        every { generalValidator.maxLength(code, 50, "code") } returns inputErrorMap
+        assertThrows<AppInputValidationException> { updatePriority.updatePriority(ID, priority) }
+        verify(exactly = 1) { generalValidator.maxLength(code, 50, "code") }
     }
 
     @Test
@@ -139,28 +154,48 @@ class UpdatePriorityInteractorTest {
     }
 
     private fun testWrongTitle(title: String) {
+        val titleSet = setOf(InputTranslation(SystemLanguage.EN, title))
         val priority = toUpdatePriority.copy(title = setOf(InputTranslation(SystemLanguage.EN, title)))
-        val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priority) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.title.size.too.long")
+        every { generalValidator.maxLength(titleSet, 300, "title") } returns inputErrorMap
+        assertThrows<AppInputValidationException> { updatePriority.updatePriority(ID, priority) }
+        verify(exactly = 1) { generalValidator.maxLength(titleSet, 300, "title") }
+
     }
 
     @Test
     fun `updatePriority - no specific objective`() {
-        every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
-        val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, toUpdatePriority.copy(specificObjectives = emptyList())) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.specificObjectives.empty")
+        every { generalValidator.minSize(emptyList(), 1, "specificObjectives") } returns inputErrorMap
+        assertThrows<AppInputValidationException> { updatePriority.updatePriority(ID, toUpdatePriority.copy(specificObjectives = emptyList())) }
+        verify(exactly = 1) { generalValidator.minSize(emptyList(), 1, "specificObjectives") }
     }
 
     @Test
-    fun `updatePriority - wrong specific objective code (long or empty)`() {
-        every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
-        testWrongSpecificObjectiveCode(getStringOfLength(51))
-        testWrongSpecificObjectiveCode(" ")
-        testWrongSpecificObjectiveCode("")
-        testWrongSpecificObjectiveCode("\n")
+    fun `updatePriority - wrong specific objective code (long)`() {
+        val code = getStringOfLength(51)
+        val priority = toUpdatePriority.copy(
+            specificObjectives = listOf(
+                ProgrammeSpecificObjective(
+                    programmeObjectivePolicy = RenewableEnergy,
+                    code = code
+                )
+            )
+        )
+        every { generalValidator.maxLength(code, 50, "specificObjectives") } returns inputErrorMap
+
+        assertThrows<AppInputValidationException> { updatePriority.updatePriority(ID, priority) }
+        verify(exactly = 1) { generalValidator.maxLength(code, 50, "specificObjectives") }
+
     }
 
-    private fun testWrongSpecificObjectiveCode(code: String, so: ProgrammeObjectivePolicy = RenewableEnergy) {
+    @Test
+    fun `updatePriority - wrong specific objective code (empty)`() {
+        every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
+        testBlankSpecificObjectiveCode(" ")
+        testBlankSpecificObjectiveCode("")
+        testBlankSpecificObjectiveCode("\n")
+    }
+
+    private fun testBlankSpecificObjectiveCode(code: String, so: ProgrammeObjectivePolicy = RenewableEnergy) {
         val priority = toUpdatePriority.copy(
             specificObjectives = listOf(
                 ProgrammeSpecificObjective(
@@ -169,13 +204,11 @@ class UpdatePriorityInteractorTest {
                 )
             )
         )
-        val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priority) }
-        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(
-            I18nFieldError(
-                i18nKey = "programme.priority.specificObjective.code.size.too.long.or.empty",
-                i18nArguments = listOf(so.name)
-            )
-        )
+        every { generalValidator.notBlank(code, "specificObjectives") } returns inputErrorMap
+
+        assertThrows<AppInputValidationException> { updatePriority.updatePriority(ID, priority) }
+        verify(exactly = 1) { generalValidator.notBlank(code, "specificObjectives") }
+
     }
 
     @Test
@@ -253,10 +286,12 @@ class UpdatePriorityInteractorTest {
         every { persistence.getPriorityIdForPolicyIfExists(WaterManagement) } returns 25
 
         val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, toUpdatePriority) }
-        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(I18nFieldError(
-            i18nKey = "programme.priority.specificObjective.objectivePolicy.already.in.use",
-            i18nArguments = listOf(WaterManagement.name)
-        ))
+        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(
+            I18nFieldError(
+                i18nKey = "programme.priority.specificObjective.objectivePolicy.already.in.use",
+                i18nArguments = listOf(WaterManagement.name)
+            )
+        )
     }
 
     @Test
@@ -281,10 +316,12 @@ class UpdatePriorityInteractorTest {
         )
 
         val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, toUpdatePriority) }
-        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(I18nFieldError(
-            i18nKey = "programme.priority.specificObjective.code.already.in.use.by.other.priority",
-            i18nArguments = listOf("CODE_15")
-        ))
+        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(
+            I18nFieldError(
+                i18nKey = "programme.priority.specificObjective.code.already.in.use.by.other.priority",
+                i18nArguments = listOf("CODE_15")
+            )
+        )
     }
 
     @Test
@@ -299,10 +336,17 @@ class UpdatePriorityInteractorTest {
         // programme setup is already locked
         every { isProgrammeSetupLocked.isLocked() } returns true
 
-        val toUpdateWithoutRenewableEnergy = toUpdatePriority.copy(specificObjectives = listOf(
-            ProgrammeSpecificObjective(programmeObjectivePolicy = GreenInfrastructure, code = "GU"),
-        ))
-        assertThrows<UpdateWhenProgrammeSetupRestricted> { updatePriority.updatePriority(ID, toUpdateWithoutRenewableEnergy) }
+        val toUpdateWithoutRenewableEnergy = toUpdatePriority.copy(
+            specificObjectives = listOf(
+                ProgrammeSpecificObjective(programmeObjectivePolicy = GreenInfrastructure, code = "GU"),
+            )
+        )
+        assertThrows<UpdateWhenProgrammeSetupRestricted> {
+            updatePriority.updatePriority(
+                ID,
+                toUpdateWithoutRenewableEnergy
+            )
+        }
     }
 
     @Test
@@ -319,15 +363,20 @@ class UpdatePriorityInteractorTest {
         // objective to be removed is used by a call already
         every { persistence.getObjectivePoliciesAlreadyInUse() } returns setOf(RenewableEnergy)
 
-        val toUpdateWithoutRenewableEnergy = toUpdatePriority.copy(specificObjectives = listOf(
-            ProgrammeSpecificObjective(programmeObjectivePolicy = GreenInfrastructure, code = "GU"),
-        ))
+        val toUpdateWithoutRenewableEnergy = toUpdatePriority.copy(
+            specificObjectives = listOf(
+                ProgrammeSpecificObjective(programmeObjectivePolicy = GreenInfrastructure, code = "GU"),
+            )
+        )
 
-        val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, toUpdateWithoutRenewableEnergy) }
-        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(I18nFieldError(
-            i18nKey = "programme.priority.specificObjective.already.used.in.call",
-            i18nArguments = listOf(RenewableEnergy.name)
-        ))
+        val ex =
+            assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, toUpdateWithoutRenewableEnergy) }
+        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(
+            I18nFieldError(
+                i18nKey = "programme.priority.specificObjective.already.used.in.call",
+                i18nArguments = listOf(RenewableEnergy.name)
+            )
+        )
     }
 
 }

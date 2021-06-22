@@ -57,30 +57,6 @@ fun validateUpdateProgrammePriority(
 }
 
 private fun validateCommonRestrictions(programmePriority: ProgrammePriority) {
-    val code = programmePriority.code
-    if (code.isBlank() || code.length > 50)
-        invalid("programme.priority.code.size.too.long")
-
-    val title = programmePriority.title
-    if (title.any { it.translation != null && it.translation!!.length > 300 })
-        invalid("programme.priority.title.size.too.long")
-
-    if (programmePriority.specificObjectives.isEmpty())
-        invalid("programme.priority.specificObjectives.empty")
-
-    val wrongSpecificObjectives = programmePriority.specificObjectives.filter {
-        it.code.isBlank() || it.code.length > 50
-    }.map { it.programmeObjectivePolicy.name }
-
-    if (wrongSpecificObjectives.isNotEmpty())
-        invalid(
-            fieldErrors = mapOf(
-                "specificObjectives" to I18nFieldError(
-                    i18nKey = "programme.priority.specificObjective.code.size.too.long.or.empty",
-                    i18nArguments = wrongSpecificObjectives
-                )
-            )
-        )
 
     validateSpecificObjectivePoliciesAreFromCorrectProgrammeObjective(
         specificObjectives = programmePriority.specificObjectives,

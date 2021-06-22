@@ -47,8 +47,13 @@ export class CallDetailPageComponent {
     max: CallDetailPageComponent.CALL_INVALID_PERIOD,
     min: CallDetailPageComponent.CALL_INVALID_PERIOD,
     matDatetimePickerParse: CallDetailPageComponent.DATE_SHOULD_BE_VALID,
-    matDatetimePickerMin: 'common.error.start.before.end',
-    matDatetimePickerMax: 'common.error.end.after.start'
+    matDatetimePickerMin: 'common.error.field.start.before.end',
+    matDatetimePickerMax: 'common.error.field.end.after.start'
+  };
+
+  dateNameArgs = {
+    startDate: 'start date',
+    endDate: 'end date'
   };
 
   inputErrorMessagesForEndDateStep1 = {

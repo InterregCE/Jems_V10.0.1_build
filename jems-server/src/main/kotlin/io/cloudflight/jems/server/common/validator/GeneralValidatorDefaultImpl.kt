@@ -102,22 +102,28 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
         }
 
     override fun startDateBeforeEndDate(
-        start: ZonedDateTime,
-        end: ZonedDateTime,
+        start: ZonedDateTime?,
+        end: ZonedDateTime?,
         startDateFieldName: String,
         endDateFieldName: String
     ): Map<String, I18nMessage> =
         mutableMapOf<String, I18nMessage>().apply {
-            if (end.isBefore(start)) {
-                this[startDateFieldName] = I18nMessage(i18nKey = "common.error.start.before.end")
-                this[endDateFieldName] = I18nMessage(i18nKey = "common.error.end.after.start")
+            if (start != null && end != null && end.isBefore(start)) {
+                this[startDateFieldName] = I18nMessage(
+                    i18nKey = "common.error.field.start.before.end",
+                    i18nArguments = mapOf("endDate" to endDateFieldName, "startDate" to startDateFieldName)
+                )
+                this[endDateFieldName] = I18nMessage(
+                    i18nKey = "common.error.field.end.after.start",
+                    i18nArguments = mapOf("endDate" to endDateFieldName, "startDate" to startDateFieldName)
+                )
             }
         }
 
     override fun dateNotInFuture(date: LocalDate, fieldName: String): Map<String, I18nMessage> =
         mutableMapOf<String, I18nMessage>().apply {
             if (date.isAfter(LocalDate.now())) {
-                this[fieldName] = I18nMessage(i18nKey = "common.error.date.is.in.future")
+                this[fieldName] = I18nMessage(i18nKey = "common.error.field.date.is.in.future")
             }
         }
 
@@ -133,6 +139,16 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                 this[fieldName] = I18nMessage(
                     i18nKey = "common.error.field.max.size",
                     i18nArguments = mapOf("maxSize" to maxSize.toString())
+                )
+            }
+        }
+
+    override fun minSize(items: Collection<Any>?, minSize: Int, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (items != null && items.size < minSize) {
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.field.min.size",
+                    i18nArguments = mapOf("minSize" to minSize.toString())
                 )
             }
         }

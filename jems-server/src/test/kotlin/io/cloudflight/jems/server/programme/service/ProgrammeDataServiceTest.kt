@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.nuts.entity.NutsCountry
 import io.cloudflight.jems.server.nuts.entity.NutsRegion1
 import io.cloudflight.jems.server.nuts.entity.NutsRegion2
@@ -57,6 +58,9 @@ internal class ProgrammeDataServiceTest {
     lateinit var callRepository: CallRepository
 
     @RelaxedMockK
+    lateinit var generalValidatorService: GeneralValidatorService
+
+    @RelaxedMockK
     lateinit var auditService: AuditService
     lateinit var programmeDataService: ProgrammeDataService
 
@@ -67,7 +71,8 @@ internal class ProgrammeDataServiceTest {
             programmeDataRepository,
             callRepository,
             nutsRegion3Repository,
-            auditService
+            auditService,
+            generalValidatorService
         )
         every { callRepository.existsByStatus(CallStatus.PUBLISHED) } returns false
     }

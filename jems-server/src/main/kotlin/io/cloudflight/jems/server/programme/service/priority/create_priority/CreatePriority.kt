@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.service.priority.create_priority
 
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -13,11 +14,13 @@ import org.springframework.transaction.annotation.Transactional
 class CreatePriority(
     private val persistence: ProgrammePriorityPersistence,
     private val auditService: AuditService,
+    private val generalValidatorService: GeneralValidatorService
 ) : CreatePriorityInteractor {
 
     @Transactional
     @CanUpdateProgrammeSetup
     override fun createPriority(priority: ProgrammePriority): ProgrammePriority {
+        validateProgrammePriority(priority)
         validateCreateProgrammePriority(
             programmePriority = priority,
             getPriorityIdByCode = { persistence.getPriorityIdByCode(it) },
@@ -29,4 +32,19 @@ class CreatePriority(
         return newPriority
     }
 
+    private fun validateProgrammePriority(programmePriority: ProgrammePriority) {
+        generalValidatorService.throwIfAnyIsInvalid(
+            generalValidatorService.notBlank(programmePriority.code, "code"),
+            generalValidatorService.maxLength(programmePriority.code,50, "code"),
+            generalValidatorService.maxLength(programmePriority.title,300, "title"),
+            generalValidatorService.minSize(programmePriority.specificObjectives,1, "specificObjectives"),
+            programmePriority.specificObjectives.map {
+                generalValidatorService.notBlank(it.code, "specificObjectives")
+            }.firstOrNull { it.isNotEmpty() } ?: mapOf(),
+
+            programmePriority.specificObjectives.map {
+                generalValidatorService.maxLength(it.code, 50,"specificObjectives")
+            }.firstOrNull { it.isNotEmpty() } ?: mapOf()
+        )
+    }
 }

@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.programme.service.priority.create_priority
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.ISO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
@@ -7,21 +9,26 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.G
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SmartEnergy
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.common.validator.AppInputValidationException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.cloudflight.jems.server.programme.service.priority.testPriority
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -29,14 +36,28 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(MockKExtension::class)
 class CreatePriorityInteractorTest {
 
+    private val inputErrorMap = mapOf("error" to I18nMessage("error.key"))
+
     @MockK
     lateinit var persistence: ProgrammePriorityPersistence
 
     @MockK
     lateinit var auditService: AuditService
 
+    @RelaxedMockK
+    lateinit var generalValidator: GeneralValidatorService
+
     @InjectMockKs
     private lateinit var createPriority: CreatePriority
+
+    @BeforeEach
+    fun reset() {
+        clearMocks(generalValidator)
+        every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
+        every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws AppInputValidationException(
+            inputErrorMap
+        )
+    }
 
     @Test
     fun `createPriority - valid`() {
@@ -55,21 +76,7 @@ class CreatePriorityInteractorTest {
     }
 
     @Test
-    fun `createPriority - long code or long title`() {
-        val priorityWithLongCode = testPriority.copy(code = getStringOfLength(51))
-        var ex = assertThrows<I18nValidationException> { createPriority.createPriority(priorityWithLongCode) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.code.size.too.long")
-
-        val priorityWithLongTitle = testPriority.copy(
-            title = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(301)))
-        )
-        ex = assertThrows { createPriority.createPriority(priorityWithLongTitle) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.title.size.too.long")
-    }
-
-    @Test
-    fun `createPriority - wrong code (long or empty)`() {
-        testWrongCode(getStringOfLength(51))
+    fun `createPriority - wrong code (empty)`() {
         testWrongCode(" ")
         testWrongCode("")
         testWrongCode("\t")
@@ -77,8 +84,20 @@ class CreatePriorityInteractorTest {
 
     private fun testWrongCode(code: String) {
         val priority = testPriority.copy(code = code)
-        val ex = assertThrows<I18nValidationException> { createPriority.createPriority(priority) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.code.size.too.long")
+        every { generalValidator.notBlank(code,  "code") } returns inputErrorMap
+        assertThrows<AppInputValidationException> { createPriority.createPriority(priority) }
+        verify (exactly = 1) { generalValidator.notBlank(code,  "code") }
+
+    }
+
+    @Test
+    fun `createPriority - wrong code (long)`() {
+        val code = getStringOfLength(51)
+        val priority = testPriority.copy(code = code)
+        every { generalValidator.maxLength(code, 50, "code") } returns inputErrorMap
+        assertThrows<AppInputValidationException> { createPriority.createPriority(priority) }
+        verify(exactly = 1) { generalValidator.maxLength(code, 50, "code") }
+
     }
 
     @Test
@@ -87,26 +106,29 @@ class CreatePriorityInteractorTest {
     }
 
     private fun testWrongTitle(title: String) {
-        val priority = testPriority.copy(title = setOf(InputTranslation(SystemLanguage.EN, title)))
-        val ex = assertThrows<I18nValidationException> { createPriority.createPriority(priority) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.title.size.too.long")
+        val titleSet = setOf(InputTranslation(SystemLanguage.EN, title))
+        val priority = testPriority.copy(title = titleSet)
+        every { generalValidator.maxLength(titleSet, 300, "title") } returns inputErrorMap
+        assertThrows<AppInputValidationException> { createPriority.createPriority(priority) }
+        verify(exactly = 1) { generalValidator.maxLength(titleSet, 300, "title") }
+
     }
 
     @Test
     fun `createPriority - no specific objective`() {
-        val ex = assertThrows<I18nValidationException> { createPriority.createPriority(testPriority.copy(specificObjectives = emptyList())) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.specificObjectives.empty")
+        every { generalValidator.minSize(emptyList(), 1, "specificObjectives") } returns inputErrorMap
+        assertThrows<AppInputValidationException> { createPriority.createPriority(testPriority.copy(specificObjectives = emptyList())) }
+        verify(exactly = 1) { generalValidator.minSize(emptyList(), 1, "specificObjectives") }
     }
 
     @Test
-    fun `createPriority - wrong specific objective code (long or empty)`() {
-        testWrongSpecificObjectiveCode(getStringOfLength(51))
-        testWrongSpecificObjectiveCode(" ")
-        testWrongSpecificObjectiveCode("")
-        testWrongSpecificObjectiveCode("\n")
+    fun `createPriority - wrong specific objective code (empty)`() {
+        testBlankSpecificObjectiveCode(" ")
+        testBlankSpecificObjectiveCode("")
+        testBlankSpecificObjectiveCode("\n")
     }
 
-    private fun testWrongSpecificObjectiveCode(code: String, so: ProgrammeObjectivePolicy = RenewableEnergy) {
+    private fun testBlankSpecificObjectiveCode(code: String, so: ProgrammeObjectivePolicy = RenewableEnergy) {
         val priority = testPriority.copy(
             specificObjectives = listOf(
                 ProgrammeSpecificObjective(
@@ -115,13 +137,29 @@ class CreatePriorityInteractorTest {
                 )
             )
         )
-        val ex = assertThrows<I18nValidationException> { createPriority.createPriority(priority) }
-        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(
-            I18nFieldError(
-                i18nKey = "programme.priority.specificObjective.code.size.too.long.or.empty",
-                i18nArguments = listOf(so.name)
+        every { generalValidator.notBlank(code, "specificObjectives") } returns inputErrorMap
+
+        assertThrows<AppInputValidationException> { createPriority.createPriority(priority) }
+        verify(exactly = 1) { generalValidator.notBlank(code, "specificObjectives") }
+
+    }
+
+    @Test
+    fun `createPriority - wrong specific objective code (long)`() {
+        val code = getStringOfLength(51)
+        val priority = testPriority.copy(
+            specificObjectives = listOf(
+                ProgrammeSpecificObjective(
+                    programmeObjectivePolicy = RenewableEnergy,
+                    code = code
+                )
             )
         )
+        every { generalValidator.maxLength(code, 50, "specificObjectives") } returns inputErrorMap
+
+        assertThrows<AppInputValidationException> { createPriority.createPriority(priority) }
+        verify(exactly = 1) { generalValidator.maxLength(code, 50, "specificObjectives") }
+
     }
 
     @Test
@@ -191,10 +229,12 @@ class CreatePriorityInteractorTest {
         every { persistence.getPriorityIdForPolicyIfExists(RenewableEnergy) } returns 25
 
         val ex = assertThrows<I18nValidationException> { createPriority.createPriority(testPriority) }
-        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(I18nFieldError(
-            i18nKey = "programme.priority.specificObjective.objectivePolicy.already.in.use",
-            i18nArguments = listOf(RenewableEnergy.name)
-        ))
+        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(
+            I18nFieldError(
+                i18nKey = "programme.priority.specificObjective.objectivePolicy.already.in.use",
+                i18nArguments = listOf(RenewableEnergy.name)
+            )
+        )
     }
 
     @Test
@@ -209,10 +249,12 @@ class CreatePriorityInteractorTest {
         )
 
         val ex = assertThrows<I18nValidationException> { createPriority.createPriority(testPriority) }
-        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(I18nFieldError(
-            i18nKey = "programme.priority.specificObjective.code.already.in.use",
-            i18nArguments = listOf("RE")
-        ))
+        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(
+            I18nFieldError(
+                i18nKey = "programme.priority.specificObjective.code.already.in.use",
+                i18nArguments = listOf("RE")
+            )
+        )
     }
 
 }
