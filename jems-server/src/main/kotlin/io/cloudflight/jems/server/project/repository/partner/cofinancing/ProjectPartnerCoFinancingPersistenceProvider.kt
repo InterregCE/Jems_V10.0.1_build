@@ -29,10 +29,9 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         partnerId: Long,
         version: String?
     ): ProjectPartnerCoFinancingAndContribution {
-        val partner = getPartnerOrThrow(partnerId)
         return projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
             currentVersionFetcher = {
-                partner.extractCoFinancingAndContribution()
+                getPartnerOrThrow(partnerId).extractCoFinancingAndContribution()
             },
             previousVersionFetcher = { timestamp ->
                 getPartnerCoFinancingAndContributions(partnerId, timestamp)

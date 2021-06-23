@@ -14,8 +14,10 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
+import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
+import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
@@ -30,6 +32,7 @@ import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -39,7 +42,8 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.Optional
 
 internal class PartnerPersistenceTest {
@@ -73,8 +77,10 @@ internal class PartnerPersistenceTest {
         project = project,
         abbreviation = "partner",
         role = ProjectPartnerRole.LEAD_PARTNER,
+        nameInOriginalLanguage = "nameInOriginalLanguage",
+        nameInEnglish = "nameInEnglish",
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
-        legalStatus = ProgrammeLegalStatusEntity(id = 1,),
+        legalStatus = ProgrammeLegalStatusEntity(id = 1),
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecovery.Yes
     )
@@ -135,6 +141,38 @@ internal class PartnerPersistenceTest {
     }
 
     @Test
+    fun getByIdAndVersion() {
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val version = "1.0"
+        val mockPartnerIdentityRow: PartnerIdentityRow = mockk()
+        every { mockPartnerIdentityRow.id } returns 1
+        every { mockPartnerIdentityRow.projectId } returns 1
+        every { mockPartnerIdentityRow.abbreviation } returns "partner"
+        every { mockPartnerIdentityRow.role } returns ProjectPartnerRole.LEAD_PARTNER
+        every { mockPartnerIdentityRow.sortNumber } returns 0
+        every { mockPartnerIdentityRow.nameInOriginalLanguage } returns "nameInOriginalLanguage"
+        every { mockPartnerIdentityRow.nameInEnglish } returns "nameInEnglish"
+        every { mockPartnerIdentityRow.partnerType } returns ProjectTargetGroup.BusinessSupportOrganisation
+        every { mockPartnerIdentityRow.vat } returns "test vat"
+        every { mockPartnerIdentityRow.language } returns SystemLanguage.EN
+        every { mockPartnerIdentityRow.department } returns "test"
+        every { mockPartnerIdentityRow.vatRecovery } returns ProjectPartnerVatRecovery.Yes
+        every { mockPartnerIdentityRow.legalStatusId } returns 1
+
+        every { projectPersistence.getProjectIdForPartner(1) } returns 2
+        every { projectVersionRepo.findTimestampByVersion(2, "404") } returns null
+        every { projectVersionRepo.findTimestampByVersion(2, version) } returns timestamp
+        every { projectPartnerRepository.findPartnerAddressesByIdAsOfTimestamp(1, timestamp) } returns emptyList()
+        every { projectPartnerRepository.findPartnerContactsByIdAsOfTimestamp(1, timestamp) } returns emptyList()
+        every { projectPartnerRepository.findPartnerMotivationByIdAsOfTimestamp(1, timestamp) } returns emptyList()
+        every { projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(1, timestamp) } returns listOf(mockPartnerIdentityRow)
+
+        assertThrows<ApplicationVersionNotFoundException> { persistence.getById(1, "404") }
+        assertThat(persistence.getById(1, version))
+            .isEqualTo(projectPartnerInclTransl.toOutputProjectPartnerDetail())
+    }
+
+    @Test
     fun findAllByProjectId() {
         every { projectPartnerRepository.findAllByProjectId(0, UNPAGED) } returns PageImpl(emptyList())
         every { projectPartnerRepository.findAllByProjectId(1, UNPAGED) } returns PageImpl(listOf(projectPartner))
@@ -177,7 +215,7 @@ internal class PartnerPersistenceTest {
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
         // also handle sorting
         val projectPartners = listOf(projectPartner, projectPartnerWithProject)
-        every { projectPartnerRepository.findTop30ByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.findTop30ByProjectId(1, any()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
 
         assertThat(persistence.create(1, inputProjectPartner)).isEqualTo(outputProjectPartnerDetail)
@@ -250,7 +288,7 @@ internal class PartnerPersistenceTest {
         // to update sort-numbers for both Partners:
         val projectPartners =
             listOf(partner(3, ProjectPartnerRole.LEAD_PARTNER), partner(2, ProjectPartnerRole.PARTNER))
-        every { projectPartnerRepository.findTop30ByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.findTop30ByProjectId(1, any()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
 
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
@@ -388,7 +426,7 @@ internal class PartnerPersistenceTest {
         every { projectPartnerRepository.save(projectPartnerWithOrganization) } returns projectPartnerWithOrganization
         // also handle sorting
         val projectPartners = listOf(projectPartner, projectPartnerWithProject)
-        every { projectPartnerRepository.findTop30ByProjectId(1, any<Sort>()) } returns projectPartners
+        every { projectPartnerRepository.findTop30ByProjectId(1, any()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
 
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatus)
@@ -447,7 +485,7 @@ internal class PartnerPersistenceTest {
             projectPartnerWithOrganization
         )
         every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id) } returns Unit
-        every { projectPartnerRepository.findTop30ByProjectId(project.id, any<Sort>()) } returns emptySet()
+        every { projectPartnerRepository.findTop30ByProjectId(project.id, any()) } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()
 
         assertDoesNotThrow { persistence.deletePartner(projectPartnerWithOrganization.id) }
@@ -458,7 +496,7 @@ internal class PartnerPersistenceTest {
     fun deleteProjectPartnerWithoutOrganization() {
         every { projectPartnerRepository.findById(projectPartner.id) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.deleteById(projectPartner.id) } returns Unit
-        every { projectPartnerRepository.findTop30ByProjectId(project.id, any<Sort>()) } returns emptySet()
+        every { projectPartnerRepository.findTop30ByProjectId(project.id, any()) } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()
 
         assertDoesNotThrow { persistence.deletePartner(projectPartner.id) }

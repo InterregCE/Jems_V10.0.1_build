@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.authorization.Authorization
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import org.springframework.security.access.prepost.PreAuthorize
@@ -22,7 +22,7 @@ annotation class CanUpdateProjectPartnerBase
 @Component
 class ProjectPartnerAuthorization(
     override val securityService: SecurityService,
-    val projectPersistence: ProjectPersistence,
+    val projectPersistence: ProjectPersistence
 ) : Authorization(securityService) {
 
     fun isUserOwnerOfPartner(partnerId: Long): Boolean =

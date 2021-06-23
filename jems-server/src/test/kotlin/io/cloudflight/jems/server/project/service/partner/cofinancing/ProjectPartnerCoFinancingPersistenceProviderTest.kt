@@ -8,7 +8,6 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
@@ -34,7 +33,7 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 open class ProjectPartnerCoFinancingPersistenceProviderTest {
     protected val partnerId = 1L
@@ -256,7 +255,6 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     @Test
     fun `should return previous version of coFinancing`() {
-        every { projectPartnerRepository.findById(partnerId) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp) } returns listOf(
             previousProjectPartner
         )

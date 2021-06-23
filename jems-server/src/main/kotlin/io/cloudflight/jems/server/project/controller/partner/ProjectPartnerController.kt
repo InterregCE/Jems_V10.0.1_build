@@ -33,7 +33,7 @@ class ProjectPartnerController(
     }
 
     override fun getProjectPartnerById(projectId: Long, partnerId: Long, version: String?): OutputProjectPartnerDetail {
-        return getProjectPartnerInteractor.getById(partnerId, version)
+        return getProjectPartnerInteractor.getById(projectId, partnerId, version)
     }
 
     override fun createProjectPartner(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {

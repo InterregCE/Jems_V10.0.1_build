@@ -21,7 +21,7 @@ import {
   ProjectPeriodDTO
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {NumberService} from '../../../common/services/number.service';
+import {NumberService} from '@common/services/number.service';
 import {PartnerBudgetTables} from '../../model/budget/partner-budget-tables';
 import {StaffCostsBudgetTable} from '../../model/budget/staff-costs-budget-table';
 import {GeneralBudgetTable} from '../../model/budget/general-budget-table';
@@ -35,7 +35,7 @@ import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-ta
 import {InvestmentSummary} from '../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
 import {ProjectVersionStore} from '../../services/project-version-store.service';
-import {Log} from '../../../common/utils/log';
+import {Log} from '@common/utils/log';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {

@@ -88,7 +88,7 @@ class PartnerPersistenceProvider(
     // used for authorization
     @Transactional(readOnly = true)
     override fun getProjectIdForPartnerId(id: Long): Long {
-        return getPartnerOrThrow(id).project.id
+        return getProjectIdIfExistedOrThrow(id)
     }
 
     @Transactional(readOnly = true)
@@ -224,4 +224,10 @@ class PartnerPersistenceProvider(
         return projectPartnerRepository.findById(partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
     }
+
+    private fun getProjectIdIfExistedOrThrow(partnerId: Long): Long {
+        return projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId)
+            ?: throw ResourceNotFoundException("projectPartner")
+    }
+
 }

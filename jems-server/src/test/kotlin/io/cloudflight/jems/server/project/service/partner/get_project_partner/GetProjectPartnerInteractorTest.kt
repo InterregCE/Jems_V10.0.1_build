@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -35,7 +36,7 @@ internal class GetProjectPartnerInteractorTest: UnitTest() {
         abbreviation = "partner",
         role = ProjectPartnerRole.LEAD_PARTNER,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
-        legalStatus = ProgrammeLegalStatusEntity(id = 1,),
+        legalStatus = ProgrammeLegalStatusEntity(id = 1),
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecovery.Yes
     )
@@ -48,8 +49,17 @@ internal class GetProjectPartnerInteractorTest: UnitTest() {
         every { persistence.getById(-1) } throws ResourceNotFoundException("partner")
         every { persistence.getById(1) } returns outputProjectPartnerDetail
 
-        assertThrows<ResourceNotFoundException> { getInteractor.getById(-1) }
-        Assertions.assertThat(getInteractor.getById(1)).isEqualTo(outputProjectPartnerDetail)
+        assertThrows<ResourceNotFoundException> { getInteractor.getById(1, -1) }
+        Assertions.assertThat(getInteractor.getById(1, 1)).isEqualTo(outputProjectPartnerDetail)
+    }
+
+    @Test
+    fun getByIdAndVersion() {
+        every { persistence.getById(1, "404") } throws ApplicationVersionNotFoundException()
+        every { persistence.getById(1, "1.0") } returns outputProjectPartnerDetail
+
+        assertThrows<ApplicationVersionNotFoundException> { getInteractor.getById(1, 1, "404") }
+        Assertions.assertThat(getInteractor.getById(1, 1, "1.0")).isEqualTo(outputProjectPartnerDetail)
     }
 
     @Test

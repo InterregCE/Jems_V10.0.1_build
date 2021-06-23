@@ -26,7 +26,7 @@ class GetProjectPartner(
     @CanRetrieveProjectPartner
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerByIdException::class)
-    override fun getById(partnerId: Long, version: String?): OutputProjectPartnerDetail =
+    override fun getById(projectId: Long, partnerId: Long, version: String?): OutputProjectPartnerDetail =
         persistence.getById(partnerId, version)
 
     @CanRetrieveProject

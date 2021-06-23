@@ -35,8 +35,16 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun countByProjectId(projectId: Long): Long
 
-    @Query("SELECT  e.project.id FROM project_partner e WHERE e.id = :partnerId")
-    fun getProjectIdForPartner(partnerId: Long): Long?
+    @Query(
+        """
+            SELECT
+             entity.project_id AS projectId
+             FROM #{#entityName} FOR SYSTEM_TIME ALL AS entity
+             WHERE entity.id = :id
+             LIMIT 1
+             """,
+        nativeQuery = true)
+    fun getProjectIdByPartnerIdInFullHistory(id: Long): Long?
 
     @Query(
         """

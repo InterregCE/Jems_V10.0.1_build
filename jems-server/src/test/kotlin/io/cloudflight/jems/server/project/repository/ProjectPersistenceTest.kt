@@ -54,7 +54,6 @@ import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -262,13 +261,13 @@ internal class ProjectPersistenceTest : UnitTest() {
 
     @Test
     fun `get ProjectId for Partner`() {
-        every { projectPartnerRepository.getProjectIdForPartner(1) } returns PROJECT_ID
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(1) } returns PROJECT_ID
         assertThat(persistence.getProjectIdForPartner(PROJECT_ID)).isEqualTo(PROJECT_ID)
     }
 
     @Test
     fun `get ProjectId for Partner - not existing`() {
-        every { projectPartnerRepository.getProjectIdForPartner(1) } returns null
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(1) } returns null
         val ex = assertThrows<ResourceNotFoundException> { persistence.getProjectIdForPartner(1) }
         assertThat(ex.entity).isEqualTo("ProjectPartner")
     }

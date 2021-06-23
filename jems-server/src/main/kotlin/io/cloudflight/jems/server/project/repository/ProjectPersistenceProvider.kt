@@ -99,7 +99,7 @@ class ProjectPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectIdForPartner(partnerId: Long) =
-        projectPartnerRepository.getProjectIdForPartner(partnerId) ?: throw ResourceNotFoundException("ProjectPartner")
+        projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) ?: throw ResourceNotFoundException("ProjectPartner")
 
     @Transactional
     override fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): Project {
