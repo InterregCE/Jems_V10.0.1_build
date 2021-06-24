@@ -52,12 +52,13 @@ describe('TopBarService', () => {
       }
     });
     tick();
-    expect(menuItems.length).toBe(5);
-    expect(menuItems[0].name).toBe('topbar.main.project');
-    expect(menuItems[1].name).toBe('topbar.main.call');
-    expect(menuItems[2].name).toBe('topbar.main.programme');
-    expect(menuItems[3].name).toBe('topbar.main.system');
-    expect(menuItems[4].name).toBe('user (administrator)');
+    expect(menuItems.length).toBe(6);
+    expect(menuItems[0].name).toBe('topbar.main.dashboard');
+    expect(menuItems[1].name).toBe('topbar.main.project');
+    expect(menuItems[2].name).toBe('topbar.main.call');
+    expect(menuItems[3].name).toBe('topbar.main.programme');
+    expect(menuItems[4].name).toBe('topbar.main.system');
+    expect(menuItems[5].name).toBe('user (administrator)');
 
 
     (securityService as any).myCurrentUser.next({name: 'user', role: {name: Permission.APPLICANT_USER, permissions: []}});

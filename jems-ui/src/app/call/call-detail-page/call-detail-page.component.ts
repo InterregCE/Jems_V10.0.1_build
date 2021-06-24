@@ -33,7 +33,7 @@ export class CallDetailPageComponent {
 
   data$: Observable<{
     call: CallDetailDTO,
-    isApplicant: boolean,
+    userCanApply: boolean,
     callIsEditable: boolean,
     priorityCheckboxes: CallPriorityCheckbox[],
     initialPriorityCheckboxes: CallPriorityCheckbox[],
@@ -85,16 +85,16 @@ export class CallDetailPageComponent {
 
     this.data$ = combineLatest([
       this.pageStore.call$,
-      this.pageStore.userCannotAccessCalls$,
+      this.pageStore.userCanApply$,
       this.pageStore.callIsEditable$,
       this.pageStore.allPriorities$,
       this.pageStore.allActiveStrategies$,
       this.pageStore.allFunds$
     ])
       .pipe(
-        map(([call, isApplicant, callIsEditable, allPriorities, allActiveStrategies, allFunds]) => ({
+        map(([call, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allFunds]) => ({
           call,
-          isApplicant,
+          userCanApply,
           callIsEditable,
           priorityCheckboxes: this.getPriorities(allPriorities, call),
           initialPriorityCheckboxes: this.getPriorities(allPriorities, call),

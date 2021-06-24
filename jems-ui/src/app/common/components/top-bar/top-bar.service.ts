@@ -69,11 +69,8 @@ export class TopBarService {
     ])
       .pipe(
         map(([permissions, editUserItem]) => {
-          const menuItems: MenuItemConfiguration[] = [];
+          const menuItems: MenuItemConfiguration[] = [this.dashboardItem];
 
-          if (!permissions.includes(Permission.PROGRAMME_USER) && !permissions.includes(Permission.ADMINISTRATOR)) {
-            menuItems.push(this.dashboardItem);
-          }
           if (permissions.includes(PermissionsEnum.ProjectRetrieve)) {
             menuItems.push(this.applicationsItem);
           }

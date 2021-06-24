@@ -24,17 +24,18 @@ export class SystemPageSidenavService {
               private permissionService: PermissionService,
               private roleService: UserRoleService) {
     combineLatest([
-      this.routing$,
+      this.systemPath$,
       this.permissionService.permissionsChanged(),
       this.roles$
     ]).pipe(
-      tap(([routing, permissions, roles]) =>
+      filter(([systemPath]) => systemPath),
+      tap(([systemPath, permissions, roles]) =>
         this.setHeadlines(permissions as PermissionsEnum[], roles)),
       untilDestroyed(this)
     ).subscribe();
   }
 
-  private routing$ = this.routingService.routeChanges(SystemPageSidenavService.SYSTEM_DETAIL_PATH)
+  private systemPath$ = this.routingService.routeChanges(SystemPageSidenavService.SYSTEM_DETAIL_PATH)
     .pipe(
       filter(systemPath => systemPath)
     );

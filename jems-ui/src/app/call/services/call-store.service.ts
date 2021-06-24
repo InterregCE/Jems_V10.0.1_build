@@ -5,13 +5,14 @@ import {
   FlatRateSetupDTO,
   ProgrammeCostOptionService,
   ProgrammeLumpSumListDTO,
-  ProgrammeUnitCostListDTO, UserRoleDTO
+  ProgrammeUnitCostListDTO, UserRoleCreateDTO, UserRoleDTO
 } from '@cat/api';
-import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {merge, Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {RoutingService} from '@common/services/routing.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable()
 export class CallStore {
@@ -20,7 +21,8 @@ export class CallStore {
   call$: Observable<CallDetailDTO>;
   unitCosts$: Observable<ProgrammeUnitCostListDTO[]>;
   lumpSums$: Observable<ProgrammeLumpSumListDTO[]>;
-  userCannotAccessCalls$: Observable<boolean>;
+  userCanApply$: Observable<boolean>;
+  callIsReadable$: Observable<boolean>;
   callIsEditable$: Observable<boolean>;
   callIsPublished$: Observable<boolean>;
 
@@ -33,8 +35,9 @@ export class CallStore {
     this.call$ = this.call();
     this.unitCosts$ = this.unitCosts();
     this.lumpSums$ = this.lumpSums();
-    this.userCannotAccessCalls$ = this.userCannotAccessCalls();
-    this.callIsEditable$ = this.callIsEditable();
+    this.userCanApply$ = this.permissionService.hasPermission(PermissionsEnum.ProjectCreate);
+    this.callIsEditable$ = this.permissionService.hasPermission(PermissionsEnum.CallUpdate);
+    this.callIsReadable$ = this.permissionService.hasPermission(PermissionsEnum.CallRetrieve);
     this.callIsPublished$ = this.callIsPublished();
   }
 
@@ -86,27 +89,6 @@ export class CallStore {
     return this.programmeCostOptionService.getProgrammeLumpSums()
       .pipe(
         tap(list => Log.info('Fetched the Lump Sums:', this, list))
-      );
-  }
-
-  private callIsEditable(): Observable<boolean> {
-    return combineLatest([this.userCannotAccessCalls$, this.permissionService.permissionsChanged()])
-      .pipe(
-        map(([isApplicant, permissions]) =>
-          permissions.includes(UserRoleDTO.PermissionsEnum.CallUpdate)
-        ),
-        shareReplay(1)
-      );
-  }
-
-  private userCannotAccessCalls(): Observable<boolean> {
-    return this.permissionService.permissionsChanged()
-      .pipe(
-        map(permissions => permissions.every(perm =>
-          perm !== UserRoleDTO.PermissionsEnum.CallUpdate && perm !== UserRoleDTO.PermissionsEnum.CallRetrieve
-          )
-        ),
-        shareReplay(1)
       );
   }
 

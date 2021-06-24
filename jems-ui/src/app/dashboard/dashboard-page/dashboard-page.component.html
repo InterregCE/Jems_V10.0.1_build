@@ -10,7 +10,7 @@
 
     <ng-container *hasPermission="Permissions.CallPublishedRetrieve">
         <h2>{{'call.list.open.title' | translate}}</h2>
-        <app-call-list appNoWidthLimit [isApplicant]="true"></app-call-list>
+        <app-call-list appNoWidthLimit [publishedCallsOnly]="true"></app-call-list>
     </ng-container>
 
 </app-main-page-template>

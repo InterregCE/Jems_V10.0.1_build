@@ -2,11 +2,11 @@
                         subTitleKey="call.general.settings">
     <app-form (discard)="onCancel(data.call, data.callIsEditable)"
               (save)="onSubmit(data.call, data.priorityCheckboxes, data.strategies, data.funds)">
-        <app-alert [show]="published && !data.isApplicant"
+        <app-alert [show]="published && data.callIsEditable"
                    [type]="Alert.WARNING">
             <span>{{'call.detail.edit.published.warning' | translate}}</span>
         </app-alert>
-        <app-alert [show]="published && data.isApplicant && !isOpen(data.call)"
+        <app-alert [show]="published && data.userCanApply && !isOpen(data.call)"
                    [type]="Alert.WARNING">
             <span>{{'call.table.column.action.apply.inactive.note' | translate}}</span>
         </app-alert>
@@ -96,7 +96,7 @@
                 </mat-form-field>
             </div>
 
-            <p *ngIf="!data.isApplicant">{{'call.detail.field.lengthOfPeriod.help' | translate}}</p>
+            <p *ngIf="!data.userCanApply">{{'call.detail.field.lengthOfPeriod.help' | translate}}</p>
             <mat-form-field>
                 <mat-label>{{'call.detail.field.lengthOfPeriod' | translate}}</mat-label>
                 <input required type="number" name="lengthOfPeriod" formControlName="lengthOfPeriod" matInput
@@ -114,7 +114,7 @@
             <app-multi-language-container
                     class="pb-3"
                     [useSystemLanguages]="true"
-                    [switchButtonsVisible]="data.callIsEditable || (published && !data.isApplicant)">
+                    [switchButtonsVisible]="data.callIsEditable || (published && !data.userCanApply)">
                 <app-multi-language-form-field
                         type="textarea"
                         formControlName="description"
@@ -139,13 +139,13 @@
             </app-call-strategies>
 
             <h3>{{'call.funds.title' | translate}}</h3>
-            <h4 *ngIf="!data.isApplicant || callForm?.controls?.isAdditionalFundAllowed.value">{{'call.funds.options' | translate}}</h4>
-            <div *ngIf="!data.isApplicant || callForm?.controls?.isAdditionalFundAllowed.value">
+            <h4 *ngIf="!data.userCanApply || callForm?.controls?.isAdditionalFundAllowed.value">{{'call.funds.options' | translate}}</h4>
+            <div *ngIf="!data.userCanApply || callForm?.controls?.isAdditionalFundAllowed.value">
                 <mat-checkbox
                         name="isAdditionalFundAllowed"
                         formControlName="isAdditionalFundAllowed"
                         (click)="$event.stopPropagation()"
-                        [disabled]="!data.callIsEditable && (!data.isApplicant && published && data.call.isAdditionalFundAllowed)"
+                        [disabled]="!data.callIsEditable && (!data.userCanApply && published && data.call.isAdditionalFundAllowed)"
                         [checked]="callForm?.controls?.isAdditionalFundAllowed.value">
                     {{'call.multiple.funds.allowed' | translate}}
                 </mat-checkbox>
@@ -160,7 +160,7 @@
         </form>
     </app-form>
 
-    <mat-card-footer *ngIf="published && data.isApplicant && isOpen(data.call)" class="footer">
+    <mat-card-footer *ngIf="published && data.userCanApply && isOpen(data.call)" class="footer">
         <button mat-raised-button color="primary"
                 class="action-button"
                 (click)="applyToCall(data.call.id)">

@@ -27,8 +27,7 @@ export class CallUnitCostsComponent {
     callUnitCosts: ProgrammeUnitCostListDTO[],
     programmeUnitCosts: ProgrammeUnitCostListDTO[],
     callIsEditable: boolean,
-    callIsPublished: boolean,
-    isApplicant: boolean
+    callIsPublished: boolean
   }>;
 
   constructor(private callStore: CallStore,
@@ -40,16 +39,14 @@ export class CallUnitCostsComponent {
       this.callStore.call$,
       this.callStore.unitCosts$,
       this.callStore.callIsEditable$,
-      this.callStore.callIsPublished$,
-      this.callStore.userCannotAccessCalls$
+      this.callStore.callIsPublished$
     ])
       .pipe(
-        map(([call, programmeUnitCosts, callIsEditable, callIsPublished, isApplicant]) => ({
+        map(([call, programmeUnitCosts, callIsEditable, callIsPublished]) => ({
           callUnitCosts: call.unitCosts,
           programmeUnitCosts,
           callIsEditable,
           callIsPublished,
-          isApplicant
         })),
         tap(data => this.resetForm(data.programmeUnitCosts, data.callUnitCosts, data.callIsEditable, data.callIsPublished))
       );
@@ -88,10 +85,7 @@ export class CallUnitCostsComponent {
     this.formService.setDirty(true);
   }
 
-  disabled(element: ProgrammeUnitCostListDTO, data: {callIsEditable: boolean, callIsPublished: boolean, isApplicant: boolean}): boolean {
-    if (data.isApplicant || !data.callIsEditable) {
-      return true;
-    }
-    return this.initialSelection.isSelected(element) && data.callIsPublished;
+  disabled(element: ProgrammeUnitCostListDTO, data: {callIsEditable: boolean, callIsPublished: boolean}): boolean {
+    return !data.callIsEditable || (data.callIsPublished && this.initialSelection.isSelected(element));
   }
 }

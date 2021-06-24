@@ -1,9 +1,10 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import {ProjectDetailDTO, ProjectStatusDTO, UserRoleCreateDTO} from '@cat/api';
 import moment from 'moment/moment';
 import {CallStore} from '../../../../../call/services/call-store.service';
-import {LocaleDatePipe} from '../../../../../common/pipe/locale-date.pipe';
-import {ProjectUtil} from '../../../../project-util';
+import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
+import {ProjectUtil} from '@project/project-util';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-project-application-information',
@@ -14,6 +15,7 @@ import {ProjectUtil} from '../../../../project-util';
 export class ProjectApplicationInformationComponent {
   CALL_PATH = CallStore.CALL_DETAIL_PATH;
   ProjectUtil = ProjectUtil;
+  PermissionsEnum = PermissionsEnum;
 
   @Input()
   project: ProjectDetailDTO;

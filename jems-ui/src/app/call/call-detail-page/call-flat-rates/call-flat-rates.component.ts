@@ -26,8 +26,7 @@ export class CallFlatRatesComponent {
   data$: Observable<{
     call: CallDetailDTO;
     callIsEditable: boolean,
-    callIsPublished: boolean,
-    isApplicant: boolean
+    callIsPublished: boolean
   }>;
 
   constructor(private callStore: CallStore,
@@ -38,10 +37,9 @@ export class CallFlatRatesComponent {
       this.callStore.call$,
       this.callStore.callIsEditable$,
       this.callStore.callIsPublished$,
-      this.callStore.userCannotAccessCalls$
     ])
       .pipe(
-        map(([call, callIsEditable, callIsPublished, isApplicant]) => ({call, callIsEditable, callIsPublished, isApplicant})),
+        map(([call, callIsEditable, callIsPublished]) => ({call, callIsEditable, callIsPublished})),
         tap(data => this.resetForm(data.call.flatRates))
       );
   }
@@ -118,11 +116,8 @@ export class CallFlatRatesComponent {
     this.formService.setCreation(!this.callId);
   }
 
-  disabled(flatRate: FlatRateDTO, data: {callIsEditable: boolean, callIsPublished: boolean, isApplicant: boolean}): boolean {
-    if (data.isApplicant || !data.callIsEditable) {
-      return true;
-    }
-    return !!flatRate && data.callIsPublished;
+  disabled(flatRate: FlatRateDTO, data: {callIsEditable: boolean, callIsPublished: boolean}): boolean {
+    return !data.callIsEditable || (data.callIsPublished && !!flatRate);
   }
 
   get isStaffCostFlatRateActive(): FormControl {

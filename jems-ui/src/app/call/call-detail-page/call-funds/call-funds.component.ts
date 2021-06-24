@@ -20,19 +20,21 @@ export class CallFundsComponent {
   selectionChanged = new EventEmitter<void>();
 
   data$: Observable<{
+    userCanApply: boolean,
+    callIsReadable: boolean,
     callIsEditable: boolean,
     callIsPublished: boolean,
-    isApplicant: boolean
   }>;
 
   constructor(private callDetailPageStore: CallDetailPageStore) {
     this.data$ = combineLatest([
+      this.callDetailPageStore.userCanApply$,
+      this.callDetailPageStore.callIsReadable$,
       this.callDetailPageStore.callIsEditable$,
       this.callDetailPageStore.callIsPublished$,
-      this.callDetailPageStore.userCannotAccessCalls$
     ])
       .pipe(
-        map(([callIsEditable, callIsPublished, isApplicant]) => ({callIsEditable, callIsPublished, isApplicant}))
+        map(([userCanApply, callIsReadable, callIsEditable, callIsPublished]) => ({userCanApply, callIsReadable, callIsEditable, callIsPublished}))
       );
   }
 

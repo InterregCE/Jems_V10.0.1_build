@@ -1,22 +1,27 @@
 import {Injectable} from '@angular/core';
-import {CallService, PageCallDTO} from '@cat/api';
+import {CallService, PageCallDTO, UserRoleCreateDTO} from '@cat/api';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {map, startWith, switchMap, tap} from 'rxjs/operators';
 import {Tables} from '../../utils/tables';
 import {Log} from '../../utils/log';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {PermissionService} from '../../../security/permissions/permission.service';
 
 @Injectable()
 export class CallListStore {
 
   callPage$: Observable<PageCallDTO>;
   publishedCallPage$: Observable<PageCallDTO>;
+  canApply$: Observable<boolean>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
 
-  constructor(private callService: CallService) {
+  constructor(private callService: CallService,
+              private permissionService: PermissionService) {
+    this.canApply$ = this.permissionService.hasPermission(PermissionsEnum.ProjectCreate);
     this.callPage$ = this.callPage();
     this.publishedCallPage$ = this.publishedCallPage();
   }

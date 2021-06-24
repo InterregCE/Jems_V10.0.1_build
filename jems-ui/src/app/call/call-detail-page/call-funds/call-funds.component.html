@@ -1,6 +1,6 @@
 <ng-container *ngIf="data$ | async as data">
     <ng-container *ngFor="let fund of funds">
-        <div *ngIf="!data.isApplicant || fund.selected" class="mt-2">
+        <div *ngIf="data.callIsReadable || (data.userCanApply && fund.selected)" class="mt-2">
             <mat-checkbox
                     (click)="$event.stopPropagation()"
                     (change)="fund.selected = !fund.selected; selectionChanged.emit()"

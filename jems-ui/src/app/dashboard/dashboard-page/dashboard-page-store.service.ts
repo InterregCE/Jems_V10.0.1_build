@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {SecurityService} from '../../security/security.service';
 
 @Injectable()
-export class ApplicantDashboardPageStore {
+export class DashboardPageStore {
 
   currentUser$: Observable<UserDTO | null>;
 

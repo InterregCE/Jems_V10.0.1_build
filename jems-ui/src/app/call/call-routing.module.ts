@@ -36,6 +36,7 @@ export const routes: Routes = [
         path: 'detail/:callId',
         data: {
           dynamicBreadcrumb: true,
+          permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve, UserRoleDTO.PermissionsEnum.ProjectCreate],
         },
         resolve: {breadcrumb$: CallNameResolver},
         canActivate: [PermissionGuard],

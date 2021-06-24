@@ -19,10 +19,11 @@ import {ProgrammeEditableStateStore} from '../../programme/programme-page/servic
 @Injectable()
 export class CallDetailPageStore {
   call$: Observable<CallDetailDTO>;
-  userCannotAccessCalls$: Observable<boolean>;
+  userCanApply$: Observable<boolean>;
   allPriorities$: Observable<CallPriorityCheckbox[]>;
   allActiveStrategies$: Observable<OutputProgrammeStrategy[]>;
   allFunds$: Observable<ProgrammeFundDTO[]>;
+  callIsReadable$: Observable<boolean>;
   callIsEditable$: Observable<boolean>;
   isFirstCall$: Observable<boolean>;
   callIsPublished$: Observable<boolean>;
@@ -36,10 +37,11 @@ export class CallDetailPageStore {
               private programmeFundService: ProgrammeFundService,
               private callService: CallService) {
     this.call$ = this.callStore.call$;
-    this.userCannotAccessCalls$ = this.callStore.userCannotAccessCalls$;
+    this.userCanApply$ = this.callStore.userCanApply$;
     this.allPriorities$ = this.allPriorities();
     this.allActiveStrategies$ = this.allActiveStrategies();
     this.allFunds$ = this.allFunds();
+    this.callIsReadable$ = this.callStore.callIsReadable$;
     this.callIsEditable$ = this.callStore.callIsEditable$;
     this.isFirstCall$ = this.isFirstCall();
     this.callIsPublished$ = this.callStore.callIsPublished$;

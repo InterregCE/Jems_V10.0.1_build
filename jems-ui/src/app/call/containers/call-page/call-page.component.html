@@ -12,6 +12,6 @@
             <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
         </div>
     </div>
-    <app-call-list appNoWidthLimit [isApplicant]="false"></app-call-list>
+    <app-call-list appNoWidthLimit [publishedCallsOnly]="false"></app-call-list>
 
 </app-main-page-template>

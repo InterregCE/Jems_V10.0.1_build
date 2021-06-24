@@ -36,7 +36,7 @@ export class FormFieldVisibilityStatusDirective {
   }
 
   shouldTheFieldBeVisible(fieldId: string): Observable<boolean> {
-    return combineLatest(this.projectStore.project$, this.projectStore.projectCall$, this.projectStore.callHasTwoSteps$).pipe(
+    return combineLatest([this.projectStore.project$, this.projectStore.projectCall$, this.projectStore.callHasTwoSteps$]).pipe(
       map(([project, callSetting, callHasTwoSteps]) => {
         const visibilityStatus = callSetting.applicationFormConfiguration.fieldConfigurations.find(it => it.id === fieldId)?.visibilityStatus;
         return visibilityStatus === VisibilityStatusEnum.STEPONEANDTWO ||

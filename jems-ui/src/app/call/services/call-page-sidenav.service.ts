@@ -32,12 +32,11 @@ export class CallPageSidenavService {
       route: `/app/call/detail/${callId}/budgetSettings`,
     };
 
-    this.callStore.userCannotAccessCalls$
+    this.callStore.callIsReadable$
       .pipe(
         take(1),
-        tap(userCannotAccessCalls => {
-          const userCanAccessCalls = !userCannotAccessCalls;
-          if (callId && userCanAccessCalls) {
+        tap(callIsReadable => {
+          if (callId && callIsReadable) {
             bulletsArray.push(flatRates as any);
           }
           this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [

@@ -28,8 +28,7 @@ export class CallLumpSumsComponent {
     callLumpSums: ProgrammeLumpSumListDTO[],
     programmeLumpSums: ProgrammeLumpSumListDTO[],
     callIsEditable: boolean,
-    callIsPublished: boolean,
-    isApplicant: boolean
+    callIsPublished: boolean
   }>;
 
   constructor(private callStore: CallStore,
@@ -41,16 +40,14 @@ export class CallLumpSumsComponent {
       this.callStore.call$,
       this.callStore.lumpSums$,
       this.callStore.callIsEditable$,
-      this.callStore.callIsPublished$,
-      this.callStore.userCannotAccessCalls$
+      this.callStore.callIsPublished$
     ])
       .pipe(
-        map(([call, programmeLumpSums, callIsEditable, callIsPublished, isApplicant]) => ({
+        map(([call, programmeLumpSums, callIsEditable, callIsPublished]) => ({
           callLumpSums: call.lumpSums,
           programmeLumpSums,
           callIsEditable,
-          callIsPublished,
-          isApplicant
+          callIsPublished
         })),
         tap(data => this.resetForm(data.programmeLumpSums, data.callLumpSums, data.callIsEditable, data.callIsPublished))
       );
@@ -85,11 +82,8 @@ export class CallLumpSumsComponent {
     this.formChanged();
   }
 
-  disabled(element: ProgrammeLumpSumListDTO, data: {callIsEditable: boolean, callIsPublished: boolean, isApplicant: boolean}): boolean {
-    if (data.isApplicant || !data.callIsEditable) {
-      return true;
-    }
-    return this.initialSelection.isSelected(element) && data.callIsPublished;
+  disabled(lumpSum: ProgrammeLumpSumListDTO, data: {callIsEditable: boolean, callIsPublished: boolean}): boolean {
+    return !data.callIsEditable || (data.callIsPublished && !!lumpSum);
   }
 
   formChanged(): void {

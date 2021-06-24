@@ -20,24 +20,22 @@ export class CallPriorityTreeComponent {
   selectionChanged = new EventEmitter<void>();
 
   data$: Observable<{
+    userCanApply: boolean,
+    callIsReadable: boolean,
     callIsEditable: boolean,
-    callIsPublished: boolean,
-    isApplicant: boolean
+    callIsPublished: boolean
   }>;
 
   constructor(private callDetailPageStore: CallDetailPageStore) {
     this.data$ = combineLatest([
+      this.callDetailPageStore.userCanApply$,
+      this.callDetailPageStore.callIsReadable$,
       this.callDetailPageStore.callIsEditable$,
-      this.callDetailPageStore.callIsPublished$,
-      this.callDetailPageStore.userCannotAccessCalls$
+      this.callDetailPageStore.callIsPublished$
     ])
       .pipe(
-        map(([callIsEditable, callIsPublished, isApplicant]) => ({callIsEditable, callIsPublished, isApplicant}))
+        map(([userCanApply, callIsReadable, callIsEditable, callIsPublished]) => ({userCanApply, callIsReadable, callIsEditable, callIsPublished}))
       );
-  }
-
-  priorityVisible(priority: CallPriorityCheckbox, isApplicant: boolean): boolean {
-    return !isApplicant || priority.checked || priority.someChecked();
   }
 
   priorityDisabled(callIsEditable: boolean, callIsPublished: boolean, priority: CallPriorityCheckbox): boolean {
