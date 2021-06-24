@@ -9,13 +9,13 @@ import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerFinancingRow
-import java.sql.Timestamp
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import java.sql.Timestamp
 import java.util.Optional
 
 @Repository
@@ -35,12 +35,16 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun countByProjectId(projectId: Long): Long
 
+    @Query("SELECT e.project.id FROM project_partner e WHERE e.id = :partnerId")
+    fun getProjectIdForPartner(partnerId: Long): Long?
+
     @Query(
         """
             SELECT
              entity.project_id AS projectId
              FROM #{#entityName} FOR SYSTEM_TIME ALL AS entity
              WHERE entity.id = :id
+             ORDER BY entity.ROW_START DESC
              LIMIT 1
              """,
         nativeQuery = true)

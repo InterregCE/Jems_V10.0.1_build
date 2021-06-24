@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -42,6 +43,8 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
+    @MockK
+    lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
     lateinit var budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence
@@ -55,7 +58,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
 
     @BeforeAll
     fun setup() {
-        every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
     }
 
     @Test
@@ -67,7 +70,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         every { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) } returns Unit
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns null
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
-        every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every {
             persistence.deleteAllBudgetTravelAndAccommodationCostsExceptFor(
                 partnerId,
@@ -92,7 +95,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
         verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
-        verify(atLeast = 1) { projectPersistence.getProjectIdForPartner(partnerId) }
+        verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
         verify(atLeast = 1) {
             persistence.deleteAllBudgetTravelAndAccommodationCostsExceptFor(
                 partnerId,
@@ -204,7 +207,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         } throws I18nValidationException()
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns ProjectPartnerBudgetOptions(partnerId)
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
-        every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
 
 
         assertThrows<I18nValidationException> {
@@ -219,7 +222,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers) }
         verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
-        verify(atLeast = 1) { projectPersistence.getProjectIdForPartner(partnerId) }
+        verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
         confirmVerified(budgetCostValidator, budgetOptionsPersistence, projectPersistence)
     }
 

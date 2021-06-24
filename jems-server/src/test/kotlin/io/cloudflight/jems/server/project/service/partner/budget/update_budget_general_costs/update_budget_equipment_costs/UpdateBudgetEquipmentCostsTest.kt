@@ -23,7 +23,7 @@ internal class UpdateBudgetEquipmentCostsTest : UpdateBudgetGeneralCostsTest() {
         every { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
         every { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) } returns Unit
-        every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns null
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
         every {
@@ -45,7 +45,7 @@ internal class UpdateBudgetEquipmentCostsTest : UpdateBudgetGeneralCostsTest() {
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) }
         verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
         verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
-        verify(atLeast = 1) { projectPersistence.getProjectIdForPartner(partnerId) }
+        verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
         verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify(atLeast = 1) {
@@ -105,7 +105,7 @@ internal class UpdateBudgetEquipmentCostsTest : UpdateBudgetGeneralCostsTest() {
                 validPeriodNumbers
             )
         } throws I18nValidationException()
-        every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
 
 
@@ -116,7 +116,7 @@ internal class UpdateBudgetEquipmentCostsTest : UpdateBudgetGeneralCostsTest() {
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntriesWithInvalidPeriods) }
         verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(budgetGeneralCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) }
         verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers) }
-        verify(atLeast = 1) { projectPersistence.getProjectIdForPartner(partnerId) }
+        verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
         confirmVerified(budgetCostValidator, projectPersistence)
     }

@@ -97,10 +97,6 @@ class ProjectPersistenceProvider(
     override fun getProjectPeriods(projectId: Long) =
         getProjectOrThrow(projectId).periods.toProjectPeriods()
 
-    @Transactional(readOnly = true)
-    override fun getProjectIdForPartner(partnerId: Long) =
-        projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) ?: throw ResourceNotFoundException("ProjectPartner")
-
     @Transactional
     override fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): Project {
         val user = userRepository.findById(userId).orElseThrow { ResourceNotFoundException("user") }
@@ -138,7 +134,7 @@ class ProjectPersistenceProvider(
         assessmentStep1: ProjectAssessmentEntity,
         assessmentStep2: ProjectAssessmentEntity,
     ): Project {
-        val periods = projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData();
+        val periods = projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData()
         return projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
             .toProjectEntryWithDetailData(project, periods, assessmentStep1, assessmentStep2, getApplicationFormConfiguration())
     }

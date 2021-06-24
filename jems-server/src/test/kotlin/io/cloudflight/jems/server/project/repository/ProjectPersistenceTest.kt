@@ -260,19 +260,6 @@ internal class ProjectPersistenceTest : UnitTest() {
     }
 
     @Test
-    fun `get ProjectId for Partner`() {
-        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(1) } returns PROJECT_ID
-        assertThat(persistence.getProjectIdForPartner(PROJECT_ID)).isEqualTo(PROJECT_ID)
-    }
-
-    @Test
-    fun `get ProjectId for Partner - not existing`() {
-        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(1) } returns null
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getProjectIdForPartner(1) }
-        assertThat(ex.entity).isEqualTo("ProjectPartner")
-    }
-
-    @Test
     fun `get Project Periods`() {
         val project = dummyProject()
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)

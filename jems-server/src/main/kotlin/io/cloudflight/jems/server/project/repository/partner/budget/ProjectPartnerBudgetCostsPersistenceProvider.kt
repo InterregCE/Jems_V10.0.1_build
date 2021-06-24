@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetBase
 import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralRow
 import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostRow
 import io.cloudflight.jems.server.project.entity.partner.budget.travel.ProjectPartnerBudgetTravelCostRow
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.ProjectPartnerLumpSumRepository
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetGeneralCostEntryList
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetGeneralEntryList
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetStaffCostEntries
@@ -14,7 +16,6 @@ import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBu
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetTravelCostEntryList
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetUnitCostEntryList
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toModel
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
@@ -25,7 +26,7 @@ import java.math.BigDecimal
 @Repository
 class ProjectPartnerBudgetCostsPersistenceProvider(
     private val projectVersionUtils: ProjectVersionUtils,
-    private val projectPersistence: ProjectPersistence,
+    private val projectPartnerRepository: ProjectPartnerRepository,
     private val budgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository,
     private val budgetTravelRepository: ProjectPartnerBudgetTravelRepository,
     private val budgetExternalRepository: ProjectPartnerBudgetExternalRepository,
@@ -37,7 +38,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getBudgetStaffCosts(partnerId: Long, version: String?): List<BudgetStaffCostEntry> =
-        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
             currentVersionFetcher = {
                 budgetStaffCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
                     .toBudgetStaffCostEntries()
@@ -51,7 +52,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getBudgetTravelAndAccommodationCosts(partnerId: Long, version: String?) =
-        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
             currentVersionFetcher = {
                 budgetTravelRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
                     .toBudgetTravelAndAccommodationCostEntries()
@@ -65,7 +66,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getBudgetInfrastructureAndWorksCosts(partnerId: Long, version: String?) =
-        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
             currentVersionFetcher = {
                 budgetInfrastructureRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
                     .toBudgetGeneralEntryList()
@@ -79,7 +80,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getBudgetUnitCosts(partnerId: Long, version: String?): List<BudgetUnitCostEntry> =
-        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
             currentVersionFetcher = {
                 budgetUnitCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId).toModel()
             },
@@ -91,7 +92,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getBudgetExternalExpertiseAndServicesCosts(partnerId: Long, version: String?) =
-        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
             currentVersionFetcher = {
                 budgetExternalRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
                     .toBudgetGeneralEntryList()
@@ -105,7 +106,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getBudgetEquipmentCosts(partnerId: Long, version: String?) =
-        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
             currentVersionFetcher = {
                 budgetEquipmentRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
                     .toBudgetGeneralEntryList()
@@ -143,7 +144,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getBudgetLumpSumsCostTotal(partnerId: Long, version: String?): BigDecimal =
-        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
             currentVersionFetcher = {
                 budgetPartnerLumpSumRepository.sumTotalForPartner(partnerId)
             },
@@ -155,7 +156,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     private fun <T : ProjectPartnerBudgetBase> getCostTotal(
         partnerId: Long, version: String?, repository: ProjectPartnerBaseBudgetRepository<T>,
     ) =
-        projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
             currentVersionFetcher = {
                 repository.sumTotalForPartner(partnerId)
             },
@@ -163,4 +164,11 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
                 repository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp)
             }
         ) ?: BigDecimal.ZERO
+
+    private fun getProjectIdForPartner(partnerId: Long, version: String?): Long {
+        return projectVersionUtils.fetchProjectId(version, partnerId,
+            currentVersionOnlyFetcher = { projectPartnerRepository.getProjectIdForPartner(partnerId) },
+            historicVersionFetcher = { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) }
+        )
+    }
 }

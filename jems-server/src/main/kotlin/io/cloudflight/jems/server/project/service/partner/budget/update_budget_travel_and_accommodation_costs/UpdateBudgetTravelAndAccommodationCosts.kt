@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -18,6 +19,7 @@ class UpdateBudgetTravelAndAccommodationCosts(
     private val persistence: ProjectPartnerBudgetCostsUpdatePersistence,
     private val optionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     private val projectPersistence: ProjectPersistence,
+    private val partnerPersistence: PartnerPersistence,
     private val budgetCostValidator: BudgetCostValidator
 ) : UpdateBudgetTravelAndAccommodationCostsInteractor {
 
@@ -33,7 +35,7 @@ class UpdateBudgetTravelAndAccommodationCosts(
 
         throwIfTravelOrOtherCostFlatRateAreSet(optionsPersistence.getBudgetOptions(partnerId))
 
-        val projectId = projectPersistence.getProjectIdForPartner(partnerId)
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
 
         budgetCostValidator.validateBudgetPeriods(
             travelCosts.map { it.budgetPeriods }.flatten().toSet(),

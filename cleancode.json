@@ -25,6 +25,10 @@
     {
       "hash": "985635b9",
       "reason": "plugin calls should take place inside the scope of a transaction even if the plugin's method is not annotated with @Transactional"
+    },
+    {
+      "hash": "5d77d119",
+      "reason": "helper method calls repo methods handed to it via arg - thus @Transactional or repo-call check fails here"
     }
   ]
 }

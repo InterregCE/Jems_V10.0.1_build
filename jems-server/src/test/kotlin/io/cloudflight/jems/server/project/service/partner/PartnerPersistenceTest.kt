@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
 import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
+import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -111,7 +112,22 @@ internal class PartnerPersistenceTest {
         )
 
     private val outputProjectPartner = projectPartner.toOutputProjectPartner()
-    private val outputProjectPartnerDetail = projectPartner.toOutputProjectPartnerDetail()
+    private val outputProjectPartnerDetail = OutputProjectPartnerDetail(
+        id = projectPartner.id,
+        abbreviation = projectPartner.abbreviation,
+        role = projectPartner.role,
+        sortNumber = projectPartner.sortNumber,
+        nameInOriginalLanguage = projectPartner.nameInOriginalLanguage,
+        nameInEnglish = projectPartner.nameInEnglish,
+        department = emptySet(),
+        partnerType = projectPartner.partnerType,
+        legalStatusId = projectPartner.legalStatus.id,
+        vat = projectPartner.vat,
+        vatRecovery = projectPartner.vatRecovery,
+        addresses = emptyList(),
+        contacts = emptyList(),
+        motivation = null
+    )
 
     @BeforeEach
     fun setup() {
@@ -120,7 +136,6 @@ internal class PartnerPersistenceTest {
         persistence = PartnerPersistenceProvider(
             projectVersionUtils,
             projectPartnerRepository,
-            projectPersistence,
             legalStatusRepo,
             projectRepository,
             projectAssociatedOrganizationService,
@@ -133,8 +148,8 @@ internal class PartnerPersistenceTest {
     fun getById() {
         every { projectPartnerRepository.findById(-1) } returns Optional.empty()
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
-        every { projectPersistence.getProjectIdForPartner(-1) } throws ResourceNotFoundException("partner")
-        every { projectPersistence.getProjectIdForPartner(1) } returns projectPartner.id
+        every { projectPartnerRepository.getProjectIdForPartner(-1) } throws ResourceNotFoundException("partner")
+        every { projectPartnerRepository.getProjectIdForPartner(1) } returns projectPartner.id
 
         assertThrows<ResourceNotFoundException> { persistence.getById(-1, null) }
         assertThat(persistence.getById(1, null)).isEqualTo(outputProjectPartnerDetail)
@@ -154,12 +169,13 @@ internal class PartnerPersistenceTest {
         every { mockPartnerIdentityRow.nameInEnglish } returns "nameInEnglish"
         every { mockPartnerIdentityRow.partnerType } returns ProjectTargetGroup.BusinessSupportOrganisation
         every { mockPartnerIdentityRow.vat } returns "test vat"
-        every { mockPartnerIdentityRow.language } returns SystemLanguage.EN
-        every { mockPartnerIdentityRow.department } returns "test"
+        every { mockPartnerIdentityRow.language } returns null
+        every { mockPartnerIdentityRow.department } returns null
         every { mockPartnerIdentityRow.vatRecovery } returns ProjectPartnerVatRecovery.Yes
         every { mockPartnerIdentityRow.legalStatusId } returns 1
 
-        every { projectPersistence.getProjectIdForPartner(1) } returns 2
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(1) } returns 2
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(-1) } returns null
         every { projectVersionRepo.findTimestampByVersion(2, "404") } returns null
         every { projectVersionRepo.findTimestampByVersion(2, version) } returns timestamp
         every { projectPartnerRepository.findPartnerAddressesByIdAsOfTimestamp(1, timestamp) } returns emptyList()
@@ -167,9 +183,12 @@ internal class PartnerPersistenceTest {
         every { projectPartnerRepository.findPartnerMotivationByIdAsOfTimestamp(1, timestamp) } returns emptyList()
         every { projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(1, timestamp) } returns listOf(mockPartnerIdentityRow)
 
+        // partner does not exist in any version
+        assertThrows<ResourceNotFoundException> { persistence.getById(-1, version) }
+        // no timestamp can be found for the specified partner->project
         assertThrows<ApplicationVersionNotFoundException> { persistence.getById(1, "404") }
-        assertThat(persistence.getById(1, version))
-            .isEqualTo(projectPartnerInclTransl.toOutputProjectPartnerDetail())
+        // historic version of partner returned (version found)
+        assertThat(persistence.getById(1, version)).isEqualTo(outputProjectPartnerDetail)
     }
 
     @Test
@@ -509,4 +528,30 @@ internal class PartnerPersistenceTest {
         assertThrows<ResourceNotFoundException> { persistence.deletePartner(-1) }
     }
 
+    @Test
+    fun `get ProjectId for Partner`() {
+        val entity: ProjectPartnerEntity = mockk()
+        every { entity.project.id } returns 2
+        every { projectPartnerRepository.findById(1) } returns Optional.of(entity)
+        assertThat(persistence.getProjectIdForPartnerId(1)).isEqualTo(2)
+    }
+
+    @Test
+    fun `get ProjectId for Partner - not existing`() {
+        every { projectPartnerRepository.findById(1) } returns Optional.empty()
+        val ex = assertThrows<ResourceNotFoundException> { persistence.getProjectIdForPartnerId(1) }
+        assertThat(ex.entity).isEqualTo("projectPartner")
+    }
+
+    @Test
+    fun `get ProjectId for historic Partner`() {
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(1) } returns 2
+        assertThat(persistence.getProjectIdForPartnerId(1, "1.0")).isEqualTo(2)
+    }
+
+    @Test
+    fun `get ProjectId for historic Partner - not existing`() {
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(1) } returns null
+        assertThrows<ResourceNotFoundException> { persistence.getProjectIdForPartnerId(1, "404") }
+    }
 }

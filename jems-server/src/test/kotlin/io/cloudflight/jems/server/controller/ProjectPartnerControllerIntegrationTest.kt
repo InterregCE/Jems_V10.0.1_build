@@ -114,7 +114,7 @@ class ProjectPartnerControllerIntegrationTest {
             get("/api/project/${project.id}/partner")
                 .accept(MediaType.APPLICATION_JSON)
         )
-            .andExpect(status().isOk())
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$.numberOfElements").value(1))
             .andExpect(jsonPath("$.content[0].id").value(projectPartner.id))
             .andExpect(jsonPath("$.content[0].abbreviation").value(projectPartner.abbreviation))
@@ -131,7 +131,7 @@ class ProjectPartnerControllerIntegrationTest {
             get("/api/project/${project.id}/partner/ids")
                 .accept(MediaType.APPLICATION_JSON)
         )
-            .andExpect(status().isOk())
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].id").value(projectPartner.id))
     }
 
@@ -146,7 +146,7 @@ class ProjectPartnerControllerIntegrationTest {
             get("/api/project/${project.id}/partner/${projectPartner.id}")
                 .accept(MediaType.APPLICATION_JSON)
         )
-            .andExpect(status().isOk())
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(projectPartner.id))
             .andExpect(jsonPath("$.abbreviation").value(projectPartner.abbreviation))
     }

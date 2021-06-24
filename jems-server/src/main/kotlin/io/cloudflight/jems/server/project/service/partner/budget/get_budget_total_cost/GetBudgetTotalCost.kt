@@ -19,7 +19,7 @@ class GetBudgetTotalCost(
     @CanRetrieveProjectPartner
     override fun getBudgetTotalCost(partnerId: Long, version: String?): BigDecimal {
 
-        val budgetOptions = getBudgetOptions.getBudgetOptions(partnerId)
+        val budgetOptions = getBudgetOptions.getBudgetOptions(partnerId, version)
 
         val unitCostTotal = budgetCostsPersistence.getBudgetUnitCostTotal(partnerId, version)
 

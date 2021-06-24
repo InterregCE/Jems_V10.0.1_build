@@ -22,7 +22,7 @@ interface PartnerPersistence {
     fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String? = null): List<OutputProjectPartner>
 
     // used for authorization
-    fun getProjectIdForPartnerId(id: Long): Long
+    fun getProjectIdForPartnerId(id: Long, version: String? = null): Long
 
     fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail
 

@@ -77,7 +77,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     private val fund = ProgrammeFundEntity(id = 1, selected = true)
 
-    val previousFinances = setOf(
+    private val previousFinances = setOf(
         ProjectPartnerCoFinancingEntity(
             coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundType.MainFund),
             percentage = BigDecimal.valueOf(15.5),
@@ -93,7 +93,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         )
     )
 
-    val currentFinances = setOf(
+    private val currentFinances = setOf(
         ProjectPartnerCoFinancingEntity(
             coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundType.MainFund),
             percentage = BigDecimal.valueOf(19.5),
@@ -109,7 +109,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         )
     )
 
-    val previousContributions = listOf(
+    private val previousContributions = listOf(
         ProjectPartnerContributionEntity(
             id = 1,
             partnerId = 1,
@@ -126,7 +126,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         )
     )
 
-    val currentContributions = listOf(
+    private val currentContributions = listOf(
         ProjectPartnerContributionEntity(
             id = 1,
             partnerId = 1,
@@ -143,13 +143,13 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         )
     )
 
-    val currentValue = ProjectPartnerCoFinancingAndContribution(
+    private val currentValue = ProjectPartnerCoFinancingAndContribution(
         finances = currentFinances.toCoFinancingModel(),
         partnerContributions = currentContributions.toContributionModel(),
         partnerAbbreviation = "partner"
     )
 
-    val previousValue = ProjectPartnerCoFinancingAndContribution(
+    private val previousValue = ProjectPartnerCoFinancingAndContribution(
         finances = previousFinances.toCoFinancingModel(),
         partnerContributions = previousContributions.toContributionModel(),
         partnerAbbreviation = "previous partner"
@@ -240,10 +240,9 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
             projectPartnerRepository,
-            projectVersionUtils,
-            projectPersistence
+            projectVersionUtils
         )
-        every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
+        every { projectPartnerRepository.getProjectIdForPartner(partnerId) } returns projectId
         every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp
     }
 
@@ -255,6 +254,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     @Test
     fun `should return previous version of coFinancing`() {
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) } returns projectId
         every { projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp) } returns listOf(
             previousProjectPartner
         )

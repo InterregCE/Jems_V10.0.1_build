@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository
 
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
@@ -28,4 +29,18 @@ class ProjectVersionUtils(
                 previousVersionFetcher.invoke(it)
             }
         }
+
+    @Transactional(readOnly = true)
+    fun fetchProjectId(
+        version: String?,
+        id: Long,
+        currentVersionOnlyFetcher: (id: Long) -> Long?,
+        historicVersionFetcher: (id: Long) -> Long?
+    ): Long {
+        return if (version == null) {
+            currentVersionOnlyFetcher.invoke(id)
+        } else {
+            historicVersionFetcher.invoke(id)
+        } ?: throw ResourceNotFoundException()
+    }
 }

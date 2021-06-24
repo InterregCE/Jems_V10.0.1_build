@@ -16,6 +16,4 @@ interface GetProjectPartnerInteractor {
 
     fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String? = null): List<OutputProjectPartner>
 
-    // used for authorization
-    fun getProjectIdForPartnerId(id: Long): Long
 }

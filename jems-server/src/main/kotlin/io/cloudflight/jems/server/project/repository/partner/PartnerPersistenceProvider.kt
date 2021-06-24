@@ -13,7 +13,6 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import org.springframework.data.domain.Page
@@ -29,7 +28,6 @@ import java.util.stream.StreamSupport
 class PartnerPersistenceProvider(
     private val projectVersionUtils: ProjectVersionUtils,
     private val projectPartnerRepository: ProjectPartnerRepository,
-    private val projectPersistence: ProjectPersistence,
     private val legalStatusRepo: ProgrammeLegalStatusRepository,
     private val projectRepo: ProjectRepository,
     private val projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
@@ -42,7 +40,11 @@ class PartnerPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getById(id: Long, version: String?): OutputProjectPartnerDetail {
-        return projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(id),
+        return projectVersionUtils.fetch(version,
+            projectId = projectVersionUtils.fetchProjectId(version, id,
+                currentVersionOnlyFetcher = { projectPartnerRepository.getProjectIdForPartner(id) },
+                historicVersionFetcher = { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(id) }
+            ),
             currentVersionFetcher = {
                 getPartnerOrThrow(id).toOutputProjectPartnerDetail()
             },
@@ -87,8 +89,11 @@ class PartnerPersistenceProvider(
 
     // used for authorization
     @Transactional(readOnly = true)
-    override fun getProjectIdForPartnerId(id: Long): Long {
-        return getProjectIdIfExistedOrThrow(id)
+    override fun getProjectIdForPartnerId(id: Long, version: String?): Long {
+        if (version != null) {
+            return getProjectIdIfExistedOrThrow(id)
+        }
+        return getPartnerOrThrow(id).project.id
     }
 
     @Transactional(readOnly = true)

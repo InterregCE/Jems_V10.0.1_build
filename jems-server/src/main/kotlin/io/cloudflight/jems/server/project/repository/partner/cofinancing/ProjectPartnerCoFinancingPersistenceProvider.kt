@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
@@ -15,9 +14,8 @@ import java.sql.Timestamp
 
 @Repository
 class ProjectPartnerCoFinancingPersistenceProvider(
-    private val projectPartnerRepo: ProjectPartnerRepository,
-    private val projectVersionUtils: ProjectVersionUtils,
-    private val projectPersistence: ProjectPersistence,
+    private val projectPartnerRepository: ProjectPartnerRepository,
+    private val projectVersionUtils: ProjectVersionUtils
 ) : ProjectPartnerCoFinancingPersistence {
 
     @Transactional(readOnly = true)
@@ -29,7 +27,11 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         partnerId: Long,
         version: String?
     ): ProjectPartnerCoFinancingAndContribution {
-        return projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(partnerId),
+        return projectVersionUtils.fetch(version,
+            projectId = projectVersionUtils.fetchProjectId(version, partnerId,
+                currentVersionOnlyFetcher = { projectPartnerRepository.getProjectIdForPartner(partnerId) },
+                historicVersionFetcher = { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) }
+            ),
             currentVersionFetcher = {
                 getPartnerOrThrow(partnerId).extractCoFinancingAndContribution()
             },
@@ -52,7 +54,7 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         val partner = getPartnerOrThrow(partnerId)
         val availableFundsGroupedById = partner.project.call.funds.associateBy { it.id }
 
-        val updatedPartner = projectPartnerRepo.save(
+        val updatedPartner = projectPartnerRepository.save(
             partner.copy(
                 financing = finances.toCoFinancingEntity(partnerId, availableFundsGroupedById),
                 partnerContributions = partnerContributions.toContributionEntity(partnerId)
@@ -67,18 +69,18 @@ class ProjectPartnerCoFinancingPersistenceProvider(
     }
 
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity =
-        projectPartnerRepo.findById(partnerId).orElseThrow { ResourceNotFoundException("projectPartner") }
+        projectPartnerRepository.findById(partnerId).orElseThrow { ResourceNotFoundException("projectPartner") }
 
     private fun getPartnerCoFinancingAndContributions(
         partnerId: Long,
         timestamp: Timestamp,
     ): ProjectPartnerCoFinancingAndContribution {
-        val finances = projectPartnerRepo.findPartnerFinancingByIdAsOfTimestamp(partnerId, timestamp)
+        val finances = projectPartnerRepository.findPartnerFinancingByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerFinancingHistoricalData()
-        val partnerContributions = projectPartnerRepo.findPartnerContributionByIdAsOfTimestamp(partnerId, timestamp)
+        val partnerContributions = projectPartnerRepository.findPartnerContributionByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerContributionHistoricalData()
         val partnerAbbrev =
-            projectPartnerRepo.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp).firstOrNull()?.abbreviation
+            projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp).firstOrNull()?.abbreviation
         return ProjectPartnerCoFinancingAndContribution(
             finances = finances,
             partnerContributions = partnerContributions,

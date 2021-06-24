@@ -26,8 +26,6 @@ interface ProjectPersistence {
 
     fun getProjectPeriods(projectId: Long): List<ProjectPeriod>
 
-    fun getProjectIdForPartner(partnerId: Long): Long
-
     fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): Project
 
 }

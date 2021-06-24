@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.truncate
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 abstract class UpdateBudgetGeneralCosts(
     private val projectPersistence: ProjectPersistence,
+    private val partnerPersistence: PartnerPersistence,
     private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     private val budgetCostValidator: BudgetCostValidator
 ) : UpdateBudgetGeneralCostsInteractor {
@@ -32,7 +34,7 @@ abstract class UpdateBudgetGeneralCosts(
         budgetCostValidator.validateBudgetPeriods(
             budgetGeneralCosts.map { it.budgetPeriods }.flatten().toSet(),
             projectPersistence.getProjectPeriods(
-                projectPersistence.getProjectIdForPartner(partnerId)
+                partnerPersistence.getProjectIdForPartnerId(partnerId)
             ).map { it.number }.toSet()
         )
 

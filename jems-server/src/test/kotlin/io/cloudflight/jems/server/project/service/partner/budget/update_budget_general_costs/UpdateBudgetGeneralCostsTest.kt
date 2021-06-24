@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -41,10 +42,12 @@ open class UpdateBudgetGeneralCostsTest : UnitTest() {
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
+    @MockK
+    lateinit var partnerPersistence: PartnerPersistence
 
     @BeforeAll
     fun setup() {
-        every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
     }
 
     private fun budgetGeneralCostEntries(listBudgetEntriesIds: Set<Long>, budgetPeriods: MutableSet<BudgetPeriod>) =

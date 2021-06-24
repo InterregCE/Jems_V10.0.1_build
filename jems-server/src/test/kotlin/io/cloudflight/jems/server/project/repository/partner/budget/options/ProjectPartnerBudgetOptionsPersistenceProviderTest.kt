@@ -99,8 +99,15 @@ internal class ProjectPartnerBudgetOptionsPersistenceProviderTest : UnitTest() {
         every {
             projectVersionUtils.fetch<ProjectPartnerBudgetOptions>(null, projectId, any(), any())
         } answers { thirdArg<() -> ProjectPartnerBudgetOptions>().invoke() }
+        // mock to call method for getting current version, historic version of projectId for partnerId
+        every {
+            projectVersionUtils.fetchProjectId(null, partnerId, any(), any())
+        } answers { thirdArg<(Long) -> Long>().invoke(partnerId) }
+        every {
+            projectVersionUtils.fetchProjectId(version, partnerId, any(), any())
+        } answers { lastArg<(Long) -> Long>().invoke(partnerId) }
 
-        every { projectPersistence.getProjectIdForPartner(projectId) } returns partnerId
+        every { partnerRepository.getProjectIdForPartner(projectId) } returns partnerId
         every { budgetOptionsRepository.findById(partnerId) } returns Optional.of(currentVersionOfBudgetOptionsEntity)
         every { budgetOptionsRepository.findByPartnerIdAsOfTimestamp(partnerId, timestamp) } returns Optional.of(
             previousVersionOfBudgetOptionsEntity
@@ -117,6 +124,7 @@ internal class ProjectPartnerBudgetOptionsPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `should return previous version of budget options when version is not null`() {
+        every { partnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) } returns 1
         assertThat(persistence.getBudgetOptions(partnerId, version)).isEqualTo(
             previousVersionOfBudgetOptionsEntity.toProjectPartnerBudgetOptions()
         )

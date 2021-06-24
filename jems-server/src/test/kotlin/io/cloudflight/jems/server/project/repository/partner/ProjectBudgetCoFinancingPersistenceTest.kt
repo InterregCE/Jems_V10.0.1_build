@@ -96,8 +96,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
             projectPartnerRepository,
-            projectVersionUtils,
-            projectPersistence
+            projectVersionUtils
         )
     }
 

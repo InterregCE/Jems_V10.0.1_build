@@ -38,7 +38,4 @@ class GetProjectPartner(
     override fun findAllByProjectId(projectId: Long): Iterable<OutputProjectPartnerDetail> =
         persistence.findAllByProjectId(projectId)
 
-    // used for authorization
-    override fun getProjectIdForPartnerId(id: Long): Long =
-        persistence.getProjectIdForPartnerId(id)
 }
