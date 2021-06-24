@@ -13,7 +13,7 @@ interface ProjectFileRepository : PagingAndSortingRepository<ProjectFile, Long> 
 
     fun findAllByProjectIdAndType(projectId: Long, type: ProjectFileType, pageable: Pageable): Page<ProjectFile>
 
-    fun findFirstByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectFile>
+    fun findFirstByProjectIdAndIdAndType(projectId: Long, id: Long, type: ProjectFileType): Optional<ProjectFile>
 
     fun findFirstByProjectIdAndNameAndType(projectId: Long, name: String, type: ProjectFileType): Optional<ProjectFile>
 

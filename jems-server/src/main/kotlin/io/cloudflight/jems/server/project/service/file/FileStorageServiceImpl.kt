@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.file.OutputProjectFile
 import io.cloudflight.jems.api.project.dto.file.ProjectFileType
 import io.cloudflight.jems.server.project.entity.file.FileMetadata
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -15,6 +16,7 @@ import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.repository.ProjectFileRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -75,8 +77,8 @@ class FileStorageServiceImpl(
         )
     }
 
-    override fun downloadFile(projectId: Long, fileId: Long): Pair<String, ByteArray> {
-        val projectFile = getFile(projectId, fileId)
+    override fun downloadFile(projectId: Long, fileId: Long, type: ProjectFileType): Pair<String, ByteArray> {
+        val projectFile = getFile(projectId, fileId, type)
         return Pair(
             projectFile.name,
             storage.getFile(projectFile.bucket, projectFile.identifier)
@@ -84,8 +86,8 @@ class FileStorageServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getFileDetail(projectId: Long, fileId: Long): OutputProjectFile {
-        return getFile(projectId, fileId).toOutputProjectFile()
+    override fun getFileDetail(projectId: Long, fileId: Long, type: ProjectFileType): OutputProjectFile {
+        return getFile(projectId, fileId, type).toOutputProjectFile()
     }
 
     @Transactional(readOnly = true)
@@ -94,8 +96,8 @@ class FileStorageServiceImpl(
     }
 
     @Transactional
-    override fun setDescription(projectId: Long, fileId: Long, description: String?): OutputProjectFile {
-        val projectFile = getFile(projectId, fileId)
+    override fun setDescription(projectId: Long, fileId: Long, type: ProjectFileType, description: String?): OutputProjectFile {
+        val projectFile = getFile(projectId, fileId, type)
         val oldDescription = projectFile.description
 
         projectFile.description = description
@@ -113,8 +115,11 @@ class FileStorageServiceImpl(
     }
 
     @Transactional
-    override fun deleteFile(projectId: Long, fileId: Long) {
-        val file = getFile(projectId, fileId)
+    override fun deleteFile(projectId: Long, fileId: Long, type: ProjectFileType) {
+        val file = getFile(projectId, fileId, type)
+
+        if (!canFileBeRemoved(file))
+            throw ApplicationUnprocessableException(code = "*TMP*FILE", i18nMessage = I18nMessage("applicant.file.is.locked.for.changes.because.it.is.older.version"))
 
         storage.deleteFile(PROJECT_FILES_BUCKET, file.identifier)
         projectFileRepository.delete(file)
@@ -122,8 +127,8 @@ class FileStorageServiceImpl(
         auditService.logEvent(projectFileDeleted(projectId, file))
     }
 
-    private fun getFile(projectId: Long, fileId: Long): ProjectFile {
-        val result = projectFileRepository.findFirstByProjectIdAndId(projectId = projectId, id = fileId)
+    private fun getFile(projectId: Long, fileId: Long, type: ProjectFileType): ProjectFile {
+        val result = projectFileRepository.findFirstByProjectIdAndIdAndType(projectId = projectId, id = fileId, type = type)
         if (result.isEmpty) {
             throw ResourceNotFoundException("project_file")
         }
@@ -168,4 +173,8 @@ class FileStorageServiceImpl(
             project = AuditProject(id = file.project.id.toString(), name = file.project.acronym),
             description = "FAILED upload of document $fileName to project application ${file.project.id}"
         )
+
+    private fun canFileBeRemoved(file: ProjectFile): Boolean =
+        file.type == ProjectFileType.ASSESSMENT_FILE || file.updated.isAfter(file.project.currentStatus.updated)
+
 }

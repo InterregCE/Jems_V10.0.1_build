@@ -19,17 +19,17 @@ interface FileStorageService {
     /**
      * Will return name of the file and ByteArray of file content.
      */
-    fun downloadFile(projectId: Long, fileId: Long): Pair<String, ByteArray>
+    fun downloadFile(projectId: Long, fileId: Long, type: ProjectFileType): Pair<String, ByteArray>
 
-    fun getFileDetail(projectId: Long, fileId: Long): OutputProjectFile
+    fun getFileDetail(projectId: Long, fileId: Long, type: ProjectFileType): OutputProjectFile
 
     /**
      * Paged list of all project files.
      */
     fun getFilesForProject(projectId: Long, type: ProjectFileType, page: Pageable): Page<OutputProjectFile>
 
-    fun setDescription(projectId: Long, fileId: Long, description: String?): OutputProjectFile
+    fun setDescription(projectId: Long, fileId: Long, type: ProjectFileType, description: String?): OutputProjectFile
 
-    fun deleteFile(projectId: Long, fileId: Long)
+    fun deleteFile(projectId: Long, fileId: Long, type: ProjectFileType)
 
 }

@@ -278,19 +278,19 @@ class FileStorageServiceTest {
 
     @Test
     fun downloadFile_notExisting() {
-        every { projectFileRepository.findFirstByProjectIdAndId(eq(-1), eq(100)) } returns Optional.empty()
-        assertThrows<ResourceNotFoundException> { fileStorageService.downloadFile(-1, 100) }
+        every { projectFileRepository.findFirstByProjectIdAndIdAndType(eq(-1), eq(100), ProjectFileType.ASSESSMENT_FILE) } returns Optional.empty()
+        assertThrows<ResourceNotFoundException> { fileStorageService.downloadFile(-1, 100, ProjectFileType.ASSESSMENT_FILE) }
     }
 
     @Test
     fun downloadFile() {
         val byteArray = "test-content".toByteArray()
-        every { projectFileRepository.findFirstByProjectIdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(
+        every { projectFileRepository.findFirstByProjectIdAndIdAndType(eq(PROJECT_ID), eq(10), ProjectFileType.APPLICANT_FILE) } returns Optional.of(
             dummyProjectFile()
         )
         every { minioStorage.getFile(eq(PROJECT_FILES_BUCKET), eq("project-1/proj-file-1.png")) } returns byteArray
 
-        val result = fileStorageService.downloadFile(PROJECT_ID, 10)
+        val result = fileStorageService.downloadFile(PROJECT_ID, 10, ProjectFileType.APPLICANT_FILE)
 
         assertEquals("proj-file-1.png", result.first)
         assertEquals("test-content".length, result.second.size)
@@ -331,9 +331,9 @@ class FileStorageServiceTest {
 
     @Test
     fun setDescription_notExisting() {
-        every { projectFileRepository.findFirstByProjectIdAndId(eq(-1), eq(100)) } returns Optional.empty()
+        every { projectFileRepository.findFirstByProjectIdAndIdAndType(eq(-1), eq(100), ProjectFileType.APPLICANT_FILE) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> {
-            fileStorageService.setDescription(-1, 100, null)
+            fileStorageService.setDescription(-1, 100, ProjectFileType.APPLICANT_FILE,null)
         }
     }
 
@@ -341,12 +341,12 @@ class FileStorageServiceTest {
     fun setDescription_null() {
         val project = dummyProjectFile()
         project.description = "old_description"
-        every { projectFileRepository.findFirstByProjectIdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(project)
+        every { projectFileRepository.findFirstByProjectIdAndIdAndType(eq(PROJECT_ID), eq(10), ProjectFileType.APPLICANT_FILE) } returns Optional.of(project)
 
         val projectFile = slot<ProjectFile>()
         every { projectFileRepository.save(capture(projectFile)) } returnsArgument 0
 
-        val result = fileStorageService.setDescription(PROJECT_ID, 10, null)
+        val result = fileStorageService.setDescription(PROJECT_ID, 10, ProjectFileType.APPLICANT_FILE, null)
 
         assertEquals(null, projectFile.captured.description)
         assertEquals(null, result.description)
@@ -365,14 +365,14 @@ class FileStorageServiceTest {
 
     @Test
     fun setDescription_new() {
-        val project = dummyProjectFile()
+        val project = dummyProjectFile(ProjectFileType.ASSESSMENT_FILE)
         project.description = null
-        every { projectFileRepository.findFirstByProjectIdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(project)
+        every { projectFileRepository.findFirstByProjectIdAndIdAndType(eq(PROJECT_ID), eq(10), ProjectFileType.ASSESSMENT_FILE) } returns Optional.of(project)
 
         val projectFile = slot<ProjectFile>()
         every { projectFileRepository.save(capture(projectFile)) } returnsArgument 0
 
-        val result = fileStorageService.setDescription(PROJECT_ID, 10, "new_description")
+        val result = fileStorageService.setDescription(PROJECT_ID, 10, ProjectFileType.ASSESSMENT_FILE, "new_description")
 
         assertEquals("new_description", projectFile.captured.description)
         assertEquals("new_description", result.description)
@@ -391,29 +391,30 @@ class FileStorageServiceTest {
 
     @Test
     fun deleteFile_notExisting() {
-        every { projectFileRepository.findFirstByProjectIdAndId(eq(-1), eq(100)) } returns Optional.empty()
+        every { projectFileRepository.findFirstByProjectIdAndIdAndType(eq(-1), eq(100), ProjectFileType.ASSESSMENT_FILE) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> {
-            fileStorageService.deleteFile(-1, 100)
+            fileStorageService.deleteFile(-1, 100, ProjectFileType.ASSESSMENT_FILE)
         }
     }
 
     @Test
-    fun deleteFile() {
+    fun `delete applicant file`() {
         val bucket = slot<String>()
         val identifier = slot<String>()
         val projectFile = slot<ProjectFile>()
 
-        every { projectFileRepository.findFirstByProjectIdAndId(eq(PROJECT_ID), eq(10)) } returns Optional.of(
-            dummyProjectFile()
-        )
+        val file = dummyProjectFile().copy(updated = ZonedDateTime.now().plusDays(1))
+
+        every { projectFileRepository.findFirstByProjectIdAndIdAndType(eq(PROJECT_ID), eq(10), ProjectFileType.APPLICANT_FILE) } returns
+            Optional.of(file)
         every { minioStorage.deleteFile(capture(bucket), capture(identifier)) } answers {}
         every { projectFileRepository.delete(capture(projectFile)) } answers {}
 
-        fileStorageService.deleteFile(PROJECT_ID, 10)
+        fileStorageService.deleteFile(PROJECT_ID, 10, ProjectFileType.APPLICANT_FILE)
 
         assertEquals(PROJECT_FILES_BUCKET, bucket.captured)
         assertEquals("project-1/proj-file-1.png", identifier.captured)
-        assertEquals(dummyProjectFile(), projectFile.captured)
+        assertEquals(file, projectFile.captured)
 
         val auditEvent = slot<AuditCandidate>()
         verify { auditService.logEvent(capture(auditEvent)) }
@@ -424,7 +425,33 @@ class FileStorageServiceTest {
         }
     }
 
-    private fun dummyProjectFile(): ProjectFile {
+    @Test
+    fun `delete assessment file`() {
+        val bucket = slot<String>()
+        val identifier = slot<String>()
+        val projectFile = slot<ProjectFile>()
+
+        every { projectFileRepository.findFirstByProjectIdAndIdAndType(eq(PROJECT_ID), eq(10), ProjectFileType.ASSESSMENT_FILE) } returns
+            Optional.of(dummyProjectFile(ProjectFileType.ASSESSMENT_FILE))
+        every { minioStorage.deleteFile(capture(bucket), capture(identifier)) } answers {}
+        every { projectFileRepository.delete(capture(projectFile)) } answers {}
+
+        fileStorageService.deleteFile(PROJECT_ID, 10, ProjectFileType.ASSESSMENT_FILE)
+
+        assertEquals(PROJECT_FILES_BUCKET, bucket.captured)
+        assertEquals("project-1/proj-file-1.png", identifier.captured)
+        assertEquals(dummyProjectFile(ProjectFileType.ASSESSMENT_FILE), projectFile.captured)
+
+        val auditEvent = slot<AuditCandidate>()
+        verify { auditService.logEvent(capture(auditEvent)) }
+        with(auditEvent) {
+            assertEquals(testProject.id, PROJECT_ID)
+            assertEquals(AuditAction.PROJECT_FILE_DELETED, captured.action)
+            assertEquals("document proj-file-1.png deleted from application 612", captured.description)
+        }
+    }
+
+    private fun dummyProjectFile(type: ProjectFileType = ProjectFileType.APPLICANT_FILE): ProjectFile {
         return ProjectFile(
             id = 1,
             bucket = PROJECT_FILES_BUCKET,
@@ -432,7 +459,7 @@ class FileStorageServiceTest {
             name = "proj-file-1.png",
             project = testProject,
             author = account,
-            type = ProjectFileType.APPLICANT_FILE,
+            type = type,
             description = "",
             size = 2,
             updated = TEST_DATE_TIME

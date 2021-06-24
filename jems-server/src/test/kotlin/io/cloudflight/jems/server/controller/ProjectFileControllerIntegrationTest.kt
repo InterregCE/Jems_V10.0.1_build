@@ -57,7 +57,7 @@ class ProjectFileControllerIntegrationTest {
         val projectDescription = InputProjectFileDescription("new test description")
 
         mockMvc.perform(
-            put("/api/project/${project.id}/file/${projectFile.id}/description")
+            put("/api/project/${project.id}/file/applicant/${projectFile.id}/description")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(projectDescription))
         )
@@ -73,7 +73,7 @@ class ProjectFileControllerIntegrationTest {
             InputProjectFileDescription("1234567890____15____1234567890____35____1234567890____55____1234567890____75____1234567890____95____1234567890")
 
         mockMvc.perform(
-            put("/api/project/1/file/10/description")
+            put("/api/project/1/file/applicant/10/description")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(projectDescription))
         )
