@@ -7,7 +7,7 @@ import {OutputProjectFile} from '@cat/api';
 import {ProjectDetailPageStore} from '../../../../project-detail-page/project-detail-page-store';
 
 describe('ProjectApplicationFilesComponent', () => {
-  const URL = '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=id,desc';
+  const URL = '//api/project/1/file?page=0&size=25&sort=id,desc';
   let component: ProjectApplicationFilesComponent;
   let fixture: ComponentFixture<ProjectApplicationFilesComponent>;
   let httpTestingController: HttpTestingController;
@@ -49,21 +49,21 @@ describe('ProjectApplicationFilesComponent', () => {
     component.newSort$.next({active: 'userRole.name', direction: 'asc'});
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=0&size=25&sort=userRole.name,asc'
+      url: '//api/project/1/file?page=0&size=25&sort=userRole.name,asc'
     });
 
     // change page index
     component.newPageIndex$.next(2);
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=2&size=25&sort=userRole.name,asc'
+      url: '//api/project/1/file?page=2&size=25&sort=userRole.name,asc'
     });
 
     // change page size
     component.newPageSize$.next(3);
     httpTestingController.expectOne({
       method: 'GET',
-      url: '//api/project/1/file?fileType=APPLICANT_FILE&page=2&size=3&sort=userRole.name,asc'
+      url: '//api/project/1/file?page=2&size=3&sort=userRole.name,asc'
     });
 
     httpTestingController.verify();
@@ -77,7 +77,7 @@ describe('ProjectApplicationFilesComponent', () => {
       method: 'GET',
       url: URL
     });
-    httpTestingController.expectOne({method: 'DELETE', url: '//api/project/1/file/1'});
+    httpTestingController.expectOne({method: 'DELETE', url: '//api/project/1/file/applicant/1'});
 
     httpTestingController.verify();
   }));
@@ -90,7 +90,7 @@ describe('ProjectApplicationFilesComponent', () => {
       method: 'GET',
       url: URL
     });
-    httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/file/1/description'});
+    httpTestingController.expectOne({method: 'PUT', url: '//api/project/1/file/applicant/1/description'});
 
     httpTestingController.verify();
   }));

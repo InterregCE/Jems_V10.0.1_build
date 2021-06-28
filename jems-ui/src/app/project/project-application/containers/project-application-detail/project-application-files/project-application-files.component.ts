@@ -1,10 +1,16 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {combineLatest, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
 import {catchError, map, mergeMap, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
-import {Permission} from '../../../../../security/permissions/permission';
-import {OutputProjectFile, ProjectDetailDTO, ProjectFileStorageService, ProjectStatusDTO} from '@cat/api';
+import {
+  OutputProjectFile,
+  PageOutputProjectFile, ProjectDecisionDTO,
+  ProjectDetailDTO,
+  ProjectFileStorageService,
+  ProjectStatusDTO,
+  UserRoleCreateDTO
+} from '@cat/api';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../../../../common/utils/tables';
 import {Log} from '../../../../../common/utils/log';
@@ -12,6 +18,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {APIError} from '../../../../../common/models/APIError';
 import {ProjectUtil} from '../../../../project-util';
 import {ProjectDetailPageStore} from '../../../../project-detail-page/project-detail-page-store';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-project-application-files',
@@ -20,7 +27,6 @@ import {ProjectDetailPageStore} from '../../../../project-detail-page/project-de
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFilesComponent extends BaseComponent {
-  Permission = Permission;
 
   @Input()
   projectId: number;
@@ -46,25 +52,34 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
     this.refreshPage$.pipe(startWith(null))
   ])
     .pipe(
-      mergeMap(([pageIndex, pageSize, sort]) =>
-        this.projectFileStorageService.getFilesForProject(this.fileType, this.projectId, pageIndex, pageSize, sort)),
-      tap(page => Log.info('Fetched the project files:', this, page.content)),
+      mergeMap(([pageIndex, pageSize, sort]) => {
+        if (this.fileType === OutputProjectFile.TypeEnum.APPLICANTFILE) {
+          return this.projectFileStorageService.getApplicationFilesForProject(this.projectId, pageIndex, pageSize, sort);
+        } else {
+          return this.projectFileStorageService.getAssessmentFilesForProject(this.projectId, pageIndex, pageSize, sort);
+        }
+      }),
+      // tap(page => Log.info('Fetched the project files:', this, page.content)),
     );
 
   details$ = combineLatest([
-    this.currentPage$,
-    this.projectDetailPageStore.project$,
-    this.projectDetailPageStore.projectCurrentDecisions$,
-    this.projectDetailPageStore.isProjectLatestVersion$,
-    this.permissionService.permissionsChanged()
-  ])
+      this.currentPage$,
+      this.projectDetailPageStore.project$,
+      this.projectDetailPageStore.projectCurrentDecisions$,
+      this.projectDetailPageStore.isProjectLatestVersion$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationRetrieve)
+      ])
     .pipe(
-      map(([page, project, decisions, isProjectLatestVersion, permissions]) => ({
+      map(([page, project, decisions, isProjectLatestVersion, canUploadAssessmentFile, canUploadApplicationFile, canRetrieveApplicationFile]: [PageOutputProjectFile, ProjectDetailDTO, ProjectDecisionDTO, boolean, boolean, boolean, boolean]) => ({
         page,
         project,
         fundingDecisionDefined: !!decisions?.finalFundingDecision || !!decisions?.preFundingDecision,
-        permission: permissions[0],
-        uploadPossible: this.canUploadFiles(project, permissions[0], isProjectLatestVersion)
+        uploadPossible: this.canUploadFiles(project, isProjectLatestVersion, canUploadAssessmentFile, canUploadApplicationFile, canRetrieveApplicationFile),
+        canChangeApplicationFile: canUploadApplicationFile,
+        canRetrieveApplicationFile,
+        canChangeAssessmentFile: canUploadAssessmentFile,
       }))
     );
 
@@ -74,63 +89,89 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
     super();
   }
 
+  private getUploadRequest(file: File): Observable<any> {
+    if (this.fileType === OutputProjectFile.TypeEnum.APPLICANTFILE) {
+      return this.projectFileStorageService.uploadProjectApplicationFileForm(file, this.projectId);
+    }
+    return this.projectFileStorageService.uploadProjectAssessmentFileForm(file, this.projectId);
+  }
+
   addNewFilesForUpload(file: File): void {
-    this.projectFileStorageService.uploadProjectFileForm(file, this.fileType, this.projectId)
-      .pipe(
-        take(1),
-        takeUntil(this.destroyed$),
-        tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-        tap(() => this.uploadSuccess$.next(true)),
-        tap(() => this.uploadError$.next(null)),
-        catchError((error: HttpErrorResponse) => {
-          this.uploadError$.next(error.error);
-          throw error;
-        })
-      ).subscribe();
+    this.getUploadRequest(file)
+        .pipe(
+          take(1),
+          takeUntil(this.destroyed$),
+          tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+          tap(() => this.uploadSuccess$.next(true)),
+          tap(() => this.uploadError$.next(null)),
+          catchError((error: HttpErrorResponse) => {
+            this.uploadError$.next(error.error);
+            throw error;
+          })
+        ).subscribe();
   }
 
   downloadFile(file: OutputProjectFile): void {
+    const type = this.fileType === OutputProjectFile.TypeEnum.APPLICANTFILE ? 'applicant' : 'assessment';
     window.open(
-      `/api/project/${this.projectId}/file/${file.id}`,
+      `/api/project/${this.projectId}/file/${type}/${file.id}`,
       '_blank',
     );
   }
 
+  private getDeleteRequest(file: OutputProjectFile): Observable<any> {
+    if (this.fileType === OutputProjectFile.TypeEnum.APPLICANTFILE) {
+      return this.projectFileStorageService.deleteProjectApplicationFile(file.id, this.projectId);
+    }
+    return this.projectFileStorageService.deleteProjectAssessmentFile(file.id, this.projectId);
+  }
+
   deleteFile(file: OutputProjectFile): void {
-    this.projectFileStorageService.deleteFile(file.id, this.projectId)
-      .pipe(
-        take(1),
-        takeUntil(this.destroyed$),
-        tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-        tap(() => Log.info('Deleted file', this, file.name)),
-      ).subscribe();
+    this.getDeleteRequest(file)
+        .pipe(
+          take(1),
+          takeUntil(this.destroyed$),
+          tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+          tap(() => Log.info('Deleted file', this, file.name)),
+        ).subscribe();
+  }
+
+  private getSaveDescriptionRequest(file: OutputProjectFile): Observable<OutputProjectFile> {
+    if (this.fileType === OutputProjectFile.TypeEnum.APPLICANTFILE) {
+      return this.projectFileStorageService.setDescriptionToProjectApplicationFile(file.id, this.projectId, {description: file.description});
+    }
+    return this.projectFileStorageService.setDescriptionToProjectAssessmentFile(file.id, this.projectId, {description: file.description});
   }
 
   saveDescription(file: OutputProjectFile): void {
-    this.projectFileStorageService.setDescriptionToFile(file.id, this.projectId, {description: file.description})
-      .pipe(
-        take(1),
-        takeUntil(this.destroyed$),
-        tap(saved => Log.info('Changed file description', this, saved)),
-        tap(() => this.refreshPage$.next()),
-      ).subscribe();
+    this.getSaveDescriptionRequest(file)
+        .pipe(
+          take(1),
+          takeUntil(this.destroyed$),
+          tap(saved => Log.info('Changed file description', this, saved)),
+          tap(() => this.refreshPage$.next()),
+        ).subscribe();
   }
 
-  private canUploadFiles(project: ProjectDetailDTO, permission: Permission, isProjectLatestVersion: boolean): boolean {
+  private canUploadFiles(project: ProjectDetailDTO, isProjectLatestVersion: boolean, canUploadAssessmentFile: boolean, canUploadApplicationFile: boolean, canRetrieveApplicationFile: boolean): boolean {
     if (!isProjectLatestVersion) {
       return false;
     }
-    if (permission === Permission.ADMINISTRATOR) {
-      return true;
-    }
+
     if (this.fileType === OutputProjectFile.TypeEnum.ASSESSMENTFILE) {
-      return permission === Permission.PROGRAMME_USER;
+      return canUploadAssessmentFile;
     }
-    if (permission === Permission.PROGRAMME_USER) {
-      // programme user can only upload assessment files
-      return false;
+
+    // make a difference between users with only View permission and applicants
+    if (this.fileType === OutputProjectFile.TypeEnum.APPLICANTFILE) {
+      if (canUploadApplicationFile && canRetrieveApplicationFile) {
+        return canUploadApplicationFile;
+      }
+      if (canRetrieveApplicationFile) {
+        return false;
+      }
     }
-    return ProjectUtil.isDraft(project)
-      || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
+
+    return ProjectUtil.isDraft(project) || project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
   }
 }

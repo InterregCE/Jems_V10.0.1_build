@@ -8,7 +8,7 @@
         matTooltip="{{'file.table.action.download.tooltip' | translate}}">
     <em class="fas fa-file-download"></em>
 </button>
-<button *ngIf="canChangeFile()" mat-icon-button color="accent"
+<button *ngIf="canDeleteFile()" mat-icon-button color="accent"
         (click)="delete.emit(file)"
         matTooltip="{{'file.table.action.delete.tooltip' | translate}}">
     <em class="fas fa-trash"></em>

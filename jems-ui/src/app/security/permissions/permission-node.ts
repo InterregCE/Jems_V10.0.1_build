@@ -9,6 +9,7 @@ export enum PermissionState {
 export enum PermissionMode {
   HIDDEN_VIEW_EDIT = 'HIDDEN_VIEW_EDIT',
   HIDDEN_VIEW = 'HIDDEN_VIEW',
+  VIEW_EDIT = 'VIEW_EDIT',
   TOGGLE_EDIT = 'TOGGLE_EDIT',
 }
 

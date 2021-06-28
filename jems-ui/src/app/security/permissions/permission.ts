@@ -147,7 +147,7 @@ export class Permission {
           children: [
             {
               name: 'file.tab.application',
-              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              mode: PermissionMode.VIEW_EDIT,
               viewPermissions: [PermissionsEnum.ProjectFileApplicationRetrieve],
               editPermissions: [PermissionsEnum.ProjectFileApplicationUpdate],
             },

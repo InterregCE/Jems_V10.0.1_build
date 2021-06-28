@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {OutputProjectFile, ProjectDetailDTO} from '@cat/api';
-import {Permission} from '../../../../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-actions-cell',
@@ -16,7 +15,11 @@ export class ActionsCellComponent {
   @Input()
   fundingDecisionDefined: boolean;
   @Input()
-  permission: Permission;
+  isAllowedToChangeApplicationFile: boolean;
+  @Input()
+  isAllowedToRetrieveApplicationFile: boolean;
+  @Input()
+  isAllowedToChangeAssessmentFile: boolean;
 
   @Output()
   edit = new EventEmitter<OutputProjectFile>();
@@ -26,17 +29,23 @@ export class ActionsCellComponent {
   delete = new EventEmitter<OutputProjectFile>();
 
   canChangeFile(): boolean {
-    if (this.permission === Permission.ADMINISTRATOR) {
-      return true;
-    }
-
     return this.file.type === OutputProjectFile.TypeEnum.APPLICANTFILE
       ? this.canChangeApplicationFile()
       : this.canChangeAssessmentFile();
   }
 
+  canDeleteFile(): boolean {
+    return this.file.type === OutputProjectFile.TypeEnum.APPLICANTFILE
+      ? this.canDeleteApplicationFile()
+      : this.canChangeAssessmentFile();
+  }
+
   private canChangeApplicationFile(): boolean {
-    if (this.permission === Permission.PROGRAMME_USER) {
+    // make a difference between users with only View permission and applicants
+    if (this.isAllowedToChangeApplicationFile && this.isAllowedToRetrieveApplicationFile) {
+      return this.isAllowedToChangeApplicationFile;
+    }
+    if (this.isAllowedToRetrieveApplicationFile) {
       return false;
     }
 
@@ -49,7 +58,24 @@ export class ActionsCellComponent {
   }
 
   private canChangeAssessmentFile(): boolean {
-    return this.permission !== Permission.APPLICANT_USER
+    return this.isAllowedToChangeAssessmentFile
       && (!this.fundingDecisionDefined || this.file.updated > this.project.projectStatus.updated);
+  }
+
+  private canDeleteApplicationFile(): boolean {
+    // the applicant user can only change/delete files that are added after a submission change
+    const lastSubmissionDate = this.project?.lastResubmission?.updated
+      || this.project?.firstSubmission?.updated
+      || this.project?.projectStatus.updated;
+
+    // make a difference between users with only View permission and applicants
+    if (this.isAllowedToChangeApplicationFile && this.isAllowedToRetrieveApplicationFile) {
+      return this.isAllowedToChangeApplicationFile && this.file.updated > lastSubmissionDate;
+    }
+    if (this.isAllowedToRetrieveApplicationFile) {
+      return false;
+    }
+
+    return this.file.updated > lastSubmissionDate;
   }
 }

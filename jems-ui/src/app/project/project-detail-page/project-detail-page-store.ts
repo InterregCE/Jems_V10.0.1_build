@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {ProjectDecisionDTO, ProjectDetailDTO, ProjectStatusService} from '@cat/api';
+import {ProjectDecisionDTO, ProjectDetailDTO, ProjectStatusService, UserRoleCreateDTO} from '@cat/api';
 import {Permission} from '../../security/permissions/permission';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
@@ -10,6 +10,7 @@ import {ProjectUtil} from '../project-util';
 import {SecurityService} from '../../security/security.service';
 import {PreConditionCheckResult} from '../model/plugin/PreConditionCheckResult';
 import {ProjectVersionStore} from '../services/project-version-store.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable()
 export class ProjectDetailPageStore {
@@ -43,11 +44,11 @@ export class ProjectDetailPageStore {
   private assessmentFilesVisible(): Observable<boolean> {
     return combineLatest([
       this.projectStore.project$,
-      this.permissionService.permissionsChanged()
+      this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve)
     ])
       .pipe(
-        map(([project, permissions]) =>
-          permissions[0] !== Permission.APPLICANT_USER && !ProjectUtil.isDraft(project)
+        map(([project, permission]) =>
+          permission && !ProjectUtil.isDraft(project)
         )
       );
 

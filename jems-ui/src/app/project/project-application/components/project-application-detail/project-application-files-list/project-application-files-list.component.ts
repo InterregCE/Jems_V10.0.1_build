@@ -37,7 +37,11 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   @Input()
   fundingDecisionDefined: boolean;
   @Input()
-  permission: Permission;
+  canChangeApplicationFile: boolean;
+  @Input()
+  canRetrieveApplicationFile: boolean;
+  @Input()
+  canChangeAssessmentFile: boolean;
 
   @Output()
   deleteFile = new EventEmitter<OutputProjectFile>();

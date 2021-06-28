@@ -28,35 +28,36 @@
                                 <div>
                                     <mat-button-toggle-group
                                             [disabled]="node.disabled || !data.isUpdateAllowed"
-                                            *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.HIDDEN_VIEW"
-                                            class="small-toggle-group">
+                                            *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.HIDDEN_VIEW || node.mode === PermissionMode.VIEW_EDIT"
+                                            class="small-toggle-group" [ngClass]="node.mode === PermissionMode.VIEW_EDIT ? 'view-edit-toggle' : ''">
                                         <mat-button-toggle
+                                                *ngIf="node.mode === PermissionMode.HIDDEN_VIEW || node.mode === PermissionMode.HIDDEN_VIEW_EDIT"
                                                 [checked]="state(node.form)?.value === PermissionState.HIDDEN"
                                                 (click)="$event.stopPropagation()"
                                                 (change)="changeState(node.form, PermissionState.HIDDEN);">
-                                <span>
-                                    <mat-icon>visibility_off</mat-icon>
-                                    {{'common.permission.hide' | translate}}
-                                </span>
+                                            <span>
+                                                <mat-icon>visibility_off</mat-icon>
+                                                {{'common.permission.hide' | translate}}
+                                            </span>
                                         </mat-button-toggle>
                                         <mat-button-toggle
                                                 [checked]="state(node.form)?.value === PermissionState.VIEW"
                                                 (click)="$event.stopPropagation()"
                                                 (change)="changeState(node.form, PermissionState.VIEW)">
-                                <span>
-                                    <mat-icon>visibility</mat-icon>
-                                    {{'common.permission.view' | translate}}
-                                </span>
+                                            <span>
+                                                <mat-icon>visibility</mat-icon>
+                                                {{'common.permission.view' | translate}}
+                                            </span>
                                         </mat-button-toggle>
                                         <mat-button-toggle
-                                                *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT"
+                                                *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.VIEW_EDIT"
                                                 [checked]="state(node.form)?.value === PermissionState.EDIT"
                                                 (click)="$event.stopPropagation()"
                                                 (change)="changeState(node.form, PermissionState.EDIT)">
-                                <span>
-                                    <mat-icon>edit</mat-icon>
-                                    {{'common.permission.edit' | translate}}
-                                </span>
+                                            <span>
+                                                <mat-icon>edit</mat-icon>
+                                                {{'common.permission.edit' | translate}}
+                                            </span>
                                         </mat-button-toggle>
                                     </mat-button-toggle-group>
                                     <span *ngIf="node.mode === PermissionMode.TOGGLE_EDIT" class="slide-toggle-wrapper">

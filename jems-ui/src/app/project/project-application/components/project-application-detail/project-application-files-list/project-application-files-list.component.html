@@ -24,7 +24,9 @@
             [file]="file"
             [project]="project"
             [fundingDecisionDefined]="fundingDecisionDefined"
-            [permission]="permission"
+            [isAllowedToChangeApplicationFile]="canChangeApplicationFile"
+            [isAllowedToRetrieveApplicationFile]="canRetrieveApplicationFile"
+            [isAllowedToChangeAssessmentFile]="canChangeAssessmentFile"
             (edit)="descriptionState.set(file.id, FormState.EDIT)"
             (download)="downloadFile.emit($event)"
             (delete)="delete(file)">

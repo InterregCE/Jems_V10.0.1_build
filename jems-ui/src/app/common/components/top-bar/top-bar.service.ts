@@ -77,7 +77,7 @@ export class TopBarService {
           if (permissions.includes(PermissionsEnum.CallRetrieve)) {
             menuItems.push(this.callsItem);
           }
-          if (Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS.every(perm => permissions.includes(perm))) {
+          if (Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {
             menuItems.push(this.programmeItem);
           }
           if (Permission.SYSTEM_MODULE_PERMISSIONS.every(perm => permissions.includes(perm))) {
