@@ -77,7 +77,7 @@ interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPacka
         value ="""
              SELECT
              entity.*,
-             entity.investment_number as investmentNumber,
+             entity.investment_number as investmentNumber
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              WHERE entity.work_package_id = :workPackageId
              """,
