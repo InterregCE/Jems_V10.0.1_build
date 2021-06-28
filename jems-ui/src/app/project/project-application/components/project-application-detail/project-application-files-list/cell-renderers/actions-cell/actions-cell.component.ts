@@ -64,18 +64,16 @@ export class ActionsCellComponent {
 
   private canDeleteApplicationFile(): boolean {
     // the applicant user can only change/delete files that are added after a submission change
-    const lastSubmissionDate = this.project?.lastResubmission?.updated
-      || this.project?.firstSubmission?.updated
-      || this.project?.projectStatus.updated;
+    const lastStatusChange = this.project?.projectStatus.updated;
 
     // make a difference between users with only View permission and applicants
     if (this.isAllowedToChangeApplicationFile && this.isAllowedToRetrieveApplicationFile) {
-      return this.isAllowedToChangeApplicationFile && this.file.updated > lastSubmissionDate;
+      return this.isAllowedToChangeApplicationFile && this.file.updated > lastStatusChange;
     }
     if (this.isAllowedToRetrieveApplicationFile) {
       return false;
     }
 
-    return this.file.updated > lastSubmissionDate;
+    return this.file.updated > lastStatusChange;
   }
 }
