@@ -36,8 +36,7 @@ class CallFactory(
                 endDateStep1 = null,
                 endDate = callEnd,
                 status = CallStatus.PUBLISHED,
-                lengthOfPeriod = 1,
-                applicationFormFieldConfigurationEntities = mutableSetOf()
+                lengthOfPeriod = 1
             )
         )
     }

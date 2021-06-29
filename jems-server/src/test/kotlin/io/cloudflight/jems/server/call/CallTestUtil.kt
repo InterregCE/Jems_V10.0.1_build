@@ -45,7 +45,6 @@ private fun testCall(id: Long = 0) = CallEntity(
     strategies = mutableSetOf(),
     funds = mutableSetOf(),
     flatRates = mutableSetOf(),
-    applicationFormFieldConfigurationEntities = mutableSetOf()
 ).apply {
     translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN),"This is a dummy call"))
     flatRates.add(ProjectCallFlatRateEntity(setupId = FlatRateSetupId(call = this, type = FlatRateType.STAFF_COSTS), rate = 5, isAdjustable = true))

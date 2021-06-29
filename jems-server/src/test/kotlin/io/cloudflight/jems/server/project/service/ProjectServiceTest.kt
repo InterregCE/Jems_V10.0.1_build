@@ -85,8 +85,7 @@ class ProjectServiceTest : UnitTest() {
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(1),
         status = CallStatus.PUBLISHED,
-        lengthOfPeriod = 1,
-        applicationFormFieldConfigurationEntities = mutableSetOf()
+        lengthOfPeriod = 1
     )
 
     @RelaxedMockK
@@ -175,8 +174,7 @@ class ProjectServiceTest : UnitTest() {
             endDateStep1 = null,
             endDate = ZonedDateTime.now(),
             status = CallStatus.PUBLISHED,
-            lengthOfPeriod = 6,
-            applicationFormFieldConfigurationEntities = mutableSetOf()
+            lengthOfPeriod = 6
         )
         val projectData = InputProjectData(acronym = "acronym", duration = 13)
         val projectToReturn = ProjectEntity(

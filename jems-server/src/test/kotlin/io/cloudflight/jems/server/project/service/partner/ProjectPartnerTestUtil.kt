@@ -37,8 +37,7 @@ class ProjectPartnerTestUtil {
             strategies = mutableSetOf(),
             isAdditionalFundAllowed = false,
             funds = mutableSetOf(),
-            lengthOfPeriod = 1,
-            applicationFormFieldConfigurationEntities = mutableSetOf()
+            lengthOfPeriod = 1
         )
         val projectStatus = ProjectStatusHistoryEntity(
             status = ApplicationStatus.APPROVED,

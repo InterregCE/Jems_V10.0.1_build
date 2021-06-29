@@ -96,8 +96,7 @@ class FileStorageServiceTest {
         endDateStep1 = null,
         endDate = ZonedDateTime.now(),
         status = CallStatus.PUBLISHED,
-        lengthOfPeriod = 1,
-        applicationFormFieldConfigurationEntities = mutableSetOf()
+        lengthOfPeriod = 1
     )
     private val testProject = ProjectEntity(
         id = PROJECT_ID, call = dummyCall, applicant = account, acronym = "test project",
