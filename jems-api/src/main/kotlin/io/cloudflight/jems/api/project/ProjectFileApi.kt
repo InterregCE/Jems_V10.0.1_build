@@ -88,7 +88,7 @@ interface ProjectFileApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer")
     )
-    @GetMapping()
+    @GetMapping("/applicant")
     fun getApplicationFilesForProject(
         @PathVariable projectId: Long,
         pageable: Pageable

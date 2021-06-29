@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0f09a8ef-d748-46e7-8cd8-c495606bacdb",
+		"_postman_id": "d99c46c0-47a7-44a3-9b71-f42c44e48494",
 		"name": "ems-rest-test",
 		"description": "Check EMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -2555,7 +2555,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
+							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
 							"host": [
 								"{{url}}"
 							],
@@ -2563,13 +2563,8 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"file"
-							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
+								"file",
+								"applicant"
 							]
 						}
 					},
@@ -2623,7 +2618,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
+							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
 							"host": [
 								"{{url}}"
 							],
@@ -2631,13 +2626,8 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"file"
-							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
+								"file",
+								"applicant"
 							]
 						}
 					},
@@ -2701,7 +2691,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/{{file_id}}/description",
+							"raw": "{{url}}/api/project/{{application_id}}/file/applicant/{{file_id}}/description",
 							"host": [
 								"{{url}}"
 							],
@@ -2710,6 +2700,7 @@
 								"project",
 								"{{application_id}}",
 								"file",
+								"applicant",
 								"{{file_id}}",
 								"description"
 							]
@@ -2765,7 +2756,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/{{file_id}}",
+							"raw": "{{url}}/api/project/{{application_id}}/file/applicant/{{file_id}}",
 							"host": [
 								"{{url}}"
 							],
@@ -2774,6 +2765,7 @@
 								"project",
 								"{{application_id}}",
 								"file",
+								"applicant",
 								"{{file_id}}"
 							]
 						}
@@ -2824,160 +2816,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"{{application_id}}",
-								"file"
-							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "programme user cannot upload file",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('programme user should not be able to upload APPLICANT file', function() {\r",
-									"    pm.response.to.have.status(403);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{programme_user_password}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{programme_user_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "multipart/form-data"
-							}
-						],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "collections/file_empty.txt"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"{{application_id}}",
-								"file"
-							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "programme user cannot set description",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('programme user should not be able to set description, although he can see DRAFT project', function() {\r",
-									"    pm.response.to.have.status(403);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{programme_user_password}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{programme_user_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"description\": \"API test description\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/{{file_id}}/description",
+							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
 							"host": [
 								"{{url}}"
 							],
@@ -2986,8 +2825,7 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"{{file_id}}",
-								"description"
+								"applicant"
 							]
 						}
 					},
@@ -3037,7 +2875,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/{{file_id}}",
+							"raw": "{{url}}/api/project/{{application_id}}/file/applicant/{{file_id}}",
 							"host": [
 								"{{url}}"
 							],
@@ -3046,6 +2884,7 @@
 								"project",
 								"{{application_id}}",
 								"file",
+								"applicant",
 								"{{file_id}}"
 							]
 						}
@@ -3338,7 +3177,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
+							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
 							"host": [
 								"{{url}}"
 							],
@@ -3346,13 +3185,8 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"file"
-							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
+								"file",
+								"applicant"
 							]
 						}
 					},
@@ -3554,7 +3388,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
+							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
 							"host": [
 								"{{url}}"
 							],
@@ -3562,13 +3396,8 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"file"
-							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
+								"file",
+								"applicant"
 							]
 						}
 					},
@@ -3622,7 +3451,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
+							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
 							"host": [
 								"{{url}}"
 							],
@@ -3630,13 +3459,8 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"file"
-							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
+								"file",
+								"applicant"
 							]
 						}
 					},
