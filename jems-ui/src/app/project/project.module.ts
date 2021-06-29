@@ -86,6 +86,7 @@ import {ProjectVersionStore} from './services/project-version-store.service';
 import {ProjectPageTemplateComponent} from './project-page-template/project-page-template.component';
 import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
 import { FormFieldVisibilityStatusDirective } from './directives/form-field-visibility-status.directive';
+import { ProjectApplicationFileDeleteComponent } from './project-application/components/project-application-detail/project-application-file-delete/project-application-file-delete.component';
 
 @NgModule({
   declarations: [
@@ -166,6 +167,7 @@ import { FormFieldVisibilityStatusDirective } from './directives/form-field-visi
     ProjectPageTemplateComponent,
     ProjectWorkPackagePageComponent,
     FormFieldVisibilityStatusDirective,
+    ProjectApplicationFileDeleteComponent,
   ],
   imports: [
     SharedModule,

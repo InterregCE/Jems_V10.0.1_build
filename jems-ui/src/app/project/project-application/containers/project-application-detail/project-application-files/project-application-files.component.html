@@ -7,6 +7,10 @@
             [projectStatus]="details.project.projectStatus.status"
             (uploadFile)="addNewFilesForUpload($event)">
     </app-project-application-file-upload>
+    <app-project-application-file-delete
+            [success$]="deleteSuccess$"
+            [error$]="deleteError$">
+    </app-project-application-file-delete>
     <app-project-application-files-list
             [filePage]="details.page"
             [pageIndex]="newPageIndex$ | async"

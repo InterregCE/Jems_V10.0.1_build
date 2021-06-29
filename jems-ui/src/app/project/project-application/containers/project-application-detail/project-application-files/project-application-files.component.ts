@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
-import {catchError, map, mergeMap, startWith, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, map, startWith, switchMap, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {
   OutputProjectFile,
@@ -36,6 +36,9 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
   uploadSuccess$ = new Subject<boolean>();
   uploadError$ = new ReplaySubject<APIError | null>(1);
 
+  deleteSuccess$ = new Subject<boolean>();
+  deleteError$ = new ReplaySubject<APIError | null>(1);
+
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   refreshPage$ = new Subject<void>();
@@ -52,14 +55,11 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
     this.refreshPage$.pipe(startWith(null))
   ])
     .pipe(
-      mergeMap(([pageIndex, pageSize, sort]) => {
-        if (this.fileType === OutputProjectFile.TypeEnum.APPLICANTFILE) {
-          return this.projectFileStorageService.getApplicationFilesForProject(this.projectId, pageIndex, pageSize, sort);
-        } else {
-          return this.projectFileStorageService.getAssessmentFilesForProject(this.projectId, pageIndex, pageSize, sort);
-        }
+      switchMap(([pageIndex, pageSize, sort]) => {
+        return this.fileType === OutputProjectFile.TypeEnum.APPLICANTFILE ?
+          this.projectFileStorageService.getApplicationFilesForProject(this.projectId, pageIndex, pageSize, sort) :
+          this.projectFileStorageService.getAssessmentFilesForProject(this.projectId, pageIndex, pageSize, sort);
       }),
-      // tap(page => Log.info('Fetched the project files:', this, page.content)),
     );
 
   details$ = combineLatest([
@@ -133,6 +133,12 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
           takeUntil(this.destroyed$),
           tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
           tap(() => Log.info('Deleted file', this, file.name)),
+          tap(() => this.deleteSuccess$.next(true)),
+          tap(() => this.deleteError$.next(null)),
+          catchError((error: HttpErrorResponse) => {
+            this.deleteError$.next(error.error);
+            throw error;
+          })
         ).subscribe();
   }
 
