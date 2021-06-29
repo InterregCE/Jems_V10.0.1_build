@@ -58,10 +58,10 @@ class AssociatedOrganizationPersistenceProvider(
         projectId: Long,
         timestamp: Timestamp,
     ): OutputProjectAssociatedOrganizationDetail {
-        val partnerId = projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, id)
-            .map { it.toOutputProjectAssociatedOrganizationDetail() }
-            .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }.partner.id
-        val partner = projectPartnerRepo.findOneByIdAsOfTimestamp(partnerId!!, timestamp)
+        val partnerId =
+            projectAssociatedOrganizationRepo.getPartnerIdByProjectIdAndIdAsOfTimestamp(projectId, id, timestamp)
+                ?: throw ResourceNotFoundException("projectAssociatedOrganisation")
+        val partner = projectPartnerRepo.findOneByIdAsOfTimestamp(partnerId, timestamp)
             .toOutputProjectPartnerHistoricalData()
         val address =
             projectAssociatedOrganizationRepo.findAssociatedOrganizationAddressesByIdAsOfTimestamp(id, timestamp)
