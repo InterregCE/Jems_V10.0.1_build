@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {OutputProjectFile, ProjectDetailDTO} from '@cat/api';
+import {OutputProjectFile, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import ProjectStatus = ProjectStatusDTO.StatusEnum;
 
 @Component({
   selector: 'app-actions-cell',
@@ -49,12 +50,10 @@ export class ActionsCellComponent {
       return false;
     }
 
-    // the applicant user can only change/delete files that are added after a submission change
-    const lastSubmissionDate = this.project?.lastResubmission?.updated
-      || this.project?.firstSubmission?.updated
-      || this.project?.projectStatus.updated;
-
-    return this.file.updated > lastSubmissionDate;
+    // the applicant user can only change files that if the project is in a specific status
+    return this.project?.projectStatus.status === ProjectStatus.DRAFT
+      || this.project?.projectStatus.status === ProjectStatus.STEP1DRAFT
+      || this.project?.projectStatus.status === ProjectStatus.RETURNEDTOAPPLICANT;
   }
 
   private canChangeAssessmentFile(): boolean {
@@ -63,7 +62,7 @@ export class ActionsCellComponent {
   }
 
   private canDeleteApplicationFile(): boolean {
-    // the applicant user can only change/delete files that are added after a submission change
+    // the user can only delete files that are added after a submission change
     const lastStatusChange = this.project?.projectStatus.updated;
 
     // make a difference between users with only View permission and applicants
