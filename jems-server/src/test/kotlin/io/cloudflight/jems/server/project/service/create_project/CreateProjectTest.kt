@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -56,6 +55,7 @@ internal class CreateProjectTest : UnitTest() {
             endDate = endDate,
             isAdditionalFundAllowed = true,
             lengthOfPeriod = 12,
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
         val callSettings = ProjectCallSettings(
@@ -69,7 +69,7 @@ internal class CreateProjectTest : UnitTest() {
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
-            applicationFormConfiguration = ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
         private val user = UserSummary(id = USER_ID, "some@applicant", "", "", UserRoleSummary(0L, ""))

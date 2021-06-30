@@ -66,7 +66,6 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -176,7 +175,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             lumpSums = emptyList(),
             unitCosts = emptyList(),
             isAdditionalFundAllowed = false,
-            applicationFormConfiguration = ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
+            applicationFormFieldConfigurations = mutableSetOf()
         )
         private val project = Project(
             id = 1L,

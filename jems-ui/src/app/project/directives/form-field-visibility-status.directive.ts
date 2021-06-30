@@ -2,9 +2,9 @@ import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {map} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
-import {ApplicationFormFieldConfigurationDTO} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import VisibilityStatusEnum = ApplicationFormFieldConfigurationDTO.VisibilityStatusEnum;
+import {ApplicationFormFieldConfigurationDTO} from '@cat/api';
+import AvailableInStepEnum = ApplicationFormFieldConfigurationDTO.AvailableInStepEnum;
 
 @UntilDestroy()
 @Directive({
@@ -38,9 +38,10 @@ export class FormFieldVisibilityStatusDirective {
   shouldTheFieldBeVisible(fieldId: string): Observable<boolean> {
     return combineLatest([this.projectStore.project$, this.projectStore.projectCall$, this.projectStore.callHasTwoSteps$]).pipe(
       map(([project, callSetting, callHasTwoSteps]) => {
-        const visibilityStatus = callSetting.applicationFormConfiguration.fieldConfigurations.find(it => it.id === fieldId)?.visibilityStatus;
-        return visibilityStatus === VisibilityStatusEnum.STEPONEANDTWO ||
-          (callHasTwoSteps && project.step2Active && visibilityStatus === VisibilityStatusEnum.STEPTWOONLY);
+        const fieldConfiguration = callSetting.applicationFormFieldConfigurations.find(it => it.id === fieldId);
+
+        return fieldConfiguration !== undefined && fieldConfiguration.isVisible && (fieldConfiguration.availableInStep === AvailableInStepEnum.STEPONEANDTWO ||
+          (callHasTwoSteps && project.step2Active && fieldConfiguration.availableInStep === AvailableInStepEnum.STEPTWOONLY));
       }),
     );
   }

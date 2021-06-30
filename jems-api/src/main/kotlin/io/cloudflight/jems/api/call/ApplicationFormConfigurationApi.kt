@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.call
 
-import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormConfigurationDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormConfigurationSummaryDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormConfigurationRequestDTO
+import io.cloudflight.jems.api.call.dto.CallDetailDTO
+import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormFieldConfigurationDTO
+import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormFieldConfigurationRequestDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
@@ -11,20 +11,19 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
-@Api("ApplicationFormConfiguration")
-@RequestMapping("/api/call/applicationFormConfiguration")
+@Api("ApplicationFormFieldConfigurations")
+@RequestMapping("/api/call/{callId}/applicationFormFieldConfigurations")
 interface ApplicationFormConfigurationApi {
 
-    @ApiOperation("Returns list of application form configuration summary")
+    @ApiOperation("Returns set of application form field configurations by call id")
     @GetMapping("")
-    fun list(): List<ApplicationFormConfigurationSummaryDTO>
-
-    @ApiOperation("Returns an application form configuration by id")
-    @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): ApplicationFormConfigurationDTO
+    fun getByCallId(@PathVariable callId: Long): MutableSet<ApplicationFormFieldConfigurationDTO>
 
 
-    @ApiOperation("Update an application form configuration")
+    @ApiOperation("Update application form field configurations")
     @PostMapping("")
-    fun update(@RequestBody applicationFormConfiguration: UpdateApplicationFormConfigurationRequestDTO)
+    fun update(
+        @PathVariable callId: Long,
+        @RequestBody applicationFormFieldConfigurations: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>
+    ) : CallDetailDTO
 }

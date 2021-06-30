@@ -1,17 +1,18 @@
 package io.cloudflight.jems.server.call.service
 
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfigurationSummary
-import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallSummary
+import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface CallPersistence {
 
     fun getCalls(pageable: Pageable): Page<CallSummary>
+    fun listCalls(): List<IdNamePair>
     fun getPublishedAndOpenCalls(pageable: Pageable): Page<CallSummary>
     fun getCallById(callId: Long): CallDetail
     fun getCallIdForNameIfExists(name: String): Long?
@@ -27,7 +28,8 @@ interface CallPersistence {
     fun publishCall(callId: Long): CallSummary
     fun hasAnyCallPublished(): Boolean
 
-    fun getApplicationFormConfiguration(id: Long): ApplicationFormConfiguration
-    fun listApplicationFormConfigurations(): List<ApplicationFormConfigurationSummary>
-    fun updateApplicationFormConfigurations(applicationFormConfiguration: ApplicationFormConfiguration)
+    fun getApplicationFormFieldConfigurations(callId: Long): MutableSet<ApplicationFormFieldConfiguration>
+    fun saveApplicationFormFieldConfigurations(
+        callId: Long, applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
+    ): CallDetail
 }

@@ -15,8 +15,10 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -29,6 +31,8 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -70,6 +74,7 @@ class UpdateCallTest: UnitTest() {
             funds = listOf(
                 ProgrammeFund(id = FUND_ID, selected = true),
             ),
+            applicationFormFieldConfigurations = mutableSetOf(ApplicationFormFieldConfiguration("field.id", FieldVisibilityStatus.STEP_TWO_ONLY), ApplicationFormFieldConfiguration("field.id", FieldVisibilityStatus.STEP_ONE_AND_TWO))
         )
 
         private val callToUpdate = Call(
@@ -99,6 +104,11 @@ class UpdateCallTest: UnitTest() {
     @InjectMockKs
     private lateinit var updateCall: UpdateCall
 
+    @BeforeEach
+    fun reset(){
+        every { persistence.saveApplicationFormFieldConfigurations(any(), any()) } returns existingCall
+        clearMocks(auditPublisher)
+    }
     @Test
     fun `update published Call - changes are allowed`() {
         every { persistence.getCallIdForNameIfExists(callToUpdate.name) } returns null
@@ -119,7 +129,6 @@ class UpdateCallTest: UnitTest() {
                     "name changed from 'old name' to 'call name'"
             )
         )
-        clearMocks(auditPublisher)
     }
 
     @Test
@@ -151,7 +160,22 @@ class UpdateCallTest: UnitTest() {
 
         assertDoesNotThrow { updateCall.updateCall(callToUpdate) }
         verify(exactly = 1) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
-        clearMocks(auditPublisher)
+
+    }
+
+    @Test
+    fun `should not reset application form field configurations if 1,2 step settings of call has not changed`() {
+        val call = callToUpdate.copy(endDateStep1 = ZonedDateTime.now())
+        every { persistence.getCallIdForNameIfExists(call.name) } returns null
+        every { persistence.getCallById(CALL_ID) } returns existingCall.copy(name = "old name")
+        val slotCallUpdate = slot<Call>()
+        every { persistence.updateCall(capture(slotCallUpdate)) } returns existingCall
+
+        updateCall.updateCall(call)
+        assertThat(slotCallUpdate.captured).isEqualTo(call)
+
+        verify(exactly = 0) { persistence.saveApplicationFormFieldConfigurations(any(), any()) }
+
     }
 
     private fun provideNotAllowedChangesToPublishedCall(): Stream<Arguments> {
@@ -164,5 +188,4 @@ class UpdateCallTest: UnitTest() {
             Arguments.of(callToUpdate.copy(fundIds = emptySet())),
         )
     }
-
 }

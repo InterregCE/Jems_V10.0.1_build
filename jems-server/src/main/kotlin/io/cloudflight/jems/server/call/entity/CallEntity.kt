@@ -101,8 +101,7 @@ class CallEntity(
         joinColumns = [JoinColumn(name = "project_call_id")],
         inverseJoinColumns = [JoinColumn(name = "programme_unit_cost_id")]
     )
-    val unitCosts: MutableSet<ProgrammeUnitCostEntity> = mutableSetOf()
-
+    val unitCosts: MutableSet<ProgrammeUnitCostEntity> = mutableSetOf(),
 ) {
     fun updateFlatRateSetup(flatRates: Set<ProjectCallFlatRateEntity>) {
         val groupedByType = flatRates.associateBy { it.setupId.type }.toMutableMap()

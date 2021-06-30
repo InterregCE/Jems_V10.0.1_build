@@ -23,7 +23,6 @@ import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibili
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.server.call.controller.toDTO
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -106,8 +105,6 @@ class ProjectControllerTest {
             specificObjectiveCode = "SO1.1",
             programmePriorityCode = "P1",
         )
-
-        private val applicationFormConfiguration = ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
     }
 
 
@@ -182,7 +179,7 @@ class ProjectControllerTest {
                     categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                 ),
             ),
-            applicationFormConfiguration = applicationFormConfiguration
+            applicationFormFieldConfigurations = mutableSetOf()
         )
         every { getProjectInteractor.getProjectCallSettings(1L) } returns callSettings
         assertThat(controller.getProjectCallSettingsById(1L)).isEqualTo(
@@ -219,7 +216,7 @@ class ProjectControllerTest {
                         categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                     )
                 ),
-                applicationFormConfiguration = applicationFormConfiguration.toDTO()
+                applicationFormFieldConfigurations = mutableSetOf()
             )
         )
     }
@@ -269,7 +266,7 @@ class ProjectControllerTest {
             lumpSums = emptyList(),
             unitCosts = emptyList(),
             isAdditionalFundAllowed = false,
-            applicationFormConfiguration = applicationFormConfiguration
+            applicationFormFieldConfigurations = mutableSetOf()
         )
         val project = Project(
             id = pId,
@@ -303,7 +300,7 @@ class ProjectControllerTest {
                     FlatRateSetupDTO(),
                     emptyList(),
                     emptyList(),
-                    callSettings.applicationFormConfiguration.toDTO()
+                    callSettings.applicationFormFieldConfigurations.toDTO()
                 ),
                 acronym = project.acronym,
                 applicant = project.applicant.toDto(),

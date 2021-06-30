@@ -1,10 +1,9 @@
 package io.cloudflight.jems.server.project.repository
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.call.entity.ApplicationFormConfigurationEntity
+import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.repository.toModel
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.toModel
@@ -43,8 +42,7 @@ fun ProjectVersionEntity.toProjectVersion() =
 
 fun List<ProjectVersionEntity>.toProjectVersions() = map { it.toProjectVersion() }
 
-// todo applicationFormConfiguration should come from callEntity after #1642
-fun CallEntity.toSettingsModel(applicationFormConfiguration: ApplicationFormConfiguration) = ProjectCallSettings(
+fun CallEntity.toSettingsModel(applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>) = ProjectCallSettings(
     callId = id,
     callName = name,
     startDate = startDate,
@@ -55,12 +53,12 @@ fun CallEntity.toSettingsModel(applicationFormConfiguration: ApplicationFormConf
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.map { it.toModel() }.sortedBy { it.id },
     unitCosts = unitCosts.toProgrammeUnitCost(),
-    applicationFormConfiguration = applicationFormConfiguration
+    applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
 )
 
-fun ProjectEntity.toModel(assessmentStep1: ProjectAssessmentEntity?, assessmentStep2: ProjectAssessmentEntity?, applicationFormConfiguration: ApplicationFormConfiguration) = Project(
+fun ProjectEntity.toModel(assessmentStep1: ProjectAssessmentEntity?, assessmentStep2: ProjectAssessmentEntity?, applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>) = Project(
     id = id,
-    callSettings = call.toSettingsModel(applicationFormConfiguration),
+    callSettings = call.toSettingsModel(applicationFormFieldConfigurationEntities),
     acronym = acronym,
     applicant = applicant.toUserSummary(),
     projectStatus = currentStatus.toProjectStatus(),
@@ -98,7 +96,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
     periods: List<ProjectPeriod>,
     assessmentStep1: ProjectAssessmentEntity,
     assessmentStep2: ProjectAssessmentEntity,
-    applicationFormConfiguration: ApplicationFormConfiguration
+    applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>
 ) =
     this.groupBy { it.id }.map { groupedRows ->
         Project(
@@ -109,7 +107,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
             duration = groupedRows.value.first().duration,
             periods = periods,
             // map non historic data
-            callSettings = project.call.toSettingsModel(applicationFormConfiguration),
+            callSettings = project.call.toSettingsModel(applicationFormFieldConfigurationEntities),
             applicant = project.applicant.toUserSummary(),
             specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy(),
             programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),

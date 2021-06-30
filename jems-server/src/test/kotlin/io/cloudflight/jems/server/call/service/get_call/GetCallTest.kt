@@ -75,6 +75,7 @@ class GetCallTest: UnitTest() {
             unitCosts = listOf(
                 ProgrammeUnitCost(isOneCostCategory = true),
             ),
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
         private val call = CallSummary(

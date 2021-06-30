@@ -60,6 +60,7 @@ internal class CallAuthorizationTest {
             endDate = ZonedDateTime.now().plusDays(2),
             isAdditionalFundAllowed = false,
             lengthOfPeriod = 10,
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
         assertTrue(

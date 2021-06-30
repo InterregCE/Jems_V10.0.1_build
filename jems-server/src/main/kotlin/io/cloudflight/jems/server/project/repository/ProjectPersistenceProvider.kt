@@ -1,8 +1,7 @@
 package io.cloudflight.jems.server.project.repository
 
+import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurationRepository
 import io.cloudflight.jems.server.call.repository.CallRepository
-import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -26,8 +25,6 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 
-private const val defaultApplicationFormConfigurationId = 1L
-
 @Repository
 class ProjectPersistenceProvider(
     private val projectVersionUtils: ProjectVersionUtils,
@@ -38,7 +35,7 @@ class ProjectPersistenceProvider(
     private val projectStatusHistoryRepo: ProjectStatusHistoryRepository,
     private val userRepository: UserRepository,
     private val callRepository: CallRepository,
-    private val callPersistence: CallPersistence
+    private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository
 ) : ProjectPersistence {
 
     @Transactional(readOnly = true)
@@ -61,7 +58,11 @@ class ProjectPersistenceProvider(
 
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                project.toModel(assessmentStep1 = assessmentStep1, assessmentStep2 = assessmentStep2, applicationFormConfiguration = getApplicationFormConfiguration())
+                project.toModel(
+                    assessmentStep1 = assessmentStep1,
+                    assessmentStep2 = assessmentStep2,
+                    applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id)
+                )
             },
             // grouped this will be only one result
             previousVersionFetcher = { timestamp ->
@@ -80,7 +81,9 @@ class ProjectPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectCallSettings(projectId: Long): ProjectCallSettings =
-        getProjectOrThrow(projectId).call.toSettingsModel(getApplicationFormConfiguration())
+        getProjectOrThrow(projectId).let {
+            it.call.toSettingsModel(applicationFormFieldConfigurationRepository.findAllByCallId(it.call.id))
+        }
 
     @Transactional(readOnly = true)
     override fun getProjects(pageable: Pageable, filterByOwnerId: Long?): Page<ProjectSummary> =
@@ -120,7 +123,7 @@ class ProjectPersistenceProvider(
         return createdProject.toModel(
             assessmentStep1 = null,
             assessmentStep2 = null,
-            applicationFormConfiguration = getApplicationFormConfiguration()
+            applicationFormFieldConfigurationRepository.findAllByCallId(callId)
         )
     }
 
@@ -134,16 +137,19 @@ class ProjectPersistenceProvider(
         assessmentStep1: ProjectAssessmentEntity,
         assessmentStep2: ProjectAssessmentEntity,
     ): Project {
-        val periods = projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData()
+        val periods =
+            projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData();
         return projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
-            .toProjectEntryWithDetailData(project, periods, assessmentStep1, assessmentStep2, getApplicationFormConfiguration())
+            .toProjectEntryWithDetailData(
+                project,
+                periods,
+                assessmentStep1,
+                assessmentStep2,
+                applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id)
+            )
     }
 
     private fun ProjectEntity.idInStep(step: Int) = ProjectAssessmentId(this, step)
 
-
-    // todo should come from callEntity - after #1642
-    private fun getApplicationFormConfiguration(): ApplicationFormConfiguration =
-        callPersistence.getApplicationFormConfiguration(defaultApplicationFormConfigurationId)
 
 }

@@ -3,16 +3,15 @@ package io.cloudflight.jems.server.call.controller
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormConfigurationDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormConfigurationSummaryDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormFieldConfigurationDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormConfigurationRequestDTO
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfigurationSummary
+import io.cloudflight.jems.api.call.dto.application_form_configuration.StepSelectionOptionDTO
+import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormFieldConfigurationRequestDTO
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
-import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallSummary
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
+import io.cloudflight.jems.server.common.CommonDTOMapper
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.programme.controller.priority.toDto
@@ -47,6 +46,7 @@ fun CallDetail.toDto() = CallDetailDTO(
     flatRates = flatRates.toDto(),
     lumpSums = lumpSums.toDto(),
     unitCosts = unitCosts.toDto(),
+    applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDTO()
 )
 
 fun CallUpdateRequestDTO.toModel() = Call(
@@ -63,26 +63,44 @@ fun CallUpdateRequestDTO.toModel() = Call(
     fundIds = fundIds,
 )
 
-fun List<ApplicationFormConfigurationSummary>.toDTO() =
-    map { it.toApplicationFormConfigurationSummaryDTO() }
 
-fun ApplicationFormConfigurationSummary.toApplicationFormConfigurationSummaryDTO() =
-    callDTOMapper.mapToSummaryDTO(this)
+fun MutableSet<ApplicationFormFieldConfiguration>.toDTO() =
+    map { callDTOMapper.map(it) }.toMutableSet()
 
-fun ApplicationFormConfiguration.toDTO() =
+fun MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>.toModel() =
+    callDTOMapper.mapUpdateRequest(this)
+
+fun StepSelectionOptionDTO.toModel() =
     callDTOMapper.map(this)
 
-fun UpdateApplicationFormConfigurationRequestDTO.toModel() =
+fun FieldVisibilityStatus.toDTO() =
     callDTOMapper.map(this)
-
 
 private val callDTOMapper = Mappers.getMapper(CallDTOMapper::class.java)
 
-@Mapper
+@Mapper(uses = [CommonDTOMapper::class])
 abstract class CallDTOMapper {
 
-    abstract fun mapToSummaryDTO(applicationFormConfigurationSummary: ApplicationFormConfigurationSummary): ApplicationFormConfigurationSummaryDTO
-    abstract fun map(applicationFormConfiguration: ApplicationFormConfiguration): ApplicationFormConfigurationDTO
-    abstract fun map(applicationFormConfigurationDTO: UpdateApplicationFormConfigurationRequestDTO): ApplicationFormConfiguration
-    abstract fun map(applicationFormFieldConfigurationDTOs: MutableSet<ApplicationFormFieldConfigurationDTO>): MutableSet<ApplicationFormFieldConfiguration>
+    abstract fun map(fieldVisibilityStatus: FieldVisibilityStatus): StepSelectionOptionDTO
+    abstract fun map(stepSelectionOptionDTO: StepSelectionOptionDTO): FieldVisibilityStatus
+
+    fun mapUpdateRequest(updateApplicationFormFieldConfigurationDTOs: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>): MutableSet<ApplicationFormFieldConfiguration> =
+        updateApplicationFormFieldConfigurationDTOs.map {
+            ApplicationFormFieldConfiguration(
+                it.id,
+                if (!it.isVisible) FieldVisibilityStatus.NONE else it.availableInStep.toModel()
+            )
+        }.toMutableSet()
+
+
+    fun map(applicationFormFieldConfiguration: ApplicationFormFieldConfiguration): ApplicationFormFieldConfigurationDTO =
+        ApplicationFormFieldConfigurationDTO(
+            applicationFormFieldConfiguration.id,
+            isVisible = applicationFormFieldConfiguration.visibilityStatus != FieldVisibilityStatus.NONE,
+            isVisibilityLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet()
+                .contains(FieldVisibilityStatus.NONE),
+            availableInStep = applicationFormFieldConfiguration.visibilityStatus.toDTO(),
+            isStepSelectionLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet()
+                .containsAll(listOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_TWO_ONLY))
+        )
 }

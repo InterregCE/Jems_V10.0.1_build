@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
+import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -30,6 +31,10 @@ interface CallApi {
     )
     @GetMapping
     fun getCalls(pageable: Pageable): Page<CallDTO>
+
+    @ApiOperation("Returns all calls` id name pair")
+    @GetMapping("/list")
+    fun listCalls(): List<IdNamePairDTO>
 
     @ApiOperation("Returns all published calls")
     @ApiImplicitParams(

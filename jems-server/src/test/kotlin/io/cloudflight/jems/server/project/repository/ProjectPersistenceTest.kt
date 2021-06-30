@@ -10,12 +10,16 @@ import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibili
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.callWithId
+import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
+import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
+import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurationRepository
 import io.cloudflight.jems.server.call.repository.CallPersistenceProvider
+import io.cloudflight.jems.server.call.repository.CallPersistenceProviderTest
 import io.cloudflight.jems.server.call.repository.CallRepository
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -79,6 +83,12 @@ internal class ProjectPersistenceTest : UnitTest() {
         val startDate: ZonedDateTime = ZonedDateTime.now().minusDays(2)
         val endDate: ZonedDateTime = ZonedDateTime.now().plusDays(2)
 
+        val applicationFormFieldConfigurationEntities= mutableSetOf(
+            ApplicationFormFieldConfigurationEntity(
+                ApplicationFormFieldConfigurationId("fieldId" , dummyCall()),
+                FieldVisibilityStatus.STEP_ONE_AND_TWO
+            )
+        )
         private fun dummyCall(): CallEntity {
             val call = callWithId(CALL_ID)
             call.name = "call name"
@@ -166,7 +176,6 @@ internal class ProjectPersistenceTest : UnitTest() {
             )
         }
     }
-    private val applicationFormConfiguration = ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
 
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
@@ -182,6 +191,8 @@ internal class ProjectPersistenceTest : UnitTest() {
     @MockK
     lateinit var projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository
     @MockK
+    lateinit var applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository
+    @MockK
     lateinit var projectStatusHistoryRepo: ProjectStatusHistoryRepository
     @MockK
     lateinit var userRepository: UserRepository
@@ -196,8 +207,7 @@ internal class ProjectPersistenceTest : UnitTest() {
     fun setup() {
         MockKAnnotations.init(this)
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
-        persistence = ProjectPersistenceProvider(projectVersionUtils, projectRepository, projectPartnerRepository, projectAssessmentQualityRepository, projectAssessmentEligibilityRepository, projectStatusHistoryRepo, userRepository, callRepository, callPersistence)
-        every { callPersistence.getApplicationFormConfiguration(1) } returns ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
+        persistence = ProjectPersistenceProvider(projectVersionUtils, projectRepository, projectPartnerRepository, projectAssessmentQualityRepository, projectAssessmentEligibilityRepository, projectStatusHistoryRepo, userRepository, callRepository, applicationFormFieldConfigurationRepository )
     }
 
     @Test
@@ -245,8 +255,9 @@ internal class ProjectPersistenceTest : UnitTest() {
     fun `get Project Call Settings`() {
         val project = dummyProject()
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
         assertThat(persistence.getProjectCallSettings(PROJECT_ID)).isEqualTo(
-            project.call.toSettingsModel(applicationFormConfiguration)
+            project.call.toSettingsModel(applicationFormFieldConfigurationEntities)
         )
     }
 
@@ -297,6 +308,7 @@ internal class ProjectPersistenceTest : UnitTest() {
             ProjectAssessmentEligibilityEntity(ProjectAssessmentId(project, 1), result = ProjectAssessmentEligibilityResult.PASSED, user = user, updated = statusChange)
         )
 
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
         assertThat(persistence.getProject(PROJECT_ID))
             .isEqualTo(
                 Project(
@@ -310,7 +322,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
-                    callSettings = project.call.toSettingsModel(applicationFormConfiguration),
+                    callSettings = project.call.toSettingsModel(applicationFormFieldConfigurationEntities),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy(),
                     assessmentStep1 = ProjectAssessment(
@@ -370,6 +382,7 @@ internal class ProjectPersistenceTest : UnitTest() {
 
         every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockPeriodRow)
         every { projectRepository.findByIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
 
         assertThat(persistence.getProject(PROJECT_ID, version))
             .isEqualTo(
@@ -384,7 +397,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
-                    callSettings = project.call.toSettingsModel(applicationFormConfiguration),
+                    callSettings = project.call.toSettingsModel(applicationFormFieldConfigurationEntities),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
                 ))

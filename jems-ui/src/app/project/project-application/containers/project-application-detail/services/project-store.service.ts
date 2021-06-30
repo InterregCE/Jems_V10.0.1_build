@@ -217,7 +217,7 @@ export class ProjectStore {
           callSetting.unitCosts
             .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.isOneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories))),
           callSetting.isAdditionalFundAllowed,
-          callSetting.applicationFormConfiguration
+          callSetting.applicationFormFieldConfigurations
         )),
         shareReplay(1)
       );

@@ -16,8 +16,8 @@ class ApplicationFormFieldConfigurationId(
     val id: String,
 
     @field:NotNull
-    @JoinColumn(name = "application_form_configuration_id", referencedColumnName = "id")
+    @JoinColumn(name = "call_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
-    var applicationFormConfigurationEntity: ApplicationFormConfigurationEntity
+    var callEntity: CallEntity
 
 ) : Serializable

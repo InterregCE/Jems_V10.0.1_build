@@ -35,6 +35,7 @@ class UpdateCallLumpSumsTest {
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
             lengthOfPeriod = 7,
+            applicationFormFieldConfigurations = mutableSetOf()
         )
     }
 

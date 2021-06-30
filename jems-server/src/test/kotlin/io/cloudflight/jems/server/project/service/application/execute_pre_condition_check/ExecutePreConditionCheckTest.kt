@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.application.execute_pre_condi
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.entity.PluginStatusEntity
@@ -53,11 +52,12 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     lateinit var executePreConditionCheck: ExecutePreConditionCheck
 
     @BeforeAll
-    fun setup(){
+    fun setup() {
         every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(
             PluginStatusEntity(pluginKey, true)
         )
     }
+
     @Test
     fun `should execute pre condition check plugin for the project application when application belongs to twp-step call and application is in step two`() {
         every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
@@ -82,7 +82,7 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
             jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey)
         } returns preConditionCheckPlugin
         every { preConditionCheckPlugin.check(projectId) } returns pluginExpectedResult
-        val preConditionActualResult= executePreConditionCheck.execute(projectId)
+        val preConditionActualResult = executePreConditionCheck.execute(projectId)
         assertThat(preConditionActualResult).isEqualTo(pluginExpectedResult)
 
     }
@@ -115,7 +115,7 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
         ProjectCallSettings(
             callId, callName, startDate, endDate, endDateStep1,
             lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts,
-            applicationFormConfiguration= ApplicationFormConfiguration(1,"test configuration", mutableSetOf())
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
     private fun buildProjectSummary(

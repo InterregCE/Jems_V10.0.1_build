@@ -5,13 +5,16 @@ import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
+import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
 import io.cloudflight.jems.server.call.service.get_call.GetCallInteractor
+import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
 import io.cloudflight.jems.server.call.service.publish_call.PublishCallInteractor
 import io.cloudflight.jems.server.call.service.update_call.UpdateCallInteractor
 import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallLumpSumsInteractor
 import io.cloudflight.jems.server.call.service.update_call_unit_costs.UpdateCallUnitCostsInteractor
 import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
+import io.cloudflight.jems.server.common.toDTO
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class CallController(
     private val getCall: GetCallInteractor,
+    private val listCalls: ListCallsInteractor,
     private val createCall: CreateCallInteractor,
     private val updateCall: UpdateCallInteractor,
     private val publishCall: PublishCallInteractor,
@@ -29,6 +33,9 @@ class CallController(
 
     override fun getCalls(pageable: Pageable): Page<CallDTO> =
         getCall.getCalls(pageable).toDto()
+
+    override fun listCalls(): List<IdNamePairDTO> =
+        listCalls.list().toDTO()
 
     override fun getPublishedCalls(pageable: Pageable): Page<CallDTO> =
         getCall.getPublishedCalls(pageable).toDto()

@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callCreated
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.validator.CallValidator
@@ -33,6 +34,7 @@ class CreateCall(
             call = call.apply { status = CallStatus.DRAFT },
             userId = securityService.currentUser?.user?.id!!,
         ).also {
+            persistence.saveApplicationFormFieldConfigurations(it.id, ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations())
             auditPublisher.publishEvent(callCreated(this, it))
         }
     }

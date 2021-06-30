@@ -3,19 +3,17 @@ package io.cloudflight.jems.server.call.repository
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.call.entity.ApplicationFormConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfigurationSummary
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
+import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
@@ -46,7 +44,7 @@ fun CallEntity.toModel() = CallSummary(
 
 fun Page<CallEntity>.toModel() = map { it.toModel() }
 
-fun CallEntity.toDetailModel() = CallDetail(
+fun CallEntity.toDetailModel(applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>) = CallDetail(
     id = id,
     name = name,
     status = status,
@@ -62,6 +60,7 @@ fun CallEntity.toDetailModel() = CallDetail(
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.toModel(),
     unitCosts = unitCosts.toModel(),
+    applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
 )
 
 private fun Set<ProgrammeSpecificObjectiveEntity>.groupSpecificObjectives() =
@@ -85,7 +84,7 @@ fun Call.toEntity(
     retrieveSpecificObjective: (ProgrammeObjectivePolicy) -> ProgrammeSpecificObjectiveEntity,
     retrieveStrategies: (Set<ProgrammeStrategy>) -> Set<ProgrammeStrategyEntity>,
     retrieveFunds: (Set<Long>) -> Set<ProgrammeFundEntity>,
-    existingEntity: CallEntity? = null,
+    existingEntity: CallEntity? = null
 ) = CallEntity(
     id = id,
     creator = user,
@@ -102,7 +101,7 @@ fun Call.toEntity(
     funds = retrieveFunds.invoke(fundIds).toMutableSet(),
     flatRates = existingEntity?.flatRates ?: mutableSetOf(),
     lumpSums = existingEntity?.lumpSums ?: mutableSetOf(),
-    unitCosts = existingEntity?.unitCosts ?: mutableSetOf(),
+    unitCosts = existingEntity?.unitCosts ?: mutableSetOf()
 ).apply {
     translatedValues.addAll(description.combineDescriptionsToTranslations(this))
 }
@@ -132,23 +131,13 @@ fun Set<ProjectCallFlatRate>.toEntity(call: CallEntity) = mapTo(HashSet()) {
 }
 
 
-fun List<ApplicationFormConfigurationEntity>.toModel() =
-    map { it.toApplicationFormConfigurationSummary() }
-
 fun MutableSet<ApplicationFormFieldConfigurationEntity>.toModel() =
     callEntityMapper.map(this)
 
-fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(applicationFormConfigurationEntity: ApplicationFormConfigurationEntity) =
-    map { callEntityMapper.map(applicationFormConfigurationEntity, it) }.toMutableSet()
+fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(call: CallEntity) =
+    map { callEntityMapper.map(call, it) }.toMutableSet()
 
-
-fun ApplicationFormConfigurationEntity.toApplicationFormConfigurationSummary() =
-    callEntityMapper.mapToApplicationFormConfigurationSummary(this)
-
-fun ApplicationFormConfigurationEntity.toModel(fieldConfigurations: MutableSet<ApplicationFormFieldConfigurationEntity>) =
-    callEntityMapper.map(this, fieldConfigurations)
-
-fun ApplicationFormConfiguration.toEntity() =
+fun List<CallEntity>.toIdNamePair() =
     callEntityMapper.map(this)
 
 
@@ -157,29 +146,20 @@ private val callEntityMapper = Mappers.getMapper(CallEntityMapper::class.java)
 @Mapper
 abstract class CallEntityMapper {
 
-    abstract fun mapToApplicationFormConfigurationSummary(applicationFormConfigurationEntity: ApplicationFormConfigurationEntity): ApplicationFormConfigurationSummary
-
-
-    abstract fun map(
-        applicationFormConfigurationEntity: ApplicationFormConfigurationEntity,
-        fieldConfigurations: MutableSet<ApplicationFormFieldConfigurationEntity>
-    ): ApplicationFormConfiguration
+    abstract fun map(calls: List<CallEntity>): List<IdNamePair>
 
     @Mapping(source = "id.id", target = "id")
     abstract fun map(applicationFormFieldConfigurationEntity: ApplicationFormFieldConfigurationEntity): ApplicationFormFieldConfiguration
 
     abstract fun map(applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>): MutableSet<ApplicationFormFieldConfiguration>
 
-    fun map(applicationFormConfiguration: ApplicationFormConfiguration): ApplicationFormConfigurationEntity =
-        ApplicationFormConfigurationEntity(applicationFormConfiguration.id, applicationFormConfiguration.name)
-
 
     fun map(
-        formConfigurationEntity: ApplicationFormConfigurationEntity,
+        call: CallEntity,
         fieldConfiguration: ApplicationFormFieldConfiguration
     ): ApplicationFormFieldConfigurationEntity =
         ApplicationFormFieldConfigurationEntity(
-            ApplicationFormFieldConfigurationId(fieldConfiguration.id, formConfigurationEntity),
+            ApplicationFormFieldConfigurationId(fieldConfiguration.id, call),
             fieldConfiguration.visibilityStatus
         )
 

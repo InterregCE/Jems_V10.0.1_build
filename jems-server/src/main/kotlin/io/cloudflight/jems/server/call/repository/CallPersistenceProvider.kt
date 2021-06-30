@@ -2,11 +2,11 @@ package io.cloudflight.jems.server.call.repository
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfiguration
-import io.cloudflight.jems.server.call.service.model.ApplicationFormConfigurationSummary
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
+import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
@@ -29,7 +29,6 @@ class CallPersistenceProvider(
     private val programmeSpecificObjectiveRepo: ProgrammeSpecificObjectiveRepository,
     private val programmeStrategyRepo: StrategyRepository,
     private val programmeFundRepo: ProgrammeFundRepository,
-    private val applicationFormConfigurationRepository: ApplicationFormConfigurationRepository,
     private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
 ) : CallPersistence {
 
@@ -43,7 +42,11 @@ class CallPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getCallById(callId: Long): CallDetail =
-        callRepo.findById(callId).map { it.toDetailModel() }.orElseThrow { CallNotFound() }
+        callRepo.findById(callId).map {
+            it.toDetailModel(
+                applicationFormFieldConfigurationRepository.findAllByCallId(callId)
+            )
+        }.orElseThrow { CallNotFound() }
 
     @Transactional(readOnly = true)
     override fun getCallIdForNameIfExists(name: String): Long? =
@@ -61,7 +64,9 @@ class CallPersistenceProvider(
                 retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() },
                 retrieveFunds = { programmeFundRepo.getTop20ByIdInAndSelectedTrue(it).toSet() },
             )
-        ).toDetailModel()
+        ).toDetailModel(
+            applicationFormFieldConfigurationRepository.findAllByCallId(call.id)
+        )
     }
 
     @Transactional
@@ -78,14 +83,18 @@ class CallPersistenceProvider(
                 retrieveFunds = { programmeFundRepo.getTop20ByIdInAndSelectedTrue(it).toSet() },
                 existingEntity = existingCall,
             )
-        ).toDetailModel()
+        ).toDetailModel(
+            applicationFormFieldConfigurationRepository.findAllByCallId(call.id)
+        )
     }
 
     @Transactional
     override fun updateProjectCallFlatRate(callId: Long, flatRates: Set<ProjectCallFlatRate>): CallDetail {
         val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
         call.updateFlatRateSetup(flatRates.toEntity(call))
-        return call.toDetailModel()
+        return call.toDetailModel(
+            applicationFormFieldConfigurationRepository.findAllByCallId(callId)
+        )
     }
 
     @Transactional(readOnly = true)
@@ -97,7 +106,9 @@ class CallPersistenceProvider(
         val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
         call.lumpSums.clear()
         call.lumpSums.addAll(programmeLumpSumRepo.findAllById(lumpSumIds))
-        return call.toDetailModel()
+        return call.toDetailModel(
+            applicationFormFieldConfigurationRepository.findAllByCallId(callId)
+        )
     }
 
     @Transactional(readOnly = true)
@@ -109,7 +120,9 @@ class CallPersistenceProvider(
         val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
         call.unitCosts.clear()
         call.unitCosts.addAll(programmeUnitCostRepo.findAllById(unitCostIds))
-        return call.toDetailModel()
+        return call.toDetailModel(
+            applicationFormFieldConfigurationRepository.findAllByCallId(callId)
+        )
     }
 
     @Transactional
@@ -122,23 +135,26 @@ class CallPersistenceProvider(
     override fun hasAnyCallPublished() =
         callRepo.existsByStatus(CallStatus.PUBLISHED)
 
-    @Transactional
-    override fun getApplicationFormConfiguration(id: Long): ApplicationFormConfiguration =
-        applicationFormConfigurationRepository.findById(id)
-            .orElseThrow { ApplicationFormConfigurationNotFound() }.toModel(
-                applicationFormFieldConfigurationRepository.findAllByApplicationFormConfigurationId(id)
-            )
+    @Transactional(readOnly = true)
+    override fun listCalls(): List<IdNamePair> =
+        callRepo.findAll().toIdNamePair()
 
     @Transactional(readOnly = true)
-    override fun listApplicationFormConfigurations(): List<ApplicationFormConfigurationSummary> =
-        applicationFormConfigurationRepository.findAll().toModel()
+    override fun getApplicationFormFieldConfigurations(callId: Long): MutableSet<ApplicationFormFieldConfiguration> =
+        applicationFormFieldConfigurationRepository.findAllByCallId(callId).toModel()
 
     @Transactional
-    override fun updateApplicationFormConfigurations(applicationFormConfiguration: ApplicationFormConfiguration) {
-        applicationFormConfigurationRepository.save(applicationFormConfiguration.toEntity()).also {
-            applicationFormFieldConfigurationRepository.saveAll(applicationFormConfiguration.fieldConfigurations.toEntities(it))
-        }
+    override fun saveApplicationFormFieldConfigurations(
+        callId: Long, applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
+    ): CallDetail {
+        val callEntity = callRepo.findById(callId).orElseThrow { CallNotFound() }
+
+        val configurations =
+            applicationFormFieldConfigurationRepository.saveAll(applicationFormFieldConfigurations.toEntities(callEntity))
+                .toMutableSet()
+        return callEntity.toDetailModel(configurations)
     }
+
 
     private fun adjustTimeToLastNanoSec(call: Call) {
 

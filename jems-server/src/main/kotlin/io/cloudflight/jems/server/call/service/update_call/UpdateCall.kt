@@ -4,8 +4,10 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callUpdated
-import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -36,6 +38,9 @@ class UpdateCall(
             validateAllowedChanges(call, existingCall)
 
         return persistence.updateCall(call).also {
+            if (call.is2StepProcedureEnabled() != existingCall.is2StepCall()) {
+                resetApplicationFormFieldConfigurations(existingCall)
+            }
             auditPublisher.publishEvent(callUpdated(this, existingCall, it))
         }
     }
@@ -81,4 +86,18 @@ class UpdateCall(
         map { it.specificObjectives.map { it.programmeObjectivePolicy }.toSet() }
             .fold(emptySet()) { first, second -> first union second }
 
+    private fun resetApplicationFormFieldConfigurations(callDetail: CallDetail) {
+        persistence.saveApplicationFormFieldConfigurations(
+            callDetail.id,
+            callDetail.applicationFormFieldConfigurations.map { configuration ->
+                ApplicationFormFieldConfiguration(
+                    configuration.id,
+                    if (configuration.visibilityStatus == FieldVisibilityStatus.STEP_TWO_ONLY)
+                        FieldVisibilityStatus.STEP_ONE_AND_TWO
+                    else configuration.visibilityStatus
+                )
+            }.toMutableSet()
+        )
+
+    }
 }

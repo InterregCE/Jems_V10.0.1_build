@@ -21,6 +21,7 @@ import io.cloudflight.jems.plugin.contract.models.common.I18nMessageData
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.MessageType
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckMessage
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
+import io.cloudflight.jems.server.call.controller.CallDTOMapper
 import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -114,7 +115,7 @@ fun Page<ProjectSummary>.toDto() = map {
 
 private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 
-@Mapper
+@Mapper(uses = [CallDTOMapper::class])
 abstract class ProjectMapper {
 
     abstract fun map(applicationStatus: ApplicationStatus): ApplicationStatusDTO

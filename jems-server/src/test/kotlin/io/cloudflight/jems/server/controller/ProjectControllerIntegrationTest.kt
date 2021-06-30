@@ -2,8 +2,6 @@ package io.cloudflight.jems.server.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.jems.api.project.dto.ProjectCreateDTO
-import io.cloudflight.jems.server.call.entity.ApplicationFormConfigurationEntity
-import io.cloudflight.jems.server.call.repository.ApplicationFormConfigurationRepository
 import io.cloudflight.jems.server.factory.CallFactory
 import io.cloudflight.jems.server.factory.UserFactory
 import io.cloudflight.jems.server.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
@@ -35,14 +33,11 @@ class ProjectControllerIntegrationTest {
     @Autowired
     private lateinit var jsonMapper: ObjectMapper
 
-    @Autowired
-    private lateinit var applicationFormConfigurationRepository: ApplicationFormConfigurationRepository
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
 
     fun `project created`() {
-        applicationFormConfigurationRepository.save(ApplicationFormConfigurationEntity(1L, "test configuration"))
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val inputProject = ProjectCreateDTO(acronym = "acronym", projectCallId = call.id)
         mockMvc.perform(

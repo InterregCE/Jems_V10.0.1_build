@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ApplicationFormFieldConfigurationRepository : JpaRepository<ApplicationFormFieldConfigurationEntity, String> {
-    @Query("SELECT e FROM #{#entityName} e  where e.id.applicationFormConfigurationEntity.id=:applicationFormConfigurationId")
-    fun findAllByApplicationFormConfigurationId(applicationFormConfigurationId: Long?): MutableSet<ApplicationFormFieldConfigurationEntity>
+    @Query("SELECT e FROM #{#entityName} e  where e.id.callEntity.id=:callId")
+    fun findAllByCallId(callId: Long?): MutableSet<ApplicationFormFieldConfigurationEntity>
 }

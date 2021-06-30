@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.dto
 
-import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormConfigurationDTO
+import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
@@ -17,6 +17,6 @@ data class ProjectCallSettingsDTO(
     val flatRates: FlatRateSetupDTO,
     val lumpSums: List<ProgrammeLumpSumDTO>,
     val unitCosts: List<ProgrammeUnitCostDTO>,
-    var applicationFormConfiguration: ApplicationFormConfigurationDTO
+    var applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfigurationDTO>
 
 )
