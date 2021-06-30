@@ -3,7 +3,7 @@ import {RouterModule} from '@angular/router';
 
 import {routes} from './call-routing.module';
 import {CallPageComponent} from './containers/call-page/call-page.component';
-import {SharedModule} from '../common/shared-module';
+import {SharedModule} from '@common/shared-module';
 import {CallStore} from './services/call-store.service';
 import {CallPriorityTreeComponent} from './components/call-priority-tree/call-priority-tree.component';
 import {CallNameResolver} from './services/call-name.resolver';
@@ -17,6 +17,7 @@ import {CallLumpSumsComponent} from './call-detail-page/call-lump-sums/call-lump
 import {CallUnitCostsComponent} from './call-detail-page/call-unit-costs/call-unit-costs.component';
 import {ProgrammeEditableStateStore} from '../programme/programme-page/services/programme-editable-state-store.service';
 import {CallDetailPageComponent} from './call-detail-page/call-detail-page.component';
+import {ApplicationFormConfigurationPageComponent} from './application-form-configuration-page/application-form-configuration-page.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import {CallDetailPageComponent} from './call-detail-page/call-detail-page.compo
     CallLumpSumsComponent,
     CallUnitCostsComponent,
     CallDetailPageComponent,
+    ApplicationFormConfigurationPageComponent,
   ],
   imports: [
     SharedModule,

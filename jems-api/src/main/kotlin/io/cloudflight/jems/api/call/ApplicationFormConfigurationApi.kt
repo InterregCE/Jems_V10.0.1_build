@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.call.dto.application_form_configuration.Applicati
 import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormFieldConfigurationRequestDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 interface ApplicationFormConfigurationApi {
 
     @ApiOperation("Returns set of application form field configurations by call id")
-    @GetMapping("")
+    @GetMapping
     fun getByCallId(@PathVariable callId: Long): MutableSet<ApplicationFormFieldConfigurationDTO>
 
 
     @ApiOperation("Update application form field configurations")
-    @PostMapping("")
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun update(
         @PathVariable callId: Long,
         @RequestBody applicationFormFieldConfigurations: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>

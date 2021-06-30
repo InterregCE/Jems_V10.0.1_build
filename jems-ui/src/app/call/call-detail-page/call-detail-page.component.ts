@@ -81,7 +81,6 @@ export class CallDetailPageComponent {
               private callNavService: CallPageSidenavService) {
     this.formService.init(this.callForm);
     this.formService.setCreation(!this.callId);
-    this.callNavService.init(this.callId);
 
     this.data$ = combineLatest([
       this.pageStore.call$,

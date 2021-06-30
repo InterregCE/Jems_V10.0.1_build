@@ -1,0 +1,36 @@
+@import "../../theme/custom-styles/custom-buttons-styles";
+
+td.mat-cell, th.mat-header-cell {
+  border: 1px solid var(--table-border-color);
+}
+
+.mat-column-show {
+  text-align: center;
+}
+
+.mat-column-step {
+  text-align: center;
+}
+
+::ng-deep.step-toggle {
+  @include customize-toggle-button-size('small');
+
+  button {
+    height: 100%
+  }
+
+  mat-icon {
+    font-size: 1.375em;
+    height: 1.25rem;
+  }
+}
+
+.bg-dark {
+  background-color: var(--table-highlight-color);
+}
+
+.bg-white {
+  background-color: var(--table-backaground-color);
+}
+
+

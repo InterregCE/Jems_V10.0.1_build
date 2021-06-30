@@ -7,6 +7,7 @@ import {CallNameResolver} from './services/call-name.resolver';
 import {CallBudgetSettingsPageComponent} from './containers/call-budget-settings-page/call-budget-settings-page.component';
 import {CallDetailPageComponent} from './call-detail-page/call-detail-page.component';
 import {UserRoleDTO} from '@cat/api';
+import {ApplicationFormConfigurationPageComponent} from './application-form-configuration-page/application-form-configuration-page.component';
 
 export const routes: Routes = [
   {
@@ -57,6 +58,15 @@ export const routes: Routes = [
             },
             canActivate: [PermissionGuard],
             component: CallBudgetSettingsPageComponent,
+          },
+          {
+            path: 'applicationFormConfiguration',
+            data: {
+              breadcrumb: 'call.detail.application.form.configuration',
+              permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
+            },
+            canActivate: [PermissionGuard],
+            component: ApplicationFormConfigurationPageComponent,
           },
         ],
       },
