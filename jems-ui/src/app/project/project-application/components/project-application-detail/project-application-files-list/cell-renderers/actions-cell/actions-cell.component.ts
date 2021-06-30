@@ -21,6 +21,8 @@ export class ActionsCellComponent {
   isAllowedToRetrieveApplicationFile: boolean;
   @Input()
   isAllowedToChangeAssessmentFile: boolean;
+  @Input()
+  isThisUserOwner: boolean;
 
   @Output()
   edit = new EventEmitter<OutputProjectFile>();
@@ -28,6 +30,12 @@ export class ActionsCellComponent {
   download = new EventEmitter<OutputProjectFile>();
   @Output()
   delete = new EventEmitter<OutputProjectFile>();
+
+  private static isApplicationOpen(status: ProjectStatusDTO.StatusEnum): boolean {
+    return status === ProjectStatus.DRAFT
+      || status === ProjectStatus.STEP1DRAFT
+      || status === ProjectStatus.RETURNEDTOAPPLICANT;
+  }
 
   canChangeFile(): boolean {
     return this.file.type === OutputProjectFile.TypeEnum.APPLICANTFILE
@@ -42,18 +50,8 @@ export class ActionsCellComponent {
   }
 
   private canChangeApplicationFile(): boolean {
-    // make a difference between users with only View permission and applicants
-    if (this.isAllowedToChangeApplicationFile && this.isAllowedToRetrieveApplicationFile) {
-      return this.isAllowedToChangeApplicationFile;
-    }
-    if (this.isAllowedToRetrieveApplicationFile) {
-      return false;
-    }
-
-    // the applicant user can only change files that if the project is in a specific status
-    return this.project?.projectStatus.status === ProjectStatus.DRAFT
-      || this.project?.projectStatus.status === ProjectStatus.STEP1DRAFT
-      || this.project?.projectStatus.status === ProjectStatus.RETURNEDTOAPPLICANT;
+    return this.isAllowedToChangeApplicationFile
+      || (this.isThisUserOwner && ActionsCellComponent.isApplicationOpen(this.project?.projectStatus.status));
   }
 
   private canChangeAssessmentFile(): boolean {
@@ -62,17 +60,13 @@ export class ActionsCellComponent {
   }
 
   private canDeleteApplicationFile(): boolean {
-    // the user can only delete files that are added after a submission change
+    // the user can only delete files that are added after a last status change
     const lastStatusChange = this.project?.projectStatus.updated;
+    const fileIsNotLocked = this.file.updated > lastStatusChange;
 
-    // make a difference between users with only View permission and applicants
-    if (this.isAllowedToChangeApplicationFile && this.isAllowedToRetrieveApplicationFile) {
-      return this.isAllowedToChangeApplicationFile && this.file.updated > lastStatusChange;
-    }
-    if (this.isAllowedToRetrieveApplicationFile) {
-      return false;
-    }
-
-    return this.file.updated > lastStatusChange;
+    const userIsAbleToDelete = this.isAllowedToChangeApplicationFile
+      || (this.isThisUserOwner && ActionsCellComponent.isApplicationOpen(this.project?.projectStatus.status));
+    return fileIsNotLocked && userIsAbleToDelete;
   }
+
 }

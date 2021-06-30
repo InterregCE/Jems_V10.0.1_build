@@ -42,6 +42,8 @@ export class ProjectApplicationFilesListComponent extends BaseComponent implemen
   canRetrieveApplicationFile: boolean;
   @Input()
   canChangeAssessmentFile: boolean;
+  @Input()
+  isThisUserOwner: boolean;
 
   @Output()
   deleteFile = new EventEmitter<OutputProjectFile>();

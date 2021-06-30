@@ -27,6 +27,7 @@
             [isAllowedToChangeApplicationFile]="canChangeApplicationFile"
             [isAllowedToRetrieveApplicationFile]="canRetrieveApplicationFile"
             [isAllowedToChangeAssessmentFile]="canChangeAssessmentFile"
+            [isThisUserOwner]="isThisUserOwner"
             (edit)="descriptionState.set(file.id, FormState.EDIT)"
             (download)="downloadFile.emit($event)"
             (delete)="delete(file)">
