@@ -1,4 +1,9 @@
-import {Component, ElementRef, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
+import {
+  Component,
+  forwardRef,
+  Input,
+  OnInit
+} from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -43,9 +48,6 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
 
   disabled = false;
   constants = MultiLanguageFormFieldConstants;
-
-  @ViewChild('inputElement')
-  inputElement: ElementRef;
 
   @Input()
   type: 'input' | 'textarea' = 'input';
@@ -144,6 +146,9 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     return formGroup.get(this.constants.FORM_CONTROL_NAMES.translation) as FormControl;
   }
 
+  getTranslationLength(formGroup: AbstractControl): number {
+    return this.getTranslation(formGroup)?.value?.length ? this.getTranslation(formGroup)?.value?.length : 0;
+  }
 
   private initForm(languages: string[]): void {
     this.multiLanguageFormGroup = this.formBuilder.group({
