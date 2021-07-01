@@ -62,7 +62,7 @@ export const routes: Routes = [
           {
             path: 'applicationFormConfiguration',
             data: {
-              breadcrumb: 'call.detail.application.form.configuration',
+              breadcrumb: 'call.detail.application.form.config.title',
               permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
             },
             canActivate: [PermissionGuard],

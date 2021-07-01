@@ -101,6 +101,6 @@ abstract class CallDTOMapper {
                 .contains(FieldVisibilityStatus.NONE),
             availableInStep = applicationFormFieldConfiguration.visibilityStatus.toDTO(),
             isStepSelectionLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet()
-                .containsAll(listOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_TWO_ONLY))
+                .containsAll(listOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY))
         )
 }
