@@ -14,13 +14,17 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import io.mockk.verifyOrder
 import okhttp3.Headers
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertLinesMatch
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -33,6 +37,11 @@ import java.time.ZonedDateTime
 class MinioStorageTest {
 
     private val zone = ZoneId.of("UTC")
+    private val sourceBucketName = "source-bucket"
+    private val sourceObjectName = "source-object"
+    private val destinationBucketName = "destination-bucket"
+    private val destinationObjectName = "destination-object"
+
 
     @MockK
     lateinit var minioClient: MinioClient
@@ -165,6 +174,107 @@ class MinioStorageTest {
         assertEquals("bucket", bucketToBe.captured)
         assertEquals("path", fileToBe.captured)
     }
+
+    @Test
+    fun `should move file to the destination bucket and then remove it from source bucket`() {
+
+        every { minioClient.bucketExists(destinationBucketName) } returns true
+        every {
+            minioClient.copyObject(
+                destinationBucketName,
+                destinationObjectName,
+                null,
+                null,
+                sourceBucketName,
+                sourceObjectName,
+                null,
+                null
+            )
+        } returns Unit
+        every { minioClient.statObject(sourceBucketName, sourceObjectName) } returns null
+        every { minioClient.removeObject(sourceBucketName, sourceObjectName) } returns Unit
+
+        minioStorage.moveFile(sourceBucketName, sourceObjectName, destinationBucketName, destinationObjectName)
+
+        verifyOrder {
+            minioClient.bucketExists(destinationBucketName)
+            minioClient.copyObject(
+                destinationBucketName,
+                destinationObjectName,
+                null,
+                null,
+                sourceBucketName,
+                sourceObjectName,
+                null,
+                null
+            )
+            minioClient.statObject(sourceBucketName, sourceObjectName)
+            minioClient.removeObject(sourceBucketName, sourceObjectName)
+        }
+    }
+
+    @Test
+    fun `should create destination bucket and then move file to the destination bucket and then remove it from source bucket when destination buckect does not exist`() {
+
+        every { minioClient.bucketExists(destinationBucketName) } returns false
+        every { minioClient.makeBucket(destinationBucketName) } returns Unit
+        every {
+            minioClient.copyObject(
+                destinationBucketName,
+                destinationObjectName,
+                null,
+                null,
+                sourceBucketName,
+                sourceObjectName,
+                null,
+                null
+            )
+        } returns Unit
+        every { minioClient.statObject(sourceBucketName, sourceObjectName) } returns null
+        every { minioClient.removeObject(sourceBucketName, sourceObjectName) } returns Unit
+
+        minioStorage.moveFile(sourceBucketName, sourceObjectName, destinationBucketName, destinationObjectName)
+
+        verifyOrder {
+            minioClient.bucketExists(destinationBucketName)
+            minioClient.makeBucket(destinationBucketName)
+            minioClient.copyObject(
+                destinationBucketName,
+                destinationObjectName,
+                null,
+                null,
+                sourceBucketName,
+                sourceObjectName,
+                null,
+                null
+            )
+            minioClient.statObject(sourceBucketName, sourceObjectName)
+            minioClient.removeObject(sourceBucketName, sourceObjectName)
+        }
+    }
+
+
+    @TestFactory
+    fun `should return correctly when existence of file is being checked`() =
+        listOf(
+            Pair(ErrorCode.NO_SUCH_KEY, false),
+            Pair(ErrorCode.NO_SUCH_OBJECT, false),
+            Pair(ErrorCode.BUCKET_NOT_EMPTY, true)
+        ).map { input ->
+            DynamicTest.dynamicTest(
+                "should return ${input.second} when existence of file is being checked"
+            ) {
+                every { minioClient.statObject(sourceBucketName, sourceObjectName) } throws
+                    ErrorResponseException(
+                        ErrorResponse(input.first, sourceBucketName, sourceObjectName, null, null, null), null
+                    )
+                assertThat(minioStorage.exists(sourceBucketName, sourceObjectName)).isEqualTo(
+                    input.second
+                )
+
+            }
+        }
+
 
     private fun getErrorResponse(errorCode: ErrorCode): ErrorResponse {
         return ErrorResponse(errorCode, null, null, null, null, null)
