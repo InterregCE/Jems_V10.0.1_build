@@ -10,14 +10,13 @@ import {
 } from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {ProjectDetailDTO, OutputProjectFile, PageOutputProjectFile} from '@cat/api';
+import {OutputProjectFile, PageOutputProjectFile, ProjectDetailDTO} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {MatSort} from '@angular/material/sort';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
-import {Forms} from '../../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {Permission} from '../../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-files-list',

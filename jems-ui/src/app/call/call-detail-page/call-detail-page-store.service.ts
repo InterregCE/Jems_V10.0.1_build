@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Log} from 'src/app/common/utils/log';
+import {Log} from '@common/utils/log';
 import {Observable} from 'rxjs';
 import {
   CallDetailDTO, CallDTO, CallService, CallUpdateRequestDTO,

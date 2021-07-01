@@ -35,15 +35,5 @@ class ApprovedApplicationWithConditionsState(
 
     override fun getPossibleStatusToRevertTo() =
         getPossibleStatusToRevertToDefaultImpl(canBeRevertTo)
-
-    private fun updateCurrentStatus(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
-        ifFundingDecisionDateIsValid(actionInfo.date).run {
-            projectWorkflowPersistence.updateProjectCurrentStatus(
-                projectSummary.id,
-                securityService.getUserIdOrThrow(),
-                targetStatus,
-                actionInfo
-            )
-        }
 }
 

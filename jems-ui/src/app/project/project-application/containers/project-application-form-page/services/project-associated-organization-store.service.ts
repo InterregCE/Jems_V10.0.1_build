@@ -8,12 +8,12 @@ import {
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {ProjectVersionStore} from '@project/services/project-version-store.service';
 import {ProjectPartnerStore} from './project-partner-store.service';
-import {RoutingService} from '../../../../../common/services/routing.service';
-import {NutsStore} from '../../../../../common/services/nuts.store';
+import {RoutingService} from '@common/services/routing.service';
+import {NutsStore} from '@common/services/nuts.store';
 
 @Injectable()
 export class ProjectAssociatedOrganizationStore {

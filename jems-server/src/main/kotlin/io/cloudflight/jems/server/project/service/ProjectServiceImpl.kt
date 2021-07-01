@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.api.project.dto.ProjectCreateDTO
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -85,12 +84,5 @@ class ProjectServiceImpl(
             generalValidator.maxLength(inputProjectData.title, 250, "title"),
             generalValidator.numberBetween(inputProjectData.duration, 1, 999, "duration"),
             generalValidator.maxLength(inputProjectData.intro, 2000, "intro"),
-        )
-
-    private fun validateProject(inputProject: ProjectCreateDTO) =
-        generalValidator.throwIfAnyIsInvalid(
-            generalValidator.notBlank(inputProject.acronym, "acronym"),
-            generalValidator.maxLength(inputProject.acronym, 25, "acronym"),
-            generalValidator.notNull(inputProject.projectCallId, "projectCallId"),
         )
 }

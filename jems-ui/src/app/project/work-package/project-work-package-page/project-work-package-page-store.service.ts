@@ -2,7 +2,7 @@ import {OutputWorkPackageSimple, WorkPackageService} from '@cat/api';
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {startWith, switchMap, tap} from 'rxjs/operators';
-import {Log} from 'src/app/common/utils/log';
+import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '../../services/project-version-store.service';
 import {filter, take} from 'rxjs/internal/operators';

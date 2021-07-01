@@ -50,7 +50,7 @@ export class HasPermissionDirective implements OnInit {
   private updateView(): void {
     const userPermissions: string[] = this.currentUser?.role?.permissions || [];
     const intersection: string[] = this.getArraysIntersection(this.permissionsNeeded, userPermissions);
-    const permissionIntersectionExists: boolean = !!intersection.length;
+    const permissionIntersectionExists = !!intersection.length;
 
     if (permissionIntersectionExists || this.alternativeCondition) {
       this.viewContainer.createEmbeddedView(this.templateRef);
@@ -60,8 +60,7 @@ export class HasPermissionDirective implements OnInit {
   }
 
   private getArraysIntersection(a1: string[], a2: string[]): string[] {
-    // tslint:disable-next-line:typedef
-    return  a1.filter(function(n) { return a2.indexOf(n) !== -1; });
+    return a1.filter(n => a2.indexOf(n) !== -1);
   }
 
 }

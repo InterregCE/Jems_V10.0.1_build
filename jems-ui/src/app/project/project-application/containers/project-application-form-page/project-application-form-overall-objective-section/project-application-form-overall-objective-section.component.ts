@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Permission} from '../../../../../security/permissions/permission';
 import {combineLatest, merge, Subject} from 'rxjs';
 import {catchError, map, mergeMap, tap} from 'rxjs/operators';
-import {Log} from '../../../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {InputProjectOverallObjective, ProjectDescriptionService} from '@cat/api';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';

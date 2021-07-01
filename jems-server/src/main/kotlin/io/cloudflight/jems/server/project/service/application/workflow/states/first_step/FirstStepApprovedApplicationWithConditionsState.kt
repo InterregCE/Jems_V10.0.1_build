@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.application.workflow.states.f
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
-import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -29,14 +28,4 @@ class FirstStepApprovedApplicationWithConditionsState (
 
     override fun getPossibleStatusToRevertTo() =
         getPossibleStatusToRevertToDefaultImpl(canBeRevertTo)
-
-    private fun updateCurrentStatus(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
-        ifFundingDecisionDateIsValid(actionInfo.date).run {
-            projectWorkflowPersistence.updateProjectCurrentStatus(
-                projectSummary.id,
-                securityService.getUserIdOrThrow(),
-                targetStatus,
-                actionInfo
-            )
-        }
 }

@@ -1,7 +1,7 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component} from '@angular/core';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {TranslateService} from '@ngx-translate/core';
-import { Alert } from '@common/components/forms/alert';
+import {Alert} from '@common/components/forms/alert';
 import {FormGroup} from '@angular/forms';
 
 @Component({

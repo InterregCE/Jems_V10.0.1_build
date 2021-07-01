@@ -12,8 +12,8 @@ import {ProjectAssociatedOrganizationStore} from '../../services/project-associa
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {take} from 'rxjs/internal/operators';
-import {RoutingService} from '../../../../../../common/services/routing.service';
-import {Permission} from 'src/app/security/permissions/permission';
+import {RoutingService} from '@common/services/routing.service';
+import {Permission} from '../../../../../../security/permissions/permission';
 
 @Component({
   selector: 'app-project-application-form-associated-org-detail',

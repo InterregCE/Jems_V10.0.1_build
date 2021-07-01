@@ -5,7 +5,8 @@ import {
   FlatRateSetupDTO,
   ProgrammeCostOptionService,
   ProgrammeLumpSumListDTO,
-  ProgrammeUnitCostListDTO, UserRoleCreateDTO, UserRoleDTO
+  ProgrammeUnitCostListDTO,
+  UserRoleCreateDTO
 } from '@cat/api';
 import {merge, Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
