@@ -24,11 +24,13 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectAssessmentView("ProjectAssessmentView"),
     ProjectAssessmentQualityEnter("ProjectAssessmentQualityEnter"),
     ProjectAssessmentEligibilityEnter("ProjectAssessmentEligibilityEnter"),
+    ProjectStatusReturnToApplicant("ProjectStatusReturnToApplicant"),
     ProjectStatusDecideEligible("ProjectStatusDecideEligible"),
     ProjectStatusDecideIneligible("ProjectStatusDecideIneligible"),
     ProjectStatusDecideApproved("ProjectStatusDecideApproved"),
     ProjectStatusDecideApprovedWithConditions("ProjectStatusDecideApprovedWithConditions"),
     ProjectStatusDecideNotApproved("ProjectStatusDecideNotApproved"),
+    ProjectStatusDecisionRevert("ProjectStatusDecisionRevert"),
 
     AuditRetrieve("AuditRetrieve"),
 

@@ -115,14 +115,12 @@ export class Permission {
             {
               name: 'project.detail.button.return.applicant',
               mode: PermissionMode.TOGGLE_EDIT,
-              editPermissions: ['ProjectReturn-to-be-done' as PermissionsEnum],
-              temporarilyDisabled: true,
+              editPermissions: [PermissionsEnum.ProjectStatusReturnToApplicant],
             },
             {
-              name: 'Revert decision',
+              name: 'project.application.revert.status.dialog.title',
               mode: PermissionMode.TOGGLE_EDIT,
-              editPermissions: ['Revert decision-to-be-done' as PermissionsEnum],
-              temporarilyDisabled: true,
+              editPermissions: [PermissionsEnum.ProjectStatusDecisionRevert],
             },
           ],
         },

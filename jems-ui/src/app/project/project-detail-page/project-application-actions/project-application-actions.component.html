@@ -39,7 +39,7 @@
 
     </ng-container>
 
-    <ng-container *ngxPermissionsOnly="[UserRole.ADMINISTRATOR, UserRole.PROGRAMME_USER]">
+    <ng-container *hasPermission="Permissions.ProjectStatusReturnToApplicant">
         <app-pending-button *ngIf="data.returnToApplicantAvailable"
                             class="mr-2 mt-2"
                             [confirm]="{title: 'project.detail.return.dialog.title', message: 'project.detail.return.dialog.message'}"
@@ -47,18 +47,20 @@
                             (clicked)="returnToApplicant(data.projectId)">
             {{'project.detail.button.return.applicant' | translate}}
         </app-pending-button>
-        <ng-container *ngxPermissionsOnly="UserRole.ADMINISTRATOR">
-            <app-pending-button
-                    class="mr-2 mt-2"
-                    *ngIf="data.revertToStatus; else revertNotPossible"
-                    [confirm]="getRevertConfirmation(data.projectStatus, data.revertToStatus)"
-                    [pending]="actionPending"
-                    [disabled]="!data.isProjectLatestVersion"
-                    (clicked)="revertProjectStatus(data.projectId)">
-                {{ 'project.application.revert.decision.button.label' | translate}}
-                {{ 'common.label.projectapplicationstatus.' + data.revertToStatus | translate }}
-            </app-pending-button>
-        </ng-container>
+    </ng-container>
+    <ng-container *hasPermission="Permissions.ProjectStatusDecisionRevert">
+        <app-pending-button
+                class="mr-2 mt-2"
+                *ngIf="data.revertToStatus; else revertNotPossible"
+                [confirm]="getRevertConfirmation(data.projectStatus, data.revertToStatus)"
+                [pending]="actionPending"
+                [disabled]="!data.isProjectLatestVersion"
+                (clicked)="revertProjectStatus(data.projectId)">
+            {{ 'project.application.revert.decision.button.label' | translate}}
+            {{ 'common.label.projectapplicationstatus.' + data.revertToStatus | translate }}
+        </app-pending-button>
+    </ng-container>
+    <ng-container *ngxPermissionsOnly="[UserRole.ADMINISTRATOR, UserRole.PROGRAMME_USER]">
         <app-pending-button *ngIf="data.startStepTwoAvailable"
                             class="mr-2 mt-2"
                             [pending]="actionPending"
@@ -68,7 +70,7 @@
     </ng-container>
 
     <ng-template #revertNotPossible>
-        <button class="mr-2 mt-2" *ngxPermissionsOnly="UserRole.ADMINISTRATOR"
+        <button class="mr-2 mt-2" *hasPermission="Permissions.ProjectStatusDecisionRevert"
                 mat-raised-button disabled
                 (click)="revertProjectStatus(data.projectId)">
             {{ 'project.application.revert.decision.impossible.button.label' | translate }}

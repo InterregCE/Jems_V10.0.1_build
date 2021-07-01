@@ -4,15 +4,8 @@ import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.ProjectService
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED_WITH_CONDITIONS
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.ELIGIBLE
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_ELIGIBLE
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_SUBMITTED
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.SUBMITTED
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
@@ -21,6 +14,10 @@ import org.springframework.stereotype.Component
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectStatusAuthorization.canSubmit(#projectId)")
 annotation class CanSubmitApplication
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectStatusReturnToApplicant')")
+annotation class CanReturnApplicationToApplicant
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('ProjectStatusDecideApproved')")
@@ -43,8 +40,8 @@ annotation class CanSetApplicationAsEligible
 annotation class CanSetApplicationAsIneligible
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canReturnToApplicant(#projectId)")
-annotation class CanReturnApplicationToApplicant
+@PreAuthorize("hasAuthority('ProjectStatusDecisionRevert')")
+annotation class CanRevertDecision
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canStartSecondStep(#projectId)")
@@ -54,7 +51,6 @@ annotation class CanStartSecondStep
 class ProjectStatusAuthorization(
     override val securityService: SecurityService,
     val projectPersistence: ProjectPersistence,
-    val projectService: ProjectService
 ) : Authorization(securityService) {
 
     fun canSubmit(projectId: Long): Boolean {
@@ -67,14 +63,6 @@ class ProjectStatusAuthorization(
             return false
         else
             throw ResourceNotFoundException("project")
-    }
-
-    fun canReturnToApplicant(projectId: Long): Boolean {
-        val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val oldStatus = project.projectStatus
-        val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, APPROVED_WITH_CONDITIONS, APPROVED)
-
-        return oldPossibilities.contains(oldStatus) && (isProgrammeUser() || isAdmin())
     }
 
     fun canStartSecondStep(projectId: Long): Boolean {

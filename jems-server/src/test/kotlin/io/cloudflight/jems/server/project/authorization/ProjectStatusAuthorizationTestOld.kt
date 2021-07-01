@@ -1,17 +1,14 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.Project
-import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
@@ -50,9 +47,6 @@ internal class ProjectStatusAuthorizationTestOld {
 
     @MockK
     lateinit var securityService: SecurityService
-
-    @MockK
-    lateinit var projectService: ProjectService
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
@@ -120,62 +114,11 @@ internal class ProjectStatusAuthorizationTestOld {
     fun setup() {
         MockKAnnotations.init(this)
         projectStatusAuthorization =
-            ProjectStatusAuthorization(securityService, projectPersistence, projectService)
+            ProjectStatusAuthorization(securityService, projectPersistence)
 
         projects.forEach { (projectId, projectObject) ->
             every { projectPersistence.getProject(projectId) } returns projectObject
         }
-    }
-
-    @Test
-    fun `admin can perform any allowed status transition`() {
-        every { securityService.currentUser } returns adminUser
-
-        listOf(projectSubmitted, projectEligible, projectApprovedWithConditions)
-            .forEach {
-                every { projectPersistence.getApplicantAndStatusById(eq(it.id!!)) } returns
-                    ProjectApplicantAndStatus(applicantId = 6489L, projectStatus = it.projectStatus.status)
-                assertTrue(
-                    projectStatusAuthorization.canReturnToApplicant(it.id!!),
-                    "transition from ${it.projectStatus.status} to ${ApplicationStatusDTO.RETURNED_TO_APPLICANT} should be possible"
-                )
-            }
-
-        listOf(projectDraft, projectReturned, projectIneligible, projectNotApproved)
-            .forEach {
-                every { projectPersistence.getApplicantAndStatusById(eq(it.id!!)) } returns
-                    ProjectApplicantAndStatus(applicantId = 6488L, projectStatus = it.projectStatus.status)
-                assertFalse(
-                    projectStatusAuthorization.canReturnToApplicant(it.id!!),
-                    "transition from ${projects[it]?.projectStatus?.status} to ${ApplicationStatusDTO.RETURNED_TO_APPLICANT} should not be possible"
-                )
-            }
-    }
-
-    @Test
-    fun `owner cannot return`() {
-        every { securityService.currentUser } returns applicantUser
-
-        every { projectPersistence.getApplicantAndStatusById(projectSubmitted.id!!) } returns
-            ProjectApplicantAndStatus(applicantId = applicantUser.user.id, projectStatus = ApplicationStatus.SUBMITTED)
-        assertFalse(projectStatusAuthorization.canReturnToApplicant(projectSubmitted.id!!))
-
-        every { projectPersistence.getApplicantAndStatusById(projectReturned.id!!) } returns
-            ProjectApplicantAndStatus(applicantId = applicantUser.user.id, projectStatus = ApplicationStatus.RETURNED_TO_APPLICANT)
-        assertFalse(projectStatusAuthorization.canReturnToApplicant(projectReturned.id!!))
-    }
-
-    @Test
-    fun `programme user can only return to applicant`() {
-        every { securityService.currentUser } returns programmeUser
-
-        every { projectPersistence.getApplicantAndStatusById(projectSubmitted.id!!) } returns
-            ProjectApplicantAndStatus(applicantId = applicantUser.user.id, projectStatus = ApplicationStatus.SUBMITTED)
-        assertTrue(projectStatusAuthorization.canReturnToApplicant(projectSubmitted.id!!))
-
-        every { projectPersistence.getApplicantAndStatusById(projectReturned.id!!) } returns
-            ProjectApplicantAndStatus(applicantId = applicantUser.user.id, projectStatus = ApplicationStatus.RETURNED_TO_APPLICANT)
-        assertFalse(projectStatusAuthorization.canReturnToApplicant(projectReturned.id!!))
     }
 
     @Test
@@ -222,21 +165,6 @@ internal class ProjectStatusAuthorizationTestOld {
             applicant = userApplicantWithoutRole,
             projectStatus = ProjectStatus(1, status, userApplicantWithoutRole, ZonedDateTime.now(), null),
             duration = 12,
-        )
-    }
-
-    private fun provideAdminAndProgramUsers(): Stream<Arguments> {
-        return Stream.of(
-            Arguments.of(programmeUser),
-            Arguments.of(adminUser)
-        )
-    }
-
-    private fun provideAllUsers(): Stream<Arguments> {
-        return Stream.of(
-            Arguments.of(adminUser),
-            Arguments.of(programmeUser),
-            Arguments.of(applicantUser)
         )
     }
 

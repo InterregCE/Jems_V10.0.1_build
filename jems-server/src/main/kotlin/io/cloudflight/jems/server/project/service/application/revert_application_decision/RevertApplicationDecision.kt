@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.application.revert_application_decision
 
-import io.cloudflight.jems.server.authentication.authorization.IsAdmin
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.project.authorization.CanRevertDecision
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
@@ -22,7 +22,7 @@ class RevertApplicationDecision(
         private val log = LoggerFactory.getLogger(this::class.java)
     }
 
-    @IsAdmin
+    @CanRevertDecision
     @Transactional
     @ExceptionWrapper(RevertApplicationDecisionException::class)
     override fun revert(projectId: Long): ApplicationStatus =
