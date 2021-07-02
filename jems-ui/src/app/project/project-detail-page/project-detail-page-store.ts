@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {ProjectDecisionDTO, ProjectDetailDTO, ProjectStatusService, UserRoleCreateDTO} from '@cat/api';
-import {Permission} from '../../security/permissions/permission';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {Log} from '../../common/utils/log';
@@ -103,7 +102,7 @@ export class ProjectDetailPageStore {
     return combineLatest([this.project$, this.permissionService.permissionsChanged()])
       .pipe(
         switchMap(([project, perms]) =>
-          perms.includes(Permission.ADMINISTRATOR)
+          perms.includes(PermissionsEnum.ProjectStatusDecisionRevert)
             ? this.projectStatusService.findPossibleDecisionRevertStatus(project.id)
             : of(null)
         ),

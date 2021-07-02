@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.application.get_possible_status_to_revert_to
 
-import io.cloudflight.jems.server.authentication.authorization.IsAdmin
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.project.authorization.CanRevertDecision
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
@@ -14,7 +14,7 @@ class GetPossibleStatusToRevertTo(
     private val applicationStateFactory: ApplicationStateFactory,
 ) : GetPossibleStatusToRevertToInteractor {
 
-    @IsAdmin
+    @CanRevertDecision
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetPossibleStatusToRevertToException::class)
     override fun get(projectId: Long): ApplicationStatus? =
