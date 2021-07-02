@@ -84,3 +84,15 @@ fun programmeInputLanguagesChanged(languages: Iterable<ProgrammeLanguage>): Audi
         .description("Programme INPUT languages set to:\n$inputLanguagesAsString")
         .build()
 }
+
+fun programmeTranslationFileUploaded(
+    context: Any,
+    fileName: String
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROGRAMME_TRANSLATION_FILE_UPLOADED)
+            .description("Translation file $fileName uploaded")
+            .build()
+    )
+

@@ -117,6 +117,7 @@ You can define following startup parameters (see also [application.yaml](jems-se
   - `minio-storage.accessKey` with access key for Minio (or env variable `MINIO_ACCESS_KEY`)
   - `minio-storage.secretKey` with secret key for Minio (or env variable `MINIO_SECRET_KEY`)
 - `info.helpdesk-url` URL, which is available in the main HELP tooltip
+- `app.translations-folder` Path for translations folder that will be uploaded by the users
 
 ### Plugins
 
