@@ -12,6 +12,9 @@ import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confir
 import moment from 'moment';
 import {Alert} from '@common/components/forms/alert';
 import {CallDetailPageStore} from './call-detail-page-store.service';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {filter} from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-call-detail-page',
@@ -78,7 +81,8 @@ export class CallDetailPageComponent {
               private pageStore: CallDetailPageStore,
               private formService: FormService,
               private activatedRoute: ActivatedRoute,
-              private callNavService: CallPageSidenavService) {
+              private callNavService: CallPageSidenavService,
+              private dialog: MatDialog) {
     this.formService.init(this.callForm);
     this.formService.setCreation(!this.callId);
 
@@ -124,6 +128,20 @@ export class CallDetailPageComponent {
       this.createCall(call);
       return;
     }
+
+    if (savedCall.endDateTimeStep1 && !this.callForm.controls.is2Step.value) {
+      Forms.confirm(this.dialog, {
+        title: 'call.detail.save.confirm.step.switch.title',
+        message: 'call.detail.save.confirm.step.switch.message',
+        warnMessage: 'call.detail.save.confirm.step.switch.warn'
+      }).pipe(
+        take(1),
+        filter(yes => yes),
+        tap(() => this.updateCall(call))
+      ).subscribe();
+      return;
+    }
+
     this.updateCall(call);
   }
 

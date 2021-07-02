@@ -38,9 +38,6 @@ class UpdateCall(
             validateAllowedChanges(call, existingCall)
 
         return persistence.updateCall(call).also {
-            if (call.is2StepProcedureEnabled() != existingCall.is2StepCall()) {
-                resetApplicationFormFieldConfigurations(existingCall)
-            }
             auditPublisher.publishEvent(callUpdated(this, existingCall, it))
         }
     }
@@ -85,19 +82,4 @@ class UpdateCall(
     private fun List<ProgrammePriority>.mergeAllSpecificObjectives(): Set<ProgrammeObjectivePolicy> =
         map { it.specificObjectives.map { it.programmeObjectivePolicy }.toSet() }
             .fold(emptySet()) { first, second -> first union second }
-
-    private fun resetApplicationFormFieldConfigurations(callDetail: CallDetail) {
-        persistence.saveApplicationFormFieldConfigurations(
-            callDetail.id,
-            callDetail.applicationFormFieldConfigurations.map { configuration ->
-                ApplicationFormFieldConfiguration(
-                    configuration.id,
-                    if (configuration.visibilityStatus == FieldVisibilityStatus.STEP_TWO_ONLY)
-                        FieldVisibilityStatus.STEP_ONE_AND_TWO
-                    else configuration.visibilityStatus
-                )
-            }.toMutableSet()
-        )
-
-    }
 }
