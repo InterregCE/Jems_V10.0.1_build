@@ -139,6 +139,7 @@ export class AuditLogComponent implements OnInit {
         timeFrom: filters[this.MAT_CHIP_START_DATE_INDEX].values[0],
         timeTo: filters[this.MAT_CHIP_END_DATE_INDEX].values[0],
       } as AuditSearchRequestDTO)),
+      tap(() => this.auditLogStore.auditPageIndex$.next(0)),
       tap((filters) => this.auditLogStore.auditPageFilter$.next(filters)),
       untilDestroyed(this)
     ).subscribe();
