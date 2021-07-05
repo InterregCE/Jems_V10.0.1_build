@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
-import {catchError, map, startWith, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, map, startWith, tap} from 'rxjs/operators';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {BudgetOptions} from '../../../../model/budget/budget-options';
@@ -38,7 +38,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   BudgetCostCategoryEnum = BudgetCostCategoryEnum;
   budgetsForm = this.initForm();
 
-  data$: Observable<{
+  data: {
     budgetTables: PartnerBudgetTables,
     investments: InvestmentSummary[],
     unitCosts: ProgrammeUnitCost[],
@@ -52,14 +52,14 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     isOfficeOnDirectFlatRateActive: boolean,
     isTravelAndAccommodationFlatRateActive: boolean,
     isOtherFlatRateBasedOnStaffCostActive: boolean,
-  }>;
+  };
 
   private otherCostsFlatRateTotal$: Observable<number>;
   private staffCostsTotal$: Observable<number>;
   private officeAndAdministrationFlatRateTotal$: Observable<number>;
   private travelAndAccommodationTotal$: Observable<number>;
 
-  constructor(private formService: FormService, private tabService: ProjectPartnerBudgetTabService, private formBuilder: FormBuilder, private pageStore: ProjectPartnerDetailPageStore) {
+  constructor(private cdr: ChangeDetectorRef, private formService: FormService, private tabService: ProjectPartnerBudgetTabService, private formBuilder: FormBuilder, private pageStore: ProjectPartnerDetailPageStore) {
   }
 
   ngOnInit(): void {
@@ -73,30 +73,30 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       startWith(0)
     );
 
-    this.travelAndAccommodationTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$]).pipe(
+    this.travelAndAccommodationTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$.pipe(distinctUntilChanged())]).pipe(
       map(([budgetOptions, staffCostTotal]) => this.calculateTravelAndAccommodationCostsTotal(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate, staffCostTotal)),
       startWith(0),
     );
 
-    this.officeAndAdministrationFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$, this.travelAndAccommodationTotal$]).pipe(
+    this.officeAndAdministrationFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$, this.travelAndAccommodationTotal$.pipe(distinctUntilChanged())]).pipe(
       map(([budgetOptions, staffCostTotal, travelCostTotal]) => this.calculateOfficeAndAdministrationFlatRateTotal(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate, budgetOptions.officeAndAdministrationOnDirectCostsFlatRate, staffCostTotal, travelCostTotal)),
       startWith(0)
     );
 
-    this.otherCostsFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$]).pipe(
+    this.otherCostsFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$.pipe(distinctUntilChanged())]).pipe(
       map(([budgetOptions, staffCostTotal]) => this.calculateOtherCostsFlatRateTotal(budgetOptions.staffCostsFlatRate, budgetOptions.otherCostsOnStaffCostsFlatRate || 0, staffCostTotal)),
       startWith(0)
     );
 
-    this.data$ = combineLatest([
+    combineLatest([
       this.pageStore.budgets$,
       this.pageStore.budgetOptions$,
       this.pageStore.investmentSummaries$,
       this.pageStore.unitCosts$,
-      this.staffCostsTotal$,
-      this.officeAndAdministrationFlatRateTotal$,
-      this.travelAndAccommodationTotal$,
-      this.otherCostsFlatRateTotal$,
+      this.staffCostsTotal$.pipe(distinctUntilChanged()),
+      this.officeAndAdministrationFlatRateTotal$.pipe(distinctUntilChanged()),
+      this.travelAndAccommodationTotal$.pipe(distinctUntilChanged()),
+      this.otherCostsFlatRateTotal$.pipe(distinctUntilChanged()),
       this.pageStore.periods$
     ]).pipe(
       map(([budgetTables, budgetOptions, investments, unitCosts, staffCostsTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationTotal, otherCostsFlatRateTotal, periods]: any) => {
@@ -115,7 +115,12 @@ export class ProjectPartnerBudgetComponent implements OnInit {
           isTravelAndAccommodationFlatRateActive: !!budgetOptions.travelAndAccommodationOnStaffCostsFlatRate,
           isOtherFlatRateBasedOnStaffCostActive: !!budgetOptions.otherCostsOnStaffCostsFlatRate,
         };
-      }));
+      }),
+      untilDestroyed(this)
+    ).subscribe(data => {
+      this.data = data;
+      this.cdr.markForCheck();
+    });
   }
 
 

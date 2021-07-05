@@ -52,6 +52,17 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
 
   constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder) {
     this.budgetForm = this.controlContainer.control as FormGroup;
+    this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
+    this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
+    this.items.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+      this.dataSource.data = this.items.controls;
+      this.items.controls.forEach(control => {
+        this.setRowSum(control as FormGroup);
+        this.setOpenForPeriods(control as FormGroup);
+      });
+      this.setTotal();
+      this.setOpenForPeriodsWarning();
+    });
   }
 
   onUnitCostChange(change: MatSelectChange, control: FormGroup, rowIndex: number): void {
@@ -73,17 +84,6 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
   }
 
   ngOnInit(): void {
-    this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
-    this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
-    this.items.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      this.dataSource.data = this.items.controls;
-      this.items.controls.forEach(control => {
-        this.setRowSum(control as FormGroup);
-        this.setOpenForPeriods(control as FormGroup);
-      });
-      this.setTotal();
-      this.setOpenForPeriodsWarning();
-    });
 
     this.formService.reset$.pipe(
       map(() => this.resetStaffFormGroup(this.staffCostTable)),

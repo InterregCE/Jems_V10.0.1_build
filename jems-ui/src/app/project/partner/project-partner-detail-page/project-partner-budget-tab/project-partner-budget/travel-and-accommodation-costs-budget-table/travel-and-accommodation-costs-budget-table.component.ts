@@ -50,9 +50,6 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
 
   constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder) {
     this.budgetForm = this.controlContainer.control as FormGroup;
-  }
-
-  ngOnInit(): void {
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
     this.items.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
@@ -65,6 +62,9 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
       this.setOpenForPeriodsWarning();
     });
 
+  }
+
+  ngOnInit(): void {
     this.formService.reset$.pipe(
       map(() => this.resetTravelFormGroup(this.travelAndAccommodationTable)),
       untilDestroyed(this)

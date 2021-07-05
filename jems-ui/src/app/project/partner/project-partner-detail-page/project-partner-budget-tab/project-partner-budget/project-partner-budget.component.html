@@ -1,4 +1,4 @@
-<ng-container *ngIf="(data$ | async) as data">
+<ng-container *ngIf="data">
     <app-form (save)="updateBudgets()">
         <form appFormLayout [formGroup]="budgetsForm">
             <h3>{{'project.partner.budget.header' | translate}}

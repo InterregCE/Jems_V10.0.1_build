@@ -53,10 +53,6 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
               private controlContainer: ControlContainer,
               private formBuilder: FormBuilder) {
     this.budgetForm = this.controlContainer.control as FormGroup;
-  }
-
-  ngOnInit(): void {
-
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
 
@@ -69,6 +65,9 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
       this.setTableTotal();
       this.setOpenForPeriodsWarning();
     });
+  }
+
+  ngOnInit(): void {
 
     this.formService.reset$.pipe(
       map(() => this.resetUnitCostFormGroup(this.unitCostTable)),

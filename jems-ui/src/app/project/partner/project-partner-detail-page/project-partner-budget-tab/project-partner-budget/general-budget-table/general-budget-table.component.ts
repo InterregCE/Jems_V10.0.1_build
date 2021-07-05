@@ -60,19 +60,6 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
 
-    this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
-    this.numberOfItems$ = this.items.valueChanges.pipe(startWith(0), map(() => this.items.length));
-
-    this.items.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      this.dataSource.data = this.items.controls;
-      this.items.controls.forEach(control => {
-        this.setRowTotal(control as FormGroup);
-        this.setOpenForPeriods(control as FormGroup);
-      });
-      this.setTableTotal();
-      this.setOpenForPeriodsWarning();
-    });
-
     this.formService.reset$.pipe(
       map(() => this.resetTableFormGroup(this.budgetTable)),
       untilDestroyed(this)
@@ -99,6 +86,19 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes.budgetTable?.isFirstChange()) {
+      this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
+      this.numberOfItems$ = this.items.valueChanges.pipe(startWith(0), map(() => this.items.length));
+      this.items.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+        this.dataSource.data = this.items.controls;
+        this.items.controls.forEach(control => {
+          this.setRowTotal(control as FormGroup);
+          this.setOpenForPeriods(control as FormGroup);
+        });
+        this.setTableTotal();
+        this.setOpenForPeriodsWarning();
+      });
+    }
     if (changes.budgetTable || changes.editable) {
       this.resetTableFormGroup(this.budgetTable);
     }
