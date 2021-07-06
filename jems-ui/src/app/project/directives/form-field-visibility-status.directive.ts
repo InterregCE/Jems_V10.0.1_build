@@ -28,11 +28,7 @@ export class FormFieldVisibilityStatusDirective {
     });
   }
 
-  constructor(
-    private templateRef: TemplateRef<any>,
-    private viewContainer: ViewContainerRef,
-    private projectStore: ProjectStore
-  ) {
+  constructor(private templateRef: TemplateRef<any>, private viewContainer: ViewContainerRef, private projectStore: ProjectStore) {
   }
 
   shouldTheFieldBeVisible(fieldId: string): Observable<boolean> {
@@ -40,9 +36,20 @@ export class FormFieldVisibilityStatusDirective {
       map(([project, callSetting, callHasTwoSteps]) => {
         const fieldConfiguration = callSetting.applicationFormFieldConfigurations.find(it => it.id === fieldId);
 
-        return fieldConfiguration !== undefined && fieldConfiguration.isVisible && (fieldConfiguration.availableInStep === AvailableInStepEnum.STEPONEANDTWO ||
-          (callHasTwoSteps && project.step2Active && fieldConfiguration.availableInStep === AvailableInStepEnum.STEPTWOONLY));
+        if (fieldConfiguration === undefined || !fieldConfiguration.isVisible) {
+          return false;
+        }
+
+        return !callHasTwoSteps ||
+        (callHasTwoSteps && this.shouldBeVisibleForTwoStepCall(fieldConfiguration, project.step2Active));
+
       }),
     );
   }
+
+  private shouldBeVisibleForTwoStepCall(fieldConfiguration: ApplicationFormFieldConfigurationDTO, isApplicationInStep2: boolean): boolean {
+    return fieldConfiguration.availableInStep === AvailableInStepEnum.STEPONEANDTWO ||
+      (fieldConfiguration.availableInStep === AvailableInStepEnum.STEPTWOONLY && isApplicationInStep2);
+  }
+
 }
