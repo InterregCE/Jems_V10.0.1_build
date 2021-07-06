@@ -65,7 +65,7 @@ class MinioStorageImpl(
             true
         } catch (e: ErrorResponseException) {
             val reason = e.errorResponse().errorCode()
-            !(reason == ErrorCode.NO_SUCH_KEY || reason == ErrorCode.NO_SUCH_OBJECT)
+            !(reason == ErrorCode.NO_SUCH_BUCKET || reason == ErrorCode.NO_SUCH_OBJECT || reason == ErrorCode.NO_SUCH_KEY)
         }
 
     private fun makeBucketIfNotExists(bucket: String) {
