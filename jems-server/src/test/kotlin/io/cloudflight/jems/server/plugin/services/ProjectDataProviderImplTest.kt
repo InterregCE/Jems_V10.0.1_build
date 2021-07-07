@@ -26,6 +26,8 @@ import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLum
 import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLumpSumPhaseData
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
@@ -652,6 +654,12 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                     period = projectLumpSum.period,
                     lumpSumContributions = listOf(ProjectPartnerLumpSumData(3L, BigDecimal.ZERO))
                 ))
+            )
+        )
+
+        assertThat(projectData.lifecycleData).isEqualTo(
+            ProjectLifecycleData(
+                status = ApplicationStatusData.APPROVED
             )
         )
     }

@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
+import io.cloudflight.jems.plugin.contract.models.call.ApplicationFormFieldConfigurationData
 import io.cloudflight.jems.plugin.contract.models.call.CallDetailData
 import io.cloudflight.jems.plugin.contract.models.call.CallStatusData
+import io.cloudflight.jems.plugin.contract.models.call.FieldVisibilityStatusData
 import io.cloudflight.jems.plugin.contract.models.call.flatrate.FlatRateData
 import io.cloudflight.jems.plugin.contract.models.call.flatrate.FlatRateSetupData
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
@@ -17,6 +19,7 @@ import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammeSp
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.entity.TranslationEntity
@@ -42,6 +45,7 @@ fun CallDetail.toDataModel() = CallDetailData(
     flatRates = flatRates.toDataModel(),
     lumpSums = lumpSums.toLumpSumDataModel(),
     unitCosts = unitCosts.toUnitCostDataModel(),
+    applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDataModel()
 )
 
 fun ProgrammePriority.toDataModel() = ProgrammePriorityData(
@@ -83,6 +87,13 @@ fun ProjectCallFlatRate.toDataModel() = FlatRateData(
     rate = rate,
     isAdjustable = isAdjustable,
 )
+
+fun MutableSet<ApplicationFormFieldConfiguration>.toDataModel() = map {
+    ApplicationFormFieldConfigurationData(
+        it.id, FieldVisibilityStatusData.valueOf(it.visibilityStatus.name)
+    )
+}.toMutableSet()
+
 
 fun Iterable<ProgrammeLumpSum>.toLumpSumDataModel() = map {
     ProgrammeLumpSumListData(

@@ -18,3 +18,8 @@ class ApplicationVersionNotFoundException : ApplicationNotFoundException(
     code = "$PROJECT_ERROR_CODE_PREFIX-003",
     i18nMessage = I18nMessage("$PROJECT_ERROR_KEY_PREFIX.application.version.not.found")
 )
+
+class ProjectNotFoundException : ApplicationNotFoundException(
+    code = "$PROJECT_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$PROJECT_ERROR_KEY_PREFIX.project.not.found")
+)

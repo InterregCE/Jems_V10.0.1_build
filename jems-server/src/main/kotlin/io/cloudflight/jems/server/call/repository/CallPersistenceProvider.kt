@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpS
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -30,6 +31,7 @@ class CallPersistenceProvider(
     private val programmeStrategyRepo: StrategyRepository,
     private val programmeFundRepo: ProgrammeFundRepository,
     private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
+    private val projectPersistence: ProjectPersistence,
 ) : CallPersistence {
 
     @Transactional(readOnly = true)
@@ -47,6 +49,10 @@ class CallPersistenceProvider(
                 applicationFormFieldConfigurationRepository.findAllByCallId(callId)
             )
         }.orElseThrow { CallNotFound() }
+
+    @Transactional(readOnly = true)
+    override fun getCallByProjectId(projectId: Long): CallDetail =
+        getCallById(projectPersistence.getCallIdOfProject(projectId))
 
     @Transactional(readOnly = true)
     override fun getCallIdForNameIfExists(name: String): Long? =

@@ -17,10 +17,8 @@ import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurationRepository
 import io.cloudflight.jems.server.call.repository.CallPersistenceProvider
-import io.cloudflight.jems.server.call.repository.CallPersistenceProviderTest
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
@@ -449,5 +447,19 @@ internal class ProjectPersistenceTest : UnitTest() {
                 status = ApplicationStatus.DRAFT,
             )
         )
+    }
+
+    @Test
+    fun `should return call id of project`() {
+        every { projectRepository.findCallIdFor(PROJECT_ID) } returns Optional.of(CALL_ID)
+        assertThat(persistence.getCallIdOfProject(PROJECT_ID)).isEqualTo(CALL_ID)
+    }
+
+    @Test
+    fun `should throw ProjectNotFoundException when getting call id of project while project does not exist`() {
+        every { projectRepository.findCallIdFor(PROJECT_ID) } returns Optional.empty()
+        assertThrows<ProjectNotFoundException> {
+            persistence.getCallIdOfProject(PROJECT_ID)
+        }
     }
 }

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.plugin.contract.models.project.ProjectData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
@@ -43,7 +44,8 @@ class ProjectDataProviderImpl(
 
     @Transactional(readOnly = true)
     override fun getProjectDataForProjectId(projectId: Long): ProjectData {
-        val sectionA = projectPersistence.getProject(projectId).toDataModel()
+        val project = projectPersistence.getProject(projectId)
+        val sectionA = project.toDataModel()
 
         val partners = partnerPersistence.findAllByProjectId(projectId).map {
             val budgetOptions = budgetOptionsPersistence.getBudgetOptions(it.id!!)?.toDataModel()
@@ -69,6 +71,9 @@ class ProjectDataProviderImpl(
 
         logger.info("Retrieved project data for project id=$projectId via plugin.")
 
-        return ProjectData(sectionA, sectionB, sectionC, sectionE)
+        return ProjectData(
+            sectionA, sectionB, sectionC, sectionE,
+            lifecycleData = ProjectLifecycleData(status = project.projectStatus.status.toDataModel())
+        )
     }
 }

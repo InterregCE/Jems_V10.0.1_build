@@ -46,6 +46,7 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUn
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -69,6 +70,7 @@ internal class CallPersistenceProviderTest {
 
     companion object {
         private const val CALL_ID = 15L
+        private const val PROJECT_ID = 1L
         private const val FUND_ID = 24L
         private const val LUMP_SUM_ID = 4L
         private const val UNIT_COST_ID = 3L
@@ -280,6 +282,9 @@ internal class CallPersistenceProviderTest {
     @MockK
     private lateinit var programmeFundRepo: ProgrammeFundRepository
 
+    @MockK
+    private lateinit var projectPersistence: ProjectPersistence
+
     @InjectMockKs
     private lateinit var persistence: CallPersistenceProvider
 
@@ -338,6 +343,24 @@ internal class CallPersistenceProviderTest {
     fun `getCallById - not existing`() {
         every { callRepo.findById(-1) } returns Optional.empty()
         assertThrows<CallNotFound> { persistence.getCallById(-1) }
+    }
+
+    @Test
+    fun `should return call detail by project id`() {
+        val callEntity= callEntity()
+        every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
+        every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(callEntity)
+        assertThat(persistence.getCallByProjectId(PROJECT_ID)).isEqualTo(expectedCallDetail)
+    }
+
+    @Test
+    fun `should throw CallNotFound when call does not exist`() {
+        every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
+        every { callRepo.findById(CALL_ID) } returns Optional.empty()
+        assertThrows<CallNotFound> {
+            persistence.getCallByProjectId(PROJECT_ID)
+        }
     }
 
     @Test

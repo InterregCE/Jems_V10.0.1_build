@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
+import java.util.Optional
 
 @Repository
 interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
@@ -46,6 +47,9 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
     fun findPeriodsByProjectIdAsOfTimestamp(
         projectId: Long, timestamp: Timestamp
     ): List<ProjectPeriodRow>
+
+    @Query("SELECT e.call.id FROM #{#entityName} e where e.id=:projectId")
+    fun findCallIdFor(projectId: Long): Optional<Long>
 
     @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
     override fun findAll(pageable: Pageable): Page<ProjectEntity>

@@ -11,3 +11,9 @@ class GetCallException(cause: Throwable) : ApplicationException(
     i18nMessage = I18nMessage("$GET_CALL_ERROR_KEY_PREFIX.failed"),
     cause = cause
 )
+
+class GetCallByProjectIdException(cause: Throwable) : ApplicationException(
+    code = GET_CALL_ERROR_CODE_PREFIX,
+    i18nMessage = I18nMessage("$GET_CALL_ERROR_KEY_PREFIX.failed"),
+    cause = cause
+)

@@ -22,6 +22,7 @@ import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammePr
 import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammeSpecificObjectiveData
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationData
@@ -75,6 +76,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.Proje
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.project.controller.workpackage.extractField
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
@@ -650,3 +652,6 @@ fun Set<InputTranslation>?.toDataModel() =
 
 fun SystemLanguage.toDataModel() =
     SystemLanguageData.valueOf(this.name)
+
+fun ApplicationStatus.toDataModel() =
+    ApplicationStatusData.valueOf(this.name)

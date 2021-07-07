@@ -20,6 +20,8 @@ interface ProjectPersistence {
 
     fun getProjectCallSettings(projectId: Long): ProjectCallSettings
 
+    fun getCallIdOfProject(projectId: Long): Long
+
     fun getProjects(pageable: Pageable, filterByOwnerId: Long? = null): Page<ProjectSummary>
 
     fun getProjectUnitCosts(projectId: Long): List<ProgrammeUnitCost>
