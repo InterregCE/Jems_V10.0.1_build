@@ -34,6 +34,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.Proj
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerEssentialData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerMotivationData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerRoleData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerStateAidData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerVatRecoveryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetCostData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetGeneralCostEntryData
@@ -99,6 +100,7 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostE
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
@@ -523,7 +525,7 @@ fun BudgetUnitCostEntry.toDataModel() = BudgetUnitCostEntryData(
     unitCostId = unitCostId
 )
 
-fun OutputProjectPartnerDetail.toDataModel(budget: PartnerBudgetData) = ProjectPartnerData(
+fun OutputProjectPartnerDetail.toDataModel(stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData) = ProjectPartnerData(
     id = id,
     abbreviation = abbreviation,
     role = ProjectPartnerRoleData.valueOf(role.name),
@@ -539,6 +541,7 @@ fun OutputProjectPartnerDetail.toDataModel(budget: PartnerBudgetData) = ProjectP
     addresses = addresses.map { it.toDataModel() }.toList(),
     contacts = contacts.map { it.toDataModel() }.toList(),
     motivation = motivation?.toDataModel(),
+    stateAid = stateAid.toDataModel(),
     budget = budget
 )
 
@@ -582,6 +585,17 @@ fun ProjectPartnerMotivationDTO.toDataModel() = ProjectPartnerMotivationData(
             it.translation
         )
     }.toSet()
+)
+
+private fun ProjectPartnerStateAid.toDataModel() = ProjectPartnerStateAidData(
+    answer1 = answer1,
+    justification1 = justification1.toDataModel(),
+    answer2 = answer2,
+    justification2 = justification2.toDataModel(),
+    answer3 = answer3,
+    justification3 = justification3.toDataModel(),
+    answer4 = answer4,
+    justification4 = justification4.toDataModel(),
 )
 
 fun OutputProjectAssociatedOrganizationDetail.toDataModel() = ProjectAssociatedOrganizationData(

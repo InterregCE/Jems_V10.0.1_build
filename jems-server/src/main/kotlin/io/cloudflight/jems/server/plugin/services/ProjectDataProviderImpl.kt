@@ -55,7 +55,8 @@ class ProjectDataProviderImpl(
             //TODO getBudgetTotalCost should be replaced by persistence/service call without permissions
             val budgetTotalCost = getBudgetTotalCost.getBudgetTotalCost(it.id!!)
             val budget = PartnerBudgetData(budgetOptions, coFinancing, budgetCosts, budgetTotalCost)
-            it.toDataModel(budget)
+            val stateAid = partnerPersistence.getPartnerStateAid(partnerId = it.id!!)
+            it.toDataModel(stateAid, budget)
         }.toSet()
         val associatedOrganisations =
             associatedOrganizationService.findAllByProjectId(projectId).map { it.toDataModel() }.toSet()

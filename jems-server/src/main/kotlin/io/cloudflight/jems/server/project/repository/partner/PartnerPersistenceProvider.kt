@@ -10,11 +10,13 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -30,6 +32,7 @@ class PartnerPersistenceProvider(
     private val projectPartnerRepository: ProjectPartnerRepository,
     private val legalStatusRepo: ProgrammeLegalStatusRepository,
     private val projectRepo: ProjectRepository,
+    private val projectPartnerStateAidRepository: ProjectPartnerStateAidRepository,
     private val projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
 ) : PartnerPersistence {
 
@@ -186,6 +189,20 @@ class PartnerPersistenceProvider(
             )
         ).toOutputProjectPartnerDetail()
     }
+
+    @Transactional(readOnly = true)
+    override fun getPartnerStateAid(partnerId: Long, version: String?): ProjectPartnerStateAid {
+        if (version == null) {
+            return projectPartnerStateAidRepository.findById(partnerId)
+                .orElse(ProjectPartnerStateAidEntity(partnerId)).toModel()
+        } else {
+            TODO("Do some magic with version fetching")
+        }
+    }
+
+    @Transactional
+    override fun updatePartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAid): ProjectPartnerStateAid =
+        projectPartnerStateAidRepository.save(stateAid.toEntity(partnerId)).toModel()
 
     @Transactional
     override fun deletePartner(partnerId: Long) {

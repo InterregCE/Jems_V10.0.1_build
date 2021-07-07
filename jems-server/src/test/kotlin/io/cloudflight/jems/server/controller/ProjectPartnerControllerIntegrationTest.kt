@@ -60,7 +60,7 @@ class ProjectPartnerControllerIntegrationTest {
         val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
 
         mockMvc.perform(
-            post("/api/project/${project.id}/partner")
+            post("/api/project/partner/toProjectId/${project.id}")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(inputProjectPartner))
         )
@@ -75,7 +75,7 @@ class ProjectPartnerControllerIntegrationTest {
         val inputProjectPartner = InputProjectPartnerCreate(null, null, legalStatusId = null)
 
         mockMvc.perform(
-            post("/api/project/1/partner")
+            post("/api/project/partner/toProjectId/1")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(inputProjectPartner))
         )
@@ -92,7 +92,7 @@ class ProjectPartnerControllerIntegrationTest {
         val inputProjectPartner = InputProjectPartnerCreate(RandomString.make(16), ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
 
         mockMvc.perform(
-            post("/api/project/1/partner")
+            post("/api/project/partner/toProjectId/1")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(inputProjectPartner))
         )
@@ -111,7 +111,7 @@ class ProjectPartnerControllerIntegrationTest {
         val projectPartner = projectPartnerFactory.saveProjectPartner(userFactory.adminUser, project)
 
         mockMvc.perform(
-            get("/api/project/${project.id}/partner")
+            get("/api/project/partner/byProjectId/${project.id}")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
@@ -128,7 +128,7 @@ class ProjectPartnerControllerIntegrationTest {
         val projectPartner = projectPartnerFactory.saveProjectPartner(userFactory.adminUser, project)
 
         mockMvc.perform(
-            get("/api/project/${project.id}/partner/ids")
+            get("/api/project/partner/byProjectId/${project.id}/ids")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
@@ -143,7 +143,7 @@ class ProjectPartnerControllerIntegrationTest {
         val projectPartner = projectPartnerFactory.saveProjectPartner(userFactory.adminUser, project)
 
         mockMvc.perform(
-            get("/api/project/${project.id}/partner/${projectPartner.id}")
+            get("/api/project/partner/${projectPartner.id}")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
@@ -155,7 +155,7 @@ class ProjectPartnerControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project partner not found`() {
         mockMvc.perform(
-            get("/api/project/1/partner/0")
+            get("/api/project/partner/0")
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isInternalServerError)

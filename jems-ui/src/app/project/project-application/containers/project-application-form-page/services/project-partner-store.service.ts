@@ -61,7 +61,7 @@ export class ProjectPartnerStore {
         this.projectId = projectId;
       }),
       switchMap(([partnerId, projectId, version]) => partnerId && projectId
-        ? this.partnerService.getProjectPartnerById(Number(partnerId), projectId, version)
+        ? this.partnerService.getProjectPartnerById(Number(partnerId), version)
           .pipe(
             catchError(err => {
               this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
@@ -76,7 +76,7 @@ export class ProjectPartnerStore {
   }
 
   savePartner(partner: InputProjectPartnerUpdate): Observable<OutputProjectPartnerDetail> {
-    return this.partnerService.updateProjectPartner(this.projectId, partner)
+    return this.partnerService.updateProjectPartner(partner)
       .pipe(
         tap(saved => this.partner$.next(saved)),
         tap(() => this.partnerUpdateEvent$.next(null)),
@@ -95,7 +95,7 @@ export class ProjectPartnerStore {
   }
 
   updatePartnerAddress(addresses: ProjectPartnerAddressDTO[]): Observable<OutputProjectPartnerDetail> {
-    return this.partnerService.updateProjectPartnerAddress(this.partnerId, this.projectId, addresses)
+    return this.partnerService.updateProjectPartnerAddress(this.partnerId, addresses)
       .pipe(
         tap(saved => this.partner$.next(saved)),
         tap(saved => Log.info('Updated partner addresses:', this, saved)),
@@ -103,7 +103,7 @@ export class ProjectPartnerStore {
   }
 
   updatePartnerContact(contacts: InputProjectContact[]): Observable<OutputProjectPartnerDetail> {
-    return this.partnerService.updateProjectPartnerContact(this.partnerId, this.projectId, contacts)
+    return this.partnerService.updateProjectPartnerContact(this.partnerId, contacts)
       .pipe(
         tap(saved => this.partner$.next(saved)),
         tap(saved => Log.info('Updated partner contact:', this, saved)),
@@ -111,7 +111,7 @@ export class ProjectPartnerStore {
   }
 
   updatePartnerMotivation(motivation: ProjectPartnerMotivationDTO): Observable<OutputProjectPartnerDetail> {
-    return this.partnerService.updateProjectPartnerMotivation(this.partnerId, this.projectId, motivation)
+    return this.partnerService.updateProjectPartnerMotivation(this.partnerId, motivation)
       .pipe(
         tap(saved => this.partner$.next(saved)),
         tap(saved => Log.info('Updated partner motivation:', this, saved)),

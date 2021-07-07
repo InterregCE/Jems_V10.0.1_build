@@ -12,7 +12,7 @@ interface GetProjectPartnerInteractor {
 
     fun findAllByProjectId(projectId: Long): Iterable<OutputProjectPartnerDetail>
 
-    fun getById(projectId: Long, partnerId: Long, version: String? = null): OutputProjectPartnerDetail
+    fun getById(partnerId: Long, version: String? = null): OutputProjectPartnerDetail
 
     fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String? = null): List<OutputProjectPartner>
 

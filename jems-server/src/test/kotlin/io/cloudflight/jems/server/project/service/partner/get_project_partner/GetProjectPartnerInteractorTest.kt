@@ -49,8 +49,8 @@ internal class GetProjectPartnerInteractorTest: UnitTest() {
         every { persistence.getById(-1) } throws ResourceNotFoundException("partner")
         every { persistence.getById(1) } returns outputProjectPartnerDetail
 
-        assertThrows<ResourceNotFoundException> { getInteractor.getById(1, -1) }
-        Assertions.assertThat(getInteractor.getById(1, 1)).isEqualTo(outputProjectPartnerDetail)
+        assertThrows<ResourceNotFoundException> { getInteractor.getById(-1) }
+        Assertions.assertThat(getInteractor.getById(1)).isEqualTo(outputProjectPartnerDetail)
     }
 
     @Test
@@ -58,8 +58,8 @@ internal class GetProjectPartnerInteractorTest: UnitTest() {
         every { persistence.getById(1, "404") } throws ApplicationVersionNotFoundException()
         every { persistence.getById(1, "1.0") } returns outputProjectPartnerDetail
 
-        assertThrows<ApplicationVersionNotFoundException> { getInteractor.getById(1, 1, "404") }
-        Assertions.assertThat(getInteractor.getById(1, 1, "1.0")).isEqualTo(outputProjectPartnerDetail)
+        assertThrows<ApplicationVersionNotFoundException> { getInteractor.getById(1, "404") }
+        Assertions.assertThat(getInteractor.getById(1, "1.0")).isEqualTo(outputProjectPartnerDetail)
     }
 
     @Test

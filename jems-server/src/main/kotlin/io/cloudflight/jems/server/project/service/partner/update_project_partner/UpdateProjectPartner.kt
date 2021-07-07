@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartnerB
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -59,6 +60,13 @@ class UpdateProjectPartner(
     @ExceptionWrapper(UpdateProjectPartnerMotivationException::class)
     override fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail =
         persistence.updatePartnerMotivation(partnerId, motivation)
+
+    @CanUpdateProjectPartner
+    @Transactional
+    @ExceptionWrapper(UpdateProjectPartnerMotivationException::class)
+    override fun updatePartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAid): ProjectPartnerStateAid {
+        TODO("Not yet implemented")
+    }
 
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {
         return projectPartnerRepository.findById(partnerId)

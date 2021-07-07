@@ -40,6 +40,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.Proj
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerEssentialData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerMotivationData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerRoleData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerStateAidData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerVatRecoveryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetCostData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetPeriodData
@@ -113,6 +114,7 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
@@ -431,6 +433,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns listOf(workPackage)
         every { projectLumpSumPersistence.getLumpSums(id) } returns listOf(projectLumpSum)
         every { programmeLumpSumPersistence.getLumpSums(listOf(projectLumpSum.programmeLumpSumId)) } returns listOf(programmeLumpSum)
+        every { partnerPersistence.getPartnerStateAid(partnerId = projectPartner.id) } returns
+            ProjectPartnerStateAid(answer1 = true, justification1 = setOf(InputTranslation(SystemLanguage.EN, "true")), answer2 = false)
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)
@@ -501,6 +505,16 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         organizationRelevance = setOf(InputTranslationData(SystemLanguageData.EN, "organizationRelevance")),
                         organizationExperience = setOf(InputTranslationData(SystemLanguageData.EN, "organizationExperience")),
                         organizationRole = setOf(InputTranslationData(SystemLanguageData.EN, "organizationRole"))
+                    ),
+                    stateAid = ProjectPartnerStateAidData(
+                        answer1 = true,
+                        justification1 = setOf(InputTranslationData(SystemLanguageData.EN, "true")),
+                        answer2 = false,
+                        justification2 = emptySet(),
+                        answer3 = null,
+                        justification3 = emptySet(),
+                        answer4 = null,
+                        justification4 = emptySet(),
                     )
                 )),
                 associatedOrganisations = setOf(ProjectAssociatedOrganizationData(

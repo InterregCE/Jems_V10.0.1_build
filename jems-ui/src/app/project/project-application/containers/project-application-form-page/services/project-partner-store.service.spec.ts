@@ -30,7 +30,7 @@ describe('ProjectPartnerStoreService', () => {
 
     httpTestingController.expectOne({
       method: 'PUT',
-      url: `//api/project/1/partner/2/contact`
+      url: `//api/project/partner/2/contact`
     });
   }));
 
@@ -39,7 +39,7 @@ describe('ProjectPartnerStoreService', () => {
 
     httpTestingController.expectOne({
       method: 'PUT',
-      url: `//api/project/1/partner/2/motivation`
+      url: `//api/project/partner/2/motivation`
     });
   }));
 });

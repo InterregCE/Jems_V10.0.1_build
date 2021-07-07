@@ -10,8 +10,10 @@ import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
+import io.cloudflight.jems.server.common.entity.TranslationEntity
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -28,8 +30,11 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationTranslEntity
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerStateAidEntity
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerStateAidTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 
 fun InputProjectPartnerCreate.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
     ProjectPartnerEntity(
@@ -108,7 +113,7 @@ fun ProjectPartnerEntity.toOutputProjectPartnerDetail() = OutputProjectPartnerDe
     vatRecovery = vatRecovery,
     addresses = addresses?.map { it.toDto() } ?: emptyList(),
     contacts = contacts?.map { it.toOutputProjectPartnerContact() } ?: emptyList(),
-    motivation = motivation.map { it.toDto() }.firstOrNull()
+    motivation = motivation.map { it.toDto() }.firstOrNull(),
 )
 
 fun ProjectPartnerAddressDTO.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerAddress(
@@ -288,3 +293,52 @@ fun PartnerSimpleRow.toOutputProjectPartnerHistoricalData() = OutputProjectPartn
     sortNumber = sortNumber,
     country = country
 )
+
+fun ProjectPartnerStateAid.toEntity(partnerId: Long) = ProjectPartnerStateAidEntity(
+    partnerId = partnerId,
+    translatedValues = combineTranslatedValuesStateAid(partnerId, justification1, justification2, justification3, justification4),
+
+)
+
+private fun combineTranslatedValuesStateAid(
+    partnerId: Long,
+    justification1: Set<InputTranslation>,
+    justification2: Set<InputTranslation>,
+    justification3: Set<InputTranslation>,
+    justification4: Set<InputTranslation>,
+): Set<ProjectPartnerStateAidTranslEntity> {
+    val justification1Map = justification1.associateBy({ it.language }, { it.translation })
+    val justification2Map = justification2.associateBy({ it.language }, { it.translation })
+    val justification3Map = justification3.associateBy({ it.language }, { it.translation })
+    val justification4Map = justification4.associateBy({ it.language }, { it.translation })
+
+    val languages = justification1Map.keys.toMutableSet()
+    languages.addAll(justification2Map.keys)
+    languages.addAll(justification3Map.keys)
+    languages.addAll(justification4Map.keys)
+
+    return languages.mapTo(HashSet()) {
+        ProjectPartnerStateAidTranslEntity(
+            TranslationPartnerId(partnerId, it),
+            justification1Map[it],
+            justification2Map[it],
+            justification3Map[it],
+            justification4Map[it],
+        )
+    }
+}
+
+fun ProjectPartnerStateAidEntity.toModel() = ProjectPartnerStateAid(
+    answer1 = answer1,
+    justification1 = translatedValues.extractField { it.justification1 },
+    answer2 = answer2,
+    justification2 = translatedValues.extractField { it.justification2 },
+    answer3 = answer3,
+    justification3 = translatedValues.extractField { it.justification3 },
+    answer4 = answer4,
+    justification4 = translatedValues.extractField { it.justification4 },
+)
+
+private inline fun Set<ProjectPartnerStateAidTranslEntity>.extractField(extractFunction: (ProjectPartnerStateAidTranslEntity) -> String?) =
+    map { InputTranslation(it.translationId.language, extractFunction.invoke(it)) }
+        .filterTo(HashSet()) { !it.translation.isNullOrBlank() }

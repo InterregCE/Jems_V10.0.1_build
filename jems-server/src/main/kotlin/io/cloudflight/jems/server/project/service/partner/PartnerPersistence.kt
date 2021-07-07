@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -33,6 +34,10 @@ interface PartnerPersistence {
     fun updatePartnerContacts(partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail
 
     fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail
+
+    fun getPartnerStateAid(partnerId: Long, version: String? = null): ProjectPartnerStateAid
+
+    fun updatePartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAid): ProjectPartnerStateAid
 
     fun deletePartner(partnerId: Long)
 }

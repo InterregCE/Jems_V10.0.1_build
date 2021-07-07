@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 
 data class OutputProjectPartnerDetail (
-    val id: Long?,
+    val id: Long,
     val abbreviation: String,
     val role: ProjectPartnerRole,
     val sortNumber: Int? = null,

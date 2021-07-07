@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.PartnerPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerStateAidRepository
 import io.cloudflight.jems.server.project.repository.partner.toEntity
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
 import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
@@ -66,6 +67,9 @@ internal class PartnerPersistenceTest {
 
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
+
+    @MockK
+    lateinit var projectPartnerStateAidRepository: ProjectPartnerStateAidRepository
 
     private lateinit var projectVersionUtils: ProjectVersionUtils
 
@@ -138,6 +142,7 @@ internal class PartnerPersistenceTest {
             projectPartnerRepository,
             legalStatusRepo,
             projectRepository,
+            projectPartnerStateAidRepository,
             projectAssociatedOrganizationService,
         )
         //for all delete tests
