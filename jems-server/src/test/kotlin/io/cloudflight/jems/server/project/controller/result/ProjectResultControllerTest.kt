@@ -9,32 +9,30 @@ import io.cloudflight.jems.api.project.dto.result.ProjectResultDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.result.get_project_result.GetProjectResultInteractor
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
-import io.cloudflight.jems.server.project.service.result.model.ProjectResultTranslatedValue
 import io.cloudflight.jems.server.project.service.result.update_project_result.UpdateProjectResultInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 
 class ProjectResultControllerTest: UnitTest() {
 
     companion object {
+        val description = setOf(
+            InputTranslation(language = EN, translation = null),
+            InputTranslation(language = CS, translation = "cs_desc"),
+            InputTranslation(language = SK, translation = ""),
+        )
         val result1 = ProjectResult(
             resultNumber = 1,
             programmeResultIndicatorId = 5L,
             programmeResultIndicatorIdentifier = "ABB05",
             targetValue = BigDecimal.ONE,
             periodNumber = 4,
-            translatedValues = setOf(
-                ProjectResultTranslatedValue(language = EN, description = null),
-                ProjectResultTranslatedValue(language = CS, description = "cs_desc"),
-                ProjectResultTranslatedValue(language = SK, description = ""),
-            ),
+            description = description
         )
         val result2 = ProjectResult(
             resultNumber = 2,
@@ -61,11 +59,11 @@ class ProjectResultControllerTest: UnitTest() {
                 programmeResultIndicatorIdentifier = "ABB05",
                 targetValue = BigDecimal.ONE,
                 periodNumber = 4,
-                description = setOf(InputTranslation(CS, "cs_desc")),
+                description = description
             ),
             ProjectResultDTO(
                 resultNumber = 2,
-            ),
+            )
         )
     }
 
@@ -88,9 +86,9 @@ class ProjectResultControllerTest: UnitTest() {
                 programmeResultIndicatorId = 15L,
                 targetValue = BigDecimal.ONE,
                 periodNumber = 7,
-                translatedValues = setOf(ProjectResultTranslatedValue(EN, "en desc")),
+                description = setOf(InputTranslation(EN, "en desc"), InputTranslation(CS, ""), InputTranslation(SK, null)),
             ),
-            ProjectResult(),
+            ProjectResult()
         )
     }
 

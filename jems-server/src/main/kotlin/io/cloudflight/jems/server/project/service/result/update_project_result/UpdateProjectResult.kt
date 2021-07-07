@@ -34,8 +34,8 @@ class UpdateProjectResult(
 
     private fun validateInputs(projectResults: List<ProjectResult>) {
         if (projectResults.any { result ->
-                result.translatedValues.mapNotNull { it.description }.any {
-                    it.length > MAX_DESCRIPTION_LENGTH
+                result.description.any {
+                    !it.translation.isNullOrBlank() && it.translation!!.length > MAX_DESCRIPTION_LENGTH
                 }
             })
             throw I18nValidationException(i18nKey = "project.results.description.size.too.long")

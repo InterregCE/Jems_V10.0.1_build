@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.BE
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.NO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -16,23 +17,26 @@ import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.TranslationResultId
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultId
+import io.cloudflight.jems.server.project.entity.result.ProjectResultRow
 import io.cloudflight.jems.server.project.entity.result.ProjectResultTransl
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
-import io.cloudflight.jems.server.project.service.result.model.ProjectResultTranslatedValue
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.Optional
 import javax.persistence.EntityNotFoundException
 
@@ -40,8 +44,8 @@ class ProjectResultPersistenceTest: UnitTest() {
 
     companion object {
         private const val INDICATOR_ID = 5L
-        val resultId1 = ProjectResultId(projectId = project.id, resultNumber = 1)
-        val resultId2 = ProjectResultId(projectId = project.id, resultNumber = 2)
+        private val resultId1 = ProjectResultId(projectId = project.id, resultNumber = 1)
+        private val resultId2 = ProjectResultId(projectId = project.id, resultNumber = 2)
 
         private fun trIdRes(resultId: ProjectResultId, lang: SystemLanguage) = TranslationResultId(
             resultId = resultId,
@@ -61,10 +65,21 @@ class ProjectResultPersistenceTest: UnitTest() {
             programmeResultIndicatorIdentifier = "IND05",
             targetValue = BigDecimal.ONE,
             periodNumber = 10,
-            translatedValues = setOf(
-                ProjectResultTranslatedValue(language = BE, description = "BE desc"),
-                ProjectResultTranslatedValue(language = NO, description = ""),
-                ProjectResultTranslatedValue(language = SK, description = null),
+            description = setOf(
+                InputTranslation(language = BE, translation = "BE desc")
+            )
+        )
+
+        val update1_model = ProjectResult(
+            resultNumber = 1,
+            programmeResultIndicatorId = INDICATOR_ID,
+            programmeResultIndicatorIdentifier = "IND05",
+            targetValue = BigDecimal.ONE,
+            periodNumber = 10,
+            description = setOf(
+                InputTranslation(language = BE, translation = "BE desc"),
+                InputTranslation(language = NO, translation = ""),
+                InputTranslation(language = SK, translation = null)
             ),
         )
 
@@ -78,7 +93,7 @@ class ProjectResultPersistenceTest: UnitTest() {
             translatedValues = setOf(
                 ProjectResultTransl(translationId = trIdRes(resultId1, BE), description = "BE desc"),
                 ProjectResultTransl(translationId = trIdRes(resultId1, NO), description = ""),
-                ProjectResultTransl(translationId = trIdRes(resultId1, SK), description = null),
+                ProjectResultTransl(translationId = trIdRes(resultId1, SK), description = null)
             ),
             periodNumber = 10,
             programmeResultIndicatorEntity = indicatorResult,
@@ -138,6 +153,28 @@ class ProjectResultPersistenceTest: UnitTest() {
     }
 
     @Test
+    fun `get project results - with previous version`() {
+        val projectId = 1L
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val version = "2.0"
+        val mockPRRow: ProjectResultRow = mockk()
+        every { mockPRRow.resultNumber } returns result1_model.resultNumber
+        every { mockPRRow.programmeResultIndicatorId } returns result1_model.programmeResultIndicatorId
+        every { mockPRRow.programmeResultIndicatorIdentifier } returns result1_model.programmeResultIndicatorIdentifier
+        every { mockPRRow.targetValue } returns result1_model.targetValue
+        every { mockPRRow.periodNumber } returns result1_model.periodNumber
+        every { mockPRRow.language } returns BE
+        every { mockPRRow.description } returns "BE desc"
+
+        every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp
+        every { projectResultRepository.getProjectResultsByProjectId(projectId, timestamp) } returns listOf(mockPRRow)
+
+        assertThat(persistence.getResultsForProject(projectId, version)).containsExactly(
+            result1_model
+        )
+    }
+
+    @Test
     fun getAvailablePeriodNumbers() {
         every { projectRepository.findById(eq(1)) } returns Optional.of(project.copy(periods = listOf(
             ProjectPeriodEntity(id = ProjectPeriodId(project.id, 1), start = 1, end = 3),
@@ -148,13 +185,13 @@ class ProjectResultPersistenceTest: UnitTest() {
     }
 
     @Test
-    fun `updateWorkPackageOutputs - test if repository save() is called with correct arguments`() {
+    fun `updateResultsForProject - test if repository save() is called with correct arguments`() {
         val projectSlot = slot<ProjectEntity>()
         every { projectRepository.findById(project.id) } returns Optional.of(project)
         every { indicatorRepository.getOne(INDICATOR_ID) } returns indicatorResult
         every { projectRepository.save(capture(projectSlot)) } returnsArgument 0
 
-        persistence.updateResultsForProject(projectId = project.id, projectResults = listOf(result1_model, result2_model))
+        persistence.updateResultsForProject(projectId = project.id, projectResults = listOf(update1_model, result2_model))
 
         assertThat(projectSlot.captured.results).containsExactly(
             result1,
@@ -163,13 +200,13 @@ class ProjectResultPersistenceTest: UnitTest() {
     }
 
     @Test
-    fun `updateWorkPackageOutputs - not existing indicator`() {
+    fun `updateResultsForProject - not existing indicator`() {
         every { projectRepository.findById(project.id) } returns Optional.of(project)
         every { indicatorRepository.getOne(-1) } throws EntityNotFoundException()
 
         assertThrows<EntityNotFoundException> { persistence.updateResultsForProject(
             projectId = project.id,
-            projectResults = listOf(result1_model.copy(programmeResultIndicatorId = -1))
+            projectResults = listOf(update1_model.copy(programmeResultIndicatorId = -1))
         ) }
     }
 

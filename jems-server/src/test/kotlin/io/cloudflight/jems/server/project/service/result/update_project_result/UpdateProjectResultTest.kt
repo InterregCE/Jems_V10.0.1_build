@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.result.update_project_result
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.FI
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
-import io.cloudflight.jems.server.project.service.result.model.ProjectResultTranslatedValue
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -23,7 +23,7 @@ class UpdateProjectResultTest: UnitTest() {
         programmeResultIndicatorIdentifier = "05PO",
         targetValue = BigDecimal.ONE,
         periodNumber = 7,
-        translatedValues = setOf(ProjectResultTranslatedValue(language = FI, description = "FI desc")),
+        description = setOf(InputTranslation(language = FI, translation = "FI desc")),
     )
 
     @MockK
@@ -58,11 +58,11 @@ class UpdateProjectResultTest: UnitTest() {
 
     @Test
     fun `update results when description is too long`() {
-        val translation = ProjectResultTranslatedValue(
+        val translation = InputTranslation(
             language = FI,
-            description = getStringOfLength(501)
+            translation = getStringOfLength(501)
         )
-        val toBeSaved = listOf(ProjectResult(translatedValues = setOf(translation)))
+        val toBeSaved = listOf(ProjectResult(description = setOf(translation)))
         val exception = assertThrows<I18nValidationException> { updateProjectResult.updateResultsForProject(4L, toBeSaved) }
         Assertions.assertThat(exception.i18nKey).isEqualTo("project.results.description.size.too.long")
     }

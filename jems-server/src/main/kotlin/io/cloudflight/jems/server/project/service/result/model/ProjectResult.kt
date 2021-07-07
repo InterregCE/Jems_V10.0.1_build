@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.result.model
 
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.math.BigDecimal
 
 data class ProjectResult(
@@ -8,5 +9,5 @@ data class ProjectResult(
     val programmeResultIndicatorIdentifier: String? = null,
     val targetValue: BigDecimal? = null,
     val periodNumber: Int? = null,
-    val translatedValues: Set<ProjectResultTranslatedValue> = emptySet()
+    val description: Set<InputTranslation> = emptySet()
 )

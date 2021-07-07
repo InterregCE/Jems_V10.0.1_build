@@ -297,13 +297,13 @@ fun ProjectCooperationCriteria.toDataModel() = ProjectCooperationCriteriaData(
 
 fun ProjectHorizontalPrinciples.toDataModel() = ProjectHorizontalPrinciplesData(
     sustainableDevelopmentCriteriaEffect = if (sustainableDevelopmentCriteriaEffect != null) ProjectHorizontalPrinciplesEffectData.valueOf(
-        sustainableDevelopmentCriteriaEffect!!.name
+        sustainableDevelopmentCriteriaEffect.name
     ) else null,
     equalOpportunitiesEffect = if (equalOpportunitiesEffect != null) ProjectHorizontalPrinciplesEffectData.valueOf(
-        equalOpportunitiesEffect!!.name
+        equalOpportunitiesEffect.name
     ) else null,
     sexualEqualityEffect = if (sexualEqualityEffect != null) ProjectHorizontalPrinciplesEffectData.valueOf(
-        sexualEqualityEffect!!.name
+        sexualEqualityEffect.name
     ) else null
 )
 
@@ -423,13 +423,9 @@ fun List<ProjectResult>.toResultDataModel() = map {
         programmeResultIndicatorIdentifier = it.programmeResultIndicatorIdentifier,
         targetValue = it.targetValue,
         periodNumber = it.periodNumber,
-        translatedValues = it.translatedValues.map {
-            ProjectResultTranslatedValueData(
-                language = SystemLanguageData.valueOf(
-                    it.language.name
-                ), description = it.description
-            )
-        }.toSet(),
+        translatedValues = it.description.map { transl ->
+            ProjectResultTranslatedValueData(SystemLanguageData.valueOf(transl.language.name), transl.translation)
+        }.toSet()
     )
 }.toList()
 

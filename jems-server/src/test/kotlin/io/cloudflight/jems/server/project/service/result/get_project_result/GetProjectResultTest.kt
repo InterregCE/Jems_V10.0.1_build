@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.result.get_project_result
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
-import io.cloudflight.jems.server.project.service.result.model.ProjectResultTranslatedValue
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -20,7 +20,7 @@ class GetProjectResultTest: UnitTest() {
         programmeResultIndicatorIdentifier = "DFG98",
         targetValue = BigDecimal.TEN,
         periodNumber = 4,
-        translatedValues = setOf(ProjectResultTranslatedValue(language = EN, description = "EN desc")),
+        description = setOf(InputTranslation(language = EN, translation = "EN desc")),
     )
 
     @MockK

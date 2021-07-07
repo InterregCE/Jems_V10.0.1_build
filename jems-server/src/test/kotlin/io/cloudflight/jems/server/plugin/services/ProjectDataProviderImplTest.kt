@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectContactType
+import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
@@ -15,6 +16,8 @@ import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
@@ -28,9 +31,12 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectContactTypeData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerAddressData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerAddressTypeData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerContactData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerEssentialData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerMotivationData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerRoleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerVatRecoveryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetCostData
@@ -107,7 +113,6 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostE
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
-import io.cloudflight.jems.server.project.service.result.model.ProjectResultTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
@@ -268,7 +273,23 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
             vat = "test vat",
             vatRecovery = ProjectPartnerVatRecovery.Yes,
-            legalStatusId = 3L
+            legalStatusId = 3L,
+            addresses = listOf(ProjectPartnerAddressDTO(
+                type = ProjectPartnerAddressType.Organization,
+                country = "country",
+                nutsRegion2 = "nutsRegion2",
+                nutsRegion3 = "nutsRegion3",
+                street = "street",
+                houseNumber = "houseNumber",
+                postalCode = "postalCode",
+                city = "city",
+                homepage = "homepage"
+            )),
+            motivation = ProjectPartnerMotivationDTO(
+                organizationRelevance = setOf(InputTranslation(SystemLanguage.EN, "organizationRelevance")),
+                organizationExperience = setOf(InputTranslation(SystemLanguage.EN, "organizationExperience")),
+                organizationRole = setOf(InputTranslation(SystemLanguage.EN, "organizationRole"))
+            )
         )
         private val partnerBudgetOptions = ProjectPartnerBudgetOptions(
             partnerId = projectPartner.id!!
@@ -366,9 +387,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             programmeResultIndicatorIdentifier = "ID01",
             targetValue = BigDecimal.ONE,
             periodNumber = 2,
-            translatedValues = setOf(
-                ProjectResultTranslatedValue(language = SystemLanguage.EN, description = "description"),
-            )
+            description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description"))
         )
         private val workPackage = ProjectWorkPackageFull(
             id = 1L,
@@ -464,6 +483,22 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                             unitCosts  = emptyList()
                         ),
                         projectPartnerBudgetTotalCost = totalCost
+                    ),
+                    addresses = listOf(ProjectPartnerAddressData(
+                        type = ProjectPartnerAddressTypeData.Organization,
+                        country = "country",
+                        nutsRegion2 = "nutsRegion2",
+                        nutsRegion3 = "nutsRegion3",
+                        street = "street",
+                        houseNumber = "houseNumber",
+                        postalCode = "postalCode",
+                        city = "city",
+                        homepage = "homepage"
+                    )),
+                    motivation = ProjectPartnerMotivationData(
+                        organizationRelevance = setOf(InputTranslationData(SystemLanguageData.EN, "organizationRelevance")),
+                        organizationExperience = setOf(InputTranslationData(SystemLanguageData.EN, "organizationExperience")),
+                        organizationRole = setOf(InputTranslationData(SystemLanguageData.EN, "organizationRole"))
                     )
                 )),
                 associatedOrganisations = setOf(ProjectAssociatedOrganizationData(
