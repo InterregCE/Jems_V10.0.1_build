@@ -1,0 +1,100 @@
+<app-form *ngIf="data$ | async as data"
+          (save)="updateStateAid()"
+          (discard)="resetForm(data.stateAid)">
+    <form appFormLayout [formGroup]="form">
+        <h3>{{ 'project.partner.state.aid.title' | translate }}</h3>
+        <app-multi-language-container>
+            <div appNoWidthLimit [appTableConfig]="[{},{maxInRem:6},{}]">
+                <span class="table-header">
+                    <h4 class="mt-2">{{'project.partner.state.aid.economic.title' | translate}}</h4>
+                    <span></span>
+                    <h5 class="ml-2">{{'project.partner.state.aid.table.subtitle' | translate}}</h5>
+                </span>
+                <div class="text-bold">
+                    <span>{{'project.partner.state.aid.question' | translate }}</span>
+                    <span>{{'project.partner.state.aid.answer' | translate }}</span>
+                    <span>{{'project.partner.state.aid.justification' | translate }}</span>
+                </div>
+
+                <div>
+                    <span>{{'project.partner.state.aid.economic.q1' | translate}}</span>
+                    <div>
+                        <mat-button-toggle-group formControlName="answer1">
+                            <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                            <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
+                    <div>
+                        <app-multi-language-form-field formControlName="justification1" maxLength="1000"
+                                                       type="textarea"
+                                                       label="common.textarea.enter.text">
+                        </app-multi-language-form-field>
+                    </div>
+                </div>
+
+                <div>
+                    <span>{{'project.partner.state.aid.economic.q2' | translate}}</span>
+                    <div>
+                        <mat-button-toggle-group formControlName="answer2">
+                            <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                            <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
+                    <div>
+                        <app-multi-language-form-field formControlName="justification2" maxLength="1000"
+                                                       type="textarea"
+                                                       label="common.textarea.enter.text">
+                        </app-multi-language-form-field>
+                    </div>
+                </div>
+            </div>
+        </app-multi-language-container>
+
+        <app-multi-language-container>
+            <div appNoWidthLimit [appTableConfig]="[{},{maxInRem:6},{}]">
+                <span class="table-header">
+                    <h4 class="mt-2">{{'project.partner.state.aid.advantage.title' | translate}}</h4>
+                    <span></span>
+                    <h5 class="ml-2">{{'project.partner.state.aid.table.subtitle' | translate}}</h5>
+                </span>
+                <div class="text-bold">
+                    <span>{{'project.partner.state.aid.question' | translate }}</span>
+                    <span>{{'project.partner.state.aid.answer' | translate }}</span>
+                    <span>{{'project.partner.state.aid.justification' | translate }}</span>
+                </div>
+
+                <div>
+                    <span>{{'project.partner.state.aid.advantage.q1' | translate}}</span>
+                    <div>
+                        <mat-button-toggle-group formControlName="answer3">
+                            <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                            <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
+                    <div>
+                        <app-multi-language-form-field formControlName="justification3" maxLength="1000"
+                                                       type="textarea"
+                                                       label="common.textarea.enter.text">
+                        </app-multi-language-form-field>
+                    </div>
+                </div>
+
+                <div>
+                    <span>{{'project.partner.state.aid.advantage.q2' | translate}}</span>
+                    <div>
+                        <mat-button-toggle-group formControlName="answer4">
+                            <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                            <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
+                    <div>
+                        <app-multi-language-form-field formControlName="justification4" maxLength="1000"
+                                                       type="textarea"
+                                                       label="common.textarea.enter.text">
+                        </app-multi-language-form-field>
+                    </div>
+                </div>
+            </div>
+        </app-multi-language-container>
+    </form>
+</app-form>

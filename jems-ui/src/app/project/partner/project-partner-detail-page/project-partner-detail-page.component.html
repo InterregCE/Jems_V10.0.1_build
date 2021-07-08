@@ -36,6 +36,9 @@
                     [editable]="projectStore.projectEditable$ | async">
             </app-project-partner-co-financing-tab>
         </mat-tab>
+        <mat-tab label="{{'partner.tab.state.aid' | translate}}">
+            <app-project-partner-state-aid-tab></app-project-partner-state-aid-tab>
+        </mat-tab>
     </mat-tab-group>
 
 </app-project-page-template>

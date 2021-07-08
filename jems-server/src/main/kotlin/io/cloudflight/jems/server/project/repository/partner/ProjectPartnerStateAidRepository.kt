@@ -13,7 +13,7 @@ interface ProjectPartnerStateAidRepository : JpaRepository<ProjectPartnerStateAi
     @Query(
         """
             SELECT
-              entity.partnerId AS partnerId,
+              entity.partner_id AS partnerId,
               entity.answer1 AS answer1,
               stateAidTransl.justification1 AS justification1,
               entity.answer2 AS answer2,

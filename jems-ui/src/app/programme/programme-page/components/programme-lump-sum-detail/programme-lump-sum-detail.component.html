@@ -47,13 +47,13 @@
                     value="Yes"
                     [checked]="previousSplitting === 'Yes'"
                     (change)="changeSplitting($event.value)">
-                {{'lump.sum.splitting.yes' | translate}}
+                {{'common.yes' | translate}}
             </mat-button-toggle>
             <mat-button-toggle
                     value="No"
                     [checked]="previousSplitting === 'No'"
                     (change)="changeSplitting($event.value)">
-                {{'lump.sum.splitting.no' | translate}}
+                {{'common.no' | translate}}
             </mat-button-toggle>
         </mat-button-toggle-group>
         <mat-error>
