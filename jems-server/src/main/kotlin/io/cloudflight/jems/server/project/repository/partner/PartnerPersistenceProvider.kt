@@ -10,7 +10,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerStateAidEntity
+import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
@@ -192,12 +192,19 @@ class PartnerPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPartnerStateAid(partnerId: Long, version: String?): ProjectPartnerStateAid {
-        if (version == null) {
-            return projectPartnerStateAidRepository.findById(partnerId)
-                .orElse(ProjectPartnerStateAidEntity(partnerId)).toModel()
-        } else {
-            TODO("Do some magic with version fetching")
-        }
+        return projectVersionUtils.fetch(version,
+            projectId = projectVersionUtils.fetchProjectId(version, partnerId,
+                currentVersionOnlyFetcher = { projectPartnerRepository.getProjectIdForPartner(partnerId) },
+                historicVersionFetcher = { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) }
+            ),
+            currentVersionFetcher = {
+                projectPartnerStateAidRepository.findById(partnerId)
+                    .orElse(ProjectPartnerStateAidEntity(partnerId)).toModel()
+            },
+            previousVersionFetcher = { timestamp ->
+                getPartnerStateAidHistorical(partnerId, timestamp)
+            }
+        ) ?: throw ApplicationVersionNotFoundException()
     }
 
     @Transactional
@@ -241,6 +248,13 @@ class PartnerPersistenceProvider(
         return projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerDetailHistoricalData(addresses, contacts, motivation)
     }
+
+    private fun getPartnerStateAidHistorical(
+        partnerId: Long,
+        timestamp: Timestamp,
+    ): ProjectPartnerStateAid =
+        projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(partnerId, timestamp).toModel()
+            ?: ProjectPartnerStateAid()
 
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {
         return projectPartnerRepository.findById(partnerId)

@@ -93,7 +93,7 @@ interface ProjectPartnerApi {
     ): OutputProjectPartnerDetail
 
     @ApiOperation("Get project partner state aid")
-    @GetMapping("/{partnerId}/stateAid", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/{partnerId}/stateAid")
     fun getProjectPartnerStateAid(
         @PathVariable partnerId: Long,
     ): ProjectPartnerStateAidDTO

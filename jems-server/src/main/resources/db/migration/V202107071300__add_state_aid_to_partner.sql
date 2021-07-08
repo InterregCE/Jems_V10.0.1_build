@@ -19,7 +19,7 @@ CREATE TABLE project_partner_state_aid_transl
     justification3 TEXT DEFAULT NULL,
     justification4 TEXT DEFAULT NULL,
     PRIMARY KEY (partner_id, language),
-    CONSTRAINT fk_project_partner_state_aid_transl_to_partner_state_aid FOREIGN KEY (partner_id) REFERENCES project_partner_state_aid (id)
+    CONSTRAINT fk_project_partner_state_aid_transl_to_partner_state_aid FOREIGN KEY (partner_id) REFERENCES project_partner_state_aid (partner_id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT
 );

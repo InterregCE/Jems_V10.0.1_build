@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.entity.partner
+package io.cloudflight.jems.server.project.entity.partner.state_aid
 
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
 import javax.persistence.EmbeddedId

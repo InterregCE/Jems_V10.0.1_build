@@ -10,10 +10,8 @@ import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
-import io.cloudflight.jems.server.common.entity.TranslationEntity
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
-import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -30,9 +28,10 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationTranslEntity
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerStateAidEntity
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerStateAidTranslEntity
+import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
+import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
+import io.cloudflight.jems.server.project.entity.partner.state_aid.PartnerStateAidRow
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 
@@ -296,8 +295,11 @@ fun PartnerSimpleRow.toOutputProjectPartnerHistoricalData() = OutputProjectPartn
 
 fun ProjectPartnerStateAid.toEntity(partnerId: Long) = ProjectPartnerStateAidEntity(
     partnerId = partnerId,
+    answer1 = answer1,
+    answer2 = answer2,
+    answer3 = answer3,
+    answer4 = answer4,
     translatedValues = combineTranslatedValuesStateAid(partnerId, justification1, justification2, justification3, justification4),
-
 )
 
 private fun combineTranslatedValuesStateAid(
@@ -342,3 +344,17 @@ fun ProjectPartnerStateAidEntity.toModel() = ProjectPartnerStateAid(
 private inline fun Set<ProjectPartnerStateAidTranslEntity>.extractField(extractFunction: (ProjectPartnerStateAidTranslEntity) -> String?) =
     map { InputTranslation(it.translationId.language, extractFunction.invoke(it)) }
         .filterTo(HashSet()) { !it.translation.isNullOrBlank() }
+
+fun List<PartnerStateAidRow>.toModel() =
+    this.groupBy { it.partnerId }.map { groupedRows ->
+    ProjectPartnerStateAid(
+        answer1 = groupedRows.value.first().answer1,
+        justification1 = groupedRows.value.extractField { it.justification1 },
+        answer2 = groupedRows.value.first().answer2,
+        justification2 = groupedRows.value.extractField { it.justification2 },
+        answer3 = groupedRows.value.first().answer3,
+        justification3 = groupedRows.value.extractField { it.justification3 },
+        answer4 = groupedRows.value.first().answer4,
+        justification4 = groupedRows.value.extractField { it.justification4 },
+    )
+}.firstOrNull()
