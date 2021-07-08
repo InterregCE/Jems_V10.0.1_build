@@ -52,7 +52,7 @@ class UpdateLegalStatus(
         return persistence.updateLegalStatuses(toDeleteIds, toPersist).also { legalStatuses ->
             if (legalStatuses.size > MAX_ALLOWED_AMOUNT_OF_LEGAL_STATUSES)
                 throw MaxAllowedLegalStatusesReachedException(MAX_ALLOWED_AMOUNT_OF_LEGAL_STATUSES)
-            auditPublisher.publishEvent(programmeLegalStatusesChanged(legalStatuses))
+            auditPublisher.publishEvent(programmeLegalStatusesChanged(this, legalStatuses))
         }
 
     }

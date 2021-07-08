@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.service
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
@@ -46,22 +47,22 @@ fun programmeNutsAreaChanged(updatedNuts: Collection<NutsIdentifier>): AuditCand
         .build()
 }
 
-fun programmeFundsChanged(funds: Iterable<ProgrammeFund>): AuditCandidate {
+fun programmeFundsChanged(context: Any, funds: Iterable<ProgrammeFund>): AuditCandidateEvent {
     val fundsAsString = funds.asSequence()
         .map { fund -> "[selected=${fund.selected}, " + fund.abbreviation.joinToString { "${it.language}=${it.translation}" } + "]" }.joinToString(",\n")
 
-    return AuditBuilder(AuditAction.PROGRAMME_FUNDS_CHANGED)
+    return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_FUNDS_CHANGED)
         .description("Programme funds has been set to:\n$fundsAsString")
-        .build()
+        .build())
 }
 
-fun programmeLegalStatusesChanged(statuses: List<ProgrammeLegalStatus>): AuditCandidate {
+fun programmeLegalStatusesChanged(context: Any, statuses: List<ProgrammeLegalStatus>): AuditCandidateEvent {
     val statusesAsString = statuses.asSequence()
         .map { fund -> "[" + fund.description.joinToString { "${it.language}=${it.translation}" } + "]" }.joinToString(",\n")
 
-    return AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
+    return AuditCandidateEvent(context, AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
         .description("Values for partner legal status set to:\n$statusesAsString")
-        .build()
+        .build())
 }
 
 fun programmeUILanguagesChanged(languages: Iterable<ProgrammeLanguage>): AuditCandidate {
