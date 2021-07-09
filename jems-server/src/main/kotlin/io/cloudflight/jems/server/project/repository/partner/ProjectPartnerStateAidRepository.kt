@@ -22,6 +22,7 @@ interface ProjectPartnerStateAidRepository : JpaRepository<ProjectPartnerStateAi
               stateAidTransl.justification3 AS justification3,
               entity.answer4 AS answer4,
               stateAidTransl.justification4 AS justification4,
+              stateAidTransl.language AS language
             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
               LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS stateAidTransl ON entity.partner_id = stateAidTransl.partner_id
               WHERE entity.partner_id = :partnerId
