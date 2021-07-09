@@ -45,6 +45,7 @@ class MinioStorageTest {
 
     @MockK
     lateinit var minioClient: MinioClient
+
     @MockK
     lateinit var exception: ErrorResponseException
 

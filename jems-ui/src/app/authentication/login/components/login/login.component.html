@@ -1,7 +1,10 @@
 <mat-card>
     <mat-card-content>
         <div class="authentication-logo px-3">
-            <p>{{'authentication.logo.disclaimer' | translate}}</p>
+            <img *ngIf="largeLogo$ | async as logo; else defaultLogo" class="img" src="data:image/png;base64,{{logo.value}}" alt="">
+            <ng-template #defaultLogo>
+                <img class="logo" src="assets/logos/InteractProgrammeLogo_200.png" alt="" width="">
+            </ng-template>
         </div>
         <div class="px-3">
             <h1>{{'authentication.login.title.label' | translate}}</h1>

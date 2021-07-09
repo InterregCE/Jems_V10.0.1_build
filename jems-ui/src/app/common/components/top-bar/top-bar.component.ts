@@ -2,11 +2,12 @@ import {Component, Input} from '@angular/core';
 import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable} from 'rxjs';
-import {OutputCurrentUser} from '@cat/api';
+import {LogoDTO, OutputCurrentUser} from '@cat/api';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {TopBarService} from '@common/components/top-bar/top-bar.service';
 import {LanguageStore} from '../../services/language-store.service';
-import {finalize, map, withLatestFrom} from 'rxjs/operators';
+import {finalize, map, tap, withLatestFrom} from 'rxjs/operators';
+import {ResourceStoreService} from '@common/services/resource-store.service';
 
 @Component({
   selector: 'app-top-bar',
@@ -26,6 +27,8 @@ export class TopBarComponent {
   logoutOngoing = false;
   isNavBarCollapsed = true;
 
+  smallLogo$ = this.resourceStore.smallLogo$;
+
   languageSettings$ = this.languageStore.systemLanguages$
     .pipe(
       withLatestFrom(this.languageStore.fallbackLanguage$),
@@ -38,6 +41,7 @@ export class TopBarComponent {
 
   constructor(public router: Router,
               private topBarService: TopBarService,
+              public resourceStore: ResourceStoreService,
               public languageStore: LanguageStore,
               public translate: TranslateService) {
     this.menuItems$ = this.topBarService.menuItems$;
