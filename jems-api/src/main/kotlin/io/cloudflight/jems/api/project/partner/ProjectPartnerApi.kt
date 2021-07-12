@@ -96,6 +96,7 @@ interface ProjectPartnerApi {
     @GetMapping("/{partnerId}/stateAid")
     fun getProjectPartnerStateAid(
         @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: String? = null
     ): ProjectPartnerStateAidDTO
 
     @ApiOperation("Update project partner state aid")

@@ -61,8 +61,8 @@ class ProjectPartnerController(
         return updateProjectPartnerInteractor.updatePartnerMotivation(partnerId, motivation)
     }
 
-    override fun getProjectPartnerStateAid(partnerId: Long): ProjectPartnerStateAidDTO =
-        getProjectPartnerStateAidInteractor.getStateAidForPartnerId(partnerId).toDto()
+    override fun getProjectPartnerStateAid(partnerId: Long, version: String?): ProjectPartnerStateAidDTO =
+        getProjectPartnerStateAidInteractor.getStateAidForPartnerId(partnerId, version).toDto()
 
     override fun updateProjectPartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAidDTO): ProjectPartnerStateAidDTO =
         updateProjectPartnerStateAidInteractor.updatePartnerStateAid(partnerId, stateAid.toModel()).toDto()

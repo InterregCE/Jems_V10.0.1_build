@@ -326,7 +326,7 @@ export class ProjectPartnerDetailPageStore {
     ])
       .pipe(
         filter(([partner]) => !!partner.id),
-        switchMap(([partner, version]) => this.projectPartnerService.getProjectPartnerStateAid(partner.id)),
+        switchMap(([partner, version]) => this.projectPartnerService.getProjectPartnerStateAid(partner.id, version)),
         tap(stateAid => Log.info('Fetched the partner state aid', this, stateAid ))
       );
 
