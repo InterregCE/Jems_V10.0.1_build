@@ -28,7 +28,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 
 const totalContributionValidator = (expectedAmount: number): ValidatorFn => (formArray: FormArray) => {
-  const total = formArray.controls.map(item => item.get('amount')?.value).reduce((a, b) => a + b, 0);
+  const total = formArray.controls.map(item => item.get('amount')?.value).reduce((a, b) => NumberService.sum([a, b]), 0);
   return expectedAmount === total
     ? null
     : {total: true};
