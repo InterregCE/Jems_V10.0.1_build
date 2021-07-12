@@ -88,8 +88,8 @@
 
         <ng-container matColumnDef="total">
             <mat-header-cell *matHeaderCellDef
-                             class="justify-end text-bold">{{ 'project.partner.budget.table.total' | translate }}</mat-header-cell>
-            <mat-cell *matCellDef="let budget" class="justify-end text-bold">{{ budget.totalSum | asMoney }}</mat-cell>
+                             class="justify-end mat-body-strong">{{ 'project.partner.budget.table.total' | translate }}</mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end mat-body-strong">{{ budget.totalSum | asMoney }}</mat-cell>
             <mat-footer-cell *matFooterCellDef class="justify-end">{{ total | asMoney }}</mat-footer-cell>
         </ng-container>
 
