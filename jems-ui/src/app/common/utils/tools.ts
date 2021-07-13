@@ -29,4 +29,8 @@ export class Tools {
     }
     return (charCode >= 48 && charCode <= 57);
   }
+
+  static first(array: any[] | null | undefined): any | undefined {
+    return array?.length && array[0];
+  }
 }

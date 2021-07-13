@@ -19,15 +19,16 @@ import {
 } from '@cat/api';
 import {catchError, take, takeUntil, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
-import {Forms} from '../../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
-import {APIError} from '../../../../../common/models/APIError';
+import {APIError} from '@common/models/APIError';
 import {APPLICATION_FORM} from '@project/application-form-model';
+import {Tools} from '@common/utils/tools';
 
 @Component({
   selector: 'app-project-application-form-partner-edit',
@@ -198,8 +199,9 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   }
 
   private handleError(error: HttpErrorResponse): Observable<any> {
-    if (!!error && error.error?.i18nMessage?.i18nKey === 'project.partner.role.lead.already.existing') {
-      this.handleLeadAlreadyExisting(this.controls, error.error as APIError);
+    const errorMessage = Tools.first((error?.error as APIError)?.details)?.i18nMessage;
+    if (errorMessage?.i18nKey === 'use.case.update.project.partner.role.lead.already.existing') {
+      this.handleLeadAlreadyExisting(this.controls, errorMessage.i18nArguments);
       return of(null);
     }
     return this.formService.setError(error);
@@ -225,15 +227,13 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
     this.controls.sortNumber.setValue(this.partner?.sortNumber);
   }
 
-  private handleLeadAlreadyExisting(controls: any, error: APIError): void {
-    const oldLeadPartnerName = error.i18nMessage.i18nArguments ? error.i18nMessage.i18nArguments[1] : null;
-    const partnerId = error.i18nMessage.i18nArguments ? error.i18nMessage.i18nArguments[0] : null;
+  private handleLeadAlreadyExisting(controls: any, errorArgs: { [key: string]: string; }): void {
     Forms.confirmDialog(
       this.dialog,
       'project.partner.role.lead.already.existing.title',
       'project.partner.role.lead.already.existing',
       {
-        old_name: oldLeadPartnerName,
+        old_name: errorArgs.currentLeadAbbreviation,
         new_name: controls.abbreviation.value
       }
     ).pipe(
@@ -241,7 +241,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
       takeUntil(this.destroyed$),
     ).subscribe(change => {
       if (change) {
-        this.onSubmit(controls, partnerId as any);
+        this.onSubmit(controls, errorArgs.currentLeadId as any);
       } else {
         this.formService.setDirty(true);
       }
