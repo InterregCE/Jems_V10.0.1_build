@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.user.service.user.register_user
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
@@ -17,22 +18,19 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class RegisterUser(
     private val persistence: UserPersistence,
+    private val programmeDataPersistence: ProgrammeDataPersistence,
     private val passwordEncoder: PasswordEncoder,
     private val auditPublisher: ApplicationEventPublisher,
     private val generalValidator: GeneralValidatorService,
 ) : RegisterUserInteractor {
 
-    companion object {
-        private const val USER_ROLE_APPLICANT_ID = 3L
-    }
-
     @Transactional
     @ExceptionWrapper(RegisterUserException::class)
     override fun registerUser(user: UserRegistration): User {
-        if(!persistence.userRoleExists(USER_ROLE_APPLICANT_ID))
-            throw UserRoleNotFound()
-
-        val userToBeRegistered = user.toUserChange(USER_ROLE_APPLICANT_ID)
+        val userRoleId = programmeDataPersistence.getDefaultUserRole()
+        if(userRoleId == null || !persistence.userRoleExists(userRoleId))
+            throw DefaultUserRoleNotFound()
+        val userToBeRegistered = user.toUserChange(userRoleId)
 
         validateUser(userToBeRegistered)
         validatePassword(generalValidator, user.password)

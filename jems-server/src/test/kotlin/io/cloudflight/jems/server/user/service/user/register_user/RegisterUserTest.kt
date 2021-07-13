@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.config.AppSecurityProperties
+import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
@@ -29,11 +29,13 @@ internal class RegisterUserTest : UnitTest() {
 
     companion object {
         private const val USER_ID = 18L
-        private const val USER_ROLE_APPLICANT_ID = 3L
+        private const val defaultUserRoleId = 3L
     }
 
     @MockK
     lateinit var persistence: UserPersistence
+    @MockK
+    lateinit var programmeDataPersistence: ProgrammeDataPersistence
 
     @MockK
     lateinit var passwordEncoder: PasswordEncoder
@@ -65,7 +67,7 @@ internal class RegisterUserTest : UnitTest() {
             email = "applicant@interact.eu",
             name = "Michael",
             surname = "Schumacher",
-            userRoleId = USER_ROLE_APPLICANT_ID,
+            userRoleId = defaultUserRoleId,
         )
         val expectedUser = User(
             id = USER_ID,
@@ -73,13 +75,14 @@ internal class RegisterUserTest : UnitTest() {
             name = "Michael",
             surname = "Schumacher",
             userRole = UserRole(
-                id = USER_ROLE_APPLICANT_ID,
+                id = defaultUserRoleId,
                 name = "applicant",
                 permissions = emptySet()
-            ),
+            )
         )
 
-        every { persistence.userRoleExists(USER_ROLE_APPLICANT_ID) } returns true
+        every { programmeDataPersistence.getDefaultUserRole() } returns defaultUserRoleId
+        every { persistence.userRoleExists(defaultUserRoleId) } returns true
         every { persistence.emailExists("applicant@interact.eu") } returns false
         val slotPassword = slot<String>()
         every { persistence.create(userChange, capture(slotPassword)) } returns expectedUser
@@ -97,22 +100,34 @@ internal class RegisterUserTest : UnitTest() {
                 "email set to 'applicant@interact.eu',\n" +
                 "name set to 'Michael',\n" +
                 "surname set to 'Schumacher',\n" +
-                "userRole set to 'applicant(id=3)'",
+                "userRole set to 'applicant(id=3)'"
         ))
     }
 
     @Test
-    fun `registerUser - no applicant role in the system`() {
+    fun `registerUser - no default role set`() {
         val userRegistration = UserRegistration(
             email = "applicant@interact.eu",
             name = "Michael",
             surname = "Schumacher",
-            password = "my_plain_pass",
+            password = "my_plain_pass"
         )
+        every { programmeDataPersistence.getDefaultUserRole() } returns null
 
-        every { persistence.userRoleExists(USER_ROLE_APPLICANT_ID) } returns false
+        assertThrows<DefaultUserRoleNotFound> { registerUser.registerUser(userRegistration) }
+    }
 
-        assertThrows<UserRoleNotFound> { registerUser.registerUser(userRegistration) }
+    @Test
+    fun `registerUser - default role is not specified`() {
+        val userRegistration = UserRegistration(
+            email = "applicant@interact.eu",
+            name = "Michael",
+            surname = "Schumacher",
+            password = "my_plain_pass"
+        )
+        every { programmeDataPersistence.getDefaultUserRole() } returns null
+
+        assertThrows<DefaultUserRoleNotFound> { registerUser.registerUser(userRegistration) }
     }
 
     @Test
@@ -123,8 +138,8 @@ internal class RegisterUserTest : UnitTest() {
             surname = "Schumacher",
             password = "my_plain_pass",
         )
-
-        every { persistence.userRoleExists(USER_ROLE_APPLICANT_ID) } returns true
+        every { programmeDataPersistence.getDefaultUserRole() } returns defaultUserRoleId
+        every { persistence.userRoleExists(defaultUserRoleId) } returns true
         every { persistence.emailExists("applicant@interact.eu") } returns true
 
         assertThrows<UserEmailAlreadyTaken> { registerUser.registerUser(userRegistration) }
