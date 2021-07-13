@@ -7971,14 +7971,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const partner = pm.response.json();\r",
-									"\r",
 									"pm.test('applicant can create project Partner A', function() {\r",
+									"    const partner = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.variables.set('partnerIdA', partner.id);\r",
 									"});\r",
 									"\r",
 									"pm.test('partner has correct abbreviation', function() {\r",
+									"    const partner = pm.response.json();\r",
 									"    pm.expect(partner.abbreviation).to.eql(\"Partner A\");\r",
 									"});\r",
 									""
@@ -8015,15 +8015,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
-								"partner"
+								"partner",
+								"toProjectId",
+								"{{application_id}}"
 							]
 						}
 					},
@@ -8089,15 +8090,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
-								"partner"
+								"partner",
+								"toProjectId",
+								"{{application_id}}"
 							]
 						}
 					},
@@ -8164,14 +8166,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
 								"partner"
 							]
 						}
@@ -8238,14 +8239,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
 								"partner"
 							]
 						}
@@ -8308,14 +8308,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
 								"partner"
 							]
 						}
@@ -8378,15 +8377,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
-								"partner"
+								"partner",
+								"toProjectId",
+								"{{application_id}}"
 							]
 						}
 					},
@@ -8448,15 +8448,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
-								"partner"
+								"partner",
+								"toProjectId",
+								"{{application_id}}"
 							]
 						}
 					},
@@ -8617,15 +8618,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
-								"partner"
+								"partner",
+								"toProjectId",
+								"{{application_id}}"
 							]
 						}
 					},
@@ -8749,14 +8751,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner/{{partnerIdD}}",
+							"raw": "{{url}}/api/project/partner/{{partnerIdD}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
 								"partner",
 								"{{partnerIdD}}"
 							]
@@ -9067,15 +9068,16 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner",
+									"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
-										"partner"
+										"partner",
+										"toProjectId",
+										"{{application_id}}"
 									]
 								}
 							},
@@ -9140,14 +9142,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/address",
+									"raw": "{{url}}/api/project/partner/{{partner_id_1}}/address",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
 										"partner",
 										"{{partner_id_1}}",
 										"address"
@@ -9226,14 +9227,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/address",
+									"raw": "{{url}}/api/project/partner/{{partner_id_1}}/address",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
 										"partner",
 										"{{partner_id_1}}",
 										"address"
@@ -9300,14 +9300,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/contact",
+									"raw": "{{url}}/api/project/partner/{{partner_id_1}}/contact",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
 										"partner",
 										"{{partner_id_1}}",
 										"contact"
@@ -9384,14 +9383,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/contact",
+									"raw": "{{url}}/api/project/partner/{{partner_id_1}}/contact",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
 										"partner",
 										"{{partner_id_1}}",
 										"contact"
@@ -9460,14 +9458,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/motivation",
+									"raw": "{{url}}/api/project/partner/{{partner_id_1}}/motivation",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
 										"partner",
 										"{{partner_id_1}}",
 										"motivation"
@@ -9557,15 +9554,16 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner",
+									"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
-										"partner"
+										"partner",
+										"toProjectId",
+										"{{application_id}}"
 									]
 								}
 							},
@@ -10376,15 +10374,16 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner",
+									"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
-										"partner"
+										"partner",
+										"toProjectId",
+										"{{application_id}}"
 									]
 								}
 							},

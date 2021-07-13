@@ -67,7 +67,7 @@ class ProjectPartnerController(
     override fun updateProjectPartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAidDTO): ProjectPartnerStateAidDTO =
         updateProjectPartnerStateAidInteractor.updatePartnerStateAid(partnerId, stateAid.toModel()).toDto()
 
-    override fun deleteProjectPartner(projectId: Long, partnerId: Long) {
+    override fun deleteProjectPartner(partnerId: Long) {
         return deleteProjectPartnerInteractor.deletePartner(partnerId)
     }
 }

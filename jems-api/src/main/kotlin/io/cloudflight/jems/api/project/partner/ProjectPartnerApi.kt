@@ -108,6 +108,6 @@ interface ProjectPartnerApi {
 
     @ApiOperation("Delete a project partner")
     @DeleteMapping("/{partnerId}")
-    fun deleteProjectPartner(@PathVariable projectId: Long, @PathVariable partnerId: Long)
+    fun deleteProjectPartner(@PathVariable partnerId: Long)
 
 }
