@@ -4,6 +4,7 @@ import {OutputProjectPartnerDetail, ProjectPartnerMotivationDTO} from '@cat/api'
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
+import { APPLICATION_FORM } from '@project/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-partner-contribution',
@@ -15,6 +16,7 @@ import {catchError, take, tap} from 'rxjs/operators';
 export class ProjectApplicationFormPartnerContributionComponent implements OnChanges {
   @Input()
   partner: OutputProjectPartnerDetail;
+  APPLICATION_FORM = APPLICATION_FORM;
 
   partnerContributionForm = this.formBuilder.group({
     organizationRelevance: [],

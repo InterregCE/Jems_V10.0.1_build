@@ -8,5 +8,5 @@ export class ApplicationFormFieldNode {
   isVisibilityLocked?: boolean;
   isStepSelectionLocked?: boolean;
   children?: ApplicationFormFieldNode[];
-  parentIndex: number;
+  rootIndex: number;
 }

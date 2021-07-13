@@ -97,7 +97,7 @@ export class ApplicationFormConfigurationPageComponent {
       (node: ApplicationFormFieldNode, level: number) => ({
         expandable: !!node.children?.length,
         level,
-        parentIndex: node.parentIndex,
+        parentIndex: node.rootIndex,
         data: this.createControl(node)
       }),
       node => node.level,

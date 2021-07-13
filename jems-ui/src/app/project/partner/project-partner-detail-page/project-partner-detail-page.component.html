@@ -15,15 +15,18 @@
                     [legalStatuses]="legalStatuses$ | async">
             </app-project-application-form-partner-edit>
         </mat-tab>
-        <mat-tab label="{{'partner.tab.address' | translate}}">
+        <mat-tab label="{{'partner.tab.address' | translate}}"
+                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS">
             <app-project-application-form-region-selection></app-project-application-form-region-selection>
         </mat-tab>
-        <mat-tab label="{{'partner.tab.contact' | translate}}">
+        <mat-tab label="{{'partner.tab.contact' | translate}}"
+                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.CONTACT">
             <app-project-application-form-partner-contact
                     [partner]="partner">
             </app-project-application-form-partner-contact>
         </mat-tab>
-        <mat-tab label="{{'partner.tab.motivation' | translate}}">
+        <mat-tab label="{{'partner.tab.motivation' | translate}}"
+                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION">
             <app-project-application-form-partner-contribution
                     [partner]="partner">
             </app-project-application-form-partner-contribution>

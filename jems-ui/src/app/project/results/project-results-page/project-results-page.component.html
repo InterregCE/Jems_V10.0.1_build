@@ -17,7 +17,7 @@
                             </button>
                         </div>
 
-                        <mat-form-field *appFormFieldVisibilityStatus="ApplicationFormFieldId.PROJECT_RESULTS_PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT" [class.mat-form-field-invalid]="!data.resultIndicators.length">
+                        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT" [class.mat-form-field-invalid]="!data.resultIndicators.length">
                             <mat-label>{{'project.results.result.indicator' | translate}}</mat-label>
                             <mat-select [disabled]="!data.resultIndicators.length"
                                         [formControlName]="constants.RESULT_INDICATOR.name">
@@ -31,7 +31,7 @@
                             </mat-hint>
                         </mat-form-field>
                         <div appMultiColumnRow stretch>
-                            <mat-form-field appFormFieldWidth="large" *appFormFieldVisibilityStatus="ApplicationFormFieldId.PROJECT_RESULTS_PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">
+                            <mat-form-field appFormFieldWidth="large" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">
                                 <mat-label>{{'project.results.result.measurement.unit' | translate}}</mat-label>
                                 <input readonly matInput
                                        value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)
@@ -39,14 +39,14 @@
                                        [disabled]="form.disabled">
                             </mat-form-field>
 
-                            <mat-form-field appFormFieldWidth="medium" *appFormFieldVisibilityStatus="ApplicationFormFieldId.PROJECT_RESULTS_TARGET_VALUE">
+                            <mat-form-field appFormFieldWidth="medium" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.TARGET_VALUE">
                                 <mat-label>{{'project.results.result.target.value' | translate}}</mat-label>
                                 <input currencyMask type="integer" [options]="{min: 1, max: 99999999, align: 'right'}"
                                        name="targetValue" formControlName="targetValue" matInput>
                             </mat-form-field>
 
                             <app-project-periods-select
-                                    *appFormFieldVisibilityStatus="ApplicationFormFieldId.PROJECT_RESULTS_DELIVERY_PERIOD"
+                                    *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DELIVERY_PERIOD"
                                     [periods]="data.periods"
                                     [control]="result.get(constants.PERIOD.name)"
                                     label='project.results.result.delivery.period'
@@ -54,7 +54,7 @@
                             </app-project-periods-select>
                         </div>
 
-                        <app-multi-language-container *appFormFieldVisibilityStatus="ApplicationFormFieldId.PROJECT_RESULTS_DESCRIPTION">
+                        <app-multi-language-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DESCRIPTION">
                             <app-multi-language-form-field
                                     type="textarea"
                                     label="project.results.result.description"

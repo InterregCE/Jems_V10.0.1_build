@@ -27,6 +27,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {APIError} from '../../../../../common/models/APIError';
+import {APPLICATION_FORM} from '@project/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-partner-edit',
@@ -39,6 +40,7 @@ export class ProjectApplicationFormPartnerEditComponent extends BaseComponent im
   RoleEnum = OutputProjectPartner.RoleEnum;
   VatRecoveryEnum = InputProjectPartnerCreate.VatRecoveryEnum;
   LANGUAGE = InputTranslation.LanguageEnum;
+  APPLICATION_FORM = APPLICATION_FORM;
 
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
 

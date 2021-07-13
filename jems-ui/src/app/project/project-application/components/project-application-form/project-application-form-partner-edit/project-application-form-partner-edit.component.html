@@ -8,37 +8,42 @@
             <input name="sortNumber" formControlName="sortNumber" matInput>
         </mat-form-field>
 
-        <mat-form-field *ngIf="!partnerForm.enabled">
-            <mat-label>{{'project.partner.role.label' | translate}}</mat-label>
-            <input ngModel="{{('common.label.project.partner.role.' + controls?.role?.value) | translate}}"
-                   name="role" formControlName="fakeRole" matInput>
-        </mat-form-field>
+        <ng-container *ngIf="!partnerForm.enabled">
+            <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ROLE">
+                <mat-label>{{'project.partner.role.label' | translate}}</mat-label>
+                <input ngModel="{{('common.label.project.partner.role.' + controls?.role?.value) | translate}}"
+                       name="role" formControlName="fakeRole" matInput>
+            </mat-form-field>
+        </ng-container>
 
-        <div *ngIf="partnerForm.enabled">
-            <div appLabel>{{'project.partner.role.label' | translate}} *</div>
-            <mat-button-toggle-group>
-                <mat-button-toggle
-                        [checked]="controls?.role.value === RoleEnum.PARTNER"
-                        (change)="setRole(RoleEnum.PARTNER)"
-                        [value]="RoleEnum.PARTNER">
-                    {{'common.label.project.partner.role.PARTNER' | translate}}
-                </mat-button-toggle>
-                <mat-button-toggle
-                        [checked]="controls?.role.value === RoleEnum.LEADPARTNER"
-                        (change)="setRole(RoleEnum.LEADPARTNER)"
-                        [value]="RoleEnum.LEADPARTNER">
-                    {{'common.label.project.partner.role.LEAD_PARTNER' | translate}}
-                </mat-button-toggle>
-            </mat-button-toggle-group>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="controls?.role?.errors"
-                        [messages]="roleErrors">
-                </app-form-field-errors>
-            </mat-error>
-        </div>
+        <ng-container *ngIf="partnerForm.enabled">
+            <div *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ROLE">
+                <div appLabel>{{'project.partner.role.label' | translate}} *</div>
+                <mat-button-toggle-group>
+                    <mat-button-toggle
+                            [checked]="controls?.role.value === RoleEnum.PARTNER"
+                            (change)="setRole(RoleEnum.PARTNER)"
+                            [value]="RoleEnum.PARTNER">
+                        {{'common.label.project.partner.role.PARTNER' | translate}}
+                    </mat-button-toggle>
+                    <mat-button-toggle
+                            [checked]="controls?.role.value === RoleEnum.LEADPARTNER"
+                            (change)="setRole(RoleEnum.LEADPARTNER)"
+                            [value]="RoleEnum.LEADPARTNER">
+                        {{'common.label.project.partner.role.LEAD_PARTNER' | translate}}
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="controls?.role?.errors"
+                            [messages]="roleErrors">
+                    </app-form-field-errors>
+                </mat-error>
+            </div>
+        </ng-container>
 
-        <mat-form-field class="w-100">
+        <mat-form-field class="w-100"
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ABBREVIATED_ORGANISATION_NAME">
             <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
             <input #abbreviationInput name="abbreviation" formControlName="abbreviation" matInput required>
             <mat-hint [appHintFor]="abbreviationInput" [hide]="controls?.abbreviation?.errors !== null">
@@ -51,7 +56,8 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="w-100">
+        <mat-form-field class="w-100"
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION">
             <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
             <input #nameInOriginalLanguageInput name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage"
                    matInput>
@@ -67,7 +73,8 @@
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language-container [staticLanguages]="[LANGUAGE.EN]">
+        <app-multi-language-container [staticLanguages]="[LANGUAGE.EN]"
+                                      *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION">
             <app-multi-language-form-field
                     label="project.organization.english.name.label"
                     formControlName="nameInEnglish"
@@ -75,7 +82,8 @@
             </app-multi-language-form-field>
         </app-multi-language-container>
 
-        <app-multi-language-container>
+        <app-multi-language-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.DEPARTMENT_UNIT_DIVISION">
             <app-multi-language-form-field
                     label="project.organization.department.label"
                     type="textarea"
@@ -86,7 +94,7 @@
 
         <h4>{{'project.partner.detail.title.legal.financial' | translate}}</h4>
 
-        <mat-form-field>
+        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.TYPE">
             <mat-label>{{'project.partner.type' | translate}}</mat-label>
             <mat-select name="partnerType" formControlName="partnerType">
                 <mat-option *ngFor="let type of partnerTypeEnums" [value]="type">
@@ -95,7 +103,7 @@
             </mat-select>
         </mat-form-field>
 
-        <mat-form-field>
+        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.LEGAL_STATUS">
             <mat-label>{{'project.partner.legal.status' | translate}}</mat-label>
             <mat-select name="legalStatusId" formControlName="legalStatusId" required>
                 <mat-option *ngFor="let status of legalStatuses" [value]="status.id">
@@ -110,7 +118,7 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="w-100">
+        <mat-form-field class="w-100" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.VAT_IDENTIFIER">
             <mat-label>{{'project.partner.vat' | translate}}</mat-label>
             <input #vatInput name="vat" formControlName="vat" matInput>
             <mat-hint [appHintFor]="vatInput" [hide]="controls?.vat?.errors !== null">
@@ -122,27 +130,29 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <p>{{'project.partner.recoverVat.intro.text' | translate}}</p>
+        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.VAT_RECOVERY">
+            <p>{{'project.partner.recoverVat.intro.text' | translate}}</p>
 
-        <mat-button-toggle-group [disabled]="!partnerForm.enabled">
-            <mat-button-toggle
-                    [checked]="controls?.vatRecovery.value === VatRecoveryEnum.Yes"
-                    (change)="setVat(VatRecoveryEnum.Yes)"
-                    [value]="VatRecoveryEnum.Yes">
-                {{'common.label.project.partner.recoverVat.true' | translate}}
-            </mat-button-toggle>
-            <mat-button-toggle
-                    [checked]="controls?.vatRecovery.value === VatRecoveryEnum.Partly"
-                    (change)="setVat(VatRecoveryEnum.Partly)"
-                    [value]="VatRecoveryEnum.Partly">
-                {{'common.label.project.partner.recoverVat.partly' | translate}}
-            </mat-button-toggle>
-            <mat-button-toggle
-                    [checked]="controls?.vatRecovery.value === VatRecoveryEnum.No"
-                    (change)="setVat(VatRecoveryEnum.No)"
-                    [value]="VatRecoveryEnum.No">
-                {{'common.label.project.partner.recoverVat.false' | translate}}
-            </mat-button-toggle>
-        </mat-button-toggle-group>
+            <mat-button-toggle-group [disabled]="!partnerForm.enabled">
+                <mat-button-toggle
+                        [checked]="controls?.vatRecovery.value === VatRecoveryEnum.Yes"
+                        (change)="setVat(VatRecoveryEnum.Yes)"
+                        [value]="VatRecoveryEnum.Yes">
+                    {{'common.label.project.partner.recoverVat.true' | translate}}
+                </mat-button-toggle>
+                <mat-button-toggle
+                        [checked]="controls?.vatRecovery.value === VatRecoveryEnum.Partly"
+                        (change)="setVat(VatRecoveryEnum.Partly)"
+                        [value]="VatRecoveryEnum.Partly">
+                    {{'common.label.project.partner.recoverVat.partly' | translate}}
+                </mat-button-toggle>
+                <mat-button-toggle
+                        [checked]="controls?.vatRecovery.value === VatRecoveryEnum.No"
+                        (change)="setVat(VatRecoveryEnum.No)"
+                        [value]="VatRecoveryEnum.No">
+                    {{'common.label.project.partner.recoverVat.false' | translate}}
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </ng-container>
     </form>
 </app-form>

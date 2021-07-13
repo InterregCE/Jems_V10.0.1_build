@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {
   ApplicationFormFieldConfigurationDTO,
-  ApplicationFormFieldConfigurationsService, CallDetailDTO,
+  ApplicationFormFieldConfigurationsService,
+  CallDetailDTO,
   UpdateApplicationFormFieldConfigurationRequestDTO
 } from '@cat/api';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
@@ -11,8 +12,8 @@ import {map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {filter} from 'rxjs/internal/operators';
 import {Log} from '@common/utils/log';
 import {ApplicationFormFieldNode} from './application-form-field-node';
+import {APPLICATION_FORM} from '@project/application-form-model';
 import AvailableInStepEnum = UpdateApplicationFormFieldConfigurationRequestDTO.AvailableInStepEnum;
-import {ApplicationFormFieldId} from '@project/application-form-field-id';
 
 @Injectable()
 export class ApplicationFormConfigurationPageStore {
@@ -52,56 +53,64 @@ export class ApplicationFormConfigurationPageStore {
     return merge(initialConfigs$, this.savedConfigurations$)
       .pipe(
         withLatestFrom(this.callStore.callIsPublished$),
-        map(([configs, callIsPublished]) => this.getConfigurations(callIsPublished, configs))
+        map(([configs, callIsPublished]) => this.getApplicationFormFieldNodeList(callIsPublished, configs))
       );
   }
 
-  private getConfigurations(callPublished: boolean,
-                            configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode[] {
+  private getApplicationFormFieldNodeList(callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode[] {
     return [
-      {
-        id: 'project.application.form.section.part.a',
-        parentIndex: 0,
-        children: [{
-          id: 'project.application.form.section.part.a.subsection.one',
-          parentIndex: 0,
-          children: [
-            this.getConfiguration(ApplicationFormFieldId.PROJECT_ACRONYM, 0, callPublished, configs),
-            this.getConfiguration(ApplicationFormFieldId.PROJECT_TITLE, 0, callPublished, configs),
-            this.getConfiguration(ApplicationFormFieldId.PROJECT_DURATION, 0, callPublished, configs),
-            this.getConfiguration(ApplicationFormFieldId.PROJECT_PRIORITY, 0, callPublished, configs),
-            this.getConfiguration(ApplicationFormFieldId.PROJECT_OBJECTIVE, 0, callPublished, configs)
-          ]
-        }]
-      },
-      {
-        id: 'project.application.form.section.part.c',
-        parentIndex: 1,
-        children: [{
-          id: 'project.application.form.section.part.c.subsection.five',
-          parentIndex: 1,
-          children: [
-            this.getConfiguration(ApplicationFormFieldId.PROJECT_RESULTS_PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT, 1, callPublished, configs),
-            this.getConfiguration(ApplicationFormFieldId.PROJECT_RESULTS_TARGET_VALUE, 1, callPublished, configs),
-            this.getConfiguration(ApplicationFormFieldId.PROJECT_RESULTS_DELIVERY_PERIOD, 1, callPublished, configs),
-            this.getConfiguration(ApplicationFormFieldId.PROJECT_RESULTS_DESCRIPTION, 1, callPublished, configs),
-          ]
-        }]
-      }
+      this.addParentNode('application.config.project.section.a', 0, [
+        this.addLeafNodes('application.config.project.section.a.1', 0, APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION, callPublished, configs)
+      ]),
+      this.addParentNode('application.config.project.section.b', 1, [
+          this.addLeafNodes('application.config.project.section.b.1.1', 1, APPLICATION_FORM.SECTION_B.IDENTITY, callPublished, configs),
+          this.addParentNode('application.config.project.section.b.1.2', 1, [
+            this.addLeafNodes('application.config.project.section.b.1.2.main.address', 1, APPLICATION_FORM.SECTION_B.ADDRESS.MAIN, callPublished, configs),
+            this.addLeafNodes('application.config.project.section.b.1.2.secondary.address', 1, APPLICATION_FORM.SECTION_B.ADDRESS.SECONDARY, callPublished, configs),
+          ]),
+          this.addLeafNodes('application.config.project.section.b.1.4', 1, APPLICATION_FORM.SECTION_B.CONTACT.LEGAL_REPRESENTATIVE, callPublished, configs),
+          this.addLeafNodes('application.config.project.section.b.1.5', 1, APPLICATION_FORM.SECTION_B.CONTACT.CONTACT_PERSON, callPublished, configs),
+          this.addLeafNodes('application.config.project.section.b.1.6', 1, APPLICATION_FORM.SECTION_B.MOTIVATION, callPublished, configs),
+        ]
+      ),
+      this.addParentNode('application.config.project.section.c', 2, [
+        this.addLeafNodes('application.config.project.section.c.5', 2, APPLICATION_FORM.SECTION_C.PROJECT_RESULT, callPublished, configs)
+      ])
     ];
   }
 
-  private getConfiguration(id: string, parentIndex: number, callPublished: boolean,
-                           configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode {
-    const config = configs?.find(conf => conf.id === id);
+  private addParentNode(id: string, rootIndex: number, children: ApplicationFormFieldNode[]): ApplicationFormFieldNode {
     return {
       id,
-      isVisible: config?.isVisible || false,
-      availableInStep: config?.availableInStep || AvailableInStepEnum.NONE,
-      isVisibilityLocked: this.isConfigVisibilityLocked(callPublished, config),
-      isStepSelectionLocked: this.isConfigStepSelectionLocked(callPublished, config),
-      parentIndex
+      rootIndex,
+      children
     };
+  }
+
+  private addLeafNodes(id: string, rootIndex: number, section: { [key: string]: string }, callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode {
+    return {
+      id,
+      rootIndex,
+      children: this.getConfiguration(section, rootIndex, callPublished, configs)
+    };
+  }
+
+  private getConfiguration(applicationFormModel: { [key: string]: string }, rootIndex: number, callPublished: boolean,
+                           configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode[] {
+    const result: ApplicationFormFieldNode[] = [];
+    Object.keys(applicationFormModel).forEach(key => {
+      const id = applicationFormModel[key];
+      const config = configs?.find(conf => conf.id === id);
+      result.push({
+        id,
+        isVisible: config?.isVisible || false,
+        availableInStep: config?.availableInStep || AvailableInStepEnum.NONE,
+        isVisibilityLocked: this.isConfigVisibilityLocked(callPublished, config),
+        isStepSelectionLocked: this.isConfigStepSelectionLocked(callPublished, config),
+        rootIndex
+      });
+    });
+    return result;
   }
 
   private isConfigVisibilityLocked(callPublished: boolean, config?: ApplicationFormFieldConfigurationDTO): boolean {

@@ -4,6 +4,7 @@ import {InputProjectContact, OutputProjectPartnerDetail} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
+import {APPLICATION_FORM} from '@project/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-partner-contact',
@@ -15,6 +16,7 @@ import {catchError, take, tap} from 'rxjs/operators';
 export class ProjectApplicationFormPartnerContactComponent implements OnInit, OnChanges {
   @Input()
   partner: OutputProjectPartnerDetail;
+  APPLICATION_FORM = APPLICATION_FORM;
 
   partnerContactForm: FormGroup = this.formBuilder.group({
     partnerRepresentativeTitle: ['', Validators.maxLength(25)],

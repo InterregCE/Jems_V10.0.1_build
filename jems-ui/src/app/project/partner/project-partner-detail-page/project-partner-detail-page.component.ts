@@ -4,6 +4,7 @@ import {ProgrammeLegalStatusService} from '@cat/api';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {TabService} from '../../../common/services/tab.service';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {APPLICATION_FORM} from '@project/application-form-model';
 
 @Component({
   templateUrl: './project-partner-detail-page.component.html',
@@ -12,6 +13,7 @@ import {ProjectPartnerStore} from '../../project-application/containers/project-
 })
 export class ProjectPartnerDetailPageComponent implements OnDestroy {
 
+  APPLICATION_FORM = APPLICATION_FORM;
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
 
