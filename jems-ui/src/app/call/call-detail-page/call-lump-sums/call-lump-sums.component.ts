@@ -83,7 +83,7 @@ export class CallLumpSumsComponent {
   }
 
   disabled(lumpSum: ProgrammeLumpSumListDTO, data: {callIsEditable: boolean, callIsPublished: boolean}): boolean {
-    return !data.callIsEditable || (data.callIsPublished && !!lumpSum);
+    return !data.callIsEditable || (data.callIsPublished && this.initialSelection.isSelected(lumpSum));
   }
 
   formChanged(): void {
