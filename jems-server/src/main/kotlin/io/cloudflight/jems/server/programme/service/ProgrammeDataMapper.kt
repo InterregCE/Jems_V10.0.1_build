@@ -7,7 +7,10 @@ import io.cloudflight.jems.server.nuts.service.groupNuts
 import io.cloudflight.jems.server.nuts.service.toOutputNuts
 import io.cloudflight.jems.server.programme.entity.ProgrammeData
 
-fun InputProgrammeData.toEntity(programmeNuts: Set<NutsRegion3>) = ProgrammeData(
+fun InputProgrammeData.toEntity(
+    programmeNuts: Set<NutsRegion3>,
+    defaultUserRoleId: Long?
+) = ProgrammeData(
     id = 1,
     cci = cci,
     title = title,
@@ -20,7 +23,8 @@ fun InputProgrammeData.toEntity(programmeNuts: Set<NutsRegion3>) = ProgrammeData
     commissionDecisionDate = commissionDecisionDate,
     programmeAmendingDecisionNumber = programmeAmendingDecisionNumber,
     programmeAmendingDecisionDate = programmeAmendingDecisionDate,
-    programmeNuts = programmeNuts
+    programmeNuts = programmeNuts,
+    defaultUserRoleId = defaultUserRoleId
 )
 
 fun ProgrammeData.toOutputProgrammeData() = OutputProgrammeData(

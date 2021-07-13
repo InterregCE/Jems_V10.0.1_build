@@ -296,7 +296,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             )
         )
         private val partnerBudgetOptions = ProjectPartnerBudgetOptions(
-            partnerId = projectPartner.id!!
+            partnerId = projectPartner.id
         )
         private val partnerCoFinancing = ProjectPartnerCoFinancingAndContribution(
             finances = emptyList(),
@@ -424,10 +424,10 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { projectPersistence.getProject(id) } returns project
         every { projectDescriptionPersistence.getProjectDescription(id) } returns projectDescription
         every { partnerPersistence.findAllByProjectId(id) } returns listOf(projectPartner)
-        every { budgetOptionsPersistence.getBudgetOptions(projectPartner.id!!) } returns partnerBudgetOptions
-        every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id!!) } returns partnerCoFinancing
-        every { getBudgetCosts.getBudgetCosts(projectPartner.id!!) } returns budgetCosts
-        every { getBudgetTotalCost.getBudgetTotalCost(projectPartner.id!!) } returns totalCost
+        every { budgetOptionsPersistence.getBudgetOptions(projectPartner.id) } returns partnerBudgetOptions
+        every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
+        every { getBudgetCosts.getBudgetCosts(projectPartner.id) } returns budgetCosts
+        every { getBudgetTotalCost.getBudgetTotalCost(projectPartner.id) } returns totalCost
         every { associatedOrganizationService.findAllByProjectId(id) } returns listOf(associatedOrganization)
         every { resultPersistence.getResultsForProject(id, null) } returns listOf(projectResult)
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns listOf(workPackage)
@@ -463,7 +463,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                     legalStatusId = projectPartner.legalStatusId,
                     budget = PartnerBudgetData(
                         projectPartnerOptions = ProjectPartnerBudgetOptionsData(
-                            partnerId = projectPartner.id!!
+                            partnerId = projectPartner.id
                         ),
                         projectPartnerCoFinancing = ProjectPartnerCoFinancingAndContributionData(
                             finances = emptySet(),

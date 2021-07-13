@@ -41,7 +41,7 @@ class ProgrammeDataServiceImpl(
         val oldProgrammeBasicData = oldProgrammeData.toOutputProgrammeData()
 
         val savedProgrammeData = programmeDataRepository.save(
-            basicData.toEntity(oldProgrammeData.programmeNuts)
+            basicData.toEntity(oldProgrammeData.programmeNuts, oldProgrammeData.defaultUserRoleId)
         ).toOutputProgrammeData()
 
         programmeBasicDataChanged(changes = oldProgrammeBasicData.getChange(savedProgrammeData))

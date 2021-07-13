@@ -42,4 +42,11 @@ interface UserRoleApi {
     @GetMapping("/byId/{id}")
     fun getById(@PathVariable id: Long): UserRoleDTO
 
+    @ApiOperation("Returns the default user role id")
+    @GetMapping("/default")
+    fun getDefault(): Long?
+
+    @ApiOperation("Set user role default")
+    @PutMapping("/default", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun setDefault(@RequestBody userRoleId: Long)
 }

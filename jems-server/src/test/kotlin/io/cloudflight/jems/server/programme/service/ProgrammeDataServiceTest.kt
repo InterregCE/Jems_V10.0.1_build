@@ -120,7 +120,7 @@ internal class ProgrammeDataServiceTest {
                 LocalDate.of(2020, 1, 1), LocalDate.of(2021, 2, 2),
                 "d1",  LocalDate.of(2022, 3, 3),
                 "d2", LocalDate.of(2022, 4, 4))
-        val programmeDataUpdated = programmeDataInput.toEntity(emptySet())
+        val programmeDataUpdated = programmeDataInput.toEntity(emptySet(), null)
         val programmeDataExpectedOutput = programmeDataUpdated.toOutputProgrammeData()
 
         every { programmeDataRepository.save(any<ProgrammeData>()) } returns programmeDataUpdated
