@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidTranslEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
@@ -83,6 +84,9 @@ class PartnerPersistenceTest {
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
+    @MockK
+    lateinit var partner: ProjectPartnerEntity
+
     lateinit var persistence: PartnerPersistenceProvider
 
     @BeforeEach
@@ -101,7 +105,8 @@ class PartnerPersistenceTest {
 
     @Test
     fun `get state aid`() {
-        every { projectPartnerRepository.getProjectIdForPartner(PARTNER_ID) } returns 265L
+        every { partner.project.id } returns 25L
+        every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(partner)
         every { projectPartnerStateAidRepository.findById(PARTNER_ID) } returns Optional.of(stateAidEntity)
 
         assertThat(persistence.getPartnerStateAid(PARTNER_ID, null))
@@ -110,7 +115,8 @@ class PartnerPersistenceTest {
 
     @Test
     fun `get state aid - not existing`() {
-        every { projectPartnerRepository.getProjectIdForPartner(PARTNER_ID) } returns 236L
+        every { partner.project.id } returns 95L
+        every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(partner)
         every { projectPartnerStateAidRepository.findById(PARTNER_ID) } returns Optional.empty()
 
         assertThat(persistence.getPartnerStateAid(PARTNER_ID, null))

@@ -193,10 +193,7 @@ class PartnerPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getPartnerStateAid(partnerId: Long, version: String?): ProjectPartnerStateAid {
         return projectVersionUtils.fetch(version,
-            projectId = projectVersionUtils.fetchProjectId(version, partnerId,
-                currentVersionOnlyFetcher = { projectPartnerRepository.getProjectIdForPartner(partnerId) },
-                historicVersionFetcher = { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) }
-            ),
+            projectId = getProjectIdForPartnerId(partnerId, version),
             currentVersionFetcher = {
                 projectPartnerStateAidRepository.findById(partnerId)
                     .orElse(ProjectPartnerStateAidEntity(partnerId)).toModel()
