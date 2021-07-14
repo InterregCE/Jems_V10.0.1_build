@@ -28,16 +28,22 @@
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <ul class="side-nav-section" *ngIf="subtitle.bullets?.length">
-                        <li *ngFor="let section of subtitle.bullets" [class.disabled]="subtitle.disabled"
+                        <li *ngFor="let section of subtitle.bullets"
                             (click)="sideNavService.navigate(section)">
-                            <span class="first-list-item">
-                                {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}</span>
-                            <ul class="side-nav-subsection" *ngIf="section.bullets?.length">
-                                <li *ngFor="let subsection of section.bullets" [class.disabled]="subtitle.disabled"
-                                    (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
-                                    <span class="second-list-item">{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</span>
-                                </li>
-                            </ul>
+
+                                <span class="first-list-item">
+                                    {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}</span>
+                                <ul class="side-nav-subsection" *ngIf="section.bullets?.length">
+                                    <li *ngFor="let subsection of section.bullets"
+                                        (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
+
+                                        <span class="second-list-item">{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</span>
+
+                                        <mat-chip-list *ngIf="subsection.badgeText" [selectable]="false" class="standard-chip-list">
+                                            <mat-chip class="standard-chip" disableRipple>{{subsection.badgeText | translate}}</mat-chip>
+                                        </mat-chip-list>
+                                    </li>
+                                </ul>
                         </li>
                     </ul>
                 </mat-expansion-panel>

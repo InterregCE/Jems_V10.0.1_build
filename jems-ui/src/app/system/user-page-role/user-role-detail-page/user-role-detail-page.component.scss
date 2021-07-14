@@ -78,3 +78,17 @@ $row-height: 2.5rem;
   }
 
 }
+
+.user-role-flag {
+  display: inline-flex;
+
+  .user-role-checkbox {
+    padding-right: 1rem;
+  }
+
+  .user-role-chip {
+    margin-right: 0.5rem;
+    height: 1.35rem !important;
+    min-height: 1.35rem !important;
+  }
+}

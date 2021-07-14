@@ -64,6 +64,7 @@ export class UserRoleDetailPageComponent {
       Validators.maxLength(50),
       Validators.minLength(1),
     ]],
+    isDefault: [false, []],
     permissions: this.formBuilder.array([])
   });
 
@@ -149,6 +150,7 @@ export class UserRoleDetailPageComponent {
 
   resetUserRole(role: UserRoleDTO, isUpdateAllowed: boolean): void {
     this.name?.patchValue(role?.name);
+    this.isDefault?.patchValue(role?.isDefault);
     this.permissions.clear();
     const groups = Permission.DEFAULT_PERMISSIONS.map((perm, index) =>
       this.extractFormPermissionSubGroup(perm, role.permissions, index)
@@ -172,7 +174,7 @@ export class UserRoleDetailPageComponent {
   changeState(permission: AbstractControl, value: PermissionState): void {
     if (this.state(permission).value !== value) {
       this.state(permission)?.setValue(value);
-      this.formService.setDirty(true);
+      this.formChanged();
     }
   }
 
@@ -182,7 +184,7 @@ export class UserRoleDetailPageComponent {
     } else {
       this.state(permission)?.setValue(PermissionState.EDIT);
     }
-    this.formService.setDirty(true);
+    this.formChanged();
   }
 
   private getCurrentState(defaultPermission: PermissionNode, perms: PermissionsEnum[]): PermissionState {
@@ -226,6 +228,10 @@ export class UserRoleDetailPageComponent {
     return this.userRoleForm.get('name') as FormControl;
   }
 
+  get isDefault(): FormControl {
+    return this.userRoleForm.get('isDefault') as FormControl;
+  }
+
   get permissions(): FormArray {
     return this.userRoleForm.get('permissions') as FormArray;
   }
@@ -236,5 +242,9 @@ export class UserRoleDetailPageComponent {
 
   state(control: AbstractControl): AbstractControl {
     return control.get('state') as AbstractControl;
+  }
+
+  formChanged(): void {
+    this.formService.setDirty(true);
   }
 }

@@ -14,6 +14,17 @@
                     </mat-error>
                 </mat-form-field>
             </div>
+
+            <div *ngIf="!data.role.isDefault" class="mt-2 user-role-flag">
+                <mat-checkbox formControlName="isDefault" class="user-role-checkbox"
+                        (click)="$event.stopPropagation()">
+                </mat-checkbox>
+                <mat-chip-list [selectable]="false">
+                    <mat-chip class="user-role-chip" disableRipple>{{'userRole.default.flag' | translate}}</mat-chip>
+                </mat-chip-list>
+                {{'userRole.default.flag.info' | translate}}
+            </div>
+
             <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="permission-tree">
 
                 <mat-tree-node *matTreeNodeDef="let node"

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, TemplateRef} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {RoutingService} from '../../common/services/routing.service';
 import {filter, map, startWith, switchMap, tap} from 'rxjs/operators';
@@ -80,7 +80,8 @@ export class SystemPageSidenavService {
           bullets: roles.map(role => ({
             headline: {i18nKey: role.name},
             route: `${UserRoleStore.USER_ROLE_DETAIL_PATH}/${role.id}`,
-            scrollToTop: true
+            scrollToTop: true,
+            badgeText: role.isDefault && 'userRole.default.flag'
           }))
         };
         userManagementHeadline.bullets.push(rolesHeadline);
@@ -95,5 +96,4 @@ export class SystemPageSidenavService {
       },
     ]);
   }
-
 }

@@ -74,8 +74,13 @@ ul {
   text-decoration-width: 0.07rem;
 }
 
-.disabled {
-  pointer-events: none;
-  cursor: default;
-  color: var(--font-color-secondary);
+.standard-chip-list {
+  display: inline-flex;
+  margin-left: 0.5rem;
+
+  .standard-chip {
+    margin-right: 0.5rem;
+    height: 1.35rem !important;
+    min-height: 1.35rem !important;
+  }
 }

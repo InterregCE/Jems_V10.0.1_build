@@ -7,8 +7,7 @@ export class HeadlineRoute {
   scrollRoute?: string;
   scrollToTop ? = false;
   bullets?: HeadlineRoute[] = [];
-  // TODO: remove this feature when project versioning is finished
-  disabled?: boolean;
+  badgeText?: string;
 
   // TODO: refactor this out in a HeadlineTemplate or a generic base Headline
   headlineTemplate?: TemplateRef<any>;
