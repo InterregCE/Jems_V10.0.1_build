@@ -24,6 +24,7 @@ internal class CreateUserRoleTest : UnitTest() {
 
         private val userRoleCreate = UserRoleCreate(
             name = "maintainer",
+            isDefault = false,
             permissions = setOf(UserRolePermission.ProjectSubmission)
         )
         private val expectedUserRole = UserRole(

@@ -10,16 +10,17 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import org.springframework.data.domain.Page
 
-
 fun UserRoleSummary.toDto() = UserRoleSummaryDTO(
     id = id,
     name = name,
+    isDefault = isDefault
 )
 
 fun UserRole.toDto() = UserRoleDTO(
     id = id,
     name = name,
-    permissions = permissions.sorted().map { UserRolePermissionDTO.valueOf(it.name) },
+    isDefault = isDefault,
+    permissions = permissions.sorted().map { UserRolePermissionDTO.valueOf(it.name) }
 )
 
 fun Page<UserRoleSummary>.toDto() = map { it.toDto() }
@@ -27,10 +28,12 @@ fun Page<UserRoleSummary>.toDto() = map { it.toDto() }
 fun UserRoleDTO.toModel() = UserRole(
     id = id!!,
     name = name,
-    permissions = permissions.mapTo(HashSet()) { UserRolePermission.valueOf(it.name) },
+    isDefault = isDefault ?: false,
+    permissions = permissions.mapTo(HashSet()) { UserRolePermission.valueOf(it.name) }
 )
 
 fun UserRoleCreateDTO.toCreateModel() = UserRoleCreate(
     name = name,
-    permissions = permissions.mapTo(HashSet()) { UserRolePermission.valueOf(it.name) },
+    isDefault = isDefault,
+    permissions = permissions.mapTo(HashSet()) { UserRolePermission.valueOf(it.name) }
 )

@@ -4,4 +4,5 @@ data class UserRole (
     val id: Long = 0L,
     val name: String,
     val permissions: Set<UserRolePermission>,
+    val isDefault: Boolean = false
 )

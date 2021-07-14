@@ -43,10 +43,12 @@ class UserRoleControllerTest : UnitTest() {
         private val expectedUserRoleSummary = UserRoleSummaryDTO(
             id = ROLE_ID,
             name = "maintainer",
+            isDefault = false
         )
         private val expectedUserRole = UserRoleDTO(
             id = ROLE_ID,
             name = expectedUserRoleSummary.name,
+            isDefault = false,
             permissions = listOf(UserRolePermissionDTO.ProjectSubmission)
         )
     }
@@ -77,6 +79,7 @@ class UserRoleControllerTest : UnitTest() {
         val userRoleCreate = UserRoleCreateDTO(
             name = "maintainer",
             permissions = setOf(UserRolePermissionDTO.ProjectSubmission),
+            isDefault = false
         )
 
         val slotUserRoleCreate = slot<UserRoleCreate>()
@@ -86,6 +89,7 @@ class UserRoleControllerTest : UnitTest() {
             UserRoleCreate(
                 name = "maintainer",
                 permissions = setOf(UserRolePermission.ProjectSubmission),
+                isDefault = false
             )
         )
     }

@@ -16,7 +16,7 @@ fun UserEntity.toModel(permissions: Set<UserRolePermission>) = User(
     email = email,
     name = name,
     surname = surname,
-    userRole = userRole.toModel(permissions),
+    userRole = userRole.toModel(permissions, null)
 )
 
 fun UserEntity.toModelWithPassword(permissions: Set<UserRolePermission>) = UserWithPassword(
@@ -24,7 +24,7 @@ fun UserEntity.toModelWithPassword(permissions: Set<UserRolePermission>) = UserW
     email = email,
     name = name,
     surname = surname,
-    userRole = userRole.toModel(permissions),
+    userRole = userRole.toModel(permissions, null),
     encodedPassword = password,
 )
 
@@ -34,7 +34,7 @@ fun Page<UserEntity>.toModel() = map {
         email = it.email,
         name = it.name,
         surname = it.surname,
-        userRole = it.userRole.toModel(),
+        userRole = it.userRole.toModel(null),
     )
 }
 
@@ -58,4 +58,5 @@ fun UserEntity.toUserSummary() = UserSummary(
 fun UserRoleEntity.toUserRoleSummary() = UserRoleSummary(
     id = id,
     name = name,
+    isDefault = false
 )

@@ -73,7 +73,7 @@ fun partnerWithId(id: Long) = ProjectPartnerEntity(
 )
 
 fun userWithId(id: Long) = LocalCurrentUser(
-    user = User(id = id, email = "x@y", name = "", surname = "", userRole = UserRole(0, "", permissions = emptySet())),
+    user = User(id = id, email = "x@y", name = "", surname = "", userRole = UserRole(0, "", permissions = emptySet(), isDefault = false)),
     password = "hash_pass",
     authorities = emptyList(),
 )

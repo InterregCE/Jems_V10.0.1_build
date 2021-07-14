@@ -9,18 +9,20 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import org.springframework.data.domain.Page
 
-fun UserRoleEntity.toModel(permissions: Set<UserRolePermission>) = UserRole(
+fun UserRoleEntity.toModel(permissions: Set<UserRolePermission>, defaultUserRoleId: Long?) = UserRole(
     id = id,
     name = name,
-    permissions = permissions,
+    isDefault = defaultUserRoleId != null && defaultUserRoleId == id,
+    permissions = permissions
 )
 
-fun UserRoleEntity.toModel() = UserRoleSummary(
+fun UserRoleEntity.toModel(defaultUserRoleId: Long?) = UserRoleSummary(
     id = id,
     name = name,
+    isDefault = defaultUserRoleId != null && defaultUserRoleId == id,
 )
 
-fun Page<UserRoleEntity>.toModel() = map { it.toModel() }
+fun Page<UserRoleEntity>.toModel(defaultUserRoleId: Long?) = map { it.toModel(defaultUserRoleId) }
 
 fun Iterable<UserRolePermissionEntity>.toModel() = mapTo(HashSet()) { it.id.permission }
 
