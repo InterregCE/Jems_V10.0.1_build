@@ -109,7 +109,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       specificObjective: this.selectedSpecificObjective
     } as InputProjectData;
     if (this.applicationForm.controls.introEn.value[0]) {
-      data.intro.push(this.applicationForm.controls.introEn.value[0]);
+      data.intro = data.intro.filter(translation => translation.language !== 'EN')
+        .concat(this.applicationForm.controls.introEn.value[0]);
     }
     this.projectStore.updateProjectData(data)
       .pipe(
