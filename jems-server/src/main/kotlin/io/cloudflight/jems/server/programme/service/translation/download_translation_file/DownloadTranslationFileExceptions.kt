@@ -5,9 +5,18 @@ import io.cloudflight.jems.server.common.exception.ApplicationException
 
 const val DOWNLOAD_TRANSLATION_FILE_ERROR_CODE_PREFIX = "S-DTF"
 const val DOWNLOAD_TRANSLATION_FILE_ERROR_KEY_PREFIX = "use.case.download.translation.file"
+const val DOWNLOAD_DEFAULT_TRANSLATION_FILE_ERROR_CODE_PREFIX = "S-DDTF"
+const val DOWNLOAD_DEFAULT_TRANSLATION_FILE_ERROR_KEY_PREFIX = "use.case.download.default.translation.file"
+
 
 class DownloadTranslationFileFailed(cause: Throwable) : ApplicationException(
     code = DOWNLOAD_TRANSLATION_FILE_ERROR_CODE_PREFIX,
     i18nMessage = I18nMessage("$DOWNLOAD_TRANSLATION_FILE_ERROR_KEY_PREFIX.failed"),
+    cause = cause
+)
+
+class DownloadDefaultTranslationFileFailed(cause: Throwable) : ApplicationException(
+    code = DOWNLOAD_DEFAULT_TRANSLATION_FILE_ERROR_CODE_PREFIX,
+    i18nMessage = I18nMessage("$DOWNLOAD_DEFAULT_TRANSLATION_FILE_ERROR_KEY_PREFIX.failed"),
     cause = cause
 )

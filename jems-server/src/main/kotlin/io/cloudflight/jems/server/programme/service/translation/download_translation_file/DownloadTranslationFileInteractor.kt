@@ -7,4 +7,6 @@ interface DownloadTranslationFileInteractor {
 
     fun download(fileType: TranslationFileType, language: SystemLanguage): ByteArray
 
+    fun downloadDefaultEnTranslationFile(fileType: TranslationFileType): ByteArray
+
 }

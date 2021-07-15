@@ -15,5 +15,7 @@ interface TranslationFilePersistence {
 
     fun getTranslationFile(fileType: TranslationFileType, language: SystemLanguage): ByteArray
 
+    fun getDefaultEnTranslationFile(fileType: TranslationFileType): ByteArray
+
     fun listTranslationFiles(): List<TranslationFileMetaData>
 }

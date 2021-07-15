@@ -29,4 +29,15 @@ internal class DownloadTranslationFileTest : UnitTest() {
         assertThat(downloadTranslationFile.download(TranslationFileType.System, SystemLanguage.EN))
             .isEqualTo(file)
     }
+
+    @Test
+    fun `should return ByteArray of the default en translation file`() {
+        val file = ByteArray(50)
+        every {
+            translationFilePersistence.getDefaultEnTranslationFile(TranslationFileType.System)
+        } returns file
+
+        assertThat(downloadTranslationFile.downloadDefaultEnTranslationFile(TranslationFileType.System))
+            .isEqualTo(file)
+    }
 }

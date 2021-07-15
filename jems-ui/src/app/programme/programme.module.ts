@@ -37,6 +37,7 @@ import {ProgrammeUnitCostsSubmissionPageComponent} from './programme-page/contai
 import {ProgrammePriorityDetailPageComponent} from './priorities/programme-priority-list-page/programme-priority-detail-page/programme-priority-detail-page.component';
 import {ProgrammePriorityListPageComponent} from './priorities/programme-priority-list-page/programme-priority-list-page.component';
 import {ProgrammeEditableStateStore} from './programme-page/services/programme-editable-state-store.service';
+import { TranslationManagementPageComponent } from './translation-management-page/translation-management-page.component';
 
 @NgModule({
   declarations: [
@@ -70,7 +71,8 @@ import {ProgrammeEditableStateStore} from './programme-page/services/programme-e
     ProgrammeUnitCostDetailComponent,
     ProgrammeUnitCostsSubmissionPageComponent,
     ProgrammePriorityListPageComponent,
-    ProgrammePriorityDetailPageComponent
+    ProgrammePriorityDetailPageComponent,
+    TranslationManagementPageComponent,
   ],
   providers: [
     IndicatorsStore,

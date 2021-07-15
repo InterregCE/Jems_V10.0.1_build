@@ -32,15 +32,29 @@ class TranslationFileController(
 
     override fun download(
         fileType: TranslationFileTypeDTO, language: SystemLanguage
-    ): ResponseEntity<ByteArrayResource> {
-        val fileTypeModel = fileType.toModel()
-        val file = downloadTranslationFile.download(fileTypeModel, language)
-        return ResponseEntity.ok()
+    ): ResponseEntity<ByteArrayResource> =
+        with(fileType.toModel()) {
+            getFileResponse(
+                downloadTranslationFile.download(this, language),
+                this.getFileNameFor(language)
+            )
+        }
+
+    override fun downloadDefaultEnTranslationFile(fileType: TranslationFileTypeDTO): ResponseEntity<ByteArrayResource> =
+        with(fileType.toModel()) {
+            getFileResponse(
+                downloadTranslationFile.downloadDefaultEnTranslationFile(this),
+                this.getFileNameFor(SystemLanguage.EN)
+            )
+        }
+
+
+    private fun getFileResponse(file: ByteArray, fileName: String): ResponseEntity<ByteArrayResource> =
+        ResponseEntity.ok()
             .contentLength(file.size.toLong())
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
             .header(
-                HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${fileTypeModel.getFileNameFor(language)}\""
+                HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"$fileName\""
             ).body(ByteArrayResource(file))
-    }
-
 }

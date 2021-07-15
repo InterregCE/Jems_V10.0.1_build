@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
+import org.springframework.core.io.ResourceLoader
 import java.io.ByteArrayInputStream
 import java.time.ZonedDateTime
 
@@ -32,6 +33,9 @@ internal class TranslationFilePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var minioStorage: MinioStorage
+
+    @MockK
+    lateinit var resourceLoader: ResourceLoader
 
     @MockK
     lateinit var translationFileRepository: TranslationFileRepository
@@ -110,6 +114,21 @@ internal class TranslationFilePersistenceProviderTest : UnitTest() {
         assertThat(translationFilePersistenceProvider.getTranslationFile(fileType, language)).isEqualTo(fileByteArray)
 
         verify(exactly = 1) { minioStorage.getFile(any(), fileType.getFileNameFor(language)) }
+
+    }
+
+    @Test
+    fun `should return ByteArray of the default en translation file `() {
+
+        val fileByteArray = ByteArray(50)
+        val fileNameSlot = slot<String>()
+
+        every { resourceLoader.getResource(capture(fileNameSlot)).inputStream.readAllBytes() } returns fileByteArray
+
+        assertThat(translationFilePersistenceProvider.getDefaultEnTranslationFile(fileType)).isEqualTo(fileByteArray)
+        assertThat(fileNameSlot.captured).isEqualTo("classpath:${fileType}_en.properties")
+
+        verify(exactly = 1) { resourceLoader.getResource(any()).inputStream.readAllBytes() }
 
     }
 

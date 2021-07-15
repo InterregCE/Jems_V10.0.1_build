@@ -12,6 +12,7 @@ import {ProgrammeLumpSumsSubmissionPageComponent} from './programme-page/contain
 import {ProgrammeUnitCostsSubmissionPageComponent} from './programme-page/containers/programme-unit-costs-submission-page/programme-unit-costs-submission-page.component';
 import {ProgrammePriorityDetailPageComponent} from './priorities/programme-priority-list-page/programme-priority-detail-page/programme-priority-detail-page.component';
 import {ProgrammePriorityListPageComponent} from './priorities/programme-priority-list-page/programme-priority-list-page.component';
+import {TranslationManagementPageComponent} from './translation-management-page/translation-management-page.component';
 
 export const routes: Routes = [
   {
@@ -53,6 +54,11 @@ export const routes: Routes = [
         path: 'languages',
         component: ProgrammeLanguagesPageComponent,
         data: {breadcrumb: 'programme.breadcrumb.languages'},
+      },
+      {
+        path: 'translationManagement',
+        component: TranslationManagementPageComponent,
+        data: {breadcrumb: 'programme.breadcrumb.translation.management'},
       },
       {
         path: 'indicators',

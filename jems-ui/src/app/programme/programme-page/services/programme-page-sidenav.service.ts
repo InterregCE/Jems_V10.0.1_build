@@ -24,6 +24,11 @@ export class ProgrammePageSidenavService {
     route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/languages`,
   };
 
+  private translationManagementPage = {
+    headline: {i18nKey: 'programme.tab.translation.management'},
+    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/translationManagement`,
+  };
+
   private costsPage = {
     headline: {i18nKey: 'programme.tab.costs.option'},
     route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/costs`
@@ -45,6 +50,7 @@ export class ProgrammePageSidenavService {
         headline: {i18nKey: 'programme.data.page.title'},
         bullets: [
           this.languagesPage,
+          this.translationManagementPage,
           {
             headline: {i18nKey: 'programme.tab.area'},
             route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/areas`,

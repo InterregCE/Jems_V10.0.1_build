@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.programme.entity.translation.TranslationFileId
 import io.cloudflight.jems.server.programme.service.translation.TranslationFilePersistence
 import io.cloudflight.jems.server.programme.service.translation.model.TranslationFileMetaData
 import io.cloudflight.jems.server.programme.service.translation.model.TranslationFileType
+import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
@@ -18,6 +19,7 @@ private const val TRANSLATION_FILE_ARCHIVE_BUCKET_NAME = "jems-translation-file-
 
 @Repository
 class TranslationFilePersistenceProvider(
+    private val resourceLoader: ResourceLoader,
     private val minioStorage: MinioStorage,
     private val translationFileRepository: TranslationFileRepository
 ) : TranslationFilePersistence {
@@ -39,6 +41,9 @@ class TranslationFilePersistenceProvider(
 
     override fun getTranslationFile(fileType: TranslationFileType, language: SystemLanguage): ByteArray =
         minioStorage.getFile(TRANSLATION_FILE_BUCKET_NAME, fileType.getFileNameFor(language))
+
+    override fun getDefaultEnTranslationFile(fileType: TranslationFileType): ByteArray =
+        resourceLoader.getResource("classpath:${fileType}_en.properties").inputStream.readAllBytes()
 
     @Transactional(readOnly = true)
     override fun listTranslationFiles(): List<TranslationFileMetaData> =

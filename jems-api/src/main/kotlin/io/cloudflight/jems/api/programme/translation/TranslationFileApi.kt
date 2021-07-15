@@ -38,4 +38,9 @@ interface TranslationFileApi {
         @PathVariable language: SystemLanguage,
     ): ResponseEntity<ByteArrayResource>
 
+    @ApiOperation("Download default en translation file")
+    @GetMapping("{fileType}", consumes = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
+    fun downloadDefaultEnTranslationFile(
+        @PathVariable fileType: TranslationFileTypeDTO
+    ): ResponseEntity<ByteArrayResource>
 }

@@ -1,0 +1,14 @@
+.file-input{
+  display: none;
+}
+#upload-button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.alert{
+  position: sticky;
+  display: block;
+  z-index: 1;
+  bottom: -4rem;
+}

@@ -1,0 +1,85 @@
+<app-main-page-template [needsCard]="true"
+                        *ngIf="data$ | async as data"
+                        titleKey="programme.data.page.title"
+                        subTitleKey="programme.tab.translation.management">
+    <input class="file-input" accept=".properties" type="file" #fileInput onclick="this.value=null;"
+           (change)="uploadFile($event)">
+
+    <div appMultiColumnRow stretch>
+        <ng-container
+                *ngTemplateOutlet="table; context:{$implicit: systemTranslationFileDataSource, data:data, fileInput: fileInput, fileType: FileTypeEnum.System}"></ng-container>
+        <ng-container
+                *ngTemplateOutlet="table; context:{$implicit: applicationTranslationFileDataSource, data:data, fileInput:fileInput , fileType: FileTypeEnum.Application}"></ng-container>
+    </div>
+    <app-alert class="alert"
+               *ngIf="data.error"
+               [show]="!!data.error.i18nMessage?.i18nKey"
+               [type]="Alert.ERROR">
+        <app-api-error-content [error]="data.error"></app-api-error-content>
+    </app-alert>
+
+    <app-alert
+            class="alert"
+            *ngIf="data.fileNameWarning"
+            [show]="data.fileNameWarning"
+            [type]="Alert.WARNING">
+        {{'programme.translation.management.file.name.warning' | translate : {expectedFileName: data.fileNameWarning} }}
+    </app-alert>
+</app-main-page-template>
+
+<ng-template #table let-dataSource let-data="data" let-fileType="fileType" let-fileInput="fileInput">
+
+    <div appFormLayout>
+        <h3> {{'programme.translation.management.' + fileType.toLowerCase() + '.translations' | translate}}</h3>
+        <button mat-raised-button
+                (click)="downloadDefaultTranslationFile(fileType)"
+                color="primary">{{'programme.translation.management.get.default.translations' | translate}}</button>
+        <mat-table [appTableConfig]="[{minInRem:8},{minInRem:10},{},{minInRem:5, maxInRem:5}]" [dataSource]="dataSource"
+                   matSort>
+            <ng-container matColumnDef="language">
+                <mat-header-cell
+                        *matHeaderCellDef>{{ 'programme.translation.management.language' | translate }}</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    {{ element?.language ? ('language.' + element?.language.toLowerCase() | translate) : ''}}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="fileName">
+                <mat-header-cell mat-sort-header="language"
+                                 *matHeaderCellDef>{{ 'programme.translation.management.file.name' | translate }}</mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{getFileName(element?.fileType, element?.language)}}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="lastModified">
+                <mat-header-cell mat-sort-header
+                                 *matHeaderCellDef>{{ 'programme.translation.management.date' | translate }}</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{ element?.lastModified | localeDate : 'L' :'LT' }}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <button id="upload-button"
+                            (click)="setFileMetaDataToUpload(element?.fileType, element?.language); fileInput.click()"
+                            mat-icon-button color="primary">
+                        <mat-spinner *ngIf="isLoading(data.inProgressUploads,element?.fileType ,element?.language)"
+                                     [strokeWidth]="2" [diameter]="24"></mat-spinner>
+                        <mat-icon *ngIf="!isLoading(data.inProgressUploads,element?.fileType ,element?.language)">
+                            upload
+                        </mat-icon>
+                    </button>
+
+                    <button class="fx-row fx-center-center"
+                            (click)="downloadTranslationFile(element?.fileType, element?.language)" color="accent"
+                            [disabled]="element?.lastModified === undefined" mat-icon-button>
+                        <mat-icon>download</mat-icon>
+                    </button>
+
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+    </div>
+</ng-template>
