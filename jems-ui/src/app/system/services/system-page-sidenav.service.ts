@@ -1,14 +1,14 @@
-import {Injectable, TemplateRef} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {RoutingService} from '../../common/services/routing.service';
+import {RoutingService} from '@common/services/routing.service';
 import {filter, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {combineLatest, of, Subject} from 'rxjs';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {UserRoleDTO, UserRoleService, UserRoleSummaryDTO} from '@cat/api';
-import {Tables} from '../../common/utils/tables';
-import {Log} from '../../common/utils/log';
+import {Tables} from '@common/utils/tables';
+import {Log} from '@common/utils/log';
 import {UserRoleStore} from '../user-page-role/user-role-detail-page/user-role-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 

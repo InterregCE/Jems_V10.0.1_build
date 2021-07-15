@@ -2,11 +2,11 @@ import {Component, Input} from '@angular/core';
 import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable} from 'rxjs';
-import {LogoDTO, OutputCurrentUser} from '@cat/api';
+import {OutputCurrentUser} from '@cat/api';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {TopBarService} from '@common/components/top-bar/top-bar.service';
 import {LanguageStore} from '../../services/language-store.service';
-import {finalize, map, tap, withLatestFrom} from 'rxjs/operators';
+import {finalize, map, withLatestFrom} from 'rxjs/operators';
 import {ResourceStoreService} from '@common/services/resource-store.service';
 
 @Component({

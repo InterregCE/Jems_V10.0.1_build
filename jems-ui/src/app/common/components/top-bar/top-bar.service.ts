@@ -5,9 +5,8 @@ import {PermissionService} from '../../../security/permissions/permission.servic
 import {Permission} from '../../../security/permissions/permission';
 import {map} from 'rxjs/operators';
 import {SecurityService} from '../../../security/security.service';
-import {LogoDTO, UserRoleDTO} from '@cat/api';
+import {UserRoleDTO} from '@cat/api';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
-import {ResourceStoreService} from '@common/services/resource-store.service';
 
 @Injectable()
 export class TopBarService {

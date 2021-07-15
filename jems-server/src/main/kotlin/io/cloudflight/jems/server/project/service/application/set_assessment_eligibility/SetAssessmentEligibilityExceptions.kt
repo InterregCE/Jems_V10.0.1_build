@@ -26,9 +26,11 @@ class AssessmentStep2AlreadyConcluded : ApplicationUnprocessableException(
 class AssessmentStep1CannotBeConcludedInThisStatus(status: ApplicationStatus) : ApplicationUnprocessableException(
     code = "$SET_ASSESSMENT_ELIGIBILITY_ERROR_CODE_PREFIX-003",
     i18nMessage = I18nMessage("$SET_ASSESSMENT_ELIGIBILITY_ERROR_KEY_PREFIX.wrong.status"),
+    message = "current status is ${status.name}"
 )
 
 class AssessmentStep2CannotBeConcludedInThisStatus(status: ApplicationStatus) : ApplicationUnprocessableException(
     code = "$SET_ASSESSMENT_ELIGIBILITY_ERROR_CODE_PREFIX-004",
     i18nMessage = I18nMessage("$SET_ASSESSMENT_ELIGIBILITY_ERROR_KEY_PREFIX.wrong.status"),
+    message = "current status is ${status.name}"
 )
