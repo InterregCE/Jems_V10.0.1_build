@@ -8,6 +8,7 @@ export class HeadlineRoute {
   scrollToTop ? = false;
   bullets?: HeadlineRoute[] = [];
   badgeText?: string;
+  badgeTooltip?: string;
 
   // TODO: refactor this out in a HeadlineTemplate or a generic base Headline
   headlineTemplate?: TemplateRef<any>;
