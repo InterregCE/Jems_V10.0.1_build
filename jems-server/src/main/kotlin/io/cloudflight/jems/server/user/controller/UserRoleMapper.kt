@@ -13,13 +13,13 @@ import org.springframework.data.domain.Page
 fun UserRoleSummary.toDto() = UserRoleSummaryDTO(
     id = id,
     name = name,
-    isDefault = isDefault
+    defaultForRegisteredUser = isDefault
 )
 
 fun UserRole.toDto() = UserRoleDTO(
     id = id,
     name = name,
-    isDefault = isDefault,
+    defaultForRegisteredUser = isDefault,
     permissions = permissions.sorted().map { UserRolePermissionDTO.valueOf(it.name) }
 )
 
@@ -28,12 +28,12 @@ fun Page<UserRoleSummary>.toDto() = map { it.toDto() }
 fun UserRoleDTO.toModel() = UserRole(
     id = id!!,
     name = name,
-    isDefault = isDefault ?: false,
+    isDefault = defaultForRegisteredUser ?: false,
     permissions = permissions.mapTo(HashSet()) { UserRolePermission.valueOf(it.name) }
 )
 
 fun UserRoleCreateDTO.toCreateModel() = UserRoleCreate(
     name = name,
-    isDefault = isDefault,
+    isDefault = defaultForRegisteredUser,
     permissions = permissions.mapTo(HashSet()) { UserRolePermission.valueOf(it.name) }
 )

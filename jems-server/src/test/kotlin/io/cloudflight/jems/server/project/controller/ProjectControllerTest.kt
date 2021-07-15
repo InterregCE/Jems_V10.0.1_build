@@ -190,7 +190,7 @@ class ProjectControllerTest {
                 endDate = endDate,
                 endDateStep1 = null,
                 lengthOfPeriod = 6,
-                isAdditionalFundAllowed = false,
+                additionalFundAllowed = false,
                 flatRates = FlatRateSetupDTO(
                     staffCostFlatRateSetup = FlatRateDTO(15, true),
                 ),
@@ -212,7 +212,7 @@ class ProjectControllerTest {
                         description = setOf(InputTranslation(SystemLanguage.EN, "pus 4")),
                         type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
                         costPerUnit = BigDecimal.ONE,
-                        isOneCostCategory = false,
+                        oneCostCategory = false,
                         categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                     )
                 ),

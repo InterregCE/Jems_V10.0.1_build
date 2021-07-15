@@ -150,7 +150,7 @@ export class UserRoleDetailPageComponent {
 
   resetUserRole(role: UserRoleDTO, isUpdateAllowed: boolean): void {
     this.name?.patchValue(role?.name);
-    this.isDefault?.patchValue(role?._default);
+    this.isDefault?.patchValue(role?.defaultForRegisteredUser);
     this.permissions.clear();
     const groups = Permission.DEFAULT_PERMISSIONS.map((perm, index) =>
       this.extractFormPermissionSubGroup(perm, role.permissions, index)

@@ -33,7 +33,7 @@ fun CallSummary.toDto() = CallDTO(
 fun CallDetail.toDto() = CallDetailDTO(
     id = id,
     name = name,
-    isAdditionalFundAllowed = isAdditionalFundAllowed,
+    additionalFundAllowed = isAdditionalFundAllowed,
     status = status,
     startDateTime = startDate,
     endDateTimeStep1 = endDateStep1,
@@ -52,7 +52,7 @@ fun CallDetail.toDto() = CallDetailDTO(
 fun CallUpdateRequestDTO.toModel() = Call(
     id = id ?: 0,
     name = name,
-    isAdditionalFundAllowed = isAdditionalFundAllowed,
+    isAdditionalFundAllowed = additionalFundAllowed,
     lengthOfPeriod = lengthOfPeriod,
     startDate = startDateTime,
     endDateStep1 = endDateTimeStep1,
@@ -88,7 +88,7 @@ abstract class CallDTOMapper {
         updateApplicationFormFieldConfigurationDTOs.map {
             ApplicationFormFieldConfiguration(
                 it.id,
-                if (!it.isVisible) FieldVisibilityStatus.NONE else it.availableInStep.toModel()
+                if (!it.visible) FieldVisibilityStatus.NONE else it.availableInStep.toModel()
             )
         }.toMutableSet()
 
@@ -96,11 +96,11 @@ abstract class CallDTOMapper {
     fun map(applicationFormFieldConfiguration: ApplicationFormFieldConfiguration): ApplicationFormFieldConfigurationDTO =
         ApplicationFormFieldConfigurationDTO(
             applicationFormFieldConfiguration.id,
-            isVisible = applicationFormFieldConfiguration.visibilityStatus != FieldVisibilityStatus.NONE,
-            isVisibilityLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet()
+            visible = applicationFormFieldConfiguration.visibilityStatus != FieldVisibilityStatus.NONE,
+            visibilityLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet()
                 .contains(FieldVisibilityStatus.NONE),
             availableInStep = applicationFormFieldConfiguration.visibilityStatus.toDTO(),
-            isStepSelectionLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet()
+            stepSelectionLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet()
                 .containsAll(listOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY))
         )
 }

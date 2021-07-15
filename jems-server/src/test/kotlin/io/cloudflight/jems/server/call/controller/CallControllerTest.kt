@@ -123,7 +123,7 @@ class CallControllerTest : UnitTest() {
             startDateTime = call.startDate,
             endDateTimeStep1 = null,
             endDateTime = call.endDate,
-            isAdditionalFundAllowed = true,
+            additionalFundAllowed = true,
             lengthOfPeriod = 8,
             description = setOf(
                 InputTranslation(language = EN, translation = "EN desc"),
@@ -144,7 +144,7 @@ class CallControllerTest : UnitTest() {
                 ProgrammeFundDTO(id = 10L, selected = true),
             ),
             flatRates = FlatRateSetupDTO(
-                officeAndAdministrationOnDirectCostsFlatRateSetup = FlatRateDTO(rate = 5, isAdjustable = true)
+                officeAndAdministrationOnDirectCostsFlatRateSetup = FlatRateDTO(rate = 5, adjustable = true)
             ),
             lumpSums = listOf(
                 ProgrammeLumpSumListDTO(id = 0L, splittingAllowed = true),
@@ -160,7 +160,7 @@ class CallControllerTest : UnitTest() {
             name = "call name",
             startDateTime = call.startDate,
             endDateTime = call.endDate,
-            isAdditionalFundAllowed = true,
+            additionalFundAllowed = true,
             lengthOfPeriod = 8,
             description = setOf(
                 InputTranslation(language = EN, translation = "EN desc"),

@@ -72,21 +72,21 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 id = 21,
                 name = "PartnerName",
                 status = Public,
-                isPartner = true,
+                partner = true,
                 amount = BigDecimal.ONE
             ),
             ProjectPartnerContributionDTO(
                 id = 22,
                 name = "supporter 1",
                 status = Private,
-                isPartner = false,
+                partner = false,
                 amount = BigDecimal.TEN
             ),
             ProjectPartnerContributionDTO(
                 id = 23,
                 name = "supporter 2",
                 status = AutomaticPublic,
-                isPartner = false,
+                partner = false,
                 amount = BigDecimal.TEN
             )
         )
@@ -326,7 +326,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 id = null,
                 name = "test abbr",
                 status = null,
-                isPartner = true,
+                partner = true,
                 amount = null
             )
         )

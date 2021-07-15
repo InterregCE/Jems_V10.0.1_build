@@ -71,7 +71,7 @@ class UserRoleControllerIntegrationTest {
         val userRole = UserRoleDTO(
             id = userRoleEntity.id,
             name = userRoleEntity.name,
-            isDefault = true,
+            defaultForRegisteredUser = true,
             permissions = emptyList()
         )
         programmeDataFactory.saveProgrammeData()
@@ -88,7 +88,7 @@ class UserRoleControllerIntegrationTest {
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.name").value("defaultRole"))
-            .andExpect(jsonPath("$.isDefault").value(true))
+            .andExpect(jsonPath("$.defaultForRegisteredUser").value(true))
             .andExpect(status().isOk)
     }
 }

@@ -36,7 +36,7 @@ class CallControllerIntegrationTest {
             name = "New Call",
             startDateTime = ZonedDateTime.now(),
             endDateTime = ZonedDateTime.now().plusDays(3L),
-            isAdditionalFundAllowed = false,
+            additionalFundAllowed = false,
             lengthOfPeriod = 12,
             description = setOf(InputTranslation(SystemLanguage.EN, "Short description")),
         )

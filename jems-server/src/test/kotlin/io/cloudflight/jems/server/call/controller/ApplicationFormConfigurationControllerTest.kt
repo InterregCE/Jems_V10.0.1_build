@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.StepSelectionOptionDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormFieldConfigurationRequestDTO
@@ -15,12 +14,9 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.get_application_form_field_configurations.GetApplicationFormConfigurationException
 import io.cloudflight.jems.server.call.service.get_application_form_field_configurations.GetApplicationFormFieldConfigurationsInteractor
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
-import io.cloudflight.jems.server.call.service.list_calls.ListCallsException
-import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.CallDetail
-import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.update_application_form_field_configuration.UpdateApplicationFormFieldConfigurationsException
@@ -87,29 +83,29 @@ class ApplicationFormConfigurationControllerTest: UnitTest() {
         private val configDTO =  mutableSetOf(
             ApplicationFormFieldConfigurationDTO(
                 id = ApplicationFormFieldSetting.PROJECT_ACRONYM.id,
-                isVisible = true,
+                visible = true,
                 availableInStep = StepSelectionOptionDTO.STEP_ONE_AND_TWO,
-                isVisibilityLocked = true,
-                isStepSelectionLocked = true
+                visibilityLocked = true,
+                stepSelectionLocked = true
             ),
             ApplicationFormFieldConfigurationDTO(
                 id = ApplicationFormFieldSetting.PROJECT_RESULTS_DELIVERY_PERIOD.id,
-                isVisible = false,
-                isVisibilityLocked = false,
+                visible = false,
+                visibilityLocked = false,
                 availableInStep = StepSelectionOptionDTO.NONE,
-                isStepSelectionLocked = false
+                stepSelectionLocked = false
             )
         )
 
         private val updateConfigDTO = mutableSetOf(
             UpdateApplicationFormFieldConfigurationRequestDTO(
                 id = ApplicationFormFieldSetting.PROJECT_ACRONYM.id,
-                isVisible = true,
+                visible = true,
                 availableInStep = StepSelectionOptionDTO.STEP_ONE_AND_TWO
             ),
             UpdateApplicationFormFieldConfigurationRequestDTO(
                 id = ApplicationFormFieldSetting.PROJECT_RESULTS_DELIVERY_PERIOD.id,
-                isVisible = false,
+                visible = false,
                 availableInStep = StepSelectionOptionDTO.NONE
             )
         )

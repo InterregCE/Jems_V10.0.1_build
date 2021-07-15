@@ -132,11 +132,11 @@ abstract class ProjectMapper {
     @Mapping(source = "totalCosts", target = "totalSum")
     abstract fun map(partnerBudget: PartnerBudget): ProjectPartnerBudgetDTO
 
-    @Mapping(source = "additionalFundAllowed", target = "isAdditionalFundAllowed")
+    @Mapping(source = "additionalFundAllowed", target = "additionalFundAllowed")
     abstract fun map(projectCallSettings: ProjectCallSettings): ProjectCallSettingsDTO
     abstract fun mapToLumpSumDTO(programmeLumpSum: List<ProgrammeLumpSum>): List<ProgrammeLumpSumDTO>
 
-    @Mapping(source = "oneCostCategory", target = "isOneCostCategory")
+    @Mapping(source = "oneCostCategory", target = "oneCostCategory")
     abstract fun mapToUnitCostDTO(programmeUnitCost: ProgrammeUnitCost): ProgrammeUnitCostDTO
     abstract fun mapToUnitCostDTO(programmeUnitCost: List<ProgrammeUnitCost>): List<ProgrammeUnitCostDTO>
 
