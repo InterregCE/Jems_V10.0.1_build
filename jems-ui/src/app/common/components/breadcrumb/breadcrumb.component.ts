@@ -26,26 +26,30 @@ export class BreadcrumbComponent extends BaseComponent implements OnInit {
       ).subscribe();
   }
 
-  private buildBreadcrumbs(route: ActivatedRoute, url: string, previous: Breadcrumb[] = []): Breadcrumb[] {
+  private buildBreadcrumbs(route: ActivatedRoute,
+                           url: string,
+                           previous: Breadcrumb[] = [],
+                           paramsHandling?: string): Breadcrumb[] {
     let newBreadcrumbs = previous;
     let nextUrl = url;
 
     const data = route.routeConfig?.data;
-
+    const queryParamsHandling = data?.queryParamsHandling || paramsHandling || '';
     if (data) {
       nextUrl = `${url}/${this.extractPathFrom(route)}`;
       if (!data.skipBreadcrumb) {
         const breadcrumb = {
           i18nKey: !data.dynamicBreadcrumb && data.breadcrumb,
           dynamicValue: data.dynamicBreadcrumb && route.snapshot?.data?.breadcrumb$,
-          url: nextUrl
+          url: nextUrl,
+          queryParamsHandling
         };
         newBreadcrumbs = [...newBreadcrumbs, breadcrumb];
       }
     }
 
     if (route.firstChild) {
-      return this.buildBreadcrumbs(route.firstChild, nextUrl, newBreadcrumbs);
+      return this.buildBreadcrumbs(route.firstChild, nextUrl, newBreadcrumbs, queryParamsHandling);
     }
 
     return newBreadcrumbs;

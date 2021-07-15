@@ -48,7 +48,7 @@ export const routes: Routes = [
       },
       {
         path: 'detail/:projectId',
-        data: {dynamicBreadcrumb: true},
+        data: {dynamicBreadcrumb: true, queryParamsHandling: 'merge'},
         resolve: {breadcrumb$: ProjectAcronymResolver},
         children: [
           {

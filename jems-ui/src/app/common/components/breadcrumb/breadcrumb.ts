@@ -4,4 +4,5 @@ export interface Breadcrumb {
   url?: string;
   i18nKey?: string;
   dynamicValue?: Observable<string>;
+  queryParamsHandling?: string;
 }
