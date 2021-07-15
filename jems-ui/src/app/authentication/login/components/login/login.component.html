@@ -55,7 +55,9 @@
                 </app-alert>
             </form>
             <div class="accessibility-disclaimer pt-3">
-                {{'user.login.accessibility.disclaimer.part.1' | translate}} <a href="/accessibility">{{'user.login.accessibility.disclaimer.part.2' | translate}}</a> {{'user.login.accessibility.disclaimer.part.3' | translate}}
+                {{'user.login.accessibility.disclaimer.part.1' | translate}}
+                <a [href]="accessibilityStatementUrl$ | async">{{'user.login.accessibility.disclaimer.part.2' | translate}}
+                </a> {{'user.login.accessibility.disclaimer.part.3' | translate}}
             </div>
         </div>
     </mat-card-content>

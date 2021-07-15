@@ -4,4 +4,5 @@ data class VersionDTO(
     val version: String,
     val commitId: String? = null,
     val helpdeskUrl: String,
+    val accessibilityStatementUrl: String,
 )
