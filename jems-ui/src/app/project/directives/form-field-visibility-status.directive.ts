@@ -60,7 +60,7 @@ export class FormFieldVisibilityStatusDirective {
   private isFieldVisible(fieldId: string, callSetting: ProjectCallSettings, hasCallTwoSteps: boolean, isProjectInStepTwo: boolean): boolean {
     const fieldConfiguration = callSetting.applicationFormFieldConfigurations.find(it => it.id === fieldId);
 
-    if (fieldConfiguration === undefined || !fieldConfiguration.isVisible) {
+    if (fieldConfiguration === undefined || !fieldConfiguration.visible) {
       return false;
     }
 

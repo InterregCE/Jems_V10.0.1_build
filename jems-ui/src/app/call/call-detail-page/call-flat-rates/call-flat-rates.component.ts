@@ -85,31 +85,31 @@ export class CallFlatRatesComponent {
       isStaffCostFlatRateActive: [!!flatRateSetup.staffCostFlatRateSetup],
       staffCostFlatRateSetup: this.formBuilder.group({
         rate: [flatRateSetup.staffCostFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.STAFF_COST), Validators.min(this.constants.FLAT_RATE_MIN_VALUES)]],
-        isAdjustable: [flatRateSetup.staffCostFlatRateSetup?.isAdjustable]
+        isAdjustable: [flatRateSetup.staffCostFlatRateSetup?.adjustable]
       }),
 
       isOfficeOnStaffFlatRateActive: [!!flatRateSetup.officeAndAdministrationOnStaffCostsFlatRateSetup],
       officeOnStaffFlatRateSetup: this.formBuilder.group({
         rate: [flatRateSetup.officeAndAdministrationOnStaffCostsFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF), Validators.min(this.constants.FLAT_RATE_MIN_VALUES)]],
-        isAdjustable: [flatRateSetup.officeAndAdministrationOnStaffCostsFlatRateSetup?.isAdjustable]
+        isAdjustable: [flatRateSetup.officeAndAdministrationOnStaffCostsFlatRateSetup?.adjustable]
       }),
 
       isOfficeOnOtherFlatRateActive: [!!flatRateSetup.officeAndAdministrationOnDirectCostsFlatRateSetup],
       officeOnOtherFlatRateSetup: this.formBuilder.group({
         rate: [flatRateSetup.officeAndAdministrationOnDirectCostsFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER), Validators.min(this.constants.FLAT_RATE_MIN_VALUES)]],
-        isAdjustable: [flatRateSetup.officeAndAdministrationOnDirectCostsFlatRateSetup?.isAdjustable]
+        isAdjustable: [flatRateSetup.officeAndAdministrationOnDirectCostsFlatRateSetup?.adjustable]
       }),
 
       isTravelOnStaffFlatRateActive: [!!flatRateSetup.travelAndAccommodationOnStaffCostsFlatRateSetup],
       travelOnStaffFlatRateSetup: this.formBuilder.group({
         rate: [flatRateSetup.travelAndAccommodationOnStaffCostsFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF), Validators.min(this.constants.FLAT_RATE_MIN_VALUES)]],
-        isAdjustable: [flatRateSetup.travelAndAccommodationOnStaffCostsFlatRateSetup?.isAdjustable]
+        isAdjustable: [flatRateSetup.travelAndAccommodationOnStaffCostsFlatRateSetup?.adjustable]
       }),
 
       isOtherOnStaffFlatRateActive: [!!flatRateSetup.otherCostsOnStaffCostsFlatRateSetup],
       otherOnStaffFlatRateSetup: this.formBuilder.group({
         rate: [flatRateSetup.otherCostsOnStaffCostsFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF), Validators.min(this.constants.FLAT_RATE_MIN_VALUES)]],
-        isAdjustable: [flatRateSetup.otherCostsOnStaffCostsFlatRateSetup?.isAdjustable]
+        isAdjustable: [flatRateSetup.otherCostsOnStaffCostsFlatRateSetup?.adjustable]
       })
     });
     this.formService.init(this.callFlatRateForm);

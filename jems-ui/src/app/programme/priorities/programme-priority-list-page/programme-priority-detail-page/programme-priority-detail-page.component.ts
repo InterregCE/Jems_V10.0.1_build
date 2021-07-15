@@ -65,12 +65,14 @@ export class ProgrammePriorityDetailPageComponent {
       ),
       map(([priority, setup]) => ({
           priority,
+        // tslint:disable-next-line
           objectives: this.getAvailableObjectives((priority as any).objective, setup.freePrioritiesWithPolicies),
           freePrioritiesWithPolicies: setup.freePrioritiesWithPolicies,
           objectivePoliciesAlreadyInUse: setup.objectivePoliciesAlreadyInUse as string[]
         })
       ),
       tap(data => this.resetForm(data.priority as ProgrammePriorityDTO, data.freePrioritiesWithPolicies)),
+      // tslint:disable-next-line
       tap(data => (data.priority as any)?.id ? this.form.disable() : this.form.enable())
     );
 

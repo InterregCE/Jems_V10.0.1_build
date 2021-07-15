@@ -222,7 +222,7 @@ export class CallDetailPageComponent {
         this.callForm.controls.endDateTimeStep1.enable();
       }
       this.callForm.controls.endDateTime.enable();
-      if (!call.isAdditionalFundAllowed) {
+      if (!call.additionalFundAllowed) {
         this.callForm.controls.isAdditionalFundAllowed.enable();
       }
     }

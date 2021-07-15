@@ -4,7 +4,9 @@ import {
   InputProjectData,
   ProjectAssessmentEligibilityDTO,
   ProjectAssessmentQualityDTO,
+  FlatRateDTO,
   InvestmentSummaryDTO,
+  ProjectCallSettingsDTO,
   ProjectDecisionDTO,
   ProjectDetailDTO,
   ProjectPartnerBudgetCoFinancingDTO,
@@ -39,6 +41,7 @@ import {SecurityService} from '../../../../../security/security.service';
 import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {InvestmentSummary} from '../../../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {FlatRateSetting} from '@project/model/flat-rate-setting';
 
 /**
  * Stores project related information.
@@ -204,23 +207,33 @@ export class ProjectStore {
     return this.project$
       .pipe(
         map(project => project.callSettings),
-        map(callSetting => new ProjectCallSettings(
+        map((callSetting: ProjectCallSettingsDTO) => new ProjectCallSettings(
           callSetting.callId,
           callSetting.callName,
           callSetting.startDate,
           callSetting.endDate,
           callSetting.endDateStep1,
           callSetting.lengthOfPeriod,
-          new CallFlatRateSetting(callSetting.flatRates.staffCostFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup),
+          new CallFlatRateSetting(
+            this.toModel(callSetting.flatRates.staffCostFlatRateSetup),
+            this.toModel(callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup),
+            this.toModel(callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup),
+            this.toModel(callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup),
+            this.toModel(callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup)
+          ),
           callSetting.lumpSums.map(lumpSum =>
             new ProgrammeLumpSum(lumpSum.id, lumpSum.name, lumpSum.description, lumpSum.cost, lumpSum.splittingAllowed, LumpSumPhaseEnumUtils.toLumpSumPhaseEnum(lumpSum.phase), BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(lumpSum.categories))),
           callSetting.unitCosts
-            .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.isOneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories))),
-          callSetting.isAdditionalFundAllowed,
+            .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.oneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories))),
+          callSetting.additionalFundAllowed,
           callSetting.applicationFormFieldConfigurations
         )),
         shareReplay(1)
       );
+  }
+
+  private toModel(flatRate: FlatRateDTO): FlatRateSetting {
+    return {rate: flatRate.rate, isAdjustable: flatRate.adjustable};
   }
 
   private callHasTwoSteps(): Observable<boolean> {

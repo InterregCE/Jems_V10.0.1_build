@@ -6,7 +6,7 @@
     "types": [],
     "paths": {
       "@cat/api": [
-        "./build/generated-sources/openapi/index.ts"
+        "./build/generated-sources/jems-api/index.ts"
       ],
       "@common/*": [
         "src/app/common/*"

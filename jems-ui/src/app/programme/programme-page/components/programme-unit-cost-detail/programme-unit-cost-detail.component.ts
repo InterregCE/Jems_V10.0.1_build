@@ -130,10 +130,10 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     this.unitCostForm.controls.description.setValue(this.unitCost.description);
     this.unitCostForm.controls.type.setValue(this.unitCost.type);
     this.unitCostForm.controls.costPerUnit.setValue(this.unitCost.costPerUnit);
-    this.unitCostForm.controls.isOneCostCategory.setValue(this.unitCost.isOneCostCategory);
+    this.unitCostForm.controls.isOneCostCategory.setValue(this.unitCost.oneCostCategory);
     this.selectionMultiple.clear();
     this.selectionSingle.clear();
-    if (this.unitCost.isOneCostCategory) {
+    if (this.unitCost.oneCostCategory) {
       this.selectionSingle.select(this.unitCost.categories[0]);
       this.validNumberOfSelections = this.selectionMultiple.selected.length === 1;
     } else {
@@ -164,7 +164,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
-          isOneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
+          oneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
           categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
         } as ProgrammeUnitCostDTO);
       } else {
@@ -174,7 +174,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
-          isOneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
+          oneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
           categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
         });
       }
@@ -225,8 +225,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
       this.unitCostForm.controls.type.setErrors(null);
       this.unitCostForm.controls.categories.setErrors(null);
     }
-    if ((this.unitCost.isOneCostCategory && this.unitCost.categories?.length === 1)
-        || (!this.unitCost.isOneCostCategory && this.unitCost.categories?.length >= 2)) {
+    if ((this.unitCost.oneCostCategory && this.unitCost.categories?.length === 1)
+        || (!this.unitCost.oneCostCategory && this.unitCost.categories?.length >= 2)) {
       this.validNumberOfSelections = true;
     }
     if (this.isProgrammeSetupLocked && !this.isCreate) {

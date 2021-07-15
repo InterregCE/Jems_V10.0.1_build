@@ -81,7 +81,7 @@ export class SystemPageSidenavService {
             headline: {i18nKey: role.name},
             route: `${UserRoleStore.USER_ROLE_DETAIL_PATH}/${role.id}`,
             scrollToTop: true,
-            badgeText: role.isDefault && 'userRole.default.flag',
+            badgeText: role._default && 'userRole.default.flag',
             badgeTooltip: 'userRole.default.flag.info',
           }))
         };

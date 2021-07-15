@@ -37,7 +37,7 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
   ])
     .pipe(
       map(([organization, nuts, partners, projectTitle]) => ({organization, nuts, partners, projectTitle})),
-      tap(details => this.resetForm(details.organization as any))
+      tap(details => this.resetForm(details.organization as OutputProjectAssociatedOrganizationDetail))
     );
 
   associatedOrganizationForm: FormGroup = this.formBuilder.group({

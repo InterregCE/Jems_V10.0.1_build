@@ -103,7 +103,7 @@ export class ApplicationFormConfigurationPageStore {
       const config = configs?.find(conf => conf.id === id);
       result.push({
         id,
-        isVisible: config?.isVisible || false,
+        isVisible: config?.visible || false,
         availableInStep: config?.availableInStep || AvailableInStepEnum.NONE,
         isVisibilityLocked: this.isConfigVisibilityLocked(callPublished, config),
         isStepSelectionLocked: this.isConfigStepSelectionLocked(callPublished, config),
@@ -114,13 +114,13 @@ export class ApplicationFormConfigurationPageStore {
   }
 
   private isConfigVisibilityLocked(callPublished: boolean, config?: ApplicationFormFieldConfigurationDTO): boolean {
-    return config?.isVisibilityLocked
-      || (callPublished && !!config?.isVisible);
+    return config?.visibilityLocked
+      || (callPublished && !!config?.visible);
   }
 
   private isConfigStepSelectionLocked(callPublished: boolean, config?: ApplicationFormFieldConfigurationDTO): boolean {
-    return config?.isStepSelectionLocked
-      || !config?.isVisible
+    return config?.stepSelectionLocked
+      || !config?.visible
       || (callPublished && config?.availableInStep === AvailableInStepEnum.STEPONEANDTWO);
   }
 
