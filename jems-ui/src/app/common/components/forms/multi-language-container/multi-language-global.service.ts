@@ -24,7 +24,7 @@ export class MultiLanguageGlobalService {
     ).subscribe();
 
     combineLatest([this.languageStore.systemLanguages$, this.languageStore.currentSystemLanguage$]).pipe(
-      tap(([systemLanguages, currentLanguage]) => this.setActiveSystemLanguage(currentLanguage || systemLanguages && systemLanguages[0]))
+      tap(([systemLanguages, currentLanguage]) => this.setActiveSystemLanguage(this.getActiveLanguage(systemLanguages, currentLanguage)))
     ).subscribe();
   }
 
@@ -34,5 +34,12 @@ export class MultiLanguageGlobalService {
 
   setActiveSystemLanguage(newLanguage: string): void {
     this.activeSystemLanguageSubject.next(newLanguage);
+  }
+
+  getActiveLanguage(systemLanguages: string[], currentLanguage: string): string {
+    if (systemLanguages?.length && !systemLanguages.includes(currentLanguage)) {
+      return systemLanguages[0];
+    }
+    return currentLanguage;
   }
 }
