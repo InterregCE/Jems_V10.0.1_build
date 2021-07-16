@@ -21,6 +21,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import { APPLICATION_FORM } from '@project/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-project-relevance-and-context-detail',
@@ -30,7 +31,7 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends BaseComponent implements OnInit, OnChanges {
-
+  APPLICATION_FORM = APPLICATION_FORM;
   // TODO: remove these and adapt the component to save independently
   @Input()
   error$: Observable<HttpErrorResponse | null>;

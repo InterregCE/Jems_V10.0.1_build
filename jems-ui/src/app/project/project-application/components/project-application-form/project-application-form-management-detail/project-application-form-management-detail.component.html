@@ -4,192 +4,209 @@
         <h3>{{'project.application.form.section.part.c.subsection.seven' | translate}}</h3>
         <p>{{'project.application.form.management.intro' | translate}}</p>
 
-        <h4>{{'project.application.form.management.field.1' | translate}}</h4>
-        <p>{{'project.application.form.management.field.1.intro' | translate}}</p>
+        <ng-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT.PROJECT_COORDINATION">
+            <h4>{{'project.application.form.management.field.1' | translate}}</h4>
+            <p>{{'project.application.form.management.field.1.intro' | translate}}</p>
 
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="'coordination'"
-                    [maxLength]="5000">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="'coordination'"
+                        [maxLength]="5000">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+        </ng-container>
 
-        <h4>{{'project.application.form.management.field.2' | translate}}</h4>
-        <p>{{'project.application.form.management.field.2.intro' | translate}}</p>
+        <ng-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT.PROJECT_QUALITY_MEASURES">
+            <h4>{{'project.application.form.management.field.2' | translate}}</h4>
+            <p>{{'project.application.form.management.field.2.intro' | translate}}</p>
 
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="'quality'"
-                    [maxLength]="5000">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="'quality'"
+                        [maxLength]="5000">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+        </ng-container>
 
-        <h4>{{'project.application.form.management.field.3' | translate}}</h4>
-        <p>{{'project.application.form.management.field.3.intro' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="'communication'"
-                    [maxLength]="5000">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+        <ng-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT.PROJECT_COMMUNICATION_APPROACH">
+            <h4>{{'project.application.form.management.field.3' | translate}}</h4>
+            <p>{{'project.application.form.management.field.3.intro' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="'communication'"
+                        [maxLength]="5000">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+        </ng-container>
 
-        <h4>{{'project.application.form.management.field.4' | translate}}</h4>
-        <p>{{'project.application.form.management.field.4.intro' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="'financial'"
-                    [maxLength]="5000">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+        <ng-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT.PROJECT_FINANCIAL_MANAGEMENT_AND_REPORTING">
+            <h4>{{'project.application.form.management.field.4' | translate}}</h4>
+            <p>{{'project.application.form.management.field.4.intro' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="'financial'"
+                        [maxLength]="5000">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+        </ng-container>
 
-        <h4>{{'project.application.form.management.field.5' | translate}}</h4>
-        <p>{{'project.application.form.management.field.5.intro' | translate}}</p>
-        <app-multi-language-container appNoWidthLimit>
-            <div [appTableConfig]="[{maxInRem:15},{}]">
-                <div>
-                    <span>{{'project.application.form.management.cooperation.table.header.criteria' | translate}}</span>
-                    <span>{{'project.application.form.management.cooperation.table.header.description' | translate}}</span>
+        <ng-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT.PROJECT_COOPERATION_CRITERIA">
+            <h4>{{'project.application.form.management.field.5' | translate}}</h4>
+            <p>{{'project.application.form.management.field.5.intro' | translate}}</p>
+            <app-multi-language-container appNoWidthLimit>
+                <div [appTableConfig]="[{maxInRem:15},{}]">
+                    <div>
+                        <span>{{'project.application.form.management.cooperation.table.header.criteria' | translate}}</span>
+                        <span>{{'project.application.form.management.cooperation.table.header.description' | translate}}</span>
+                    </div>
+                    <div>
+                        <mat-checkbox
+                                (click)="$event.stopPropagation()"
+                                (change)="changeSelection('criteria_development')"
+                                [disabled]="!editable"
+                                [checked]="selection.isSelected('criteria_development')">
+                            <div>
+                                {{'project.application.form.management.cooperation.table.row.1' | translate}}
+                            </div>
+                        </mat-checkbox>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                minRows="1"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="'criteria_development'"
+                                [maxLength]="2000">
+                        </app-multi-language-form-field>
+                    </div>
+
+                    <div>
+                        <mat-checkbox
+                                (click)="$event.stopPropagation()"
+                                (change)="changeSelection('criteria_implementation')"
+                                [disabled]="!editable"
+                                [checked]="selection.isSelected('criteria_implementation')">
+                            <div>
+                                {{'project.application.form.management.cooperation.table.row.2' | translate}}
+                            </div>
+                        </mat-checkbox>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                minRows="1"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="'criteria_implementation'"
+                                [maxLength]="2000">
+                        </app-multi-language-form-field>
+                    </div>
+                    <div>
+                        <mat-checkbox
+                                (click)="$event.stopPropagation()"
+                                (change)="changeSelection('criteria_staffing')"
+                                [disabled]="!editable"
+                                [checked]="selection.isSelected('criteria_staffing')">
+                            <div>
+                                {{'project.application.form.management.cooperation.table.row.3' | translate}}
+                            </div>
+                        </mat-checkbox>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                minRows="1"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="'criteria_staffing'"
+                                [maxLength]="2000">
+                        </app-multi-language-form-field>
+                    </div>
+
+                    <div>
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                                      (change)="changeSelection('criteria_financing')"
+                                      [disabled]="!editable"
+                                      [checked]="selection.isSelected('criteria_financing')">
+                            <div>
+                                {{'project.application.form.management.cooperation.table.row.4' | translate}}
+                            </div>
+                        </mat-checkbox>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                minRows="1"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="'criteria_financing'"
+                                [maxLength]="2000">
+                        </app-multi-language-form-field>
+                    </div>
                 </div>
-                <div>
-                    <mat-checkbox
-                            (click)="$event.stopPropagation()"
-                            (change)="changeSelection('criteria_development')"
-                            [disabled]="!editable"
-                            [checked]="selection.isSelected('criteria_development')">
-                        <div>
-                            {{'project.application.form.management.cooperation.table.row.1' | translate}}
-                        </div>
-                    </mat-checkbox>
-                    <app-multi-language-form-field
-                            type="textarea"
-                            minRows="1"
-                            [label]="'common.textarea.enter.text'"
-                            [formControlName]="'criteria_development'"
-                            [maxLength]="2000">
-                    </app-multi-language-form-field>
-                </div>
+            </app-multi-language-container>
+        </ng-container>
 
-                <div>
-                    <mat-checkbox
-                            (click)="$event.stopPropagation()"
-                            (change)="changeSelection('criteria_implementation')"
-                            [disabled]="!editable"
-                            [checked]="selection.isSelected('criteria_implementation')">
-                        <div>
-                            {{'project.application.form.management.cooperation.table.row.2' | translate}}
-                        </div>
-                    </mat-checkbox>
-                    <app-multi-language-form-field
-                            type="textarea"
-                            minRows="1"
-                            [label]="'common.textarea.enter.text'"
-                            [formControlName]="'criteria_implementation'"
-                            [maxLength]="2000">
-                    </app-multi-language-form-field>
+        <ng-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT.PROJECT_HORIZONTAL_PRINCIPLES">
+            <h4>{{'project.application.form.management.field.6' | translate}}</h4>
+            <p>{{'project.application.form.management.field.6.intro' | translate}}</p>
+            <app-multi-language-container appNoWidthLimit>
+                <div [appTableConfig]="[{minInRem:12},{minInRem:20},{}]">
+                    <div>
+                        <span>{{'project.application.form.management.principles.table.header.principles' | translate}}</span>
+                        <span>{{'project.application.form.management.principles.table.header.contribution' | translate}}</span>
+                        <span>{{'project.application.form.management.principles.table.header.description' | translate}}</span>
+                    </div>
+                    <div>
+                        <span>{{'project.application.form.management.principles.table.row.1' | translate}}</span>
+                        <app-contribution-toggle-column
+                                [disabled]="!editable"
+                                (selected)="selectedContributionPrincipleDevelopment = $event; formChanged()"
+                                [previousSelection]="selectedContributionPrincipleDevelopment">
+                        </app-contribution-toggle-column>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                minRows="1"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="'principles_sustainable'"
+                                [maxLength]="2000">
+                        </app-multi-language-form-field>
+                    </div>
+                    <div>
+                        <span>{{'project.application.form.management.principles.table.row.2' | translate}}</span>
+                        <app-contribution-toggle-column
+                                [disabled]="!editable"
+                                (selected)="selectedContributionPrincipleOpportunities = $event; formChanged()"
+                                [previousSelection]="selectedContributionPrincipleOpportunities">
+                        </app-contribution-toggle-column>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                minRows="1"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="'principles_opportunities'"
+                                [maxLength]="2000">
+                        </app-multi-language-form-field>
+                    </div>
+                    <div>
+                        <span>{{'project.application.form.management.principles.table.row.3' | translate}}</span>
+                        <app-contribution-toggle-column
+                                [disabled]="!editable"
+                                (selected)="selectedContributionPrincipleEquality = $event; formChanged()"
+                                [previousSelection]="selectedContributionPrincipleEquality">
+                        </app-contribution-toggle-column>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                minRows="1"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="'principles_equality'"
+                                [maxLength]="2000">
+                        </app-multi-language-form-field>
+                    </div>
                 </div>
-                <div>
-                    <mat-checkbox
-                            (click)="$event.stopPropagation()"
-                            (change)="changeSelection('criteria_staffing')"
-                            [disabled]="!editable"
-                            [checked]="selection.isSelected('criteria_staffing')">
-                        <div>
-                            {{'project.application.form.management.cooperation.table.row.3' | translate}}
-                        </div>
-                    </mat-checkbox>
-                    <app-multi-language-form-field
-                            type="textarea"
-                            minRows="1"
-                            [label]="'common.textarea.enter.text'"
-                            [formControlName]="'criteria_staffing'"
-                            [maxLength]="2000">
-                    </app-multi-language-form-field>
-                </div>
-
-                <div>
-                    <mat-checkbox (click)="$event.stopPropagation()"
-                                  (change)="changeSelection('criteria_financing')"
-                                  [disabled]="!editable"
-                                  [checked]="selection.isSelected('criteria_financing')">
-                        <div>
-                            {{'project.application.form.management.cooperation.table.row.4' | translate}}
-                        </div>
-                    </mat-checkbox>
-                    <app-multi-language-form-field
-                            type="textarea"
-                            minRows="1"
-                            [label]="'common.textarea.enter.text'"
-                            [formControlName]="'criteria_financing'"
-                            [maxLength]="2000">
-                    </app-multi-language-form-field>
-                </div>
-            </div>
-        </app-multi-language-container>
-
-        <h4>{{'project.application.form.management.field.6' | translate}}</h4>
-        <p>{{'project.application.form.management.field.6.intro' | translate}}</p>
-
-        <app-multi-language-container appNoWidthLimit>
-            <div [appTableConfig]="[{minInRem:12},{minInRem:20},{}]">
-                <div>
-                    <span>{{'project.application.form.management.principles.table.header.principles' | translate}}</span>
-                    <span>{{'project.application.form.management.principles.table.header.contribution' | translate}}</span>
-                    <span>{{'project.application.form.management.principles.table.header.description' | translate}}</span>
-                </div>
-                <div>
-                    <span>{{'project.application.form.management.principles.table.row.1' | translate}}</span>
-                    <app-contribution-toggle-column
-                            [disabled]="!editable"
-                            (selected)="selectedContributionPrincipleDevelopment = $event; formChanged()"
-                            [previousSelection]="selectedContributionPrincipleDevelopment">
-                    </app-contribution-toggle-column>
-                    <app-multi-language-form-field
-                            type="textarea"
-                            minRows="1"
-                            [label]="'common.textarea.enter.text'"
-                            [formControlName]="'principles_sustainable'"
-                            [maxLength]="2000">
-                    </app-multi-language-form-field>
-                </div>
-                <div>
-                    <span>{{'project.application.form.management.principles.table.row.2' | translate}}</span>
-                    <app-contribution-toggle-column
-                            [disabled]="!editable"
-                            (selected)="selectedContributionPrincipleOpportunities = $event; formChanged()"
-                            [previousSelection]="selectedContributionPrincipleOpportunities">
-                    </app-contribution-toggle-column>
-                    <app-multi-language-form-field
-                            type="textarea"
-                            minRows="1"
-                            [label]="'common.textarea.enter.text'"
-                            [formControlName]="'principles_opportunities'"
-                            [maxLength]="2000">
-                    </app-multi-language-form-field>
-                </div>
-                <div>
-                    <span>{{'project.application.form.management.principles.table.row.3' | translate}}</span>
-                    <app-contribution-toggle-column
-                            [disabled]="!editable"
-                            (selected)="selectedContributionPrincipleEquality = $event; formChanged()"
-                            [previousSelection]="selectedContributionPrincipleEquality">
-                    </app-contribution-toggle-column>
-                    <app-multi-language-form-field
-                            type="textarea"
-                            minRows="1"
-                            [label]="'common.textarea.enter.text'"
-                            [formControlName]="'principles_equality'"
-                            [maxLength]="2000">
-                    </app-multi-language-form-field>
-                </div>
-            </div>
-        </app-multi-language-container>
+            </app-multi-language-container>
+        </ng-container>
     </form>
 </app-form>

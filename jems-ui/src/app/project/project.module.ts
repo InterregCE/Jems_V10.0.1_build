@@ -88,6 +88,7 @@ import {ProjectWorkPackagePageComponent} from './work-package/project-work-packa
 import { FormFieldVisibilityStatusDirective } from './directives/form-field-visibility-status.directive';
 import { ProjectApplicationFileDeleteComponent } from './project-application/components/project-application-detail/project-application-file-delete/project-application-file-delete.component';
 import { ProjectPartnerStateAidTabComponent } from './partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
+import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
 
 @NgModule({
   declarations: [
@@ -188,7 +189,8 @@ import { ProjectPartnerStateAidTabComponent } from './partner/project-partner-de
     ProjectPartnerStore,
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,
-    ProjectLumpSumsPageStore
+    ProjectLumpSumsPageStore,
+    FormVisibilityStatusService
   ]
 })
 export class ProjectModule {

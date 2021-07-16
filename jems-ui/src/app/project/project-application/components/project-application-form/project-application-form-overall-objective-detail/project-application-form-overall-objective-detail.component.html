@@ -13,25 +13,28 @@
                 {{'project.application.form.overall.objective.specific.objective.required' | translate}}
             </mat-hint>
         </mat-form-field>
-        <h4>{{'project.application.form.overall.objective.field.projectOverallObjective' | translate}}</h4>
-        <p>{{'project.application.form.overall.objective.field.row.two' | translate}}</p>
-        <div>
-            {{'project.application.form.overall.objective.field.row.three' | translate}}
-            <ul>
-                <li>{{'project.application.form.overall.objective.field.row.four' | translate}}</li>
-                <li>{{'project.application.form.overall.objective.field.row.five' | translate}}</li>
-                <li>{{'project.application.form.overall.objective.field.row.six' | translate}}</li>
-            </ul>
-        </div>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    formControlName="projectOverallObjective"
-                    maxLength="500"
-                    minRows="3"
-                    label="project.application.form.overall.objective.field.projectOverallObjective"
-                    [disabled]="!editable">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+        <ng-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE.OVERALL_OBJECTIVE">
+            <h4>{{'project.application.form.overall.objective.field.projectOverallObjective' | translate}}</h4>
+            <p>{{'project.application.form.overall.objective.field.row.two' | translate}}</p>
+            <div>
+                {{'project.application.form.overall.objective.field.row.three' | translate}}
+                <ul>
+                    <li>{{'project.application.form.overall.objective.field.row.four' | translate}}</li>
+                    <li>{{'project.application.form.overall.objective.field.row.five' | translate}}</li>
+                    <li>{{'project.application.form.overall.objective.field.row.six' | translate}}</li>
+                </ul>
+            </div>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        formControlName="projectOverallObjective"
+                        maxLength="500"
+                        minRows="3"
+                        label="project.application.form.overall.objective.field.projectOverallObjective"
+                        [disabled]="!editable">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+        </ng-container>
     </form>
 </app-form>

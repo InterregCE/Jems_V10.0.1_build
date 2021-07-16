@@ -3,37 +3,46 @@
     <form appFormLayout [formGroup]="futurePlansForm">
         <h3>{{'project.application.form.section.part.c.subsection.eight' | translate}}</h3>
         <p>{{'project.application.form.future.plans.intro' | translate}}</p>
-        <h4>{{'project.application.form.future.plans.field.1' | translate}}</h4>
-        <p>{{'project.application.form.future.plans.field.1.intro' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="'ownership'"
-                    [maxLength]="5000">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+        <ng-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS.PROJECT_OWNERSHIP">
+            <h4>{{'project.application.form.future.plans.field.1' | translate}}</h4>
+            <p>{{'project.application.form.future.plans.field.1.intro' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="'ownership'"
+                        [maxLength]="5000">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+        </ng-container>
 
-        <h4>{{'project.application.form.future.plans.field.2' | translate}}</h4>
-        <p>{{'project.application.form.future.plans.field.2.intro' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="'durability'"
-                    [maxLength]="5000">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+        <ng-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS.PROJECT_DURABILITY">
+            <h4>{{'project.application.form.future.plans.field.2' | translate}}</h4>
+            <p>{{'project.application.form.future.plans.field.2.intro' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="'durability'"
+                        [maxLength]="5000">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+        </ng-container>
 
-        <h4>{{'project.application.form.future.plans.field.3' | translate}}</h4>
-        <p>{{'project.application.form.future.plans.field.3.intro' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    [label]="'common.textarea.enter.text'"
-                    [formControlName]="'transferability'"
-                    [maxLength]="5000">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+        <ng-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS.PROJECT_TRANSFERABILITY">
+            <h4>{{'project.application.form.future.plans.field.3' | translate}}</h4>
+            <p>{{'project.application.form.future.plans.field.3.intro' | translate}}</p>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        [label]="'common.textarea.enter.text'"
+                        [formControlName]="'transferability'"
+                        [maxLength]="5000">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+        </ng-container>
     </form>
 </app-form>

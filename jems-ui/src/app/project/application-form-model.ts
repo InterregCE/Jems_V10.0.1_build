@@ -9,7 +9,8 @@ export const APPLICATION_FORM = {
       TITLE: 'application.config.project.title',
       DURATION: 'application.config.project.duration',
       PRIORITY: 'application.config.project.priority',
-      OBJECTIVE: 'application.config.project.objective'
+      OBJECTIVE: 'application.config.project.objective',
+      SUMMARY: 'application.config.project.summary'
     }
   },
   SECTION_B: {
@@ -62,11 +63,39 @@ export const APPLICATION_FORM = {
     }
   },
   SECTION_C: {
+    PROJECT_OVERALL_OBJECTIVE: {
+      OVERALL_OBJECTIVE: 'application.config.project.overall.objective'
+    },
+    PROJECT_RELEVANCE_AND_CONTEXT: {
+      TERRITORIAL_CHALLENGES: 'application.config.project.territorial.challenges',
+      HOW_ARE_CHALLENGES_AND_OPPORTUNITIES_TACKLED: 'application.config.project.how.are.challenges.and.opportunities.tackled',
+      PROJECT_WHY_IS_COOPERATION_NEEDED: 'application.config.project.why.is.cooperation.needed',
+      PROJECT_TARGET_GROUP: 'application.config.project.target.group',
+      PROJECT_STRATEGY_CONTRIBUTION: 'application.config.project.strategy.contribution',
+      PROJECT_SYNERGIES: 'application.config.project.synergies',
+      PROJECT_HOW_BUILDS_PROJECT_ON_AVAILABLE_KNOWLEDGE: 'application.config.project.how.builds.project.on.available.knowledge',
+    },
+    PROJECT_PARTNERSHIP: {
+      PROJECT_PARTNERSHIP: 'application.config.project.partnership',
+    },
     PROJECT_RESULT: {
       PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT: 'application.config.project.result.indicator.and.measurement.unit',
       TARGET_VALUE: 'application.config.project.result.target.value',
       DELIVERY_PERIOD: 'application.config.project.result.delivery.period',
       DESCRIPTION: 'application.config.project.result.description'
+    },
+    PROJECT_MANAGEMENT: {
+      PROJECT_COORDINATION: 'application.config.project.coordination',
+      PROJECT_QUALITY_MEASURES: 'application.config.project.quality.measures',
+      PROJECT_COMMUNICATION_APPROACH: 'application.config.project.communication.approach',
+      PROJECT_FINANCIAL_MANAGEMENT_AND_REPORTING: 'application.config.project.financial.management.and.reporting',
+      PROJECT_COOPERATION_CRITERIA: 'application.config.project.cooperation.criteria',
+      PROJECT_HORIZONTAL_PRINCIPLES: 'application.config.project.horizontal.principles'
+    },
+    PROJECT_LONG_TERM_PLANS: {
+      PROJECT_OWNERSHIP: 'application.config.project.ownership',
+      PROJECT_DURABILITY: 'application.config.project.durability',
+      PROJECT_TRANSFERABILITY: 'application.config.project.transferability',
     }
   }
 };

@@ -2,7 +2,8 @@
           (discard)="resetForm()">
     <form appFormLayout [formGroup]="applicationForm">
         <h3>{{'project.application.form.section.part.a.subsection.one' | translate}}</h3>
-        <mat-form-field appFormFieldWidth="xx-large" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ID">
+        <mat-form-field appFormFieldWidth="xx-large"
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ID">
             <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
             <input name="projectId" formControlName="projectId" matInput>
         </mat-form-field>
@@ -24,7 +25,8 @@
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.TITLE">
+        <app-multi-language-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.TITLE">
             <app-multi-language-form-field
                     type="textarea"
                     label="project.application.form.field.project.title"
@@ -35,7 +37,8 @@
 
         <h4>{{'project.application.project.duration.title' | translate}}</h4>
 
-        <div appMultiColumnRow stretch *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.DURATION">
+        <div appMultiColumnRow stretch
+             *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.DURATION">
             <mat-form-field>
                 <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
                 <input type="number" name="duration" formControlName="duration" matInput
@@ -123,34 +126,36 @@
             </div>
         </div>
 
-        <h3>{{'project.application.form.section.part.a.subsection.two' | translate}}</h3>
-        <div>
-            <span>{{'project.application.form.summary.intro.row.one' | translate}}</span>
-            <ul>
-                <li>{{'project.application.form.summary.intro.row.two' | translate}}</li>
-                <li>{{'project.application.form.summary.intro.row.three' | translate}}</li>
-                <li>{{'project.application.form.summary.intro.row.four' | translate}}</li>
-                <li>{{'project.application.form.summary.intro.row.five' | translate}}</li>
-                <li>{{'project.application.form.summary.intro.row.six' | translate}}</li>
-            </ul>
-        </div>
-        <app-multi-language-container *ngIf="!languageStore.isInputLanguageExist(this.LANGUAGE.EN)"
-                                      [staticLanguages]="[LANGUAGE.EN]">
-            <app-multi-language-form-field
-                    type="textarea"
-                    label="project.application.form.field.project.summary.in.english"
-                    formControlName="introEn"
-                    maxLength="2000">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.SUMMARY">
+            <h3>{{'project.application.form.section.part.a.subsection.two' | translate}}</h3>
+            <div>
+                <span>{{'project.application.form.summary.intro.row.one' | translate}}</span>
+                <ul>
+                    <li>{{'project.application.form.summary.intro.row.two' | translate}}</li>
+                    <li>{{'project.application.form.summary.intro.row.three' | translate}}</li>
+                    <li>{{'project.application.form.summary.intro.row.four' | translate}}</li>
+                    <li>{{'project.application.form.summary.intro.row.five' | translate}}</li>
+                    <li>{{'project.application.form.summary.intro.row.six' | translate}}</li>
+                </ul>
+            </div>
+            <app-multi-language-container *ngIf="!languageStore.isInputLanguageExist(this.LANGUAGE.EN)"
+                                          [staticLanguages]="[LANGUAGE.EN]">
+                <app-multi-language-form-field
+                        type="textarea"
+                        label="project.application.form.field.project.summary.in.english"
+                        formControlName="introEn"
+                        maxLength="2000">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
 
-        <app-multi-language-container>
-            <app-multi-language-form-field
-                    type="textarea"
-                    label="project.application.form.field.project.summary"
-                    formControlName="intro"
-                    [maxLength]="2000">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            <app-multi-language-container>
+                <app-multi-language-form-field
+                        type="textarea"
+                        label="project.application.form.field.project.summary"
+                        formControlName="intro"
+                        [maxLength]="2000">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+        </ng-container>
     </form>
 </app-form>

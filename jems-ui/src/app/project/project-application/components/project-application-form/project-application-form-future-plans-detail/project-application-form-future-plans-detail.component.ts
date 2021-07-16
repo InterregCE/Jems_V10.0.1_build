@@ -14,6 +14,7 @@ import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {takeUntil, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import { APPLICATION_FORM } from '@project/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-future-plans-detail',
@@ -24,6 +25,7 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
 })
 export class ProjectApplicationFormFuturePlansDetailComponent extends BaseComponent implements OnInit, OnChanges {
 
+  APPLICATION_FORM = APPLICATION_FORM;
   // TODO: remove these and adapt the component to save independently
   @Input()
   error$: Observable<HttpErrorResponse | null>;

@@ -74,7 +74,12 @@ export class ApplicationFormConfigurationPageStore {
         ]
       ),
       this.addParentNode('application.config.project.section.c', 2, [
-        this.addLeafNodes('application.config.project.section.c.5', 2, APPLICATION_FORM.SECTION_C.PROJECT_RESULT, callPublished, configs)
+        this.addLeafNodes('application.config.project.section.c.1', 2, APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE, callPublished, configs),
+        this.addLeafNodes('application.config.project.section.c.2', 2, APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT, callPublished, configs),
+        this.addLeafNodes('application.config.project.section.c.3', 2, APPLICATION_FORM.SECTION_C.PROJECT_PARTNERSHIP, callPublished, configs),
+        this.addLeafNodes('application.config.project.section.c.5', 2, APPLICATION_FORM.SECTION_C.PROJECT_RESULT, callPublished, configs),
+        this.addLeafNodes('application.config.project.section.c.7', 2, APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT, callPublished, configs),
+        this.addLeafNodes('application.config.project.section.c.8', 2, APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS, callPublished, configs)
       ])
     ];
   }
