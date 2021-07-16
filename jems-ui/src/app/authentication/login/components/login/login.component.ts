@@ -1,12 +1,11 @@
-import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {LoginRequest} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
 import {ResourceStoreService} from '@common/services/resource-store.service';
 import {InfoService} from '@cat/api';
-import {map, tap} from 'rxjs/operators';
-import {untilDestroyed} from '@ngneat/until-destroy';
+import {map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 
 @Component({

@@ -17,15 +17,13 @@ import {NoAuthWrapComponent} from './component/no-auth-wrap/no-auth-wrap.compone
 import {AppNotFoundComponent} from './component/app-not-found/app-not-found.component';
 import {OverlayContainer, OverlayModule} from '@angular/cdk/overlay';
 import {ThemeService} from './theme/theme.service';
-import {AccessibilityDisclaimerComponent} from './component/accessibility-disclaimer/accessibility-disclaimer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AppNotFoundComponent,
     AppWrapComponent,
-    NoAuthWrapComponent,
-    AccessibilityDisclaimerComponent
+    NoAuthWrapComponent
   ],
   imports: [
     ApiModule,
