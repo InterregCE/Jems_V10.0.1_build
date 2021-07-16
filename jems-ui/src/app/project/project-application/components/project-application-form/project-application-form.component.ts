@@ -108,9 +108,10 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       duration: this.applicationForm.controls.duration.value,
       specificObjective: this.selectedSpecificObjective
     } as InputProjectData;
-    if (this.applicationForm.controls.introEn.value[0]) {
+    const english = this.applicationForm.controls.introEn?.value?.find((translation: any) => translation.language === 'EN');
+    if (english) {
       data.intro = data.intro.filter(translation => translation.language !== 'EN')
-        .concat(this.applicationForm.controls.introEn.value[0]);
+        .concat(english);
     }
     this.projectStore.updateProjectData(data)
       .pipe(
