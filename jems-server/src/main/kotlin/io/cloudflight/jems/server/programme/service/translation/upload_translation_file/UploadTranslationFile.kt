@@ -8,15 +8,15 @@ import io.cloudflight.jems.server.programme.service.programmeTranslationFileUplo
 import io.cloudflight.jems.server.programme.service.translation.TranslationFilePersistence
 import io.cloudflight.jems.server.programme.service.translation.model.TranslationFileMetaData
 import io.cloudflight.jems.server.programme.service.translation.model.TranslationFileType
-import java.io.ByteArrayInputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
 import org.apache.commons.io.IOUtils
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.Path
 
 @Service
 class UploadTranslationFile(
@@ -38,12 +38,7 @@ class UploadTranslationFile(
 
         val byteArray = IOUtils.toByteArray(inputStream)
 
-        return translationFilePersistence.save(
-            fileType,
-            language,
-            ByteArrayInputStream(byteArray),
-            size
-        ).also {
+        return translationFilePersistence.save(fileType, language, ByteArrayInputStream(byteArray), size).also {
             eventPublisher.publishEvent(programmeTranslationFileUploaded(this, fileType.getFileNameFor(language)))
             copyTranslationFiles(byteArray, fileType, language)
             //refreshes translation files without restarting the system
@@ -51,39 +46,13 @@ class UploadTranslationFile(
         }
     }
 
-    private fun copyTranslationFiles(
-        byteArray: ByteArray,
-        fileType: TranslationFileType,
-        language: SystemLanguage,
-    ) {
-        val translationsFolderPath = getTranslationsFolder()
-        val translationsFolder = File(translationsFolderPath)
+    private fun copyTranslationFiles(byteArray: ByteArray, fileType: TranslationFileType, language: SystemLanguage, ) =
+        with(Path.of(appResourcesProperties.translationsFolder)) {
+            if (!Files.exists(this))
+                Files.createDirectories(this)
 
-        val translationFilePath = translationsFolderPath.plus(fileType.getFileNameFor(language))
-
-        if (!translationsFolder.exists())
-            translationsFolder.mkdirs()
-        val translationFile = File(translationFilePath)
-        val outputStream: FileOutputStream = if (translationFile.exists())
-            FileOutputStream(translationFile)
-        else {
-            translationFile.createNewFile()
-            FileOutputStream(translationFilePath)
+            Path.of(this.toString(), fileType.getFileNameFor(language)).toFile().writeBytes(byteArray)
         }
-        outputStream.write(byteArray)
-        outputStream.close()
-    }
 
-    private fun getTranslationsFolder(): String =
-        with(appResourcesProperties.translationsFolder) {
-            var result = this
-            if (!result.endsWith("/"))
-                result = result.plus("/")
-
-            if (!result.startsWith("./"))
-                result = "./".plus(result)
-
-            result
-        }
 
 }
