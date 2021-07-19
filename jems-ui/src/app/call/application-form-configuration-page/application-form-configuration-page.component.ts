@@ -75,13 +75,13 @@ export class ApplicationFormConfigurationPageComponent {
     return group.get('availableInStep') as FormControl;
   }
 
-  isVisible(group: FormGroup): FormControl {
-    return group.get('isVisible') as FormControl;
+  visible(group: FormGroup): FormControl {
+    return group.get('visible') as FormControl;
   }
 
   visibilityChanged(control: FormGroup): void {
     const availableInStep = this.availableInStep(control);
-    if (!this.isVisible(control)?.value) {
+    if (!this.visible(control)?.value) {
       availableInStep?.disable();
       availableInStep?.setValue(AvailableInStepEnum.NONE);
     } else {
@@ -110,13 +110,13 @@ export class ApplicationFormConfigurationPageComponent {
   private createControl(node: ApplicationFormFieldNode): FormGroup {
     const control = this.formBuilder.group({
       id: node.id,
-      isVisible: this.formBuilder.control({
-        value: node.isVisible,
-        disabled: node.isVisibilityLocked
+      visible: this.formBuilder.control({
+        value: node.visible,
+        disabled: node.visibilityLocked
       }),
       availableInStep: this.formBuilder.control({
         value: node.availableInStep,
-        disabled: node.isStepSelectionLocked
+        disabled: node.stepSelectionLocked
       })
     });
     if (node.availableInStep) {

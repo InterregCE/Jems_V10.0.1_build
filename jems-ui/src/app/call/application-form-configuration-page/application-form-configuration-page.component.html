@@ -35,7 +35,7 @@
                     <td mat-cell *matCellDef="let node"
                         [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
                         <mat-slide-toggle *ngIf="availableInStep(node.data).value" color="primary"
-                                          [formControl]="isVisible(node.data)"
+                                          [formControl]="visible(node.data)"
                                           (change)="visibilityChanged(node.data)">
                         </mat-slide-toggle>
                     </td>

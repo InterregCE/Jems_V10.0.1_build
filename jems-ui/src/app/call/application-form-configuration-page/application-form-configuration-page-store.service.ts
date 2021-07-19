@@ -108,10 +108,10 @@ export class ApplicationFormConfigurationPageStore {
       const config = configs?.find(conf => conf.id === id);
       result.push({
         id,
-        isVisible: config?.visible || false,
+        visible: config?.visible || false,
         availableInStep: config?.availableInStep || AvailableInStepEnum.NONE,
-        isVisibilityLocked: this.isConfigVisibilityLocked(callPublished, config),
-        isStepSelectionLocked: this.isConfigStepSelectionLocked(callPublished, config),
+        visibilityLocked: this.isConfigVisibilityLocked(callPublished, config),
+        stepSelectionLocked: this.isConfigStepSelectionLocked(callPublished, config),
         rootIndex
       });
     });

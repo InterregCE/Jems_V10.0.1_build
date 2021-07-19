@@ -3,10 +3,10 @@ import AvailableInStepEnum = ApplicationFormFieldConfigurationDTO.AvailableInSte
 
 export class ApplicationFormFieldNode {
   id: string;
-  isVisible?: boolean;
+  visible?: boolean;
   availableInStep?: AvailableInStepEnum;
-  isVisibilityLocked?: boolean;
-  isStepSelectionLocked?: boolean;
+  visibilityLocked?: boolean;
+  stepSelectionLocked?: boolean;
   children?: ApplicationFormFieldNode[];
   rootIndex: number;
 }
