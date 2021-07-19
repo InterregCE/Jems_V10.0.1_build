@@ -26,10 +26,11 @@ import io.cloudflight.jems.server.common.entity.TranslationEntity
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 
-fun CallDetail.toDataModel() = CallDetailData(
+fun CallDetail.toDataModel(inputLanguages: List<ProgrammeLanguage>) = CallDetailData(
     id = id,
     name = name,
     isAdditionalFundAllowed = isAdditionalFundAllowed,
@@ -45,7 +46,8 @@ fun CallDetail.toDataModel() = CallDetailData(
     flatRates = flatRates.toDataModel(),
     lumpSums = lumpSums.toLumpSumDataModel(),
     unitCosts = unitCosts.toUnitCostDataModel(),
-    applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDataModel()
+    applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDataModel(),
+    inputLanguages = inputLanguages.map { SystemLanguageData.valueOf(it.code.name) }.toSet()
 )
 
 fun ProgrammePriority.toDataModel() = ProgrammePriorityData(
