@@ -134,7 +134,7 @@ export class AuditLogComponent implements OnInit {
       map((filters: any[]) => ({
         userIds: filters[this.MAT_CHIP_USER_IDS_INDEX].values,
         userEmails: filters[this.MAT_CHIP_USER_EMAILS_INDEX].values,
-        actions: filters[this.MAT_CHIP_ACTIONS_INDEX].values,
+        actions: filters[this.MAT_CHIP_ACTIONS_INDEX].values?.filter((action: any) => !!action),
         projectIds: filters[this.MAT_CHIP_PROJECT_IDS_INDEX].values,
         timeFrom: filters[this.MAT_CHIP_START_DATE_INDEX].values[0],
         timeTo: filters[this.MAT_CHIP_END_DATE_INDEX].values[0],
@@ -151,8 +151,17 @@ export class AuditLogComponent implements OnInit {
       );
   }
 
+
   addFilter(filterIndex: number, event: Event, isDate: boolean): void {
     if (!this.referenceForm.valid) {
+      return;
+    }
+    if (filterIndex === this.MAT_CHIP_ACTIONS_INDEX) {
+      const action = (event.target as any)?.value;
+      if (!action || Object.values(AuditSearchRequestDTO.ActionsEnum).includes(action)) {
+        this.addFilterToIndex(filterIndex, action);
+        (event.target as any).value = '';
+      }
       return;
     }
     if (isDate) {
