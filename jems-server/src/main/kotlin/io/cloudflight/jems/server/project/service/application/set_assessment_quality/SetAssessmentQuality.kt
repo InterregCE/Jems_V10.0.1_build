@@ -8,7 +8,8 @@ import io.cloudflight.jems.server.project.authorization.CanSetQualityAssessment
 import io.cloudflight.jems.server.project.service.ProjectAssessmentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.getProjectWithoutFormData
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.project.service.qualityAssessmentStep1Concluded
@@ -29,7 +30,7 @@ class SetAssessmentQuality(
     @CanSetQualityAssessment
     @Transactional
     @ExceptionWrapper(SetAssessmentQualityException::class)
-    override fun setQualityAssessment(projectId: Long, result: ProjectAssessmentQualityResult, note: String?): Project {
+    override fun setQualityAssessment(projectId: Long, result: ProjectAssessmentQualityResult, note: String?): ProjectDetail {
         validateNote(note)
         val project = projectPersistence.getProjectSummary(projectId)
 
@@ -38,7 +39,7 @@ class SetAssessmentQuality(
         else
             processStep1(project, result, note)
 
-        return projectPersistence.getProject(projectId)
+        return projectPersistence.getProject(projectId).getProjectWithoutFormData()
     }
 
     private fun validateNote(note: String?) =

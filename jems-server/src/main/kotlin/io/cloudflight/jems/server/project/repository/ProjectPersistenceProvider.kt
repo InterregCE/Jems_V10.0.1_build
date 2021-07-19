@@ -13,9 +13,11 @@ import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmen
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
+import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -39,7 +41,7 @@ class ProjectPersistenceProvider(
 ) : ProjectPersistence {
 
     @Transactional(readOnly = true)
-    override fun getProject(projectId: Long, version: String?): Project {
+    override fun getProject(projectId: Long, version: String?): ProjectFull {
         val project = getProjectOrThrow(projectId)
 
         val assessmentStep1 = ProjectAssessmentEntity(
@@ -105,7 +107,7 @@ class ProjectPersistenceProvider(
         getProjectOrThrow(projectId).periods.toProjectPeriods()
 
     @Transactional
-    override fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): Project {
+    override fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): ProjectDetail {
         val user = userRepository.findById(userId).orElseThrow { ResourceNotFoundException("user") }
         val projectStatus = projectStatusHistoryRepo.save(
             ProjectStatusHistoryEntity(
@@ -124,7 +126,7 @@ class ProjectPersistenceProvider(
         )
         projectStatus.project = createdProject
 
-        return createdProject.toModel(
+        return createdProject.toDetailModel(
             assessmentStep1 = null,
             assessmentStep2 = null,
             applicationFormFieldConfigurationRepository.findAllByCallId(callId)
@@ -140,7 +142,7 @@ class ProjectPersistenceProvider(
         project: ProjectEntity,
         assessmentStep1: ProjectAssessmentEntity,
         assessmentStep2: ProjectAssessmentEntity,
-    ): Project {
+    ): ProjectFull {
         val periods =
             projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData();
         return projectRepository.findByIdAsOfTimestamp(projectId, timestamp)

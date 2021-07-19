@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.result.update_project_result
 
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import org.springframework.stereotype.Service
@@ -18,7 +18,7 @@ class UpdateProjectResult(
         private val MAX_TARGET_VALUE = BigDecimal.valueOf(999_999_999_99, 2)
     }
 
-    @CanUpdateProject
+    @CanUpdateProjectForm
     override fun updateResultsForProject(projectId: Long, projectResults: List<ProjectResult>): List<ProjectResult> {
         validateMaxAllowedSize(projectResults)
         validateInputs(projectResults)

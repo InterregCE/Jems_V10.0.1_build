@@ -6,10 +6,11 @@ import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
-import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.controller.workpackage.toInvestmentSummaryDTOs
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
@@ -21,7 +22,6 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.toProjectP
 import io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries.GetProjectInvestmentSummariesInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -42,7 +42,10 @@ class ProjectController(
         getProjectInteractor.getMyProjects(pageable).toDto()
 
     override fun getProjectById(projectId: Long, version: String?): ProjectDetailDTO =
-        getProjectInteractor.getProject(projectId, version).toDto()
+        getProjectInteractor.getProjectDetail(projectId, version).toDto()
+
+    override fun getProjectFormById(projectId: Long, version: String?): ProjectDetailFormDTO =
+        getProjectInteractor.getProjectForm(projectId, version).toDto()
 
     override fun getProjectCallSettingsById(projectId: Long): ProjectCallSettingsDTO =
         getProjectInteractor.getProjectCallSettings(projectId).toDto()
@@ -50,10 +53,8 @@ class ProjectController(
     override fun createProject(project: ProjectCreateDTO): ProjectDetailDTO =
         createProjectInteractor.createProject(project.acronym, project.projectCallId).toDto()
 
-    @CanUpdateProject
-    override fun updateProjectData(projectId: Long, project: InputProjectData): ProjectDetailDTO {
-        return projectService.update(projectId, project)
-    }
+    override fun updateProjectForm(projectId: Long, project: InputProjectData): ProjectDetailFormDTO =
+        projectService.update(projectId, project).toDto()
 
     override fun getProjectBudget(projectId: Long, version: String?): List<ProjectPartnerBudgetDTO> =
         getProjectBudgetInteractor.getBudget(projectId = projectId, version).toDTO()

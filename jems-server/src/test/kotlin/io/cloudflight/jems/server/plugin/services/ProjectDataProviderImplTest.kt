@@ -86,7 +86,7 @@ import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersiste
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
@@ -186,7 +186,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             isAdditionalFundAllowed = false,
             applicationFormFieldConfigurations = mutableSetOf()
         )
-        private val project = Project(
+        private val project = ProjectFull(
             id = 1L,
             callSettings = callSettings,
             acronym = "acronym",
@@ -681,7 +681,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     @Test
     fun `project data provider get for project Id - with empty values`() {
         val id = project.id!!
-        every { projectPersistence.getProject(id) } returns Project(
+        every { projectPersistence.getProject(id) } returns ProjectFull(
             id = 1L,
             callSettings = callSettings,
             acronym = "acronym",

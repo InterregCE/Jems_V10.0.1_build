@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.budget.get_project_budget
 
-import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
@@ -20,7 +20,7 @@ class GetProjectBudget(
 ) : GetProjectBudgetInteractor {
 
     @Transactional(readOnly = true)
-    @CanRetrieveProject
+    @CanRetrieveProjectForm
     override fun getBudget(projectId: Long, version: String?): List<PartnerBudget> {
         val partners = persistence.getPartnersForProjectId(projectId = projectId, version).associateBy { it.id!! }
 

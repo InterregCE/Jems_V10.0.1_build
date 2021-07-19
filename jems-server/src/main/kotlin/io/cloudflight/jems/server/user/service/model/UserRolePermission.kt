@@ -15,7 +15,9 @@ enum class UserRolePermission(val key: String) {
     ProjectRetrieve("ProjectRetrieve"),
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     ProjectCreate("ProjectCreate"),
-    ProjectUpdate("ProjectUpdate"),
+
+    ProjectFormRetrieve("ProjectFormRetrieve"),
+    ProjectFormUpdate("ProjectFormUpdate"),
 
     ProjectFileApplicationRetrieve("ProjectFileApplicationRetrieve"),
     ProjectFileApplicationUpdate("ProjectFileApplicationUpdate"),

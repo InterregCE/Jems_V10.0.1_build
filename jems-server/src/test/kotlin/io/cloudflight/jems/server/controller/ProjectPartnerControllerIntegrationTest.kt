@@ -89,10 +89,13 @@ class ProjectPartnerControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project partner create fails with invalid fields`() {
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
+        val project = projectFactory.saveProject(userFactory.adminUser, call)
+
         val inputProjectPartner = InputProjectPartnerCreate(RandomString.make(16), ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
 
         mockMvc.perform(
-            post("/api/project/partner/toProjectId/1")
+            post("/api/project/partner/toProjectId/${project.id}")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(inputProjectPartner))
         )

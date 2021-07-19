@@ -12,6 +12,7 @@ import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDataDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
@@ -29,8 +30,10 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUn
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
+import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
@@ -69,26 +72,32 @@ fun Collection<PartnerBudget>.toDTO() = map { it.toDTO() }
 fun ProjectCallSettings.toDto() = projectMapper.map(this)
 fun ProjectPartner.toOutputProjectPartner() = projectMapper.map(this)
 
-fun Project.toDto() = ProjectDetailDTO(
+fun ProjectDetail.toDto() = ProjectDetailDTO(
     id = id,
     callSettings = callSettings.toDto(),
     acronym = acronym,
     applicant = applicant.toDto(),
+    title = title,
+    specificObjective = specificObjective,
+    programmePriority = programmePriority,
     projectStatus = projectStatus.toDto(),
     firstSubmission = firstSubmission?.toDto(),
     lastResubmission = lastResubmission?.toDto(),
     step2Active = projectStatus.status.isInStep2(),
     firstStepDecision = assessmentStep1?.toDto(),
     secondStepDecision = assessmentStep2?.toDto(),
-    // projectData
-    projectData = ProjectDataDTO(
-        title = title ?: emptySet(),
-        intro = intro ?: emptySet(),
-        duration = duration,
-        specificObjective = specificObjective,
-        programmePriority = programmePriority
-    ),
-    periods = periods.toDtos(id)
+)
+
+fun ProjectForm.toDto() = ProjectDetailFormDTO(
+    id = id,
+    callSettings = callSettings.toDto(),
+    acronym = acronym,
+    title = title ?: emptySet(),
+    intro = intro ?: emptySet(),
+    duration = duration,
+    specificObjective = specificObjective,
+    programmePriority = programmePriority,
+    periods = periods.toDtos(id),
 )
 
 fun Collection<ProjectPeriod>.toDtos(projectId: Long?) = map { it.toDto(projectId) }

@@ -11,9 +11,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
-import io.cloudflight.jems.api.project.dto.ProjectDataDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
-import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
@@ -34,10 +32,9 @@ import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofina
 import io.cloudflight.jems.server.project.service.create_project.CreateProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
-import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
-import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
@@ -268,23 +265,22 @@ class ProjectControllerTest {
             isAdditionalFundAllowed = false,
             applicationFormFieldConfigurations = mutableSetOf()
         )
-        val project = Project(
+        val project = ProjectDetail(
             id = pId,
             callSettings = callSettings,
             acronym = "acronym",
             applicant = user,
-            duration = 12,
-            programmePriority = null,
+            title = setOf(InputTranslation(SystemLanguage.EN, "title")),
             specificObjective = null,
+            programmePriority = null,
             projectStatus = projectStatus,
-            periods = listOf(ProjectPeriod(1, 1, 1), ProjectPeriod(2, 2, 2)),
             assessmentStep1 = ProjectAssessment(
                 ProjectAssessmentQuality(pId, 1, ProjectAssessmentQualityResult.NOT_RECOMMENDED, updated = startDate),
                 ProjectAssessmentEligibility(pId, 1, ProjectAssessmentEligibilityResult.FAILED, updated = startDate),
                 eligibilityDecision = projectStatus
             )
         )
-        every { getProjectInteractor.getProject(pId, null) } returns project
+        every { getProjectInteractor.getProjectDetail(pId, null) } returns project
 
         assertThat(controller.getProjectById(pId)).isEqualTo(
             ProjectDetailDTO(
@@ -303,6 +299,9 @@ class ProjectControllerTest {
                     callSettings.applicationFormFieldConfigurations.toDTO()
                 ),
                 acronym = project.acronym,
+                title = project.title,
+                specificObjective = project.specificObjective,
+                programmePriority = project.programmePriority,
                 applicant = project.applicant.toDto(),
                 projectStatus = ProjectStatusDTO(
                     projectStatus.id,
@@ -311,15 +310,6 @@ class ProjectControllerTest {
                     projectStatus.updated
                 ),
                 step2Active = true,
-                projectData = ProjectDataDTO(
-                    duration = project.duration,
-                    programmePriority = null,
-                    specificObjective = null
-                ),
-                periods = listOf(
-                    ProjectPeriodDTO(pId, 1, 1, 1),
-                    ProjectPeriodDTO(pId, 2, 2, 2)
-                ),
                 firstStepDecision = ProjectDecisionDTO(
                     OutputProjectQualityAssessment(ProjectAssessmentQualityResult.NOT_RECOMMENDED, startDate),
                     OutputProjectEligibilityAssessment(ProjectAssessmentEligibilityResult.FAILED, startDate),

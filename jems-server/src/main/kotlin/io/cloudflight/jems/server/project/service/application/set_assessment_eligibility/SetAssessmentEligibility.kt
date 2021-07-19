@@ -10,7 +10,9 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.eligibilityAssessmentStep1Concluded
 import io.cloudflight.jems.server.project.service.eligibilityAssessmentStep2Concluded
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.getProjectWithoutFormData
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import org.springframework.context.ApplicationEventPublisher
@@ -29,7 +31,7 @@ class SetAssessmentEligibility(
     @CanSetEligibilityAssessment
     @Transactional
     @ExceptionWrapper(SetAssessmentEligibilityException::class)
-    override fun setEligibilityAssessment(projectId: Long, result: ProjectAssessmentEligibilityResult, note: String?): Project {
+    override fun setEligibilityAssessment(projectId: Long, result: ProjectAssessmentEligibilityResult, note: String?): ProjectDetail {
         validateNote(note)
         val project = projectPersistence.getProjectSummary(projectId)
 
@@ -38,7 +40,7 @@ class SetAssessmentEligibility(
         else
             processStep1(project, result, note)
 
-        return projectPersistence.getProject(projectId)
+        return projectPersistence.getProject(projectId).getProjectWithoutFormData()
     }
 
     private fun validateNote(note: String?) =

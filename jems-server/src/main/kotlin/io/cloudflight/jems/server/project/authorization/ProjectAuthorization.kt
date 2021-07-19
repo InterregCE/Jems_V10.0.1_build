@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -24,8 +25,12 @@ annotation class CanRetrieveProjectsWithOwnership
 annotation class CanCreateProject
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectUpdate') || @projectAuthorization.canOwnerUpdateProject(#projectId)")
-annotation class CanUpdateProject
+@PreAuthorize("hasAuthority('ProjectFormRetrieve') || @projectAuthorization.isUserOwnerOfProject(#projectId)")
+annotation class CanRetrieveProjectForm
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+annotation class CanUpdateProjectForm
 
 @Component
 class ProjectAuthorization(
@@ -40,21 +45,10 @@ class ProjectAuthorization(
         throw ResourceNotFoundException("project") // should be same exception as if entity not found
     }
 
-    fun canReadProject(id: Long): Boolean {
-        val project = projectPersistence.getApplicantAndStatusById(id)
-        if (isAdmin() || isApplicantOwner(project.applicantId) || isProgrammeUser())
-            return true
-
-        if (isApplicantNotOwner(project.applicantId))
-            throw ResourceNotFoundException("project")
-
-        return false
-    }
-
-    fun canOwnerUpdateProject(projectId: Long): Boolean {
+    fun canUpdateProject(projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val isOwner = isActiveUserIdEqualTo(project.applicantId)
-        if (isOwner)
+        val canSeeProject = hasPermission(UserRolePermission.ProjectFormUpdate) || isActiveUserIdEqualTo(project.applicantId)
+        if (canSeeProject)
             return project.projectStatus.hasNotBeenSubmittedYet()
         throw ResourceNotFoundException("project") // should be same exception as if entity not found
     }

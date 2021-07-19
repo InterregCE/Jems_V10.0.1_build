@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing
 
-import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
@@ -17,7 +17,7 @@ class GetProjectBudgetCoFinancing(
 ) : GetProjectBudgetCoFinancingInteractor {
 
     @Transactional(readOnly = true)
-    @CanRetrieveProject
+    @CanRetrieveProjectForm
     override fun getBudgetCoFinancing(projectId: Long, version: String?): List<PartnerBudgetCoFinancing> {
         val partners = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).associateBy { it.id!! }
 

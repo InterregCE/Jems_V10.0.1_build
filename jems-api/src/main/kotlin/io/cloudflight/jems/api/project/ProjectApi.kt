@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.ProjectCreateDTO
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
+import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
@@ -46,12 +47,19 @@ interface ProjectApi {
     @GetMapping("/mine")
     fun getMyProjects(pageable: Pageable): Page<OutputProjectSimple>
 
-    @ApiOperation("Returns a project application by id")
-    @GetMapping("/{projectId}")
+    @ApiOperation("Returns a project application details by id")
+    @GetMapping("/byId/{projectId}")
     fun getProjectById(
         @PathVariable projectId: Long,
         @RequestParam(required = false) version: String? = null
     ): ProjectDetailDTO
+
+    @ApiOperation("Returns a project application form by id")
+    @GetMapping("/byId/{projectId}/form")
+    fun getProjectFormById(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): ProjectDetailFormDTO
 
     @ApiOperation("Returns call setting of a call related to this application")
     @GetMapping("/{projectId}/callSettings")
@@ -63,7 +71,7 @@ interface ProjectApi {
 
     @ApiOperation("Update project-related data")
     @PutMapping("/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectData(@PathVariable projectId: Long, @RequestBody project: InputProjectData): ProjectDetailDTO
+    fun updateProjectForm(@PathVariable projectId: Long, @RequestBody project: InputProjectData): ProjectDetailFormDTO
 
     @ApiOperation("Returns project budget for all partners")
     @GetMapping("/{projectId}/budget")

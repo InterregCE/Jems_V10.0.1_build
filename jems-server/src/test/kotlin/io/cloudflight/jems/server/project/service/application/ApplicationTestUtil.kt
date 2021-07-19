@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.application
 
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
@@ -21,7 +21,7 @@ val callSettings = ProjectCallSettings(
     applicationFormFieldConfigurations = mutableSetOf()
 )
 
-fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMITTED) = Project(
+fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMITTED) = ProjectFull(
     id = id,
     callSettings = callSettings,
     acronym = "project acronym",

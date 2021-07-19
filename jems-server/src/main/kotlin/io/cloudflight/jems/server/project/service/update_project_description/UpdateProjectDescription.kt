@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.update_project_description
 
-import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
 import io.cloudflight.jems.server.project.service.model.ProjectManagement
@@ -14,27 +14,27 @@ class UpdateProjectDescription(
     private val projectDescriptionPersistence: ProjectDescriptionPersistence
 ) : UpdateProjectDescriptionInteractor {
 
-    @CanUpdateProject
+    @CanUpdateProjectForm
     override fun updateOverallObjective(projectId: Long, projectOverallObjective: ProjectOverallObjective): ProjectOverallObjective {
         return projectDescriptionPersistence.updateOverallObjective(projectId, projectOverallObjective)
     }
 
-    @CanUpdateProject
+    @CanUpdateProjectForm
     override fun updateProjectRelevance(projectId: Long, projectRelevance: ProjectRelevance): ProjectRelevance {
         return projectDescriptionPersistence.updateProjectRelevance(projectId, projectRelevance)
     }
 
-    @CanUpdateProject
+    @CanUpdateProjectForm
     override fun updatePartnership(projectId: Long, projectPartnership: ProjectPartnership): ProjectPartnership {
         return projectDescriptionPersistence.updatePartnership(projectId, projectPartnership)
     }
 
-    @CanUpdateProject
+    @CanUpdateProjectForm
     override fun updateProjectManagement(projectId: Long, projectManagement: ProjectManagement): ProjectManagement {
         return projectDescriptionPersistence.updateProjectManagement(projectId, projectManagement)
     }
 
-    @CanUpdateProject
+    @CanUpdateProjectForm
     override fun updateProjectLongTermPlans(projectId: Long, projectLongTermPlans: ProjectLongTermPlans): ProjectLongTermPlans {
         return projectDescriptionPersistence.updateProjectLongTermPlans(projectId, projectLongTermPlans)
     }

@@ -42,7 +42,7 @@ import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmen
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentQualityRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
@@ -309,7 +309,7 @@ internal class ProjectPersistenceTest : UnitTest() {
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
         assertThat(persistence.getProject(PROJECT_ID))
             .isEqualTo(
-                Project(
+                ProjectFull(
                     id = project.id,
                     intro = null,
                     title = null,
@@ -384,7 +384,7 @@ internal class ProjectPersistenceTest : UnitTest() {
 
         assertThat(persistence.getProject(PROJECT_ID, version))
             .isEqualTo(
-                Project(
+                ProjectFull(
                     id = mockRow.id,
                     intro = setOf(InputTranslation(mockRow.language!!, mockRow.intro)),
                     title = setOf(InputTranslation(mockRow.language!!, mockRow.title)),

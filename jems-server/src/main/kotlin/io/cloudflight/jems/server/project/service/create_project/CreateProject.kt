@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.project.authorization.CanCreateProject
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.callAlreadyEnded
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.projectApplicationCreated
 import io.cloudflight.jems.server.project.service.projectVersionRecorded
@@ -29,7 +29,7 @@ class CreateProject(
     @CanCreateProject
     @Transactional
     @ExceptionWrapper(CreateProjectExceptions::class)
-    override fun createProject(acronym: String, callId: Long): Project {
+    override fun createProject(acronym: String, callId: Long): ProjectDetail {
         validateProjectAcronym(acronym)
 
         val call = callPersistence.getCallById(callId)

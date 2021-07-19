@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.repository.partner.PartnerPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -20,7 +20,7 @@ class CreateProjectPartner(
     private val generalValidator: GeneralValidatorService
 ) : CreateProjectPartnerInteractor {
 
-    @CanUpdateProject
+    @CanUpdateProjectForm
     @Transactional
     @ExceptionWrapper(CreateProjectPartnerException::class)
     override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {

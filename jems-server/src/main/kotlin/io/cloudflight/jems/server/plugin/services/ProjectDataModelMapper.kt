@@ -81,7 +81,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
 import io.cloudflight.jems.server.project.service.model.ProjectDescription
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
@@ -108,7 +108,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 
-fun Project.toDataModel() = ProjectDataSectionA(
+fun ProjectFull.toDataModel() = ProjectDataSectionA(
     acronym = acronym,
     title = title.toDataModel(),
     intro = intro.toDataModel(),

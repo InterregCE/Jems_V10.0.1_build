@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySim
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.user.service.model.UserSummary
 
-data class Project(
+data class ProjectFull(
     val id: Long?,
     val callSettings: ProjectCallSettings,
     val acronym: String,

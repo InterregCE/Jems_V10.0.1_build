@@ -194,7 +194,7 @@ export class ProjectStore {
           if (!currentVersionIsLatest) {
             return false;
           }
-          if (permissions.includes(PermissionsEnum.ProjectUpdate)) {
+          if (permissions.includes(PermissionsEnum.ProjectFormUpdate)) {
             return true;
           }
           return ProjectUtil.isOpenForModifications(project) && currentUser?.id === project.applicant.id;

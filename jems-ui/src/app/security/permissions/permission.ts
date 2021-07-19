@@ -157,6 +157,12 @@ export class Permission {
             },
           ],
         },
+        {
+          name: 'project.application.form.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectFormRetrieve],
+          editPermissions: [PermissionsEnum.ProjectFormUpdate],
+        },
       ]
     },
   ];

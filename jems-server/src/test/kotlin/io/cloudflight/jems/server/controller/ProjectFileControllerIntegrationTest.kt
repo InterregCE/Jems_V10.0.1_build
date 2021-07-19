@@ -87,7 +87,7 @@ class ProjectFileControllerIntegrationTest {
         val projectFile = projectFileFactory.saveProjectFile(project, userFactory.adminUser)
 
         mockMvc.perform(
-            get("/api/project/${project.id}")
+            get("/api/project/byId/${project.id}")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andExpect(status().isNotFound())
@@ -114,7 +114,7 @@ class ProjectFileControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFileFactory.saveProject(userFactory.applicantUser, call)
         mockMvc.perform(
-            get("/api/project/${project.id}")
+            get("/api/project/byId/${project.id}")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andExpect(status().isOk())

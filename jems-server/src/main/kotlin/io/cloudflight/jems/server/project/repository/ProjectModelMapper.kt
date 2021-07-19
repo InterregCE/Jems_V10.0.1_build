@@ -19,9 +19,10 @@ import io.cloudflight.jems.server.project.entity.ProjectVersionEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEligibilityEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentQualityEntity
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -56,7 +57,7 @@ fun CallEntity.toSettingsModel(applicationFormFieldConfigurationEntities: Mutabl
     applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
 )
 
-fun ProjectEntity.toModel(assessmentStep1: ProjectAssessmentEntity?, assessmentStep2: ProjectAssessmentEntity?, applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>) = Project(
+fun ProjectEntity.toModel(assessmentStep1: ProjectAssessmentEntity?, assessmentStep2: ProjectAssessmentEntity?, applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>) = ProjectFull(
     id = id,
     callSettings = call.toSettingsModel(applicationFormFieldConfigurationEntities),
     acronym = acronym,
@@ -76,6 +77,23 @@ fun ProjectEntity.toModel(assessmentStep1: ProjectAssessmentEntity?, assessmentS
     specificObjective = priorityPolicy?.toOutputProgrammePriorityPolicy(),
     programmePriority = priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
     periods = periods.toProjectPeriods()
+)
+
+fun ProjectEntity.toDetailModel(assessmentStep1: ProjectAssessmentEntity?, assessmentStep2: ProjectAssessmentEntity?, applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>) = ProjectDetail(
+    id = id,
+    callSettings = call.toSettingsModel(applicationFormFieldConfigurationEntities),
+    acronym = acronym,
+    title = projectData?.translatedValues?.mapTo(HashSet()) {
+        InputTranslation(it.translationId.language, it.title)
+    } ?: emptySet(),
+    applicant = applicant.toUserSummary(),
+    projectStatus = currentStatus.toProjectStatus(),
+    firstSubmission = firstSubmission?.toProjectStatus(),
+    lastResubmission = lastResubmission?.toProjectStatus(),
+    assessmentStep1 = assessmentStep1?.toModel(),
+    assessmentStep2 = assessmentStep2?.toModel(),
+    specificObjective = priorityPolicy?.toOutputProgrammePriorityPolicy(),
+    programmePriority = priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
 )
 
 fun ProjectEntity.toSummaryModel() = ProjectSummary(
@@ -99,7 +117,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
     applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>
 ) =
     this.groupBy { it.id }.map { groupedRows ->
-        Project(
+        ProjectFull(
             id = groupedRows.key,
             acronym = groupedRows.value.first().acronym,
             title = groupedRows.value.extractField { it.title },

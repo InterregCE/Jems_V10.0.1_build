@@ -9,11 +9,7 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
-import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurationRepository
-import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -27,8 +23,8 @@ import io.cloudflight.jems.server.project.entity.ProjectTransl
 import io.cloudflight.jems.server.project.entity.TranslationId
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.projectWithId
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
+import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.mockk.every
@@ -187,15 +183,7 @@ class ProjectServiceTest : UnitTest() {
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         val slot = slot<ProjectEntity>()
         every { projectRepository.save(capture(slot)) } returnsArgument 0
-        every { getProjectInteractor.getProject(1L) } returns projectWithId(1L).copy(
-            acronym = "acronym",
-            title = emptySet(),
-            duration = 13,
-            intro = emptySet(),
-            periods = listOf(
-
-            )
-        )
+        every { getProjectInteractor.getProjectForm(1L) } returns ProjectForm(id = 4L, acronym = "acronym", duration = 12)
 
         projectService.update(1, projectData)
 

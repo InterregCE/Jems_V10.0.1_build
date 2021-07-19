@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.get_project_partner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import org.springframework.data.domain.Page
@@ -17,7 +17,7 @@ class GetProjectPartner(
     private val persistence: PartnerPersistence,
 ) : GetProjectPartnerInteractor {
 
-    @CanRetrieveProject
+    @CanRetrieveProjectForm
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnersByProjectIdException::class)
     override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<OutputProjectPartner> =
@@ -29,7 +29,7 @@ class GetProjectPartner(
     override fun getById(partnerId: Long, version: String?): OutputProjectPartnerDetail =
         persistence.getById(partnerId, version)
 
-    @CanRetrieveProject
+    @CanRetrieveProjectForm
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerByProjectIdForDropdownException::class)
     override fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String?): List<OutputProjectPartner> =

@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
@@ -31,7 +31,7 @@ class WorkPackageServiceImpl(
     override fun getProjectForWorkPackageId(id: Long): ProjectApplicantAndStatus =
         getWorkPackageOrThrow(id).project.toApplicantAndStatus()
 
-    @CanUpdateProject
+    @CanUpdateProjectForm
     @Transactional
     override fun createWorkPackage(projectId: Long, inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage {
         val project = projectRepository.findById(projectId)
@@ -49,7 +49,7 @@ class WorkPackageServiceImpl(
         return workPackageSavedWithTranslations.toOutputWorkPackage()
     }
 
-    @PreAuthorize("hasAuthority('ProjectUpdate') || @projectWorkPackageAuthorization.canOwnerUpdateProjectWorkPackage(#inputWorkPackageUpdate.id)")
+    @PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectWorkPackage(#inputWorkPackageUpdate.id)")
     @Transactional
     override fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage {
         val oldWorkPackage = getWorkPackageOrThrow(inputWorkPackageUpdate.id)

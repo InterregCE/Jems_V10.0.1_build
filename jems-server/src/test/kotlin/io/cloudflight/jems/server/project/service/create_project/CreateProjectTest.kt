@@ -16,8 +16,8 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.DRAFT
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_DRAFT
-import io.cloudflight.jems.server.project.service.model.Project
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
@@ -74,14 +74,13 @@ internal class CreateProjectTest : UnitTest() {
 
         private val user = UserSummary(id = USER_ID, "some@applicant", "", "", UserRoleSummary(0L, ""))
 
-        private fun dummyProjectWithStatus(acronym: String, status: ApplicationStatus): Project {
-            return Project(
+        private fun dummyProjectWithStatus(acronym: String, status: ApplicationStatus): ProjectDetail {
+            return ProjectDetail(
                 id = PROJECT_ID,
                 callSettings = callSettings,
                 acronym = acronym,
                 applicant = user,
                 projectStatus = ProjectStatus(id = 4587L, status = status, user = user, updated = ZonedDateTime.now()),
-                duration = 12,
             )
         }
 

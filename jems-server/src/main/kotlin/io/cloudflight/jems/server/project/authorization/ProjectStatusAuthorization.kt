@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
@@ -43,10 +44,6 @@ annotation class CanSetApplicationAsIneligible
 @PreAuthorize("hasAuthority('ProjectStatusDecisionRevert')")
 annotation class CanRevertDecision
 
-@Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canStartSecondStep(#projectId)")
-annotation class CanStartSecondStep
-
 @Component
 class ProjectStatusAuthorization(
     override val securityService: SecurityService,
@@ -63,16 +60,6 @@ class ProjectStatusAuthorization(
             return false
         else
             throw ResourceNotFoundException("project")
-    }
-
-    fun canStartSecondStep(projectId: Long): Boolean {
-        val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val oldPossibilities = setOf(STEP1_APPROVED_WITH_CONDITIONS, STEP1_APPROVED)
-
-        if (!isProgrammeUser() && ! isAdmin())
-            throw ResourceNotFoundException("project")
-
-        return oldPossibilities.contains(project.projectStatus)
     }
 
 }

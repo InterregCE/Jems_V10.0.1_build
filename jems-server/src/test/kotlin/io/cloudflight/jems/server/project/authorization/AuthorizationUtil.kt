@@ -46,6 +46,7 @@ internal class AuthorizationUtil {
                 SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name),
                 SimpleGrantedAuthority(UserRolePermission.ProgrammeSetupRetrieve.key),
                 SimpleGrantedAuthority(UserRolePermission.ProgrammeSetupUpdate.key),
+                SimpleGrantedAuthority(UserRolePermission.ProjectFormUpdate.key),
             )
         )
 

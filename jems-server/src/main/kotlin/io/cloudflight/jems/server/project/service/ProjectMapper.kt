@@ -7,6 +7,9 @@ import io.cloudflight.jems.server.project.entity.ProjectData
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectTransl
 import io.cloudflight.jems.server.project.entity.TranslationId
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
+import io.cloudflight.jems.server.project.service.model.ProjectForm
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 
 
 fun ProjectEntity.toApplicantAndStatus() = ProjectApplicantAndStatus(
@@ -37,3 +40,30 @@ fun combineTranslatedValuesProject(
         )
     }
 }
+
+fun ProjectFull.getProjectWithoutFormData() = ProjectDetail(
+    id = id,
+    callSettings = callSettings,
+    acronym = acronym,
+    applicant = applicant,
+    title = title ?: emptySet(),
+    specificObjective = specificObjective,
+    programmePriority = programmePriority,
+    projectStatus = projectStatus,
+    firstSubmission = firstSubmission,
+    lastResubmission = lastResubmission,
+    assessmentStep1 = assessmentStep1,
+    assessmentStep2 = assessmentStep2,
+)
+
+fun ProjectFull.getOnlyFormRelatedData() = ProjectForm(
+    id = id!!,
+    callSettings = callSettings,
+    acronym = acronym,
+    title = title,
+    intro = intro,
+    duration = duration,
+    specificObjective = specificObjective,
+    programmePriority = programmePriority,
+    periods = periods,
+)

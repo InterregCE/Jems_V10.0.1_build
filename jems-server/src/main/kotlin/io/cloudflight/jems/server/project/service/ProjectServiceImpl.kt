@@ -2,15 +2,15 @@ package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.project.dto.InputProjectData
-import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
-import io.cloudflight.jems.server.project.controller.toDto
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
+import io.cloudflight.jems.server.project.service.model.ProjectForm
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.math.ceil
@@ -23,12 +23,13 @@ class ProjectServiceImpl(
 ) : ProjectService {
 
     @Transactional
-    override fun update(id: Long, projectData: InputProjectData): ProjectDetailDTO {
+    @CanUpdateProjectForm
+    override fun update(projectId: Long, projectData: InputProjectData): ProjectForm {
         validateProjectData(projectData)
-        val project = projectRepo.findById(id).orElseThrow { ResourceNotFoundException("project") }
+        val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
         val periods =
             if (project.projectData?.duration == projectData.duration) project.periods
-            else calculatePeriods(id, project.call.lengthOfPeriod, projectData.duration)
+            else calculatePeriods(projectId, project.call.lengthOfPeriod, projectData.duration)
 
         projectRepo.save(
             project.copy(
@@ -38,7 +39,7 @@ class ProjectServiceImpl(
                 periods = periods
             )
         )
-        return getProjectInteractor.getProject(projectId = project.id).toDto()
+        return getProjectInteractor.getProjectForm(projectId = project.id)
     }
 
     /**
