@@ -233,7 +233,7 @@ export class ProjectStore {
   }
 
   private toModel(flatRate: FlatRateDTO): FlatRateSetting {
-    return {rate: flatRate.rate, isAdjustable: flatRate.adjustable};
+    return {rate: flatRate?.rate, isAdjustable: flatRate?.adjustable};
   }
 
   private callHasTwoSteps(): Observable<boolean> {
