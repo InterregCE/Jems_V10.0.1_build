@@ -10822,7 +10822,7 @@
 									"    const contributions = pm.response.json().partnerContributions;\r",
 									"    pm.expect(contributions[0].name).to.eql(pm.variables.get('partner_abbreviation'));\r",
 									"    pm.expect(contributions[0].status).to.eql('Private');\r",
-									"    pm.expect(contributions[0].isPartner).to.be.true;\r",
+									"    pm.expect(contributions[0].partner).to.be.true;\r",
 									"    pm.expect(contributions[0].amount).to.eql(5100);\r",
 									"});\r",
 									"\r",
@@ -10875,7 +10875,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 25,\r\n            \"fundType\": \"MainFund\",\r\n            \"fundId\": {{programmeFundId}}\r\n        },\r\n        {\r\n            \"percentage\": 75,\r\n            \"fundType\": \"PartnerContribution\"\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 8000\r\n        },\r\n        {\r\n            \"isPartner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 5100\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 3000\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 2050\r\n        }\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 25,\r\n            \"fundType\": \"MainFund\",\r\n            \"fundId\": {{programmeFundId}}\r\n        },\r\n        {\r\n            \"percentage\": 75,\r\n            \"fundType\": \"PartnerContribution\"\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"partner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 8000\r\n        },\r\n        {\r\n            \"partner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 5100\r\n        },\r\n        {\r\n            \"partner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 3000\r\n        },\r\n        {\r\n            \"partner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 2050\r\n        }\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
