@@ -118,6 +118,6 @@ export class TranslationManagementPageComponent {
   }
 
   getFileName(fileType: FileTypeEnum, language: string): string {
-    return `${fileType}_${language}.properties`;
+    return `${fileType}_${language.toLowerCase()}.properties`;
   }
 }
