@@ -64,7 +64,7 @@ export class UserRoleDetailPageComponent {
       Validators.maxLength(50),
       Validators.minLength(1),
     ]],
-    isDefault: [false, []],
+    defaultForRegisteredUser: [false, []],
     permissions: this.formBuilder.array([])
   });
 
@@ -150,7 +150,7 @@ export class UserRoleDetailPageComponent {
 
   resetUserRole(role: UserRoleDTO, isUpdateAllowed: boolean): void {
     this.name?.patchValue(role?.name);
-    this.isDefault?.patchValue(role?.defaultForRegisteredUser);
+    this.defaultForRegisteredUser?.patchValue(role?.defaultForRegisteredUser);
     this.permissions.clear();
     const groups = Permission.DEFAULT_PERMISSIONS.map((perm, index) =>
       this.extractFormPermissionSubGroup(perm, role.permissions, index)
@@ -228,8 +228,8 @@ export class UserRoleDetailPageComponent {
     return this.userRoleForm.get('name') as FormControl;
   }
 
-  get isDefault(): FormControl {
-    return this.userRoleForm.get('isDefault') as FormControl;
+  get defaultForRegisteredUser(): FormControl {
+    return this.userRoleForm.get('defaultForRegisteredUser') as FormControl;
   }
 
   get permissions(): FormArray {

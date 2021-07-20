@@ -16,7 +16,8 @@
             </div>
 
             <div class="mt-2 user-role-flag">
-                <mat-checkbox *ngIf="!data.role.isDefault" formControlName="isDefault" class="user-role-checkbox"
+                <mat-checkbox *ngIf="!data.role.defaultForRegisteredUser"
+                              formControlName="defaultForRegisteredUser" class="user-role-checkbox"
                         (click)="$event.stopPropagation()">
                 </mat-checkbox>
                 <mat-chip-list [selectable]="false">
