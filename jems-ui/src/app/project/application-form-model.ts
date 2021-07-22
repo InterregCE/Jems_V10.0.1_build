@@ -9,7 +9,9 @@ export const APPLICATION_FORM = {
       TITLE: 'application.config.project.title',
       DURATION: 'application.config.project.duration',
       PRIORITY: 'application.config.project.priority',
-      OBJECTIVE: 'application.config.project.objective',
+      OBJECTIVE: 'application.config.project.objective'
+    },
+    PROJECT_SUMMARY: {
       SUMMARY: 'application.config.project.summary'
     }
   },

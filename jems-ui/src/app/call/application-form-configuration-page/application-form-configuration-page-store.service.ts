@@ -60,7 +60,8 @@ export class ApplicationFormConfigurationPageStore {
   private getApplicationFormFieldNodeList(callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode[] {
     return [
       this.addParentNode('application.config.project.section.a', 0, [
-        this.addLeafNodes('application.config.project.section.a.1', 0, APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION, callPublished, configs)
+        this.addLeafNodes('application.config.project.section.a.1', 0, APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION, callPublished, configs),
+        this.addLeafNodes('application.config.project.section.a.2', 0, APPLICATION_FORM.SECTION_A.PROJECT_SUMMARY, callPublished, configs)
       ]),
       this.addParentNode('application.config.project.section.b', 1, [
           this.addLeafNodes('application.config.project.section.b.1.1', 1, APPLICATION_FORM.SECTION_B.IDENTITY, callPublished, configs),
