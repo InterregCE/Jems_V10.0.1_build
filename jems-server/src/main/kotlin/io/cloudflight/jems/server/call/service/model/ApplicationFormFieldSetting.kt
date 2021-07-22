@@ -141,8 +141,6 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.partner.motivation.organization.experience",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-
-
     PROJECT_OVERALL_OBJECTIVE(
         "application.config.project.overall.objective",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -184,7 +182,118 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.partnership",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-
+    PROJECT_WORK_PACKAGE_TITLE(
+        "application.config.project.work.package.title",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_SPECIFIC_OBJECTIVE(
+        "application.config.project.specific.objective",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_COMMUNICATION_OBJECTIVES_AND_TARGET_AUDIENCE(
+        "application.config.project.communication.objectives.and.target.audience",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_TITLE(
+        "application.config.project.investment.title",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_WHY_IS_INVESTMENT_NEEDED(
+        "application.config.project.investment.why.is.investment.needed",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_CROSS_BORDER_TRANSNATIONAL_RELEVANCE_OF_INVESTMENT(
+        "application.config.project.investment.cross.border.transnational.relevance.of.investment",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_WHO_IS_BENEFITING(
+        "application.config.project.investment.who.is.benefiting",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_PILOT_CLARIFICATION(
+        "application.config.project.investment.pilot.clarification",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_COUNTRY(
+        "application.config.project.investment.country",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_STREET(
+        "application.config.project.investment.street",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_HOUSE_NUMBER(
+        "application.config.project.investment.house.number",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_POSTAL_CODE(
+        "application.config.project.investment.postal.code",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_CITY(
+        "application.config.project.investment.city",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_RISK(
+        "application.config.project.investment.risk",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_DOCUMENTATION(
+        "application.config.project.investment.documentation",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_WHO_OWNS_THE_INVESTMENT_SITE(
+        "application.config.project.investment.who.owns.the.investment.site",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_OWNERSHIP_AFTER_END_OF_PROJECT(
+        "application.config.project.investment.ownership.after.end.of.project",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_MAINTENANCE(
+        "application.config.project.investment.maintenance",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_ACTIVITIES_TITLE(
+        "application.config.project.activities.title",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_ACTIVITIES_DESCRIPTION(
+        "application.config.project.activities.description",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_ACTIVITIES_START_PERIOD(
+        "application.config.project.activities.start.period",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_ACTIVITIES_END_PERIOD(
+        "application.config.project.activities.end.period",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_ACTIVITIES_PARTNERS_INVOLVED(
+        "application.config.project.activities.partners.involved",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_OUTPUT_TITLE(
+        "application.config.project.output.title",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_OUTPUT_PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT(
+        "application.config.project.output.programme.output.indicator.and.measurement.unit",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_OUTPUT_TARGET_VALUE(
+        "application.config.project.output.target.value",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_OUTPUT_DELIVERY_PERIOD(
+        "application.config.project.output.delivery.period",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_OUTPUT_DESCRIPTION(
+        "application.config.project.output.description",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PROJECT_RESULTS_PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT(
         "application.config.project.result.indicator.and.measurement.unit",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
