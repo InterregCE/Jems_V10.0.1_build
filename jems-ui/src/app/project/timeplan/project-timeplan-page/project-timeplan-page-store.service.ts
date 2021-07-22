@@ -37,9 +37,9 @@ export class ProjectTimeplanPageStore {
   }
 
   private periods(): Observable<ProjectPeriodDTO[]> {
-    return this.projectStore.project$
+    return this.projectStore.projectForm$
       .pipe(
-        map(project => project?.periods)
+        map(projectForm => projectForm?.periods)
       );
   }
 

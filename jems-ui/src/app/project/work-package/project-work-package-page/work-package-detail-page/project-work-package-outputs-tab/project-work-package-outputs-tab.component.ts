@@ -52,11 +52,11 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
       this.workPackageStore.outputs$,
       this.workPackageStore.workPackage$,
       this.workPackageStore.outputIndicators$,
-      this.workPackageStore.project$,
+      this.workPackageStore.projectForm$,
     ]).pipe(
-      map(([outputs, workPackage, indicators, project]) => ({
+      map(([outputs, workPackage, indicators, projectForm$]) => ({
           outputs,
-          periods: project.periods,
+          periods: projectForm$.periods,
           outputIndicators: indicators,
           workPackageNumber: workPackage.number,
         })

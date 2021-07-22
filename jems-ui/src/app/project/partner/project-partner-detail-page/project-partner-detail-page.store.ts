@@ -79,9 +79,9 @@ export class ProjectPartnerDetailPageStore {
     this.financingAndContribution$ = this.financingAndContribution();
     this.callFunds$ = this.callFunds();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
-    this.periods$ = this.projectStore.getProject()
+    this.periods$ = this.projectStore.projectForm$
       .pipe(
-        map(project => project.periods)
+        map(projectForm => projectForm.periods)
       );
     this.multipleFundsAllowed$ = this.projectStore.projectCall$.pipe(map(it => it.multipleFundsAllowed));
     this.partner$ = this.partnerStore.partner$;
@@ -151,7 +151,7 @@ export class ProjectPartnerDetailPageStore {
   }
 
   private callFunds(): Observable<ProgrammeFundDTO[]> {
-    return this.projectStore.getProject()
+    return this.projectStore.project$
       .pipe(
         map(project => project.callSettings.callId),
         switchMap(callId => this.callService.getCallById(callId)),

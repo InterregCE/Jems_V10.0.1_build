@@ -5,6 +5,7 @@
     <app-project-application-form
             *ngIf="details$ | async as details"
             [project]="details.project"
+            [projectForm]="details.projectForm"
             [priorities]="details.callObjectives.priorities"
             [objectivesWithPolicies]="details.callObjectives.objectivesWithPolicies">
     </app-project-application-form>

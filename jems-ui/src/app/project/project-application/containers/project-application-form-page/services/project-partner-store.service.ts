@@ -43,7 +43,7 @@ export class ProjectPartnerStore {
     this.dropdownPartners$ = this.dropdownPartners();
 
     this.partners$ = combineLatest([
-      this.projectStore.getProject(),
+      this.projectStore.project$,
       this.projectVersionStore.currentRouteVersion$,
       this.partnerUpdateEvent$
     ]).pipe(

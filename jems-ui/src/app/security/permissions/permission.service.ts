@@ -4,7 +4,7 @@ import {Observable, ReplaySubject} from 'rxjs';
 import {SecurityService} from '../security.service';
 import {OutputCurrentUser, UserRoleDTO} from '@cat/api';
 import {switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../common/utils/log';
+import {Log} from '@common/utils/log';
 
 @Injectable({providedIn: 'root'})
 export class PermissionService {

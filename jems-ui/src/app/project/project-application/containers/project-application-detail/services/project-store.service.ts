@@ -2,12 +2,13 @@ import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {
   InputProjectData,
+  InvestmentSummaryDTO,
   ProjectAssessmentEligibilityDTO,
   ProjectAssessmentQualityDTO,
-  InvestmentSummaryDTO,
   ProjectCallSettingsDTO,
   ProjectDecisionDTO,
   ProjectDetailDTO,
+  ProjectDetailFormDTO,
   ProjectPartnerBudgetCoFinancingDTO,
   ProjectService,
   ProjectStatusDTO,
@@ -38,8 +39,8 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectUtil} from '@project/project-util';
 import {SecurityService} from '../../../../../security/security.service';
 import {ProjectVersionStore} from '@project/services/project-version-store.service';
-import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 /**
  * Stores project related information.
@@ -53,6 +54,7 @@ export class ProjectStore {
 
   projectStatus$: Observable<ProjectStatusDTO.StatusEnum>;
   project$: Observable<ProjectDetailDTO>;
+  projectForm$: Observable<ProjectDetailFormDTO>;
   currentProject: ProjectDetailDTO;
   currentVersionIsLatest$: Observable<boolean>;
   projectEditable$: Observable<boolean>;
@@ -60,6 +62,7 @@ export class ProjectStore {
   callHasTwoSteps$: Observable<boolean>;
   projectCurrentDecisions$: Observable<ProjectDecisionDTO>;
   investmentSummaries$: Observable<InvestmentSummary[]>;
+  isThisUserOwner$: Observable<boolean>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -70,6 +73,7 @@ export class ProjectStore {
   private newEligibilityAssessment$ = new Subject<ProjectAssessmentEligibilityDTO>();
   private newQualityAssessment$ = new Subject<ProjectAssessmentQualityDTO>();
   private updatedProjectData$ = new Subject<ProjectDetailDTO>();
+  private updatedProjectForm$ = new Subject<ProjectDetailFormDTO>();
 
   private changedEligibilityAssessment$ = this.newEligibilityAssessment$
     .pipe(
@@ -87,6 +91,10 @@ export class ProjectStore {
       tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
     );
 
+  private static latestVersion(versions?: ProjectVersionDTO[]): number {
+    return versions?.length ? Number(versions[0].version) : 1;
+  }
+
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
               private router: RoutingService,
@@ -100,6 +108,7 @@ export class ProjectStore {
       ).subscribe();
 
     this.project$ = this.project();
+    this.projectForm$ = this.projectForm();
     this.currentVersionIsLatest$ = this.currentVersionIsLatest();
     this.projectEditable$ = this.projectEditable();
     this.projectStatus$ = this.projectStatus();
@@ -111,20 +120,14 @@ export class ProjectStore {
     this.callHasTwoSteps$ = this.callHasTwoSteps();
     this.projectCurrentDecisions$ = this.projectCurrentDecisions();
     this.investmentSummaries$ = this.investmentSummaries();
+    this.isThisUserOwner$ = this.isThisUserOwner();
   }
 
-  /**
-   * TODO: remove and use project$
-   */
-  getProject(): Observable<ProjectDetailDTO> {
-    return this.project$;
-  }
-
-  updateProjectData(data: InputProjectData): Observable<ProjectDetailDTO> {
+  updateProjectData(data: InputProjectData): Observable<ProjectDetailFormDTO> {
     return this.projectId$
       .pipe(
-        switchMap(id => this.projectService.updateProjectData(id, data)),
-        tap(project => this.updatedProjectData$.next(project)),
+        switchMap(id => this.projectService.updateProjectForm(id, data)),
+        tap(projectForm => this.updatedProjectForm$.next(projectForm)),
         tap(saved => Log.info('Updated project data:', this, saved)),
       );
   }
@@ -182,6 +185,24 @@ export class ProjectStore {
       );
   }
 
+  private projectForm(): Observable<ProjectDetailFormDTO> {
+    const formById$ = combineLatest([this.projectId$, this.projectVersionStore.currentRouteVersion$])
+      .pipe(
+        filter(([id]) => !!id),
+        switchMap(([id, version]) => this.projectService.getProjectFormById(id, version)),
+        tap(project => Log.info('Fetched projectForm:', this, project))
+      );
+
+    return merge(
+      formById$,
+      this.updatedProjectForm$
+    )
+      .pipe(
+        tap(project => this.projectAcronym$.next(project?.acronym)),
+        shareReplay(1)
+      );
+  }
+
   private projectEditable(): Observable<boolean> {
     return combineLatest([
       this.project$,
@@ -214,7 +235,13 @@ export class ProjectStore {
           callSetting.endDate,
           callSetting.endDateStep1,
           callSetting.lengthOfPeriod,
-          new CallFlatRateSetting(callSetting.flatRates.staffCostFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup),
+          new CallFlatRateSetting(
+            callSetting.flatRates.staffCostFlatRateSetup,
+            callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup,
+            callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup,
+            callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup,
+            callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup
+          ),
           callSetting.lumpSums.map(lumpSum =>
             new ProgrammeLumpSum(lumpSum.id, lumpSum.name, lumpSum.description, lumpSum.cost, lumpSum.splittingAllowed, LumpSumPhaseEnumUtils.toLumpSumPhaseEnum(lumpSum.phase), BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(lumpSum.categories))),
           callSetting.unitCosts
@@ -260,7 +287,7 @@ export class ProjectStore {
             if (!currentVersion) {
               return true;
             }
-            const latest = this.latestVersion(versions);
+            const latest = ProjectStore.latestVersion(versions);
             const current = Number(currentVersion);
             // if project is editable the current version is the next one
             return ProjectUtil.isOpenForModifications(project) ? latest < current : latest === current;
@@ -268,10 +295,6 @@ export class ProjectStore {
         ),
         shareReplay(1)
       );
-  }
-
-  private latestVersion(versions?: ProjectVersionDTO[]): number {
-    return versions?.length ? Number(versions[0].version) : 1;
   }
 
   private investmentSummaries(): Observable<InvestmentSummary[]> {
@@ -285,4 +308,12 @@ export class ProjectStore {
         shareReplay(1)
       );
   }
+
+  private isThisUserOwner(): Observable<boolean> {
+    return combineLatest([this.project$, this.securityService.currentUser])
+      .pipe(
+        map(([project, currentUser]) => project?.applicant?.id === currentUser?.id)
+      );
+  }
+
 }

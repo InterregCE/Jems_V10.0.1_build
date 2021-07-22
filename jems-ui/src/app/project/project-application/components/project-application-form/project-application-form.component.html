@@ -110,16 +110,16 @@
         <div *ngIf="!applicationForm.enabled">
             <div>{{'project.application.form.field.project.priority' | translate}}</div>
             <div *ngIf="previousObjective">
-                {{project.projectData.programmePriority.code + ' - '}}
-                {{project.projectData.programmePriority.title | translateBySystemLanguage | async }}
+                {{projectForm.programmePriority.code + ' - '}}
+                {{projectForm.programmePriority.title | translateBySystemLanguage | async }}
             </div>
             <div *ngIf="!previousObjective">
                 {{'project.application.form.field.project.field.empty' | translate}}
             </div>
             <div>{{'project.application.form.field.project.objective' | translate}}</div>
             <div *ngIf="previousObjective">
-                {{project.projectData.specificObjective.code + ' - '}}
-                {{'programme.policy.' + project.projectData.specificObjective.programmeObjectivePolicy | translate}}
+                {{projectForm.specificObjective.code + ' - '}}
+                {{'programme.policy.' + projectForm.specificObjective.programmeObjectivePolicy | translate}}
             </div>
             <div *ngIf="!previousObjective">
                 {{'project.application.form.field.project.field.empty' | translate}}

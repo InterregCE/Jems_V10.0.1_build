@@ -17,7 +17,7 @@ export class ProjectLumpSumsPageStore {
   projectTitle$ = this.projectStore.projectTitle$;
   isProjectEditable$ = this.projectStore.projectEditable$;
   partners$ = this.projectPartnerStore.partners$;
-  projectPeriods$ = this.projectStore.getProject().pipe(map(project => project.periods.map(it => new ProjectPeriod(it.projectId, it.number, it.start, it.end))));
+  projectPeriods$ = this.projectStore.projectForm$.pipe(map(project => project.periods.map(it => new ProjectPeriod(it.projectId, it.number, it.start, it.end))));
 
   private updateProjectLumpSumsEvent$ = new BehaviorSubject(null);
 
@@ -29,7 +29,7 @@ export class ProjectLumpSumsPageStore {
   }
 
   updateProjectLumpSums(projectLumpSums: ProjectLumpSum[]): Observable<any> {
-    return of(projectLumpSums).pipe(withLatestFrom(this.projectStore.getProject())).pipe(
+    return of(projectLumpSums).pipe(withLatestFrom(this.projectStore.project$)).pipe(
       switchMap(([lumpSums, project]) => this.projectLumpSumService.updateProjectLumpSums(project.id, lumpSums)),
       tap(() => this.updateProjectLumpSumsEvent$.next(null)),
       share()
@@ -38,7 +38,7 @@ export class ProjectLumpSumsPageStore {
 
   private projectLumpSums(): Observable<ProjectLumpSum[]> {
     return combineLatest([
-      this.projectStore.getProject(),
+      this.projectStore.project$,
       this.projectVersionStore.currentRouteVersion$,
       this.updateProjectLumpSumsEvent$.pipe(startWith(null))
     ]).pipe(

@@ -62,18 +62,18 @@ export class ProjectResultsPageStore {
   }
 
   private resultIndicators(): Observable<ResultIndicatorSummaryDTO[]> {
-    return this.projectStore.project$
+    return this.projectStore.projectForm$
       .pipe(
-        map(project => project?.projectData?.specificObjective?.programmeObjectivePolicy),
+        map(projectForm => projectForm?.specificObjective?.programmeObjectivePolicy),
         switchMap(programmeObjectivePolicy => programmeObjectivePolicy ? this.programmeIndicatorService.getResultIndicatorSummariesForSpecificObjective(programmeObjectivePolicy) : of([])),
         tap(results => Log.info('Fetched programme result indicators', results)),
       );
   }
 
   private periods(): Observable<ProjectPeriodDTO[]> {
-    return this.projectStore.project$
+    return this.projectStore.projectForm$
       .pipe(
-        map(project => project.periods),
+        map(projectForm => projectForm.periods),
       );
   }
 }

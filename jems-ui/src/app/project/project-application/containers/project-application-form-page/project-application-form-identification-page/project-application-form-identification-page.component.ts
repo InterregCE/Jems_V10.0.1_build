@@ -4,7 +4,7 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {Log} from '../../../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {
   CallService,
   InputProjectData,
@@ -22,7 +22,7 @@ import {
 export class ProjectApplicationFormIdentificationPageComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  private callObjectives$ = this.projectStore.getProject()
+  private callObjectives$ = this.projectStore.project$
     .pipe(
       mergeMap(project => this.callService.getCallById(project.callSettings.callId)),
       map(call => call.objectives),
@@ -39,12 +39,13 @@ export class ProjectApplicationFormIdentificationPageComponent {
     );
 
   details$ = combineLatest([
-    this.projectStore.getProject(),
+    this.projectStore.project$,
+    this.projectStore.projectForm$,
     this.callObjectives$,
   ])
     .pipe(
       map(
-        ([project, callObjectives]) => ({project, callObjectives})
+        ([project, projectForm, callObjectives]) => ({project, projectForm, callObjectives})
       )
     );
 

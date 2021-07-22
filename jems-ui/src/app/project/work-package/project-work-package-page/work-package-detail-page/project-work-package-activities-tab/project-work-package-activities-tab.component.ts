@@ -49,11 +49,11 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
     this.data$ = combineLatest([
       this.workPackageStore.activities$,
       this.workPackageStore.workPackage$,
-      this.workPackageStore.project$,
+      this.workPackageStore.projectForm$,
     ]).pipe(
-      map(([activities, workPackage, project]) => ({
+      map(([activities, workPackage, projectForm]) => ({
           activities,
-          periods: project.periods,
+          periods: projectForm.periods,
           workPackageNumber: workPackage.number,
         })
       ));

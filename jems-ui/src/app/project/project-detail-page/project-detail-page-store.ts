@@ -1,7 +1,13 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {ProjectDecisionDTO, ProjectDetailDTO, ProjectStatusService, UserRoleCreateDTO} from '@cat/api';
+import {
+  ProjectDecisionDTO,
+  ProjectDetailDTO,
+  ProjectDetailFormDTO,
+  ProjectStatusService,
+  UserRoleCreateDTO
+} from '@cat/api';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {Log} from '../../common/utils/log';
@@ -15,6 +21,7 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 export class ProjectDetailPageStore {
 
   project$: Observable<ProjectDetailDTO>;
+  projectForm$: Observable<ProjectDetailFormDTO>;
   assessmentFilesVisible$: Observable<boolean>;
   revertToStatus$: Observable<string | null>;
   callHasTwoSteps$: Observable<boolean>;
@@ -31,10 +38,11 @@ export class ProjectDetailPageStore {
               private securityService: SecurityService,
               private projectVersionStore: ProjectVersionStore) {
     this.project$ = this.projectStore.project$;
+    this.projectForm$ = this.projectStore.projectForm$;
     this.assessmentFilesVisible$ = this.assessmentFilesVisible();
     this.revertToStatus$ = this.revertToStatus();
     this.callHasTwoSteps$ = this.projectStore.callHasTwoSteps$;
-    this.isThisUserOwner$ = this.isThisUserOwner();
+    this.isThisUserOwner$ = this.projectStore.isThisUserOwner$;
     this.preConditionCheckResult.next(null);
     this.isProjectLatestVersion$ = this.projectStore.currentVersionIsLatest$;
     this.projectCurrentDecisions$ = this.projectStore.projectCurrentDecisions$;
@@ -110,10 +118,4 @@ export class ProjectDetailPageStore {
       );
   }
 
-  private isThisUserOwner(): Observable<boolean> {
-    return combineLatest([this.project$, this.securityService.currentUser])
-      .pipe(
-        map(([project, currentUser]) => project?.applicant?.id === currentUser?.id)
-      );
-  }
 }

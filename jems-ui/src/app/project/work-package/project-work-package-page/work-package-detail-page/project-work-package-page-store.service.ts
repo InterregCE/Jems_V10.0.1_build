@@ -2,9 +2,9 @@ import {Injectable} from '@angular/core';
 import {
   InputWorkPackageUpdate,
   OutputIndicatorSummaryDTO,
-  ProjectDetailDTO,
   OutputWorkPackage,
   ProgrammeIndicatorService,
+  ProjectDetailFormDTO,
   WorkPackageActivityDTO,
   WorkPackageActivityService,
   WorkPackageInvestmentService,
@@ -29,7 +29,7 @@ export class ProjectWorkPackagePageStore {
 
   workPackage$: Observable<OutputWorkPackage>;
   isProjectEditable$: Observable<boolean>;
-  project$: Observable<ProjectDetailDTO>;
+  projectForm$: Observable<ProjectDetailFormDTO>;
   activities$: Observable<WorkPackageActivityDTO[]>;
   outputs$: Observable<WorkPackageOutputDTO[]>;
   outputIndicators$: Observable<OutputIndicatorSummaryDTO[]>;
@@ -49,7 +49,7 @@ export class ProjectWorkPackagePageStore {
               private routingService: RoutingService) {
     this.workPackage$ = this.workPackage();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
-    this.project$ = this.projectStore.getProject();
+    this.projectForm$ = this.projectStore.projectForm$;
     this.activities$ = this.workPackageActivities();
     this.outputs$ = this.workPackageOutputs();
     this.outputIndicators$ = this.outputIndicators();
@@ -158,9 +158,9 @@ export class ProjectWorkPackagePageStore {
   }
 
   private outputIndicators(): Observable<OutputIndicatorSummaryDTO[]> {
-    return this.projectStore.getProject()
+    return this.projectStore.projectForm$
       .pipe(
-        map(project => project?.projectData?.specificObjective?.programmeObjectivePolicy),
+        map(projectForm => projectForm?.specificObjective?.programmeObjectivePolicy),
         switchMap(programmeObjectivePolicy => programmeObjectivePolicy ? this.programmeIndicatorService.getOutputIndicatorSummariesForSpecificObjective(programmeObjectivePolicy) : of([])),
         tap(outputs => Log.info('Fetched programme output indicators', outputs)),
       );

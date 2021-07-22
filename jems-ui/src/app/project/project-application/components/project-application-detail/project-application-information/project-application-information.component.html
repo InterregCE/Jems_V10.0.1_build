@@ -23,18 +23,18 @@
     </div>
     <div class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.overview.project.name' | translate}}</span>
-        <span class="p-1">{{project?.projectData?.title | translateContainerLessInputsBySystemLanguage | async}}</span>
+        <span class="p-1">{{project?.title | translateContainerLessInputsBySystemLanguage | async}}</span>
     </div>
     <div class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.table.programme.priority' | translate}}</span>
-        <span class="p-1">{{getCodeAndTitle(project.projectData?.programmePriority?.code, (project.projectData?.programmePriority?.title | translateContainerLessInputsBySystemLanguage| async))}}</span>
+        <span class="p-1">{{getCodeAndTitle(project.programmePriority?.code, (project.programmePriority?.title | translateContainerLessInputsBySystemLanguage| async))}}</span>
     </div>
     <div class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.table.specific.objective' | translate}}</span>
         <span class="p-1">
-              <ng-container *ngIf="project.projectData?.specificObjective">
-                  {{project.projectData?.specificObjective?.code}}
-                  - {{'programme.policy.' + project.projectData?.specificObjective?.programmeObjectivePolicy | translate}}
+              <ng-container *ngIf="project.specificObjective">
+                  {{project.specificObjective?.code}}
+                  - {{'programme.policy.' + project.specificObjective?.programmeObjectivePolicy | translate}}
               </ng-container>
         </span>
     </div>

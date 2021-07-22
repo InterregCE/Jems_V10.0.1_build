@@ -12,10 +12,10 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/internal/operators';
 import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/application-form-model';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
-import StatusEnum = ProjectStatusDTO.StatusEnum;
 import {ProjectVersionStore} from '@project/services/project-version-store.service';
 import {RoutingService} from '@common/services/routing.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import StatusEnum = ProjectStatusDTO.StatusEnum;
 
 @Injectable()
 @UntilDestroy()
@@ -26,48 +26,63 @@ export class ProjectApplicationFormSidenavService {
   private fetchPartners$ = new Subject<number>();
   private fetchPackages$ = new Subject<number>();
 
+  private canSeeProjectForm$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectFormRetrieve),
+    this.projectStore.isThisUserOwner$,
+  ]).pipe(
+    map(([hasPermission, isOwner]) => hasPermission || isOwner),
+  );
+
   private partners$: Observable<HeadlineRoute[]> =
-    combineLatest([merge(this.projectStore.projectId$, this.fetchPartners$), this.projectVersionStore.currentRouteVersion$])
-      .pipe(
-        mergeMap(([projectId, version]) => forkJoin([
-            of(projectId),
-            this.projectPartnerService.getProjectPartners(projectId, 0, 100, ['sortNumber,asc'], version)
-          ])
-        ),
-        tap(([, partners]) => Log.info('Fetched the project partners:', this, partners.content)),
-        map(([projectId, partners]) => partners.content
-          .map(partner => ({
-              headline: {
-                i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
-                i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
-              },
-              route: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}/identity`,
-            }
-          ))
-        )
-      );
+    this.canSeeProjectForm$.pipe(switchMap(canSeeProject => {
+        return canSeeProject ?
+          combineLatest([merge(this.projectStore.projectId$, this.fetchPartners$), this.projectVersionStore.currentRouteVersion$])
+            .pipe(
+              mergeMap(([projectId, version]) => forkJoin([
+                  of(projectId),
+                  this.projectPartnerService.getProjectPartners(projectId, 0, 100, ['sortNumber,asc'], version)
+                ])
+              ),
+              tap(([, partners]) => Log.info('Fetched the project partners:', this, partners.content)),
+              map(([projectId, partners]) => partners.content
+                .map(partner => ({
+                    headline: {
+                      i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
+                      i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
+                    },
+                    route: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}/identity`,
+                  }
+                ))
+              )
+            ) : of([]);
+      })
+    );
 
   private packages$: Observable<HeadlineRoute[]> =
-    combineLatest([merge(this.projectStore.projectId$, this.fetchPackages$), this.projectVersionStore.currentRouteVersion$])
-      .pipe(
-        mergeMap(([projectId, version]) => forkJoin([
-            of(projectId),
-            this.workPackageService.getWorkPackagesByProjectId(projectId, version)
-          ])
-        ),
-        tap(([, packages]) => Log.info('Fetched the project work packages:', this, packages)),
-        map(([projectId, packages]) => packages
-          .map(workPackage => ({
-              headline: {
-                i18nKey: 'common.label.workpackage.shortcut',
-                i18nArguments: {workpackage: `${workPackage.number}`},
-                disabled: true
-              },
-              route: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}/objectives`,
-            }
-          ))
-        )
-      );
+    this.canSeeProjectForm$.pipe(switchMap(canSeeProject => {
+        return canSeeProject ?
+          combineLatest([merge(this.projectStore.projectId$, this.fetchPackages$), this.projectVersionStore.currentRouteVersion$])
+            .pipe(
+              mergeMap(([projectId, version]) => forkJoin([
+                  of(projectId),
+                  this.workPackageService.getWorkPackagesByProjectId(projectId, version)
+                ])
+              ),
+              tap(([, packages]) => Log.info('Fetched the project work packages:', this, packages)),
+              map(([projectId, packages]) => packages
+                .map(workPackage => ({
+                    headline: {
+                      i18nKey: 'common.label.workpackage.shortcut',
+                      i18nArguments: {workpackage: `${workPackage.number}`},
+                      disabled: true
+                    },
+                    route: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}/objectives`,
+                  }
+                ))
+              )
+            ) : of([]);
+      })
+    );
 
   private canSeeAssessments$: Observable<boolean> = this.permissionService
     .hasPermission(PermissionsEnum.ProjectAssessmentView);
@@ -88,15 +103,16 @@ export class ProjectApplicationFormSidenavService {
       this.projectStore.project$,
       this.partners$,
       this.packages$,
-      this.versionSelectTemplate$
+      this.versionSelectTemplate$,
+      this.canSeeProjectForm$
     ])
       .pipe(
         filter(([, project]) => !!project),
-        tap(([canSeeAssessments, project, partners, packages, versionTemplate]) => {
+        tap(([canSeeAssessments, project, partners, packages, versionTemplate, canSeeProjectForm]) => {
           const status = project.projectStatus.status;
           const callHas2Steps = !!project.callSettings.endDateStep1;
           const showAssessments = (callHas2Steps && status !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && status !== StatusEnum.DRAFT);
-          this.setHeadlines(canSeeAssessments && showAssessments, project, partners, packages, versionTemplate);
+          this.setHeadlines(canSeeAssessments && showAssessments, canSeeProjectForm, project, partners, packages, versionTemplate);
         }),
         catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
       );
@@ -118,15 +134,17 @@ export class ProjectApplicationFormSidenavService {
   }
 
   private setHeadlines(showAssessment: boolean,
+                       showProjectForm: boolean,
                        project: ProjectDetailDTO,
                        partners: HeadlineRoute[],
                        packages: HeadlineRoute[],
                        versionTemplate: TemplateRef<any>): void {
-
+    const applicationFormHeadlines = showProjectForm
+      ? this.getApplicationFormHeadline(project, partners, packages, versionTemplate) : {};
     this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH,
                                      [
         this.getProjectOverviewHeadline(project, showAssessment),
-        this.getApplicationFormHeadline(project, partners, packages, versionTemplate)
+        applicationFormHeadlines
       ]
     );
   }
