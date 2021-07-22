@@ -159,23 +159,20 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     @Query(
         value = """
              SELECT
-             entity.*,
+             entity.id as id,
+             entity.abbreviation as abbreviation,
+             entity.role as role,
              entity.sort_number as sortNumber,
-             (SELECT
-                addresses.country
-                from project_partner_address
-                FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses
-                WHERE entity.id = addresses.partner_id AND addresses.type = 'Organization') as country
+             addresses.country as country
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             WHERE entity.project_id = :projectId
-             ORDER BY entity.id
+             LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses ON entity.id = addresses.partner_id
+             WHERE entity.project_id = :projectId AND addresses.type = 'Organization'
              """,
         countQuery = """
              SELECT
              count(*)
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              WHERE entity.project_id = :projectId
-             ORDER BY entity.id
              """,
         nativeQuery = true
     )

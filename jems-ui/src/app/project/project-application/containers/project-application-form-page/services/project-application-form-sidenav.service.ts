@@ -31,7 +31,7 @@ export class ProjectApplicationFormSidenavService {
       .pipe(
         mergeMap(([projectId, version]) => forkJoin([
             of(projectId),
-            this.projectPartnerService.getProjectPartners(projectId, 0, 100, undefined, version)
+            this.projectPartnerService.getProjectPartners(projectId, 0, 100, ['sortNumber,asc'], version)
           ])
         ),
         tap(([, partners]) => Log.info('Fetched the project partners:', this, partners.content)),

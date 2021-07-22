@@ -40,7 +40,7 @@ export class ProjectApplicationFormPartnerSectionComponent {
       .pipe(
         mergeMap(([pageIndex, pageSize, sort, version]) =>
           // put lead partner on top by default
-          this.projectPartnerService.getProjectPartners(this.projectId, pageIndex, pageSize, undefined, version)),
+          this.projectPartnerService.getProjectPartners(this.projectId, pageIndex, pageSize, [sort], version)),
         tap(page => Log.info('Fetched the project partners:', this, page.content)),
       );
 
