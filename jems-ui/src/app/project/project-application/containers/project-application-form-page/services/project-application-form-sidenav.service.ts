@@ -4,18 +4,18 @@ import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, mergeMap, switchMap, tap} from 'rxjs/operators';
 import {ProjectDetailDTO, ProjectPartnerService, ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
-import {Log} from '../../../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/internal/operators';
-import {RoutingService} from '../../../../../common/services/routing.service';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
 import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/application-form-model';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
+import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {RoutingService} from '@common/services/routing.service';
 
 @Injectable()
 @UntilDestroy()
@@ -41,7 +41,7 @@ export class ProjectApplicationFormSidenavService {
                 i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
                 i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
               },
-              route: `/app/project/detail/${projectId}/applicationFormPartner/detail/${partner.id}`,
+              route: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}/identity`,
             }
           ))
         )
@@ -63,7 +63,7 @@ export class ProjectApplicationFormSidenavService {
                 i18nArguments: {workpackage: `${workPackage.number}`},
                 disabled: true
               },
-              route: `/app/project/detail/${projectId}/applicationFormWorkPackage/detail/${workPackage.id}`,
+              route: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}/objectives`,
             }
           ))
         )

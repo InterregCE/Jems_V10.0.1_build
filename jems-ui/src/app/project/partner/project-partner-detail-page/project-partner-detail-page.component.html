@@ -4,46 +4,40 @@
         <h2>{{'common.label.project.partner.role.' + partner.role | translate}}{{partner.abbreviation}}</h2>
     </ng-container>
 
-    <mat-tab-group class="partner-tab-menu"
-                   (selectedIndexChange)="changeTab($event)"
-                   [selectedIndex]="activeTab$ | async">
-        <mat-tab label="{{'partner.tab.identity' | translate}}">
-            <app-project-application-form-partner-edit
-                    *ngIf="partner"
-                    [partner]="partner"
-                    [projectId]="projectId"
-                    [legalStatuses]="legalStatuses$ | async">
-            </app-project-application-form-partner-edit>
-        </mat-tab>
-        <mat-tab label="{{'partner.tab.address' | translate}}"
-                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS">
-            <app-project-application-form-region-selection></app-project-application-form-region-selection>
-        </mat-tab>
-        <mat-tab label="{{'partner.tab.contact' | translate}}"
-                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.CONTACT">
-            <app-project-application-form-partner-contact
-                    [partner]="partner">
-            </app-project-application-form-partner-contact>
-        </mat-tab>
-        <mat-tab label="{{'partner.tab.motivation' | translate}}"
-                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION">
-            <app-project-application-form-partner-contribution
-                    [partner]="partner">
-            </app-project-application-form-partner-contribution>
-        </mat-tab>
-        <mat-tab label="{{'partner.tab.budget' | translate}}">
-            <app-project-partner-budget-tab></app-project-partner-budget-tab>
-        </mat-tab>
-        <mat-tab label="{{'partner.tab.coFinancing' | translate}}">
-            <app-project-partner-co-financing-tab
-                    [editable]="projectStore.projectEditable$ | async">
-            </app-project-partner-co-financing-tab>
-        </mat-tab>
-        <mat-tab label="{{'partner.tab.state.aid' | translate}}">
-            <app-project-partner-state-aid-tab></app-project-partner-state-aid-tab>
-        </mat-tab>
-    </mat-tab-group>
-
+    <nav mat-tab-nav-bar>
+        <a [active]="activeTab('identity')" mat-tab-link
+           (click)="routeTo('identity')">
+            {{'partner.tab.identity' | translate}}
+        </a>
+        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS"
+           [active]="activeTab('region')" mat-tab-link
+           (click)="routeTo('region')">
+            {{'partner.tab.address' | translate}}
+        </a>
+        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.CONTACT"
+           [active]="activeTab('contact')" mat-tab-link
+           (click)="routeTo('contact')">
+            {{'partner.tab.contact' | translate}}
+        </a>
+        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION"
+           [active]="activeTab('motivation')" mat-tab-link
+           (click)="routeTo('motivation')">
+            {{'partner.tab.motivation' | translate}}
+        </a>
+        <a [active]="activeTab('budget')" mat-tab-link
+           (click)="routeTo('budget')">
+            {{'partner.tab.budget' | translate}}
+        </a>
+        <a [active]="activeTab('coFinancing')" mat-tab-link
+           (click)="routeTo('coFinancing')">
+            {{'partner.tab.coFinancing' | translate}}
+        </a>
+        <a [active]="activeTab('stateAid')" mat-tab-link
+           (click)="routeTo('stateAid')">
+            {{'partner.tab.state.aid' | translate}}
+        </a>
+    </nav>
+    <router-outlet></router-outlet>
 </app-project-page-template>
 
 <ng-template #defaultSubTitle>

@@ -53,6 +53,7 @@ export class ProjectPartnerDetailPageStore {
   periods$: Observable<ProjectPeriodDTO[]>;
   multipleFundsAllowed$: Observable<boolean>;
   stateAid$: Observable<ProjectPartnerStateAidDTO>;
+  partner$: Observable<OutputProjectPartnerDetail>;
 
   private updateBudgetOptionsEvent$ = new Subject();
   private updateBudgetEvent$ = new Subject();
@@ -83,6 +84,7 @@ export class ProjectPartnerDetailPageStore {
         map(project => project.periods)
       );
     this.multipleFundsAllowed$ = this.projectStore.projectCall$.pipe(map(it => it.multipleFundsAllowed));
+    this.partner$ = this.partnerStore.partner$;
     this.stateAid$ = this.stateAid();
   }
 

@@ -29,6 +29,17 @@ import {ProjectDetailPageComponent} from './project-detail-page/project-detail-p
 import {UserRoleDTO} from '@cat/api';
 import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import { ProjectApplicationFormRegionSelectionComponent } from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-region-selection/project-application-form-region-selection.component';
+import {ProjectApplicationFormPartnerEditComponent} from '@project/project-application/components/project-application-form/project-application-form-partner-edit/project-application-form-partner-edit.component';
+import {ProjectPartnerBudgetTabComponent} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.component';
+import {ProjectApplicationFormPartnerContactComponent} from '@project/project-application/components/project-application-form/project-application-form-partner-contact/project-application-form-partner-contact.component';
+import { ProjectApplicationFormPartnerContributionComponent } from './project-application/components/project-application-form/project-application-form-partner-contribution/project-application-form-partner-contribution.component';
+import {ProjectPartnerCoFinancingTabComponent} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/project-partner-co-financing-tab.component';
+import {ProjectPartnerStateAidTabComponent} from '@project/partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
+import {ProjectWorkPackageObjectivesTabComponent} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-objectives-tab/project-work-package-objectives-tab.component';
+import {ProjectWorkPackageInvestmentsTabComponent} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-investments-tab/project-work-package-investments-tab.component';
+import {ProjectWorkPackageActivitiesTabComponent} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-activities-tab/project-work-package-activities-tab.component';
+import {ProjectWorkPackageOutputsTabComponent} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-outputs-tab/project-work-package-outputs-tab.component';
 
 export const routes: Routes = [
   {
@@ -104,9 +115,43 @@ export const routes: Routes = [
                 data: {breadcrumb: 'project.breadcrumb.partnerCreate'},
               },
               {
-                path: 'detail/:partnerId',
+                path: ':partnerId',
+                redirectTo: ':partnerId/identity',
+              },
+              {
+                path: ':partnerId',
                 component: ProjectPartnerDetailPageComponent,
                 data: {breadcrumb: 'project.breadcrumb.partnerName'},
+                children: [
+                  {
+                    path: 'identity',
+                    component: ProjectApplicationFormPartnerEditComponent,
+                  },
+                  {
+                    path: 'region',
+                    component: ProjectApplicationFormRegionSelectionComponent,
+                  },
+                  {
+                    path: 'contact',
+                    component: ProjectApplicationFormPartnerContactComponent,
+                  },
+                  {
+                    path: 'motivation',
+                    component: ProjectApplicationFormPartnerContributionComponent,
+                  },
+                  {
+                    path: 'budget',
+                    component: ProjectPartnerBudgetTabComponent,
+                  },
+                  {
+                    path: 'coFinancing',
+                    component: ProjectPartnerCoFinancingTabComponent,
+                  },
+                  {
+                    path: 'stateAid',
+                    component: ProjectPartnerStateAidTabComponent,
+                  }
+                ]
               },
             ]
           },
@@ -159,23 +204,45 @@ export const routes: Routes = [
                 data: {breadcrumb: 'project.breadcrumb.workPackageCreate'},
               },
               {
-                path: 'detail/:workPackageId',
+                path: ':workPackageId',
+                redirectTo: ':workPackageId/objectives',
+              },
+              {
+                path: ':workPackageId',
                 data: {breadcrumb: 'project.breadcrumb.workPackageName'},
                 children: [
                   {
                     path: '',
-                    component: ProjectWorkPackageDetailPageComponent
+                    component: ProjectWorkPackageDetailPageComponent,
+                    children: [
+                      {
+                        path: 'objectives',
+                        component: ProjectWorkPackageObjectivesTabComponent
+                      },
+                      {
+                        path: 'investments',
+                        component: ProjectWorkPackageInvestmentsTabComponent,
+                      },
+                      {
+                        path: 'activities',
+                        component: ProjectWorkPackageActivitiesTabComponent
+                      },
+                      {
+                        path: 'outputs',
+                        component: ProjectWorkPackageOutputsTabComponent
+                      }
+                    ]
                   },
                   {
-                    path: 'investment/create',
+                    path: 'investments/create',
                     component: ProjectWorkPackageInvestmentDetailPageComponent,
                     data: {breadcrumb: 'project.breadcrumb.workPackageInvestment.create'},
                   },
                   {
-                    path: 'investment/detail/:workPackageInvestmentId',
+                    path: 'investments/:workPackageInvestmentId',
                     component: ProjectWorkPackageInvestmentDetailPageComponent,
                     data: {breadcrumb: 'project.breadcrumb.workPackageInvestment.name'},
-                  }
+                  },
                 ]
               },
 

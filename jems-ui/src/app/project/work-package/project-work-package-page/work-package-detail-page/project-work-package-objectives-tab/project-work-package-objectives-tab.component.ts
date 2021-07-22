@@ -1,14 +1,14 @@
-import {ChangeDetectionStrategy, Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {OutputWorkPackage} from '@cat/api';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
-import {catchError, take, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, take, tap} from 'rxjs/operators';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
-import {ProjectApplicationFormSidenavService} from '../../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {ProjectStore} from '../../../../project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @UntilDestroy()
 @Component({
@@ -18,11 +18,10 @@ import {ProjectStore} from '../../../../project-application/containers/project-a
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectWorkPackageObjectivesTabComponent implements OnInit, OnChanges {
-
-  projectId = this.activatedRoute?.snapshot?.params?.projectId;
+export class ProjectWorkPackageObjectivesTabComponent {
 
   workPackage$: Observable<OutputWorkPackage | any>;
+  projectId: number;
   workPackageId: number;
   workPackageNumber: number;
 
@@ -40,9 +39,6 @@ export class ProjectWorkPackageObjectivesTabComponent implements OnInit, OnChang
               public workPackageStore: ProjectWorkPackagePageStore,
               private projectStore: ProjectStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
-  }
-
-  ngOnInit(): void {
     this.formService.init(this.form);
 
     this.workPackageStore.isProjectEditable$.pipe(
@@ -57,26 +53,11 @@ export class ProjectWorkPackageObjectivesTabComponent implements OnInit, OnChang
         tap(workPackage => this.resetForm(workPackage))
       );
 
-    this.formService.reset$
+    this.projectStore.projectId$
       .pipe(
-        withLatestFrom(this.workPackage$),
-        tap(([reset, investment]) => {
-          if (this.workPackageId) {
-            this.resetForm(investment);
-            return;
-          }
-          this.redirectToWorkPackageOverview();
-        }),
+        tap(projectId => this.projectId = projectId),
         untilDestroyed(this)
       ).subscribe();
-
-    this.resetForm();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.workPackage) {
-      this.resetForm();
-    }
   }
 
   onSubmit(): void {
@@ -101,23 +82,31 @@ export class ProjectWorkPackageObjectivesTabComponent implements OnInit, OnChang
       ).subscribe();
   }
 
+  discard(workPackage?: OutputWorkPackage): void {
+    if (!workPackage?.id) {
+      this.redirectToWorkPackageOverview();
+      return;
+    }
+    this.resetForm(workPackage);
+  }
+
   private resetForm(existing?: OutputWorkPackage): void {
-    this.formService.setCreation(!this.workPackageId);
     this.form.get('number')?.patchValue(existing?.number || this.workPackageNumber);
     this.form.get('name')?.patchValue(existing?.name || []);
     this.form.get('specificObjective')?.patchValue(existing?.specificObjective || []);
     this.form.get('objectiveAndAudience')?.patchValue(existing?.objectiveAndAudience || []);
     this.formService.resetEditable();
     this.form.controls.number.disable();
+    if (!existing?.id) {
+      this.formService.setCreation(!this.workPackageId);
+    }
   }
 
   private redirectToWorkPackageOverview(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage']);
+    this.router.navigate(['..'], {relativeTo: this.activatedRoute});
   }
 
   private redirectToWorkPackageDetail(): void {
-    this.router.navigate([
-      'app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage', 'detail', this.workPackageId
-    ]);
+    this.router.navigate(['..', this.workPackageId], {relativeTo: this.activatedRoute});
   }
 }

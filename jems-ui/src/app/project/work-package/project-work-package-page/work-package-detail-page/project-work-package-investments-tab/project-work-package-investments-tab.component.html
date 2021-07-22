@@ -4,9 +4,9 @@
             <h3>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h3>
             <div>{{'project.work.package.tab.investment.intro' | translate}}</div>
 
-            <button mat-stroked-button *ngIf="editable"
-                    [routerLink]="'/app/project/detail/' + projectId + '/applicationFormWorkPackage/detail/' + workPackageId +  '/investment/create'"
-                    [disabled]="!editable">
+            <button mat-stroked-button
+                    routerLink="create"
+                    [disabled]="(projectStore.projectEditable$ | async) === false">
                 + {{'project.application.form.add.workpackage.investment' | translate}}
             </button>
 
@@ -32,7 +32,7 @@
 
 <ng-template #deletionCell let-workPackageInvestment let-name>
     <ng-container *ngIf="(workPackageInvestment.title | translateContainerLessInputsBySystemLanguage | async) as title">
-        <button *ngIf="editable" mat-icon-button color="accent"
+        <button *ngIf="projectStore.projectEditable$ | async" mat-icon-button color="accent"
                 (click)="$event.stopPropagation();delete(workPackageInvestment, title)"
                 matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
             <em class="mat-column-delete fas fa-trash"></em>

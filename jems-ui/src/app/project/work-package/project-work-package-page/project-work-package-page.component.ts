@@ -52,7 +52,7 @@ export class ProjectWorkPackagePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
-      routerLink: `/app/project/detail/${this.projectId}/applicationFormWorkPackage/detail`,
+      routerLink: `/app/project/detail/${this.projectId}/applicationFormWorkPackage`,
       isTableClickable: true,
       sortable: false,
       columns: [

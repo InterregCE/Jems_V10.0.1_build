@@ -1,5 +1,6 @@
 <app-form *ngIf="workPackage$ | async as workPackage"
-          (save)="onSubmit()">
+          (save)="onSubmit()"
+          (discard)="discard(workPackage)">
     <form appFormLayout [formGroup]="form">
         <h3>{{'project.application.form.workpackage.form.header' | translate}}</h3>
 

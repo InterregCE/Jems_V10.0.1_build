@@ -1,10 +1,11 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectContact, OutputProjectPartnerDetail} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
 import {APPLICATION_FORM} from '@project/application-form-model';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-project-application-form-partner-contact',
@@ -13,10 +14,10 @@ import {APPLICATION_FORM} from '@project/application-form-model';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerContactComponent implements OnInit, OnChanges {
-  @Input()
-  partner: OutputProjectPartnerDetail;
+export class ProjectApplicationFormPartnerContactComponent {
   APPLICATION_FORM = APPLICATION_FORM;
+
+  partner$: Observable<OutputProjectPartnerDetail>;
 
   partnerContactForm: FormGroup = this.formBuilder.group({
     partnerRepresentativeTitle: ['', Validators.maxLength(25)],
@@ -62,18 +63,11 @@ export class ProjectApplicationFormPartnerContactComponent implements OnInit, On
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private partnerStore: ProjectPartnerStore) {
-  }
-
-  ngOnInit(): void {
     this.formService.init(this.partnerContactForm, this.partnerStore.isProjectEditable$);
-    this.resetForm();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.partner) {
-      this.resetForm();
-      this.formService.setDirty(false);
-    }
+    this.partner$ = this.partnerStore.partner$
+      .pipe(
+        tap(partner => this.resetForm(partner))
+      );
   }
 
   onSubmit(): void {
@@ -104,20 +98,20 @@ export class ProjectApplicationFormPartnerContactComponent implements OnInit, On
       ).subscribe();
   }
 
-  resetForm(): void {
-    this.initLegalRepresentative();
-    this.initContactPerson();
+  resetForm(partner: OutputProjectPartnerDetail): void {
+    this.initLegalRepresentative(partner);
+    this.initContactPerson(partner);
   }
 
-  private initLegalRepresentative(): void {
-    const legalRepresentative = this.partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.LegalRepresentative);
+  private initLegalRepresentative(partner: OutputProjectPartnerDetail): void {
+    const legalRepresentative = partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.LegalRepresentative);
     this.partnerContactForm.controls.partnerRepresentativeTitle.setValue(legalRepresentative?.title);
     this.partnerContactForm.controls.partnerRepresentativeFirstName.setValue(legalRepresentative?.firstName);
     this.partnerContactForm.controls.partnerRepresentativeLastName.setValue(legalRepresentative?.lastName);
   }
 
-  private initContactPerson(): void {
-    const contactPerson = this.partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.ContactPerson);
+  private initContactPerson(partner: OutputProjectPartnerDetail): void {
+    const contactPerson = partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.ContactPerson);
     this.partnerContactForm.controls.partnerContactTitle.setValue(contactPerson?.title);
     this.partnerContactForm.controls.partnerContactFirstName.setValue(contactPerson?.firstName);
     this.partnerContactForm.controls.partnerContactLastName.setValue(contactPerson?.lastName);

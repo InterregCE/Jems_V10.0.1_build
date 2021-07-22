@@ -1,5 +1,6 @@
-<app-form (save)="onSubmit(controls)"
-          (discard)="discard()">
+<app-form *ngIf="partner$ | async as partner"
+          (save)="onSubmit(controls)"
+          (discard)="discard(partner)">
     <form appFormLayout id="partner-form" [formGroup]="partnerForm">
         <h3>{{'project.partner.detail.title' | translate}}</h3>
 
@@ -19,17 +20,11 @@
         <ng-container *ngIf="partnerForm.enabled">
             <div *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ROLE">
                 <div appLabel>{{'project.partner.role.label' | translate}} *</div>
-                <mat-button-toggle-group>
-                    <mat-button-toggle
-                            [checked]="controls?.role.value === RoleEnum.PARTNER"
-                            (change)="setRole(RoleEnum.PARTNER)"
-                            [value]="RoleEnum.PARTNER">
+                <mat-button-toggle-group formControlName="role">
+                    <mat-button-toggle [value]="RoleEnum.PARTNER">
                         {{'common.label.project.partner.role.PARTNER' | translate}}
                     </mat-button-toggle>
-                    <mat-button-toggle
-                            [checked]="controls?.role.value === RoleEnum.LEADPARTNER"
-                            (change)="setRole(RoleEnum.LEADPARTNER)"
-                            [value]="RoleEnum.LEADPARTNER">
+                    <mat-button-toggle [value]="RoleEnum.LEADPARTNER">
                         {{'common.label.project.partner.role.LEAD_PARTNER' | translate}}
                     </mat-button-toggle>
                 </mat-button-toggle-group>
@@ -106,7 +101,7 @@
         <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.LEGAL_STATUS">
             <mat-label>{{'project.partner.legal.status' | translate}}</mat-label>
             <mat-select name="legalStatusId" formControlName="legalStatusId" required>
-                <mat-option *ngFor="let status of legalStatuses" [value]="status.id">
+                <mat-option *ngFor="let status of legalStatuses$ | async" [value]="status.id">
                     {{ status.description | translateBySystemLanguage | async }}
                 </mat-option>
             </mat-select>
@@ -133,23 +128,14 @@
         <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.VAT_RECOVERY">
             <p>{{'project.partner.recoverVat.intro.text' | translate}}</p>
 
-            <mat-button-toggle-group [disabled]="!partnerForm.enabled">
-                <mat-button-toggle
-                        [checked]="controls?.vatRecovery.value === VatRecoveryEnum.Yes"
-                        (change)="setVat(VatRecoveryEnum.Yes)"
-                        [value]="VatRecoveryEnum.Yes">
+            <mat-button-toggle-group formControlName="vatRecovery">
+                <mat-button-toggle [value]="VatRecoveryEnum.Yes">
                     {{'common.label.project.partner.recoverVat.true' | translate}}
                 </mat-button-toggle>
-                <mat-button-toggle
-                        [checked]="controls?.vatRecovery.value === VatRecoveryEnum.Partly"
-                        (change)="setVat(VatRecoveryEnum.Partly)"
-                        [value]="VatRecoveryEnum.Partly">
+                <mat-button-toggle [value]="VatRecoveryEnum.Partly">
                     {{'common.label.project.partner.recoverVat.partly' | translate}}
                 </mat-button-toggle>
-                <mat-button-toggle
-                        [checked]="controls?.vatRecovery.value === VatRecoveryEnum.No"
-                        (change)="setVat(VatRecoveryEnum.No)"
-                        [value]="VatRecoveryEnum.No">
+                <mat-button-toggle [value]="VatRecoveryEnum.No">
                     {{'common.label.project.partner.recoverVat.false' | translate}}
                 </mat-button-toggle>
             </mat-button-toggle-group>

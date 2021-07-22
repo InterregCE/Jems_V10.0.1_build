@@ -6,13 +6,13 @@ import {combineLatest, Subject} from 'rxjs';
 import {filter, map, mergeMap, startWith, take, tap} from 'rxjs/operators';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 import {MatDialog} from '@angular/material/dialog';
-import {Forms} from '../../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {Log} from '../../../../../common/utils/log';
-import {ProjectApplicationFormSidenavService} from '../../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {Log} from '@common/utils/log';
+import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
-import {ProjectStore} from '../../../../project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-project-work-package-investments-tab',
@@ -22,15 +22,9 @@ import {ProjectStore} from '../../../../project-application/containers/project-a
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
-  projectId = this.activatedRoute.snapshot.params.projectId;
-  workPackageId = this.activatedRoute.snapshot.params.workPackageId;
+
   workPackageNumber: number;
   tableConfiguration: TableConfiguration;
-
-  @Input()
-  pageIndex: number;
-  @Input()
-  editable: boolean;
 
   @ViewChild('deletionCell', {static: true})
   deletionCell: TemplateRef<any>;
@@ -47,16 +41,14 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
       this.projectVersionStore.currentRouteVersion$,
       this.workPackageStore.workPackage$
         .pipe(
-          tap(workPackage => this.workPackageId = workPackage.id),
           tap(workPackage => this.workPackageNumber = workPackage.number),
-          tap(() => this.setRouterLink())
         ),
       this.investmentsChanged$.pipe(startWith(null))
     ])
       .pipe(
-        filter(([projectId, version, workPackage]) => !!workPackage.id),
-        mergeMap(([projectId, version]) =>
-          this.workPackageInvestmentService.getWorkPackageInvestments(projectId, this.workPackageId, version)),
+        filter(([projectId, version, workPackage]) => !!workPackage.id && !!projectId),
+        mergeMap(([projectId, version, workPackage]) =>
+          this.workPackageInvestmentService.getWorkPackageInvestments(projectId, workPackage.id, version)),
         tap(investments => Log.info('Fetched the work package investments:', this, investments)),
       );
 
@@ -65,14 +57,14 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
               private workPackageInvestmentService: WorkPackageInvestmentService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectVersionStore: ProjectVersionStore,
-              private projectStore: ProjectStore,
+              public projectStore: ProjectStore,
               private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
       isTableClickable: true,
-      routerLink: `/app/project/detail/${this.projectId}/applicationFormWorkPackage/detail/${this.workPackageId}/investment/detail`,
+      routerLink: '../investments/',
       columns: [
         {
           displayedColumn: 'project.application.form.workpackage.investments.number',
@@ -98,7 +90,6 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
         },
       ]
     });
-    this.setRouterLink();
   }
 
   delete(workPackageInvestment: WorkPackageInvestmentDTO, title: string): void {
@@ -122,10 +113,6 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
           tap(() => Log.info('Deleted investment: ', this, workPackageInvestment.id))
         ).subscribe()),
     ).subscribe();
-  }
-
-  private setRouterLink(): void {
-    this.tableConfiguration.routerLink = `/app/project/detail/${this.projectId}/applicationFormWorkPackage/detail/${this.workPackageId}/investment/detail`;
   }
 }
 

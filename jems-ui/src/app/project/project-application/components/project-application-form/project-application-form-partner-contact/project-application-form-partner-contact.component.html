@@ -1,5 +1,6 @@
-<app-form (save)="onSubmit()"
-          (discard)="resetForm()">
+<app-form *ngIf="partner$ | async as partner"
+          (save)="onSubmit()"
+          (discard)="resetForm(partner)">
     <form appFormLayout [formGroup]="partnerContactForm">
         <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.CONTACT.LEGAL_REPRESENTATIVE">
             <h3>{{'project.partner.representative.header' | translate}}</h3>

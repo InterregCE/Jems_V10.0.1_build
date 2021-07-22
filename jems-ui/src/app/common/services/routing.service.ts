@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {distinctUntilChanged, filter, map, take, tap} from 'rxjs/operators';
 import {
   ActivatedRoute,
-  ActivatedRouteSnapshot,
   NavigationEnd,
   NavigationExtras,
   ResolveEnd,
@@ -67,14 +66,19 @@ export class RoutingService {
   routeParameterChanges(url: string, parameter: string): Observable<string | number | null> {
     return this.currentRoute
       .pipe(
-        map(route => this.containsPath(route, url) ? this.getParameter(route.snapshot, parameter) : null),
+        map(route => this.containsPath(route, url) ? this.getParameter(route, parameter) : null),
         distinctUntilChanged((o, n) => o === n),
         tap(param => Log.debug('Route param changed', this, url, param)),
       );
   }
 
-  private getParameter(routeSnapshot: ActivatedRouteSnapshot, param: string): string | number | null {
-    return routeSnapshot.params[param] || routeSnapshot.queryParams[param];
+  get url(): string {
+    return this.router.url;
+  }
+
+  getParameter(route: ActivatedRoute, param: string): string | number | null {
+    return route?.snapshot.params[param] || route?.snapshot.queryParams[param]
+      || route?.parent?.snapshot.params[param] || route?.parent?.snapshot.queryParams[param];
   }
 
   private containsPath(route: ActivatedRoute, path: string): boolean {

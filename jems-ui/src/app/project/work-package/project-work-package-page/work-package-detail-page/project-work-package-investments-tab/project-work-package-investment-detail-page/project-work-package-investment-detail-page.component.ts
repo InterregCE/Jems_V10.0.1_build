@@ -7,8 +7,6 @@ import {catchError, map, take, tap} from 'rxjs/operators';
 import {ProjectWorkPackageInvestmentDetailPageConstants} from './project-work-package-investment-detail-page.constants';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
-import {ProjectWorkPackagePageStore} from '../../project-work-package-page-store.service';
-import {NutsStore} from '@common/services/nuts.store';
 
 @Component({
   selector: 'app-project-work-package-investment-detail-page',
@@ -20,16 +18,13 @@ import {NutsStore} from '@common/services/nuts.store';
 export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   constants = ProjectWorkPackageInvestmentDetailPageConstants;
 
-  private projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  private workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
-  private workPackageInvestmentId = this.activatedRoute?.snapshot?.params?.workPackageInvestmentId;
+  private workPackageInvestmentId: number;
 
   data$: Observable<{
     investment: WorkPackageInvestmentDTO,
     workPackageNumber: number,
     nuts: OutputNuts[]
   }>;
-
 
   workPackageInvestmentForm: FormGroup = this.formBuilder.group({
     number: [''],
@@ -59,14 +54,11 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
               private formService: FormService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
-              public investmentPageStore: ProjectWorkPackageInvestmentDetailPageStore,
-              public workPackageStore: ProjectWorkPackagePageStore,
-              public nutsStore: NutsStore) {
+              public investmentPageStore: ProjectWorkPackageInvestmentDetailPageStore) {
   }
 
   ngOnInit(): void {
     this.formService.init(this.workPackageInvestmentForm, this.investmentPageStore.isProjectEditable$);
-    this.formService.setCreation(!this.workPackageInvestmentId);
 
     this.data$ = combineLatest([
       this.investmentPageStore.investment$,
@@ -74,7 +66,9 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
       this.investmentPageStore.nuts$
     ]).pipe(
       map(([investment, workPackageNumber, nuts]) => ({investment, workPackageNumber, nuts})),
-      tap(data => this.resetForm(data.investment, data.workPackageNumber))
+      tap(data => this.workPackageInvestmentId = data.investment.id),
+      tap(data => this.formService.setCreation(!data.investment.id)),
+      tap(data => this.resetForm(data.investment, data.workPackageNumber)),
     );
   }
 
@@ -136,8 +130,6 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   }
 
   private redirectToWorkPackageDetail(): void {
-    this.router.navigate([
-      'app', 'project', 'detail', this.projectId, 'applicationFormWorkPackage', 'detail', this.workPackageId
-    ]);
+    this.router.navigate(['..'], {relativeTo: this.activatedRoute});
   }
 }

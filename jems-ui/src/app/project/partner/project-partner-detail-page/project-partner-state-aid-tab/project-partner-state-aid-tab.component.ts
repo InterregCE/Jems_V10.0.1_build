@@ -3,7 +3,7 @@ import {FormBuilder} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerDetailPageStore} from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ActivatedRoute} from '@angular/router';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, map, switchMap, take, tap} from 'rxjs/operators';
 import {ProjectPartnerStateAidDTO} from '@cat/api';
 import {Observable} from 'rxjs';
 
@@ -15,7 +15,6 @@ import {Observable} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectPartnerStateAidTabComponent {
-  partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
 
   data$: Observable<{
     stateAid: ProjectPartnerStateAidDTO
@@ -45,9 +44,10 @@ export class ProjectPartnerStateAidTabComponent {
   }
 
   updateStateAid(): void {
-    this.pageStore.updateStateAid(this.partnerId, this.form.value)
+    this.pageStore.partner$
       .pipe(
         take(1),
+        switchMap(partner => this.pageStore.updateStateAid(partner.id, this.form.value)),
         tap(() => this.formService.setSuccess('project.partner.state.aid..saved')),
         catchError(err => this.formService.setError(err))
       ).subscribe();

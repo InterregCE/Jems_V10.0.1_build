@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -21,7 +21,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormService} from '@common/components/section/form/form.service';
 import {Alert} from '@common/components/forms/alert';
-import {NumberService} from '../../../../common/services/number.service';
+import {NumberService} from '@common/services/number.service';
 import {ProjectPartnerDetailPageStore} from '../project-partner-detail-page.store';
 import {ProjectPartnerCoFinancingTabConstants} from './project-partner-co-financing-tab.constants';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -43,8 +43,6 @@ const totalContributionValidator = (expectedAmount: number): ValidatorFn => (for
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectPartnerCoFinancingTabComponent implements OnInit {
-  @Input()
-  editable: boolean;
 
   constants = ProjectPartnerCoFinancingTabConstants;
   partnerContributionStatus = ProjectPartnerContributionDTO.StatusEnum;
@@ -59,7 +57,8 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     automaticPublicContributionSubTotal: number,
     contributionTotal: number,
     showTotalContributionWarning: boolean,
-    partnerContributionErrorsArgs: ValidationErrors | null
+    partnerContributionErrorsArgs: ValidationErrors | null,
+    editable: boolean
   }>;
 
   coFinancingForm: FormGroup;
@@ -106,8 +105,9 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
       this.contributionTotal$,
       this.showTotalContributionWarning$,
       this.partnerContributionErrorsArgs$,
+      this.pageStore.isProjectEditable$
     ]).pipe(
-      map(([financingAndContribution, callFunds, totalBudget, multipleFundsAllowed, privateContributionSubTotal, publicContributionSubTotal, automaticPublicContributionSubTotal, contributionTotal, showTotalContributionWarning, partnerContributionErrorsArgs]: any) => {
+      map(([financingAndContribution, callFunds, totalBudget, multipleFundsAllowed, privateContributionSubTotal, publicContributionSubTotal, automaticPublicContributionSubTotal, contributionTotal, showTotalContributionWarning, partnerContributionErrorsArgs, editable]: any) => {
         this.multipleFundsAllowed = multipleFundsAllowed;
         return {
           financingAndContribution,
@@ -118,7 +118,8 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
           automaticPublicContributionSubTotal,
           contributionTotal,
           showTotalContributionWarning,
-          partnerContributionErrorsArgs
+          partnerContributionErrorsArgs,
+          editable
         };
       }));
 

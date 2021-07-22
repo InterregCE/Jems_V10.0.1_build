@@ -12,7 +12,7 @@ import {filter, take} from 'rxjs/internal/operators';
 
 @Injectable()
 export class ProjectWorkPackageInvestmentDetailPageStore {
-  public static INVESTMENT_DETAIL_PATH = 'investment/';
+  public static INVESTMENT_DETAIL_PATH = 'investments/';
   investment$: Observable<WorkPackageInvestmentDTO>;
   isProjectEditable$: Observable<boolean>;
   workPackageNumber$: Observable<number>;

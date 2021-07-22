@@ -5,7 +5,6 @@ import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {catchError, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {ActivatedRoute} from '@angular/router';
-import {TabService} from '../../../../common/services/tab.service';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammeCostOptionService, ProgrammeLumpSumDTO} from '@cat/api';
@@ -31,7 +30,6 @@ export class ProgrammeLumpSumsSubmissionPageComponent extends BaseComponent {
 
   constructor(private programmeCostOptionService: ProgrammeCostOptionService,
               private activatedRoute: ActivatedRoute,
-              private tabService: TabService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
   }

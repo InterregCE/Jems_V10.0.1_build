@@ -79,14 +79,14 @@
                         </mat-error>
                     </mat-form-field>
                     <div>
-                        <button *ngIf="editable" type="button" mat-icon-button color="accent"
+                        <button *ngIf="data.editable" type="button" mat-icon-button color="accent"
                                 (click)="deleteAdditionalFund()">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </div>
                 </div>
 
-                <button *ngIf="editable && multipleFundsAllowed && !hasASecondFundBeenAdded && !additionalFundId.value"
+                <button *ngIf="data.editable && multipleFundsAllowed && !hasASecondFundBeenAdded && !additionalFundId.value"
                         mat-icon-button type="button" class="mt-2 co-financing-button"
                         (click)="addAdditionalFund()">
                     <mat-icon>add</mat-icon>

@@ -23,7 +23,7 @@ import {ProjectVersionStore} from '../../../services/project-version-store.servi
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
-  public static WORK_PACKAGE_DETAIL_PATH = '/applicationFormWorkPackage/detail/';
+  public static WORK_PACKAGE_DETAIL_PATH = '/applicationFormWorkPackage/';
 
   private workPackageId: number;
   private projectId: number;

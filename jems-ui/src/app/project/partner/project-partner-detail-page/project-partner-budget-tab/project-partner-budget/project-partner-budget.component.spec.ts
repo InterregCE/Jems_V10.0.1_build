@@ -1,21 +1,20 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ProjectPartnerBudgetComponent} from './project-partner-budget.component';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {ProjectPartnerStore} from '../../../../project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {TestModule} from '../../../../../common/test-module';
-import {ProjectModule} from '../../../../project.module';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {TestModule} from '@common/test-module';
+import {ProjectModule} from '@project/project.module';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {of} from 'rxjs';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {ProjectVersionStore} from '@project/services/project-version-store.service';
 
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   let component: ProjectPartnerBudgetComponent;
   let fixture: ComponentFixture<ProjectPartnerBudgetComponent>;
   let httpTestingController: HttpTestingController;
-  let partnerStore: ProjectPartnerStore;
   let partnerDetailPageStore: ProjectPartnerDetailPageStore;
   let projectPartnerDetailPageStore: ProjectPartnerDetailPageStore;
 
@@ -40,6 +39,12 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
           }
         },
         {
+          provide: ProjectPartnerStore,
+          useValue: {
+            partner$: of({id: 2})
+          }
+        },
+        {
           provide: ProjectPartnerDetailPageStore,
           useClass: ProjectPartnerDetailPageStore
         },
@@ -51,13 +56,11 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
-    partnerStore = TestBed.inject(ProjectPartnerStore);
     partnerDetailPageStore = TestBed.inject(ProjectPartnerDetailPageStore);
     projectPartnerDetailPageStore = TestBed.inject(ProjectPartnerDetailPageStore);
   }));
 
   beforeEach(() => {
-    partnerStore.partner$.next({id: 2});
     fixture = TestBed.createComponent(ProjectPartnerBudgetComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

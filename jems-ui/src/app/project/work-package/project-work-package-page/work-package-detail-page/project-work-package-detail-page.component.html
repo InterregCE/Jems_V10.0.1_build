@@ -1,29 +1,28 @@
 <app-project-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
                            titleKey="project.application.form.section.part.c"
                            subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
-    <mat-tab-group
-            appNoWidthLimit
-            *ngIf="workPackageId"
-            (selectedIndexChange)="changeTab($event)"
-            [selectedIndex]="activeTab$ | async">
-        <mat-tab label="{{'workpackage.tab.objectives' | translate}}">
-            <app-project-work-package-objectives-tab>
-            </app-project-work-package-objectives-tab>
-        </mat-tab>
-        <mat-tab label="{{'workpackage.tab.investments' | translate}}">
-            <app-project-work-package-investments-tab
-                    [editable]="workPackageStore.isProjectEditable$ | async">
-            </app-project-work-package-investments-tab>
-        </mat-tab>
-        <mat-tab label="{{'workpackage.tab.activities' | translate}}">
-            <app-project-work-package-activities-tab></app-project-work-package-activities-tab>
-        </mat-tab>
-        <mat-tab label="{{'workpackage.tab.outputs' | translate}}">
-            <app-project-work-package-outputs-tab></app-project-work-package-outputs-tab>
-        </mat-tab>
-    </mat-tab-group>
+    <nav mat-tab-nav-bar
+         *ngIf="workPackageId">
+        <a [active]="activeTab('objectives')" mat-tab-link
+           (click)="routeTo('objectives')">
+            {{'workpackage.tab.objectives' | translate}}
+        </a>
+        <a [active]="activeTab('investments')" mat-tab-link
+           (click)="routeTo('investments')">
+            {{'workpackage.tab.investments' | translate}}
+        </a>
+        <a [active]="activeTab('activities')" mat-tab-link
+           (click)="routeTo('activities')">
+            {{'workpackage.tab.activities' | translate}}
+        </a>
+        <a [active]="activeTab('outputs')" mat-tab-link
+           (click)="routeTo('outputs')">
+            {{'workpackage.tab.outputs' | translate}}
+        </a>
+    </nav>
+    <router-outlet></router-outlet>
 
-    <app-project-work-package-objectives-tab *ngIf="!workPackageId">
+    <app-project-work-package-objectives-tab *ngIf="!workPackage.id">
     </app-project-work-package-objectives-tab>
 
 </app-project-page-template>

@@ -9,28 +9,30 @@ import {
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
 } from '@cat/api';
-import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
-import {ProjectPartner} from '../../../../model/ProjectPartner';
-import {ProjectPartnerRoleEnumUtil} from '../../../../model/ProjectPartnerRoleEnum';
-import {RoutingService} from '../../../../../common/services/routing.service';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {ProjectPartner} from '@project/model/ProjectPartner';
+import {ProjectPartnerRoleEnumUtil} from '@project/model/ProjectPartnerRoleEnum';
+import {RoutingService} from '@common/services/routing.service';
+import {ProjectVersionStore} from '@project/services/project-version-store.service';
 
 @Injectable()
 export class ProjectPartnerStore {
-  public static PARTNER_DETAIL_PATH = '/applicationFormPartner/detail/';
+  public static PARTNER_DETAIL_PATH = '/applicationFormPartner/';
 
   private partnerId: number;
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
 
   isProjectEditable$: Observable<boolean>;
-  partner$ = new ReplaySubject<OutputProjectPartnerDetail | any>(1);
+  partner$: Observable<OutputProjectPartnerDetail>;
   partners$: Observable<ProjectPartner[]>;
   dropdownPartners$: Observable<OutputProjectPartner[]>;
+
+  private updatedPartner$ = new Subject<OutputProjectPartnerDetail>();
 
   constructor(private partnerService: ProjectPartnerService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
@@ -50,8 +52,11 @@ export class ProjectPartnerStore {
         new ProjectPartner(projectPartner.id, index, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
       shareReplay(1)
     );
+    this.partner$ = this.partner();
+  }
 
-    combineLatest([
+  private partner(): Observable<OutputProjectPartnerDetail> {
+    const initialPartner$ =  combineLatest([
       this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
       this.projectStore.projectId$,
       this.projectVersionStore.currentRouteVersion$
@@ -65,20 +70,24 @@ export class ProjectPartnerStore {
           .pipe(
             catchError(err => {
               this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
-              return of({});
+              return of({} as OutputProjectPartnerDetail);
             })
           )
-        : of({})
+        : of({} as OutputProjectPartnerDetail)
       ),
-      tap(partner => this.partner$.next(partner)),
       tap(partner => Log.info('Fetched the programme partner:', this, partner)),
-    ).subscribe();
+    );
+
+    return merge(initialPartner$, this.updatedPartner$)
+      .pipe(
+        shareReplay(1)
+      );
   }
 
   savePartner(partner: InputProjectPartnerUpdate): Observable<OutputProjectPartnerDetail> {
     return this.partnerService.updateProjectPartner(partner)
       .pipe(
-        tap(saved => this.partner$.next(saved)),
+        tap(saved => this.updatedPartner$.next(saved)),
         tap(() => this.partnerUpdateEvent$.next(null)),
         tap(saved => Log.info('Updated partner:', this, saved))
       );
@@ -87,7 +96,7 @@ export class ProjectPartnerStore {
   createPartner(partner: InputProjectPartnerCreate): Observable<OutputProjectPartnerDetail> {
     return this.partnerService.createProjectPartner(this.projectId, partner)
       .pipe(
-        tap(created => this.partner$.next(created)),
+        tap(created => this.updatedPartner$.next(created)),
         tap(() => this.partnerUpdateEvent$.next(null)),
         tap(created => Log.info('Created partner:', this, created)),
         tap(() => this.projectApplicationFormSidenavService.refreshPartners(this.projectId)),
@@ -97,7 +106,7 @@ export class ProjectPartnerStore {
   updatePartnerAddress(addresses: ProjectPartnerAddressDTO[]): Observable<OutputProjectPartnerDetail> {
     return this.partnerService.updateProjectPartnerAddress(this.partnerId, addresses)
       .pipe(
-        tap(saved => this.partner$.next(saved)),
+        tap(saved => this.updatedPartner$.next(saved)),
         tap(saved => Log.info('Updated partner addresses:', this, saved)),
       );
   }
@@ -105,7 +114,7 @@ export class ProjectPartnerStore {
   updatePartnerContact(contacts: InputProjectContact[]): Observable<OutputProjectPartnerDetail> {
     return this.partnerService.updateProjectPartnerContact(this.partnerId, contacts)
       .pipe(
-        tap(saved => this.partner$.next(saved)),
+        tap(saved => this.updatedPartner$.next(saved)),
         tap(saved => Log.info('Updated partner contact:', this, saved)),
       );
   }
@@ -113,7 +122,7 @@ export class ProjectPartnerStore {
   updatePartnerMotivation(motivation: ProjectPartnerMotivationDTO): Observable<OutputProjectPartnerDetail> {
     return this.partnerService.updateProjectPartnerMotivation(this.partnerId, motivation)
       .pipe(
-        tap(saved => this.partner$.next(saved)),
+        tap(saved => this.updatedPartner$.next(saved)),
         tap(saved => Log.info('Updated partner motivation:', this, saved)),
       );
   }

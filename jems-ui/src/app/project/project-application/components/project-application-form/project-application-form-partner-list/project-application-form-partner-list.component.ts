@@ -12,13 +12,10 @@ import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {OutputProjectPartner, PageOutputProjectPartner} from '@cat/api';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {Forms} from '../../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {filter, map, take} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
-import {ProjectPartnerDetailPageComponent} from '../../../../partner/project-partner-detail-page/project-partner-detail-page.component';
-import {TabService} from '../../../../../common/services/tab.service';
-import {RoutingService} from '../../../../../common/services/routing.service';
-
+import {RoutingService} from '@common/services/routing.service';
 
 @Component({
   selector: 'app-project-application-form-partner-list',
@@ -53,14 +50,12 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
 
   tableConfiguration: TableConfiguration;
 
-  constructor(private dialog: MatDialog,
-              private router: RoutingService,
-              private tabService: TabService) {
+  constructor(private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
     this.tableConfiguration = new TableConfiguration({
-      routerLink: this.getPartnerLink(),
+      routerLink: '..',
       isTableClickable: true,
       columns: [
         {
@@ -112,15 +107,6 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
         filter(answer => !!answer),
         map(() => this.deletePartner.emit(partner.id)),
       ).subscribe();
-  }
-
-  goToPartnerBudget(id: number): void {
-    this.router.navigate([this.getPartnerLink(), id]);
-    this.tabService.changeTab(ProjectPartnerDetailPageComponent.name + id, 4);
-  }
-
-  private getPartnerLink(): string {
-    return `/app/project/detail/${this.projectId}/applicationFormPartner/detail`;
   }
 
 }

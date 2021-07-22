@@ -1,5 +1,6 @@
-<app-form (save)="onSubmit()"
-          (discard)="resetForm()">
+<app-form *ngIf="partner$ | async as partner"
+          (save)="onSubmit()"
+          (discard)="resetForm(partner)">
     <form appFormLayout [formGroup]="partnerContributionForm">
         <h3>{{'project.partner.motivation.header' | translate}}</h3>
 

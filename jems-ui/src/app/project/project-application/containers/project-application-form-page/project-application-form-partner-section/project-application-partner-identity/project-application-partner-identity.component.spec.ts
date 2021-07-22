@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ProjectApplicationPartnerIdentityComponent} from './project-application-partner-identity.component';
-import {TestModule} from '../../../../../../common/test-module';
-import {ProjectModule} from '../../../../../project.module';
+import {TestModule} from '@common/test-module';
+import {ProjectModule} from '@project/project.module';
 import {RouterTestingModule} from '@angular/router/testing';
 
 describe('ProjectApplicationPartnerIdentityComponent', () => {
@@ -24,7 +24,6 @@ describe('ProjectApplicationPartnerIdentityComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectApplicationPartnerIdentityComponent);
     component = fixture.componentInstance;
-    component.projectId = 1;
     fixture.detectChanges();
   });
 

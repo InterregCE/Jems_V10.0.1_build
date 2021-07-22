@@ -3,9 +3,8 @@ import {BaseComponent} from '@common/components/base-component';
 import {of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {catchError, take, takeUntil, tap} from 'rxjs/operators';
-import {Log} from '../../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {ActivatedRoute} from '@angular/router';
-import {TabService} from '../../../../common/services/tab.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {
   ProgrammeIndicatorService,
@@ -39,7 +38,6 @@ export class ProgrammeResultIndicatorSubmissionPageComponent extends BaseCompone
 
   constructor(private programmeIndicatorService: ProgrammeIndicatorService,
               private activatedRoute: ActivatedRoute,
-              private tabService: TabService,
               private programmePriorityService: ProgrammePriorityService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
