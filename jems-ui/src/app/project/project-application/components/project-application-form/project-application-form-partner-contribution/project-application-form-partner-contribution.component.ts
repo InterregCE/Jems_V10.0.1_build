@@ -45,7 +45,7 @@ export class ProjectApplicationFormPartnerContributionComponent {
   }
 
   resetForm(partner: OutputProjectPartnerDetail): void {
-    this.partnerContributionForm.patchValue(partner?.motivation);
+    this.partnerContributionForm.patchValue(partner?.motivation || {});
   }
 
   get controls(): any {
