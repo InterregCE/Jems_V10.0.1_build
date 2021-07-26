@@ -2,14 +2,14 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {map, mergeMap, startWith, take, tap} from 'rxjs/operators';
-import {Tables} from '../../../../../common/utils/tables';
-import {Log} from '../../../../../common/utils/log';
+import {Tables} from '@common/utils/tables';
+import {Log} from '@common/utils/log';
 import {ProjectPartnerService} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {ProjectVersionStore} from '@project/services/project-version-store.service';
 
 @Component({
   selector: 'app-project-application-form-partner-section',
@@ -52,7 +52,7 @@ export class ProjectApplicationFormPartnerSectionComponent {
   }
 
   deletePartner(partnerId: number): void {
-    this.projectPartnerService.deleteProjectPartner(partnerId, this.projectId)
+    this.projectPartnerService.deleteProjectPartner(partnerId)
       .pipe(
         take(1),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
