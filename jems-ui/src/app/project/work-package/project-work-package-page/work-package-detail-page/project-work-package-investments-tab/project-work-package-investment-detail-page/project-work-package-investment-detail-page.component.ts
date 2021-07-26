@@ -7,6 +7,7 @@ import {catchError, map, take, tap} from 'rxjs/operators';
 import {ProjectWorkPackageInvestmentDetailPageConstants} from './project-work-package-investment-detail-page.constants';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
+import {APPLICATION_FORM} from '@project/application-form-model';
 
 @Component({
   selector: 'app-project-work-package-investment-detail-page',
@@ -17,6 +18,7 @@ import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-packag
 })
 export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   constants = ProjectWorkPackageInvestmentDetailPageConstants;
+  APPLICATION_FORM = APPLICATION_FORM;
 
   private workPackageInvestmentId: number;
 

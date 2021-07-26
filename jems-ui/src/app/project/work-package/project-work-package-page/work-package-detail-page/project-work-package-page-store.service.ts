@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {
-  InputWorkPackageCreate,
   InputWorkPackageUpdate,
   OutputIndicatorSummaryDTO,
   ProjectDetailDTO,
@@ -64,15 +63,6 @@ export class ProjectWorkPackagePageStore {
       );
   }
 
-  createWorkPackage(workPackage: InputWorkPackageCreate): Observable<OutputWorkPackage> {
-    return this.workPackageService.createWorkPackage(this.projectId, workPackage)
-      .pipe(
-        tap(created => this.savedWorkPackage$.next(created)),
-        tap(created => Log.info('Created workPackage:', this, created)),
-        tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
-      );
-  }
-
   deleteWorkPackageInvestment(investmentId: number): Observable<void> {
     return this.workPackageInvestmentService.deleteWorkPackageInvestment(investmentId, this.projectId, this.workPackageId)
       .pipe(
@@ -107,11 +97,11 @@ export class ProjectWorkPackagePageStore {
         this.workPackageId = Number(workPackageId);
         this.projectId = projectId;
       }),
-      filter(([workPackageId, projectId]) => !!projectId),
+      filter(([, projectId]) => !!projectId),
       switchMap(([workPackageId, projectId, version]) => workPackageId
         ? this.workPackageService.getWorkPackageById(projectId, Number(workPackageId), version)
           .pipe(
-            catchError(err => {
+            catchError(() => {
               this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
               return of({} as OutputWorkPackage);
             })

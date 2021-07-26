@@ -238,11 +238,12 @@ export class ProjectApplicationFormSidenavService {
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.three'},
           route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormPartnership`,
         }] : [],
-      {
-        headline: {i18nKey: 'project.application.form.section.part.c.subsection.four'},
-        route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormWorkPackage`,
-        bullets: [...packages],
-      },
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN) ?
+        [{
+          headline: {i18nKey: 'project.application.form.section.part.c.subsection.four'},
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormWorkPackage`,
+          bullets: [...packages],
+        }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_RESULT) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.five'},

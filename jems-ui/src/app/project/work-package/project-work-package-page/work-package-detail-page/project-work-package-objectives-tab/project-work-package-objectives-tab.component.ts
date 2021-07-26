@@ -9,6 +9,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {APPLICATION_FORM} from '@project/application-form-model';
 
 @UntilDestroy()
 @Component({
@@ -20,6 +21,7 @@ import {ProjectStore} from '@project/project-application/containers/project-appl
 })
 export class ProjectWorkPackageObjectivesTabComponent {
 
+  APPLICATION_FORM = APPLICATION_FORM;
   workPackage$: Observable<OutputWorkPackage | any>;
   projectId: number;
   workPackageId: number;
@@ -61,16 +63,6 @@ export class ProjectWorkPackageObjectivesTabComponent {
   }
 
   onSubmit(): void {
-    if (!this.workPackageId) {
-      this.workPackageStore.createWorkPackage(this.form.value)
-        .pipe(
-          take(1),
-          tap(saved => this.redirectToWorkPackageDetail()),
-          tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
-          catchError(error => this.formService.setError(error))
-        ).subscribe();
-      return;
-    }
     this.workPackageStore.saveWorkPackage({
       id: this.workPackageId,
       ...this.form.value
@@ -106,7 +98,4 @@ export class ProjectWorkPackageObjectivesTabComponent {
     this.router.navigate(['..'], {relativeTo: this.activatedRoute});
   }
 
-  private redirectToWorkPackageDetail(): void {
-    this.router.navigate(['..', this.workPackageId], {relativeTo: this.activatedRoute});
-  }
 }

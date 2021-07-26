@@ -199,11 +199,6 @@ export const routes: Routes = [
                 component: ProjectWorkPackagePageComponent
               },
               {
-                path: 'create',
-                component: ProjectWorkPackageDetailPageComponent,
-                data: {breadcrumb: 'project.breadcrumb.workPackageCreate'},
-              },
-              {
                 path: ':workPackageId',
                 redirectTo: ':workPackageId/objectives',
               },

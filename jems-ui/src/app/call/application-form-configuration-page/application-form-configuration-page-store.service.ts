@@ -89,6 +89,20 @@ export class ApplicationFormConfigurationPageStore {
         this.addSectionNodes('application.config.project.section.c.1', 2, APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE, callPublished, configs),
         this.addSectionNodes('application.config.project.section.c.2', 2, APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT, callPublished, configs),
         this.addSectionNodes('application.config.project.section.c.3', 2, APPLICATION_FORM.SECTION_C.PROJECT_PARTNERSHIP, callPublished, configs),
+        this.addParentNode('application.config.project.section.c.4', 2, [
+          this.addSectionNodes('application.config.project.section.c.4.objectives', 2, APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES, callPublished, configs),
+          this.addParentNode('application.config.project.section.c.4.investments', 2, [
+            this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE, 2, callPublished, configs),
+            ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION, 2, callPublished, configs),
+            ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS, 2, callPublished, configs),
+            this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.RISK, 2, callPublished, configs),
+            this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.DOCUMENTATION, 2, callPublished, configs),
+            ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.OWNERSHIP, 2, callPublished, configs),
+          ]),
+          this.addSectionNodes('application.config.project.section.c.4.activities', 2, APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES, callPublished, configs),
+          this.addSectionNodes('application.config.project.section.c.4.outputs', 2, APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS, callPublished, configs),
+        ]),
+
         this.addSectionNodes('application.config.project.section.c.5', 2, APPLICATION_FORM.SECTION_C.PROJECT_RESULT, callPublished, configs),
         this.addSectionNodes('application.config.project.section.c.7', 2, APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT, callPublished, configs),
         this.addSectionNodes('application.config.project.section.c.8', 2, APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS, callPublished, configs)
@@ -114,7 +128,7 @@ export class ApplicationFormConfigurationPageStore {
     return {
       id,
       rootIndex,
-      children: this.getNodes(section, rootIndex, callPublished, configs, showStepToggle, showVisibilitySwitch),
+      children: this.addLeafNodes(section, rootIndex, callPublished, configs, showStepToggle, showVisibilitySwitch),
       showStepToggle: false,
       showVisibilitySwitch: false
     };
@@ -135,8 +149,8 @@ export class ApplicationFormConfigurationPageStore {
     };
   }
 
-  private getNodes(applicationFormModel: { [key: string]: string }, rootIndex: number, callPublished: boolean,
-                   configs: ApplicationFormFieldConfigurationDTO[], showStepToggle: boolean = true, showVisibilitySwitch: boolean = true): ApplicationFormFieldNode[] {
+  private addLeafNodes(applicationFormModel: { [key: string]: string }, rootIndex: number, callPublished: boolean,
+                       configs: ApplicationFormFieldConfigurationDTO[], showStepToggle: boolean = true, showVisibilitySwitch: boolean = true): ApplicationFormFieldNode[] {
     return Object.keys(applicationFormModel).flatMap(key => [this.addLeafNode(applicationFormModel[key], rootIndex, callPublished, configs, showStepToggle, showVisibilitySwitch)]);
   }
 

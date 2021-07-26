@@ -11,6 +11,7 @@
                         <h4 class="mb-0" appMultiColumnRow>
                             <span>{{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
                             <span appFormFieldWidth="xx-large"
+                                  *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE"
                                   class="text-overflow-ellipsis">{{output.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                         </h4>
                         <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
@@ -20,7 +21,7 @@
                         </button>
                     </div>
 
-                    <app-multi-language-container>
+                    <app-multi-language-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">
                         <app-multi-language-form-field
                                 label="project.application.form.work.package.output.title"
                                 [formControlName]="constants.TITLE.name"
@@ -28,7 +29,7 @@
                         </app-multi-language-form-field>
                     </app-multi-language-container>
 
-                    <mat-form-field [class.mat-form-field-invalid]="!data.outputIndicators.length">
+                    <mat-form-field [class.mat-form-field-invalid]="!data.outputIndicators.length" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
                         <mat-label>{{'project.application.form.work.package.output.programme.output.indicator' | translate}}</mat-label>
                         <mat-select [disabled]="!data.outputIndicators.length"
                                     [formControlName]="constants.RESULT_INDICATOR.name">
@@ -43,7 +44,7 @@
                     </mat-form-field>
 
                     <div appMultiColumnRow stretch>
-                        <mat-form-field>
+                        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
                             <mat-label>{{'project.application.form.work.package.output.measurement.unit' | translate}}</mat-label>
                             <input readonly matInput
                                    value="{{getMeasurementUnit(output.get(constants.RESULT_INDICATOR.name)?.value, data.outputIndicators)
@@ -51,7 +52,7 @@
                                    [disabled]="form.disabled">
                         </mat-form-field>
 
-                        <mat-form-field appFormFieldWidth="medium">
+                        <mat-form-field appFormFieldWidth="medium" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TARGET_VALUE">
                             <mat-label>{{'project.application.form.work.package.output.target.value' | translate}}</mat-label>
                             <input currencyMask type="integer" [options]="{min: 1, max: 99999999, align: 'right'}"
                                    name="targetValue" formControlName="targetValue" matInput>
@@ -59,13 +60,14 @@
                     </div>
 
                     <app-project-periods-select
+                            *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.DELIVERY_PERIOD"
                             [periods]="data.periods"
                             [control]="output.get(constants.PERIOD.name)"
                             label='project.application.form.work.package.output.delivery.period'
                             (selectionChanged)="formService.setDirty(true)">
                     </app-project-periods-select>
 
-                    <app-multi-language-container>
+                    <app-multi-language-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.DESCRIPTION">
                         <app-multi-language-form-field
                                 label="project.application.form.work.package.output.description"
                                 [formControlName]="constants.DESCRIPTION.name"

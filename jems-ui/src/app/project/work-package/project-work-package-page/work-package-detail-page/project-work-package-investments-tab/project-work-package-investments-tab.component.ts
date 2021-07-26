@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {WorkPackageInvestmentDTO, WorkPackageInvestmentService} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ActivatedRoute} from '@angular/router';
@@ -13,6 +13,8 @@ import {ProjectApplicationFormSidenavService} from '@project/project-application
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectVersionStore} from '@project/services/project-version-store.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
+import {APPLICATION_FORM} from '@project/application-form-model';
 
 @Component({
   selector: 'app-project-work-package-investments-tab',
@@ -58,6 +60,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectVersionStore: ProjectVersionStore,
               public projectStore: ProjectStore,
+              private visibilityStatusService: FormVisibilityStatusService,
               private dialog: MatDialog) {
   }
 
@@ -72,17 +75,18 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
           customCellTemplate: this.numberingCell,
           sortProperty: 'investmentNumber'
         },
-        {
-          displayedColumn: 'project.application.form.workpackage.investments.title',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.titleCell,
-          sortProperty: 'title'
-        },
-        {
-          displayedColumn: 'project.application.form.workpackage.investments.nuts3',
-          elementProperty: 'address.region3',
-          sortProperty: 'address.region3',
-        },
+        ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE) ?
+          [{
+            displayedColumn: 'project.application.form.workpackage.investments.title',
+            columnType: ColumnType.CustomComponent,
+            customCellTemplate: this.titleCell,
+            sortProperty: 'title'
+          }] : [],
+        ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.COUNTRY_AND_NUTS) ?          [{
+            displayedColumn: 'project.application.form.workpackage.investments.nuts3',
+            elementProperty: 'address.region3',
+            sortProperty: 'address.region3',
+          }] : [],
         {
           displayedColumn: ' ',
           columnType: ColumnType.CustomComponent,

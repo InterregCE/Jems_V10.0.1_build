@@ -11,6 +11,8 @@ import {ActivatedRoute} from '@angular/router';
 import {ProjectWorkPackagePageStore} from './project-work-package-page-store.service';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
+import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
+import {APPLICATION_FORM} from '@project/application-form-model';
 
 @Component({
   selector: 'app-project-work-package-page',
@@ -40,6 +42,7 @@ export class ProjectWorkPackagePageComponent implements OnInit {
   constructor(private pageStore: ProjectWorkPackagePageStore,
               private activatedRoute: ActivatedRoute,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+              private visibilityStatusService: FormVisibilityStatusService,
               private dialog: MatDialog) {
     this.data$ = combineLatest([
       this.pageStore.workPackages$,
@@ -65,11 +68,12 @@ export class ProjectWorkPackagePageComponent implements OnInit {
           alternativeValue: 'project.application.form.partner.number.info.auto',
           sortProperty: 'number'
         },
-        {
-          displayedColumn: 'project.application.form.workpackage.name',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.titleCell
-        },
+        ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES.TITLE) ?
+          [{
+            displayedColumn: 'project.application.form.workpackage.name',
+            columnType: ColumnType.CustomComponent,
+            customCellTemplate: this.titleCell
+          }] : [],
         {
           displayedColumn: ' ',
           columnType: ColumnType.CustomComponent,
@@ -77,6 +81,14 @@ export class ProjectWorkPackagePageComponent implements OnInit {
         },
       ]
     });
+  }
+
+  createWorkPackage(): void {
+    this.pageStore.createEmptyWorkPackage(this.projectId)
+      .pipe(
+        take(1),
+        tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId)),
+      ).subscribe();
   }
 
   delete(workPackage: OutputWorkPackageSimple, name: string): void {

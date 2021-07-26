@@ -8,6 +8,7 @@ import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.se
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {InputTranslation, OutputIndicatorSummaryDTO, ProjectPeriodDTO, WorkPackageOutputDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
+import {APPLICATION_FORM} from '@project/application-form-model';
 
 @UntilDestroy()
 @Component({
@@ -19,6 +20,7 @@ import {take} from 'rxjs/internal/operators';
 })
 export class ProjectWorkPackageOutputsTabComponent implements OnInit {
   constants = ProjectWorkPackageOutputsTabConstants;
+  APPLICATION_FORM = APPLICATION_FORM;
 
   form = this.formBuilder.group({
     outputs: this.formBuilder.array([])

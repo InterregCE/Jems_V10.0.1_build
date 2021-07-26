@@ -393,12 +393,8 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.activities.end.period",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-    PROJECT_ACTIVITIES_PARTNERS_INVOLVED(
-        "application.config.project.activities.partners.involved",
-        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
-    ),
-    PROJECT_DELIVERABLES(
-        "application.config.project.deliverables",
+    PROJECT_ACTIVITIES_DELIVERABLES(
+        "application.config.project.activities.deliverables",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_OUTPUT_TITLE(

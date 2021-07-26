@@ -124,6 +124,50 @@ export const APPLICATION_FORM = {
     PROJECT_PARTNERSHIP: {
       PARTNERSHIP: 'application.config.project.partnership',
     },
+    PROJECT_WORK_PLAN: {
+      OBJECTIVES: {
+        TITLE: 'application.config.project.work.package.title',
+        SPECIFIC_OBJECTIVE: 'application.config.project.specific.objective',
+        COMMUNICATION_OBJECTIVES_AND_TARGET_AUDIENCE: 'application.config.project.communication.objectives.and.target.audience',
+      },
+      INVESTMENTS: {
+        TITLE: 'application.config.project.investment.title',
+        JUSTIFICATION: {
+          WHY_IS_INVESTMENT_NEEDED: 'application.config.project.investment.why.is.investment.needed',
+          CROSS_BORDER_TRANSNATIONAL_RELEVANCE_OF_INVESTMENT: 'application.config.project.investment.cross.border.transnational.relevance.of.investment',
+          WHO_IS_BENEFITING: 'application.config.project.investment.who.is.benefiting',
+          PILOT_CLARIFICATION: 'application.config.project.investment.pilot.clarification',
+        },
+        ADDRESS: {
+          COUNTRY_AND_NUTS: 'application.config.project.investment.country',
+          STREET: 'application.config.project.investment.street',
+          HOUSE_NUMBER: 'application.config.project.investment.house.number',
+          POSTAL_CODE: 'application.config.project.investment.postal.code',
+          CITY: 'application.config.project.investment.city'
+        },
+        RISK: 'application.config.project.investment.risk',
+        DOCUMENTATION: 'application.config.project.investment.documentation',
+        OWNERSHIP: {
+          WHO_OWNS_THE_INVESTMENT_SITE: 'application.config.project.investment.who.owns.the.investment.site',
+          OWNERSHIP_AFTER_END_OF_PROJECT: 'application.config.project.investment.ownership.after.end.of.project',
+          MAINTENANCE: 'application.config.project.investment.maintenance',
+        }
+      },
+      ACTIVITIES: {
+        TITLE: 'application.config.project.activities.title',
+        DESCRIPTION: 'application.config.project.activities.description',
+        START_PERIOD: 'application.config.project.activities.start.period',
+        END_PERIOD: 'application.config.project.activities.end.period',
+        DELIVERABLES: 'application.config.project.activities.deliverables',
+      },
+      OUTPUTS: {
+        TITLE: 'application.config.project.output.title',
+        PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT: 'application.config.project.output.programme.output.indicator.and.measurement.unit',
+        TARGET_VALUE: 'application.config.project.output.target.value',
+        DELIVERY_PERIOD: 'application.config.project.output.delivery.period',
+        DESCRIPTION: 'application.config.project.output.description',
+      }
+    },
     PROJECT_RESULT: {
       PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT: 'application.config.project.result.indicator.and.measurement.unit',
       TARGET_VALUE: 'application.config.project.result.target.value',

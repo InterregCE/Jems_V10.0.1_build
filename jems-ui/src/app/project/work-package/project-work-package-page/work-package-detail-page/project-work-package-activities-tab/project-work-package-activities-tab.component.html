@@ -10,6 +10,7 @@
                             <h4 appMultiColumnRow class="mb-0">
                                 <span>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
                                 <span appFormFieldWidth="44rem"
+                                      *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE"
                                       class="text-overflow-ellipsis">{{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                             </h4>
 
@@ -19,7 +20,8 @@
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>
-                        <app-multi-language-container>
+                        <app-multi-language-container
+                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE">
                             <app-multi-language-form-field
                                     type="textarea"
                                     minRows="1"
@@ -32,6 +34,7 @@
                         <div>
                             <div appMultiColumnRow stretch>
                                 <app-project-periods-select
+                                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.START_PERIOD"
                                         [periods]="data.periods"
                                         [control]="activity.get(constants.START_PERIOD.name)"
                                         label='project.work.package.tab.activity.start.period'
@@ -39,6 +42,7 @@
                                 </app-project-periods-select>
 
                                 <app-project-periods-select
+                                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.END_PERIOD"
                                         [periods]="data.periods"
                                         [control]="activity.get(constants.END_PERIOD.name)"
                                         label='project.work.package.tab.activity.end.period'
@@ -52,59 +56,63 @@
                             </mat-error>
                         </div>
 
-                        <app-multi-language-container>
+                        <app-multi-language-container
+                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DESCRIPTION">
                             <app-multi-language-form-field [label]="'project.work.package.tab.activity.description'"
                                                            [formControlName]="constants.DESCRIPTION.name"
                                                            [maxLength]="constants.DESCRIPTION.maxLength">
                             </app-multi-language-form-field>
                         </app-multi-language-container>
 
-                        <h4>{{'Deliverables' | translate}}</h4>
-                        <p>{{'project.work.package.tab.deliverables.intro' | translate}}</p>
-                        <app-multi-language-container appNoWidthLimit *ngIf="deliverables(i).controls?.length">
-                            <div [appTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:10}, {maxInRem:2}]">
-                                <div>
-                                    <span class="mat-body-strong">{{'project.work.package.tab.deliverables.number' | translate }}</span>
-                                    <span class="mat-body-strong">{{'project.work.package.tab.deliverables.deliverable' | translate }}</span>
-                                    <span class="mat-body-strong">{{'project.work.package.tab.deliverables.period' | translate }}</span>
-                                    <div class="mat-body-strong"></div>
-                                </div>
-                                <div *ngFor="let deliverable of deliverables(i).controls;let j=index">
-                                    <ng-container [formArrayName]="constants.DELIVERABLES.name">
-                                        <ng-container [formGroupName]="j">
-                                            <div>D.{{data.workPackageNumber}}.{{i + 1}}.{{j + 1}}</div>
+                        <ng-container
+                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DELIVERABLES">
+                            <h4>{{'Deliverables' | translate}}</h4>
+                            <p>{{'project.work.package.tab.deliverables.intro' | translate}}</p>
+                            <app-multi-language-container appNoWidthLimit *ngIf="deliverables(i).controls?.length">
+                                <div [appTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:10}, {maxInRem:2}]">
+                                    <div>
+                                        <span class="mat-body-strong">{{'project.work.package.tab.deliverables.number' | translate }}</span>
+                                        <span class="mat-body-strong">{{'project.work.package.tab.deliverables.deliverable' | translate }}</span>
+                                        <span class="mat-body-strong">{{'project.work.package.tab.deliverables.period' | translate }}</span>
+                                        <div class="mat-body-strong"></div>
+                                    </div>
+                                    <div *ngFor="let deliverable of deliverables(i).controls;let j=index">
+                                        <ng-container [formArrayName]="constants.DELIVERABLES.name">
+                                            <ng-container [formGroupName]="j">
+                                                <div>D.{{data.workPackageNumber}}.{{i + 1}}.{{j + 1}}</div>
 
-                                            <app-multi-language-form-field
-                                                    [label]="'project.work.package.tab.deliverables.deliverable'"
-                                                    [formControlName]="constants.DELIVERABLE.name"
-                                                    [maxLength]="constants.DELIVERABLE.maxLength">
-                                            </app-multi-language-form-field>
+                                                <app-multi-language-form-field
+                                                        [label]="'project.work.package.tab.deliverables.deliverable'"
+                                                        [formControlName]="constants.DELIVERABLE.name"
+                                                        [maxLength]="constants.DELIVERABLE.maxLength">
+                                                </app-multi-language-form-field>
 
-                                            <app-project-periods-select
-                                                    [periods]="data.periods"
-                                                    [control]="deliverable.get(constants.PERIOD.name)"
-                                                    label='project.work.package.tab.deliverables.period'
-                                                    (selectionChanged)="formService.setDirty(true)">
-                                            </app-project-periods-select>
+                                                <app-project-periods-select
+                                                        [periods]="data.periods"
+                                                        [control]="deliverable.get(constants.PERIOD.name)"
+                                                        label='project.work.package.tab.deliverables.period'
+                                                        (selectionChanged)="formService.setDirty(true)">
+                                                </app-project-periods-select>
 
-                                            <div>
-                                                <button *ngIf="form.enabled"
-                                                        type="button"
-                                                        (click)="removeDeliverable(i, j)"
-                                                        mat-icon-button
-                                                        color="accent">
-                                                    <mat-icon>delete</mat-icon>
-                                                </button>
-                                            </div>
+                                                <div>
+                                                    <button *ngIf="form.enabled"
+                                                            type="button"
+                                                            (click)="removeDeliverable(i, j)"
+                                                            mat-icon-button
+                                                            color="accent">
+                                                        <mat-icon>delete</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </ng-container>
                                         </ng-container>
-                                    </ng-container>
+                                    </div>
                                 </div>
-                            </div>
-                        </app-multi-language-container>
-                        <button *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
-                                (click)="addNewDeliverable(i)">
-                            <mat-icon>add</mat-icon>
-                        </button>
+                            </app-multi-language-container>
+                            <button *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
+                                    (click)="addNewDeliverable(i)">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </ng-container>
                     </div>
                 </ng-container>
             </div>

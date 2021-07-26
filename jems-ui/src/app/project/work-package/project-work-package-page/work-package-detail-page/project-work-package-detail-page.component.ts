@@ -3,6 +3,8 @@ import {ActivatedRoute} from '@angular/router';
 import {WorkPackageService} from '@cat/api';
 import {ProjectWorkPackagePageStore} from './project-work-package-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
+import {APPLICATION_FORM} from '@project/application-form-model';
+
 @Component({
   selector: 'app-project-work-package-detail-page',
   templateUrl: './project-work-package-detail-page.component.html',
@@ -11,6 +13,7 @@ import {RoutingService} from '@common/services/routing.service';
 })
 export class ProjectWorkPackageDetailPageComponent {
 
+  APPLICATION_FORM = APPLICATION_FORM;
   workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
 
   constructor(private workPackageService: WorkPackageService,
