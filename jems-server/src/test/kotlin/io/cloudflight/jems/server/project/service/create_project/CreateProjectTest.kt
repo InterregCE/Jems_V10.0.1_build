@@ -4,6 +4,8 @@ import io.cloudflight.jems.api.audit.dto.AuditAction.APPLICATION_STATUS_CHANGED
 import io.cloudflight.jems.api.audit.dto.AuditAction.APPLICATION_VERSION_RECORDED
 import io.cloudflight.jems.api.audit.dto.AuditAction.CALL_ALREADY_ENDED
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
@@ -81,6 +83,9 @@ internal class CreateProjectTest : UnitTest() {
                 acronym = acronym,
                 applicant = user,
                 projectStatus = ProjectStatus(id = 4587L, status = status, user = user, updated = ZonedDateTime.now()),
+                title = setOf(InputTranslation(SystemLanguage.EN, "title")),
+                specificObjective = null,
+                programmePriority = null
             )
         }
 
@@ -146,27 +151,28 @@ internal class CreateProjectTest : UnitTest() {
     fun `createProject - 2STEP mode - everything is OK`() {
         every { callPersistence.getCallById(CALL_ID) } returns call
         every { securityService.currentUser!!.user.id } returns USER_ID
-        every { projectPersistence.createProjectWithStatus("test application", STEP1_DRAFT, USER_ID, CALL_ID) } returns
-            dummyProjectWithStatus(acronym = "test application", status = STEP1_DRAFT)
+        val acronym = "test acronym"
+        every { projectPersistence.createProjectWithStatus(acronym, STEP1_DRAFT, USER_ID, CALL_ID) } returns
+            dummyProjectWithStatus(acronym = acronym, status = STEP1_DRAFT)
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
 
-        val result = createProject.createProject("test application", CALL_ID)
+        val result = createProject.createProject(acronym, CALL_ID)
 
         assertThat(result.projectStatus.status).isEqualTo(STEP1_DRAFT)
         assertThat(result.projectStatus.user).isEqualTo(user)
-        assertThat(result.acronym).isEqualTo("test application")
+        assertThat(result.acronym).isEqualTo(acronym)
         assertThat(result.applicant.email).isEqualTo("some@applicant")
 
         verify(exactly = 2) { auditPublisher.publishEvent(any()) }
         assertThat(slot[0].auditCandidate).isEqualTo(AuditCandidate(
             action = APPLICATION_STATUS_CHANGED,
-            project = AuditProject(id = "29", name = "test application"),
+            project = AuditProject(id = "29", name = acronym),
             description = "Project application created with status STEP1_DRAFT",
         ))
         assertThat(slot[1].auditCandidate.action).isEqualTo(APPLICATION_VERSION_RECORDED)
-        assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", name = "test application"))
+        assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", name = acronym))
         assertThat(slot[1].auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
     }
 

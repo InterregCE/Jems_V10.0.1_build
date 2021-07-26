@@ -8,7 +8,10 @@
             </app-project-application-information>
         </div>
 
-        <app-project-application-actions appNoWidthLimit></app-project-application-actions>
+        <app-project-application-actions
+                *hasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition projectDetailStore.isThisUserOwner$ | async"
+                appNoWidthLimit>
+        </app-project-application-actions>
 
         <ng-container *ngIf="projectDetailStore.preConditionCheckResult$ | async as results">
             <app-project-application-pre-condition-check-result
@@ -45,7 +48,8 @@
             </app-context-info>
         </h3>
         <mat-tab-group appNoWidthLimit>
-            <mat-tab label="{{'file.tab.application' | translate}}">
+            <mat-tab *hasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition projectDetailStore.isThisUserOwner$ | async"
+                     label="{{'file.tab.application' | translate}}">
                 <ng-template matTabContent>
                     <app-project-application-files
                             [projectId]="projectId"

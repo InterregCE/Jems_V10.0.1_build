@@ -161,7 +161,7 @@ class ProjectPartnerControllerIntegrationTest {
             get("/api/project/partner/0")
                 .accept(MediaType.APPLICATION_JSON)
         )
-            .andExpect(status().isInternalServerError)
+            .andExpect(status().isNotFound)
             .andExpect(
                 jsonPath("$.i18nMessage.i18nKey")
                     .value("use.case.get.project.partner.by.id.failed")

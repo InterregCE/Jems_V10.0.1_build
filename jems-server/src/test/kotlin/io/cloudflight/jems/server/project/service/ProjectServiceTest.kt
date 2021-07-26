@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.project.entity.TranslationId
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
@@ -180,10 +181,23 @@ class ProjectServiceTest : UnitTest() {
             applicant = account,
             currentStatus = statusDraft,
         )
+        val callSettings = ProjectCallSettings(
+            callId = 2,
+            callName = "callName",
+            startDate = ZonedDateTime.now(),
+            endDate = ZonedDateTime.now(),
+            endDateStep1 = null,
+            lengthOfPeriod = 6,
+            isAdditionalFundAllowed = false,
+            flatRates = emptySet(),
+            lumpSums = emptyList(),
+            unitCosts = emptyList(),
+            applicationFormFieldConfigurations = mutableSetOf()
+        )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         val slot = slot<ProjectEntity>()
         every { projectRepository.save(capture(slot)) } returnsArgument 0
-        every { getProjectInteractor.getProjectForm(1L) } returns ProjectForm(id = 4L, acronym = "acronym", duration = 12)
+        every { getProjectInteractor.getProjectForm(1L) } returns ProjectForm(id = 4L, callSettings = callSettings, acronym = "acronym", duration = 12)
 
         projectService.update(1, projectData)
 

@@ -7,21 +7,23 @@
 </app-main-page-template>
 
 <ng-template #versionWarn>
-    <app-alert *ngIf="versionWarnData$ | async as data"
-               [type]="Alert.WARNING"
-               [show]="!data.currentIsLatest">
-        <div id="version-warn">
-            <span class="mt-2">{{'project.versions.warn.old.version' | translate}}</span>
-            <span class="mt-2">
-                {{data.current?.version}}, {{data.current?.status}}
-                ({{data.current?.createdAt | localeDate: 'L' : 'LT'}})
-            </span>
-            <button id="switch-to-current" mat-raised-button
-                    (click)="pageStore.changeVersion(data.latest)">
-                {{'project.versions.warn.switch' | translate}}
-            </button>
-        </div>
-    </app-alert>
+    <ng-container *hasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition pageStore.isThisUserOwner$ | async">
+        <app-alert *ngIf="versionWarnData$ | async as data"
+                   [type]="Alert.WARNING"
+                   [show]="!data.currentIsLatest">
+            <div id="version-warn">
+                <span class="mt-2">{{'project.versions.warn.old.version' | translate}}</span>
+                <span class="mt-2">
+                    {{data.current?.version}}, {{data.current?.status}}
+                    ({{data.current?.createdAt | localeDate: 'L' : 'LT'}})
+                </span>
+                <button id="switch-to-current" mat-raised-button
+                        (click)="pageStore.changeVersion(data.latest)">
+                    {{'project.versions.warn.switch' | translate}}
+                </button>
+            </div>
+        </app-alert>
+    </ng-container>
 </ng-template>
 
 <ng-template #sidenavVersionSelect>

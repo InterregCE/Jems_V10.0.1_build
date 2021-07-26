@@ -12,12 +12,12 @@ import {
   UserRoleCreateDTO
 } from '@cat/api';
 import {MatSort} from '@angular/material/sort';
-import {Tables} from '../../../../../common/utils/tables';
-import {Log} from '../../../../../common/utils/log';
+import {Tables} from '@common/utils/tables';
+import {Log} from '@common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
-import {APIError} from '../../../../../common/models/APIError';
-import {ProjectUtil} from '../../../../project-util';
-import {ProjectDetailPageStore} from '../../../../project-detail-page/project-detail-page-store';
+import {APIError} from '@common/models/APIError';
+import {ProjectUtil} from '@project/project-util';
+import {ProjectDetailPageStore} from '@project/project-detail-page/project-detail-page-store';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Component({
@@ -66,18 +66,17 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
     this.currentPage$,
     this.projectDetailPageStore.project$,
     this.projectDetailPageStore.projectCurrentDecisions$,
-    this.projectDetailPageStore.isProjectLatestVersion$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate),
     this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate),
     this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationRetrieve),
     this.projectDetailPageStore.isThisUserOwner$,
   ])
     .pipe(
-      map(([page, project, decisions, isProjectLatestVersion, canUploadAssessmentFile, canUploadApplicationFile, canRetrieveApplicationFile, isThisUserOwner]: [PageOutputProjectFile, ProjectDetailDTO, ProjectDecisionDTO, boolean, boolean, boolean, boolean, boolean]) => ({
+      map(([page, project, decisions, canUploadAssessmentFile, canUploadApplicationFile, canRetrieveApplicationFile, isThisUserOwner]: [PageOutputProjectFile, ProjectDetailDTO, ProjectDecisionDTO, boolean, boolean, boolean, boolean, boolean]) => ({
         page,
         project,
         fundingDecisionDefined: !!decisions?.finalFundingDecision || !!decisions?.preFundingDecision,
-        uploadPossible: this.canUploadFiles(project, isProjectLatestVersion, canUploadAssessmentFile, canUploadApplicationFile, canRetrieveApplicationFile),
+        uploadPossible: this.canUploadFiles(project, canUploadAssessmentFile, canUploadApplicationFile, canRetrieveApplicationFile),
         canChangeApplicationFile: canUploadApplicationFile,
         canRetrieveApplicationFile,
         canChangeAssessmentFile: canUploadAssessmentFile,
@@ -161,11 +160,7 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
         ).subscribe();
   }
 
-  private canUploadFiles(project: ProjectDetailDTO, isProjectLatestVersion: boolean, canUploadAssessmentFile: boolean, canUploadApplicationFile: boolean, canRetrieveApplicationFile: boolean): boolean {
-    if (!isProjectLatestVersion) {
-      return false;
-    }
-
+  private canUploadFiles(project: ProjectDetailDTO, canUploadAssessmentFile: boolean, canUploadApplicationFile: boolean, canRetrieveApplicationFile: boolean): boolean {
     if (this.fileType === OutputProjectFile.TypeEnum.ASSESSMENTFILE) {
       return canUploadAssessmentFile;
     }

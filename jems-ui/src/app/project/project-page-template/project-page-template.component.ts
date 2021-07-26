@@ -2,9 +2,10 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, Input, TemplateRef, V
 import {ProjectApplicationFormSidenavService} from '../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Alert} from '@common/components/forms/alert';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectVersionDTO} from '@cat/api';
+import {ProjectVersionDTO, UserRoleDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {ProjectPageTemplateStore} from './project-page-template-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-project-page-template',
@@ -15,6 +16,7 @@ import {ProjectPageTemplateStore} from './project-page-template-store.service';
 })
 export class ProjectPageTemplateComponent implements AfterViewInit {
   Alert = Alert;
+  PermissionsEnum = PermissionsEnum;
 
   @ViewChild('sidenavVersionSelect', {static: true})
   sidenavVersionSelect: TemplateRef<any>;

@@ -8,17 +8,23 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySimple
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
+import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
-import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
-import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.server.call.controller.toDTO
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
@@ -32,9 +38,11 @@ import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofina
 import io.cloudflight.jems.server.project.service.create_project.CreateProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
-import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
+import io.cloudflight.jems.server.project.service.model.ProjectForm
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
@@ -62,8 +70,23 @@ import java.time.ZonedDateTime
 class ProjectControllerTest {
 
     companion object {
+        private const val projectId = 2L
         private val startDate = ZonedDateTime.now().minusDays(2)
         private val endDate = ZonedDateTime.now().plusDays(5)
+
+        val callSettings = ProjectCallSettings(
+            callId = 2L,
+            callName = "call",
+            startDate = startDate,
+            endDate = endDate,
+            lengthOfPeriod = 2,
+            endDateStep1 = endDate,
+            flatRates = emptySet(),
+            lumpSums = emptyList(),
+            unitCosts = emptyList(),
+            isAdditionalFundAllowed = false,
+            applicationFormFieldConfigurations = mutableSetOf()
+        )
 
         private val partner1 = ProjectPartner(
             id = 2,
@@ -101,6 +124,30 @@ class ProjectControllerTest {
             lastResubmissionDate = ZonedDateTime.parse("2021-05-14T23:30:00+02:00"),
             specificObjectiveCode = "SO1.1",
             programmePriorityCode = "P1",
+        )
+
+        private val projectPeriod = ProjectPeriod(number = 1, start = 1, end = 12)
+        private val projectForm = ProjectForm(
+            id = projectId,
+            callSettings = callSettings,
+            acronym = "acronym",
+            duration = 12,
+            title = setOf(InputTranslation(SystemLanguage.EN, "title")),
+            intro = setOf(InputTranslation(SystemLanguage.EN, "intro")),
+            specificObjective = OutputProgrammePriorityPolicySimpleDTO(ProgrammeObjectivePolicy.AdvancedTechnologies, "code"),
+            programmePriority = OutputProgrammePrioritySimple("code", setOf(InputTranslation(SystemLanguage.EN, "title"))),
+            periods = listOf(projectPeriod)
+        )
+        private val projectDetailFormDTO = ProjectDetailFormDTO(
+            id = projectId,
+            callSettings = callSettings.toDto(),
+            acronym = projectForm.acronym,
+            title = projectForm.title!!,
+            intro = projectForm.intro!!,
+            duration = projectForm.duration,
+            specificObjective = projectForm.specificObjective,
+            programmePriority = projectForm.programmePriority,
+            periods = listOf(ProjectPeriodDTO(projectId = projectId, number = 1, start = 1, end = 12))
         )
     }
 
@@ -252,19 +299,6 @@ class ProjectControllerTest {
         val pId = 1L
         val user = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"))
         val projectStatus = ProjectStatus(5L, ApplicationStatus.APPROVED, user, updated = startDate)
-        val callSettings = ProjectCallSettings(
-            callId = 2L,
-            callName = "call",
-            startDate = startDate,
-            endDate = endDate,
-            lengthOfPeriod = 2,
-            endDateStep1 = endDate,
-            flatRates = emptySet(),
-            lumpSums = emptyList(),
-            unitCosts = emptyList(),
-            isAdditionalFundAllowed = false,
-            applicationFormFieldConfigurations = mutableSetOf()
-        )
         val project = ProjectDetail(
             id = pId,
             callSettings = callSettings,
@@ -317,5 +351,34 @@ class ProjectControllerTest {
                 )
             )
         )
+    }
+
+    @Test
+    fun `get Project Form By Id`() {
+        every { getProjectInteractor.getProjectForm(projectId, null) } returns projectForm
+        assertThat(controller.getProjectFormById(projectId = projectId, null))
+            .isEqualTo(projectDetailFormDTO)
+    }
+
+    @Test
+    fun `get Project Form By Id with previous version`() {
+        val version = "3.0"
+        every { getProjectInteractor.getProjectForm(projectId, version) } returns projectForm
+        assertThat(controller.getProjectFormById(projectId = projectId, version))
+            .isEqualTo(projectDetailFormDTO)
+    }
+
+    @Test
+    fun `update Project Form`() {
+        val inputData = InputProjectData(
+            acronym = "acronym",
+            duration = 12,
+            title = setOf(InputTranslation(SystemLanguage.EN, "title")),
+            intro = setOf(InputTranslation(SystemLanguage.EN, "intro")),
+            specificObjective = ProgrammeObjectivePolicy.AdvancedTechnologies,
+        )
+        every { projectService.update(projectId, inputData) } returns projectForm
+        assertThat(controller.updateProjectForm(projectId = projectId, inputData))
+            .isEqualTo(projectDetailFormDTO)
     }
 }
