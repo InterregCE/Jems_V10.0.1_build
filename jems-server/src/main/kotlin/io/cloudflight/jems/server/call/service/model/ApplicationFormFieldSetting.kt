@@ -141,6 +141,129 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.partner.motivation.organization.experience",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PARTNER_BUDGET_AND_CO_FINANCING(
+        "application.config.project.partner.budget.and.co.financing",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN(
+        "application.config.project.partner.co.financing.add.new.contribution.origin",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_PERIODS(
+        "application.config.project.partner.budget.periods",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_STAFF_COST_STAFF_FUNCTION(
+        "application.config.project.partner.budget.staff.cost.staff.function",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_STAFF_COST_COMMENT(
+        "application.config.project.partner.budget.staff.cost.comment",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_STAFF_COST_UNIT_TYPE_AND_NUMBER_OF_UNITS(
+        "application.config.project.partner.budget.staff.cost.unit.type.and.number.of.units",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_STAFF_COST_PRICE_PER_UNIT(
+        "application.config.project.partner.budget.staff.cost.price.per.unit",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_DESCRIPTION(
+        "application.config.project.partner.budget.travel.and.accommodation.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_UNIT_TYPE_AND_NUMBER_OF_UNITS(
+        "application.config.project.partner.budget.travel.and.accommodation.unit.type.and.number.of.units",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_PRICE_PER_UNIT(
+        "application.config.project.partner.budget.travel.and.accommodation.price.per.unit",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EXTERNAL_EXPERTISE_DESCRIPTION(
+        "application.config.project.partner.budget.external.expertise.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EXTERNAL_EXPERTISE_AWARD_PROCEDURE(
+        "application.config.project.partner.budget.external.expertise.award.procedure",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EXTERNAL_EXPERTISE_INVESTMENT(
+        "application.config.project.partner.budget.external.expertise.investment",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EXTERNAL_EXPERTISE_UNIT_TYPE_AND_NUMBER_OF_UNITS(
+        "application.config.project.partner.budget.external.expertise.unit.type.and.number.of.units",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EXTERNAL_EXPERTISE_PRICE_PER_UNIT(
+        "application.config.project.partner.budget.external.expertise.price.per.unit",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EQUIPMENT_DESCRIPTION(
+        "application.config.project.partner.budget.equipment.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EQUIPMENT_AWARD_PROCEDURE(
+        "application.config.project.partner.budget.equipment.award.procedure",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EQUIPMENT_INVESTMENT(
+        "application.config.project.partner.budget.equipment.investment",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EQUIPMENT_UNIT_TYPE_AND_NUMBER_OF_UNITS(
+        "application.config.project.partner.budget.equipment.unit.type.and.number.of.units",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EQUIPMENT_PRICE_PER_UNIT(
+        "application.config.project.partner.budget.equipment.price.per.unit",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_DESCRIPTION(
+        "application.config.project.partner.budget.infrastructure.and.works.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_AWARD_PROCEDURE(
+        "application.config.project.partner.budget.infrastructure.and.works.award.procedure",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_INVESTMENT(
+        "application.config.project.partner.budget.infrastructure.and.works.investment",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_UNIT_TYPE_AND_NUMBER_OF_UNITS(
+        "application.config.project.partner.budget.infrastructure.and.works.unit.type.and.number.of.units",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_PRICE_PER_UNIT(
+        "application.config.project.partner.budget.infrastructure.and.works.price.per.unit",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+
+    PARTNER_BUDGET_UNIT_COSTS_PROGRAMME_UNIT_COSTS(
+        "application.config.project.partner.budget.unit.costs.programme.unit.costs",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_UNIT_COSTS_DESCRIPTION(
+        "application.config.project.partner.budget.unit.costs.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_UNIT_COSTS__UNIT_TYPE_AND_NUMBER_OF_UNITS(
+        "application.config.project.partner.budget.unit.costs.unit.type.and.number.of.units",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_UNIT_COSTS_PRICE_PER_UNIT(
+        "application.config.project.partner.budget.unit.costs.price.per.unit",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_ASSOCIATED_ORGANIZATIONS(
+        "application.config.project.partner.associated.organizations",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+
+
     PROJECT_OVERALL_OBJECTIVE(
         "application.config.project.overall.objective",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -366,6 +489,38 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
                     }
                 ApplicationFormFieldConfiguration(it.id, defaultVisibilityStatus)
             }.toMutableSet()
+
+        fun getFieldsThatDependsOnBudgetSetting() : Set<String> =
+            setOf(
+                PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id,
+                PARTNER_BUDGET_PERIODS.id,
+                PARTNER_BUDGET_STAFF_COST_STAFF_FUNCTION.id,
+                PARTNER_BUDGET_STAFF_COST_COMMENT.id,
+                PARTNER_BUDGET_STAFF_COST_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                PARTNER_BUDGET_STAFF_COST_PRICE_PER_UNIT.id,
+                PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_DESCRIPTION.id,
+                PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_PRICE_PER_UNIT.id,
+                PARTNER_BUDGET_EXTERNAL_EXPERTISE_DESCRIPTION.id,
+                PARTNER_BUDGET_EXTERNAL_EXPERTISE_AWARD_PROCEDURE.id,
+                PARTNER_BUDGET_EXTERNAL_EXPERTISE_INVESTMENT.id,
+                PARTNER_BUDGET_EXTERNAL_EXPERTISE_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                PARTNER_BUDGET_EXTERNAL_EXPERTISE_PRICE_PER_UNIT.id,
+                PARTNER_BUDGET_EQUIPMENT_DESCRIPTION.id,
+                PARTNER_BUDGET_EQUIPMENT_AWARD_PROCEDURE.id,
+                PARTNER_BUDGET_EQUIPMENT_INVESTMENT.id,
+                PARTNER_BUDGET_EQUIPMENT_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                PARTNER_BUDGET_EQUIPMENT_PRICE_PER_UNIT.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_DESCRIPTION.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_AWARD_PROCEDURE.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_INVESTMENT.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_PRICE_PER_UNIT.id,
+                PARTNER_BUDGET_UNIT_COSTS_PROGRAMME_UNIT_COSTS.id,
+                PARTNER_BUDGET_UNIT_COSTS_DESCRIPTION.id,
+                PARTNER_BUDGET_UNIT_COSTS__UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                PARTNER_BUDGET_UNIT_COSTS_PRICE_PER_UNIT.id
+            )
     }
 
 }

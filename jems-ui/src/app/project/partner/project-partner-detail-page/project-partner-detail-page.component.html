@@ -24,14 +24,16 @@
            (click)="routeTo('motivation')">
             {{'partner.tab.motivation' | translate}}
         </a>
-        <a [active]="activeTab('budget')" mat-tab-link
-           (click)="routeTo('budget')">
-            {{'partner.tab.budget' | translate}}
-        </a>
-        <a [active]="activeTab('coFinancing')" mat-tab-link
-           (click)="routeTo('coFinancing')">
-            {{'partner.tab.coFinancing' | translate}}
-        </a>
+        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING">
+            <a [active]="activeTab('budget')" mat-tab-link
+               (click)="routeTo('budget')">
+                {{'partner.tab.budget' | translate}}
+            </a>
+            <a [active]="activeTab('coFinancing')" mat-tab-link
+               (click)="routeTo('coFinancing')">
+                {{'partner.tab.coFinancing' | translate}}
+            </a>
+        </ng-container>
         <a [active]="activeTab('stateAid')" mat-tab-link
            (click)="routeTo('stateAid')">
             {{'partner.tab.state.aid' | translate}}

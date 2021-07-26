@@ -67,18 +67,6 @@ export class ApplicationFormConfigurationPageComponent {
       ).subscribe();
   }
 
-  get formFields(): FormArray {
-    return this.form.get('formFields') as FormArray;
-  }
-
-  availableInStep(group: FormGroup): FormControl {
-    return group.get('availableInStep') as FormControl;
-  }
-
-  visible(group: FormGroup): FormControl {
-    return group.get('visible') as FormControl;
-  }
-
   visibilityChanged(control: FormGroup): void {
     const availableInStep = this.availableInStep(control);
     if (!this.visible(control)?.value) {
@@ -117,11 +105,32 @@ export class ApplicationFormConfigurationPageComponent {
       availableInStep: this.formBuilder.control({
         value: node.availableInStep,
         disabled: node.stepSelectionLocked
-      })
+      }),
+      showStepToggle: node.showStepToggle,
+      showVisibilitySwitch: node.showVisibilitySwitch
     });
-    if (node.availableInStep) {
+    if (node.showStepToggle || node.showVisibilitySwitch) {
       this.formFields.push(control);
     }
     return control;
+  }
+
+  get formFields(): FormArray {
+    return this.form.get('formFields') as FormArray;
+  }
+
+  availableInStep(group: FormGroup): FormControl {
+    return group.get('availableInStep') as FormControl;
+  }
+
+  visible(group: FormGroup): FormControl {
+    return group.get('visible') as FormControl;
+  }
+
+  showStepToggle(group: FormGroup): FormControl {
+    return group.get('showStepToggle') as FormControl;
+  }
+  showVisibilitySwitch(group: FormGroup): FormControl {
+    return group.get('showVisibilitySwitch') as FormControl;
   }
 }

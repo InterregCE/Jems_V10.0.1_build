@@ -34,7 +34,7 @@ export class ProjectApplicationFormSidenavService {
             this.projectPartnerService.getProjectPartners(projectId, 0, 100, undefined, version)
           ])
         ),
-        tap(([projectId, partners]) => Log.info('Fetched the project partners:', this, partners.content)),
+        tap(([, partners]) => Log.info('Fetched the project partners:', this, partners.content)),
         map(([projectId, partners]) => partners.content
           .map(partner => ({
               headline: {
@@ -55,7 +55,7 @@ export class ProjectApplicationFormSidenavService {
             this.workPackageService.getWorkPackagesByProjectId(projectId, version)
           ])
         ),
-        tap(([projectId, packages]) => Log.info('Fetched the project work packages:', this, packages)),
+        tap(([, packages]) => Log.info('Fetched the project work packages:', this, packages)),
         map(([projectId, packages]) => packages
           .map(workPackage => ({
               headline: {
@@ -88,16 +88,15 @@ export class ProjectApplicationFormSidenavService {
       this.projectStore.project$,
       this.partners$,
       this.packages$,
-      this.versionSelectTemplate$,
-      this.projectStore.currentVersionIsLatest$
+      this.versionSelectTemplate$
     ])
       .pipe(
-        filter(([canSeeAssessments, project]) => !!project),
-        tap(([canSeeAssessments, project, partners, packages, versionTemplate, currentVersionIsLatest]) => {
+        filter(([, project]) => !!project),
+        tap(([canSeeAssessments, project, partners, packages, versionTemplate]) => {
           const status = project.projectStatus.status;
           const callHas2Steps = !!project.callSettings.endDateStep1;
           const showAssessments = (callHas2Steps && status !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && status !== StatusEnum.DRAFT);
-          this.setHeadlines(canSeeAssessments && showAssessments, project, partners, packages, versionTemplate, currentVersionIsLatest);
+          this.setHeadlines(canSeeAssessments && showAssessments, project, partners, packages, versionTemplate);
         }),
         catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
       );
@@ -122,10 +121,19 @@ export class ProjectApplicationFormSidenavService {
                        project: ProjectDetailDTO,
                        partners: HeadlineRoute[],
                        packages: HeadlineRoute[],
-                       versionTemplate: TemplateRef<any>,
-                       currentVersionIsLatest: boolean): void {
-    // extracted this because Assessment is now on the same level with other headlines
-    const applicationTreeHeadlines = {
+                       versionTemplate: TemplateRef<any>): void {
+
+    this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH,
+                                     [
+        this.getProjectOverviewHeadline(project, showAssessment),
+        this.getApplicationFormHeadline(project, partners, packages, versionTemplate)
+      ]
+    );
+  }
+
+
+  private getProjectOverviewHeadline(project: ProjectDetailDTO, showAssessment: boolean): HeadlineRoute {
+    return {
       headline: {i18nKey: 'project.application.form.tree.title'},
       bullets: [
         {
@@ -134,164 +142,127 @@ export class ProjectApplicationFormSidenavService {
           scrollToTop: true,
           scrollRoute: ''
         },
-      ]
-    };
-    if (showAssessment) {
-      applicationTreeHeadlines.bullets.push(
-        {
+        ...showAssessment ? [{
           headline: {i18nKey: 'project.assessment.header'},
           scrollRoute: 'applicationFormLifecycleAssessment',
           route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}`,
           scrollToTop: false
+        }] : [],
+        {
+          headline: {i18nKey: 'file.tab.header'},
+          scrollRoute: 'applicationFormLifecycleAttachments',
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}`,
+          scrollToTop: false
         }
-      );
-    }
-    applicationTreeHeadlines.bullets.push(
-      {
-        headline: {i18nKey: 'file.tab.header'},
-        scrollRoute: 'applicationFormLifecycleAttachments',
-        route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}`,
-        scrollToTop: false
-      }
-    );
-    this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH, [
-      applicationTreeHeadlines,
-      {
-        headline: {i18nKey: 'project.application.form.title'},
-        bullets: [
-          {
-            headlineTemplate: versionTemplate
-          },
-          {
-            headline: {i18nKey: 'project.application.form.section.part.a'},
-            bullets: [
-              {
-                headline: {i18nKey: 'project.application.form.section.part.a'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormIdentification`,
-              },
-            ]
-          },
-          {
-            headline: {i18nKey: 'project.application.form.section.part.b'},
-            bullets: [
-              {
-                headline: {i18nKey: 'project.application.form.section.part.b.partners'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormPartner`,
-                bullets: [...partners],
-              },
-              {
-                headline: {i18nKey: 'project.application.form.section.part.b.associatedOrganizations'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormAssociatedOrganization`,
-              },
-            ]
-          },
-          {
-            headline: {i18nKey: 'project.application.form.section.part.c'},
-            bullets: this.getSectionCHeadlines(project, packages)
-          },
-          {
-            headline: {i18nKey: 'project.application.form.section.part.d'},
-            bullets: [
-              {
-                headline: {i18nKey: 'project.application.form.section.part.d.subsection.one'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudgetPerPartner`,
-              },
-              {
-                headline: {i18nKey: 'project.application.form.section.part.d.subsection.two'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudget`,
-              }
-            ]
-          },
-          {
-            headline: {i18nKey: 'project.application.form.section.part.e'},
-            bullets: [
-              {
-                headline: {i18nKey: 'project.application.form.section.part.e'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormLumpSums`,
-              }
-            ]
-          },
-        ]
-      },
-    ]);
+      ]
+    };
   }
 
+  private getApplicationFormHeadline(project: ProjectDetailDTO, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>): HeadlineRoute {
+    return {
+      headline: {i18nKey: 'project.application.form.title'},
+      bullets: [
+        {
+          headlineTemplate: versionTemplate
+        },
+        {
+          headline: {i18nKey: 'project.application.form.section.part.a'},
+          bullets: [
+            {
+              headline: {i18nKey: 'project.application.form.section.part.a'},
+              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormIdentification`,
+            },
+          ]
+        },
+        {
+          headline: {i18nKey: 'project.application.form.section.part.b'},
+          bullets: [
+            {
+              headline: {i18nKey: 'project.application.form.section.part.b.partners'},
+              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormPartner`,
+              bullets: [...partners],
+            },
+            ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.PARTNER_ASSOCIATED_ORGANIZATIONS) ?
+              [{
+                headline: {i18nKey: 'project.application.form.section.part.b.associatedOrganizations'},
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormAssociatedOrganization`,
+              }] : []
+          ]
+        },
+        {
+          headline: {i18nKey: 'project.application.form.section.part.c'},
+          bullets: this.getSectionCHeadlines(project, packages)
+        },
+        ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) ?
+          [
+            {
+              headline: {i18nKey: 'project.application.form.section.part.d'},
+              bullets: [
+                {
+                  headline: {i18nKey: 'project.application.form.section.part.d.subsection.one'},
+                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudgetPerPartner`,
+                },
+                {
+                  headline: {i18nKey: 'project.application.form.section.part.d.subsection.two'},
+                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudget`,
+                }
+              ]
+            },
+            {
+              headline: {i18nKey: 'project.application.form.section.part.e'},
+              bullets: [
+                {
+                  headline: {i18nKey: 'project.application.form.section.part.e'},
+                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormLumpSums`,
+                }
+              ]
+            }
+          ] : [],
+      ]
+    };
+  }
 
   private getSectionCHeadlines(project: ProjectDetailDTO, packages: HeadlineRoute[]): HeadlineRoute[] {
-
-    const bullets: HeadlineRoute[] = [
+    return [
       {
         headline: {i18nKey: 'project.application.form.section.part.c.subsection.one'},
         route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormOverallObjective`,
-      }
-    ];
-
-    if (this.visibilityStatusService.shouldBeVisible(
-      APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT, project.callSettings.applicationFormFieldConfigurations, project.callSettings.endDateStep1 !== undefined, project.step2Active
-    )) {
-      bullets.push({
-        headline: {i18nKey: 'project.application.form.section.part.c.subsection.two'},
-        route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormRelevanceAndContext`,
-      });
-    }
-
-    if (this.visibilityStatusService.shouldBeVisible(
-      APPLICATION_FORM.SECTION_C.PROJECT_PARTNERSHIP, project.callSettings.applicationFormFieldConfigurations, project.callSettings.endDateStep1 !== undefined, project.step2Active
-    )) {
-      bullets.push(
-        {
+      },
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT) ?
+        [{
+          headline: {i18nKey: 'project.application.form.section.part.c.subsection.two'},
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormRelevanceAndContext`,
+        }] : [],
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_PARTNERSHIP) ?
+        [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.three'},
           route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormPartnership`,
-        }
-      );
-    }
-
-    bullets.push({
-      headline: {i18nKey: 'project.application.form.section.part.c.subsection.four'},
-      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormWorkPackage`,
-      bullets: [...packages],
-    });
-
-    if (this.visibilityStatusService.shouldBeVisible(
-      APPLICATION_FORM.SECTION_C.PROJECT_RESULT, project.callSettings.applicationFormFieldConfigurations, project.callSettings.endDateStep1 !== undefined, project.step2Active
-    )) {
-      bullets.push(
-        {
+        }] : [],
+      {
+        headline: {i18nKey: 'project.application.form.section.part.c.subsection.four'},
+        route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormWorkPackage`,
+        bullets: [...packages],
+      },
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_RESULT) ?
+        [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.five'},
           route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormResults`,
-        },
-      );
-    }
-
-    bullets.push(
+        }] : [],
       {
         headline: {i18nKey: 'project.application.form.section.part.c.subsection.six'},
         route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationTimePlan`,
-      }
-    );
-
-    if (this.visibilityStatusService.shouldBeVisible(
-      APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT, project.callSettings.applicationFormFieldConfigurations, project.callSettings.endDateStep1 !== undefined, project.step2Active
-    )) {
-      bullets.push(
-        {
+      },
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT) ?
+        [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.seven'},
           route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormManagement`,
-        },
-      );
-    }
-
-    if (this.visibilityStatusService.shouldBeVisible(
-      APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS, project.callSettings.applicationFormFieldConfigurations, project.callSettings.endDateStep1 !== undefined, project.step2Active
-    )) {
-      bullets.push(
-        {
+        }] : [],
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS) ?
+        [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.eight'},
           route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormFuturePlans`,
-        }
-      );
-    }
-
-    return bullets;
+        }] : []
+    ];
   }
+
 }

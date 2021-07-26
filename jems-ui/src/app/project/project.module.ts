@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {routes} from './project-routing.module';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
-import {SharedModule} from '../common/shared-module';
+import {SharedModule} from '@common/shared-module';
 import {ProjectApplicationFilesListComponent} from './project-application/components/project-application-detail/project-application-files-list/project-application-files-list.component';
 import {ProjectApplicationInformationComponent} from './project-application/components/project-application-detail/project-application-information/project-application-information.component';
 import {ProjectApplicationFileUploadComponent} from './project-application/components/project-application-detail/project-application-file-upload/project-application-file-upload.component';
@@ -89,6 +89,7 @@ import { FormFieldVisibilityStatusDirective } from './directives/form-field-visi
 import { ProjectApplicationFileDeleteComponent } from './project-application/components/project-application-detail/project-application-file-delete/project-application-file-delete.component';
 import { ProjectPartnerStateAidTabComponent } from './partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
 import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
+import {PeriodsTotalPipe} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/periods-total.pipe';
 
 @NgModule({
   declarations: [
@@ -164,6 +165,7 @@ import {FormVisibilityStatusService} from '@project/services/form-visibility-sta
     BudgetPagePerPartnerComponent,
     ProjectTimeplanPageComponent,
     FilterUnitCostsPipe,
+    PeriodsTotalPipe,
     ProjectDetailPageComponent,
     ProjectApplicationPreConditionCheckResultComponent,
     ProjectPageTemplateComponent,

@@ -9,4 +9,6 @@ export class ApplicationFormFieldNode {
   stepSelectionLocked?: boolean;
   children?: ApplicationFormFieldNode[];
   rootIndex: number;
+  showStepToggle: boolean;
+  showVisibilitySwitch: boolean;
 }

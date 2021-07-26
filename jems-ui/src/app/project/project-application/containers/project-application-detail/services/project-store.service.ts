@@ -53,6 +53,7 @@ export class ProjectStore {
 
   projectStatus$: Observable<ProjectStatusDTO.StatusEnum>;
   project$: Observable<ProjectDetailDTO>;
+  currentProject: ProjectDetailDTO;
   currentVersionIsLatest$: Observable<boolean>;
   projectEditable$: Observable<boolean>;
   projectTitle$: Observable<string>;
@@ -176,6 +177,7 @@ export class ProjectStore {
     )
       .pipe(
         tap(project => this.projectAcronym$.next(project?.acronym)),
+        tap(project => this.currentProject = project),
         shareReplay(1)
       );
   }

@@ -13,10 +13,10 @@ import {
   Validators
 } from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {TableConfig} from '../../../common/directives/table-config/TableConfig';
+import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {ProjectLumSumsConstants} from './project-lum-sums.constants';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {NumberService} from '../../../common/services/number.service';
+import {NumberService} from '@common/services/number.service';
 import {ProjectLumpSum} from '../../model/lump-sums/projectLumpSum';
 import {ProjectPartner} from '../../model/ProjectPartner';
 import {PartnerContribution} from '../../model/lump-sums/partnerContribution';
@@ -26,6 +26,8 @@ import {Alert} from '@common/components/forms/alert';
 import {ProjectPeriod} from '../../model/ProjectPeriod';
 import {TranslateService} from '@ngx-translate/core';
 import {MatTable} from '@angular/material/table';
+import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
+import {APPLICATION_FORM} from '@project/application-form-model';
 
 @UntilDestroy()
 @Component({
@@ -36,6 +38,15 @@ import {MatTable} from '@angular/material/table';
   providers: [FormService]
 })
 export class ProjectLumpSumsPageComponent implements OnInit {
+
+  constructor(public pageStore: ProjectLumpSumsPageStore,
+              private formBuilder: FormBuilder,
+              private formService: FormService,
+              private translateService: TranslateService,
+              private formVisibilityStatusService: FormVisibilityStatusService
+  ) {
+  }
+
   PREPARATION_PERIOD = 0;
   CLOSURE_PERIOD = 255;
 
@@ -69,22 +80,6 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private showGapExistsWarning$: Observable<boolean>;
   private loading = new BehaviorSubject(false);
 
-  private static getColumnsToDisplay(partners: ProjectPartner[]): string[] {
-    let columnsToDisplay = ['lumpSum', 'period', 'isSplittingLumpSumAllowed', 'lumpSumCost'];
-    columnsToDisplay = columnsToDisplay.concat(partners?.map(partner => partner.toPartnerNumberString()));
-    columnsToDisplay = columnsToDisplay.concat(['rowSum', 'gap', 'description', 'actions']);
-    return columnsToDisplay;
-  }
-
-  private static getTableConfig(partners: ProjectPartner[]): TableConfig[] {
-    let tableConfig = [{minInRem: 8}, {minInRem: 5}, {minInRem: 4}, {minInRem: 8}];
-    tableConfig = tableConfig.concat(partners?.map(() => {
-      return {minInRem: 8};
-    }));
-    tableConfig = tableConfig.concat({minInRem: 8}, {minInRem: 8}, {minInRem: 12}, {minInRem: 3});
-    return tableConfig;
-  }
-
   private static calculateRowSum(amounts: number[]): number {
     return NumberService.sum(amounts);
   }
@@ -93,10 +88,26 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     return NumberService.minus(lumpSumCost, rowSum);
   }
 
-  constructor(public pageStore: ProjectLumpSumsPageStore,
-              private formBuilder: FormBuilder,
-              private formService: FormService,
-              private translateService: TranslateService) {
+  private getColumnsToDisplay(partners: ProjectPartner[]): string[] {
+    return [
+      'lumpSum',
+      ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ? ['period'] : [],
+      'isSplittingLumpSumAllowed', 'lumpSumCost',
+      ...partners?.map(partner => partner.toPartnerNumberString()),
+      'rowSum', 'gap', 'description', 'actions'
+    ];
+  }
+
+  private getTableConfig(partners: ProjectPartner[]): TableConfig[] {
+    return [
+      {minInRem: 8},
+      ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ? [{minInRem: 5}] : [],
+      {minInRem: 4}, {minInRem: 8},
+      ...partners?.map(() => {
+        return {minInRem: 8};
+      }),
+      {minInRem: 8}, {minInRem: 8}, {minInRem: 12}, {minInRem: 3}
+    ];
   }
 
   ngOnInit(): void {
@@ -112,8 +123,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       map(([, projectLumpSums]) => (projectLumpSums.length === 0 && this.items?.length === 0)),
     );
 
-    this.columnsToDisplay$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => ProjectLumpSumsPageComponent.getColumnsToDisplay(partners)));
-    this.withConfigs$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => ProjectLumpSumsPageComponent.getTableConfig(partners)));
+    this.columnsToDisplay$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => this.getColumnsToDisplay(partners)));
+    this.withConfigs$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => this.getTableConfig(partners)));
     this.costIsNotSplittableError$ = this.items.valueChanges
       .pipe(startWith(null), map(() => this.items.controls.find(itemFormGroup => itemFormGroup.errors !== null)?.errors || null));
     this.partnerColumnsTotal$ = combineLatest(

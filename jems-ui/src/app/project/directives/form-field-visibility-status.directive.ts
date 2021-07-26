@@ -15,7 +15,7 @@ export class FormFieldVisibilityStatusDirective {
     if (fieldIds === undefined || fieldIds === null || (typeof fieldIds === 'string' && fieldIds.length === 0) || (typeof fieldIds === 'object' && Object.keys(fieldIds).length === 0)) {
       return;
     }
-    this.visibilityStatusService.shouldBeVisible$(fieldIds).pipe(untilDestroyed(this)).subscribe(shouldBeVisible => {
+    this.visibilityStatusService.isVisible$(fieldIds).pipe(untilDestroyed(this)).subscribe(shouldBeVisible => {
       this.handleElementVisibility(shouldBeVisible);
     });
   }

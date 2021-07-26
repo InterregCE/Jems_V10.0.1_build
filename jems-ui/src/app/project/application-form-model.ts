@@ -62,7 +62,51 @@ export const APPLICATION_FORM = {
       COMPETENCES: 'application.config.project.partner.motivation.organization.relevance',
       ROLE: 'application.config.project.partner.motivation.organization.role',
       ROLE_EXPERIENCE: 'application.config.project.partner.motivation.organization.experience'
-    }
+    },
+    BUDGET_AND_CO_FINANCING: {
+      PARTNER_BUDGET_AND_CO_FINANCING: 'application.config.project.partner.budget.and.co.financing',
+      PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN: 'application.config.project.partner.co.financing.add.new.contribution.origin',
+      PARTNER_BUDGET_PERIODS: 'application.config.project.partner.budget.periods',
+      STAFF_COST: {
+        STAFF_FUNCTION: 'application.config.project.partner.budget.staff.cost.staff.function',
+        COMMENT: 'application.config.project.partner.budget.staff.cost.comment',
+        UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.staff.cost.unit.type.and.number.of.units',
+        PRICE_PER_UNIT: 'application.config.project.partner.budget.staff.cost.price.per.unit'
+      },
+      TRAVEL_AND_ACCOMMODATION: {
+        DESCRIPTION: 'application.config.project.partner.budget.travel.and.accommodation.description',
+        UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.travel.and.accommodation.unit.type.and.number.of.units',
+        PRICE_PER_UNIT: 'application.config.project.partner.budget.travel.and.accommodation.price.per.unit',
+      },
+      EXTERNAL_EXPERTISE: {
+        DESCRIPTION: 'application.config.project.partner.budget.external.expertise.description',
+        AWARD_PROCEDURE: 'application.config.project.partner.budget.external.expertise.award.procedure',
+        INVESTMENT: 'application.config.project.partner.budget.external.expertise.investment',
+        UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.external.expertise.unit.type.and.number.of.units',
+        PRICE_PER_UNIT: 'application.config.project.partner.budget.external.expertise.price.per.unit'
+      },
+      EQUIPMENT: {
+        DESCRIPTION: 'application.config.project.partner.budget.equipment.description',
+        AWARD_PROCEDURE: 'application.config.project.partner.budget.equipment.award.procedure',
+        INVESTMENT: 'application.config.project.partner.budget.equipment.investment',
+        UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.equipment.unit.type.and.number.of.units',
+        PRICE_PER_UNIT: 'application.config.project.partner.budget.equipment.price.per.unit'
+      },
+      INFRASTRUCTURE_AND_WORKS: {
+        DESCRIPTION: 'application.config.project.partner.budget.infrastructure.and.works.description',
+        AWARD_PROCEDURE: 'application.config.project.partner.budget.infrastructure.and.works.award.procedure',
+        INVESTMENT: 'application.config.project.partner.budget.infrastructure.and.works.investment',
+        UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.infrastructure.and.works.unit.type.and.number.of.units',
+        PRICE_PER_UNIT: 'application.config.project.partner.budget.infrastructure.and.works.price.per.unit'
+      },
+      UNIT_COSTS: {
+        PROGRAMME_UNIT_COSTS: 'application.config.project.partner.budget.unit.costs.programme.unit.costs',
+        DESCRIPTION: 'application.config.project.partner.budget.unit.costs.description',
+        UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.unit.costs.unit.type.and.number.of.units',
+        PRICE_PER_UNIT: 'application.config.project.partner.budget.unit.costs.price.per.unit'
+      }
+    },
+    PARTNER_ASSOCIATED_ORGANIZATIONS: 'application.config.project.partner.associated.organizations',
   },
   SECTION_C: {
     PROJECT_OVERALL_OBJECTIVE: {
@@ -71,14 +115,14 @@ export const APPLICATION_FORM = {
     PROJECT_RELEVANCE_AND_CONTEXT: {
       TERRITORIAL_CHALLENGES: 'application.config.project.territorial.challenges',
       HOW_ARE_CHALLENGES_AND_OPPORTUNITIES_TACKLED: 'application.config.project.how.are.challenges.and.opportunities.tackled',
-      PROJECT_WHY_IS_COOPERATION_NEEDED: 'application.config.project.why.is.cooperation.needed',
-      PROJECT_TARGET_GROUP: 'application.config.project.target.group',
-      PROJECT_STRATEGY_CONTRIBUTION: 'application.config.project.strategy.contribution',
-      PROJECT_SYNERGIES: 'application.config.project.synergies',
-      PROJECT_HOW_BUILDS_PROJECT_ON_AVAILABLE_KNOWLEDGE: 'application.config.project.how.builds.project.on.available.knowledge',
+      WHY_IS_COOPERATION_NEEDED: 'application.config.project.why.is.cooperation.needed',
+      TARGET_GROUP: 'application.config.project.target.group',
+      STRATEGY_CONTRIBUTION: 'application.config.project.strategy.contribution',
+      SYNERGIES: 'application.config.project.synergies',
+      HOW_BUILDS_PROJECT_ON_AVAILABLE_KNOWLEDGE: 'application.config.project.how.builds.project.on.available.knowledge',
     },
     PROJECT_PARTNERSHIP: {
-      PROJECT_PARTNERSHIP: 'application.config.project.partnership',
+      PARTNERSHIP: 'application.config.project.partnership',
     },
     PROJECT_RESULT: {
       PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT: 'application.config.project.result.indicator.and.measurement.unit',
@@ -87,17 +131,17 @@ export const APPLICATION_FORM = {
       DESCRIPTION: 'application.config.project.result.description'
     },
     PROJECT_MANAGEMENT: {
-      PROJECT_COORDINATION: 'application.config.project.coordination',
-      PROJECT_QUALITY_MEASURES: 'application.config.project.quality.measures',
-      PROJECT_COMMUNICATION_APPROACH: 'application.config.project.communication.approach',
-      PROJECT_FINANCIAL_MANAGEMENT_AND_REPORTING: 'application.config.project.financial.management.and.reporting',
-      PROJECT_COOPERATION_CRITERIA: 'application.config.project.cooperation.criteria',
-      PROJECT_HORIZONTAL_PRINCIPLES: 'application.config.project.horizontal.principles'
+      COORDINATION: 'application.config.project.coordination',
+      QUALITY_MEASURES: 'application.config.project.quality.measures',
+      COMMUNICATION_APPROACH: 'application.config.project.communication.approach',
+      FINANCIAL_MANAGEMENT_AND_REPORTING: 'application.config.project.financial.management.and.reporting',
+      COOPERATION_CRITERIA: 'application.config.project.cooperation.criteria',
+      HORIZONTAL_PRINCIPLES: 'application.config.project.horizontal.principles'
     },
     PROJECT_LONG_TERM_PLANS: {
-      PROJECT_OWNERSHIP: 'application.config.project.ownership',
-      PROJECT_DURABILITY: 'application.config.project.durability',
-      PROJECT_TRANSFERABILITY: 'application.config.project.transferability',
+      OWNERSHIP: 'application.config.project.ownership',
+      DURABILITY: 'application.config.project.durability',
+      TRANSFERABILITY: 'application.config.project.transferability',
     }
   }
 };

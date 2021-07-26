@@ -12,16 +12,22 @@ export class FormVisibilityStatusService {
   constructor(private projectStore: ProjectStore) {
   }
 
-  shouldBeVisible(fieldIds: string | ApplicationFormModel, applicationFormFieldConfiguration: ApplicationFormFieldConfigurationDTO[], hasCallTwoSteps: boolean, isProjectInStepTwo: boolean): boolean {
-    return this.getFieldIdsToCheck(fieldIds).find(fieldId => this.isFieldVisible(fieldId, applicationFormFieldConfiguration, hasCallTwoSteps, isProjectInStepTwo)) !== undefined;
+  isVisible(fieldIds: string | ApplicationFormModel): boolean {
+    return !this.projectStore.currentProject ?
+      false :
+      this.shouldBeVisible(fieldIds, this.projectStore.currentProject.callSettings.applicationFormFieldConfigurations, this.projectStore.currentProject.callSettings.endDateStep1 !== undefined, this.projectStore.currentProject.step2Active);
   }
 
-  shouldBeVisible$(fieldIds: string | ApplicationFormModel): Observable<boolean> {
+  isVisible$(fieldIds: string | ApplicationFormModel): Observable<boolean> {
     return combineLatest([this.projectStore.project$, this.projectStore.projectCall$, this.projectStore.callHasTwoSteps$]).pipe(
       map(([project, callSetting, hasCallTwoSteps]) =>
         this.shouldBeVisible(fieldIds, callSetting.applicationFormFieldConfigurations, hasCallTwoSteps, project.step2Active)
       )
     );
+  }
+
+  private shouldBeVisible(fieldIds: string | ApplicationFormModel, applicationFormFieldConfigurations: ApplicationFormFieldConfigurationDTO[], hasCallTwoSteps: boolean, isProjectInStepTwo: boolean): boolean {
+    return this.getFieldIdsToCheck(fieldIds).find(fieldId => this.isFieldVisible(fieldId, applicationFormFieldConfigurations, hasCallTwoSteps, isProjectInStepTwo)) !== undefined;
   }
 
   private getFieldIdsToCheck(fieldIds: string | ApplicationFormModel): string[] {

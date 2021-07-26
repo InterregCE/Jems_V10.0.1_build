@@ -22,6 +22,7 @@ class UpdateApplicationFormFieldConfiguration(private val persistence: CallPersi
         applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
     ) =
         ifConfigurationIsValid(applicationFormFieldConfigurations, callId).run {
+            resetVisibilityForFieldsThatDependsOnBudgetSetting(applicationFormFieldConfigurations)
             persistence.saveApplicationFormFieldConfigurations(callId, applicationFormFieldConfigurations)
         }
 
@@ -44,6 +45,15 @@ class UpdateApplicationFormFieldConfiguration(private val persistence: CallPersi
             }
         ) throw InvalidFieldVisibilityChangeWhenCallIsPublishedException()
     }
+
+    private fun resetVisibilityForFieldsThatDependsOnBudgetSetting(applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>): Unit =
+        with(applicationFormFieldConfigurations.first { it.id == ApplicationFormFieldSetting.PARTNER_BUDGET_AND_CO_FINANCING.id }) {
+            val dependentFieldIds = ApplicationFormFieldSetting.getFieldsThatDependsOnBudgetSetting()
+            applicationFormFieldConfigurations.filter { dependentFieldIds.contains(it.id) && it.visibilityStatus != FieldVisibilityStatus.NONE }
+                .forEach { fieldConfig ->
+                    fieldConfig.visibilityStatus = this.visibilityStatus
+                }
+        }
 
 
     private fun fieldVisibilityHasChangedToNone(

@@ -10,52 +10,60 @@ import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.ZonedDateTime
 
-class UpdateApplicationFormFieldConfigurationsTest: UnitTest() {
+class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
 
-    companion object {
-        private const val CALL_ID = 1L
-
-        private val applicationFormFieldConfigurations =  mutableSetOf(
+    private val CALL_ID = 1L
+    private val fieldsThatDependsOnBudget = ApplicationFormFieldSetting.getFieldsThatDependsOnBudgetSetting()
+    private val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration> = mutableSetOf(
+        ApplicationFormFieldConfiguration(
+            id = ApplicationFormFieldSetting.PROJECT_ACRONYM.id,
+            visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
+        ),
+        ApplicationFormFieldConfiguration(
+            id = ApplicationFormFieldSetting.PROJECT_TITLE.id,
+            visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
+        ),
+        ApplicationFormFieldConfiguration(
+            id = ApplicationFormFieldSetting.PROJECT_RESULTS_DELIVERY_PERIOD.id,
+            visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
+        ),
+        ApplicationFormFieldConfiguration(
+            id = ApplicationFormFieldSetting.PARTNER_BUDGET_AND_CO_FINANCING.id,
+            visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
+        ),
+        *fieldsThatDependsOnBudget.map {
             ApplicationFormFieldConfiguration(
-                id = ApplicationFormFieldSetting.PROJECT_ACRONYM.id,
-                visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
-            ),
-            ApplicationFormFieldConfiguration(
-                id = ApplicationFormFieldSetting.PROJECT_TITLE.id,
-                visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
-            ),
-            ApplicationFormFieldConfiguration(
-                id = ApplicationFormFieldSetting.PROJECT_RESULTS_DELIVERY_PERIOD.id,
-                visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
+                id = it,
+                visibilityStatus = FieldVisibilityStatus.STEP_TWO_ONLY
             )
-        )
+        }.toTypedArray()
+    )
 
-        private val callDetail = CallDetail(
-            id = CALL_ID,
-            name = "call name",
-            status = CallStatus.DRAFT,
-            startDate = ZonedDateTime.now().minusDays(1),
-            endDateStep1 = null,
-            endDate = ZonedDateTime.now().plusDays(1),
-            isAdditionalFundAllowed = true,
-            lengthOfPeriod = 8,
-            description = setOf(),
-            objectives = listOf(),
-            strategies = sortedSetOf(),
-            funds = listOf(),
-            flatRates = sortedSetOf(),
-            lumpSums = listOf(),
-            unitCosts = listOf(),
-            applicationFormFieldConfigurations = applicationFormFieldConfigurations
-        )
+    private val callDetail = CallDetail(
+        id = CALL_ID,
+        name = "call name",
+        status = CallStatus.DRAFT,
+        startDate = ZonedDateTime.now().minusDays(1),
+        endDateStep1 = null,
+        endDate = ZonedDateTime.now().plusDays(1),
+        isAdditionalFundAllowed = true,
+        lengthOfPeriod = 8,
+        description = setOf(),
+        objectives = listOf(),
+        strategies = sortedSetOf(),
+        funds = listOf(),
+        flatRates = sortedSetOf(),
+        lumpSums = listOf(),
+        unitCosts = listOf(),
+        applicationFormFieldConfigurations = applicationFormFieldConfigurations
+    )
 
-
-    }
 
     @MockK
     lateinit var persistence: CallPersistence
@@ -65,7 +73,12 @@ class UpdateApplicationFormFieldConfigurationsTest: UnitTest() {
 
     @Test
     fun `update application form field configuration`() {
-        every { persistence.saveApplicationFormFieldConfigurations(CALL_ID, applicationFormFieldConfigurations) } returns callDetail
+        every {
+            persistence.saveApplicationFormFieldConfigurations(
+                CALL_ID,
+                applicationFormFieldConfigurations
+            )
+        } returns callDetail
         every { persistence.getCallById(CALL_ID) } returns callDetail
 
         val result = updateApplicationFormConfiguration.update(CALL_ID, applicationFormFieldConfigurations)
@@ -85,9 +98,19 @@ class UpdateApplicationFormFieldConfigurationsTest: UnitTest() {
                 visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
             )
         )
-        every { persistence.saveApplicationFormFieldConfigurations(CALL_ID, invalidApplicationFormConfiguration) } returns callDetail
+        every {
+            persistence.saveApplicationFormFieldConfigurations(
+                CALL_ID,
+                invalidApplicationFormConfiguration
+            )
+        } returns callDetail
 
-        assertThrows<InvalidFieldStatusException> { updateApplicationFormConfiguration.update(CALL_ID, invalidApplicationFormConfiguration) }
+        assertThrows<InvalidFieldStatusException> {
+            updateApplicationFormConfiguration.update(
+                CALL_ID,
+                invalidApplicationFormConfiguration
+            )
+        }
     }
 
     @Test
@@ -99,9 +122,19 @@ class UpdateApplicationFormFieldConfigurationsTest: UnitTest() {
             )
         )
         every { persistence.getCallById(CALL_ID) } returns callDetail.copy(status = CallStatus.PUBLISHED)
-        every { persistence.saveApplicationFormFieldConfigurations(CALL_ID, invalidApplicationFormConfiguration) } returns callDetail
+        every {
+            persistence.saveApplicationFormFieldConfigurations(
+                CALL_ID,
+                invalidApplicationFormConfiguration
+            )
+        } returns callDetail
 
-        assertThrows<InvalidFieldVisibilityChangeWhenCallIsPublishedException> { updateApplicationFormConfiguration.update(CALL_ID, invalidApplicationFormConfiguration) }
+        assertThrows<InvalidFieldVisibilityChangeWhenCallIsPublishedException> {
+            updateApplicationFormConfiguration.update(
+                CALL_ID,
+                invalidApplicationFormConfiguration
+            )
+        }
     }
 
     @Test
@@ -113,8 +146,37 @@ class UpdateApplicationFormFieldConfigurationsTest: UnitTest() {
             )
         )
         every { persistence.getCallById(CALL_ID) } returns callDetail.copy(status = CallStatus.PUBLISHED)
-        every { persistence.saveApplicationFormFieldConfigurations(CALL_ID, invalidApplicationFormConfiguration) } returns callDetail
+        every {
+            persistence.saveApplicationFormFieldConfigurations(
+                CALL_ID,
+                invalidApplicationFormConfiguration
+            )
+        } returns callDetail
 
-        assertThrows<InvalidFieldVisibilityChangeWhenCallIsPublishedException> { updateApplicationFormConfiguration.update(CALL_ID, invalidApplicationFormConfiguration) }
+        assertThrows<InvalidFieldVisibilityChangeWhenCallIsPublishedException> {
+            updateApplicationFormConfiguration.update(
+                CALL_ID,
+                invalidApplicationFormConfiguration
+            )
+        }
+    }
+
+    @Test
+    fun `should set visibility status of fields that are dependent on the budget and co-financing to budget and co-financing visibility when user updates the visibility of budget and co-financing`() {
+        val slot = slot<MutableSet<ApplicationFormFieldConfiguration>>()
+        every { persistence.saveApplicationFormFieldConfigurations(CALL_ID, capture(slot)) } returns callDetail
+        every { persistence.getCallById(CALL_ID) } returns callDetail
+
+        val result = updateApplicationFormConfiguration.update(CALL_ID, applicationFormFieldConfigurations)
+
+        val budgetSetting = applicationFormFieldConfigurations.first { it.id == ApplicationFormFieldSetting.PARTNER_BUDGET_AND_CO_FINANCING.id }
+        assertThat(slot.captured).containsAll(
+            applicationFormFieldConfigurations.map {
+                if (fieldsThatDependsOnBudget.contains(it.id) && it.visibilityStatus != FieldVisibilityStatus.NONE)
+                    ApplicationFormFieldConfiguration(it.id, budgetSetting.visibilityStatus)
+                else it
+            }
+        )
+        assertThat(result).isEqualTo(callDetail)
     }
 }
