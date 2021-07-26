@@ -132,9 +132,9 @@
                 <div *ngFor="let partnerContribution of partnerContributions.controls;let i=index">
                     <ng-container [formArrayName]="constants.FORM_CONTROL_NAMES.partnerContributions">
                         <ng-container [formGroupName]="i">
-                            <div *ngIf="partnerContribution?.value?.isPartner">{{partnerContribution?.value?.name}}</div>
+                            <div *ngIf="partnerContribution?.value?.partner">{{partnerContribution?.value?.name}}</div>
                             <mat-form-field
-                                    *ngIf="!partnerContribution.get(constants.FORM_CONTROL_NAMES.isPartner)?.value">
+                                    *ngIf="!partnerContribution.get(constants.FORM_CONTROL_NAMES.partner)?.value">
                                 <input [formControlName]="constants.FORM_CONTROL_NAMES.name" matInput required>
                                 <mat-error>
                                     <app-form-field-errors

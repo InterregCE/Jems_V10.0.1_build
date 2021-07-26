@@ -132,7 +132,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
       name: [initialValue ? initialValue.name : '', [Validators.required, Validators.maxLength(255)]],
       status: [initialValue ? initialValue.status : '', [Validators.required]],
       amount: [initialValue ? initialValue.amount : 0, [Validators.required, Validators.min(0)]],
-      isPartner: [initialValue ? initialValue.partner : false]
+      partner: [initialValue ? initialValue.partner : false]
     }));
     if (!initialValue) {
       this.coFinancingForm.markAsDirty();

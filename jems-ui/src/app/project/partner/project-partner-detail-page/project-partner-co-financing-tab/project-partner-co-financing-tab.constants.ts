@@ -8,7 +8,7 @@ export class ProjectPartnerCoFinancingTabConstants {
     name: 'name',
     status: 'status',
     amount: 'amount',
-    isPartner: 'isPartner',
+    partner: 'partner',
     fundPercentage: 'fundPercentage',
     fundId: 'fundId',
     fundAmount: 'fundAmount',
