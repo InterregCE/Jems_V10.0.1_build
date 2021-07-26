@@ -4,7 +4,6 @@ import {
   InputProjectData,
   ProjectAssessmentEligibilityDTO,
   ProjectAssessmentQualityDTO,
-  FlatRateDTO,
   InvestmentSummaryDTO,
   ProjectCallSettingsDTO,
   ProjectDecisionDTO,
@@ -27,21 +26,20 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators';
-import {Log} from '../../../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {ProjectCallSettings} from '../../../../model/projectCallSettings';
-import {CallFlatRateSetting} from '../../../../model/call-flat-rate-setting';
-import {ProgrammeLumpSum} from '../../../../model/lump-sums/programmeLumpSum';
-import {ProgrammeUnitCost} from '../../../../model/programmeUnitCost';
-import {LumpSumPhaseEnumUtils} from '../../../../model/lump-sums/LumpSumPhaseEnum';
-import {BudgetCostCategoryEnumUtils} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
-import {RoutingService} from '../../../../../common/services/routing.service';
-import {ProjectUtil} from '../../../../project-util';
+import {ProjectCallSettings} from '@project/model/projectCallSettings';
+import {CallFlatRateSetting} from '@project/model/call-flat-rate-setting';
+import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
+import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
+import {LumpSumPhaseEnumUtils} from '@project/model/lump-sums/LumpSumPhaseEnum';
+import {BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCategoryEnum';
+import {RoutingService} from '@common/services/routing.service';
+import {ProjectUtil} from '@project/project-util';
 import {SecurityService} from '../../../../../security/security.service';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {ProjectVersionStore} from '@project/services/project-version-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {InvestmentSummary} from '../../../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
-import {FlatRateSetting} from '@project/model/flat-rate-setting';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 
 /**
  * Stores project related information.
@@ -214,13 +212,7 @@ export class ProjectStore {
           callSetting.endDate,
           callSetting.endDateStep1,
           callSetting.lengthOfPeriod,
-          new CallFlatRateSetting(
-            this.toModel(callSetting.flatRates.staffCostFlatRateSetup),
-            this.toModel(callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup),
-            this.toModel(callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup),
-            this.toModel(callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup),
-            this.toModel(callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup)
-          ),
+          new CallFlatRateSetting(callSetting.flatRates.staffCostFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup),
           callSetting.lumpSums.map(lumpSum =>
             new ProgrammeLumpSum(lumpSum.id, lumpSum.name, lumpSum.description, lumpSum.cost, lumpSum.splittingAllowed, LumpSumPhaseEnumUtils.toLumpSumPhaseEnum(lumpSum.phase), BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(lumpSum.categories))),
           callSetting.unitCosts
@@ -230,10 +222,6 @@ export class ProjectStore {
         )),
         shareReplay(1)
       );
-  }
-
-  private toModel(flatRate: FlatRateDTO): FlatRateSetting {
-    return {rate: flatRate?.rate, isAdjustable: flatRate?.adjustable};
   }
 
   private callHasTwoSteps(): Observable<boolean> {
