@@ -1,6 +1,6 @@
 <app-main-page-template [needsCard]="true" *ngIf="details$ | async as details"
                         titleKey="topbar.main.user.user.management"
-                        subTitleKey="userRole.detail.short">
+                        subTitleText="{{'userRole.detail.short' | translate}}: {{details.user?.name}} {{details.user?.surname}}">
     <form appFormLayout [formGroup]="userForm">
         <div appMultiColumnRow>
             <h2 class="inline-block">{{'user.detail.page.title' | translate}}</h2>
