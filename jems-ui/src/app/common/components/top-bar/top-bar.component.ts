@@ -1,5 +1,4 @@
 import {Component, Input} from '@angular/core';
-import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable} from 'rxjs';
 import {OutputCurrentUser} from '@cat/api';
@@ -8,6 +7,7 @@ import {TopBarService} from '@common/components/top-bar/top-bar.service';
 import {LanguageStore} from '../../services/language-store.service';
 import {finalize, map, withLatestFrom} from 'rxjs/operators';
 import {ResourceStoreService} from '@common/services/resource-store.service';
+import {RoutingService} from '@common/services/routing.service';
 
 @Component({
   selector: 'app-top-bar',
@@ -39,7 +39,7 @@ export class TopBarComponent {
       }))
     );
 
-  constructor(public router: Router,
+  constructor(public router: RoutingService,
               private topBarService: TopBarService,
               public resourceStore: ResourceStoreService,
               public languageStore: LanguageStore,

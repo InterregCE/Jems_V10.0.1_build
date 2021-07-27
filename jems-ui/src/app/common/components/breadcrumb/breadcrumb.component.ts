@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, NavigationExtras, QueryParamsHandling} from '@angular/router';
 import {Breadcrumb} from '@common/components/breadcrumb/breadcrumb';
 import {takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
+import {RoutingService} from '@common/services/routing.service';
 
 @Component({
   selector: 'app-breadcrumb',
@@ -14,7 +15,8 @@ export class BreadcrumbComponent extends BaseComponent implements OnInit {
 
   breadcrumbs: Breadcrumb[] = [];
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute,
+              private routingService: RoutingService) {
     super();
   }
 
@@ -24,6 +26,10 @@ export class BreadcrumbComponent extends BaseComponent implements OnInit {
         takeUntil(this.destroyed$),
         tap(() => this.breadcrumbs = this.buildBreadcrumbs(this.route.root, '/'))
       ).subscribe();
+  }
+
+  navigate(url: string, extras: NavigationExtras): void {
+    this.routingService.navigate([url], extras);
   }
 
   private buildBreadcrumbs(route: ActivatedRoute,

@@ -27,6 +27,6 @@ export class ProjectWorkPackageDetailPageComponent {
   }
 
   routeTo(route: string): void {
-    this.router.navigate([route], {relativeTo: this.activatedRoute});
+    this.router.navigate([route], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'});
   }
 }

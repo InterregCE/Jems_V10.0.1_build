@@ -22,8 +22,8 @@
                          'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
                          'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
                        }">
-                    <a class="nav-link" *ngIf="item.isInternal" [routerLink]="item.route"
-                       (click)="isNavBarCollapsed = true">
+                    <a class="nav-link" *ngIf="item.isInternal"
+                       (click)="isNavBarCollapsed = true; router.navigate([item.route])">
                         {{item.name | translate}}
                     </a>
                     <a class="nav-link" *ngIf="!item.isInternal" [href]="item.route" target="_blank">
