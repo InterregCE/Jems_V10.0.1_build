@@ -66,17 +66,18 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
     this.currentPage$,
     this.projectDetailPageStore.project$,
     this.projectDetailPageStore.projectCurrentDecisions$,
+    this.projectDetailPageStore.isProjectLatestVersion$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate),
     this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate),
     this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationRetrieve),
     this.projectDetailPageStore.isThisUserOwner$,
   ])
     .pipe(
-      map(([page, project, decisions, canUploadAssessmentFile, canUploadApplicationFile, canRetrieveApplicationFile, isThisUserOwner]: [PageOutputProjectFile, ProjectDetailDTO, ProjectDecisionDTO, boolean, boolean, boolean, boolean, boolean]) => ({
+      map(([page, project, decisions, isProjectLatestVersion, canUploadAssessmentFile, canUploadApplicationFile, canRetrieveApplicationFile, isThisUserOwner]: [PageOutputProjectFile, ProjectDetailDTO, ProjectDecisionDTO, boolean, boolean, boolean, boolean, boolean]) => ({
         page,
         project,
         fundingDecisionDefined: !!decisions?.finalFundingDecision || !!decisions?.preFundingDecision,
-        uploadPossible: this.canUploadFiles(project, canUploadAssessmentFile, canUploadApplicationFile, canRetrieveApplicationFile),
+        uploadPossible: this.canUploadFiles(project, isProjectLatestVersion, canUploadAssessmentFile, canUploadApplicationFile, canRetrieveApplicationFile),
         canChangeApplicationFile: canUploadApplicationFile,
         canRetrieveApplicationFile,
         canChangeAssessmentFile: canUploadAssessmentFile,
@@ -160,7 +161,11 @@ export class ProjectApplicationFilesComponent extends BaseComponent {
         ).subscribe();
   }
 
-  private canUploadFiles(project: ProjectDetailDTO, canUploadAssessmentFile: boolean, canUploadApplicationFile: boolean, canRetrieveApplicationFile: boolean): boolean {
+  private canUploadFiles(project: ProjectDetailDTO, isProjectLatestVersion: boolean, canUploadAssessmentFile: boolean, canUploadApplicationFile: boolean, canRetrieveApplicationFile: boolean): boolean {
+    if (!isProjectLatestVersion) {
+      return false;
+    }
+
     if (this.fileType === OutputProjectFile.TypeEnum.ASSESSMENTFILE) {
       return canUploadAssessmentFile;
     }

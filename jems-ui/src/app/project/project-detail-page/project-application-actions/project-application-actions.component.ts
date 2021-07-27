@@ -8,7 +8,7 @@ import * as moment from 'moment';
 import {ProjectDetailPageStore} from '../project-detail-page-store';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {APIError} from '../../../common/models/APIError';
+import {APIError} from '@common/models/APIError';
 
 @Component({
   selector: 'app-project-application-actions',

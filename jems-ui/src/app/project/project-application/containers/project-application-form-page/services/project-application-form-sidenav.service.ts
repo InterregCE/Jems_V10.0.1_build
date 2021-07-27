@@ -139,16 +139,19 @@ export class ProjectApplicationFormSidenavService {
                        partners: HeadlineRoute[],
                        packages: HeadlineRoute[],
                        versionTemplate: TemplateRef<any>): void {
-    const applicationFormHeadlines = showProjectForm
-      ? this.getApplicationFormHeadline(project, partners, packages, versionTemplate) : {};
-    this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH,
-                                     [
-        this.getProjectOverviewHeadline(project, showAssessment),
-        applicationFormHeadlines
-      ]
-    );
+    showProjectForm ?
+      this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH,
+                                       [
+          this.getProjectOverviewHeadline(project, showAssessment),
+          this.getApplicationFormHeadline(project, partners, packages, versionTemplate)
+        ]
+      ) :
+      this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH,
+                                       [
+          this.getProjectOverviewHeadline(project, showAssessment)
+        ]
+      );
   }
-
 
   private getProjectOverviewHeadline(project: ProjectDetailDTO, showAssessment: boolean): HeadlineRoute {
     return {

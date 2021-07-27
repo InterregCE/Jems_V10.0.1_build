@@ -12,6 +12,11 @@ import org.springframework.stereotype.Component
 @PreAuthorize("hasAuthority('ProjectRetrieve') || @projectAuthorization.isUserOwnerOfProject(#projectId)")
 annotation class CanRetrieveProject
 
+// TODO with MP2-1722 this should be restricted so that only ProjectForm or Owner needs access (removing isLatest checks)
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectRetrieve') || hasAuthority('ProjectFormRetrieve') || @projectAuthorization.isUserOwnerOfProject(#projectId)")
+annotation class CanRetrieveProjectVersion
+
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('ProjectRetrieve')")
 annotation class CanRetrieveProjects

@@ -8,10 +8,7 @@
             </app-project-application-information>
         </div>
 
-        <app-project-application-actions
-                *hasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition projectDetailStore.isThisUserOwner$ | async"
-                appNoWidthLimit>
-        </app-project-application-actions>
+        <app-project-application-actions appNoWidthLimit></app-project-application-actions>
 
         <ng-container *ngIf="projectDetailStore.preConditionCheckResult$ | async as results">
             <app-project-application-pre-condition-check-result
