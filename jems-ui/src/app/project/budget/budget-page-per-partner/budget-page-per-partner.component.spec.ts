@@ -2,11 +2,11 @@ import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing
 
 import {BudgetPagePerPartnerComponent} from './budget-page-per-partner.component';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {TestModule} from '../../../common/test-module';
+import {TestModule} from '@common/test-module';
 import {ProjectModule} from '../../project.module';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {of} from 'rxjs';
 
 describe('BudgetPagePerPartnerComponent', () => {

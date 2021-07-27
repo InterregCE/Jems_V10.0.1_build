@@ -3,7 +3,7 @@ import {ProjectDetailDTO, ProjectStatusDTO, UserRoleCreateDTO} from '@cat/api';
 import moment from 'moment/moment';
 import {CallStore} from '../../../../../call/services/call-store.service';
 import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
-import {ProjectUtil} from '@project/project-util';
+import {ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Component({

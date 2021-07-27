@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
-import {ProjectVersionStore} from '../services/project-version-store.service';
+import {ProjectVersionStore} from '../common/services/project-version-store.service';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectVersionDTO} from '@cat/api';
 import {distinctUntilChanged, map, shareReplay} from 'rxjs/operators';
-import {ProjectUtil} from '../project-util';
+import {ProjectUtil} from '../common/project-util';
 
 @Injectable()
 export class ProjectPageTemplateStore {

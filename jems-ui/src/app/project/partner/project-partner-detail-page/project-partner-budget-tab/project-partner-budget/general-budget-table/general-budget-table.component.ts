@@ -22,7 +22,7 @@ import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
 import {MatSelectChange} from '@angular/material/select/select';
 import {ProjectPartnerBudgetTabService} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.service';
-import {APPLICATION_FORM, ApplicationFormModel} from '@project/application-form-model';
+import {APPLICATION_FORM, ApplicationFormModel} from '@project/common/application-form-model';
 
 const FIELD_KEYS =
   {

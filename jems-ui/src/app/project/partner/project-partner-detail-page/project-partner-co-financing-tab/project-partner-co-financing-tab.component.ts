@@ -25,7 +25,7 @@ import {NumberService} from '@common/services/number.service';
 import {ProjectPartnerDetailPageStore} from '../project-partner-detail-page.store';
 import {ProjectPartnerCoFinancingTabConstants} from './project-partner-co-financing-tab.constants';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import { APPLICATION_FORM } from '@project/application-form-model';
+import { APPLICATION_FORM } from '@project/common/application-form-model';
 
 
 const totalContributionValidator = (expectedAmount: number): ValidatorFn => (formArray: FormArray) => {

@@ -17,7 +17,7 @@ import {Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {takeUntil, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import { APPLICATION_FORM } from '@project/application-form-model';
+import { APPLICATION_FORM } from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-management-detail',

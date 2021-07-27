@@ -10,7 +10,7 @@ import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {take} from 'rxjs/internal/operators';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Injectable()
 export class ProjectResultsPageStore {

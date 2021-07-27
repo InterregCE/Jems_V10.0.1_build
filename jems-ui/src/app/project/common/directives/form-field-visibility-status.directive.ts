@@ -1,7 +1,7 @@
 import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ApplicationFormModel} from '@project/application-form-model';
-import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
+import {ApplicationFormModel} from '@project/common/application-form-model';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 
 @UntilDestroy()
 @Directive({

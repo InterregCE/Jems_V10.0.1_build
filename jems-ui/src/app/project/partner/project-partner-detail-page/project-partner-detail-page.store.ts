@@ -36,7 +36,7 @@ import {UnitCostsBudgetTable} from '../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-table-entry';
 import {InvestmentSummary} from '../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
-import {ProjectVersionStore} from '../../services/project-version-store.service';
+import {ProjectVersionStore} from '../../common/services/project-version-store.service';
 import {Log} from '@common/utils/log';
 
 @Injectable()

@@ -8,7 +8,7 @@ import {ActivatedRoute} from '@angular/router';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {of} from 'rxjs';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {

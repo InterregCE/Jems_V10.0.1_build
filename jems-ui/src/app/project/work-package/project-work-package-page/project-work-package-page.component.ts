@@ -11,8 +11,8 @@ import {ActivatedRoute} from '@angular/router';
 import {ProjectWorkPackagePageStore} from './project-work-package-page-store.service';
 import {ProjectApplicationFormSidenavService} from '../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-work-package-page',

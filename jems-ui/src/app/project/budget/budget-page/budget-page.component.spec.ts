@@ -1,11 +1,11 @@
 import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 
 import {BudgetPageComponent} from './budget-page.component';
-import {TestModule} from '../../../common/test-module';
+import {TestModule} from '@common/test-module';
 import {ProjectModule} from '../../project.module';
 import {ActivatedRoute} from '@angular/router';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {of} from 'rxjs';
 
 describe('BudgetPageComponent', () => {

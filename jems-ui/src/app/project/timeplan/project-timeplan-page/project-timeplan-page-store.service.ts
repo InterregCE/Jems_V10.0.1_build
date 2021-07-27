@@ -5,7 +5,7 @@ import {ProjectPeriodDTO, ProjectResultDTO, ProjectResultService, WorkPackageSer
 import {map, switchMap, tap} from 'rxjs/operators';
 import {filter} from 'rxjs/internal/operators';
 import {Log} from '@common/utils/log';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Injectable()
 export class ProjectTimeplanPageStore {

@@ -7,7 +7,7 @@ import {catchError, map, take, tap} from 'rxjs/operators';
 import {ProjectWorkPackageInvestmentDetailPageConstants} from './project-work-package-investment-detail-page.constants';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-work-package-investment-detail-page',

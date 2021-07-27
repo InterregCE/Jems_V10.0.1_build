@@ -10,9 +10,9 @@ import {PermissionService} from '../../../../../security/permissions/permission.
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter} from 'rxjs/internal/operators';
-import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
-import {APPLICATION_FORM} from '@project/application-form-model';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;

@@ -10,11 +10,11 @@ import {
 } from '@cat/api';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
-import {Log} from '../../common/utils/log';
-import {ProjectUtil} from '../project-util';
+import {Log} from '@common/utils/log';
+import {ProjectUtil} from '../common/project-util';
 import {SecurityService} from '../../security/security.service';
 import {PreConditionCheckResult} from '../model/plugin/PreConditionCheckResult';
-import {ProjectVersionStore} from '../services/project-version-store.service';
+import {ProjectVersionStore} from '../common/services/project-version-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable()

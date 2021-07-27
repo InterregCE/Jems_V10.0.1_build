@@ -16,7 +16,7 @@ import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {APIError} from '@common/models/APIError';
-import {ProjectUtil} from '@project/project-util';
+import {ProjectUtil} from '@project/common/project-util';
 import {ProjectDetailPageStore} from '@project/project-detail-page/project-detail-page-store';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 

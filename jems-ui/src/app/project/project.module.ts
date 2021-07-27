@@ -62,7 +62,7 @@ import {ProjectWorkPackageObjectivesTabComponent} from './work-package/project-w
 import {ProjectWorkPackageDetailPageComponent} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-detail-page.component';
 import {ProjectWorkPackageActivitiesTabComponent} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-activities-tab/project-work-package-activities-tab.component';
 import {TravelAndAccommodationCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/travel-and-accommodation-costs-budget-table/travel-and-accommodation-costs-budget-table.component';
-import {ProjectPeriodsSelectComponent} from './components/project-periods-select/project-periods-select.component';
+import {ProjectPeriodsSelectComponent} from './common/components/project-periods-select/project-periods-select.component';
 import {ProjectWorkPackageInvestmentsTabComponent} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-investments-tab/project-work-package-investments-tab.component';
 import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-investment-detail-page.component';
 import {StaffCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/staff-costs-budget-table/staff-costs-budget-table.component';
@@ -82,13 +82,13 @@ import {ProjectDetailPageComponent} from './project-detail-page/project-detail-p
 import {ProjectApplicationPreConditionCheckResultComponent} from './project-detail-page/project-application-pre-condition-check-result/project-application-pre-condition-check-result.component';
 import {ProjectStore} from './project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
-import {ProjectVersionStore} from './services/project-version-store.service';
+import {ProjectVersionStore} from './common/services/project-version-store.service';
 import {ProjectPageTemplateComponent} from './project-page-template/project-page-template.component';
 import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
-import { FormFieldVisibilityStatusDirective } from './directives/form-field-visibility-status.directive';
+import { FormFieldVisibilityStatusDirective } from './common/directives/form-field-visibility-status.directive';
 import { ProjectApplicationFileDeleteComponent } from './project-application/components/project-application-detail/project-application-file-delete/project-application-file-delete.component';
 import { ProjectPartnerStateAidTabComponent } from './partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
-import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {PeriodsTotalPipe} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/periods-total.pipe';
 
 @NgModule({

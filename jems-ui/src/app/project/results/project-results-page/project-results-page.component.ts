@@ -8,7 +8,7 @@ import {catchError, map, tap} from 'rxjs/operators';
 import {InputTranslation, ProjectPeriodDTO, ProjectResultDTO, ResultIndicatorSummaryDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 import {ActivatedRoute} from '@angular/router';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-results-page',

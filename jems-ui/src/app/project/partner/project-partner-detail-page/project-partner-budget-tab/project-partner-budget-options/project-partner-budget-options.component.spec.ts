@@ -8,7 +8,7 @@ import {ActivatedRoute} from '@angular/router';
 import {BudgetOptions} from '@project/model/budget/budget-options';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {of} from 'rxjs';
 
 describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {

@@ -9,7 +9,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @UntilDestroy()
 @Component({

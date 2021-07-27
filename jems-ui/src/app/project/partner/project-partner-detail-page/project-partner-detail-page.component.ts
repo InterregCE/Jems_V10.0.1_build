@@ -6,7 +6,7 @@ import {ActivatedRoute} from '@angular/router';
 import {ProgrammeLegalStatusService} from '@cat/api';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 

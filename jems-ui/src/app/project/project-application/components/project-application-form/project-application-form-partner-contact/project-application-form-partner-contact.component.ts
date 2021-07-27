@@ -4,7 +4,7 @@ import {InputProjectContact, OutputProjectPartnerDetail} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Observable} from 'rxjs';
 
 @Component({

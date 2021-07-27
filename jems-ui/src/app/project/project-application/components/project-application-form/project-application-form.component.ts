@@ -22,7 +22,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectStore} from '../../containers/project-application-detail/services/project-store.service';
 import {LanguageStore} from '@common/services/language-store.service';
-import { APPLICATION_FORM } from '@project/application-form-model';
+import { APPLICATION_FORM } from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-application-form',

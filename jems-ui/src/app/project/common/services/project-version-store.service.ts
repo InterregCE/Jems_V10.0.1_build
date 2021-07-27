@@ -4,7 +4,7 @@ import {ProjectService, ProjectVersionDTO} from '@cat/api';
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {RoutingService} from '@common/services/routing.service';
-import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {filter} from 'rxjs/internal/operators';
 
 @Injectable()

@@ -21,7 +21,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import { APPLICATION_FORM } from '@project/application-form-model';
+import { APPLICATION_FORM } from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-project-relevance-and-context-detail',

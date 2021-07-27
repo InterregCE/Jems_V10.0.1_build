@@ -5,7 +5,7 @@ import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectWorkPackagePageStore} from '../../project-work-package-page-store.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {Log} from '@common/utils/log';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {NutsStore} from '@common/services/nuts.store';
 import {filter, take} from 'rxjs/internal/operators';

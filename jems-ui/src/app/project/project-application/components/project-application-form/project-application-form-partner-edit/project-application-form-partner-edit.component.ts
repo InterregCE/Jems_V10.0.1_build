@@ -20,7 +20,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {APIError} from '@common/models/APIError';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Tools} from '@common/utils/tools';
 import {RoutingService} from '@common/services/routing.service';
 

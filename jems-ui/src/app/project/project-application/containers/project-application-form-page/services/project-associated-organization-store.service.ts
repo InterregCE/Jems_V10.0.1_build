@@ -10,7 +10,7 @@ import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectPartnerStore} from './project-partner-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {NutsStore} from '@common/services/nuts.store';
@@ -73,7 +73,7 @@ export class ProjectAssociatedOrganizationStore {
       switchMap(([organizationId, projectId, version]) => organizationId
         ? this.associatedOrganizationService.getAssociatedOrganizationById(organizationId as number, projectId, version)
           .pipe(
-            catchError(err => {
+            catchError(() => {
               this.router.navigate([ProjectStore.PROJECT_DETAIL_PATH, projectId]);
               return of({});
             })

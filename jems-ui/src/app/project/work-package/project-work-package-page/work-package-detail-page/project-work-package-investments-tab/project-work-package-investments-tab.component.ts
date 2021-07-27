@@ -11,10 +11,10 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Log} from '@common/utils/log';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-work-package-investments-tab',
@@ -119,4 +119,3 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
     ).subscribe();
   }
 }
-

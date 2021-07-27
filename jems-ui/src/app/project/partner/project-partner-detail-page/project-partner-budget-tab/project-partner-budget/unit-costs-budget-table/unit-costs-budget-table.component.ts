@@ -21,7 +21,7 @@ import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {Alert} from '@common/components/forms/alert';
 import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
 import {ProjectPartnerBudgetTabService} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.service';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @UntilDestroy()
 @Component({

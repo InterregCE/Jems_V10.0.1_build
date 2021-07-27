@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {OutputProjectDescription, ProjectDescriptionService} from '@cat/api';
 import {mergeMap, shareReplay, tap} from 'rxjs/operators';
-import {Log} from '../../../../../common/utils/log';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {Log} from '@common/utils/log';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Injectable()
 export class ProjectApplicationFormStore {

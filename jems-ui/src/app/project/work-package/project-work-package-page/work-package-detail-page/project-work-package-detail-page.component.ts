@@ -3,7 +3,7 @@ import {ActivatedRoute} from '@angular/router';
 import {WorkPackageService} from '@cat/api';
 import {ProjectWorkPackagePageStore} from './project-work-package-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-work-package-detail-page',

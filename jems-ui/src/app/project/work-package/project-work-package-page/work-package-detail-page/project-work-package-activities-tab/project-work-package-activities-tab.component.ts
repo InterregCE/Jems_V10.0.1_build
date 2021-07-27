@@ -7,7 +7,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 import {ProjectWorkPackageActivitiesTabConstants} from './project-work-package-activities-tab.constants';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @UntilDestroy()
 @Component({

@@ -18,7 +18,7 @@ import {ProjectApplicationFormSidenavService} from '../../../project-application
 import {Log} from '@common/utils/log';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectVersionStore} from '../../../services/project-version-store.service';
+import {ProjectVersionStore} from '../../../common/services/project-version-store.service';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {

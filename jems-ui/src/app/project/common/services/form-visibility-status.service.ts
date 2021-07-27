@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ApplicationFormModel} from '@project/application-form-model';
+import {ApplicationFormModel} from '@project/common/application-form-model';
 import {ApplicationFormFieldConfigurationDTO} from '@cat/api';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable} from 'rxjs';

@@ -7,7 +7,7 @@ import {ProjectLumpSum} from '../../model/lump-sums/projectLumpSum';
 import {PartnerContribution} from '../../model/lump-sums/partnerContribution';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectPeriod} from '../../model/ProjectPeriod';
-import {ProjectVersionStore} from '../../services/project-version-store.service';
+import {ProjectVersionStore} from '../../common/services/project-version-store.service';
 
 @Injectable()
 export class ProjectLumpSumsPageStore {

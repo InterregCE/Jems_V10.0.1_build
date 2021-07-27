@@ -26,8 +26,8 @@ import {Alert} from '@common/components/forms/alert';
 import {ProjectPeriod} from '../../model/ProjectPeriod';
 import {TranslateService} from '@ngx-translate/core';
 import {MatTable} from '@angular/material/table';
-import {FormVisibilityStatusService} from '@project/services/form-visibility-status.service';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @UntilDestroy()
 @Component({

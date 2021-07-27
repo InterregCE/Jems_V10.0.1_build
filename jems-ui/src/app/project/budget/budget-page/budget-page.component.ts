@@ -3,10 +3,10 @@ import {ProjectStore} from '../../project-application/containers/project-applica
 import {ActivatedRoute} from '@angular/router';
 import {ProjectCallSettingsDTO, ProjectPartnerBudgetDTO, ProjectService} from '@cat/api';
 import {map, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {combineLatest, Observable} from 'rxjs';
-import {NumberService} from '../../../common/services/number.service';
-import {ProjectVersionStore} from '@project/services/project-version-store.service';
+import {NumberService} from '@common/services/number.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Component({
   selector: 'app-budget-page',

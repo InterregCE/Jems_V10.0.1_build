@@ -8,7 +8,7 @@ import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.se
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {InputTranslation, OutputIndicatorSummaryDTO, ProjectPeriodDTO, WorkPackageOutputDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @UntilDestroy()
 @Component({

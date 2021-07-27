@@ -12,7 +12,7 @@ import {map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {filter} from 'rxjs/internal/operators';
 import {Log} from '@common/utils/log';
 import {ApplicationFormFieldNode} from './application-form-field-node';
-import {APPLICATION_FORM} from '@project/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 import AvailableInStepEnum = UpdateApplicationFormFieldConfigurationRequestDTO.AvailableInStepEnum;
 
 @Injectable()
