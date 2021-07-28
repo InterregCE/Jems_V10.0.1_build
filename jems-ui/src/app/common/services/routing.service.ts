@@ -1,12 +1,6 @@
 import {Injectable} from '@angular/core';
 import {distinctUntilChanged, filter, map, take, tap} from 'rxjs/operators';
-import {
-  ActivatedRoute,
-  NavigationEnd,
-  NavigationExtras,
-  ResolveEnd,
-  Router
-} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, NavigationExtras, ResolveEnd, Router} from '@angular/router';
 import {Forms} from '../utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Log} from '../utils/log';
@@ -35,6 +29,10 @@ export class RoutingService {
       .subscribe();
   }
 
+  get url(): string {
+    return this.router.url;
+  }
+
   navigate(commands: any[], extras?: NavigationExtras): void {
     const navigationExtras = extras || {queryParamsHandling: 'merge'} as NavigationExtras;
     if (!this.confirmLeave) {
@@ -42,10 +40,12 @@ export class RoutingService {
       return;
     }
 
-    Forms.confirmDialog(
+    Forms.confirm(
       this.dialog,
-      'common.sidebar.dialog.title',
-      'common.sidebar.dialog.message'
+      {
+        title: 'common.sidebar.dialog.title',
+        warnMessage: 'common.sidebar.dialog.message'
+      }
     ).pipe(
       take(1),
       filter(yes => !!yes),
@@ -70,10 +70,6 @@ export class RoutingService {
         distinctUntilChanged((o, n) => o === n),
         tap(param => Log.debug('Route param changed', this, url, param)),
       );
-  }
-
-  get url(): string {
-    return this.router.url;
   }
 
   getParameter(route: ActivatedRoute, param: string): string | number | null {

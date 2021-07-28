@@ -3,7 +3,7 @@
 </h1>
 
 <div mat-dialog-content>
-    <p>{{message | translate : arguments}}</p>
+    <p *ngIf="message">{{message | translate : arguments}}</p>
 
     <app-alert [closable]="false"
                [show]="!!data.warnMessage"
@@ -13,7 +13,9 @@
 </div>
 
 <div mat-dialog-actions>
-    <button mat-stroked-button mat-dialog-close (click)="onDismiss()" cdkFocusInitial>{{'common.dialog.dismiss' | translate}}</button>
-    <button mat-raised-button mat-dialog-close (click)="onConfirm()" color="primary">{{'common.dialog.confirm' | translate}}</button>
+    <button (click)="onDismiss()" cdkFocusInitial mat-dialog-close
+            mat-stroked-button>{{'common.dialog.dismiss' | translate}}</button>
+    <button (click)="onConfirm()" color="primary" mat-dialog-close
+            mat-raised-button>{{'common.dialog.confirm' | translate}}</button>
 </div>
 
