@@ -1,7 +1,7 @@
 <app-project-page-template *ngIf="partnerStore.partner$ | async as partner"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} ">
     <ng-container page-sub-title *ngIf="partner.abbreviation else defaultSubTitle">
-        <h2>{{'common.label.project.partner.role.' + partner.role | translate}}{{partner.abbreviation}}</h2>
+        <h2>{{'common.label.project.partner.role.' + partner.role | translate}} {{partner.abbreviation}}</h2>
     </ng-container>
 
     <nav mat-tab-nav-bar>
