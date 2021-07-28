@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6d1c0499-5b1d-44ac-9129-274ced21dd6b",
+		"_postman_id": "5b9c2017-5661-4f09-b498-91dbc9315df6",
 		"name": "ems-rest-test",
 		"description": "Check JEMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -2321,18 +2321,15 @@
 									"\r",
 									"pm.test('title should fit', function() {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"projectData\");\r",
-									"    pm.expect(response.projectData).to.have.property(\"title\");\r",
-									"    const title = pm.response.json().projectData.title.find(title => title.language === pm.variables.get('inputLanguage')).translation;\r",
+									"    const title = pm.response.json().title.find(title => title.language === pm.variables.get('inputLanguage')).translation;\r",
 									"    pm.expect(title).to.eql(pm.variables.get(\"project_title\"));\r",
 									"});\r",
 									"\r",
 									"pm.test('specificObjective should fit', function() {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"projectData\");\r",
-									"    pm.expect(response.projectData).to.have.property(\"specificObjective\");\r",
-									"    pm.expect(response.projectData.specificObjective).to.have.property(\"programmeObjectivePolicy\");\r",
-									"    pm.expect(response.projectData.specificObjective.programmeObjectivePolicy)\r",
+									"    pm.expect(response).to.have.property(\"specificObjective\");\r",
+									"    pm.expect(response.specificObjective).to.have.property(\"programmeObjectivePolicy\");\r",
+									"    pm.expect(response.specificObjective.programmeObjectivePolicy)\r",
 									"        .to.eql(pm.variables.get(\"programmePriorityPolicy\"));\r",
 									"});\r",
 									""
@@ -2345,13 +2342,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{projectId}}",
+							"raw": "{{url}}/api/project/byId/{{projectId}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"{{projectId}}"
 							]
 						}
@@ -2386,13 +2384,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/-1",
+							"raw": "{{url}}/api/project/byId/-1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"-1"
 							]
 						}
@@ -3270,23 +3269,25 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const application = pm.response.json();\r",
-									"\r",
 									"pm.test('status should be SUBMITTED', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.expect(application.projectStatus.status).to.eql('SUBMITTED');\r",
 									"});\r",
 									"\r",
 									"pm.test('submission date should be filled in', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.expect(application.firstSubmission.updated).not.eql(null);\r",
 									"    pm.variables.set('application_submission_time', application.firstSubmission.updated);\r",
 									"});\r",
 									"\r",
 									"pm.test('resubmission date should be empty after first submission', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.expect(application.lastResubmission).to.eql(null);\r",
 									"});\r",
 									"\r",
 									"pm.test('submission and status should be equal', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.expect(application.firstSubmission)\r",
 									"        .deep.equal(application.projectStatus);\r",
 									"});\r",
@@ -3315,13 +3316,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
+							"raw": "{{url}}/api/project/byId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"{{application_id}}"
 							]
 						}
@@ -3544,20 +3546,21 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const application = pm.response.json();\r",
-									"\r",
 									"pm.test('status should be RETURNED_TO_APPLICANT', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.expect(application.projectStatus.status).to.eql('RETURNED_TO_APPLICANT');\r",
 									"});\r",
 									"\r",
 									"pm.test('submission date should stay like it was', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.expect(application.firstSubmission.updated).to.eql(\r",
 									"        pm.variables.get('application_submission_time')\r",
 									"    );\r",
 									"});\r",
 									"\r",
 									"pm.test('resubmission date should still be empty', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.expect(application.lastResubmission).to.eql(null);\r",
 									"});\r",
 									"\r",
@@ -3591,13 +3594,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
+							"raw": "{{url}}/api/project/byId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"{{application_id}}"
 							]
 						}
@@ -3785,13 +3789,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
+							"raw": "{{url}}/api/project/byId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"{{application_id}}"
 							]
 						}
@@ -4538,13 +4543,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
+							"raw": "{{url}}/api/project/byId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"{{application_id}}"
 							]
 						}
@@ -6126,13 +6132,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
+										"byId",
 										"{{application_id}}"
 									]
 								}
@@ -7522,13 +7529,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
+										"byId",
 										"{{application_id}}"
 									]
 								}
@@ -7717,13 +7725,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
+										"byId",
 										"{{application_id}}"
 									]
 								}
@@ -7864,13 +7873,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
+										"byId",
 										"{{application_id}}"
 									]
 								}
@@ -8957,7 +8967,7 @@
 										"exec": [
 											"pm.test('project duration is saved', function() {\r",
 											"    pm.response.to.have.status(200);\r",
-											"    pm.expect(pm.response.json().projectData.duration).to.eql(50);\r",
+											"    pm.expect(pm.response.json().duration).to.eql(50);\r",
 											"});\r",
 											""
 										],
@@ -11021,7 +11031,7 @@
 										"exec": [
 											"pm.test('project duration is saved', function() {\r",
 											"    pm.response.to.have.status(200);\r",
-											"    pm.expect(pm.response.json().projectData.duration).to.eql(80);\r",
+											"    pm.expect(pm.response.json().duration).to.eql(80);\r",
 											"});\r",
 											""
 										],
