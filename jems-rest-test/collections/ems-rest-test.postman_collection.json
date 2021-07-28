@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "d99c46c0-47a7-44a3-9b71-f42c44e48494",
 		"name": "ems-rest-test",
-		"description": "Check EMS application for common use-cases",
+		"description": "Check JEMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -2301,7 +2301,7 @@
 					"response": []
 				},
 				{
-					"name": "test project application retrieval by id 1",
+					"name": "test project application retrieval by Id 1",
 					"event": [
 						{
 							"listen": "test",
@@ -2345,7 +2345,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{projectId}}",
+							"raw": "{{url}}/api/project/byId/{{projectId}}",
 							"host": [
 								"{{url}}"
 							],
@@ -2359,7 +2359,7 @@
 					"response": []
 				},
 				{
-					"name": "test project application retrieval by Id - invalid id",
+					"name": "test project application retrieval by Id - invalid Id",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -2386,7 +2386,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/-1",
+							"raw": "{{url}}/api/project/byId/-1",
 							"host": [
 								"{{url}}"
 							],
@@ -3315,7 +3315,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
+							"raw": "{{url}}/api/project/byId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
@@ -4538,7 +4538,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
+							"raw": "{{url}}/api/project/byId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
@@ -6126,7 +6126,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
@@ -7522,7 +7522,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
@@ -7717,7 +7717,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
@@ -7864,7 +7864,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
