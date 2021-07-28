@@ -215,10 +215,10 @@ export class ProjectStore {
           if (!currentVersionIsLatest) {
             return false;
           }
-          if (permissions.includes(PermissionsEnum.ProjectFormUpdate)) {
-            return true;
+          if (!ProjectUtil.isOpenForModifications(project)) {
+            return false;
           }
-          return ProjectUtil.isOpenForModifications(project) && currentUser?.id === project.applicant.id;
+          return permissions.includes(PermissionsEnum.ProjectFormUpdate) || currentUser?.id === project.applicant.id;
         }),
         shareReplay(1)
       );
