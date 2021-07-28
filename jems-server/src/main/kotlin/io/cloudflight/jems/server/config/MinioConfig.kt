@@ -15,7 +15,7 @@ class MinioConfig {
 
     @Bean
     fun initClient(): MinioClient {
-        return MinioClient(endpoint, accessKey, secretKey)
+        return MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build()
     }
 
 }

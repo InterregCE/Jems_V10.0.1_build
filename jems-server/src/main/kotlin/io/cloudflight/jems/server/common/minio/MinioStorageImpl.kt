@@ -1,15 +1,20 @@
 package io.cloudflight.jems.server.common.minio
 
 import io.cloudflight.jems.server.common.exception.DuplicateFileException
-import io.minio.ErrorCode
+import io.minio.BucketExistsArgs
+import io.minio.CopyObjectArgs
+import io.minio.CopySource
+import io.minio.GetObjectArgs
+import io.minio.ListObjectsArgs
+import io.minio.MakeBucketArgs
 import io.minio.MinioClient
-import io.minio.ObjectStat
-import io.minio.PutObjectOptions
-import io.minio.errors.ErrorResponseException
+import io.minio.PutObjectArgs
+import io.minio.RemoveObjectArgs
+import io.minio.messages.Item
+import java.io.InputStream
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.io.InputStream
 
 @Service
 class MinioStorageImpl(
@@ -24,8 +29,8 @@ class MinioStorageImpl(
         makeBucketIfNotExists(bucket)
         throwIfObjectAlreadyExists(bucket, filePath)
 
-        val options = PutObjectOptions(size, -1)
-        minioClient.putObject(bucket, filePath, stream, options)
+        val arguments = PutObjectArgs.builder().bucket(bucket).`object`(filePath).stream(stream, size, -1).build()
+        minioClient.putObject(arguments)
     }
 
     override fun moveFile(
@@ -33,60 +38,55 @@ class MinioStorageImpl(
     ) {
         makeBucketIfNotExists(destinationBucket)
         minioClient.copyObject(
-            destinationBucket, destinationFilePath, null, null, sourceBucket, sourceFilePath, null, null
+            CopyObjectArgs.builder()
+                .bucket(destinationBucket)
+                .`object`(destinationFilePath)
+                .source(
+                    CopySource.builder()
+                        .bucket(sourceBucket)
+                        .`object`(sourceFilePath)
+                        .build()
+                )
+                .build()
         )
         deleteFile(sourceBucket, sourceFilePath)
     }
 
     override fun getFile(bucket: String, filePath: String): ByteArray {
         return IOUtils.toByteArray(
-            minioClient.getObject(bucket, filePath)
+            minioClient.getObject(GetObjectArgs.builder().bucket(bucket).`object`(filePath).build())
         )
     }
 
     override fun deleteFile(bucket: String, filePath: String) {
-        try {
-            minioClient.statObject(bucket, filePath)
-        } catch (e: ErrorResponseException) {
-            val reason = e.errorResponse().errorCode()
-            if (reason == ErrorCode.NO_SUCH_KEY || reason == ErrorCode.NO_SUCH_OBJECT) {
+        exists(bucket, filePath).also { objectAlreadyExists ->
+            if (objectAlreadyExists)
+                minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucket).`object`(filePath).build())
+            else
                 logger.error("Attempt to delete a file $bucket/$filePath from MinIO storage, that does not exist.")
-                return
-            } else {
-                throw e
-            }
         }
-        minioClient.removeObject(bucket, filePath)
     }
 
     override fun exists(bucket: String, filePath: String): Boolean =
-        try {
-            minioClient.statObject(bucket, filePath)
-            true
-        } catch (e: ErrorResponseException) {
-            val reason = e.errorResponse().errorCode()
-            !(reason == ErrorCode.NO_SUCH_BUCKET || reason == ErrorCode.NO_SUCH_OBJECT || reason == ErrorCode.NO_SUCH_KEY)
-        }
+        getObjectInfoOrNull(bucket, filePath) != null
 
     private fun makeBucketIfNotExists(bucket: String) {
-        if (!minioClient.bucketExists(bucket)) {
-            minioClient.makeBucket(bucket)
+        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())) {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build())
         }
     }
 
-    private fun throwIfObjectAlreadyExists(bucket: String, filePath: String) {
-        val fileMetadata: ObjectStat
-        try {
-            fileMetadata = minioClient.statObject(bucket, filePath)
-        } catch (e: ErrorResponseException) {
-            val reason = e.errorResponse().errorCode()
-            if (reason == ErrorCode.NO_SUCH_KEY || reason == ErrorCode.NO_SUCH_OBJECT) {
-                // if cannot be find, then everything is alright
-                return
-            }
-            throw e
+    private fun throwIfObjectAlreadyExists(bucket: String, filePath: String) =
+        getObjectInfoOrNull(bucket, filePath)?.let {
+            throw DuplicateFileException(it)
         }
-        throw DuplicateFileException(fileMetadata)
-    }
+
+    private fun getObjectInfoOrNull(bucket: String, filePath: String): Item? =
+        with(
+            minioClient.listObjects(ListObjectsArgs.builder().bucket(bucket).prefix(filePath).build())
+                .map { it.get() }) {
+            this.firstOrNull()
+        }
+
 
 }
