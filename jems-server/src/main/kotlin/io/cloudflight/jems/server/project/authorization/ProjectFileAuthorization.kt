@@ -26,7 +26,7 @@ annotation class CanRetrieveProjectApplicationFile
 annotation class CanRetrieveProjectApplicationFiles
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectFileApplicationUpdate') || @projectAuthorization.canOwnerUpdateProject(#projectId)")
+@PreAuthorize("hasAuthority('ProjectFileApplicationUpdate') || @projectAuthorization.canUpdateProject(#projectId)")
 annotation class CanUpdateProjectApplicationFile
 
 @Component
