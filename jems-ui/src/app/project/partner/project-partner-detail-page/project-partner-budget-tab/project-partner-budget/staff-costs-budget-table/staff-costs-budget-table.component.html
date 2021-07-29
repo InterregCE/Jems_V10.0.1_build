@@ -38,7 +38,9 @@
                             </mat-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
-                            <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            <ng-container *ngIf="columnsToDisplay[0]==='unitCost'">
+                                <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            </ng-container>
                         </mat-footer-cell>
                     </ng-container>
 
@@ -54,7 +56,7 @@
                             </app-multi-language-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
-                            <ng-container *ngIf="availableUnitCosts.length<=0">
+                            <ng-container *ngIf="columnsToDisplay[0]==='description'">
                                 <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
                             </ng-container>
                         </mat-footer-cell>
@@ -69,7 +71,11 @@
                                     [formControlName]="constants.FORM_CONTROL_NAMES.comment">
                             </app-multi-language-form-field>
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef>
+                            <ng-container *ngIf="columnsToDisplay[0]==='comment'">
+                                <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            </ng-container>
+                        </mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="unitType">
@@ -86,7 +92,11 @@
                                     [formControlName]="constants.FORM_CONTROL_NAMES.unitType">
                             </app-multi-language-form-field>
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef>
+                            <ng-container *ngIf="columnsToDisplay[0]==='unitType'">
+                                <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            </ng-container>
+                        </mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="numberOfUnits">
@@ -116,7 +126,11 @@
                                        matInput>
                             </mat-form-field>
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef>
+                            <ng-container *ngIf="columnsToDisplay[0]==='pricePerUnit'">
+                                <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            </ng-container>
+                        </mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="total" stickyEnd>
