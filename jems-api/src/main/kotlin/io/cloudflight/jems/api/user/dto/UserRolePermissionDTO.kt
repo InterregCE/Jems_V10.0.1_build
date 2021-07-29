@@ -44,5 +44,4 @@ enum class UserRolePermissionDTO(val key: String) {
     UserCreate("UserCreate"),
     UserUpdate("UserUpdate"),
     UserUpdateRole("UserUpdateRole"),
-    UserUpdatePassword("UserUpdatePassword"),
 }

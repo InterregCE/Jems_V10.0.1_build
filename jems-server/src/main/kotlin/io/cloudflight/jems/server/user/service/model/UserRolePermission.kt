@@ -49,5 +49,4 @@ enum class UserRolePermission(val key: String) {
     UserCreate("UserCreate"),
     UserUpdate("UserUpdate"),
     UserUpdateRole("UserUpdateRole"),
-    UserUpdatePassword("UserUpdatePassword"),
 }

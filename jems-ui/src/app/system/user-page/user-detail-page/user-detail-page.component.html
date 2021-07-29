@@ -80,7 +80,7 @@
         </div>
     </form>
 
-    <ng-container *hasPermission="PermissionsEnum.UserUpdatePassword">
+    <ng-container>
         <app-user-password
                 *ngIf="details.user?.id"
                 class="mt-3 block"
