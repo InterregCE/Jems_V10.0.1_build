@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.project.service.workpackage
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.programme.service.language.model.AvailableProgrammeLanguages
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
@@ -55,12 +57,12 @@ fun InputWorkPackageCreate.combineTranslatedValues(
 }
 
 fun InputWorkPackageUpdate.combineTranslatedValues(
-    workPackageId: Long
+    workPackageId: Long,
+    languages: MutableSet<SystemLanguage>
 ): MutableSet<WorkPackageTransl> {
     val nameMap = name.associateBy( { it.language }, { it.translation } )
     val specificObjectiveMap = specificObjective.associateBy( { it.language }, { it.translation } )
     val objectiveAndAudienceMap = objectiveAndAudience.associateBy( { it.language }, { it.translation } )
-    val languages = nameMap.keys.toMutableSet()
 
     return languages.mapTo(HashSet()) {
         WorkPackageTransl(

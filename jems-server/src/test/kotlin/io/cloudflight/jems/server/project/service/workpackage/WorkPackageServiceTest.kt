@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.language.get_languages.GetLanguagesInteractor
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
@@ -112,13 +113,18 @@ class WorkPackageServiceTest {
 
     lateinit var workPackageService: WorkPackageService
 
+    @MockK
+    lateinit var getLanguagesInteractor: GetLanguagesInteractor
+
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
         workPackageService = WorkPackageServiceImpl(
             workPackageRepository,
-            projectRepository
+            projectRepository,
+            getLanguagesInteractor
         )
+        every { getLanguagesInteractor.getAvailableLanguages().inputLanguages } returns setOf(SystemLanguage.EN)
     }
 
     @Test

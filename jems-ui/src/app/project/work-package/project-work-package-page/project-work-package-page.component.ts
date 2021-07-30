@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import { Permission } from 'src/app/security/permissions/permission';
+import {Permission} from 'src/app/security/permissions/permission';
 import {Forms} from '@common/utils/forms';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
@@ -13,6 +13,7 @@ import {ProjectApplicationFormSidenavService} from '../../project-application/co
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
   selector: 'app-project-work-package-page',
@@ -77,7 +78,8 @@ export class ProjectWorkPackagePageComponent implements OnInit {
         {
           displayedColumn: ' ',
           columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.deletionCell
+          customCellTemplate: this.deletionCell,
+          columnWidth: ColumnWidth.IdColumn
         },
       ]
     });

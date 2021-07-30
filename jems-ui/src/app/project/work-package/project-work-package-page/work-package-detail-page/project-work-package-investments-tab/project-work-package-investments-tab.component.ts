@@ -15,6 +15,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
   selector: 'app-project-work-package-investments-tab',
@@ -90,7 +91,8 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
         {
           displayedColumn: ' ',
           columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.deletionCell
+          customCellTemplate: this.deletionCell,
+          columnWidth: ColumnWidth.IdColumn
         },
       ]
     });

@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.service.language.get_languages.GetLanguagesInteractor
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
@@ -20,7 +21,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class WorkPackageServiceImpl(
     private val workPackageRepository: WorkPackageRepository,
-    private val projectRepository: ProjectRepository
+    private val projectRepository: ProjectRepository,
+    private val getLanguagesInteractor: GetLanguagesInteractor
 ) : WorkPackageService {
 
     companion object {
@@ -54,8 +56,10 @@ class WorkPackageServiceImpl(
     override fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage {
         val oldWorkPackage = getWorkPackageOrThrow(inputWorkPackageUpdate.id)
 
+        val languages = getLanguagesInteractor.getAvailableLanguages().inputLanguages.toMutableSet()
+
         val toUpdate = oldWorkPackage.copy(
-            translatedValues = inputWorkPackageUpdate.combineTranslatedValues(oldWorkPackage.id)
+            translatedValues = inputWorkPackageUpdate.combineTranslatedValues(oldWorkPackage.id, languages)
         )
 
         return workPackageRepository.save(toUpdate).toOutputWorkPackage()
