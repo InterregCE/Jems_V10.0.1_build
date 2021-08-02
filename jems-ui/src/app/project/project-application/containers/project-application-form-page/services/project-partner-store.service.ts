@@ -22,16 +22,13 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 @Injectable()
 export class ProjectPartnerStore {
   public static PARTNER_DETAIL_PATH = '/applicationFormPartner/';
-
-  private partnerId: number;
-  private projectId: number;
-  private partnerUpdateEvent$ = new BehaviorSubject(null);
-
   isProjectEditable$: Observable<boolean>;
   partner$: Observable<OutputProjectPartnerDetail>;
   partners$: Observable<ProjectPartner[]>;
   dropdownPartners$: Observable<OutputProjectPartner[]>;
-
+  private partnerId: number;
+  private projectId: number;
+  private partnerUpdateEvent$ = new BehaviorSubject(null);
   private updatedPartner$ = new Subject<OutputProjectPartnerDetail>();
 
   constructor(private partnerService: ProjectPartnerService,
@@ -53,35 +50,6 @@ export class ProjectPartnerStore {
       shareReplay(1)
     );
     this.partner$ = this.partner();
-  }
-
-  private partner(): Observable<OutputProjectPartnerDetail> {
-    const initialPartner$ =  combineLatest([
-      this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
-      this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$
-    ]).pipe(
-      tap(([partnerId, projectId]) => {
-        this.partnerId = Number(partnerId);
-        this.projectId = projectId;
-      }),
-      switchMap(([partnerId, projectId, version]) => partnerId && projectId
-        ? this.partnerService.getProjectPartnerById(Number(partnerId), version)
-          .pipe(
-            catchError(() => {
-              this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
-              return of({} as OutputProjectPartnerDetail);
-            })
-          )
-        : of({} as OutputProjectPartnerDetail)
-      ),
-      tap(partner => Log.info('Fetched the programme partner:', this, partner)),
-    );
-
-    return merge(initialPartner$, this.updatedPartner$)
-      .pipe(
-        shareReplay(1)
-      );
   }
 
   savePartner(partner: InputProjectPartnerUpdate): Observable<OutputProjectPartnerDetail> {
@@ -127,10 +95,39 @@ export class ProjectPartnerStore {
       );
   }
 
-  private dropdownPartners(): Observable<OutputProjectPartner[]> {
-    return this.projectVersionStore.currentRouteVersion$
+  private partner(): Observable<OutputProjectPartnerDetail> {
+    const initialPartner$ = combineLatest([
+      this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
+      this.projectStore.projectId$,
+      this.projectVersionStore.currentRouteVersion$
+    ]).pipe(
+      tap(([partnerId, projectId]) => {
+        this.partnerId = Number(partnerId);
+        this.projectId = projectId;
+      }),
+      switchMap(([partnerId, projectId, version]) => partnerId && projectId
+        ? this.partnerService.getProjectPartnerById(Number(partnerId), version)
+          .pipe(
+            catchError(() => {
+              this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
+              return of({} as OutputProjectPartnerDetail);
+            })
+          )
+        : of({} as OutputProjectPartnerDetail)
+      ),
+      tap(partner => Log.info('Fetched the programme partner:', this, partner)),
+    );
+
+    return merge(initialPartner$, this.updatedPartner$)
       .pipe(
-        switchMap(version => this.partnerService.getProjectPartnersForDropdown(this.projectId, undefined, version))
+        shareReplay(1)
+      );
+  }
+
+  private dropdownPartners(): Observable<OutputProjectPartner[]> {
+    return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$])
+      .pipe(
+        switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, undefined, version))
       );
   }
 }
