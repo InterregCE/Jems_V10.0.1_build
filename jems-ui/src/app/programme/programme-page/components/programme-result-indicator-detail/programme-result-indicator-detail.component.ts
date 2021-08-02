@@ -28,7 +28,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {LanguageStore} from '../../../../common/services/language-store.service';
-
 @UntilDestroy()
 @Component({
   selector: 'app-programme-result-indicator-detail',
@@ -91,16 +90,6 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
   ngOnInit(): void {
     super.ngOnInit();
     this.resetForm();
-    this.resultIndicatorForm.get('indicatorCode')?.valueChanges
-      .pipe(
-        tap((relation: ResultIndicatorCodeRelation) => this.resultIndicatorForm.get('indicatorName')
-          ?.setValue(this.extractFromCodeRelation(relation, code => code.name))
-        ),
-        tap((relation: ResultIndicatorCodeRelation) => this.resultIndicatorForm.get('measurementUnit')
-          ?.setValue(this.extractFromCodeRelation(relation, code => code.measurementUnit))
-        ),
-        untilDestroyed(this),
-      ).subscribe();
   }
 
   resetForm(): void {
@@ -174,6 +163,11 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
     } else {
       this.resetForm();
     }
+  }
+
+  updateIndicatorCode(indicatorCode: ResultIndicatorCodeRelation): void {
+    this.resultIndicatorForm.get('indicatorName')?.setValue(this.extractFromCodeRelation(indicatorCode, code => code.name));
+    this.resultIndicatorForm.get('measurementUnit')?.setValue(this.extractFromCodeRelation(indicatorCode, code => code.measurementUnit));
   }
 
   protected enterEditMode(): void {

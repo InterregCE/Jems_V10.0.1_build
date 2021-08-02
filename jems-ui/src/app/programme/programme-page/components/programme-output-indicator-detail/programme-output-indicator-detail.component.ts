@@ -101,17 +101,6 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
   ngOnInit(): void {
     super.ngOnInit();
     this.resetForm();
-
-    this.outputIndicatorForm.get('indicatorCode')?.valueChanges
-      .pipe(
-        tap((relation: OutputIndicatorCodeRelation) => this.outputIndicatorForm.get('indicatorName')
-          ?.setValue(this.extractFromCodeRelation(relation, code => code.name))
-        ),
-        tap((relation: OutputIndicatorCodeRelation) => this.outputIndicatorForm.get('measurementUnit')
-          ?.setValue(this.extractFromCodeRelation(relation, code => code.measurementUnit))
-        ),
-        untilDestroyed(this),
-      ).subscribe();
   }
 
   resetForm(): void {
@@ -194,6 +183,11 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
     } else {
       this.resetForm();
     }
+  }
+
+  updateIndicatorCode(indicatorCode: OutputIndicatorCodeRelation): void {
+    this.outputIndicatorForm.get('indicatorName')?.setValue(this.extractFromCodeRelation(indicatorCode, code => code.name));
+    this.outputIndicatorForm.get('measurementUnit')?.setValue(this.extractFromCodeRelation(indicatorCode, code => code.measurementUnit));
   }
 
   protected enterEditMode(): void {
