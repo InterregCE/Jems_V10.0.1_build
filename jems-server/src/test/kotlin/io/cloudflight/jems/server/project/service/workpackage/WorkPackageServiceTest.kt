@@ -113,18 +113,13 @@ class WorkPackageServiceTest {
 
     lateinit var workPackageService: WorkPackageService
 
-    @MockK
-    lateinit var getLanguagesInteractor: GetLanguagesInteractor
-
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
         workPackageService = WorkPackageServiceImpl(
             workPackageRepository,
-            projectRepository,
-            getLanguagesInteractor
+            projectRepository
         )
-        every { getLanguagesInteractor.getAvailableLanguages().inputLanguages } returns setOf(SystemLanguage.EN)
     }
 
     @Test

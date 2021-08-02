@@ -21,8 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class WorkPackageServiceImpl(
     private val workPackageRepository: WorkPackageRepository,
-    private val projectRepository: ProjectRepository,
-    private val getLanguagesInteractor: GetLanguagesInteractor
+    private val projectRepository: ProjectRepository
 ) : WorkPackageService {
 
     companion object {
@@ -56,10 +55,8 @@ class WorkPackageServiceImpl(
     override fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage {
         val oldWorkPackage = getWorkPackageOrThrow(inputWorkPackageUpdate.id)
 
-        val languages = getLanguagesInteractor.getAvailableLanguages().inputLanguages.toMutableSet()
-
         val toUpdate = oldWorkPackage.copy(
-            translatedValues = inputWorkPackageUpdate.combineTranslatedValues(oldWorkPackage.id, languages)
+            translatedValues = inputWorkPackageUpdate.combineTranslatedValues(oldWorkPackage.id)
         )
 
         return workPackageRepository.save(toUpdate).toOutputWorkPackage()
