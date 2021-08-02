@@ -98,16 +98,17 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
     });
   }
 
-  delete(workPackageInvestment: WorkPackageInvestmentDTO, title: string): void {
+  delete(workPackageInvestment: WorkPackageInvestmentDTO, title?: string | null): void {
     const messageKey = title
       ? 'project.application.form.workpackage.investment.table.action.delete.dialog.message'
       : 'project.application.form.workpackage.investment.table.action.delete.dialog.message.no.name';
+    const messageArguments = title ? title : '';
 
     Forms.confirm(
       this.dialog,
       {
         title: 'project.application.form.workpackage.table.action.delete.dialog.header',
-        message: {i18nKey: messageKey, i18nArguments: {title}},
+        message: {i18nKey: messageKey, i18nArguments: {title: messageArguments}},
         warnMessage: 'project.application.form.workpackage.investment.table.action.delete.dialog.warning'
       }).pipe(
       take(1),
