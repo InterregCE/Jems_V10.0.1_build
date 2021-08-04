@@ -74,13 +74,13 @@ export class ApplicationFormConfigurationPageStore {
           this.addSectionNodes('application.config.project.section.b.1.6', 1, APPLICATION_FORM.SECTION_B.MOTIVATION, callPublished, configs),
           this.addConfigurableParentNode('application.config.project.partner.budget.and.co.financing', 1, callPublished, configs, [
             this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS, 1, callPublished, configs, false),
+            this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN, 1, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.staff.cost', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.travel.and.accommodation', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.external.expertise.and.services', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.EXTERNAL_EXPERTISE, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.equipment', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.EQUIPMENT, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.infrastructure.and.works', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.INFRASTRUCTURE_AND_WORKS, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.unit.costs', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS, callPublished, configs, false),
-            this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN, 1, callPublished, configs, false),
           ]),
           this.addLeafNode(APPLICATION_FORM.SECTION_B.PARTNER_ASSOCIATED_ORGANIZATIONS, 1, callPublished, configs)
         ]

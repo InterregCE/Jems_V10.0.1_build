@@ -32,18 +32,22 @@ class UpdateApplicationFormFieldConfiguration(private val persistence: CallPersi
         callId: Long
     ) {
 
-        if (applicationFormFieldConfigurations.any {
-                !ApplicationFormFieldSetting.getValidVisibilityStatusSetById(it.id).contains(it.visibilityStatus)
-            }) throw InvalidFieldStatusException()
+        with(applicationFormFieldConfigurations.filter {
+            !ApplicationFormFieldSetting.getValidVisibilityStatusSetById(it.id).contains(it.visibilityStatus)
+        }) {
+            if (this.isNotEmpty())
+                throw InvalidFieldStatusException(this)
+        }
 
-        val existingCall = persistence.getCallById(callId)
+        with(persistence.getCallById(callId)) {
+            if (this.isPublished() &&
+                applicationFormFieldConfigurations.any {
+                    fieldVisibilityHasChangedToNone(it, this) ||
+                        fieldVisibilityHasChangedFromOneAndTwoStepToStepTwoOnly(it, this)
+                }
+            ) throw InvalidFieldVisibilityChangeWhenCallIsPublishedException()
+        }
 
-        if (existingCall.isPublished() &&
-            applicationFormFieldConfigurations.any {
-                fieldVisibilityHasChangedToNone(it, existingCall) ||
-                    fieldVisibilityHasChangedFromOneAndTwoStepToStepTwoOnly(it, existingCall)
-            }
-        ) throw InvalidFieldVisibilityChangeWhenCallIsPublishedException()
     }
 
     private fun resetVisibilityForFieldsThatDependsOnBudgetSetting(applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>): Unit =
