@@ -46,5 +46,33 @@ ul {
 .side-nav-container {
   width: $sidebarSize;
   height: 100%;
-  background: #5FB3D9;
+  background: var(--sidebar-color);
+  overflow: visible;
 }
+
+.side-nav-container:not(.mat-drawer-opened) {
+  &.stayVisible {
+    transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    width: 1.25rem !important;
+    transition: width 0.2s ease-out;
+    app-side-nav {
+      display: none;
+    }
+  }
+  .side-nav-toggle-button {
+      transform: rotate(0deg) scale(0.75);
+  }
+}
+
+.side-nav-toggle-button {
+  position: absolute;
+  right: -1.25rem;
+  top: 2rem;
+  color: var(--sidebar-color);
+  transform: rotate(180deg) scale(0.75);
+  &:hover {
+      background-color: var(--background-lighter);
+  }
+}
+

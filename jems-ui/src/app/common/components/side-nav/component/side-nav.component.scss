@@ -42,7 +42,7 @@ hr.solid {
 }
 
 mat-expansion-panel {
-  background: #5FB3D9 !important;
+  background: var(--sidebar-color) !important;
 }
 
 mat-expansion-panel-header {
