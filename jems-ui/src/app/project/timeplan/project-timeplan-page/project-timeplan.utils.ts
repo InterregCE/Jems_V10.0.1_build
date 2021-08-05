@@ -155,7 +155,7 @@ function getResultBoxId(resultIndicatorId: number, resultNumber: number): number
  *     - output
  *   - result indicator
  */
-export function getItems(workPackages: ProjectWorkPackageDTO[], results: ProjectResultDTO[], translateService: TranslateService, isResultVisible: boolean): DataSet<any> {
+export function getItems(workPackages: ProjectWorkPackageDTO[], results: ProjectResultDTO[], translateService: TranslateService): DataSet<any> {
   let items: any[] = [];
   workPackages.forEach((wp, indexWp) => {
     let minPeriod = 999;
@@ -216,21 +216,19 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
     }
   });
 
-  if (isResultVisible) {
-    results.forEach((result, indexResult) => {
-      items = items.concat({
-        id: getResultBoxId(result.programmeResultIndicatorId, result.resultNumber),
-        group: getResultIndicatorId(result.programmeResultIndicatorId),
-        start: getNestedStartDateFromPeriod(result.periodNumber),
-        end: getNestedEndDateFromPeriod(result.periodNumber),
-        type: 'range',
-        title: getIndicatorTooltip(result.targetValue, translateService),
-        content: `R.${result.resultNumber}`,
-        data: {type: GroupType.Indicator},
-        className: 'bg-blue',
-      });
+  results.forEach((result, indexResult) => {
+    items = items.concat({
+      id: getResultBoxId(result.programmeResultIndicatorId, result.resultNumber),
+      group: getResultIndicatorId(result.programmeResultIndicatorId),
+      start: getNestedStartDateFromPeriod(result.periodNumber),
+      end: getNestedEndDateFromPeriod(result.periodNumber),
+      type: 'range',
+      title: getIndicatorTooltip(result.targetValue, translateService),
+      content: `R.${result.resultNumber}`,
+      data: {type: GroupType.Indicator},
+      className: 'bg-blue',
     });
-  }
+  });
 
   return new DataSet(items);
 }
@@ -262,7 +260,7 @@ export function sortNullLast(a: Indicator, b: Indicator): number {
  *     - output
  *   - result indicator
  */
-export function getGroups(workPackages: ProjectWorkPackageDTO[], results: ProjectResultDTO[], isResultVisible: boolean): DataSet<any> {
+export function getGroups(workPackages: ProjectWorkPackageDTO[], results: ProjectResultDTO[]): DataSet<any> {
   let wpSubGroups: any[] = [];
   const wpGroups = workPackages.map(wp => {
     const activities = wp.activities.map(activity => {
@@ -307,28 +305,23 @@ export function getGroups(workPackages: ProjectWorkPackageDTO[], results: Projec
     }
   });
 
-  let resultGroups: any[] = [];
+  let resultGroups: any[] = uniqueResultIndicators.sort(sortNullLast).map(indicator => {
+    return {
+      id: getResultIndicatorId(indicator.id),
+      content: indicator.identifier || EMPTY_STRING,
+      treeLevel: 2,
+      data: {type: GroupType.Indicator},
+    };
+  });
 
-  if (isResultVisible) {
-    resultGroups = uniqueResultIndicators.sort(sortNullLast).map(indicator => {
-      return {
-        id: getResultIndicatorId(indicator.id),
-        content: indicator.identifier || EMPTY_STRING,
-        treeLevel: 2,
-        data: {type: GroupType.Indicator},
-      };
+  if (resultGroups.length) {
+    // create group for all results
+    resultGroups = resultGroups.concat({
+      id: RESULT_GROUP_TITLE_ID,
+      treeLevel: 1,
+      nestedGroups: resultGroups.map(result => result.id),
+      data: {type: GroupType.ResultTitle},
     });
-
-    if (resultGroups.length) {
-      console.log(isResultVisible);
-      // create group for all results
-      resultGroups = resultGroups.concat({
-        id: RESULT_GROUP_TITLE_ID,
-        treeLevel: 1,
-        nestedGroups: resultGroups.map(result => result.id),
-        data: {type: GroupType.ResultTitle},
-      });
-    }
   }
 
   return new DataSet(wpGroups.concat(wpSubGroups).concat(resultGroups));

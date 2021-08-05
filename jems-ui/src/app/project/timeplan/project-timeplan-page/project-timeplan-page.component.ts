@@ -2,13 +2,11 @@ import {ChangeDetectionStrategy, Component, ElementRef, ViewChild} from '@angula
 import {ActivatedRoute, Router} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
 import {TranslateService} from '@ngx-translate/core';
-import {ProjectPeriodDTO, ProjectResultDTO} from '@cat/api';
+import {ProjectPeriodDTO} from '@cat/api';
 import {Timeline} from 'vis-timeline';
 import {DataSet} from 'vis-data/peer';
 import {map, shareReplay, tap} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
-import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
-import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 import {ProjectTimeplanPageStore} from './project-timeplan-page-store.service';
 import {
@@ -46,21 +44,19 @@ export class ProjectTimeplanPageComponent {
               private multiLanguageGlobalService: MultiLanguageGlobalService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
-              public pageStore: ProjectTimeplanPageStore,
-              private formVisibilityStatusService: FormVisibilityStatusService) {
+              public pageStore: ProjectTimeplanPageStore) {
     const data$ = combineLatest([
       this.pageStore.workPackages$,
       this.pageStore.projectResults$,
       this.pageStore.periods$,
-      this.multiLanguageGlobalService.activeInputLanguage$,
-      this.formVisibilityStatusService.isVisible$(APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DELIVERY_PERIOD.valueOf())
+      this.multiLanguageGlobalService.activeInputLanguage$
     ])
       .pipe(
-        map(([workPackages, results, periods, language, isDeliveryPeriodVisible$]) => ({
+        map(([workPackages, results, periods, language]) => ({
           workPackages,
           results,
-          timelineGroups: getGroups(workPackages, results, isDeliveryPeriodVisible$),
-          timelineItems: getItems(workPackages, results, this.translateService, isDeliveryPeriodVisible$),
+          timelineGroups: getGroups(workPackages, results),
+          timelineItems: getItems(workPackages, results, this.translateService),
           timelineTranslations: getInputTranslations(workPackages)[language] || [],
           periods,
         })),
