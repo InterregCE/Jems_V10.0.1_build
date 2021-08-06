@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import java.util.stream.Collectors
 
 fun programmePriorityAdded(programmePriority: ProgrammePriority): AuditCandidate {
@@ -62,6 +63,16 @@ fun programmeLegalStatusesChanged(context: Any, statuses: List<ProgrammeLegalSta
 
     return AuditCandidateEvent(context, AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
         .description("Values for partner legal status set to:\n$statusesAsString")
+        .build())
+}
+
+//TODO format the string properly
+fun programmeStateAidsChanged(context: Any, stateAids: List<ProgrammeStateAid>): AuditCandidateEvent {
+    val stateAidsAsString = stateAids.asSequence()
+        .map { fund -> "[" + fund.name.joinToString { "${it.language}=${it.translation}" } + "]"}.joinToString(",\n")
+
+    return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_STATE_AIDS_CHANGED)
+        .description("Values for state aid set to:\n$stateAidsAsString")
         .build())
 }
 
