@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.programme.service.stateaid.get_stateaid
 
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.service.stateaid.ProgrammeStateAidPersistence
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
@@ -13,6 +14,7 @@ class GetStateAid(
 
     @Transactional(readOnly = true)
     @CanRetrieveProgrammeSetup
+    @ExceptionWrapper(GetStateAidException::class)
     override fun getStateAidList(): List<ProgrammeStateAid> =
         persistence.getStateAidList()
 

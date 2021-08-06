@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.math.BigDecimal
 
 data class ProgrammeStateAidDTO (
-    val id: Long? = null,
+    val id: Long,
     val measure: ProgrammeStateAidMeasure,
     val name: Set<InputTranslation> = emptySet(),
     val abbreviatedName: Set<InputTranslation> = emptySet(),

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 interface ProgrammeStateAidRepository : JpaRepository<ProgrammeStateAidEntity, Long> {
 
     @EntityGraph(value = "ProgrammeStateAidEntity.fetchWithTranslations")
-    fun findTop20ByOrderById(): Iterable<ProgrammeStateAidEntity>
+    fun findAllByOrderById(): Iterable<ProgrammeStateAidEntity>
 
     @EntityGraph(value = "ProgrammeStateAidEntity.fetchWithTranslations")
     override fun findAllById(ids: Iterable<Long>): List<ProgrammeStateAidEntity>

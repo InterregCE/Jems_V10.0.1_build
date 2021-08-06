@@ -249,6 +249,31 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
             }
         }
 
+    @TestFactory
+    fun `should return correct validation result when input big decimal is not in the range`() =
+        listOf(
+            50, 110
+        ).map { input ->
+            DynamicTest.dynamicTest(
+                "should return correct validation result when input big decimal is not in the range - (input = ${input})"
+            ) {
+                val minValue = 60
+                val maxValue = 100
+                val validationResult = generalValidator.numberBetween(input, minValue, maxValue, "input")
+
+                assertThat(validationResult["input"])
+                    .isEqualTo(
+                        I18nMessage(
+                            "common.error.field.number.out.of.range",
+                            mapOf(
+                                "number" to "$input",
+                                "min" to "$minValue",
+                                "max" to "$maxValue",
+                            )
+                        )
+                    )
+            }
+        }
 
     @Test
     fun `should throw AppInputValidationException when there is at least one validation error`() {

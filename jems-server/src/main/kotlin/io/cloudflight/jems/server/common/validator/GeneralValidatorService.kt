@@ -14,6 +14,8 @@ interface GeneralValidatorService {
 
     fun numberBetween(number: Int?, minValue: Int, maxValue: Int, fieldName: String): Map<String, I18nMessage>
 
+    fun numberBetween(number: BigDecimal?, minValue: BigDecimal, maxValue: BigDecimal, fieldName: String): Map<String, I18nMessage>
+
     fun notBlank(input: String?, fieldName: String): Map<String, I18nMessage>
 
     fun notNull(input: Any?, fieldName: String): Map<String, I18nMessage>

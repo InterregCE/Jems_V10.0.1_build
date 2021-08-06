@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.programme.entity.stateaid
 
 import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
-import org.jetbrains.annotations.NotNull
+import javax.validation.constraints.NotNull
 import java.math.BigDecimal
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -18,7 +18,7 @@ import javax.persistence.OneToMany
 @NamedEntityGraphs(
     NamedEntityGraph(
         name = "ProgrammeStateAidEntity.fetchWithTranslations",
-        attributeNodes = [NamedAttributeNode(value = "translatedValue")],
+        attributeNodes = [NamedAttributeNode(value = "translatedValues")],
     )
 )
 class ProgrammeStateAidEntity(
@@ -27,15 +27,13 @@ class ProgrammeStateAidEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @field: NotNull
+    @field:NotNull
     val measure: ProgrammeStateAidMeasure = ProgrammeStateAidMeasure.OTHER_1,
 
     val schemeNumber: String? = null,
 
-    @field: NotNull
     val maxIntensity: BigDecimal?,
 
-    @field: NotNull
     val threshold: BigDecimal?,
 
     @OneToMany(

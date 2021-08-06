@@ -1,8 +1,7 @@
 CREATE TABLE programme_state_aid
 (
-    id                   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY KEY,
-    measure ENUM (
-        'General de minimis',
+    id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    measure       ENUM ( 'General de minimis',
         'Road freight de minimis',
         'Agricultural de minimis',
         'Fishery and aquaculture sector de minimis',
@@ -74,7 +73,23 @@ CREATE TABLE programme_state_aid
         'SGEI Framework',
         'Other 1',
         'Other 2',
-        'Other 3' ) NOT NULL,
+        'Other 3' ) NOT NULL DEFAULT 'Other 1',
+    scheme_number VARCHAR(25) DEFAULT NULL,
+    max_intensity DECIMAL(5, 2) UNSIGNED DEFAULT 0.00,
+    threshold     DECIMAL(17,2)  DEFAULT 0.00
+);
 
-
-        )
+CREATE TABLE programme_state_aid_transl
+(
+    source_entity_id INT UNSIGNED NOT NULL,
+    language         VARCHAR(3) NOT NULL,
+    name             VARCHAR(150) DEFAULT NULL,
+    abbreviated_name VARCHAR(50)  DEFAULT NULL,
+    comments         VARCHAR(500) DEFAULT NULL,
+    PRIMARY KEY (source_entity_id, language),
+    CONSTRAINT fk_programme_state_aid_transl_to_programme_state_aid
+        FOREIGN KEY (source_entity_id)
+            REFERENCES programme_state_aid (id)
+            ON DELETE CASCADE
+            ON UPDATE RESTRICT
+);

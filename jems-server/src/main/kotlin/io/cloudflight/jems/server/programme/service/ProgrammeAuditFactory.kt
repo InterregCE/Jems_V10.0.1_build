@@ -66,13 +66,12 @@ fun programmeLegalStatusesChanged(context: Any, statuses: List<ProgrammeLegalSta
         .build())
 }
 
-//TODO format the string properly
 fun programmeStateAidsChanged(context: Any, stateAids: List<ProgrammeStateAid>): AuditCandidateEvent {
     val stateAidsAsString = stateAids.asSequence()
         .map { fund -> "[" + fund.name.joinToString { "${it.language}=${it.translation}" } + "]"}.joinToString(",\n")
 
-    return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_STATE_AIDS_CHANGED)
-        .description("Values for state aid set to:\n$stateAidsAsString")
+    return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_STATE_AID_CHANGED)
+        .description("Programme State aid was set to:\n$stateAidsAsString")
         .build())
 }
 

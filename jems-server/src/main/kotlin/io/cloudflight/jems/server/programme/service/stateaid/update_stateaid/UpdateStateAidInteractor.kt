@@ -4,8 +4,5 @@ import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStat
 
 interface UpdateStateAidInteractor {
 
-    fun updateStateAids(
-        toDeleteIds: Set<Long>,
-        toPersist: Collection<ProgrammeStateAid>
-    ): List<ProgrammeStateAid>
+    fun updateStateAids(toDeleteIds: Set<Long>, toPersist: Collection<ProgrammeStateAid>): List<ProgrammeStateAid>
 }

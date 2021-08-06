@@ -52,6 +52,19 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                 )
         }
 
+    override fun numberBetween(number: BigDecimal?, minValue: BigDecimal, maxValue: BigDecimal, fieldName: String) =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (number != null && (number < minValue || number > maxValue))
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.field.number.out.of.range",
+                    i18nArguments = mapOf(
+                        "number" to "$number",
+                        "min" to "$minValue",
+                        "max" to "$maxValue",
+                    )
+                )
+        }
+
     override fun notBlank(input: String?, fieldName: String) =
         mutableMapOf<String, I18nMessage>().apply {
             if (input.isNullOrBlank())
