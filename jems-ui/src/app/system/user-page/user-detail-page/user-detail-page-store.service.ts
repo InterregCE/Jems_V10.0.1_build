@@ -1,19 +1,14 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {
-  OutputCurrentUser,
-  UserChangeDTO,
-  UserService,
-  UserDTO, UserRoleSummaryDTO, PasswordDTO,
-} from '@cat/api';
+import {OutputCurrentUser, PasswordDTO, UserChangeDTO, UserDTO, UserRoleSummaryDTO, UserService} from '@cat/api';
 import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {SecurityService} from '../../../security/security.service';
-import {RoutingService} from '../../../common/services/routing.service';
+import {RoutingService} from '@common/services/routing.service';
 import {filter, take} from 'rxjs/internal/operators';
-import {RolePageService} from '../../role-page/role-page.service';
-import {APIError} from '../../../common/models/APIError';
+import {RoleStore} from '../../services/role-store.service';
+import {APIError} from '@common/models/APIError';
 
 @Injectable()
 export class UserDetailPageStore {
@@ -51,7 +46,7 @@ export class UserDetailPageStore {
   constructor(private userService: UserService,
               private router: RoutingService,
               private securityService: SecurityService,
-              private rolePageService: RolePageService) {
+              private roleStore: RoleStore) {
     this.user$ = this.user();
     this.roles$ = this.roles();
     this.currentUser$ = this.securityService.currentUser;
@@ -83,6 +78,10 @@ export class UserDetailPageStore {
       );
   }
 
+  getUserName(): Observable<string> {
+    return this.userName$.asObservable();
+  }
+
   private user(): Observable<UserDTO> {
     const initialUser$ = this.router.routeParameterChanges(UserDetailPageStore.USER_DETAIL_PATH, 'userId')
       .pipe(
@@ -109,7 +108,7 @@ export class UserDetailPageStore {
   }
 
   private roles(): Observable<UserRoleSummaryDTO[]> {
-    return combineLatest([this.user$, this.rolePageService.userRoles()])
+    return combineLatest([this.user$, this.roleStore.roles$])
       .pipe(
         map(([user, roles]) => roles?.length ? roles : [user?.userRole])
       );
@@ -119,9 +118,5 @@ export class UserDetailPageStore {
     if (user?.name) {
       this.userName$.next(`${user.name} ${user.surname}`);
     }
-  }
-
-  getUserName(): Observable<string> {
-    return this.userName$.asObservable();
   }
 }

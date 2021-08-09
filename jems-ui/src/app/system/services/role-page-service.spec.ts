@@ -1,14 +1,14 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import {RolePageService} from './role-page.service';
+import {RoleStore} from './role-store.service';
 import {UserRoleDTO, UserRoleSummaryDTO} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {SystemModule} from '../system.module';
-import {TestModule} from '../../common/test-module';
+import {TestModule} from '@common/test-module';
 import {PermissionService} from '../../security/permissions/permission.service';
 
 describe('RolePageService', () => {
-  let service: RolePageService;
+  let service: RoleStore;
   let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('RolePageService', () => {
         TestModule
       ]
     });
-    service = TestBed.inject(RolePageService);
+    service = TestBed.inject(RoleStore);
     httpTestingController = TestBed.inject(HttpTestingController);
   });
 
@@ -28,7 +28,7 @@ describe('RolePageService', () => {
 
   it('should list empty user roles for regular user', fakeAsync(() => {
     let results: UserRoleSummaryDTO[] = [];
-    service.userRoles().subscribe(result => results = result);
+    service.roles$.subscribe(result => results = result);
 
     tick();
 
@@ -37,10 +37,14 @@ describe('RolePageService', () => {
 
   it('should list user roles for admin', fakeAsync(() => {
     const permissionService = TestBed.inject(PermissionService);
-    const role: UserRoleDTO = {id: 0, name: 'administrator', permissions: [UserRoleDTO.PermissionsEnum.RoleRetrieve]} as UserRoleDTO;
+    const role: UserRoleDTO = {
+      id: 0,
+      name: 'administrator',
+      permissions: [UserRoleDTO.PermissionsEnum.RoleRetrieve]
+    } as UserRoleDTO;
     permissionService.setPermissions([role]);
     let results: UserRoleSummaryDTO[] = [];
-    service.userRoles().subscribe(result => results = result);
+    service.roles$.subscribe(result => results = result);
 
     httpTestingController.match({method: 'GET', url: `//api/auth/current`});
     const roles = [

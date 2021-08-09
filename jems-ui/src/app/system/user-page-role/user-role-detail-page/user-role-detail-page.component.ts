@@ -6,8 +6,8 @@ import {UserRoleDTO} from '@cat/api';
 import {combineLatest, Observable, of} from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
-import {RoutingService} from '../../../common/services/routing.service';
-import {UserRoleStore} from './user-role-store.service';
+import {RoutingService} from '@common/services/routing.service';
+import {UserRoleDetailPageStore} from './user-role-detail-page-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {PermissionMode, PermissionNode, PermissionState} from '../../../security/permissions/permission-node';
 import {FormService} from '@common/components/section/form/form.service';
@@ -29,7 +29,22 @@ export class UserRoleDetailPageComponent {
 
   treeControl = new FlatTreeControl<RolePermissionRow>(
     node => node.level, node => node.expandable);
-
+  PermissionState = PermissionState;
+  PermissionMode = PermissionMode;
+  roleId = this.activatedRoute?.snapshot?.params?.roleId;
+  data$: Observable<{
+    role: UserRoleDTO,
+    isUpdateAllowed: boolean,
+  }>;
+  userRoleForm = this.formBuilder.group({
+    name: ['', [
+      Validators.required,
+      Validators.maxLength(50),
+      Validators.minLength(1),
+    ]],
+    defaultForRegisteredUser: [false, []],
+    permissions: this.formBuilder.array([])
+  });
   private treeFlattener = new MatTreeFlattener<AbstractControl, RolePermissionRow>(
     (form: AbstractControl, level: number) => ({
       expandable: !!this.subtree(form),
@@ -46,27 +61,7 @@ export class UserRoleDetailPageComponent {
     node => node.expandable,
     form => this.subtree(form).controls || []
   );
-
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-
-  PermissionState = PermissionState;
-  PermissionMode = PermissionMode;
-  roleId = this.activatedRoute?.snapshot?.params?.roleId;
-
-  data$: Observable<{
-    role: UserRoleDTO,
-    isUpdateAllowed: boolean,
-  }>;
-
-  userRoleForm = this.formBuilder.group({
-    name: ['', [
-      Validators.required,
-      Validators.maxLength(50),
-      Validators.minLength(1),
-    ]],
-    defaultForRegisteredUser: [false, []],
-    permissions: this.formBuilder.array([])
-  });
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
@@ -75,11 +70,11 @@ export class UserRoleDetailPageComponent {
               private sidenavService: SystemPageSidenavService,
               private formService: FormService,
               private permissionService: PermissionService,
-              public roleStore: UserRoleStore) {
+              public pageStore: UserRoleDetailPageStore) {
     this.formService.init(this.userRoleForm);
 
     this.data$ = combineLatest([
-      this.roleStore.userRole$,
+      this.pageStore.userRole$,
       of(!this.roleId),
       this.permissionService.hasPermission(PermissionsEnum.RoleUpdate),
     ]).pipe(
@@ -91,6 +86,18 @@ export class UserRoleDetailPageComponent {
     );
   }
 
+  get name(): FormControl {
+    return this.userRoleForm.get('name') as FormControl;
+  }
+
+  get defaultForRegisteredUser(): FormControl {
+    return this.userRoleForm.get('defaultForRegisteredUser') as FormControl;
+  }
+
+  get permissions(): FormArray {
+    return this.userRoleForm.get('permissions') as FormArray;
+  }
+
   save(role: UserRoleDTO): void {
     const user: UserRoleDTO = {
       id: role.id,
@@ -98,7 +105,7 @@ export class UserRoleDetailPageComponent {
       permissions: this.getFormPermissions()
     };
     if (role?.id) {
-      this.roleStore.saveUserRole(user)
+      this.pageStore.saveUserRole(user)
         .pipe(
           take(1),
           tap(() => this.formService.setSuccess('User role saved successfully')),
@@ -109,7 +116,7 @@ export class UserRoleDetailPageComponent {
     const redirectSuccessPayload = {
       state: {success: {i18nKey: 'userRole.detail.save.success'}}
     };
-    this.roleStore.createUserRole(user)
+    this.pageStore.createUserRole(user)
       .pipe(
         take(1),
         tap(() => this.router.navigate(['/app/system/userRole/'], redirectSuccessPayload)),
@@ -122,29 +129,6 @@ export class UserRoleDetailPageComponent {
       this.resetUserRole(role, shouldUpdateBePossible);
     } else {
       this.router.navigate(['/app/system/userRole']);
-    }
-  }
-
-  private extractFormPermissionSubGroup(perm: PermissionNode,
-                                        currentRolePermissions: PermissionsEnum[],
-                                        parentIndex: number): FormGroup {
-    if (!perm.children?.length) {
-      return this.formBuilder.group({
-        name: perm.name,
-        parentIndex,
-        mode: perm.mode,
-        // TODO remove 'disabled' when all permissions are used correctly and not just mocked
-        disabled: perm.temporarilyDisabled,
-        state: this.getCurrentState(perm, currentRolePermissions)
-      });
-    } else {
-      return this.formBuilder.group({
-        name: perm.name,
-        parentIndex,
-        subtree: this.formBuilder.array(
-          perm.children.map(child => this.extractFormPermissionSubGroup(child, currentRolePermissions, parentIndex))
-        ),
-      });
     }
   }
 
@@ -170,7 +154,6 @@ export class UserRoleDetailPageComponent {
     }
   }
 
-
   changeState(permission: AbstractControl, value: PermissionState): void {
     if (this.state(permission).value !== value) {
       this.state(permission)?.setValue(value);
@@ -185,6 +168,43 @@ export class UserRoleDetailPageComponent {
       this.state(permission)?.setValue(PermissionState.EDIT);
     }
     this.formChanged();
+  }
+
+  hasChild = (_: number, node: RolePermissionRow) => node.expandable;
+
+  subtree(control: AbstractControl): FormArray {
+    return control.get('subtree') as FormArray;
+  }
+
+  state(control: AbstractControl): AbstractControl {
+    return control.get('state') as AbstractControl;
+  }
+
+  formChanged(): void {
+    this.formService.setDirty(true);
+  }
+
+  private extractFormPermissionSubGroup(perm: PermissionNode,
+                                        currentRolePermissions: PermissionsEnum[],
+                                        parentIndex: number): FormGroup {
+    if (!perm.children?.length) {
+      return this.formBuilder.group({
+        name: perm.name,
+        parentIndex,
+        mode: perm.mode,
+        // TODO remove 'disabled' when all permissions are used correctly and not just mocked
+        disabled: perm.temporarilyDisabled,
+        state: this.getCurrentState(perm, currentRolePermissions)
+      });
+    } else {
+      return this.formBuilder.group({
+        name: perm.name,
+        parentIndex,
+        subtree: this.formBuilder.array(
+          perm.children.map(child => this.extractFormPermissionSubGroup(child, currentRolePermissions, parentIndex))
+        ),
+      });
+    }
   }
 
   private getCurrentState(defaultPermission: PermissionNode, perms: PermissionsEnum[]): PermissionState {
@@ -220,31 +240,5 @@ export class UserRoleDetailPageComponent {
 
     return permissionNode.children.flatMap((node: PermissionNode, index: number) =>
       this.extractChildrenPermissions(this.subtree(nodeForm).at(index), node));
-  }
-
-  hasChild = (_: number, node: RolePermissionRow) => node.expandable;
-
-  get name(): FormControl {
-    return this.userRoleForm.get('name') as FormControl;
-  }
-
-  get defaultForRegisteredUser(): FormControl {
-    return this.userRoleForm.get('defaultForRegisteredUser') as FormControl;
-  }
-
-  get permissions(): FormArray {
-    return this.userRoleForm.get('permissions') as FormArray;
-  }
-
-  subtree(control: AbstractControl): FormArray {
-    return control.get('subtree') as FormArray;
-  }
-
-  state(control: AbstractControl): AbstractControl {
-    return control.get('state') as AbstractControl;
-  }
-
-  formChanged(): void {
-    this.formService.setDirty(true);
   }
 }

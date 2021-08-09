@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {SystemPageSidenavService} from '../services/system-page-sidenav.service';
-import {RolePageService} from '../role-page/role-page.service';
 import {UserPageStore} from './user-page-store.service';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {Router} from '@angular/router';
@@ -54,7 +53,6 @@ export class UserPageComponent implements OnInit {
   });
 
   constructor(public userPageStore: UserPageStore,
-              private rolePageService: RolePageService,
               private router: Router,
               private changeDetectorRef: ChangeDetectorRef,
               private systemPageSidenavService: SystemPageSidenavService) {
