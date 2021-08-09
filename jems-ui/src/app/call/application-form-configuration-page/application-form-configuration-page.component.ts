@@ -28,7 +28,8 @@ export class ApplicationFormConfigurationPageComponent {
 
   data$: Observable<{
     fieldConfigurations: ApplicationFormFieldNode[],
-    callHasTwoSteps: boolean
+    callHasTwoSteps: boolean,
+    callIsEditable: boolean
   }>;
 
   form = this.formBuilder.group({
@@ -44,9 +45,9 @@ export class ApplicationFormConfigurationPageComponent {
               private callSidenavService: CallPageSidenavService) {
     this.formService.init(this.form);
     this.initializeDataSource();
-    this.data$ = combineLatest([this.pageStore.fieldConfigurations$, this.pageStore.callHasTwoSteps$])
+    this.data$ = combineLatest([this.pageStore.fieldConfigurations$, this.pageStore.callHasTwoSteps$, this.pageStore.callIsEditable$])
       .pipe(
-        map(([fieldConfigurations, callHasTwoSteps]) => ({fieldConfigurations, callHasTwoSteps})),
+        map(([fieldConfigurations, callHasTwoSteps, callIsEditable]) => ({fieldConfigurations, callHasTwoSteps, callIsEditable})),
         tap(data => this.displayedColumns = data.callHasTwoSteps ? ['name', 'show', 'step'] : ['name', 'show']),
         tap(data => this.resetForm(data.fieldConfigurations))
       );

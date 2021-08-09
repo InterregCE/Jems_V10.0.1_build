@@ -2,7 +2,7 @@
                         titleKey="call.detail.application.form.config.title">
     <app-form (save)="save()"
               (discard)="resetForm(data.fieldConfigurations)">
-        <app-alert [show]="true"
+        <app-alert [show]="data.callIsEditable"
                    [type]="Alert.WARNING">
             <span>{{'call.detail.application.form.config.warning' | translate}}</span>
         </app-alert>
@@ -35,6 +35,7 @@
                     <td mat-cell *matCellDef="let node"
                         [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
                         <mat-slide-toggle *ngIf="showVisibilitySwitch(node.data)?.value" color="primary"
+                                          [disabled]="!data.callIsEditable"
                                           [formControl]="visible(node.data)"
                                           (change)="visibilityChanged(node.data)">
                         </mat-slide-toggle>
@@ -48,6 +49,7 @@
                     <td mat-cell *matCellDef="let node" class="step-toggle"
                         [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
                         <mat-button-toggle-group
+                                [disabled]="!data.callIsEditable"
                                 *ngIf="showStepToggle(node.data)?.value"
                                 [formControl]="availableInStep(node.data)">
                             <mat-button-toggle [value]="AvailableInStepEnum.STEPONEANDTWO">

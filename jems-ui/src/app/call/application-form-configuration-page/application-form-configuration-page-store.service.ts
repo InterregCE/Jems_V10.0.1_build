@@ -21,6 +21,7 @@ export class ApplicationFormConfigurationPageStore {
 
   fieldConfigurations$: Observable<ApplicationFormFieldNode[]>;
   callHasTwoSteps$: Observable<boolean>;
+  callIsEditable$: Observable<boolean>;
 
   private savedConfigurations$ = new Subject<ApplicationFormFieldConfigurationDTO[]>();
 
@@ -29,6 +30,7 @@ export class ApplicationFormConfigurationPageStore {
               private callStore: CallStore) {
     this.fieldConfigurations$ = this.fieldConfigurations();
     this.callHasTwoSteps$ = this.callHasTwoSteps();
+    this.callIsEditable$ = this.callStore.callIsEditable$;
   }
 
   saveConfigurations(formFields: UpdateApplicationFormFieldConfigurationRequestDTO[]): Observable<CallDetailDTO> {
