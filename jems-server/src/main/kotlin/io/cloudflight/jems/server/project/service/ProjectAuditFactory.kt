@@ -4,11 +4,15 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditBuilder
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
+import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
+import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -129,4 +133,86 @@ fun eligibilityAssessmentStep2Concluded(context: Any, project: ProjectSummary, r
             .project(id = project.id, name = project.acronym)
             .description("Project application eligibility assessment concluded as $result")
             .build()
+    )
+
+
+fun projectFileDownloadSucceed(
+    context: Any, projectFileMetadata: ProjectFileMetadata
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_FILE_DOWNLOADED_SUCCESSFULLY,
+            project = AuditProject(id = projectFileMetadata.projectId.toString()),
+            description = "document ${projectFileMetadata.name} downloaded from project application ${projectFileMetadata.projectId} by ${projectFileMetadata.uploadedBy.id}"
+
+        )
+    )
+
+fun projectFileDownloadFailed(
+    context: Any, projectId: Long, fileId:Long, userId:Long
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_FILE_DOWNLOADED_FAILED,
+            project = AuditProject(id = projectId.toString()),
+            description = "document $fileId download failed from project application $projectId by $userId"
+
+        )
+    )
+
+fun projectFileUploadSucceed(
+    context: Any, projectFileMetaData: ProjectFileMetadata, projectFileCategory: ProjectFileCategory
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY,
+            project = AuditProject(id = projectFileMetaData.projectId.toString()),
+            description = when (projectFileCategory.type) {
+                ProjectFileCategoryType.PARTNER -> "document ${projectFileMetaData.name} uploaded to project application ${projectFileMetaData.projectId} for Partner ${projectFileCategory.id} by ${projectFileMetaData.uploadedBy.id}"
+                ProjectFileCategoryType.INVESTMENT -> "document ${projectFileMetaData.name} uploaded to project application ${projectFileMetaData.projectId} for Investment ${projectFileCategory.id} by ${projectFileMetaData.uploadedBy.id}"
+                else -> "document ${projectFileMetaData.name} uploaded to project application ${projectFileMetaData.projectId} by ${projectFileMetaData.uploadedBy.id}"
+            }
+        )
+    )
+
+fun projectFileUploadFailed(context: Any, projectId: Long, fileName: String, projectFileCategory: ProjectFileCategory, userId: Long): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_FILE_UPLOAD_FAILED,
+            project = AuditProject(id = projectId.toString()),
+            description = when (projectFileCategory.type) {
+                ProjectFileCategoryType.PARTNER -> "FAILED upload of document $fileName to project application $projectId for Partner ${projectFileCategory.id} by $userId"
+                ProjectFileCategoryType.INVESTMENT -> "FAILED upload of document $fileName to project application $projectId for Investment ${projectFileCategory.id} by $userId"
+                else -> "FAILED upload of document $fileName to project application $projectId by $userId"
+            }
+        )
+    )
+
+fun projectFileDeleteSucceed(
+    context: Any, projectFileMetadata: ProjectFileMetadata
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_FILE_DELETED,
+            project = AuditProject(id = projectFileMetadata.projectId.toString()),
+            description = "document ${projectFileMetadata.name} deleted from project application ${projectFileMetadata.projectId} by ${projectFileMetadata.uploadedBy.id}"
+
+        )
+    )
+
+fun projectFileDescriptionChanged(
+    context: Any, projectFileMetadata: ProjectFileMetadata, oldValue: String
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED,
+            project = AuditProject(id = projectFileMetadata.projectId.toString()),
+            description = "description of document ${projectFileMetadata.name} in project application ${projectFileMetadata.projectId} has changed from `$oldValue` to `${projectFileMetadata.description}` by ${projectFileMetadata.uploadedBy.id}"
+        )
     )

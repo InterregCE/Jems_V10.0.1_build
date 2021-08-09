@@ -15,6 +15,9 @@ import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
+import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryDTO
+import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryTypeDTO
+import io.cloudflight.jems.api.project.dto.file.ProjectFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.plugin.contract.models.common.I18nMessageData
@@ -29,7 +32,9 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUn
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
-import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
+import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
+import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
@@ -121,6 +126,12 @@ fun Page<ProjectSummary>.toDto() = map {
     )
 }
 
+fun ProjectFileCategoryTypeDTO.toModel() = projectMapper.map(this)
+fun ProjectFileCategoryDTO.toModel() = projectMapper.map(this)
+fun ProjectFileMetadata.toDTO() = projectMapper.map(this)
+fun Page<ProjectFileMetadata>.toDTO() = map { projectMapper.map(it) }
+
+
 private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 
 @Mapper(uses = [CallDTOMapper::class])
@@ -147,6 +158,22 @@ abstract class ProjectMapper {
     @Mapping(source = "oneCostCategory", target = "oneCostCategory")
     abstract fun mapToUnitCostDTO(programmeUnitCost: ProgrammeUnitCost): ProgrammeUnitCostDTO
     abstract fun mapToUnitCostDTO(programmeUnitCost: List<ProgrammeUnitCost>): List<ProgrammeUnitCostDTO>
+
+    abstract fun map(fileCategoryTypDTO: ProjectFileCategoryTypeDTO): ProjectFileCategoryType
+    abstract fun map(fileCategoryDTO: ProjectFileCategoryDTO): ProjectFileCategory
+
+
+    fun map(fileMetadata: ProjectFileMetadata): ProjectFileMetadataDTO =
+        ProjectFileMetadataDTO(
+            fileMetadata.id,
+            fileMetadata.projectId,
+            fileMetadata.name,
+            fileMetadata.size,
+            fileMetadata.uploadedAt,
+            fileMetadata.uploadedBy.toDto(),
+            fileMetadata.description
+        )
+
 
     fun map(projectCallFlatRateSet: Set<ProjectCallFlatRate>): FlatRateSetupDTO =
         projectCallFlatRateSet.toDto()

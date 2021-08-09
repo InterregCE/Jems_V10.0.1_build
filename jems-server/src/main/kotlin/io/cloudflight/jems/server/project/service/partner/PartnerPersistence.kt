@@ -14,6 +14,8 @@ import org.springframework.data.domain.Sort
 
 interface PartnerPersistence {
 
+    fun throwIfNotExistsInProject(projectId: Long, partnerId: Long)
+
     fun findAllByProjectId(projectId: Long, page: Pageable, version: String? = null): Page<OutputProjectPartner>
 
     fun findAllByProjectId(projectId: Long): Iterable<OutputProjectPartnerDetail>

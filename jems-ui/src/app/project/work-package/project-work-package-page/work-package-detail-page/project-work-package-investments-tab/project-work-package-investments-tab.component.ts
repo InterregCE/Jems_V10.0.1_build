@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {WorkPackageInvestmentDTO, WorkPackageInvestmentService} from '@cat/api';
+import {WorkPackageInvestmentDTO} from '@cat/api';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ActivatedRoute} from '@angular/router';
-import {combineLatest, Subject} from 'rxjs';
-import {filter, map, mergeMap, startWith, take, tap} from 'rxjs/operators';
+import {combineLatest, Observable} from 'rxjs';
+import {filter, map, take, tap} from 'rxjs/operators';
 import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
@@ -36,33 +36,20 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   @ViewChild('titleCell', {static: true})
   titleCell: TemplateRef<any>;
 
-  investmentsChanged$ = new Subject<void>();
-
-  investments$ =
-    combineLatest([
-      this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$,
-      this.workPackageStore.workPackage$
-        .pipe(
-          tap(workPackage => this.workPackageNumber = workPackage.number),
-        ),
-      this.investmentsChanged$.pipe(startWith(null))
-    ])
-      .pipe(
-        filter(([projectId, version, workPackage]) => !!workPackage.id && !!projectId),
-        mergeMap(([projectId, version, workPackage]) =>
-          this.workPackageInvestmentService.getWorkPackageInvestments(projectId, workPackage.id, version)),
-        tap(investments => Log.info('Fetched the work package investments:', this, investments)),
-      );
+  investments$: Observable<WorkPackageInvestmentDTO[]>;
 
   constructor(private activatedRoute: ActivatedRoute,
               public workPackageStore: ProjectWorkPackagePageStore,
-              private workPackageInvestmentService: WorkPackageInvestmentService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectVersionStore: ProjectVersionStore,
               public projectStore: ProjectStore,
               private visibilityStatusService: FormVisibilityStatusService,
               private dialog: MatDialog) {
+    this.investments$ = combineLatest([this.workPackageStore.investments$, this.workPackageStore.workPackage$])
+      .pipe(
+        tap(([investments, workPackage]) => this.workPackageNumber = workPackage.number),
+        map(([investments]) => investments)
+      );
   }
 
   ngOnInit(): void {
@@ -83,11 +70,11 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
             customCellTemplate: this.titleCell,
             sortProperty: 'title'
           }] : [],
-        ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.COUNTRY_AND_NUTS) ?          [{
-            displayedColumn: 'project.application.form.workpackage.investments.nuts3',
-            elementProperty: 'address.region3',
-            sortProperty: 'address.region3',
-          }] : [],
+        ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.COUNTRY_AND_NUTS) ? [{
+          displayedColumn: 'project.application.form.workpackage.investments.nuts3',
+          elementProperty: 'address.region3',
+          sortProperty: 'address.region3',
+        }] : [],
         {
           displayedColumn: ' ',
           columnType: ColumnType.CustomComponent,
@@ -116,7 +103,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
       map(() => this.workPackageStore.deleteWorkPackageInvestment(workPackageInvestment.id)
         .pipe(
           take(1),
-          tap(() => this.investmentsChanged$.next()),
+          tap(() => this.workPackageStore.investmentsChanged$.next()),
           tap(() => Log.info('Deleted investment: ', this, workPackageInvestment.id))
         ).subscribe()),
     ).subscribe();

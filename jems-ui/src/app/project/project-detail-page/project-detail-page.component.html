@@ -1,10 +1,10 @@
-<app-project-page-template [needsCard]="true" *ngIf="projectDetailStore.project$ | async as project"
+<app-project-page-template *ngIf="projectDetailStore.project$ | async as project" [needsCard]="true"
                            titleKey="project.application.form.lifecycle.title">
     <div appFormLayout>
 
         <div appNoWidthLimit>
             <h2>{{project.id}} - {{project.acronym}}</h2>
-            <app-project-application-information appNoWidthLimit [project]="project">
+            <app-project-application-information [project]="project" appNoWidthLimit>
             </app-project-application-information>
         </div>
 
@@ -16,23 +16,24 @@
                     appNoWidthLimit></app-project-application-pre-condition-check-result>
         </ng-container>
 
-        <div appFormLayout *hasPermission="PermissionsEnum.ProjectAssessmentView" id="project-detail-container">
+        <div *hasPermission="PermissionsEnum.ProjectAssessmentView" appFormLayout id="project-detail-container">
             <ng-container *ngIf="projectDetailStore.callHasTwoSteps$ | async">
                 <app-project-application-decisions appNoWidthLimit step="1">
                 </app-project-application-decisions>
-                <app-project-application-assessments appNoWidthLimit
-                                                     step="1"
-                                                     [decisions]="project.firstStepDecision"
-                                                     [projectStatus]="project.projectStatus">
+                <app-project-application-assessments [decisions]="project.firstStepDecision"
+                                                     [projectStatus]="project.projectStatus"
+                                                     appNoWidthLimit
+                                                     step="1">
                 </app-project-application-assessments>
             </ng-container>
 
             <ng-container *ngIf="project.step2Active && project.projectStatus.status !== StatusEnum.DRAFT">
                 <app-project-application-decisions appNoWidthLimit step="2">
                 </app-project-application-decisions>
-                <app-project-application-assessments appNoWidthLimit step="2"
-                                                     [decisions]="project.secondStepDecision"
-                                                     [projectStatus]="project.projectStatus">
+                <app-project-application-assessments [decisions]="project.secondStepDecision"
+                                                     [projectStatus]="project.projectStatus"
+                                                     appNoWidthLimit
+                                                     step="2">
                 </app-project-application-assessments>
             </ng-container>
         </div>
@@ -44,25 +45,6 @@
                               infoText="{{'file.tab.info' | translate}}">
             </app-context-info>
         </h3>
-        <mat-tab-group appNoWidthLimit>
-            <mat-tab *hasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition projectDetailStore.isThisUserOwner$ | async"
-                     label="{{'file.tab.application' | translate}}">
-                <ng-template matTabContent>
-                    <app-project-application-files
-                            [projectId]="projectId"
-                            [fileType]="fileType.APPLICANTFILE">
-                    </app-project-application-files>
-                </ng-template>
-            </mat-tab>
-            <mat-tab *ngIf="projectDetailStore.assessmentFilesVisible$ | async"
-                     label="{{'file.tab.assessment' | translate}}">
-                <ng-template matTabContent>
-                    <app-project-application-files
-                            [projectId]="projectId"
-                            [fileType]="fileType.ASSESSMENTFILE">
-                    </app-project-application-files>
-                </ng-template>
-            </mat-tab>
-        </mat-tab-group>
+        <app-file-management appNoWidthLimit></app-file-management>
     </div>
 </app-project-page-template>

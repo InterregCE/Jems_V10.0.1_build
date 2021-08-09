@@ -52,7 +52,7 @@ export class ProjectStore {
   projectId$ = new ReplaySubject<number>(1);
   projectStatusChanged$ = new Subject();
 
-  projectStatus$: Observable<ProjectStatusDTO.StatusEnum>;
+  projectStatus$: Observable<ProjectStatusDTO>;
   project$: Observable<ProjectDetailDTO>;
   projectForm$: Observable<ProjectDetailFormDTO>;
   currentProject: ProjectDetailDTO;
@@ -62,7 +62,7 @@ export class ProjectStore {
   callHasTwoSteps$: Observable<boolean>;
   projectCurrentDecisions$: Observable<ProjectDecisionDTO>;
   investmentSummaries$: Observable<InvestmentSummary[]>;
-  isThisUserOwner$: Observable<boolean>;
+  userIsProjectOwner$: Observable<boolean>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -91,10 +91,6 @@ export class ProjectStore {
       tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
     );
 
-  private static latestVersion(versions?: ProjectVersionDTO[]): number {
-    return versions?.length ? Number(versions[0].version) : 1;
-  }
-
   constructor(private projectService: ProjectService,
               private projectStatusService: ProjectStatusService,
               private router: RoutingService,
@@ -120,7 +116,11 @@ export class ProjectStore {
     this.callHasTwoSteps$ = this.callHasTwoSteps();
     this.projectCurrentDecisions$ = this.projectCurrentDecisions();
     this.investmentSummaries$ = this.investmentSummaries();
-    this.isThisUserOwner$ = this.isThisUserOwner();
+    this.userIsProjectOwner$ = this.userIsProjectOwner();
+  }
+
+  private static latestVersion(versions?: ProjectVersionDTO[]): number {
+    return versions?.length ? Number(versions[0].version) : 1;
   }
 
   updateProjectData(data: InputProjectData): Observable<ProjectDetailFormDTO> {
@@ -148,10 +148,17 @@ export class ProjectStore {
     this.newQualityAssessment$.next(assessment);
   }
 
-  private projectStatus(): Observable<ProjectStatusDTO.StatusEnum> {
+  projectDecisions(step: number | undefined): Observable<ProjectDecisionDTO> {
     return this.project$
       .pipe(
-        map(project => project.projectStatus.status),
+        map(project => step && Number(step) === 2 ? project.secondStepDecision : project.firstStepDecision)
+      );
+  }
+
+  private projectStatus(): Observable<ProjectStatusDTO> {
+    return this.project$
+      .pipe(
+        map(project => project.projectStatus),
         shareReplay(1)
       );
   }
@@ -267,13 +274,6 @@ export class ProjectStore {
       );
   }
 
-  projectDecisions(step: number | undefined): Observable<ProjectDecisionDTO> {
-    return this.project$
-      .pipe(
-        map(project => step && Number(step) === 2 ? project.secondStepDecision : project.firstStepDecision)
-      );
-  }
-
   private currentVersionIsLatest(): Observable<boolean> {
     return combineLatest([
       this.projectVersionStore.currentRouteVersion$,
@@ -309,7 +309,7 @@ export class ProjectStore {
       );
   }
 
-  private isThisUserOwner(): Observable<boolean> {
+  private userIsProjectOwner(): Observable<boolean> {
     return combineLatest([this.project$, this.securityService.currentUser])
       .pipe(
         map(([project, currentUser]) => project?.applicant?.id === currentUser?.id)

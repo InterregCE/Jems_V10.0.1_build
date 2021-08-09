@@ -20,6 +20,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.sql.Timestamp
 import java.time.ZonedDateTime
 import java.util.Optional
@@ -28,6 +29,7 @@ class PartnerPersistenceTest {
 
     companion object {
         private const val PARTNER_ID = 1L
+        private const val PROJECT_ID = 2L
 
         private val stateAidEntity = ProjectPartnerStateAidEntity(
             partnerId = PARTNER_ID,
@@ -165,6 +167,20 @@ class PartnerPersistenceTest {
         assertThat(stateAidEnitySlot.captured.answer3).isNull()
         assertThat(stateAidEnitySlot.captured.answer4).isNull()
         assertThat(stateAidEnitySlot.captured.translatedValues).hasSize(2)
+    }
+
+    @Test
+    fun `should throw PartnerNotFoundInProjectException when partner does not exist in the project`() {
+        every { projectPartnerRepository.existsByProjectIdAndId(PROJECT_ID, PARTNER_ID) } returns false
+        assertThrows<PartnerNotFoundInProjectException> {
+            (persistence.throwIfNotExistsInProject(PROJECT_ID, PARTNER_ID))
+        }
+    }
+
+    @Test
+    fun `should return Unit when partner exists in the project`() {
+        every { projectPartnerRepository.existsByProjectIdAndId(PROJECT_ID, PARTNER_ID) } returns true
+        assertThat(persistence.throwIfNotExistsInProject(PROJECT_ID, PARTNER_ID)).isEqualTo(Unit)
     }
 
 }

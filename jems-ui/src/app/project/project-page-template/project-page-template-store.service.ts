@@ -15,6 +15,15 @@ export class ProjectPageTemplateStore {
   currentVersionIsLatest$: Observable<boolean>;
   isThisUserOwner$: Observable<boolean>;
 
+  constructor(private projectVersionStore: ProjectVersionStore,
+              private projectStore: ProjectStore) {
+    this.versions$ = this.versions();
+    this.currentVersion$ = this.currentVersion();
+    this.latestVersion$ = this.latestVersion();
+    this.currentVersionIsLatest$ = this.projectStore.currentVersionIsLatest$;
+    this.isThisUserOwner$ = this.projectStore.userIsProjectOwner$;
+  }
+
   private static latest(versions?: ProjectVersionDTO[]): ProjectVersionDTO | undefined {
     return versions?.length ? versions[0] : undefined;
   }
@@ -25,15 +34,6 @@ export class ProjectPageTemplateStore {
       createdAt: null as any,
       status: null as any
     };
-  }
-
-  constructor(private projectVersionStore: ProjectVersionStore,
-              private projectStore: ProjectStore) {
-    this.versions$ = this.versions();
-    this.currentVersion$ = this.currentVersion();
-    this.latestVersion$ = this.latestVersion();
-    this.currentVersionIsLatest$ = this.projectStore.currentVersionIsLatest$;
-    this.isThisUserOwner$ = this.projectStore.isThisUserOwner$;
   }
 
   changeVersion(versionDTO: ProjectVersionDTO): void {

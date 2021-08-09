@@ -28,7 +28,7 @@ export class ProjectApplicationFormSidenavService {
 
   private canSeeProjectForm$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectFormRetrieve),
-    this.projectStore.isThisUserOwner$,
+    this.projectStore.userIsProjectOwner$,
   ]).pipe(
     map(([hasPermission, isOwner]) => hasPermission || isOwner),
   );
@@ -140,17 +140,13 @@ export class ProjectApplicationFormSidenavService {
                        packages: HeadlineRoute[],
                        versionTemplate: TemplateRef<any>): void {
     showProjectForm ?
-      this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH,
-                                       [
-          this.getProjectOverviewHeadline(project, showAssessment),
-          this.getApplicationFormHeadline(project, partners, packages, versionTemplate)
-        ]
-      ) :
-      this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH,
-                                       [
-          this.getProjectOverviewHeadline(project, showAssessment)
-        ]
-      );
+      this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH, [
+        this.getProjectOverviewHeadline(project, showAssessment),
+        this.getApplicationFormHeadline(project, partners, packages, versionTemplate)
+      ]) :
+      this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH, [
+        this.getProjectOverviewHeadline(project, showAssessment)
+      ]);
   }
 
   private getProjectOverviewHeadline(project: ProjectDetailDTO, showAssessment: boolean): HeadlineRoute {

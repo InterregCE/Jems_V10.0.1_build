@@ -10,10 +10,10 @@ import {
   WorkPackageInvestmentService,
   WorkPackageOutputDTO,
   WorkPackageOutputService,
-  WorkPackageService,
+  WorkPackageService, WorkPackageInvestmentDTO,
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, filter, map, mergeMap, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {ProjectApplicationFormSidenavService} from '../../../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Log} from '@common/utils/log';
 import {RoutingService} from '@common/services/routing.service';
@@ -33,6 +33,9 @@ export class ProjectWorkPackagePageStore {
   activities$: Observable<WorkPackageActivityDTO[]>;
   outputs$: Observable<WorkPackageOutputDTO[]>;
   outputIndicators$: Observable<OutputIndicatorSummaryDTO[]>;
+  investments$: Observable<WorkPackageInvestmentDTO[]>;
+
+  investmentsChanged$ = new Subject<void>();
 
   private savedActivities$ = new Subject<WorkPackageActivityDTO[]>();
   private savedOutputs$ = new Subject<WorkPackageOutputDTO[]>();
@@ -53,6 +56,7 @@ export class ProjectWorkPackagePageStore {
     this.activities$ = this.workPackageActivities();
     this.outputs$ = this.workPackageOutputs();
     this.outputIndicators$ = this.outputIndicators();
+    this.investments$ = this.investments();
   }
 
   saveWorkPackage(workPackage: InputWorkPackageUpdate): Observable<OutputWorkPackage> {
@@ -164,5 +168,20 @@ export class ProjectWorkPackagePageStore {
         switchMap(programmeObjectivePolicy => programmeObjectivePolicy ? this.programmeIndicatorService.getOutputIndicatorSummariesForSpecificObjective(programmeObjectivePolicy) : of([])),
         tap(outputs => Log.info('Fetched programme output indicators', outputs)),
       );
+  }
+
+  private investments(): Observable<WorkPackageInvestmentDTO[]> {
+    return combineLatest([
+        this.projectStore.projectId$,
+        this.projectVersionStore.currentRouteVersion$,
+        this.workPackage$,
+        this.investmentsChanged$.pipe(startWith(null))
+      ])
+        .pipe(
+          filter(([projectId, version, workPackage]) => !!workPackage.id && !!projectId),
+          mergeMap(([projectId, version, workPackage]) =>
+            this.workPackageInvestmentService.getWorkPackageInvestments(projectId, workPackage.id, version)),
+          tap(investments => Log.info('Fetched the work package investments:', this, investments)),
+        );
   }
 }

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository
 @Repository
 interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPackageInvestmentEntity, Long> {
 
+    fun existsByWorkPackageProjectIdAndId(projectId: Long, investmentId: Long): Boolean
+
     fun findAllByWorkPackageId(workPackageId: Long): List<WorkPackageInvestmentEntity>
 
     fun findAllByWorkPackageId(workPackageId: Long, sort: Sort): Iterable<WorkPackageInvestmentEntity>

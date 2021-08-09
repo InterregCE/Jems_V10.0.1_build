@@ -42,6 +42,12 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
+    override fun throwIfNotExistsInProject(projectId: Long, partnerId: Long) {
+        if (!projectPartnerRepository.existsByProjectIdAndId(projectId, partnerId))
+            throw PartnerNotFoundInProjectException(projectId, partnerId)
+    }
+
+    @Transactional(readOnly = true)
     override fun getById(id: Long, version: String?): OutputProjectPartnerDetail {
         return projectVersionUtils.fetch(version,
             projectId = projectVersionUtils.fetchProjectId(version, id,

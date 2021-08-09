@@ -33,6 +33,12 @@ class UserPersistenceProvider(
         }
 
     @Transactional(readOnly = true)
+    override fun throwIfNotExists(id: Long) {
+        if (!userRepo.existsById(id))
+            throw UserNotFound()
+    }
+
+    @Transactional(readOnly = true)
     override fun getByEmail(email: String): UserWithPassword? =
         userRepo.getOneByEmail(email)?.let {
             it.toModelWithPassword(userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())

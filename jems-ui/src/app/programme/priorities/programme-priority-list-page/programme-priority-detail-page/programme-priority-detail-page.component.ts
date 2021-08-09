@@ -65,7 +65,7 @@ export class ProgrammePriorityDetailPageComponent {
       ),
       map(([priority, setup]) => ({
           priority,
-        // tslint:disable-next-line
+          // tslint:disable-next-line
           objectives: this.getAvailableObjectives((priority as any).objective, setup.freePrioritiesWithPolicies),
           freePrioritiesWithPolicies: setup.freePrioritiesWithPolicies,
           objectivePoliciesAlreadyInUse: setup.objectivePoliciesAlreadyInUse as string[]
@@ -77,9 +77,13 @@ export class ProgrammePriorityDetailPageComponent {
     );
 
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
-        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
-        untilDestroyed(this)
+      tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+      untilDestroyed(this)
     ).subscribe();
+  }
+
+  get specificObjectives(): FormArray {
+    return this.form.get(this.constants.SPECIFIC_OBJECTIVES.name) as FormArray;
   }
 
   save(): void {
@@ -160,7 +164,7 @@ export class ProgrammePriorityDetailPageComponent {
       return null;
     }
     const args: string[] = [];
-    Object.keys(this.saveError?.formErrors?.specificObjectives?.i18nArguments).forEach(argKey => args.push(this.saveError?.formErrors?.specificObjectives?.i18nArguments[argKey]));
+    Object.keys(this.saveError?.formErrors?.specificObjectives?.i18nArguments as any).forEach(argKey => args.push((this.saveError?.formErrors?.specificObjectives?.i18nArguments as any)[argKey]));
     return {
       i18nKey: this.saveError?.formErrors?.specificObjectives.i18nKey,
       i8nArguments: {
@@ -209,9 +213,5 @@ export class ProgrammePriorityDetailPageComponent {
       return objectives;
     }
     return [currentObjective, ...objectives];
-  }
-
-  get specificObjectives(): FormArray {
-    return this.form.get(this.constants.SPECIFIC_OBJECTIVES.name) as FormArray;
   }
 }

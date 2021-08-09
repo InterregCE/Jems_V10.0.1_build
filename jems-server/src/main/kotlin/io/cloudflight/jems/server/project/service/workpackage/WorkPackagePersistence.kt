@@ -20,6 +20,7 @@ interface WorkPackagePersistence {
     fun updateWorkPackageOutputs(workPackageId: Long, workPackageOutputs: List<WorkPackageOutput>): List<WorkPackageOutput>
     fun getWorkPackageOutputsForWorkPackage(workPackageId: Long, projectId: Long, version: String? = null): List<WorkPackageOutput>
 
+    fun throwIfInvestmentNotExistsInProject(projectId: Long, investmentId: Long)
     fun getWorkPackageInvestment(workPackageInvestmentId: Long, projectId: Long, version: String? = null): WorkPackageInvestment
     fun getWorkPackageInvestments(workPackageId: Long, projectId: Long, version: String? = null): List<WorkPackageInvestment>
     fun addWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment): Long

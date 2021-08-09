@@ -16,13 +16,14 @@ import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.programme.service.language.ProgrammeLanguagePersistence
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
-import io.cloudflight.jems.server.service.PROJECT_ID
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
+
+const val PROJECT_ID = 612L
 
 internal class CallDataProviderImplTest : UnitTest() {
 

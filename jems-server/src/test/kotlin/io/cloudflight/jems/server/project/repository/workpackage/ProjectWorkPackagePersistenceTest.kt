@@ -67,6 +67,8 @@ class ProjectWorkPackagePersistenceTest {
     companion object {
         private const val WORK_PACKAGE_ID = 1L
         private const val WORK_PACKAGE_ID_2 = 654L
+        private const val INVESTMENT_ID = 54L
+        private const val PROJECT_ID = 64L
 
         private val activityId1 = WorkPackageActivityId(workPackageId = WORK_PACKAGE_ID, activityNumber = 1)
         private val activityId2 = WorkPackageActivityId(workPackageId = WORK_PACKAGE_ID, activityNumber = 2)
@@ -325,10 +327,10 @@ class ProjectWorkPackagePersistenceTest {
             number = 2,
         )
         every { repository.findAllByProjectId(eq(1)) } returns
-                listOf(
-                    workPackageWithActivities.copy(activities = emptyList(), outputs = emptyList()),
-                    emptyWP
-                )
+            listOf(
+                workPackageWithActivities.copy(activities = emptyList(), outputs = emptyList()),
+                emptyWP
+            )
         every {
             repositoryActivity.findAllByActivityIdWorkPackageIdIn(
                 setOf(
@@ -394,45 +396,85 @@ class ProjectWorkPackagePersistenceTest {
 
         every { projectVersionRepo.findTimestampByVersion(id, version) } returns timestamp
         every { repository.findAllByProjectIdAsOfTimestamp(id, timestamp) } returns listOf(mockWPRow)
-        every { repositoryActivity.findAllByActivityIdWorkPackageIdAsOfTimestamp(setOf(wpId), timestamp) } returns listOf(mockWPARow)
-        every { repositoryActivity.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(wpId, 3, timestamp) } returns listOf(mockWPDRow)
-        every { repositoryOutput.findAllByOutputIdWorkPackageIdAsOfTimestamp(setOf(wpId), timestamp) } returns listOf(mockWPORow)
+        every {
+            repositoryActivity.findAllByActivityIdWorkPackageIdAsOfTimestamp(
+                setOf(wpId),
+                timestamp
+            )
+        } returns listOf(mockWPARow)
+        every {
+            repositoryActivity.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(
+                wpId,
+                3,
+                timestamp
+            )
+        } returns listOf(mockWPDRow)
+        every { repositoryOutput.findAllByOutputIdWorkPackageIdAsOfTimestamp(setOf(wpId), timestamp) } returns listOf(
+            mockWPORow
+        )
 
         // test
         val result = persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(id, version)
 
         assertThat(result.size).isEqualTo(1)
-        assertThat(result[0]).isEqualTo(ProjectWorkPackage(
-            id = mockWPRow.id,
-            workPackageNumber = mockWPRow.number!!,
-            translatedValues = setOf(ProjectWorkPackageTranslatedValue(
-                language = EN,
-                name = mockWPRow.name,
-                specificObjective = mockWPRow.specificObjective,
-                objectiveAndAudience = mockWPRow.objectiveAndAudience
-            )),
-            activities = listOf(WorkPackageActivity(
-                activityNumber = mockWPARow.activityNumber,
-                workPackageId = mockWPARow.workPackageId,
-                translatedValues = setOf(WorkPackageActivityTranslatedValue(EN, mockWPARow.title, mockWPARow.description)),
-                startPeriod = mockWPARow.startPeriod,
-                endPeriod = mockWPARow.endPeriod,
-                deliverables = listOf(WorkPackageActivityDeliverable(
-                    deliverableNumber = mockWPDRow.deliverableNumber,
-                    translatedValues = setOf(WorkPackageActivityDeliverableTranslatedValue(EN, mockWPDRow.description)),
-                    period = mockWPDRow.startPeriod
-                ))
-            )),
-            outputs = listOf(WorkPackageOutput(
-                workPackageId = mockWPORow.workPackageId,
-                outputNumber = mockWPORow.outputNumber,
-                programmeOutputIndicatorId = mockWPORow.programmeOutputIndicatorId,
-                programmeOutputIndicatorIdentifier = mockWPORow.programmeOutputIndicatorIdentifier,
-                targetValue = mockWPORow.targetValue,
-                periodNumber = mockWPORow.periodNumber,
-                translatedValues = setOf(WorkPackageOutputTranslatedValue(EN, mockWPORow.title, mockWPORow.description))
-            ))
-        ))
+        assertThat(result[0]).isEqualTo(
+            ProjectWorkPackage(
+                id = mockWPRow.id,
+                workPackageNumber = mockWPRow.number!!,
+                translatedValues = setOf(
+                    ProjectWorkPackageTranslatedValue(
+                        language = EN,
+                        name = mockWPRow.name,
+                        specificObjective = mockWPRow.specificObjective,
+                        objectiveAndAudience = mockWPRow.objectiveAndAudience
+                    )
+                ),
+                activities = listOf(
+                    WorkPackageActivity(
+                        activityNumber = mockWPARow.activityNumber,
+                        workPackageId = mockWPARow.workPackageId,
+                        translatedValues = setOf(
+                            WorkPackageActivityTranslatedValue(
+                                EN,
+                                mockWPARow.title,
+                                mockWPARow.description
+                            )
+                        ),
+                        startPeriod = mockWPARow.startPeriod,
+                        endPeriod = mockWPARow.endPeriod,
+                        deliverables = listOf(
+                            WorkPackageActivityDeliverable(
+                                deliverableNumber = mockWPDRow.deliverableNumber,
+                                translatedValues = setOf(
+                                    WorkPackageActivityDeliverableTranslatedValue(
+                                        EN,
+                                        mockWPDRow.description
+                                    )
+                                ),
+                                period = mockWPDRow.startPeriod
+                            )
+                        )
+                    )
+                ),
+                outputs = listOf(
+                    WorkPackageOutput(
+                        workPackageId = mockWPORow.workPackageId,
+                        outputNumber = mockWPORow.outputNumber,
+                        programmeOutputIndicatorId = mockWPORow.programmeOutputIndicatorId,
+                        programmeOutputIndicatorIdentifier = mockWPORow.programmeOutputIndicatorIdentifier,
+                        targetValue = mockWPORow.targetValue,
+                        periodNumber = mockWPORow.periodNumber,
+                        translatedValues = setOf(
+                            WorkPackageOutputTranslatedValue(
+                                EN,
+                                mockWPORow.title,
+                                mockWPORow.description
+                            )
+                        )
+                    )
+                )
+            )
+        )
     }
 
     @Test
@@ -627,5 +669,21 @@ class ProjectWorkPackagePersistenceTest {
         verify { investmentRepository.findAllByWorkPackageId(1, Sort.by("id")) }
         verify { investmentRepository.saveAll(sortedInvestments) }
     }
+
+    @Test
+    fun `should throw InvestmentNotFoundInProjectException when investment does not exist in the project`() {
+        every { investmentRepository.existsByWorkPackageProjectIdAndId(PROJECT_ID, INVESTMENT_ID) } returns false
+        assertThrows<InvestmentNotFoundInProjectException> {
+            (persistence.throwIfInvestmentNotExistsInProject(PROJECT_ID, INVESTMENT_ID))
+        }
+    }
+
+
+    @Test
+    fun `should return Unit when investment exists in the project`() {
+        every { investmentRepository.existsByWorkPackageProjectIdAndId(PROJECT_ID, INVESTMENT_ID) } returns true
+        assertThat(persistence.throwIfInvestmentNotExistsInProject(PROJECT_ID, INVESTMENT_ID)).isEqualTo(Unit)
+    }
+
 
 }

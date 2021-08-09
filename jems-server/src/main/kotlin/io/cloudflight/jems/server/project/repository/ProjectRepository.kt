@@ -35,6 +35,17 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
 
     @Query(
         """
+            SELECT count(entity) > 0
+            FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+            WHERE entity.id = :id
+             """,
+        nativeQuery = true
+    )
+    fun existsByIsAsOfTimestamp(id: Long): Boolean
+
+
+    @Query(
+        """
             SELECT
              period.number as periodNumber,
               period.start as periodStart,

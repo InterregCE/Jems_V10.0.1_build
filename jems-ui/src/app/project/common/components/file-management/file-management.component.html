@@ -1,0 +1,18 @@
+<div *ngIf="canReadFiles$ | async" appNoWidthLimit id="project-files">
+    <app-project-application-files-tree
+            (categorySelected)="selectedCategory = $event"
+            class="mr-3"
+            id="project-files-tree"
+            [selectedCategory]="{type : FileCategoryEnum.PARTNER}">
+    </app-project-application-files-tree>
+
+    <div id="project-files-table">
+        <div class="mb-3">
+            <span *ngFor="let item of getSelectedCategoryPath(); let last = last">
+                <span [class.mat-body-strong]="item === last">{{item | translate}}</span>
+                <span *ngIf="!last"> > </span>
+            </span>
+        </div>
+        <app-project-application-files-table></app-project-application-files-table>
+    </div>
+</div>

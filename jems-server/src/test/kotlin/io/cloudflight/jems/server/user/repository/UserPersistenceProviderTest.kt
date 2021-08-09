@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.entity.UserRolePermissionEntity
 import io.cloudflight.jems.server.user.entity.UserRolePermissionId
+import io.cloudflight.jems.server.user.repository.user.UserNotFound
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.user.UserRoleNotFound
 import io.cloudflight.jems.server.user.repository.userrole.UserRolePermissionRepository
@@ -24,7 +25,7 @@ import java.util.Optional
 internal class UserPersistenceProviderTest : UnitTest() {
 
     companion object {
-        private const val USER_ID = 1L;
+        private const val USER_ID = 1L
         private const val ROLE_ID = 2L
 
         private val userRoleEntity = UserRoleEntity(
@@ -82,6 +83,18 @@ internal class UserPersistenceProviderTest : UnitTest() {
         every { userRoleRepo.findById(-1) } returns Optional.empty()
 
         assertThrows<UserRoleNotFound> { persistence.update(change) }
+    }
+
+    @Test
+    fun `should throw UserNotFound when user does not exist`() {
+        every { userRepo.existsById(USER_ID) } returns false
+        assertThrows<UserNotFound> { (persistence.throwIfNotExists(USER_ID)) }
+    }
+
+    @Test
+    fun `should return Unit when user exists in the project`() {
+        every { userRepo.existsById(USER_ID) } returns true
+        assertThat(persistence.throwIfNotExists(USER_ID)).isEqualTo(Unit)
     }
 
 }

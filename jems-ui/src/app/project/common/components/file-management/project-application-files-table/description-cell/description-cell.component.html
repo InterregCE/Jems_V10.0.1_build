@@ -1,0 +1,22 @@
+<form [formGroup]="descriptionForm">
+    <label *ngIf="!editable" [title]="file?.description">
+        {{getSizedDescription()}}
+    </label>
+    <app-expandable-textarea
+            *ngIf="editable"
+            [control]="descriptionForm.controls.description">
+    </app-expandable-textarea>
+    <div class="mb-2 mt-2">
+        <button (click)="onCancel()"
+                *ngIf="editable"
+                class="button"
+                mat-stroked-button>{{'project.file.description.button.cancel' | translate}}
+        </button>
+
+        <button (click)="onSubmit()"
+                *ngIf="editable" [disabled]="descriptionForm.invalid" class="ml-2" color="primary"
+                mat-raised-button
+                type="submit">{{'project.file.description.button.save' | translate}}
+        </button>
+    </div>
+</form>

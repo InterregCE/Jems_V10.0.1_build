@@ -3,15 +3,12 @@ import {DatePipe} from '@angular/common';
 import {routes} from './project-routing.module';
 import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
 import {SharedModule} from '@common/shared-module';
-import {ProjectApplicationFilesListComponent} from './project-application/components/project-application-detail/project-application-files-list/project-application-files-list.component';
 import {ProjectApplicationInformationComponent} from './project-application/components/project-application-detail/project-application-information/project-application-information.component';
-import {ProjectApplicationFileUploadComponent} from './project-application/components/project-application-detail/project-application-file-upload/project-application-file-upload.component';
 import {ProjectApplicationAssessmentsComponent} from './project-detail-page/project-application-assessments/project-application-assessments.component';
-import {ProjectApplicationFilesComponent} from './project-application/containers/project-application-detail/project-application-files/project-application-files.component';
-import {DescriptionCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/description-cell/description-cell.component';
+import {DescriptionCellComponent} from './common/components/file-management/project-application-files-table/description-cell/description-cell.component';
 import {ProjectApplicationEligibilityCheckComponent} from './project-detail-page/project-application-eligibility-check/project-application-eligibility-check.component';
 import {ProjectApplicationQualityCheckComponent} from './project-detail-page/project-application-quality-check/project-application-quality-check.component';
-import {ActionsCellComponent} from './project-application/components/project-application-detail/project-application-files-list/cell-renderers/actions-cell/actions-cell.component';
+import {ActionsCellComponent} from './common/components/file-management/project-application-files-table/actions-cell/actions-cell.component';
 import {ProjectApplicationDecisionsComponent} from './project-detail-page/project-application-decisions/project-application-decisions.component';
 import {ProjectApplicationActionsComponent} from './project-detail-page/project-application-actions/project-application-actions.component';
 import {ProjectApplicationFundingPageComponent} from './project-detail-page/project-application-funding-page/project-application-funding-page.component';
@@ -85,11 +82,13 @@ import {ProjectAcronymResolver} from './project-application/containers/project-a
 import {ProjectVersionStore} from './common/services/project-version-store.service';
 import {ProjectPageTemplateComponent} from './project-page-template/project-page-template.component';
 import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
-import { FormFieldVisibilityStatusDirective } from './common/directives/form-field-visibility-status.directive';
-import { ProjectApplicationFileDeleteComponent } from './project-application/components/project-application-detail/project-application-file-delete/project-application-file-delete.component';
-import { ProjectPartnerStateAidTabComponent } from './partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
+import {FormFieldVisibilityStatusDirective} from './common/directives/form-field-visibility-status.directive';
+import {ProjectPartnerStateAidTabComponent} from './partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
+import {ProjectApplicationFilesTreeComponent} from './common/components/file-management/project-application-files-tree/project-application-files-tree.component';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {PeriodsTotalPipe} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/periods-total.pipe';
+import {FileManagementComponent} from './common/components/file-management/file-management.component';
+import {ProjectApplicationFilesTableComponent} from './common/components/file-management/project-application-files-table/project-application-files-table.component';
 
 @NgModule({
   declarations: [
@@ -97,11 +96,8 @@ import {PeriodsTotalPipe} from '@project/partner/project-partner-detail-page/pro
     ProjectApplicationComponent,
     ProjectApplyToCallComponent,
     ProjectDetailPageComponent,
-    ProjectApplicationFilesListComponent,
     ProjectApplicationInformationComponent,
-    ProjectApplicationFileUploadComponent,
     ProjectApplicationAssessmentsComponent,
-    ProjectApplicationFilesComponent,
     ProjectApplicationDecisionsComponent,
     ProjectApplicationActionsComponent,
     ProjectApplicationQualityCheckComponent,
@@ -171,8 +167,10 @@ import {PeriodsTotalPipe} from '@project/partner/project-partner-detail-page/pro
     ProjectPageTemplateComponent,
     ProjectWorkPackagePageComponent,
     FormFieldVisibilityStatusDirective,
-    ProjectApplicationFileDeleteComponent,
     ProjectPartnerStateAidTabComponent,
+    FileManagementComponent,
+    ProjectApplicationFilesTreeComponent,
+    ProjectApplicationFilesTableComponent,
   ],
   imports: [
     SharedModule,

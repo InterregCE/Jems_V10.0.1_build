@@ -40,10 +40,9 @@ import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentId
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentQualityEntity
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentEligibilityRepository
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentQualityRepository
-import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -67,7 +66,7 @@ import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
-import java.util.Optional
+import java.util.*
 
 /**
  * tests implementation of ProjectPersistenceProvider including mappings and projectVersionUtils
@@ -81,12 +80,13 @@ internal class ProjectPersistenceTest : UnitTest() {
         val startDate: ZonedDateTime = ZonedDateTime.now().minusDays(2)
         val endDate: ZonedDateTime = ZonedDateTime.now().plusDays(2)
 
-        val applicationFormFieldConfigurationEntities= mutableSetOf(
+        val applicationFormFieldConfigurationEntities = mutableSetOf(
             ApplicationFormFieldConfigurationEntity(
-                ApplicationFormFieldConfigurationId("fieldId" , dummyCall()),
+                ApplicationFormFieldConfigurationId("fieldId", dummyCall()),
                 FieldVisibilityStatus.STEP_ONE_AND_TWO
             )
         )
+
         private fun dummyCall(): CallEntity {
             val call = callWithId(CALL_ID)
             call.name = "call name"
@@ -182,20 +182,25 @@ internal class ProjectPersistenceTest : UnitTest() {
 
     @MockK
     lateinit var projectRepository: ProjectRepository
-    @MockK
-    lateinit var projectPartnerRepository: ProjectPartnerRepository
+
     @MockK
     lateinit var projectAssessmentQualityRepository: ProjectAssessmentQualityRepository
+
     @MockK
     lateinit var projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository
+
     @MockK
     lateinit var applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository
+
     @MockK
     lateinit var projectStatusHistoryRepo: ProjectStatusHistoryRepository
+
     @MockK
     lateinit var userRepository: UserRepository
+
     @MockK
     lateinit var callRepository: CallRepository
+
     @MockK
     lateinit var callPersistence: CallPersistenceProvider
 
@@ -205,7 +210,16 @@ internal class ProjectPersistenceTest : UnitTest() {
     fun setup() {
         MockKAnnotations.init(this)
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
-        persistence = ProjectPersistenceProvider(projectVersionUtils, projectRepository, projectPartnerRepository, projectAssessmentQualityRepository, projectAssessmentEligibilityRepository, projectStatusHistoryRepo, userRepository, callRepository, applicationFormFieldConfigurationRepository )
+        persistence = ProjectPersistenceProvider(
+            projectVersionUtils,
+            projectRepository,
+            projectAssessmentQualityRepository,
+            projectAssessmentEligibilityRepository,
+            projectStatusHistoryRepo,
+            userRepository,
+            callRepository,
+            applicationFormFieldConfigurationRepository
+        )
     }
 
     @Test
@@ -297,13 +311,30 @@ internal class ProjectPersistenceTest : UnitTest() {
         )
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
         every { projectAssessmentQualityRepository.findById(ProjectAssessmentId(project, 1)) } returns Optional.of(
-            ProjectAssessmentQualityEntity(ProjectAssessmentId(project, 1), result = ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING, user = user, updated = statusChange)
+            ProjectAssessmentQualityEntity(
+                ProjectAssessmentId(project, 1),
+                result = ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING,
+                user = user,
+                updated = statusChange
+            )
         )
         every { projectAssessmentQualityRepository.findById(ProjectAssessmentId(project, 2)) } returns Optional.empty()
 
-        every { projectAssessmentEligibilityRepository.findById(ProjectAssessmentId(project, 1)) } returns Optional.empty()
+        every {
+            projectAssessmentEligibilityRepository.findById(
+                ProjectAssessmentId(
+                    project,
+                    1
+                )
+            )
+        } returns Optional.empty()
         every { projectAssessmentEligibilityRepository.findById(ProjectAssessmentId(project, 2)) } returns Optional.of(
-            ProjectAssessmentEligibilityEntity(ProjectAssessmentId(project, 1), result = ProjectAssessmentEligibilityResult.PASSED, user = user, updated = statusChange)
+            ProjectAssessmentEligibilityEntity(
+                ProjectAssessmentId(project, 1),
+                result = ProjectAssessmentEligibilityResult.PASSED,
+                user = user,
+                updated = statusChange
+            )
         )
 
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
@@ -333,7 +364,13 @@ internal class ProjectPersistenceTest : UnitTest() {
                         fundingDecision = ProjectStatus(
                             id = 896L,
                             status = ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS,
-                            user = UserSummary(id = user.id, email = user.email, name = user.name, surname = user.surname, userRole = UserRoleSummary(id = 1, name = "ADMIN")),
+                            user = UserSummary(
+                                id = user.id,
+                                email = user.email,
+                                name = user.name,
+                                surname = user.surname,
+                                userRole = UserRoleSummary(id = 1, name = "ADMIN")
+                            ),
                             updated = statusChange,
                         )
                     ),
@@ -347,7 +384,13 @@ internal class ProjectPersistenceTest : UnitTest() {
                         eligibilityDecision = ProjectStatus(
                             id = 897L,
                             status = ApplicationStatus.ELIGIBLE,
-                            user = UserSummary(id = user.id, email = user.email, name = user.name, surname = user.surname, userRole = UserRoleSummary(id = 1, name = "ADMIN")),
+                            user = UserSummary(
+                                id = user.id,
+                                email = user.email,
+                                name = user.name,
+                                surname = user.surname,
+                                userRole = UserRoleSummary(id = 1, name = "ADMIN")
+                            ),
                             updated = statusChange,
                         )
                     ),
@@ -378,7 +421,9 @@ internal class ProjectPersistenceTest : UnitTest() {
         every { projectAssessmentQualityRepository.findById(any()) } returns Optional.empty()
         every { projectAssessmentEligibilityRepository.findById(any()) } returns Optional.empty()
 
-        every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockPeriodRow)
+        every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(
+            mockPeriodRow
+        )
         every { projectRepository.findByIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
 
@@ -390,7 +435,13 @@ internal class ProjectPersistenceTest : UnitTest() {
                     title = setOf(InputTranslation(mockRow.language!!, mockRow.title)),
                     acronym = mockRow.acronym,
                     duration = mockRow.duration,
-                    periods = listOf(ProjectPeriod(mockPeriodRow.periodNumber!!, mockPeriodRow.periodStart!!, mockPeriodRow.periodEnd!!)),
+                    periods = listOf(
+                        ProjectPeriod(
+                            mockPeriodRow.periodNumber!!,
+                            mockPeriodRow.periodStart!!,
+                            mockPeriodRow.periodEnd!!
+                        )
+                    ),
                     applicant = project.applicant.toUserSummary(),
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
@@ -398,7 +449,8 @@ internal class ProjectPersistenceTest : UnitTest() {
                     callSettings = project.call.toSettingsModel(applicationFormFieldConfigurationEntities),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
-                ))
+                )
+            )
     }
 
     @Test
@@ -434,7 +486,12 @@ internal class ProjectPersistenceTest : UnitTest() {
 
     @Test
     fun `getProjects - owner`() {
-        every { projectRepository.findAllByApplicantId(7006L, Pageable.unpaged()) } returns PageImpl(listOf(dummyProject()))
+        every {
+            projectRepository.findAllByApplicantId(
+                7006L,
+                Pageable.unpaged()
+            )
+        } returns PageImpl(listOf(dummyProject()))
 
         val result = persistence.getProjects(Pageable.unpaged(), 7006L)
 
@@ -462,4 +519,17 @@ internal class ProjectPersistenceTest : UnitTest() {
             persistence.getCallIdOfProject(PROJECT_ID)
         }
     }
+
+    @Test
+    fun `should throw ProjectNotFoundException when project does not exist`() {
+        every { projectRepository.existsById(PROJECT_ID) } returns false
+        assertThrows<ProjectNotFoundException> { (persistence.throwIfNotExists(PROJECT_ID)) }
+    }
+
+    @Test
+    fun `should return Unit when project exists`() {
+        every { projectRepository.existsById(PROJECT_ID) } returns true
+        assertThat(persistence.throwIfNotExists(PROJECT_ID)).isEqualTo(Unit)
+    }
+
 }

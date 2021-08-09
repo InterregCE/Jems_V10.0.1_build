@@ -11,6 +11,8 @@ interface UserPersistence {
 
     fun getById(id: Long): UserWithPassword
 
+    fun throwIfNotExists(id: Long)
+
     fun getByEmail(email: String): UserWithPassword?
 
     fun findAll(pageable: Pageable): Page<UserSummary>

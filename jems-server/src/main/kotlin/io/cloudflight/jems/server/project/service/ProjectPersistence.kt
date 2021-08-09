@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
-import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.data.domain.Page
@@ -15,6 +14,8 @@ import org.springframework.data.domain.Pageable
 interface ProjectPersistence {
 
     fun getProject(projectId: Long, version: String? = null): ProjectFull
+
+    fun throwIfNotExists(projectId: Long, version: String? = null)
 
     fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus
 

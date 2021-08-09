@@ -14,7 +14,7 @@ import {Log} from '@common/utils/log';
 import {ProjectUtil} from '../common/project-util';
 import {SecurityService} from '../../security/security.service';
 import {PreConditionCheckResult} from '../model/plugin/PreConditionCheckResult';
-import {ProjectVersionStore} from '../common/services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable()
@@ -42,23 +42,10 @@ export class ProjectDetailPageStore {
     this.assessmentFilesVisible$ = this.assessmentFilesVisible();
     this.revertToStatus$ = this.revertToStatus();
     this.callHasTwoSteps$ = this.projectStore.callHasTwoSteps$;
-    this.isThisUserOwner$ = this.projectStore.isThisUserOwner$;
+    this.isThisUserOwner$ = this.projectStore.userIsProjectOwner$;
     this.preConditionCheckResult.next(null);
     this.isProjectLatestVersion$ = this.projectStore.currentVersionIsLatest$;
     this.projectCurrentDecisions$ = this.projectStore.projectCurrentDecisions$;
-  }
-
-  private assessmentFilesVisible(): Observable<boolean> {
-    return combineLatest([
-      this.projectStore.project$,
-      this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve)
-    ])
-      .pipe(
-        map(([project, permission]) =>
-          permission && !ProjectUtil.isDraft(project)
-        )
-      );
-
   }
 
   preConditionCheck(projectId: number): Observable<PreConditionCheckResult> {
@@ -106,6 +93,18 @@ export class ProjectDetailPageStore {
       );
   }
 
+  private assessmentFilesVisible(): Observable<boolean> {
+    return combineLatest([
+      this.projectStore.project$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve)
+    ])
+      .pipe(
+        map(([project, permission]) =>
+          permission && !ProjectUtil.isDraft(project)
+        )
+      );
+  }
+
   private revertToStatus(): Observable<string | null> {
     return combineLatest([this.project$, this.permissionService.permissionsChanged()])
       .pipe(
@@ -117,5 +116,4 @@ export class ProjectDetailPageStore {
         tap(status => Log.info('Fetched revert status', status))
       );
   }
-
 }

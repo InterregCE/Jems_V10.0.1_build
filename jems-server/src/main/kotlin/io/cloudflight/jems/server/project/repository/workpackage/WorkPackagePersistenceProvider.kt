@@ -136,6 +136,12 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
+    override fun throwIfInvestmentNotExistsInProject(projectId: Long, investmentId: Long) {
+        if (!workPackageInvestmentRepository.existsByWorkPackageProjectIdAndId(projectId, investmentId))
+            throw InvestmentNotFoundInProjectException(projectId, investmentId)
+    }
+
+    @Transactional(readOnly = true)
     override fun getWorkPackageInvestment(workPackageInvestmentId: Long, projectId: Long, version: String?): WorkPackageInvestment {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {

@@ -10,14 +10,12 @@ import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEnt
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentId
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentEligibilityRepository
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentQualityRepository
-import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
-import io.cloudflight.jems.server.project.service.model.ProjectForm
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -31,7 +29,6 @@ import java.sql.Timestamp
 class ProjectPersistenceProvider(
     private val projectVersionUtils: ProjectVersionUtils,
     private val projectRepository: ProjectRepository,
-    private val projectPartnerRepository: ProjectPartnerRepository,
     private val projectAssessmentQualityRepository: ProjectAssessmentQualityRepository,
     private val projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository,
     private val projectStatusHistoryRepo: ProjectStatusHistoryRepository,
@@ -71,6 +68,15 @@ class ProjectPersistenceProvider(
                 getProjectHistoricalData(projectId, timestamp, project, assessmentStep1, assessmentStep2)
             }
         ) ?: throw ApplicationVersionNotFoundException()
+    }
+
+    @Transactional(readOnly = true)
+    override fun throwIfNotExists(projectId: Long, version: String?) {
+        if (projectVersionUtils.fetch(version, projectId,
+                { projectRepository.existsById(projectId) },
+                { projectRepository.existsByIsAsOfTimestamp(projectId) }
+            ) != true
+        ) throw ProjectNotFoundException()
     }
 
     @Transactional(readOnly = true)
@@ -144,7 +150,7 @@ class ProjectPersistenceProvider(
         assessmentStep2: ProjectAssessmentEntity,
     ): ProjectFull {
         val periods =
-            projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData();
+            projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData()
         return projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
             .toProjectEntryWithDetailData(
                 project,

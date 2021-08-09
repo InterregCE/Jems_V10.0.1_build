@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectDetailPageStore} from './project-detail-page-store';
-import {OutputProjectFile, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
+import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
@@ -13,7 +13,6 @@ import StatusEnum = ProjectStatusDTO.StatusEnum;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectDetailPageComponent {
-  fileType = OutputProjectFile.TypeEnum;
   PermissionsEnum = PermissionsEnum;
   StatusEnum = StatusEnum;
 

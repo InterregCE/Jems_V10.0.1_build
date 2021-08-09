@@ -21,6 +21,8 @@ import java.util.Optional
 @Repository
 interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
+    fun existsByProjectIdAndId(projectId: Long, id: Long): Boolean
+
     fun findFirstByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectPartnerEntity>
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectPartnerEntity>
