@@ -5,15 +5,15 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.ProjectContactType
+import io.cloudflight.jems.api.project.dto.ProjectContactTypeDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
@@ -222,7 +222,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 commonChallenge = setOf(InputTranslation(SystemLanguage.EN, "commonChallenge")),
                 transnationalCooperation = setOf(InputTranslation(SystemLanguage.EN, "transnationalCooperation")),
                 projectBenefits = listOf(ProjectRelevanceBenefit(
-                    group = ProjectTargetGroup.LocalPublicAuthority,
+                    group = ProjectTargetGroupDTO.LocalPublicAuthority,
                     specification = setOf(InputTranslation(SystemLanguage.EN, "specification")))
                 ),
                 projectStrategies = listOf(ProjectRelevanceStrategy(
@@ -274,7 +274,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             role = ProjectPartnerRoleDTO.LEAD_PARTNER,
             nameInOriginalLanguage = "test",
             nameInEnglish = "test",
-            partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+            partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
             vat = "test vat",
             vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
             legalStatusId = 3L,
@@ -323,7 +323,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         )
         private val associatedOrganization = OutputProjectAssociatedOrganizationDetail(
             id = 2L,
-            partner = ProjectPartnerDTO(
+            partner = ProjectPartnerSummaryDTO(
                 id = projectPartner.id,
                 abbreviation = projectPartner.abbreviation,
                 role = projectPartner.role,
@@ -344,7 +344,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 homepage = "homepage"
             ),
             contacts = listOf(ProjectPartnerContactDTO(
-                type = ProjectContactType.ContactPerson,
+                type = ProjectContactTypeDTO.ContactPerson,
                 title = "title",
                 firstName = "firstName",
                 lastName = "lastName",

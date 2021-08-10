@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAs
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.AddressEntity
@@ -126,7 +126,7 @@ fun ProjectAssociatedOrganizationAddress.toOutputProjectAssociatedOrganizationDe
 )
 
 fun List<ProjectAssociatedOrganizationRow>.toAssociatedOrganizationDetailHistoricalData(
-    partner: ProjectPartnerDTO,
+    partner: ProjectPartnerSummaryDTO,
     address: OutputProjectAssociatedOrganizationAddress?,
     contacts: List<ProjectPartnerContactDTO>) =
     this.groupBy { it.id }.map { groupedRows -> OutputProjectAssociatedOrganizationDetail(

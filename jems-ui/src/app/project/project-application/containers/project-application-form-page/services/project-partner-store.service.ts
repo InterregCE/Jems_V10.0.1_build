@@ -3,7 +3,7 @@ import {
   ProjectContactDTO,
   CreateProjectPartnerRequestDTO,
   UpdateProjectPartnerRequestDTO,
-  ProjectPartnerDTO,
+  ProjectPartnerSummaryDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerAddressDTO,
   ProjectPartnerMotivationDTO,
@@ -25,7 +25,7 @@ export class ProjectPartnerStore {
   isProjectEditable$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   partners$: Observable<ProjectPartner[]>;
-  dropdownPartners$: Observable<ProjectPartnerDTO[]>;
+  dropdownPartners$: Observable<ProjectPartnerSummaryDTO[]>;
   private partnerId: number;
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
@@ -124,7 +124,7 @@ export class ProjectPartnerStore {
       );
   }
 
-  private dropdownPartners(): Observable<ProjectPartnerDTO[]> {
+  private dropdownPartners(): Observable<ProjectPartnerSummaryDTO[]> {
     return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$])
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, undefined, version))

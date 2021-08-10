@@ -18,7 +18,7 @@ import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryTypeDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileMetadataDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.plugin.contract.models.common.I18nMessageData
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.MessageType
@@ -146,7 +146,7 @@ abstract class ProjectMapper {
     abstract fun map(preConditionCheckMessageList: List<PreConditionCheckMessage>): List<PreConditionCheckMessageDTO>
     abstract fun map(messageType: MessageType): MessageTypeDTO
 
-    abstract fun map(projectPartner: ProjectPartner): ProjectPartnerDTO
+    abstract fun map(projectPartner: ProjectPartner): ProjectPartnerSummaryDTO
 
     @Mapping(source = "totalCosts", target = "totalSum")
     abstract fun map(partnerBudget: PartnerBudget): ProjectPartnerBudgetDTO

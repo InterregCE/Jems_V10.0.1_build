@@ -9,7 +9,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
@@ -625,7 +625,7 @@ fun OutputProjectAssociatedOrganizationAddress.toDataModel() = ProjectAssociated
     homepage = homepage
 )
 
-fun ProjectPartnerDTO.toDataModel() = ProjectPartnerEssentialData(
+fun ProjectPartnerSummaryDTO.toDataModel() = ProjectPartnerEssentialData(
     id = id,
     abbreviation = abbreviation,
     role = ProjectPartnerRoleData.valueOf(role.name),

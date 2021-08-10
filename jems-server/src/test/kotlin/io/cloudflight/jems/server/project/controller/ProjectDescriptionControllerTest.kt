@@ -17,9 +17,8 @@ import io.cloudflight.jems.api.project.dto.description.OutputProjectDescription
 import io.cloudflight.jems.api.project.dto.description.OutputProjectLongTermPlans
 import io.cloudflight.jems.api.project.dto.description.OutputProjectManagement
 import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.project.service.get_project_description.GetProjectDescriptionInteractor
-import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
 import io.cloudflight.jems.server.project.service.model.ProjectDescription
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
@@ -54,7 +53,7 @@ class ProjectDescriptionControllerTest {
                 transnationalCooperation = setOf(InputTranslation(SystemLanguage.EN, "transnationalCooperation")),
                 projectBenefits = listOf(
                     ProjectRelevanceBenefit(
-                    group = ProjectTargetGroup.LocalPublicAuthority,
+                    group = ProjectTargetGroupDTO.LocalPublicAuthority,
                     specification = setOf(InputTranslation(SystemLanguage.EN, "specification")))
                 ),
                 projectStrategies = listOf(
@@ -113,7 +112,7 @@ class ProjectDescriptionControllerTest {
                 transnationalCooperation = setOf(InputTranslation(SystemLanguage.EN, "transnationalCooperation")),
                 projectBenefits = listOf(
                     InputProjectRelevanceBenefit(
-                        group = ProjectTargetGroup.LocalPublicAuthority,
+                        group = ProjectTargetGroupDTO.LocalPublicAuthority,
                         specification = setOf(InputTranslation(SystemLanguage.EN, "specification")))
                 ),
                 projectStrategies = listOf(

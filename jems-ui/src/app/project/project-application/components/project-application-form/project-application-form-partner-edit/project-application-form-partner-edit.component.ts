@@ -7,7 +7,7 @@ import {
   CreateProjectPartnerRequestDTO,
   UpdateProjectPartnerRequestDTO,
   InputTranslation,
-  ProjectPartnerDTO,
+  ProjectPartnerSummaryDTO,
   ProjectPartnerDetailDTO,
   ProgrammeLegalStatusService,
 } from '@cat/api';
@@ -32,7 +32,7 @@ import {RoutingService} from '@common/services/routing.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormPartnerEditComponent {
-  RoleEnum = ProjectPartnerDTO.RoleEnum;
+  RoleEnum = ProjectPartnerSummaryDTO.RoleEnum;
   VatRecoveryEnum = CreateProjectPartnerRequestDTO.VatRecoveryEnum;
   LANGUAGE = InputTranslation.LanguageEnum;
   APPLICATION_FORM = APPLICATION_FORM;

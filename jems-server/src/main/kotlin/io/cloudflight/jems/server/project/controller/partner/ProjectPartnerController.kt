@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
 import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.server.project.service.partner.create_project_partner.CreateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.delete_project_partner.DeleteProjectPartnerInteractor
@@ -29,11 +29,11 @@ class ProjectPartnerController(
     private val deleteProjectPartner: DeleteProjectPartnerInteractor,
 ) : ProjectPartnerApi {
 
-    override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<ProjectPartnerDTO> {
+    override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<ProjectPartnerSummaryDTO> {
         return getProjectPartner.findAllByProjectId(projectId, pageable, version)
     }
 
-    override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable, version: String?): List<ProjectPartnerDTO> {
+    override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable, version: String?): List<ProjectPartnerSummaryDTO> {
         return getProjectPartner.findAllByProjectIdForDropdown(projectId, pageable.sort, version)
     }
 

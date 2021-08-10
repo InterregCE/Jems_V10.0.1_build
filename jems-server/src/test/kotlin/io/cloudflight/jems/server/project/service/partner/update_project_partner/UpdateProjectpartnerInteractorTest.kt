@@ -3,9 +3,9 @@ package io.cloudflight.jems.server.project.service.partner.update_project_partne
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.ProjectContactType
+import io.cloudflight.jems.api.project.dto.ProjectContactTypeDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
@@ -55,7 +55,7 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
         nameInOriginalLanguage = "test",
         nameInEnglish = "test",
         translatedValues = partnerTranslatedValues,
-        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
         legalStatus = laegalStatus,
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecoveryDTO.Yes
@@ -86,7 +86,7 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
     @Test
     fun updatePartnerContact() {
         val projectPartnerContactUpdate = ProjectContactDTO(
-            ProjectContactType.ContactPerson,
+            ProjectContactTypeDTO.ContactPerson,
             "test",
             "test",
             "test",
@@ -99,7 +99,7 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
             "updated",
             ProjectPartnerRoleDTO.PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 1),
-            partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool
+            partnerType = ProjectTargetGroupDTO.EducationTrainingCentreAndSchool
         )
         val contactPersonsEntity = setOf(projectPartnerContactUpdate.toEntity(projectPartner))
         val updatedProjectPartner = projectPartner.copy(contacts = contactPersonsEntity)
@@ -113,7 +113,7 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
     @Test
     fun updatePartnerContact_notExisting() {
         val projectPartnerContactUpdate = ProjectContactDTO(
-            ProjectContactType.LegalRepresentative,
+            ProjectContactTypeDTO.LegalRepresentative,
             "test",
             "test",
             "test",
@@ -144,7 +144,7 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
             "updated",
             ProjectPartnerRoleDTO.PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 1),
-            partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool
+            partnerType = ProjectTargetGroupDTO.EducationTrainingCentreAndSchool
         )
         val updatedProjectPartner =
             projectPartner.copy(motivation = projectPartnerMotivationUpdate.toEntity(projectPartner.id))

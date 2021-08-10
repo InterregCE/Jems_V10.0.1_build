@@ -2,12 +2,12 @@ package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
-import io.cloudflight.jems.api.project.dto.ProjectContactType
+import io.cloudflight.jems.api.project.dto.ProjectContactTypeDTO
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
@@ -103,7 +103,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         sortNumber = 1,
     )
 
-    private val projectPartnerDTO = ProjectPartnerDTO(
+    private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
         abbreviation = projectPartner.abbreviation,
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
@@ -120,7 +120,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
             sortNumber = sortNr
         )
 
-    private fun outputOrganizationDetail(id: Long, partner: ProjectPartnerDTO, name: String, sortNr: Int? = null) =
+    private fun outputOrganizationDetail(id: Long, partner: ProjectPartnerSummaryDTO, name: String, sortNr: Int? = null) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
             partner = partner,
@@ -156,7 +156,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
         // mock 2 repo.save() method calls
         val toBePersistedContact = ProjectAssociatedOrganizationContact(
-            contactId = ProjectAssociatedOrganizationContactId(10, ProjectContactType.ContactPerson),
+            contactId = ProjectAssociatedOrganizationContactId(10, ProjectContactTypeDTO.ContactPerson),
             contact = Contact(firstName = "test contact")
         )
         val toBePersistedAddress = ProjectAssociatedOrganizationAddress(
@@ -198,7 +198,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
             nameInOriginalLanguage = "to create",
             nameInEnglish = "to create",
             address = InputProjectAssociatedOrganizationAddress(country = "AT"),
-            contacts = setOf(ProjectContactDTO(type = ProjectContactType.ContactPerson, firstName = "test contact"))
+            contacts = setOf(ProjectContactDTO(type = ProjectContactTypeDTO.ContactPerson, firstName = "test contact"))
         )
         val result = projectAssociatedOrganizationService.create(projectPartner.id, toCreate)
         assertThat(result).isEqualTo(

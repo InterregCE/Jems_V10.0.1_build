@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
@@ -88,7 +88,7 @@ fun ProjectPartnerEntity.toProjectPartner() = ProjectPartner(
 fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartner() }
 
 // todo remove when everything switched to Models
-fun ProjectPartnerEntity.toDto() = ProjectPartnerDTO(
+fun ProjectPartnerEntity.toDto() = ProjectPartnerSummaryDTO(
     id = id,
     abbreviation = abbreviation,
     role = role,
@@ -285,7 +285,7 @@ fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartner(
     country = country
 )
 
-fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerDTO(
+fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummaryDTO(
     id = id,
     abbreviation = abbreviation,
     role = role,

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner
 
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -51,7 +51,7 @@ data class ProjectPartnerEntity(
     val translatedValues: MutableSet<ProjectPartnerTranslEntity> = mutableSetOf(),
 
     @Enumerated(EnumType.STRING)
-    val partnerType: ProjectTargetGroup? = null,
+    val partnerType: ProjectTargetGroupDTO? = null,
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "legal_status_id")

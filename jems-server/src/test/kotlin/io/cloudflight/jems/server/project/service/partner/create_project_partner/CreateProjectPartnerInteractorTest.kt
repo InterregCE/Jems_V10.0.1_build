@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.partner.create_project_partne
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
@@ -50,7 +50,7 @@ internal class CreateProjectPartnerInteractorTest: UnitTest() {
         project = ProjectPartnerTestUtil.project,
         abbreviation = "partner",
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
-        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1,),
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecoveryDTO.Yes
@@ -70,7 +70,7 @@ internal class CreateProjectPartnerInteractorTest: UnitTest() {
         nameInOriginalLanguage = "test",
         nameInEnglish = "test",
         translatedValues = partnerTranslatedValues,
-        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
         legalStatus = legalStatus,
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
@@ -102,7 +102,7 @@ internal class CreateProjectPartnerInteractorTest: UnitTest() {
                 InputTranslation(
                     SystemLanguage.EN, "test"
                 )
-            ), ProjectTargetGroup.BusinessSupportOrganisation,
+            ), ProjectTargetGroupDTO.BusinessSupportOrganisation,
             1, "test vat", ProjectPartnerVatRecoveryDTO.Yes
         )
         every { persistence.create(-1, projectPartnerRequest) } throws ResourceNotFoundException("project")
@@ -191,7 +191,7 @@ internal class CreateProjectPartnerInteractorTest: UnitTest() {
                         InputTranslation(
                             SystemLanguage.EN, "test"
                         )
-                    ), ProjectTargetGroup.BusinessSupportOrganisation,
+                    ), ProjectTargetGroupDTO.BusinessSupportOrganisation,
                     1, "test vat", ProjectPartnerVatRecoveryDTO.Yes
                 )
             )

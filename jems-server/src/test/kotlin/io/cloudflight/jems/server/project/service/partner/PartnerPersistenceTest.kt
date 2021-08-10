@@ -3,9 +3,9 @@ package io.cloudflight.jems.server.project.service.partner
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.ProjectContactType
+import io.cloudflight.jems.api.project.dto.ProjectContactTypeDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
@@ -84,7 +84,7 @@ internal class PartnerPersistenceTest {
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         nameInOriginalLanguage = "nameInOriginalLanguage",
         nameInEnglish = "nameInEnglish",
-        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecoveryDTO.Yes
@@ -102,7 +102,7 @@ internal class PartnerPersistenceTest {
         nameInOriginalLanguage = "test",
         nameInEnglish = "test",
         translatedValues = partnerTranslatedValues,
-        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
         legalStatus = laegalStatus,
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecoveryDTO.Yes
@@ -172,7 +172,7 @@ internal class PartnerPersistenceTest {
         every { mockPartnerIdentityRow.sortNumber } returns 0
         every { mockPartnerIdentityRow.nameInOriginalLanguage } returns "nameInOriginalLanguage"
         every { mockPartnerIdentityRow.nameInEnglish } returns "nameInEnglish"
-        every { mockPartnerIdentityRow.partnerType } returns ProjectTargetGroup.BusinessSupportOrganisation
+        every { mockPartnerIdentityRow.partnerType } returns ProjectTargetGroupDTO.BusinessSupportOrganisation
         every { mockPartnerIdentityRow.vat } returns "test vat"
         every { mockPartnerIdentityRow.language } returns null
         every { mockPartnerIdentityRow.department } returns null
@@ -253,7 +253,7 @@ internal class PartnerPersistenceTest {
                 InputTranslation(
                     SystemLanguage.EN, "test"
                 )
-            ), ProjectTargetGroup.BusinessSupportOrganisation,
+            ), ProjectTargetGroupDTO.BusinessSupportOrganisation,
             1, "test vat", ProjectPartnerVatRecoveryDTO.Yes
         )
         every { projectRepository.findById(-1) } returns Optional.empty()
@@ -333,7 +333,7 @@ internal class PartnerPersistenceTest {
     @Test
     fun updatePartnerContact() {
         val projectPartnerContactUpdate = ProjectContactDTO(
-            ProjectContactType.ContactPerson,
+            ProjectContactTypeDTO.ContactPerson,
             "test",
             "test",
             "test",
@@ -346,7 +346,7 @@ internal class PartnerPersistenceTest {
             "updated",
             ProjectPartnerRoleDTO.PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 1),
-            partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool
+            partnerType = ProjectTargetGroupDTO.EducationTrainingCentreAndSchool
         )
         val contactPersonsEntity = setOf(projectPartnerContactUpdate.toEntity(projectPartner))
         val updatedProjectPartner = projectPartner.copy(contacts = contactPersonsEntity)
@@ -362,7 +362,7 @@ internal class PartnerPersistenceTest {
     @Test
     fun updatePartnerContact_notExisting() {
         val projectPartnerContactUpdate = ProjectContactDTO(
-            ProjectContactType.LegalRepresentative,
+            ProjectContactTypeDTO.LegalRepresentative,
             "test",
             "test",
             "test",
@@ -394,7 +394,7 @@ internal class PartnerPersistenceTest {
             "updated",
             ProjectPartnerRoleDTO.PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 1),
-            partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool
+            partnerType = ProjectTargetGroupDTO.EducationTrainingCentreAndSchool
         )
         val updatedProjectPartner =
             projectPartner.copy(motivation = projectPartnerMotivationUpdate.toEntity(projectPartner.id))

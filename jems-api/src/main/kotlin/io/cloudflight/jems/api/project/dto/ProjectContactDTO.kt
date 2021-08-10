@@ -8,7 +8,7 @@ import javax.validation.constraints.Size
 data class ProjectContactDTO (
 
     @field:NotNull(message = "project.contact.type.should.not.be.empty")
-    val type: ProjectContactType,
+    val type: ProjectContactTypeDTO,
 
     @field:Size(max = 25, message = "project.contact.title.size.too.long")
     val title: String? = null,

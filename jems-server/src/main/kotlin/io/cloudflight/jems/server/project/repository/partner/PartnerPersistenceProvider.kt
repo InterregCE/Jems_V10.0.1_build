@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -64,7 +64,7 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectPartnerDTO> {
+    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectPartnerSummaryDTO> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 projectPartnerRepository.findAllByProjectId(projectId, page).map { it.toDto() }
@@ -81,7 +81,7 @@ class PartnerPersistenceProvider(
         projectId: Long,
         sort: Sort,
         version: String?
-    ): List<ProjectPartnerDTO> {
+    ): List<ProjectPartnerSummaryDTO> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 StreamSupport.stream(

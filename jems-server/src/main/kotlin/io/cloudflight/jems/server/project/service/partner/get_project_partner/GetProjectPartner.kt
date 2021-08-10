@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.get_project_partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
@@ -20,7 +20,7 @@ class GetProjectPartner(
     @CanRetrieveProjectForm
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnersByProjectIdException::class)
-    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectPartnerDTO> =
+    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectPartnerSummaryDTO> =
         persistence.findAllByProjectId(projectId, page, version)
 
     @CanRetrieveProjectPartner
@@ -32,7 +32,7 @@ class GetProjectPartner(
     @CanRetrieveProjectForm
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerByProjectIdForDropdownException::class)
-    override fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String?): List<ProjectPartnerDTO> =
+    override fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String?): List<ProjectPartnerSummaryDTO> =
         persistence.findAllByProjectIdForDropdown(projectId, sort, version)
 
     override fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerDetailDTO> =

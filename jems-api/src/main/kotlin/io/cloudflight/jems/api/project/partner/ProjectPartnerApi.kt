@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
 import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -40,7 +40,7 @@ interface ProjectPartnerApi {
         @PathVariable projectId: Long,
         pageable: Pageable,
         @RequestParam(required = false) version: String? = null
-    ): Page<ProjectPartnerDTO>
+    ): Page<ProjectPartnerSummaryDTO>
 
     @ApiOperation("Returns all project partners (only name)")
     @ApiImplicitParams(
@@ -49,7 +49,7 @@ interface ProjectPartnerApi {
     @GetMapping("/byProjectId/{projectId}/ids")
     fun getProjectPartnersForDropdown(@PathVariable projectId: Long,
                                       pageable: Pageable,
-                                      @RequestParam(required = false) version: String? = null): List<ProjectPartnerDTO>
+                                      @RequestParam(required = false) version: String? = null): List<ProjectPartnerSummaryDTO>
 
     @ApiOperation("Returns a project partner by id")
     @GetMapping("/{partnerId}")

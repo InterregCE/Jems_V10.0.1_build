@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.dto.partner
 
-data class ProjectPartnerDTO (
+data class ProjectPartnerSummaryDTO (
     val id: Long?,
     val abbreviation: String,
     val role: ProjectPartnerRoleDTO,

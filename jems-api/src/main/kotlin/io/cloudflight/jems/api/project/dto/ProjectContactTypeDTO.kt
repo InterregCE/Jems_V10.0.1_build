@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.dto
 
-enum class ProjectContactType {
+enum class ProjectContactTypeDTO {
     LegalRepresentative,
     ContactPerson
 }

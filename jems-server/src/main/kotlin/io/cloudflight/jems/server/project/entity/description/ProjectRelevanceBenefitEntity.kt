@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.description
 
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import java.util.Objects
 import java.util.UUID
 import javax.persistence.CascadeType
@@ -25,7 +25,7 @@ data class ProjectRelevanceBenefitEntity(
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val targetGroup: ProjectTargetGroup,
+    val targetGroup: ProjectTargetGroupDTO,
 
     // specification
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.id")

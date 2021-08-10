@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner.delete_project_partner
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.server.UnitTest
@@ -33,7 +33,7 @@ internal class DeleteProjecPartnerInteractorTest: UnitTest() {
         project = ProjectPartnerTestUtil.project,
         abbreviation = "partner",
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
-        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1,),
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecoveryDTO.Yes
@@ -49,7 +49,7 @@ internal class DeleteProjecPartnerInteractorTest: UnitTest() {
         nameInOriginalLanguage = "test",
         nameInEnglish = "test",
         translatedValues = partnerTranslatedValues,
-        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
         legalStatus = laegalStatus,
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecoveryDTO.Yes

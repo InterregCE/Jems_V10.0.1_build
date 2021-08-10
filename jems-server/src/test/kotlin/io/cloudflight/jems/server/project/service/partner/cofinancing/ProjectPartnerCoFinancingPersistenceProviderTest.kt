@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
@@ -50,7 +50,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         override val sortNumber: Int,
         override val nameInOriginalLanguage: String?,
         override val nameInEnglish: String?,
-        override val partnerType: ProjectTargetGroup?,
+        override val partnerType: ProjectTargetGroupDTO?,
         override val vat: String?,
         override val vatRecovery: ProjectPartnerVatRecoveryDTO?,
         override val legalStatusId: Long,
@@ -160,7 +160,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         project = ProjectPartnerTestUtil.project,
         abbreviation = "partner",
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
-        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
@@ -215,7 +215,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         sortNumber = 1,
         nameInOriginalLanguage = "",
         nameInEnglish = "",
-        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
         legalStatusId = 1,

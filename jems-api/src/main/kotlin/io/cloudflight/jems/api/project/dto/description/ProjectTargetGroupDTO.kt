@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.dto.description
 
-enum class ProjectTargetGroup {
+enum class ProjectTargetGroupDTO {
     LocalPublicAuthority,
     RegionalPublicAuthority,
     NationalPublicAuthority,

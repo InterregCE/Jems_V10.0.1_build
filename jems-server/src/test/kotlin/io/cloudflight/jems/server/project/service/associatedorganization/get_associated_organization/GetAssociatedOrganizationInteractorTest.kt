@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.associatedorganization.get_as
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.entity.CallEntity
@@ -85,7 +85,7 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
         sortNumber = 1,
     )
 
-    private val projectPartnerDTO = ProjectPartnerDTO(
+    private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
         abbreviation = projectPartner.abbreviation,
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
@@ -111,7 +111,7 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
             sortNumber = sortNr
         )
 
-    private fun outputOrganizationDetail(id: Long, partner: ProjectPartnerDTO, name: String, sortNr: Int? = null) =
+    private fun outputOrganizationDetail(id: Long, partner: ProjectPartnerSummaryDTO, name: String, sortNr: Int? = null) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
             partner = partner,

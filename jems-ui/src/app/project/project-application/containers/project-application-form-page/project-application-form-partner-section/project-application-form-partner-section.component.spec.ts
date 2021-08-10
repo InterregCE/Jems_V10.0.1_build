@@ -2,7 +2,7 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {TestModule} from '@common/test-module';
 import {ProjectModule} from '@project/project.module';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {ProjectPartnerDTO} from '@cat/api';
+import {ProjectPartnerSummaryDTO} from '@cat/api';
 import {ProjectApplicationFormPartnerSectionComponent} from './project-application-form-partner-section.component';
 import {RouterTestingModule} from '@angular/router/testing';
 

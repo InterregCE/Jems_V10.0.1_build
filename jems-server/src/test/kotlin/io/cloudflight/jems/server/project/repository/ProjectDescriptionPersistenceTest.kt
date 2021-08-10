@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.description.ProjectCooperationCriteriaEntity
 import io.cloudflight.jems.server.project.entity.description.ProjectHorizontalPrinciplesEntity
@@ -92,7 +92,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
             projectBenefits = setOf(
                 ProjectRelevanceBenefitEntity(
                     id = projectBenefitUuid,
-                    targetGroup = ProjectTargetGroup.LocalPublicAuthority,
+                    targetGroup = ProjectTargetGroupDTO.LocalPublicAuthority,
                     translatedValues = combineTranslatedValuesBenefit(
                         uuid = projectBenefitUuid,
                         specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
@@ -175,7 +175,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 commonChallenge = setOf(InputTranslation(SystemLanguage.EN, "commonChallenge")),
                 transnationalCooperation = setOf(InputTranslation(SystemLanguage.EN, "transnationalCooperation")),
                 projectBenefits = listOf(ProjectRelevanceBenefit(
-                    group = ProjectTargetGroup.LocalPublicAuthority,
+                    group = ProjectTargetGroupDTO.LocalPublicAuthority,
                     specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
                 )),
                 projectStrategies = listOf(ProjectRelevanceStrategy(
@@ -285,7 +285,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
         every { mockRBeRow.id } returns projectBenefitUuid.toString()
         every { mockRBeRow.projectId } returns PROJECT_ID
         every { mockRBeRow.language } returns SystemLanguage.EN
-        every { mockRBeRow.targetGroup } returns ProjectTargetGroup.LocalPublicAuthority
+        every { mockRBeRow.targetGroup } returns ProjectTargetGroupDTO.LocalPublicAuthority
         every { mockRBeRow.specification } returns "specification"
         val mockRStRow: ProjectRelevanceStrategyRow = mockk()
         every { mockRStRow.id } returns projectStrategyUuid.toString()

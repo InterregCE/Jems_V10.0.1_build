@@ -2,7 +2,7 @@ package io.cloudflight.jems.api.project.dto.partner
 
 import io.cloudflight.jems.api.project.dto.InputOrganization
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 
 data class CreateProjectPartnerRequestDTO(
 
@@ -21,7 +21,7 @@ data class CreateProjectPartnerRequestDTO(
 
     val department: Set<InputTranslation> = emptySet(),
 
-    val partnerType: ProjectTargetGroup? = null,
+    val partnerType: ProjectTargetGroupDTO? = null,
 
     val legalStatusId: Long?,
 

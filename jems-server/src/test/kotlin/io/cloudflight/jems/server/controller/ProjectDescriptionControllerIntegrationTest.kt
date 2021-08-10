@@ -10,7 +10,7 @@ import io.cloudflight.jems.api.project.dto.description.InputProjectRelevance
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceBenefit
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceStrategy
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceSynergy
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.factory.CallFactory
 import io.cloudflight.jems.server.factory.ProjectFactory
 import io.cloudflight.jems.server.factory.UserFactory
@@ -88,7 +88,7 @@ class ProjectDescriptionControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
         val translationEn = InputTranslation(SystemLanguage.ES, "relevancia")
-        val benefit = InputProjectRelevanceBenefit(ProjectTargetGroup.Egtc, setOf(translationEn))
+        val benefit = InputProjectRelevanceBenefit(ProjectTargetGroupDTO.Egtc, setOf(translationEn))
         val strategy = InputProjectRelevanceStrategy(ProgrammeStrategy.AtlanticStrategy, setOf(translationEn))
         val synergy = InputProjectRelevanceSynergy(setOf(translationEn), setOf(translationEn))
         val projectDescription = InputProjectRelevance(

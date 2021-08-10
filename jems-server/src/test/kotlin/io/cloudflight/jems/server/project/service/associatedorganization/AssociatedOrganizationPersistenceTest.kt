@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.ProjectContactType
+import io.cloudflight.jems.api.project.dto.ProjectContactTypeDTO
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
@@ -94,7 +94,7 @@ class AssociatedOrganizationPersistenceTest {
                 address = address
             )),
             contacts = mutableSetOf(ProjectAssociatedOrganizationContact(
-                contactId = ProjectAssociatedOrganizationContactId(2L, ProjectContactType.ContactPerson),
+                contactId = ProjectAssociatedOrganizationContactId(2L, ProjectContactTypeDTO.ContactPerson),
                 contact = Contact(
                     title = "title",
                     firstName = "firstName",
@@ -106,7 +106,7 @@ class AssociatedOrganizationPersistenceTest {
         )
         private val projectAssociatedOrganizationOutput = OutputProjectAssociatedOrganizationDetail(
             id = 2L,
-            partner = ProjectPartnerDTO(
+            partner = ProjectPartnerSummaryDTO(
                 id = projectPartner.id,
                 abbreviation = projectPartner.abbreviation,
                 role = projectPartner.role,
@@ -128,7 +128,7 @@ class AssociatedOrganizationPersistenceTest {
             ),
             contacts = listOf(
                 ProjectPartnerContactDTO(
-                    type = ProjectContactType.ContactPerson,
+                    type = ProjectContactTypeDTO.ContactPerson,
                     title = "title",
                     firstName = "firstName",
                     lastName = "lastName",
@@ -195,7 +195,7 @@ class AssociatedOrganizationPersistenceTest {
         every { mockAOARow.city } returns "city"
         every { mockAOARow.homepage } returns "homepage"
         val mockAOCRow: AssociatedOrganizationContactRow = mockk()
-        every { mockAOCRow.type } returns ProjectContactType.ContactPerson
+        every { mockAOCRow.type } returns ProjectContactTypeDTO.ContactPerson
         every { mockAOCRow.title } returns "title"
         every { mockAOCRow.firstName } returns "firstName"
         every { mockAOCRow.lastName } returns "lastName"
