@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner.get_project_partner
 
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
@@ -20,22 +20,22 @@ class GetProjectPartner(
     @CanRetrieveProjectForm
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnersByProjectIdException::class)
-    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<OutputProjectPartner> =
+    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectPartnerDTO> =
         persistence.findAllByProjectId(projectId, page, version)
 
     @CanRetrieveProjectPartner
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerByIdException::class)
-    override fun getById(partnerId: Long, version: String?): OutputProjectPartnerDetail =
+    override fun getById(partnerId: Long, version: String?): ProjectPartnerDetailDTO =
         persistence.getById(partnerId, version)
 
     @CanRetrieveProjectForm
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerByProjectIdForDropdownException::class)
-    override fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String?): List<OutputProjectPartner> =
+    override fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String?): List<ProjectPartnerDTO> =
         persistence.findAllByProjectIdForDropdown(projectId, sort, version)
 
-    override fun findAllByProjectId(projectId: Long): Iterable<OutputProjectPartnerDetail> =
+    override fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerDetailDTO> =
         persistence.findAllByProjectId(projectId)
 
 }

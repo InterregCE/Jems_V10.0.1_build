@@ -4,11 +4,11 @@ import {
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
-  InputProjectPartnerCreate,
-  InputProjectPartnerUpdate,
+  CreateProjectPartnerRequestDTO,
+  UpdateProjectPartnerRequestDTO,
   InputTranslation,
-  OutputProjectPartner,
-  OutputProjectPartnerDetail,
+  ProjectPartnerDTO,
+  ProjectPartnerDetailDTO,
   ProgrammeLegalStatusService,
 } from '@cat/api';
 import {catchError, take, tap} from 'rxjs/operators';
@@ -32,13 +32,13 @@ import {RoutingService} from '@common/services/routing.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormPartnerEditComponent {
-  RoleEnum = OutputProjectPartner.RoleEnum;
-  VatRecoveryEnum = InputProjectPartnerCreate.VatRecoveryEnum;
+  RoleEnum = ProjectPartnerDTO.RoleEnum;
+  VatRecoveryEnum = CreateProjectPartnerRequestDTO.VatRecoveryEnum;
   LANGUAGE = InputTranslation.LanguageEnum;
   APPLICATION_FORM = APPLICATION_FORM;
 
   partnerId = this.router.getParameter(this.activatedRoute, 'partnerId');
-  partner$: Observable<OutputProjectPartnerDetail>;
+  partner$: Observable<ProjectPartnerDetailDTO>;
   legalStatuses$ = this.programmeLegalStatusService.getProgrammeLegalStatusList();
 
   partnerForm: FormGroup = this.formBuilder.group({
@@ -123,7 +123,7 @@ export class ProjectApplicationFormPartnerEditComponent {
         partnerToCreate.partnerType = null;
       }
 
-      this.partnerStore.createPartner(partnerToCreate as InputProjectPartnerCreate)
+      this.partnerStore.createPartner(partnerToCreate as CreateProjectPartnerRequestDTO)
         .pipe(
           take(1),
           tap(created => this.redirectToPartnerDetail(created)),
@@ -148,7 +148,7 @@ export class ProjectApplicationFormPartnerEditComponent {
       if (!controls.partnerType.value) {
         partnerToUpdate.partnerType = null;
       }
-      this.partnerStore.savePartner(partnerToUpdate as InputProjectPartnerUpdate)
+      this.partnerStore.savePartner(partnerToUpdate as UpdateProjectPartnerRequestDTO)
         .pipe(
           take(1),
           tap(() => this.formService.setSuccess('project.partner.save.success')),
@@ -157,7 +157,7 @@ export class ProjectApplicationFormPartnerEditComponent {
     }
   }
 
-  discard(partner?: OutputProjectPartnerDetail): void {
+  discard(partner?: ProjectPartnerDetailDTO): void {
     if (!this.partnerId) {
       this.redirectToPartnerOverview();
     } else {
@@ -175,7 +175,7 @@ export class ProjectApplicationFormPartnerEditComponent {
     return this.formService.setError(error);
   }
 
-  private resetForm(partner?: OutputProjectPartnerDetail): void {
+  private resetForm(partner?: ProjectPartnerDetailDTO): void {
     if (!this.partnerId) {
       this.formService.setCreation(true);
     }

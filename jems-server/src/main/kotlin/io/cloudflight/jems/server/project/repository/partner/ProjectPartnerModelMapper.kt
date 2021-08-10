@@ -1,15 +1,15 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressTypeDTO
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.AddressEntity
@@ -35,7 +35,7 @@ import io.cloudflight.jems.server.project.entity.partner.state_aid.PartnerStateA
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 
-fun InputProjectPartnerCreate.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
+fun CreateProjectPartnerRequestDTO.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
     ProjectPartnerEntity(
         project = project,
         abbreviation = abbreviation!!,
@@ -49,7 +49,7 @@ fun InputProjectPartnerCreate.toEntity(project: ProjectEntity, legalStatus: Prog
         vatRecovery = vatRecovery,
     )
 
-fun InputProjectPartnerCreate.combineTranslatedValues(
+fun CreateProjectPartnerRequestDTO.combineTranslatedValues(
     partnerId: Long
 ): MutableSet<ProjectPartnerTranslEntity> {
     val departmentMap = department.associateBy({ it.language }, { it.translation })
@@ -63,7 +63,7 @@ fun InputProjectPartnerCreate.combineTranslatedValues(
     }
 }
 
-fun InputProjectPartnerUpdate.combineTranslatedValues(
+fun UpdateProjectPartnerRequestDTO.combineTranslatedValues(
     partnerId: Long
 ): MutableSet<ProjectPartnerTranslEntity> {
     val departmentMap = department.associateBy({ it.language }, { it.translation })
@@ -82,23 +82,23 @@ fun ProjectPartnerEntity.toProjectPartner() = ProjectPartner(
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
-    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
+    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressTypeDTO.Organization }?.address?.country
 )
 
 fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartner() }
 
 // todo remove when everything switched to Models
-fun ProjectPartnerEntity.toOutputProjectPartner() = OutputProjectPartner(
+fun ProjectPartnerEntity.toDto() = ProjectPartnerDTO(
     id = id,
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
-    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
+    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressTypeDTO.Organization }?.address?.country
 )
 
-fun Iterable<ProjectPartnerEntity>.toOutputProjectPartner() = map { it.toOutputProjectPartner() }
+fun Iterable<ProjectPartnerEntity>.toDto() = map { it.toDto() }
 
-fun ProjectPartnerEntity.toOutputProjectPartnerDetail() = OutputProjectPartnerDetail(
+fun ProjectPartnerEntity.toProjectPartnerDetailDTO() = ProjectPartnerDetailDTO(
     id = id,
     abbreviation = abbreviation,
     role = role,
@@ -111,7 +111,7 @@ fun ProjectPartnerEntity.toOutputProjectPartnerDetail() = OutputProjectPartnerDe
     vat = vat,
     vatRecovery = vatRecovery,
     addresses = addresses?.map { it.toDto() } ?: emptyList(),
-    contacts = contacts?.map { it.toOutputProjectPartnerContact() } ?: emptyList(),
+    contacts = contacts?.map { it.toProjectPartnerContactDTO() } ?: emptyList(),
     motivation = motivation.map { it.toDto() }.firstOrNull(),
 )
 
@@ -129,7 +129,7 @@ fun ProjectPartnerAddressDTO.toEntity(partner: ProjectPartnerEntity) = ProjectPa
     )
 )
 
-fun InputProjectContact.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerContact(
+fun ProjectContactDTO.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerContact(
     contactId = ProjectPartnerContactId(partner.id, type),
     contact = Contact(
         title = title,
@@ -140,7 +140,7 @@ fun InputProjectContact.toEntity(partner: ProjectPartnerEntity) = ProjectPartner
     )
 )
 
-fun ProjectPartnerContact.toOutputProjectPartnerContact() = OutputProjectPartnerContact(
+fun ProjectPartnerContact.toProjectPartnerContactDTO() = ProjectPartnerContactDTO(
     type = contactId.type,
     title = contact?.title,
     firstName = contact?.firstName,
@@ -236,7 +236,7 @@ fun PartnerAddressRow.toModel() = ProjectPartnerAddressDTO(
 
 fun Collection<PartnerContactRow>.toProjectPartnerContactHistoricalData() = map { it.toModel() }.toList()
 
-fun PartnerContactRow.toModel() = OutputProjectPartnerContact(
+fun PartnerContactRow.toModel() = ProjectPartnerContactDTO(
     type = type,
     title = title,
     firstName = firstName,
@@ -256,10 +256,10 @@ fun List<PartnerMotivationRow>.toProjectPartnerMotivationHistoricalData() =
 
 fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
     addresses: List<ProjectPartnerAddressDTO>,
-    contacts: List<OutputProjectPartnerContact>,
+    contacts: List<ProjectPartnerContactDTO>,
     motivation: ProjectPartnerMotivationDTO?
 ) = this.groupBy { it.id }.map { groupedRows ->
-    OutputProjectPartnerDetail(
+    ProjectPartnerDetailDTO(
         id = groupedRows.value.first().id,
         abbreviation = groupedRows.value.first().abbreviation,
         role = groupedRows.value.first().role,
@@ -285,7 +285,7 @@ fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartner(
     country = country
 )
 
-fun PartnerSimpleRow.toOutputProjectPartnerHistoricalData() = OutputProjectPartner(
+fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerDTO(
     id = id,
     abbreviation = abbreviation,
     role = role,

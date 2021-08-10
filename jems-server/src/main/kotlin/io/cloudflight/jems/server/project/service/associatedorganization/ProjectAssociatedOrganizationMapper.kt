@@ -1,14 +1,14 @@
 package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
@@ -23,7 +23,7 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationTransl
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
-import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
+import io.cloudflight.jems.server.project.repository.partner.toDto
 
 fun InputProjectAssociatedOrganization.toEntity(
     partner: ProjectPartnerEntity
@@ -83,7 +83,7 @@ fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganization() = Outp
 
 fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganizationDetail() = OutputProjectAssociatedOrganizationDetail(
     id = id,
-    partner = partner.toOutputProjectPartner(),
+    partner = partner.toDto(),
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
     sortNumber = sortNumber,
@@ -92,7 +92,7 @@ fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganizationDetail() 
     roleDescription = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.roleDescription) }
 )
 
-fun Set<InputProjectContact>.toEntity(organizationId: Long): MutableSet<ProjectAssociatedOrganizationContact> = mapTo(HashSet()) {
+fun Set<ProjectContactDTO>.toEntity(organizationId: Long): MutableSet<ProjectAssociatedOrganizationContact> = mapTo(HashSet()) {
     ProjectAssociatedOrganizationContact(
         contactId = ProjectAssociatedOrganizationContactId(organizationId, it.type),
         contact = Contact(
@@ -105,7 +105,7 @@ fun Set<InputProjectContact>.toEntity(organizationId: Long): MutableSet<ProjectA
     )
 }
 
-fun ProjectAssociatedOrganizationContact.toOutputProjectAssociatedOrganizationContact() = OutputProjectPartnerContact(
+fun ProjectAssociatedOrganizationContact.toOutputProjectAssociatedOrganizationContact() = ProjectPartnerContactDTO(
     type = contactId.type,
     title = contact?.title,
     firstName = contact?.firstName,
@@ -126,9 +126,9 @@ fun ProjectAssociatedOrganizationAddress.toOutputProjectAssociatedOrganizationDe
 )
 
 fun List<ProjectAssociatedOrganizationRow>.toAssociatedOrganizationDetailHistoricalData(
-    partner: OutputProjectPartner,
+    partner: ProjectPartnerDTO,
     address: OutputProjectAssociatedOrganizationAddress?,
-    contacts: List<OutputProjectPartnerContact>) =
+    contacts: List<ProjectPartnerContactDTO>) =
     this.groupBy { it.id }.map { groupedRows -> OutputProjectAssociatedOrganizationDetail(
         id = groupedRows.value.first().id,
         partner = partner,
@@ -164,7 +164,7 @@ fun AssociatedOrganizationSimpleRow.toOutputAssociatedOrganizationHistoricalData
 
 fun Collection<AssociatedOrganizationContactRow>.toAssociatedOrganizationContactHistoricalData() = map { it.toModel() }.toList()
 
-fun AssociatedOrganizationContactRow.toModel() = OutputProjectPartnerContact(
+fun AssociatedOrganizationContactRow.toModel() = ProjectPartnerContactDTO(
     type = type,
     title = title,
     firstName = firstName,

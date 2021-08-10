@@ -9,9 +9,9 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
@@ -525,7 +525,7 @@ fun BudgetUnitCostEntry.toDataModel() = BudgetUnitCostEntryData(
     unitCostId = unitCostId
 )
 
-fun OutputProjectPartnerDetail.toDataModel(stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData) = ProjectPartnerData(
+fun ProjectPartnerDetailDTO.toDataModel(stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData) = ProjectPartnerData(
     id = id,
     abbreviation = abbreviation,
     role = ProjectPartnerRoleData.valueOf(role.name),
@@ -557,7 +557,7 @@ fun ProjectPartnerAddressDTO.toDataModel() = ProjectPartnerAddressData(
     homepage = homepage
 )
 
-fun OutputProjectPartnerContact.toDataModel() = ProjectPartnerContactData(
+fun ProjectPartnerContactDTO.toDataModel() = ProjectPartnerContactData(
     type = ProjectContactTypeData.valueOf(type.name),
     title = title,
     firstName = firstName,
@@ -625,7 +625,7 @@ fun OutputProjectAssociatedOrganizationAddress.toDataModel() = ProjectAssociated
     homepage = homepage
 )
 
-fun OutputProjectPartner.toDataModel() = ProjectPartnerEssentialData(
+fun ProjectPartnerDTO.toDataModel() = ProjectPartnerEssentialData(
     id = id,
     abbreviation = abbreviation,
     role = ProjectPartnerRoleData.valueOf(role.name),

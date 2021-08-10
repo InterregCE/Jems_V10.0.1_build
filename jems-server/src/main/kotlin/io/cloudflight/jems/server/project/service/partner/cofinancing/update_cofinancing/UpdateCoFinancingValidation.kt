@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing
 
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
@@ -52,7 +52,7 @@ fun validateContribution(
         invalid("project.partner.contribution.status.is.mandatory")
 
     val partnerStatus = partnerContributions.find { it.isPartner }!!.status!!
-    if (partnerStatus == ProjectPartnerContributionStatus.AutomaticPublic)
+    if (partnerStatus == ProjectPartnerContributionStatusDTO.AutomaticPublic)
         invalid("project.partner.contribution.partner.status.invalid")
 
     if (!partnerContributions.all { it.amount != null && it.amount >= BigDecimal.ZERO })

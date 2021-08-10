@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner.cofinancing
 
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import java.io.Serializable
 import javax.persistence.Column
 import javax.persistence.Embeddable
@@ -17,6 +17,6 @@ data class ProjectPartnerCoFinancingFundId(
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val type: ProjectPartnerCoFinancingFundType
+    val type: ProjectPartnerCoFinancingFundTypeDTO
 
 ) : Serializable

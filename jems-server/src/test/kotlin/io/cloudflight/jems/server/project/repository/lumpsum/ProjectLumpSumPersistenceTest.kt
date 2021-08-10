@@ -3,8 +3,7 @@ package io.cloudflight.jems.server.project.repository.lumpsum
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -28,7 +27,6 @@ import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
@@ -59,7 +57,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
             id = id,
             project = dummyProject,
             abbreviation = "",
-            role = ProjectPartnerRole.LEAD_PARTNER,
+            role = ProjectPartnerRoleDTO.LEAD_PARTNER,
             sortNumber = sortNumber,
             legalStatus = ProgrammeLegalStatusEntity(id = 1),
         )

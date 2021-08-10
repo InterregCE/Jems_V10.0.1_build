@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {
-  InputProjectContact,
-  InputProjectPartnerCreate,
-  InputProjectPartnerUpdate,
-  OutputProjectPartner,
-  OutputProjectPartnerDetail,
+  ProjectContactDTO,
+  CreateProjectPartnerRequestDTO,
+  UpdateProjectPartnerRequestDTO,
+  ProjectPartnerDTO,
+  ProjectPartnerDetailDTO,
   ProjectPartnerAddressDTO,
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
@@ -23,13 +23,13 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 export class ProjectPartnerStore {
   public static PARTNER_DETAIL_PATH = '/applicationFormPartner/';
   isProjectEditable$: Observable<boolean>;
-  partner$: Observable<OutputProjectPartnerDetail>;
+  partner$: Observable<ProjectPartnerDetailDTO>;
   partners$: Observable<ProjectPartner[]>;
-  dropdownPartners$: Observable<OutputProjectPartner[]>;
+  dropdownPartners$: Observable<ProjectPartnerDTO[]>;
   private partnerId: number;
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
-  private updatedPartner$ = new Subject<OutputProjectPartnerDetail>();
+  private updatedPartner$ = new Subject<ProjectPartnerDetailDTO>();
 
   constructor(private partnerService: ProjectPartnerService,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
@@ -52,7 +52,7 @@ export class ProjectPartnerStore {
     this.partner$ = this.partner();
   }
 
-  savePartner(partner: InputProjectPartnerUpdate): Observable<OutputProjectPartnerDetail> {
+  savePartner(partner: UpdateProjectPartnerRequestDTO): Observable<ProjectPartnerDetailDTO> {
     return this.partnerService.updateProjectPartner(partner)
       .pipe(
         tap(saved => this.updatedPartner$.next(saved)),
@@ -61,7 +61,7 @@ export class ProjectPartnerStore {
       );
   }
 
-  createPartner(partner: InputProjectPartnerCreate): Observable<OutputProjectPartnerDetail> {
+  createPartner(partner: CreateProjectPartnerRequestDTO): Observable<ProjectPartnerDetailDTO> {
     return this.partnerService.createProjectPartner(this.projectId, partner)
       .pipe(
         tap(created => this.updatedPartner$.next(created)),
@@ -71,7 +71,7 @@ export class ProjectPartnerStore {
       );
   }
 
-  updatePartnerAddress(addresses: ProjectPartnerAddressDTO[]): Observable<OutputProjectPartnerDetail> {
+  updatePartnerAddress(addresses: ProjectPartnerAddressDTO[]): Observable<ProjectPartnerDetailDTO> {
     return this.partnerService.updateProjectPartnerAddress(this.partnerId, addresses)
       .pipe(
         tap(saved => this.updatedPartner$.next(saved)),
@@ -79,7 +79,7 @@ export class ProjectPartnerStore {
       );
   }
 
-  updatePartnerContact(contacts: InputProjectContact[]): Observable<OutputProjectPartnerDetail> {
+  updatePartnerContact(contacts: ProjectContactDTO[]): Observable<ProjectPartnerDetailDTO> {
     return this.partnerService.updateProjectPartnerContact(this.partnerId, contacts)
       .pipe(
         tap(saved => this.updatedPartner$.next(saved)),
@@ -87,7 +87,7 @@ export class ProjectPartnerStore {
       );
   }
 
-  updatePartnerMotivation(motivation: ProjectPartnerMotivationDTO): Observable<OutputProjectPartnerDetail> {
+  updatePartnerMotivation(motivation: ProjectPartnerMotivationDTO): Observable<ProjectPartnerDetailDTO> {
     return this.partnerService.updateProjectPartnerMotivation(this.partnerId, motivation)
       .pipe(
         tap(saved => this.updatedPartner$.next(saved)),
@@ -95,7 +95,7 @@ export class ProjectPartnerStore {
       );
   }
 
-  private partner(): Observable<OutputProjectPartnerDetail> {
+  private partner(): Observable<ProjectPartnerDetailDTO> {
     const initialPartner$ = combineLatest([
       this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
       this.projectStore.projectId$,
@@ -110,10 +110,10 @@ export class ProjectPartnerStore {
           .pipe(
             catchError(() => {
               this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
-              return of({} as OutputProjectPartnerDetail);
+              return of({} as ProjectPartnerDetailDTO);
             })
           )
-        : of({} as OutputProjectPartnerDetail)
+        : of({} as ProjectPartnerDetailDTO)
       ),
       tap(partner => Log.info('Fetched the programme partner:', this, partner)),
     );
@@ -124,7 +124,7 @@ export class ProjectPartnerStore {
       );
   }
 
-  private dropdownPartners(): Observable<OutputProjectPartner[]> {
+  private dropdownPartners(): Observable<ProjectPartnerDTO[]> {
     return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$])
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, undefined, version))

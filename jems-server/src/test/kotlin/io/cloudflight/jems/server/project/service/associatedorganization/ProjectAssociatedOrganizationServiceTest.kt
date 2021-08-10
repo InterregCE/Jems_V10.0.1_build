@@ -1,15 +1,15 @@
 package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectContactType
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
@@ -27,7 +27,7 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
+import io.cloudflight.jems.server.project.repository.partner.toDto
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
@@ -98,15 +98,15 @@ internal class ProjectAssociatedOrganizationServiceTest {
         id = 1,
         project = project,
         abbreviation = "partner",
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
         sortNumber = 1,
     )
 
-    private val outputProjectPartner = OutputProjectPartner(
+    private val projectPartnerDTO = ProjectPartnerDTO(
         id = 1,
         abbreviation = projectPartner.abbreviation,
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
     )
 
@@ -120,7 +120,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
             sortNumber = sortNr
         )
 
-    private fun outputOrganizationDetail(id: Long, partner: OutputProjectPartner, name: String, sortNr: Int? = null) =
+    private fun outputOrganizationDetail(id: Long, partner: ProjectPartnerDTO, name: String, sortNr: Int? = null) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
             partner = partner,
@@ -147,7 +147,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
                 PageImpl(listOf(organization(1, projectPartner, "test", 1)))
 
         assertThat(projectAssociatedOrganizationService.findAllByProjectId(1))
-            .containsExactly(outputOrganizationDetail(1, projectPartner.toOutputProjectPartner(), "test", 1))
+            .containsExactly(outputOrganizationDetail(1, projectPartner.toDto(), "test", 1))
     }
 
     @Test
@@ -198,19 +198,19 @@ internal class ProjectAssociatedOrganizationServiceTest {
             nameInOriginalLanguage = "to create",
             nameInEnglish = "to create",
             address = InputProjectAssociatedOrganizationAddress(country = "AT"),
-            contacts = setOf(InputProjectContact(type = ProjectContactType.ContactPerson, firstName = "test contact"))
+            contacts = setOf(ProjectContactDTO(type = ProjectContactType.ContactPerson, firstName = "test contact"))
         )
         val result = projectAssociatedOrganizationService.create(projectPartner.id, toCreate)
         assertThat(result).isEqualTo(
             outputOrganizationDetail(
                 id = 10,
-                partner = outputProjectPartner,
+                partner = projectPartnerDTO,
                 name = "to create",
                 sortNr = null // this will be updated to 2 during updateSort, but for unit test we mock hibernate so object is not tightly connected to entity
             ).copy(
                 address = OutputProjectAssociatedOrganizationAddress(country = "AT"),
                 contacts = listOf(
-                    OutputProjectPartnerContact(
+                    ProjectPartnerContactDTO(
                         type = toBePersistedContact.contactId.type,
                         firstName = toBePersistedContact.contact!!.firstName
                     )
@@ -284,7 +284,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         assertThat(result).isEqualTo(
             outputOrganizationDetail(
                 id = 1,
-                partner = outputProjectPartner,
+                partner = projectPartnerDTO,
                 name = "new name",
                 sortNr = 13 // this will be updated to 1, but for unit test we mock hibernate so object is not tightly connected to entity
             )

@@ -4,7 +4,7 @@ import {map, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {
   InputProjectAssociatedOrganizationAddress,
-  InputProjectContact,
+  ProjectContactDTO,
   InputTranslation,
   OutputProjectAssociatedOrganizationDetail
 } from '@cat/api';
@@ -118,28 +118,28 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
     }
   }
 
-  private getContacts(): InputProjectContact[] {
-    const contacts: InputProjectContact[] = [];
+  private getContacts(): ProjectContactDTO[] {
+    const contacts: ProjectContactDTO[] = [];
 
     const contactRepresentative = {
-      type: InputProjectContact.TypeEnum.LegalRepresentative,
+      type: ProjectContactDTO.TypeEnum.LegalRepresentative,
       title: this.controls?.representativeTitle.value,
       firstName: this.controls?.representativeFirstName.value,
       lastName: this.controls?.representativeLastName.value,
-    } as InputProjectContact;
+    } as ProjectContactDTO;
 
     if (contactRepresentative.title || contactRepresentative.firstName || contactRepresentative.lastName) {
       contacts.push(contactRepresentative);
     }
 
     const person = {
-      type: InputProjectContact.TypeEnum.ContactPerson,
+      type: ProjectContactDTO.TypeEnum.ContactPerson,
       title: this.controls?.contactTitle.value,
       firstName: this.controls?.contactFirstName.value,
       lastName: this.controls?.contactLastName.value,
       email: this.controls?.contactEmail.value,
       telephone: this.controls?.contactTelephone.value,
-    } as InputProjectContact;
+    } as ProjectContactDTO;
 
     if (person.title || person.firstName || person.lastName || person.email || person.telephone) {
       contacts.push(person);
@@ -176,14 +176,14 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
   }
 
   private initLegalRepresentative(organization: OutputProjectAssociatedOrganizationDetail): void {
-    const legalRepresentative = organization?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.LegalRepresentative);
+    const legalRepresentative = organization?.contacts?.find(person => person.type === ProjectContactDTO.TypeEnum.LegalRepresentative);
     this.associatedOrganizationForm.controls.representativeTitle.setValue(legalRepresentative?.title);
     this.associatedOrganizationForm.controls.representativeFirstName.setValue(legalRepresentative?.firstName);
     this.associatedOrganizationForm.controls.representativeLastName.setValue(legalRepresentative?.lastName);
   }
 
   private initContactPerson(organization: OutputProjectAssociatedOrganizationDetail): void {
-    const contactPerson = organization?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.ContactPerson);
+    const contactPerson = organization?.contacts?.find(person => person.type === ProjectContactDTO.TypeEnum.ContactPerson);
     this.associatedOrganizationForm.controls.contactTitle.setValue(contactPerson?.title);
     this.associatedOrganizationForm.controls.contactFirstName.setValue(contactPerson?.firstName);
     this.associatedOrganizationForm.controls.contactLastName.setValue(contactPerson?.lastName);

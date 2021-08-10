@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {OutputProjectPartner, PageOutputProjectPartner} from '@cat/api';
+import {ProjectPartnerDTO, PageProjectPartnerDTO} from '@cat/api';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '@common/utils/forms';
 import {filter, map, take} from 'rxjs/operators';
@@ -27,7 +27,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   @Input()
   projectId: number;
   @Input()
-  partnerPage: PageOutputProjectPartner;
+  partnerPage: PageProjectPartnerDTO;
   @Input()
   pageIndex: number;
   @Input()
@@ -92,7 +92,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
     });
   }
 
-  delete(partner: OutputProjectPartner): void {
+  delete(partner: ProjectPartnerDTO): void {
     Forms.confirm(
       this.dialog,
       {

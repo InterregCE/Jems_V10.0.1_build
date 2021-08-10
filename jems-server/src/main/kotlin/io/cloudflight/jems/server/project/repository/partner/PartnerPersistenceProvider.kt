@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
@@ -48,14 +48,14 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long, version: String?): OutputProjectPartnerDetail {
+    override fun getById(id: Long, version: String?): ProjectPartnerDetailDTO {
         return projectVersionUtils.fetch(version,
             projectId = projectVersionUtils.fetchProjectId(version, id,
                 currentVersionOnlyFetcher = { projectPartnerRepository.getProjectIdForPartner(id) },
                 historicVersionFetcher = { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(id) }
             ),
             currentVersionFetcher = {
-                getPartnerOrThrow(id).toOutputProjectPartnerDetail()
+                getPartnerOrThrow(id).toProjectPartnerDetailDTO()
             },
             previousVersionFetcher = { timestamp ->
                 getPartnerHistoricalDetail(id, timestamp)
@@ -64,14 +64,14 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<OutputProjectPartner> {
+    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectPartnerDTO> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                projectPartnerRepository.findAllByProjectId(projectId, page).map { it.toOutputProjectPartner() }
+                projectPartnerRepository.findAllByProjectId(projectId, page).map { it.toDto() }
             },
             previousVersionFetcher = { timestamp ->
                 projectPartnerRepository.findAllByProjectIdAsOfTimestamp(projectId, page, timestamp)
-                    .map { it.toOutputProjectPartnerHistoricalData() }
+                    .map { it.toProjectPartnerDTOHistoricalData() }
             }
         ) ?: Page.empty()
     }
@@ -81,17 +81,17 @@ class PartnerPersistenceProvider(
         projectId: Long,
         sort: Sort,
         version: String?
-    ): List<OutputProjectPartner> {
+    ): List<ProjectPartnerDTO> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 StreamSupport.stream(
                     projectPartnerRepository.findTop30ByProjectId(projectId, sort).spliterator(),
                     false
-                ).map { it.toOutputProjectPartner() }.collect(Collectors.toList())
+                ).map { it.toDto() }.collect(Collectors.toList())
             },
             previousVersionFetcher = { timestamp ->
                 projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
-                    .map { it.toOutputProjectPartnerHistoricalData() }
+                    .map { it.toProjectPartnerDTOHistoricalData() }
             }
         ) ?: emptyList()
     }
@@ -106,12 +106,12 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectId(projectId: Long): Iterable<OutputProjectPartnerDetail> {
-        return projectPartnerRepository.findAllByProjectId(projectId).map { it.toOutputProjectPartnerDetail() }.toSet()
+    override fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerDetailDTO> {
+        return projectPartnerRepository.findAllByProjectId(projectId).map { it.toProjectPartnerDetailDTO() }.toSet()
     }
 
     @Transactional
-    override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
+    override fun create(projectId: Long, projectPartner: CreateProjectPartnerRequestDTO): ProjectPartnerDetailDTO {
         val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
         val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!)
             .orElseThrow { ResourceNotFoundException("legalstatus") }
@@ -126,11 +126,11 @@ class PartnerPersistenceProvider(
         )
         updateSortByRole(projectId)
         // entity is attached, number will have been updated
-        return partnerCreated.toOutputProjectPartnerDetail()
+        return partnerCreated.toProjectPartnerDetailDTO()
     }
 
     @Transactional
-    override fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
+    override fun update(projectPartner: UpdateProjectPartnerRequestDTO): ProjectPartnerDetailDTO {
         val oldProjectPartner = getPartnerOrThrow(projectPartner.id)
         val projectId = oldProjectPartner.project.id
         val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!)
@@ -154,46 +154,46 @@ class PartnerPersistenceProvider(
         if (projectPartner.oldLeadPartnerId != null || makingThisLead)
             updateSortByRole(projectId)
 
-        return partnerUpdated.toOutputProjectPartnerDetail()
+        return partnerUpdated.toProjectPartnerDetailDTO()
     }
 
     @Transactional
     override fun updatePartnerAddresses(
         partnerId: Long,
         addresses: Set<ProjectPartnerAddressDTO>
-    ): OutputProjectPartnerDetail {
+    ): ProjectPartnerDetailDTO {
         val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepository.save(
             projectPartner.copy(
                 addresses = addresses.mapTo(HashSet()) { it.toEntity(projectPartner) }
             )
-        ).toOutputProjectPartnerDetail()
+        ).toProjectPartnerDetailDTO()
     }
 
     @Transactional
     override fun updatePartnerContacts(
         partnerId: Long,
-        contacts: Set<InputProjectContact>
-    ): OutputProjectPartnerDetail {
+        contacts: Set<ProjectContactDTO>
+    ): ProjectPartnerDetailDTO {
         val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepository.save(
             projectPartner.copy(
                 contacts = contacts.mapTo(HashSet()) { it.toEntity(projectPartner) }
             )
-        ).toOutputProjectPartnerDetail()
+        ).toProjectPartnerDetailDTO()
     }
 
     @Transactional
     override fun updatePartnerMotivation(
         partnerId: Long,
         motivation: ProjectPartnerMotivationDTO
-    ): OutputProjectPartnerDetail {
+    ): ProjectPartnerDetailDTO {
         val projectPartner = getPartnerOrThrow(partnerId)
         return projectPartnerRepository.save(
             projectPartner.copy(
                 motivation = motivation.toEntity(projectPartner.id)
             )
-        ).toOutputProjectPartnerDetail()
+        ).toProjectPartnerDetailDTO()
     }
 
     @Transactional(readOnly = true)
@@ -241,7 +241,7 @@ class PartnerPersistenceProvider(
     private fun getPartnerHistoricalDetail(
         partnerId: Long,
         timestamp: Timestamp,
-    ): OutputProjectPartnerDetail {
+    ): ProjectPartnerDetailDTO {
         val addresses = projectPartnerRepository.findPartnerAddressesByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerAddressHistoricalData()
         val contacts = projectPartnerRepository.findPartnerContactsByIdAsOfTimestamp(partnerId, timestamp)

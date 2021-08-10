@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull
 data class ProjectPartnerAddressDTO(
 
     @field:NotNull(message = "project.partner.type.should.not.be.empty")
-    val type: ProjectPartnerAddressType,
+    val type: ProjectPartnerAddressTypeDTO,
 
     override val country: String? = null,
     override val nutsRegion2: String? = null,

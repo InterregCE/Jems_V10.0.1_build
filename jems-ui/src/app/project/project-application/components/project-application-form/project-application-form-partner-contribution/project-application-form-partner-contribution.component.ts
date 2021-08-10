@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
-import {OutputProjectPartnerDetail} from '@cat/api';
+import {ProjectPartnerDetailDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
@@ -17,7 +17,7 @@ import {Observable} from 'rxjs';
 export class ProjectApplicationFormPartnerContributionComponent {
   APPLICATION_FORM = APPLICATION_FORM;
 
-  partner$: Observable<OutputProjectPartnerDetail>;
+  partner$: Observable<ProjectPartnerDetailDTO>;
 
   partnerContributionForm = this.formBuilder.group({
     organizationRelevance: [],
@@ -44,7 +44,7 @@ export class ProjectApplicationFormPartnerContributionComponent {
       ).subscribe();
   }
 
-  resetForm(partner: OutputProjectPartnerDetail): void {
+  resetForm(partner: ProjectPartnerDetailDTO): void {
     this.partnerContributionForm.patchValue(partner?.motivation || {});
   }
 

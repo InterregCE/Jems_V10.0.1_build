@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.partner.update_project_partner
 
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -27,7 +27,7 @@ class UpdateProjectPartner(
     @CanUpdateProjectPartnerBase
     @Transactional
     @ExceptionWrapper(UpdateProjectPartnerException::class)
-    override fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
+    override fun update(projectPartner: UpdateProjectPartnerRequestDTO): ProjectPartnerDetailDTO {
         validatePartner(projectPartner)
         val oldProjectPartner = getPartnerOrThrow(projectPartner.id)
         val projectId = oldProjectPartner.project.id
@@ -45,19 +45,19 @@ class UpdateProjectPartner(
     @CanUpdateProjectPartner
     @Transactional
     @ExceptionWrapper(UpdateProjectPartnerAddressesException::class)
-    override fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): OutputProjectPartnerDetail =
+    override fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): ProjectPartnerDetailDTO =
         persistence.updatePartnerAddresses(partnerId, addresses)
 
     @CanUpdateProjectPartner
     @Transactional
     @ExceptionWrapper(UpdateProjectPartnerContactsException::class)
-    override fun updatePartnerContacts(partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail =
+    override fun updatePartnerContacts(partnerId: Long, contacts: Set<ProjectContactDTO>): ProjectPartnerDetailDTO =
         persistence.updatePartnerContacts(partnerId, contacts)
 
     @CanUpdateProjectPartner
     @Transactional
     @ExceptionWrapper(UpdateProjectPartnerMotivationException::class)
-    override fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail =
+    override fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): ProjectPartnerDetailDTO =
         persistence.updatePartnerMotivation(partnerId, motivation)
 
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {
@@ -83,7 +83,7 @@ class UpdateProjectPartner(
      * validate project partner to be saved: only one role LEAD should exist.
      */
     private fun validateOnlyOneLeadPartner(projectId: Long) {
-        val projectPartner = projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER)
+        val projectPartner = projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRoleDTO.LEAD_PARTNER)
         if (projectPartner.isPresent) {
             val currentLead = projectPartner.get()
             throw LeadPartnerAlreadyExists(mapOf("currentLeadId" to currentLead.id.toString(), "currentLeadAbbreviation" to currentLead.abbreviation))
@@ -91,16 +91,16 @@ class UpdateProjectPartner(
     }
 
     private fun updateOldLeadPartner(projectId: Long, oldLeadPartnerId: Long) {
-        val oldLeadPartner = projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER)
+        val oldLeadPartner = projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRoleDTO.LEAD_PARTNER)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
 
         if (oldLeadPartner.id == oldLeadPartnerId)
-            projectPartnerRepository.save(oldLeadPartner.copy(role = ProjectPartnerRole.PARTNER))
+            projectPartnerRepository.save(oldLeadPartner.copy(role = ProjectPartnerRoleDTO.PARTNER))
         else
             throw PartnerIsNotLead()
     }
 
-    private fun validatePartner(inputPartner: InputProjectPartnerUpdate) =
+    private fun validatePartner(inputPartner: UpdateProjectPartnerRequestDTO) =
         generalValidator.throwIfAnyIsInvalid(
             generalValidator.notNull(inputPartner.role, "role"),
             generalValidator.notBlank(inputPartner.abbreviation, "abbreviation"),

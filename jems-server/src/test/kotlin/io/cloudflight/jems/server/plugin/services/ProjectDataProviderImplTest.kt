@@ -13,13 +13,13 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectA
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLumpSumData
@@ -268,18 +268,18 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 projectTransferability = setOf(InputTranslation(SystemLanguage.EN, "projectTransferability"))
             )
         )
-        private val projectPartner = OutputProjectPartnerDetail(
+        private val projectPartner = ProjectPartnerDetailDTO(
             id = 2L,
             abbreviation = "partner",
-            role = ProjectPartnerRole.LEAD_PARTNER,
+            role = ProjectPartnerRoleDTO.LEAD_PARTNER,
             nameInOriginalLanguage = "test",
             nameInEnglish = "test",
             partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
             vat = "test vat",
-            vatRecovery = ProjectPartnerVatRecovery.Yes,
+            vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
             legalStatusId = 3L,
             addresses = listOf(ProjectPartnerAddressDTO(
-                type = ProjectPartnerAddressType.Organization,
+                type = ProjectPartnerAddressTypeDTO.Organization,
                 country = "country",
                 nutsRegion2 = "nutsRegion2",
                 nutsRegion3 = "nutsRegion3",
@@ -323,7 +323,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         )
         private val associatedOrganization = OutputProjectAssociatedOrganizationDetail(
             id = 2L,
-            partner = OutputProjectPartner(
+            partner = ProjectPartnerDTO(
                 id = projectPartner.id,
                 abbreviation = projectPartner.abbreviation,
                 role = projectPartner.role,
@@ -343,7 +343,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 city = "city",
                 homepage = "homepage"
             ),
-            contacts = listOf(OutputProjectPartnerContact(
+            contacts = listOf(ProjectPartnerContactDTO(
                 type = ProjectContactType.ContactPerson,
                 title = "title",
                 firstName = "firstName",

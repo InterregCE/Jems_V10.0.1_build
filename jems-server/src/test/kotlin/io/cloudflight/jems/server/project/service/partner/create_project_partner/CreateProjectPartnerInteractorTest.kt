@@ -3,12 +3,12 @@ package io.cloudflight.jems.server.project.service.partner.create_project_partne
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
@@ -21,7 +21,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetailDTO
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.mockk.every
@@ -49,87 +49,87 @@ internal class CreateProjectPartnerInteractorTest: UnitTest() {
         id = 1,
         project = ProjectPartnerTestUtil.project,
         abbreviation = "partner",
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1,),
         vat = "test vat",
-        vatRecovery = ProjectPartnerVatRecovery.Yes
+        vatRecovery = ProjectPartnerVatRecoveryDTO.Yes
     )
     private val partnerTranslatedValues =
         mutableSetOf(ProjectPartnerTranslEntity(TranslationPartnerId(1, SystemLanguage.EN), "test"))
     private val legalStatus = ProgrammeLegalStatusEntity(id = 1)
     private val partnerAddress = ProjectPartnerAddress(
-        addressId = ProjectPartnerAddressId(1, ProjectPartnerAddressType.Organization),
+        addressId = ProjectPartnerAddressId(1, ProjectPartnerAddressTypeDTO.Organization),
         address = AddressEntity("AT")
     )
     private val projectPartnerWithOrganization = ProjectPartnerEntity(
         id = 1,
         project = ProjectPartnerTestUtil.project,
         abbreviation = "partner",
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         nameInOriginalLanguage = "test",
         nameInEnglish = "test",
         translatedValues = partnerTranslatedValues,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         legalStatus = legalStatus,
         vat = "test vat",
-        vatRecovery = ProjectPartnerVatRecovery.Yes,
+        vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
         addresses = setOf(partnerAddress)
     )
 
     private val projectPartnerInclTransl =
         projectPartner.copy(translatedValues = partnerTranslatedValues)
 
-    private val outputProjectPartnerDetail = projectPartner.toOutputProjectPartnerDetail()
+    private val projectPartnerDetailDTO = projectPartner.toProjectPartnerDetailDTO()
 
     @Test
     fun createProjectPartner() {
-        val inputProjectPartner =
-            InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        every { persistence.create(1, inputProjectPartner) } returns outputProjectPartnerDetail
+        val projectPartnerRequest =
+            CreateProjectPartnerRequestDTO("partner", ProjectPartnerRoleDTO.LEAD_PARTNER, legalStatusId = 1)
+        every { persistence.create(1, projectPartnerRequest) } returns projectPartnerDetailDTO
         every { projectPartnerRepository.countByProjectId(1) } returns 0
-        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
+        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRoleDTO.LEAD_PARTNER) } returns Optional.empty()
         every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.empty()
 
 
-        assertThat(createInteractor.create(1, inputProjectPartner)).isEqualTo(outputProjectPartnerDetail)
+        assertThat(createInteractor.create(1, projectPartnerRequest)).isEqualTo(projectPartnerDetailDTO)
     }
 
     @Test
     fun `createProjectPartner not existing`() {
-        val inputProjectPartner = InputProjectPartnerCreate(
-            "partner", ProjectPartnerRole.LEAD_PARTNER, null, "test", "test", setOf(
+        val projectPartnerRequest = CreateProjectPartnerRequestDTO(
+            "partner", ProjectPartnerRoleDTO.LEAD_PARTNER, null, "test", "test", setOf(
                 InputTranslation(
                     SystemLanguage.EN, "test"
                 )
             ), ProjectTargetGroup.BusinessSupportOrganisation,
-            1, "test vat", ProjectPartnerVatRecovery.Yes
+            1, "test vat", ProjectPartnerVatRecoveryDTO.Yes
         )
-        every { persistence.create(-1, inputProjectPartner) } throws ResourceNotFoundException("project")
+        every { persistence.create(-1, projectPartnerRequest) } throws ResourceNotFoundException("project")
         every { projectPartnerRepository.countByProjectId(-1) } returns 0
-        every { projectPartnerRepository.findFirstByProjectIdAndRole(-1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.empty()
+        every { projectPartnerRepository.findFirstByProjectIdAndRole(-1, ProjectPartnerRoleDTO.LEAD_PARTNER) } returns Optional.empty()
         every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(-1, "partner") } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { createInteractor.create(-1, inputProjectPartner) }
+        val ex = assertThrows<ResourceNotFoundException> { createInteractor.create(-1, projectPartnerRequest) }
         assertThat(ex.entity).isEqualTo("project")
     }
 
     @Test
     fun createProjectPartnerWithOrganization() {
-        val inputProjectPartner = InputProjectPartnerCreate(
-            "partner", ProjectPartnerRole.LEAD_PARTNER, null, "test", "test", setOf(
+        val projectPartnerRequest = CreateProjectPartnerRequestDTO(
+            "partner", ProjectPartnerRoleDTO.LEAD_PARTNER, null, "test", "test", setOf(
                 InputTranslation(
                     SystemLanguage.EN, "test"
                 )
             ), legalStatusId = 1
         )
-        every { persistence.create(1, inputProjectPartner) } returns projectPartnerWithOrganization.toOutputProjectPartnerDetail()
+        every { persistence.create(1, projectPartnerRequest) } returns projectPartnerWithOrganization.toProjectPartnerDetailDTO()
         assertThat(
             createInteractor.create(
                 1,
-                inputProjectPartner
+                projectPartnerRequest
             )
         ).isEqualTo(
-            OutputProjectPartnerDetail(
+            ProjectPartnerDetailDTO(
                 id = projectPartnerWithOrganization.id,
                 abbreviation = projectPartnerWithOrganization.abbreviation,
                 role = projectPartnerWithOrganization.role,
@@ -151,10 +151,10 @@ internal class CreateProjectPartnerInteractorTest: UnitTest() {
 
     @Test
     fun `error on already existing partner name when creating`() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        val inputProjectPartner2 = InputProjectPartnerCreate("partner", ProjectPartnerRole.PARTNER, legalStatusId = 1)
+        val projectPartnerRequest = CreateProjectPartnerRequestDTO("partner", ProjectPartnerRoleDTO.LEAD_PARTNER, legalStatusId = 1)
+        val inputProjectPartner2 = CreateProjectPartnerRequestDTO("partner", ProjectPartnerRoleDTO.PARTNER, legalStatusId = 1)
         val projectPartnerWithProject = ProjectPartnerEntity(0,
-            ProjectPartnerTestUtil.project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
+            ProjectPartnerTestUtil.project, projectPartnerRequest.abbreviation!!, projectPartnerRequest.role!!, legalStatus = legalStatus)
 
         every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.of(projectPartnerWithProject)
         every { projectPartnerRepository.countByProjectId(eq(1)) } returns 0
@@ -170,11 +170,11 @@ internal class CreateProjectPartnerInteractorTest: UnitTest() {
     @Test
     fun `error on multiple LEAD_PARTNER partner creation attempt`() {
         val inputProjectPartnerLead =
-            InputProjectPartnerCreate("partnerLead", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
+            CreateProjectPartnerRequestDTO("partnerLead", ProjectPartnerRoleDTO.LEAD_PARTNER, legalStatusId = 1)
 
-        every { persistence.create(1, inputProjectPartnerLead) } returns outputProjectPartnerDetail
+        every { persistence.create(1, inputProjectPartnerLead) } returns projectPartnerDetailDTO
         every { projectPartnerRepository.countByProjectId(1) } returns 1
-        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRoleDTO.LEAD_PARTNER) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.empty()
 
         assertThrows<LeadPartnerAlreadyExists> { createInteractor.create(1, inputProjectPartnerLead) }
@@ -186,13 +186,13 @@ internal class CreateProjectPartnerInteractorTest: UnitTest() {
 
         val ex = assertThrows<MaximumNumberOfPartnersReached> {
             createInteractor.create(
-                1, InputProjectPartnerCreate(
-                    "partner", ProjectPartnerRole.PARTNER, null, "test", "test", setOf(
+                1, CreateProjectPartnerRequestDTO(
+                    "partner", ProjectPartnerRoleDTO.PARTNER, null, "test", "test", setOf(
                         InputTranslation(
                             SystemLanguage.EN, "test"
                         )
                     ), ProjectTargetGroup.BusinessSupportOrganisation,
-                    1, "test vat", ProjectPartnerVatRecovery.Yes
+                    1, "test vat", ProjectPartnerVatRecoveryDTO.Yes
                 )
             )
         }

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {OutputProjectPartner} from '@cat/api';
+import {ProjectPartnerDTO} from '@cat/api';
 
 @Component({
   selector: 'app-delete-action-cell',
@@ -10,10 +10,10 @@ import {OutputProjectPartner} from '@cat/api';
 export class DeleteActionCellComponent {
 
   @Input()
-  element: OutputProjectPartner;
+  element: ProjectPartnerDTO;
   @Input()
   disabled: boolean;
   @Output()
-  delete = new EventEmitter<OutputProjectPartner>();
+  delete = new EventEmitter<ProjectPartnerDTO>();
 
 }

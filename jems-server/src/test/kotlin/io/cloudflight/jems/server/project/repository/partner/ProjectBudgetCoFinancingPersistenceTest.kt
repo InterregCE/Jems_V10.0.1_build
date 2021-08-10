@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Private
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -72,7 +72,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
             id = PARTNER_ID,
             project = dummyProject(),
             abbreviation = "test abbr",
-            role = ProjectPartnerRole.LEAD_PARTNER,
+            role = ProjectPartnerRoleDTO.LEAD_PARTNER,
             legalStatus = ProgrammeLegalStatusEntity()
         )
     }
@@ -119,13 +119,13 @@ class ProjectBudgetCoFinancingPersistenceTest {
             ProjectPartnerCoFinancingEntity(
                 coFinancingFundId = ProjectPartnerCoFinancingFundId(
                     partnerId = PARTNER_ID,
-                    type = ProjectPartnerCoFinancingFundType.MainFund
+                    type = ProjectPartnerCoFinancingFundTypeDTO.MainFund
                 ), percentage = BigDecimal.valueOf(24.5), programmeFund = fund1
             ),
             ProjectPartnerCoFinancingEntity(
                 coFinancingFundId = ProjectPartnerCoFinancingFundId(
                     partnerId = PARTNER_ID,
-                    type = ProjectPartnerCoFinancingFundType.PartnerContribution
+                    type = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
                 ), percentage = BigDecimal.valueOf(74.5), programmeFund = null
             )
         )
@@ -157,12 +157,12 @@ class ProjectBudgetCoFinancingPersistenceTest {
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fund = fund1Model,
                 percentage = BigDecimal.valueOf(24.5)
             ),
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fund = null,
                 percentage = BigDecimal.valueOf(74.5)
             )
@@ -186,12 +186,12 @@ class ProjectBudgetCoFinancingPersistenceTest {
 
         val toBeSavedFinancing = setOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = fund1.id,
                 percentage = BigDecimal.valueOf(29.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(69.5)
             )
@@ -210,12 +210,12 @@ class ProjectBudgetCoFinancingPersistenceTest {
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fund = fund1Model,
                 percentage = BigDecimal.valueOf(29.5)
             ),
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fund = null,
                 percentage = BigDecimal.valueOf(69.5)
             )

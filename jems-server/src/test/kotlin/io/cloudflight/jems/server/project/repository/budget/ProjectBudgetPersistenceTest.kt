@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.budget
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.partnerWithId
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -192,11 +192,11 @@ class ProjectBudgetPersistenceTest {
                 id = 5,
                 project = ProjectPartnerTestUtil.project,
                 abbreviation = "partner",
-                role = ProjectPartnerRole.LEAD_PARTNER,
+                role = ProjectPartnerRoleDTO.LEAD_PARTNER,
                 legalStatus = ProgrammeLegalStatusEntity(1),
                 sortNumber = 1,
                 addresses = setOf(ProjectPartnerAddress(
-                    addressId = ProjectPartnerAddressId(5, ProjectPartnerAddressType.Organization),
+                    addressId = ProjectPartnerAddressId(5, ProjectPartnerAddressTypeDTO.Organization),
                     address = AddressEntity(country = "SK")
                 ))
             )
@@ -207,7 +207,7 @@ class ProjectBudgetPersistenceTest {
                 ProjectPartner(
                     id = 5,
                     abbreviation = "partner",
-                    role = ProjectPartnerRole.LEAD_PARTNER,
+                    role = ProjectPartnerRoleDTO.LEAD_PARTNER,
                     sortNumber = 1,
                     country = "SK"
                 )
@@ -219,7 +219,7 @@ class ProjectBudgetPersistenceTest {
         val mockPRow: PartnerSimpleRow = mockk()
         every { mockPRow.id } returns PARTNER_ID
         every { mockPRow.abbreviation } returns "abbreviation"
-        every { mockPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
+        every { mockPRow.role } returns ProjectPartnerRoleDTO.LEAD_PARTNER
         every { mockPRow.sortNumber } returns 1
         every { mockPRow.country } returns "AT"
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
@@ -229,7 +229,7 @@ class ProjectBudgetPersistenceTest {
             .containsExactly(ProjectPartner(
                 id = PARTNER_ID,
                 abbreviation = "abbreviation",
-                role = ProjectPartnerRole.LEAD_PARTNER,
+                role = ProjectPartnerRoleDTO.LEAD_PARTNER,
                 sortNumber = 1,
                 country = "AT"
             ))

@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.project.service.partner.cofinancing
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
@@ -46,19 +46,19 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         override val id: Long,
         override val projectId: Long,
         override val abbreviation: String,
-        override val role: ProjectPartnerRole,
+        override val role: ProjectPartnerRoleDTO,
         override val sortNumber: Int,
         override val nameInOriginalLanguage: String?,
         override val nameInEnglish: String?,
         override val partnerType: ProjectTargetGroup?,
         override val vat: String?,
-        override val vatRecovery: ProjectPartnerVatRecovery?,
+        override val vatRecovery: ProjectPartnerVatRecoveryDTO?,
         override val legalStatusId: Long,
         override val department: String?
     ) : PartnerIdentityRow
 
     protected class PreviousVersionOfCoFinancing(
-        override val type: ProjectPartnerCoFinancingFundType,
+        override val type: ProjectPartnerCoFinancingFundTypeDTO,
         override val percentage: BigDecimal,
         override val language: SystemLanguage?,
         override val fundId: Long?,
@@ -71,7 +71,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     protected class PreviousVersionOfContribution(
         override val id: Long,
         override val name: String?,
-        override val status: ProjectPartnerContributionStatus?,
+        override val status: ProjectPartnerContributionStatusDTO?,
         override val amount: BigDecimal
     ) : PartnerContributionRow
 
@@ -79,14 +79,14 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     private val previousFinances = setOf(
         ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundType.MainFund),
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundTypeDTO.MainFund),
             percentage = BigDecimal.valueOf(15.5),
             programmeFund = null
         ),
         ProjectPartnerCoFinancingEntity(
             coFinancingFundId = ProjectPartnerCoFinancingFundId(
                 1,
-                ProjectPartnerCoFinancingFundType.PartnerContribution
+                ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
             ),
             percentage = BigDecimal.valueOf(25.5),
             programmeFund = null
@@ -95,14 +95,14 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     private val currentFinances = setOf(
         ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundType.MainFund),
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundTypeDTO.MainFund),
             percentage = BigDecimal.valueOf(19.5),
             programmeFund = fund
         ),
         ProjectPartnerCoFinancingEntity(
             coFinancingFundId = ProjectPartnerCoFinancingFundId(
                 1,
-                ProjectPartnerCoFinancingFundType.PartnerContribution
+                ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
             ),
             percentage = BigDecimal.valueOf(79.5),
             programmeFund = null
@@ -114,14 +114,14 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             id = 1,
             partnerId = 1,
             name = null,
-            status = ProjectPartnerContributionStatus.Public,
+            status = ProjectPartnerContributionStatusDTO.Public,
             amount = BigDecimal.ONE
         ),
         ProjectPartnerContributionEntity(
             id = 2,
             partnerId = 1,
             name = "BMW",
-            status = ProjectPartnerContributionStatus.AutomaticPublic,
+            status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
             amount = BigDecimal.ZERO
         )
     )
@@ -131,14 +131,14 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             id = 1,
             partnerId = 1,
             name = null,
-            status = ProjectPartnerContributionStatus.Public,
+            status = ProjectPartnerContributionStatusDTO.Public,
             amount = BigDecimal.TEN
         ),
         ProjectPartnerContributionEntity(
             id = 2,
             partnerId = 1,
             name = "BMW",
-            status = ProjectPartnerContributionStatus.AutomaticPublic,
+            status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
             amount = BigDecimal.ONE
         )
     )
@@ -159,18 +159,18 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         id = 1,
         project = ProjectPartnerTestUtil.project,
         abbreviation = "partner",
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
         vat = "test vat",
-        vatRecovery = ProjectPartnerVatRecovery.Yes,
+        vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
         financing = currentFinances,
         partnerContributions = currentContributions
     )
 
     private val previousFinancingValues = listOf(
         PreviousVersionOfCoFinancing(
-            type = ProjectPartnerCoFinancingFundType.MainFund,
+            type = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
             percentage = BigDecimal.valueOf(15.5),
             language = null,
             abbreviation = null,
@@ -180,7 +180,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             selected = true
         ),
         PreviousVersionOfCoFinancing(
-            type = ProjectPartnerCoFinancingFundType.PartnerContribution,
+            type = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
             percentage = BigDecimal.valueOf(25.5),
             language = null,
             abbreviation = null,
@@ -195,13 +195,13 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         PreviousVersionOfContribution(
             id = 1,
             name = null,
-            status = ProjectPartnerContributionStatus.Public,
+            status = ProjectPartnerContributionStatusDTO.Public,
             amount = BigDecimal.ONE
         ),
         PreviousVersionOfContribution(
             id = 2,
             name = "BMW",
-            status = ProjectPartnerContributionStatus.AutomaticPublic,
+            status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
             amount = BigDecimal.ZERO
         )
     )
@@ -211,13 +211,13 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         id = 1,
         projectId = 1,
         abbreviation = "previous partner",
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
         nameInOriginalLanguage = "",
         nameInEnglish = "",
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         vat = "test vat",
-        vatRecovery = ProjectPartnerVatRecovery.Yes,
+        vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
         legalStatusId = 1,
         department = ""
     )

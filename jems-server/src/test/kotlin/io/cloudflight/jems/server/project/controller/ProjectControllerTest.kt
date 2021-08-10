@@ -20,7 +20,7 @@ import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
@@ -91,7 +91,7 @@ class ProjectControllerTest {
         private val partner1 = ProjectPartner(
             id = 2,
             abbreviation = "Partner 1",
-            role = ProjectPartnerRole.LEAD_PARTNER,
+            role = ProjectPartnerRoleDTO.LEAD_PARTNER,
             sortNumber = 1,
             country = "AT",
         )
@@ -99,7 +99,7 @@ class ProjectControllerTest {
         private val partner2 = ProjectPartner(
             id = 1,
             abbreviation = "Partner 2",
-            role = ProjectPartnerRole.PARTNER,
+            role = ProjectPartnerRoleDTO.PARTNER,
             sortNumber = 2,
             country = "CZ",
         )

@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.service.partner.delete_project_partne
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -32,11 +32,11 @@ internal class DeleteProjecPartnerInteractorTest: UnitTest() {
         id = 1,
         project = ProjectPartnerTestUtil.project,
         abbreviation = "partner",
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1,),
         vat = "test vat",
-        vatRecovery = ProjectPartnerVatRecovery.Yes
+        vatRecovery = ProjectPartnerVatRecoveryDTO.Yes
     )
     private val partnerTranslatedValues =
         mutableSetOf(ProjectPartnerTranslEntity(TranslationPartnerId(1, SystemLanguage.EN), "test"))
@@ -45,14 +45,14 @@ internal class DeleteProjecPartnerInteractorTest: UnitTest() {
         id = 1,
         project = ProjectPartnerTestUtil.project,
         abbreviation = "partner",
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         nameInOriginalLanguage = "test",
         nameInEnglish = "test",
         translatedValues = partnerTranslatedValues,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         legalStatus = laegalStatus,
         vat = "test vat",
-        vatRecovery = ProjectPartnerVatRecovery.Yes
+        vatRecovery = ProjectPartnerVatRecoveryDTO.Yes
     )
 
     @Test
@@ -61,7 +61,7 @@ internal class DeleteProjecPartnerInteractorTest: UnitTest() {
             id = 1,
             project = ProjectPartnerTestUtil.project,
             abbreviation = "partner",
-            role = ProjectPartnerRole.LEAD_PARTNER,
+            role = ProjectPartnerRoleDTO.LEAD_PARTNER,
             nameInOriginalLanguage = projectPartnerWithOrganization.nameInOriginalLanguage,
             nameInEnglish = projectPartnerWithOrganization.nameInEnglish,
             translatedValues = projectPartnerWithOrganization.translatedValues,

@@ -8,13 +8,13 @@ import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommo
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionDTO
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.AutomaticPublic
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Private
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.AutomaticPublic
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCosts
@@ -49,7 +49,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     private val expectedDto = ProjectPartnerCoFinancingAndContributionOutputDTO(
         finances = listOf(
             ProjectPartnerCoFinancingOutputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(20.5),
                 fund = ProgrammeFundDTO(
                     id = 10,
@@ -57,12 +57,12 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 )
             ),
             ProjectPartnerCoFinancingOutputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
                 percentage = BigDecimal.valueOf(30.5),
                 fund = ProgrammeFundDTO(id = 2, selected = true /* abbreviation missing for ids 1..9 */)
             ),
             ProjectPartnerCoFinancingOutputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(50.5),
                 fund = null
             )
@@ -119,7 +119,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     private val modelMock = ProjectPartnerCoFinancingAndContribution(
         finances = listOf(
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(20.5),
                 fund = ProgrammeFund(
                     id = 10,
@@ -127,12 +127,12 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 )
             ),
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
                 percentage = BigDecimal.valueOf(30.5),
                 fund = ProgrammeFund(id = 2, selected = true)
             ),
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(50.5),
                 fund = null
             )
@@ -336,17 +336,17 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     fun updateProjectPartnerCoFinancing() {
         val inputFinances = listOf(
             ProjectPartnerCoFinancingInputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = 2,
                 percentage = BigDecimal.valueOf(30.5)
             ),
             ProjectPartnerCoFinancingInputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
                 fundId = 10,
                 percentage = BigDecimal.valueOf(20.5)
             ),
             ProjectPartnerCoFinancingInputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(50.5)
             )
@@ -374,17 +374,17 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         // no matter the order
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = 2,
                 percentage = BigDecimal.valueOf(30.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
                 fundId = 10,
                 percentage = BigDecimal.valueOf(20.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(50.5)
             )

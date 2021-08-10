@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectContact, OutputProjectPartnerDetail} from '@cat/api';
+import {ProjectContactDTO, ProjectPartnerDetailDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
@@ -17,7 +17,7 @@ import {Observable} from 'rxjs';
 export class ProjectApplicationFormPartnerContactComponent {
   APPLICATION_FORM = APPLICATION_FORM;
 
-  partner$: Observable<OutputProjectPartnerDetail>;
+  partner$: Observable<ProjectPartnerDetailDTO>;
 
   partnerContactForm: FormGroup = this.formBuilder.group({
     partnerRepresentativeTitle: ['', Validators.maxLength(25)],
@@ -43,14 +43,14 @@ export class ProjectApplicationFormPartnerContactComponent {
     pattern: 'project.contact.telephone.wrong.format'
   };
 
-  private static isContactDtoEmpty(contactDto: InputProjectContact): boolean {
+  private static isContactDtoEmpty(contactDto: ProjectContactDTO): boolean {
     return !(contactDto.title || contactDto.firstName || contactDto.lastName ||
       contactDto.email || contactDto.telephone);
   }
 
-  private static getValidatedDataToEmit(legalRepresentative: InputProjectContact,
-                                        contactPerson: InputProjectContact): InputProjectContact[] {
-    const dataToEmit: InputProjectContact[] = [];
+  private static getValidatedDataToEmit(legalRepresentative: ProjectContactDTO,
+                                        contactPerson: ProjectContactDTO): ProjectContactDTO[] {
+    const dataToEmit: ProjectContactDTO[] = [];
     if (!ProjectApplicationFormPartnerContactComponent.isContactDtoEmpty(legalRepresentative)) {
       dataToEmit.push(legalRepresentative);
     }
@@ -72,7 +72,7 @@ export class ProjectApplicationFormPartnerContactComponent {
 
   onSubmit(): void {
     const legalRepresentative = {
-      type: InputProjectContact.TypeEnum.LegalRepresentative,
+      type: ProjectContactDTO.TypeEnum.LegalRepresentative,
       title: this.partnerContactForm.controls.partnerRepresentativeTitle.value,
       firstName: this.partnerContactForm.controls.partnerRepresentativeFirstName.value,
       lastName: this.partnerContactForm.controls.partnerRepresentativeLastName.value,
@@ -80,7 +80,7 @@ export class ProjectApplicationFormPartnerContactComponent {
       telephone: ''
     };
     const contactPerson = {
-      type: InputProjectContact.TypeEnum.ContactPerson,
+      type: ProjectContactDTO.TypeEnum.ContactPerson,
       title: this.partnerContactForm.controls.partnerContactTitle.value,
       firstName: this.partnerContactForm.controls.partnerContactFirstName.value,
       lastName: this.partnerContactForm.controls.partnerContactLastName.value,
@@ -98,20 +98,20 @@ export class ProjectApplicationFormPartnerContactComponent {
       ).subscribe();
   }
 
-  resetForm(partner: OutputProjectPartnerDetail): void {
+  resetForm(partner: ProjectPartnerDetailDTO): void {
     this.initLegalRepresentative(partner);
     this.initContactPerson(partner);
   }
 
-  private initLegalRepresentative(partner: OutputProjectPartnerDetail): void {
-    const legalRepresentative = partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.LegalRepresentative);
+  private initLegalRepresentative(partner: ProjectPartnerDetailDTO): void {
+    const legalRepresentative = partner?.contacts?.find(person => person.type === ProjectContactDTO.TypeEnum.LegalRepresentative);
     this.partnerContactForm.controls.partnerRepresentativeTitle.setValue(legalRepresentative?.title);
     this.partnerContactForm.controls.partnerRepresentativeFirstName.setValue(legalRepresentative?.firstName);
     this.partnerContactForm.controls.partnerRepresentativeLastName.setValue(legalRepresentative?.lastName);
   }
 
-  private initContactPerson(partner: OutputProjectPartnerDetail): void {
-    const contactPerson = partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.ContactPerson);
+  private initContactPerson(partner: ProjectPartnerDetailDTO): void {
+    const contactPerson = partner?.contacts?.find(person => person.type === ProjectContactDTO.TypeEnum.ContactPerson);
     this.partnerContactForm.controls.partnerContactTitle.setValue(contactPerson?.title);
     this.partnerContactForm.controls.partnerContactFirstName.setValue(contactPerson?.firstName);
     this.partnerContactForm.controls.partnerContactLastName.setValue(contactPerson?.lastName);

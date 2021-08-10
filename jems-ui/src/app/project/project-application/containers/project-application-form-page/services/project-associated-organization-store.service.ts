@@ -3,7 +3,7 @@ import {
   InputProjectAssociatedOrganization,
   OutputNuts,
   OutputProjectAssociatedOrganizationDetail,
-  OutputProjectPartner,
+  ProjectPartnerDTO,
   ProjectAssociatedOrganizationService,
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
@@ -21,7 +21,7 @@ export class ProjectAssociatedOrganizationStore {
 
   associatedOrganization$: Observable<OutputProjectAssociatedOrganizationDetail | {}>;
   nuts$: Observable<OutputNuts[]>;
-  dropdownPartners$: Observable<OutputProjectPartner[]>;
+  dropdownPartners$: Observable<ProjectPartnerDTO[]>;
   organizationEditable$: Observable<boolean>;
   projectTitle$: Observable<string>;
 

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressTypeDTO
 import java.io.Serializable
 import javax.persistence.Column
 import javax.persistence.Embeddable
@@ -17,6 +17,6 @@ data class ProjectPartnerAddressId (
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val type: ProjectPartnerAddressType
+    val type: ProjectPartnerAddressTypeDTO
 
 ) : Serializable

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.project.entity.partner.PartnerAddressRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
@@ -31,7 +31,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun findTop30ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartnerEntity>
 
-    fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole): Optional<ProjectPartnerEntity>
+    fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRoleDTO): Optional<ProjectPartnerEntity>
 
     fun findFirstByProjectIdAndAbbreviation(projectId: Long, name: String): Optional<ProjectPartnerEntity>
 

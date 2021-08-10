@@ -8,7 +8,7 @@ data class ProjectPartnerContributionDTO(
     val id: Long? = null,
 
     val name: String? = null,
-    val status: ProjectPartnerContributionStatus? = null,
+    val status: ProjectPartnerContributionStatusDTO? = null,
     val partner: Boolean,
     val amount: BigDecimal? = null
 

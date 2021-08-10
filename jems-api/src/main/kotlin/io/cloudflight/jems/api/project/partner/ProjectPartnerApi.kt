@@ -1,13 +1,13 @@
 package io.cloudflight.jems.api.project.partner
 
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -40,7 +40,7 @@ interface ProjectPartnerApi {
         @PathVariable projectId: Long,
         pageable: Pageable,
         @RequestParam(required = false) version: String? = null
-    ): Page<OutputProjectPartner>
+    ): Page<ProjectPartnerDTO>
 
     @ApiOperation("Returns all project partners (only name)")
     @ApiImplicitParams(
@@ -49,48 +49,48 @@ interface ProjectPartnerApi {
     @GetMapping("/byProjectId/{projectId}/ids")
     fun getProjectPartnersForDropdown(@PathVariable projectId: Long,
                                       pageable: Pageable,
-                                      @RequestParam(required = false) version: String? = null): List<OutputProjectPartner>
+                                      @RequestParam(required = false) version: String? = null): List<ProjectPartnerDTO>
 
     @ApiOperation("Returns a project partner by id")
     @GetMapping("/{partnerId}")
     fun getProjectPartnerById(
         @PathVariable partnerId: Long,
         @RequestParam(required = false) version: String? = null
-    ): OutputProjectPartnerDetail
+    ): ProjectPartnerDetailDTO
 
     @ApiOperation("Creates new project partner")
     @PostMapping("/toProjectId/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProjectPartner(
         @PathVariable projectId: Long,
-        @RequestBody projectPartner: InputProjectPartnerCreate
-    ): OutputProjectPartnerDetail
+        @RequestBody projectPartner: CreateProjectPartnerRequestDTO
+    ): ProjectPartnerDetailDTO
 
     @ApiOperation("Update project partner")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartner(
-        @RequestBody projectPartner: InputProjectPartnerUpdate
-    ): OutputProjectPartnerDetail
+        @RequestBody projectPartner: UpdateProjectPartnerRequestDTO
+    ): ProjectPartnerDetailDTO
 
     @ApiOperation("Update project partner addresses")
     @PutMapping("/{partnerId}/address", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerAddress(
         @PathVariable partnerId: Long,
         @Valid @RequestBody addresses: Set<ProjectPartnerAddressDTO>
-    ): OutputProjectPartnerDetail
+    ): ProjectPartnerDetailDTO
 
     @ApiOperation("Update project partner contact")
     @PutMapping("/{partnerId}/contact", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerContact(
         @PathVariable partnerId: Long,
-        @Valid @RequestBody contacts: Set<InputProjectContact>
-    ): OutputProjectPartnerDetail
+        @Valid @RequestBody contacts: Set<ProjectContactDTO>
+    ): ProjectPartnerDetailDTO
 
     @ApiOperation("Update project partner motivation")
     @PutMapping("/{partnerId}/motivation", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerMotivation(
         @PathVariable partnerId: Long,
         @Valid @RequestBody motivation: ProjectPartnerMotivationDTO
-    ): OutputProjectPartnerDetail
+    ): ProjectPartnerDetailDTO
 
     @ApiOperation("Get project partner state aid")
     @GetMapping("/{partnerId}/stateAid")

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.budget.get_project_budget
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
@@ -28,14 +28,14 @@ class GetProjectBudgetInteractorTest : UnitTest() {
     private val partner1 = ProjectPartner(
         id = partner1Id,
         abbreviation = "PP 2",
-        role = ProjectPartnerRole.PARTNER,
+        role = ProjectPartnerRoleDTO.PARTNER,
         sortNumber = 2,
         country = "SK"
     )
     private val partner2 = ProjectPartner(
         id = partner2Id,
         abbreviation = "LP 1",
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1
     )
 

@@ -1,15 +1,15 @@
 package io.cloudflight.jems.server.project.service.partner.update_project_partner
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectContactType
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
+import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
@@ -20,7 +20,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.toEntity
-import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerDetail
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetailDTO
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.mockk.every
@@ -51,21 +51,21 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
         id = 1,
         project = ProjectPartnerTestUtil.project,
         abbreviation = "partner",
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         nameInOriginalLanguage = "test",
         nameInEnglish = "test",
         translatedValues = partnerTranslatedValues,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         legalStatus = laegalStatus,
         vat = "test vat",
-        vatRecovery = ProjectPartnerVatRecovery.Yes
+        vatRecovery = ProjectPartnerVatRecoveryDTO.Yes
     )
     private val legalStatus = ProgrammeLegalStatusEntity(id = 1)
 
     @Test
     fun updateProjectPartner() {
         val projectPartnerUpdate =
-            InputProjectPartnerUpdate(1, "updated", ProjectPartnerRole.PARTNER, legalStatusId = 1)
+            UpdateProjectPartnerRequestDTO(1, "updated", ProjectPartnerRoleDTO.PARTNER, legalStatusId = 1)
         val updatedProjectPartner = ProjectPartnerEntity(
             1,
             ProjectPartnerTestUtil.project,
@@ -73,19 +73,19 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
             projectPartnerUpdate.role!!,
             legalStatus = legalStatus
         )
-        every { persistence.update(projectPartnerUpdate) } returns updatedProjectPartner.toOutputProjectPartnerDetail()
+        every { persistence.update(projectPartnerUpdate) } returns updatedProjectPartner.toProjectPartnerDetailDTO()
         every { projectPartnerRepository.findById(1) } returns Optional.of(updatedProjectPartner)
-        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRole.PARTNER) } returns Optional.of(updatedProjectPartner)
+        every { projectPartnerRepository.findFirstByProjectIdAndRole(1, ProjectPartnerRoleDTO.PARTNER) } returns Optional.of(updatedProjectPartner)
         every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "updated") } returns Optional.of(updatedProjectPartner)
 
 
         Assertions.assertThat(updateInteractor.update(projectPartnerUpdate))
-            .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
+            .isEqualTo(updatedProjectPartner.toProjectPartnerDetailDTO())
     }
 
     @Test
     fun updatePartnerContact() {
-        val projectPartnerContactUpdate = InputProjectContact(
+        val projectPartnerContactUpdate = ProjectContactDTO(
             ProjectContactType.ContactPerson,
             "test",
             "test",
@@ -97,22 +97,22 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
             1,
             ProjectPartnerTestUtil.project,
             "updated",
-            ProjectPartnerRole.PARTNER,
+            ProjectPartnerRoleDTO.PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 1),
             partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool
         )
         val contactPersonsEntity = setOf(projectPartnerContactUpdate.toEntity(projectPartner))
         val updatedProjectPartner = projectPartner.copy(contacts = contactPersonsEntity)
 
-        every { persistence.updatePartnerContacts(1, setOf(projectPartnerContactUpdate)) } returns updatedProjectPartner.toOutputProjectPartnerDetail()
+        every { persistence.updatePartnerContacts(1, setOf(projectPartnerContactUpdate)) } returns updatedProjectPartner.toProjectPartnerDetailDTO()
 
         Assertions.assertThat(updateInteractor.updatePartnerContacts(1, setOf(projectPartnerContactUpdate)))
-            .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
+            .isEqualTo(updatedProjectPartner.toProjectPartnerDetailDTO())
     }
 
     @Test
     fun updatePartnerContact_notExisting() {
-        val projectPartnerContactUpdate = InputProjectContact(
+        val projectPartnerContactUpdate = ProjectContactDTO(
             ProjectContactType.LegalRepresentative,
             "test",
             "test",
@@ -142,17 +142,17 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
             1,
             ProjectPartnerTestUtil.project,
             "updated",
-            ProjectPartnerRole.PARTNER,
+            ProjectPartnerRoleDTO.PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 1),
             partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool
         )
         val updatedProjectPartner =
             projectPartner.copy(motivation = projectPartnerMotivationUpdate.toEntity(projectPartner.id))
 
-        every { updateInteractor.updatePartnerMotivation(1, projectPartnerMotivationUpdate) } returns updatedProjectPartner.toOutputProjectPartnerDetail()
+        every { updateInteractor.updatePartnerMotivation(1, projectPartnerMotivationUpdate) } returns updatedProjectPartner.toProjectPartnerDetailDTO()
 
         Assertions.assertThat(updateInteractor.updatePartnerMotivation(1, projectPartnerMotivationUpdate))
-            .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
+            .isEqualTo(updatedProjectPartner.toProjectPartnerDetailDTO())
     }
 
     @Test
@@ -174,8 +174,8 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
 
     @Test
     fun updateProjectPartnerWithOrganization() {
-        val projectPartnerUpdate = InputProjectPartnerUpdate(
-            1, "updated", ProjectPartnerRole.PARTNER, null, "test", "test", setOf(
+        val projectPartnerUpdate = UpdateProjectPartnerRequestDTO(
+            1, "updated", ProjectPartnerRoleDTO.PARTNER, null, "test", "test", setOf(
                 InputTranslation(
                     SystemLanguage.EN, "test"
                 )
@@ -191,21 +191,21 @@ internal class UpdateProjectpartnerInteractorTest: UnitTest() {
             translatedValues = projectPartnerWithOrganization.translatedValues,
             legalStatus = legalStatus
         )
-        every { updateInteractor.update(projectPartnerUpdate) } returns updatedProjectPartner.toOutputProjectPartnerDetail()
+        every { updateInteractor.update(projectPartnerUpdate) } returns updatedProjectPartner.toProjectPartnerDetailDTO()
         every { projectPartnerRepository.findById(1) } returns Optional.of(updatedProjectPartner)
 
         Assertions.assertThat(updateInteractor.update(projectPartnerUpdate))
-            .isEqualTo(updatedProjectPartner.toOutputProjectPartnerDetail())
+            .isEqualTo(updatedProjectPartner.toProjectPartnerDetailDTO())
     }
 
     @Test
     fun `error on already existing partner name when updating`() {
-        val inputProjectPartner = InputProjectPartnerCreate("partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
-        val updateProjectPartner = InputProjectPartnerUpdate(1, "partner", ProjectPartnerRole.PARTNER, legalStatusId = 1)
+        val projectPartnerRequest = CreateProjectPartnerRequestDTO("partner", ProjectPartnerRoleDTO.LEAD_PARTNER, legalStatusId = 1)
+        val updateProjectPartner = UpdateProjectPartnerRequestDTO(1, "partner", ProjectPartnerRoleDTO.PARTNER, legalStatusId = 1)
         val projectPartnerWithProject = ProjectPartnerEntity(0,
-            ProjectPartnerTestUtil.project, inputProjectPartner.abbreviation!!, inputProjectPartner.role!!, legalStatus = legalStatus)
+            ProjectPartnerTestUtil.project, projectPartnerRequest.abbreviation!!, projectPartnerRequest.role!!, legalStatus = legalStatus)
         val oldProjectPartnerWithProject = ProjectPartnerEntity(0,
-            ProjectPartnerTestUtil.project, "old partner", inputProjectPartner.role!!, legalStatus = legalStatus)
+            ProjectPartnerTestUtil.project, "old partner", projectPartnerRequest.role!!, legalStatus = legalStatus)
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(oldProjectPartnerWithProject)
         every { projectPartnerRepository.findFirstByProjectIdAndAbbreviation(1, "partner") } returns Optional.of(projectPartnerWithProject)

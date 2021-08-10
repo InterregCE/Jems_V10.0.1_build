@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 
-data class InputProjectContact (
+data class ProjectContactDTO (
 
     @field:NotNull(message = "project.contact.type.should.not.be.empty")
     val type: ProjectContactType,

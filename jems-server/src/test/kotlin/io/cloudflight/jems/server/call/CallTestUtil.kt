@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.call
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
@@ -68,7 +68,7 @@ fun partnerWithId(id: Long) = ProjectPartnerEntity(
     id = id,
     project = dummyProject,
     abbreviation = "test abbr",
-    role = ProjectPartnerRole.LEAD_PARTNER,
+    role = ProjectPartnerRoleDTO.LEAD_PARTNER,
     legalStatus = ProgrammeLegalStatusEntity()
 )
 

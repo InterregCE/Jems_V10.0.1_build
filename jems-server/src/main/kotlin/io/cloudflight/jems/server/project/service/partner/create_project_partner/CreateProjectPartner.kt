@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.partner.create_project_partner
 
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -23,7 +23,7 @@ class CreateProjectPartner(
     @CanUpdateProjectForm
     @Transactional
     @ExceptionWrapper(CreateProjectPartnerException::class)
-    override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
+    override fun create(projectId: Long, projectPartner: CreateProjectPartnerRequestDTO): ProjectPartnerDetailDTO {
         validatePartner(projectPartner)
         // to be possible to list all partners for dropdowns we decided to limit total amount of them
         if (projectPartnerRepository.countByProjectId(projectId) >= PartnerPersistenceProvider.MAX_PROJECT_PARTNERS)
@@ -56,7 +56,7 @@ class CreateProjectPartner(
      * validate project partner to be saved: only one role LEAD should exist.
      */
     private fun validateOnlyOneLeadPartner(projectId: Long) {
-        val projectPartner = projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER)
+        val projectPartner = projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRoleDTO.LEAD_PARTNER)
         if (projectPartner.isPresent) {
             val currentLead = projectPartner.get()
             throw LeadPartnerAlreadyExists(mapOf("currentLeadId" to currentLead.id.toString(), "currentLeadAbbreviation" to currentLead.abbreviation))
@@ -64,16 +64,16 @@ class CreateProjectPartner(
     }
 
     private fun updateOldLeadPartner(projectId: Long, oldLeadPartnerId: Long) {
-        val oldLeadPartner = projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER)
+        val oldLeadPartner = projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRoleDTO.LEAD_PARTNER)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
 
         if (oldLeadPartner.id == oldLeadPartnerId)
-            projectPartnerRepository.save(oldLeadPartner.copy(role = ProjectPartnerRole.PARTNER))
+            projectPartnerRepository.save(oldLeadPartner.copy(role = ProjectPartnerRoleDTO.PARTNER))
         else
             throw PartnerIsNotLead()
     }
 
-    private fun validatePartner(inputPartner: InputProjectPartnerCreate) =
+    private fun validatePartner(inputPartner: CreateProjectPartnerRequestDTO) =
         generalValidator.throwIfAnyIsInvalid(
             generalValidator.notNull(inputPartner.role, "role"),
             generalValidator.notBlank(inputPartner.abbreviation, "abbreviation"),

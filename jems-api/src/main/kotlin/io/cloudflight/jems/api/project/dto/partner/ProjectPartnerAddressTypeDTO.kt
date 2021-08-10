@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.dto.partner
 
-enum class ProjectPartnerAddressType {
+enum class ProjectPartnerAddressTypeDTO {
     Organization,
     Department
 }

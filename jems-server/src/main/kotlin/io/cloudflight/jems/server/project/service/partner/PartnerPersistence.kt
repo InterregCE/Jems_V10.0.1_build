@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.partner
 
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import org.springframework.data.domain.Page
@@ -16,26 +16,26 @@ interface PartnerPersistence {
 
     fun throwIfNotExistsInProject(projectId: Long, partnerId: Long)
 
-    fun findAllByProjectId(projectId: Long, page: Pageable, version: String? = null): Page<OutputProjectPartner>
+    fun findAllByProjectId(projectId: Long, page: Pageable, version: String? = null): Page<ProjectPartnerDTO>
 
-    fun findAllByProjectId(projectId: Long): Iterable<OutputProjectPartnerDetail>
+    fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerDetailDTO>
 
-    fun getById(id: Long, version: String? = null): OutputProjectPartnerDetail
+    fun getById(id: Long, version: String? = null): ProjectPartnerDetailDTO
 
-    fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String? = null): List<OutputProjectPartner>
+    fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String? = null): List<ProjectPartnerDTO>
 
     // used for authorization
     fun getProjectIdForPartnerId(id: Long, version: String? = null): Long
 
-    fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail
+    fun create(projectId: Long, projectPartner: CreateProjectPartnerRequestDTO): ProjectPartnerDetailDTO
 
-    fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail
+    fun update(projectPartner: UpdateProjectPartnerRequestDTO): ProjectPartnerDetailDTO
 
-    fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): OutputProjectPartnerDetail
+    fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): ProjectPartnerDetailDTO
 
-    fun updatePartnerContacts(partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail
+    fun updatePartnerContacts(partnerId: Long, contacts: Set<ProjectContactDTO>): ProjectPartnerDetailDTO
 
-    fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail
+    fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): ProjectPartnerDetailDTO
 
     fun getPartnerStateAid(partnerId: Long, version: String? = null): ProjectPartnerStateAid
 

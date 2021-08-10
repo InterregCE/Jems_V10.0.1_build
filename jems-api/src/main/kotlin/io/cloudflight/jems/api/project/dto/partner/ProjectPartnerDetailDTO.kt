@@ -4,10 +4,10 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
 
-data class OutputProjectPartnerDetail (
+data class ProjectPartnerDetailDTO (
     val id: Long,
     val abbreviation: String,
-    val role: ProjectPartnerRole,
+    val role: ProjectPartnerRoleDTO,
     val sortNumber: Int? = null,
     val nameInOriginalLanguage: String?,
     val nameInEnglish: String?,
@@ -15,8 +15,8 @@ data class OutputProjectPartnerDetail (
     val partnerType: ProjectTargetGroup?,
     val legalStatusId: Long?,
     val vat: String?,
-    val vatRecovery: ProjectPartnerVatRecovery?,
+    val vatRecovery: ProjectPartnerVatRecoveryDTO?,
     val addresses: List<ProjectPartnerAddressDTO> = emptyList(),
-    val contacts: List<OutputProjectPartnerContact> = emptyList(),
+    val contacts: List<ProjectPartnerContactDTO> = emptyList(),
     val motivation: ProjectPartnerMotivationDTO? = null
 )

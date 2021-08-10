@@ -4,7 +4,7 @@ import java.math.BigDecimal
 
 data class ProjectPartnerCoFinancingInputDTO(
 
-    val fundType: ProjectPartnerCoFinancingFundType,
+    val fundType: ProjectPartnerCoFinancingFundTypeDTO,
     val fundId: Long? = null,
     val percentage: BigDecimal? = null,
 

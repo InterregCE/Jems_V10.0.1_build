@@ -1,27 +1,23 @@
 package io.cloudflight.jems.api.project.dto.partner
 
+import io.cloudflight.jems.api.project.dto.InputOrganization
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
 
-data class InputProjectPartnerUpdate(
-
-    val id: Long,
+data class CreateProjectPartnerRequestDTO(
 
     val abbreviation: String?,
 
-    val role: ProjectPartnerRole?,
+    val role: ProjectPartnerRoleDTO?,
 
     /**
      * Optional: if creating new LeadPartner when there is already one (then it is mandatory)
      */
     val oldLeadPartnerId: Long? = null,
 
-    val nameInOriginalLanguage: String? = null,
+    override val nameInOriginalLanguage: String? = null,
 
-    val nameInEnglish: String? = null,
+    override val nameInEnglish: String? = null,
 
     val department: Set<InputTranslation> = emptySet(),
 
@@ -31,6 +27,6 @@ data class InputProjectPartnerUpdate(
 
     val vat: String? = null,
 
-    val vatRecovery: ProjectPartnerVatRecovery? = null
+    val vatRecovery: ProjectPartnerVatRecoveryDTO? = null
 
-)
+): InputOrganization

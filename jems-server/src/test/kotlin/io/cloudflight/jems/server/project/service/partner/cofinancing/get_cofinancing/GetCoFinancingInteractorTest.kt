@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing
 
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.AutomaticPublic
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.AutomaticPublic
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
@@ -32,12 +32,12 @@ internal class GetCoFinancingInteractorTest: UnitTest() {
     fun `test get cofinancing`() {
         val finances = setOf(
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fund = fund,
                 percentage = BigDecimal.valueOf(19.5)
             ),
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fund = null,
                 percentage = BigDecimal.valueOf(79.5)
             )

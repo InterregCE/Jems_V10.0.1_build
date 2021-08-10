@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project.dto.associatedorganization
 
 import io.cloudflight.jems.api.project.dto.InputOrganization
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
 
 data class InputProjectAssociatedOrganization (
@@ -16,7 +16,7 @@ data class InputProjectAssociatedOrganization (
 
     val address: InputProjectAssociatedOrganizationAddress? = null,
 
-    val contacts: Set<InputProjectContact> = emptySet(),
+    val contacts: Set<ProjectContactDTO> = emptySet(),
 
     val roleDescription: Set<InputTranslation> = emptySet()
 

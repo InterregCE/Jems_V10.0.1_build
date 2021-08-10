@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing
 
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.AutomaticPublic
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Private
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.AutomaticPublic
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
@@ -28,12 +28,12 @@ internal class UpdateCoFinancingInteractorTest {
 
         private val financingOk = setOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(40.5),
                 fundId = null
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(59.5),
                 fundId = 1
             )
@@ -91,7 +91,7 @@ internal class UpdateCoFinancingInteractorTest {
     private fun testWrongPercentage(percentages: List<BigDecimal?>, errorMsg: String) {
         val testCoFinancing = percentages.mapTo(HashSet()) {
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = it
             )
         }
@@ -110,12 +110,12 @@ internal class UpdateCoFinancingInteractorTest {
         ignoreFundIdsRetrieval()
         val testCoFinancing = setOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(20),
                 fundId = null
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(80),
                 fundId = null
             )
@@ -132,12 +132,12 @@ internal class UpdateCoFinancingInteractorTest {
         ignoreFundIdsRetrieval()
         val testCoFinancing = setOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(20),
                 fundId = 10
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(80),
                 fundId = 11
             )
@@ -154,17 +154,17 @@ internal class UpdateCoFinancingInteractorTest {
         ignoreFundIdsRetrieval()
         val testCoFinancing = setOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(20),
                 fundId = null
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(30),
                 fundId = 555
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
                 percentage = BigDecimal.valueOf(50),
                 fundId = 555
             )
@@ -181,22 +181,22 @@ internal class UpdateCoFinancingInteractorTest {
         ignoreFundIdsRetrieval()
         val testCoFinancing = setOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(40),
                 fundId = null
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(20),
                 fundId = 1
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
                 percentage = BigDecimal.valueOf(20),
                 fundId = 2
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
                 percentage = BigDecimal.valueOf(20),
                 fundId = 3
             )
@@ -214,12 +214,12 @@ internal class UpdateCoFinancingInteractorTest {
 
         val toSave = setOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = -1,
                 percentage = BigDecimal.valueOf(20)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(80)
             )
@@ -254,12 +254,12 @@ internal class UpdateCoFinancingInteractorTest {
         )
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = fund.id,
                 percentage = BigDecimal.valueOf(59.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(40.5)
             )
@@ -375,12 +375,12 @@ internal class UpdateCoFinancingInteractorTest {
         )
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = fund.id,
                 percentage = BigDecimal.valueOf(59.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(40.5)
             )

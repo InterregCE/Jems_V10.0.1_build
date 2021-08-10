@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.factory
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
@@ -29,7 +29,7 @@ class ProjectPartnerFactory(
                 project = project,
                 abbreviation = "abbr",
                 legalStatus = legalStatus,
-                role = ProjectPartnerRole.PARTNER
+                role = ProjectPartnerRoleDTO.PARTNER
             )
         )
     }

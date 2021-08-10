@@ -1,14 +1,14 @@
 package io.cloudflight.jems.server.project.controller.partner
 
 import io.cloudflight.jems.api.project.partner.ProjectPartnerApi
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
+import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
+import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.server.project.service.partner.create_project_partner.CreateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.delete_project_partner.DeleteProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.get_project_partner.GetProjectPartnerInteractor
@@ -21,53 +21,53 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProjectPartnerController(
-    private val getProjectPartnerInteractor: GetProjectPartnerInteractor,
-    private val createProjectPartnerInteractor: CreateProjectPartnerInteractor,
-    private val updateProjectPartnerInteractor: UpdateProjectPartnerInteractor,
-    private val getProjectPartnerStateAidInteractor: GetProjectPartnerStateAidInteractor,
-    private val updateProjectPartnerStateAidInteractor: UpdateProjectPartnerStateAidInteractor,
-    private val deleteProjectPartnerInteractor: DeleteProjectPartnerInteractor,
+    private val getProjectPartner: GetProjectPartnerInteractor,
+    private val createProjectPartner: CreateProjectPartnerInteractor,
+    private val updateProjectPartner: UpdateProjectPartnerInteractor,
+    private val getProjectPartnerStateAid: GetProjectPartnerStateAidInteractor,
+    private val updateProjectPartnerStateAid: UpdateProjectPartnerStateAidInteractor,
+    private val deleteProjectPartner: DeleteProjectPartnerInteractor,
 ) : ProjectPartnerApi {
 
-    override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<OutputProjectPartner> {
-        return getProjectPartnerInteractor.findAllByProjectId(projectId, pageable, version)
+    override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<ProjectPartnerDTO> {
+        return getProjectPartner.findAllByProjectId(projectId, pageable, version)
     }
 
-    override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable, version: String?): List<OutputProjectPartner> {
-        return getProjectPartnerInteractor.findAllByProjectIdForDropdown(projectId, pageable.sort, version)
+    override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable, version: String?): List<ProjectPartnerDTO> {
+        return getProjectPartner.findAllByProjectIdForDropdown(projectId, pageable.sort, version)
     }
 
-    override fun getProjectPartnerById(partnerId: Long, version: String?): OutputProjectPartnerDetail {
-        return getProjectPartnerInteractor.getById(partnerId, version)
+    override fun getProjectPartnerById(partnerId: Long, version: String?): ProjectPartnerDetailDTO {
+        return getProjectPartner.getById(partnerId, version)
     }
 
-    override fun createProjectPartner(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
-        return createProjectPartnerInteractor.create(projectId = projectId, projectPartner = projectPartner)
+    override fun createProjectPartner(projectId: Long, projectPartner: CreateProjectPartnerRequestDTO): ProjectPartnerDetailDTO {
+        return createProjectPartner.create(projectId = projectId, projectPartner = projectPartner)
     }
 
-    override fun updateProjectPartner(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
-        return updateProjectPartnerInteractor.update(projectPartner)
+    override fun updateProjectPartner(projectPartner: UpdateProjectPartnerRequestDTO): ProjectPartnerDetailDTO {
+        return updateProjectPartner.update(projectPartner)
     }
 
-    override fun updateProjectPartnerAddress(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): OutputProjectPartnerDetail {
-        return updateProjectPartnerInteractor.updatePartnerAddresses(partnerId, addresses)
+    override fun updateProjectPartnerAddress(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): ProjectPartnerDetailDTO {
+        return updateProjectPartner.updatePartnerAddresses(partnerId, addresses)
     }
 
-    override fun updateProjectPartnerContact(partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail {
-        return updateProjectPartnerInteractor.updatePartnerContacts(partnerId, contacts)
+    override fun updateProjectPartnerContact(partnerId: Long, contacts: Set<ProjectContactDTO>): ProjectPartnerDetailDTO {
+        return updateProjectPartner.updatePartnerContacts(partnerId, contacts)
     }
 
-    override fun updateProjectPartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail {
-        return updateProjectPartnerInteractor.updatePartnerMotivation(partnerId, motivation)
+    override fun updateProjectPartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): ProjectPartnerDetailDTO {
+        return updateProjectPartner.updatePartnerMotivation(partnerId, motivation)
     }
 
     override fun getProjectPartnerStateAid(partnerId: Long, version: String?): ProjectPartnerStateAidDTO =
-        getProjectPartnerStateAidInteractor.getStateAidForPartnerId(partnerId, version).toDto()
+        getProjectPartnerStateAid.getStateAidForPartnerId(partnerId, version).toDto()
 
     override fun updateProjectPartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAidDTO): ProjectPartnerStateAidDTO =
-        updateProjectPartnerStateAidInteractor.updatePartnerStateAid(partnerId, stateAid.toModel()).toDto()
+        updateProjectPartnerStateAid.updatePartnerStateAid(partnerId, stateAid.toModel()).toDto()
 
     override fun deleteProjectPartner(partnerId: Long) {
-        return deleteProjectPartnerInteractor.deletePartner(partnerId)
+        return deleteProjectPartner.deletePartner(partnerId)
     }
 }

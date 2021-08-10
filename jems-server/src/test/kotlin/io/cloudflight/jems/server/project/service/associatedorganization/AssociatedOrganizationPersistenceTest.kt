@@ -5,10 +5,10 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectContactType
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressType
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.AddressEntity
@@ -70,10 +70,10 @@ class AssociatedOrganizationPersistenceTest {
             project = project,
             abbreviation = "abbreviation",
             sortNumber = 1,
-            role = ProjectPartnerRole.LEAD_PARTNER,
+            role = ProjectPartnerRoleDTO.LEAD_PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 5L),
             addresses = setOf(ProjectPartnerAddress(
-                addressId = ProjectPartnerAddressId(partnerId = 3L, ProjectPartnerAddressType.Organization),
+                addressId = ProjectPartnerAddressId(partnerId = 3L, ProjectPartnerAddressTypeDTO.Organization),
                 address = address
             ))
         )
@@ -106,7 +106,7 @@ class AssociatedOrganizationPersistenceTest {
         )
         private val projectAssociatedOrganizationOutput = OutputProjectAssociatedOrganizationDetail(
             id = 2L,
-            partner = OutputProjectPartner(
+            partner = ProjectPartnerDTO(
                 id = projectPartner.id,
                 abbreviation = projectPartner.abbreviation,
                 role = projectPartner.role,
@@ -127,7 +127,7 @@ class AssociatedOrganizationPersistenceTest {
                 homepage = "homepage"
             ),
             contacts = listOf(
-                OutputProjectPartnerContact(
+                ProjectPartnerContactDTO(
                     type = ProjectContactType.ContactPerson,
                     title = "title",
                     firstName = "firstName",
@@ -181,7 +181,7 @@ class AssociatedOrganizationPersistenceTest {
         val mockPPRow: PartnerSimpleRow = mockk()
         every { mockPPRow.id } returns projectPartner.id
         every { mockPPRow.abbreviation } returns "abbreviation"
-        every { mockPPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
+        every { mockPPRow.role } returns ProjectPartnerRoleDTO.LEAD_PARTNER
         every { mockPPRow.sortNumber } returns 1
         every { mockPPRow.country } returns "country"
         val mockAOARow: AssociatedOrganizationAddressRow = mockk()

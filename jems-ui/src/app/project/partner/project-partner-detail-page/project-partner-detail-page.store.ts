@@ -12,7 +12,7 @@ import {
   BudgetUnitCostEntryDTO,
   CallDetailDTO,
   CallService,
-  OutputProjectPartnerDetail,
+  ProjectPartnerDetailDTO,
   ProgrammeFundDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
@@ -53,7 +53,7 @@ export class ProjectPartnerDetailPageStore {
   periods$: Observable<ProjectPeriodDTO[]>;
   multipleFundsAllowed$: Observable<boolean>;
   stateAid$: Observable<ProjectPartnerStateAidDTO>;
-  partner$: Observable<OutputProjectPartnerDetail>;
+  partner$: Observable<ProjectPartnerDetailDTO>;
 
   private updateBudgetOptionsEvent$ = new Subject();
   private updateBudgetEvent$ = new Subject();
@@ -111,7 +111,7 @@ export class ProjectPartnerDetailPageStore {
     );
   }
 
-  private getBudgetsToSave(partner: OutputProjectPartnerDetail, newBudgets: PartnerBudgetTables, options: BudgetOptions): { [key: string]: Observable<any> } {
+  private getBudgetsToSave(partner: ProjectPartnerDetailDTO, newBudgets: PartnerBudgetTables, options: BudgetOptions): { [key: string]: Observable<any> } {
     if (options.otherCostsOnStaffCostsFlatRate) {
       return {staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts))};
     } else {
