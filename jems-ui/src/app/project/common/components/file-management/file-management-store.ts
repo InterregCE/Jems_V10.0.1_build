@@ -24,6 +24,7 @@ import {InvestmentSummary} from '@project/work-package/project-work-package-page
 import {ProjectPartnerRoleEnumUtil} from '@project/model/ProjectPartnerRoleEnum';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {ProjectUtil} from '@project/common/project-util';
+import {I18nMessage} from '@common/models/I18nMessage';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable()
@@ -32,6 +33,7 @@ export class FileManagementStore {
   fileList$: Observable<PageProjectFileMetadataDTO>;
   fileCategories$: Observable<FileCategoryNode>;
   selectedCategory$ = new ReplaySubject<FileCategoryInfo | undefined>(1);
+  selectedCategoryPath$: Observable<I18nMessage[]>;
 
   projectStatus$: Observable<ProjectStatusDTO>;
   userIsProjectOwner$: Observable<boolean>;
@@ -72,6 +74,7 @@ export class FileManagementStore {
     this.investments$ = this.investments();
     this.partners$ = this.partners();
     this.fileCategories$ = this.fileCategories();
+    this.selectedCategoryPath$ = this.selectedCategoryPath();
     this.fileList$ = this.fileList();
   }
 
@@ -286,5 +289,33 @@ export class FileManagementStore {
       .pipe(
         map(([canReadApplicationFile, userIsProjectOwner]) => canReadApplicationFile || userIsProjectOwner)
       );
+  }
+
+  private selectedCategoryPath(): Observable<I18nMessage[]> {
+    return combineLatest([this.selectedCategory$, this.fileCategories$])
+      .pipe(
+        map(([selectedCategory, fileCategories]) =>
+          ([{i18nKey: 'file.tree.type.all'}, ...this.getPath(selectedCategory as any, fileCategories)])
+        )
+      );
+  }
+
+  private getPath(selectedCategory: FileCategoryInfo, node: FileCategoryNode): I18nMessage[] {
+    if (node.info?.type === selectedCategory?.type && (!selectedCategory?.id || selectedCategory.id === node.info?.id)) {
+      return [node.name as any];
+    }
+
+    if (node.children && node.children.length > 0) {
+      let potentialPath: I18nMessage[] = [];
+      for (const child of node.children) {
+        potentialPath = this.getPath(selectedCategory, child);
+        if (potentialPath.filter(it => it.i18nKey === 'INVALID_PATH').length === 0) {
+          break;
+        }
+      }
+      return [node.name as any, ...potentialPath];
+    }
+
+    return [{i18nKey: 'INVALID_PATH'}];
   }
 }

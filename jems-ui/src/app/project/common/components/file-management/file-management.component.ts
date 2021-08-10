@@ -1,7 +1,8 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {FileCategoryEnum, FileCategoryNode} from '@project/common/components/file-management/file-category';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {FileCategoryEnum, FileCategoryInfo} from '@project/common/components/file-management/file-category';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {Observable} from 'rxjs';
+import {I18nMessage} from '@common/models/I18nMessage';
 
 @Component({
   selector: 'app-file-management',
@@ -10,26 +11,20 @@ import {Observable} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [FileManagementStore]
 })
-export class FileManagementComponent {
+export class FileManagementComponent implements OnInit {
 
-  selectedCategory: FileCategoryNode | undefined;
-
-  FileCategoryEnum = FileCategoryEnum;
+  @Input()
+  defaultCategory: FileCategoryInfo = {type: FileCategoryEnum.ALL};
 
   canReadFiles$: Observable<boolean>;
+  selectedCategoryPath$: Observable<I18nMessage[]>;
 
   constructor(public fileManagementStore: FileManagementStore) {
     this.canReadFiles$ = fileManagementStore.canReadFiles$;
+    this.selectedCategoryPath$ = fileManagementStore.selectedCategoryPath$;
   }
 
-  getSelectedCategoryPath(): string[] {
-    const path: string[] = [];
-    let root = this.selectedCategory;
-    while (root) {
-      path.push(root.name as any);
-      root = root.parent;
-    }
-    path.push('Projects');
-    return path.reverse();
+  ngOnInit(): void {
+    this.fileManagementStore.selectedCategory$.next(this.defaultCategory);
   }
 }

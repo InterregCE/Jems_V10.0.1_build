@@ -1,14 +1,10 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {FlatTreeNode} from '@common/models/flat-tree-node';
 import {tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
-import {
-  FileCategoryEnum,
-  FileCategoryInfo,
-  FileCategoryNode
-} from '@project/common/components/file-management/file-category';
+import {FileCategoryInfo, FileCategoryNode} from '@project/common/components/file-management/file-category';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 
 @Component({
@@ -18,12 +14,8 @@ import {FileManagementStore} from '@project/common/components/file-management/fi
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFilesTreeComponent {
-  @Output()
-  categorySelected = new EventEmitter<FileCategoryNode>();
 
-  @Input()
-  selectedCategory: FileCategoryInfo | undefined = {type : FileCategoryEnum.ALL};
-
+  selectedCategory: FileCategoryInfo | undefined;
   treeControl: FlatTreeControl<FlatTreeNode<FileCategoryNode>>;
   dataSource: MatTreeFlatDataSource<FileCategoryNode, FlatTreeNode<FileCategoryNode>>;
 
@@ -34,8 +26,7 @@ export class ProjectApplicationFilesTreeComponent {
     this.fileCategories$ = this.fileManagementStore.fileCategories$
       .pipe(
         tap(fileCategories => this.dataSource.data = [fileCategories]),
-        tap(() => this.treeControl.expandAll()),
-        tap(fileCategories => this.selectCategory(fileCategories))
+        tap(() => this.treeControl.expandAll())
       );
   }
 
@@ -45,7 +36,6 @@ export class ProjectApplicationFilesTreeComponent {
 
   selectCategory(node: FileCategoryNode): void {
     this.selectedCategory = node.info;
-    this.categorySelected.emit(node);
     this.fileManagementStore.selectedCategory$.next(node.info);
   }
 
