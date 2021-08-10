@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofina
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -20,14 +20,14 @@ class GetProjectBudgetCoFinancingInteractorTest : UnitTest() {
 
     private val partner1Id = 1L
     private val partner2Id = 2L
-    private val partner1 = ProjectPartner(
+    private val partner1 = ProjectPartnerSummary(
         id = partner1Id,
         abbreviation = "PP 2",
         role = ProjectPartnerRoleDTO.PARTNER,
         sortNumber = 2,
         country = "SK"
     )
-    private val partner2 = ProjectPartner(
+    private val partner2 = ProjectPartnerSummary(
         id = partner2Id,
         abbreviation = "LP 1",
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,

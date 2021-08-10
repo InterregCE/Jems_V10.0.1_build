@@ -32,7 +32,7 @@ import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartne
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.PartnerStateAidRow
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 
 fun CreateProjectPartnerRequestDTO.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
@@ -77,7 +77,7 @@ fun UpdateProjectPartnerRequestDTO.combineTranslatedValues(
     }
 }
 
-fun ProjectPartnerEntity.toProjectPartner() = ProjectPartner(
+fun ProjectPartnerEntity.toProjectPartner() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
     role = role,
@@ -277,7 +277,7 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
     )
 }.first()
 
-fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartner(
+fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
     role = role,

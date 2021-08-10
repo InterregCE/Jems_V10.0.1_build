@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -70,7 +70,7 @@ class GetProjectBudget(
     private fun Collection<ProjectPartnerCost>.groupByPartnerId() = associateBy({ it.partnerId }, { it.sum })
 
     private fun BudgetCostsCalculationResult.toPartnerBudget(
-        partner: ProjectPartner,
+        partner: ProjectPartnerSummary,
         unitCosts: BigDecimal,
         lumpSumCosts: BigDecimal,
         externalCosts: BigDecimal,

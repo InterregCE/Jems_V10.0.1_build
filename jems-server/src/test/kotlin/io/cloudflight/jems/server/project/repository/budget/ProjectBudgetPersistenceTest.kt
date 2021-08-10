@@ -26,7 +26,7 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -204,7 +204,7 @@ class ProjectBudgetPersistenceTest {
         every { projectPartnerRepository.findTop30ByProjectId(eq(1), any()) } returns partners
         assertThat(projectBudgetPersistence.getPartnersForProjectId(1))
             .containsExactlyInAnyOrder(
-                ProjectPartner(
+                ProjectPartnerSummary(
                     id = 5,
                     abbreviation = "partner",
                     role = ProjectPartnerRoleDTO.LEAD_PARTNER,
@@ -226,7 +226,7 @@ class ProjectBudgetPersistenceTest {
         every { projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(1L, timestamp) } returns listOf(mockPRow)
 
         assertThat(projectBudgetPersistence.getPartnersForProjectId(1L, version))
-            .containsExactly(ProjectPartner(
+            .containsExactly(ProjectPartnerSummary(
                 id = PARTNER_ID,
                 abbreviation = "abbreviation",
                 role = ProjectPartnerRoleDTO.LEAD_PARTNER,

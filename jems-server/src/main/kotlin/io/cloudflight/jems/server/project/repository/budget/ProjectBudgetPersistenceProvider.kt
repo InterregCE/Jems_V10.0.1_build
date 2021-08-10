@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.project.repository.partner.toProjectPartner
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerHistoricalData
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import java.math.BigDecimal
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
@@ -117,7 +117,7 @@ class ProjectBudgetPersistenceProvider(
             }) ?: emptyMap()
 
     @Transactional(readOnly = true)
-    override fun getPartnersForProjectId(projectId: Long, version: String?): List<ProjectPartner> =
+    override fun getPartnersForProjectId(projectId: Long, version: String?): List<ProjectPartnerSummary> =
         projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 projectPartnerRepository.findTop30ByProjectId(projectId, Sort.unsorted()).toProjectPartner()

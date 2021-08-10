@@ -41,7 +41,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.user.controller.toDto
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -74,7 +74,7 @@ fun Collection<PartnerBudget>.toDTO() = map { it.toDTO() }
     .sortedBy { it.partner.sortNumber }
 
 fun ProjectCallSettings.toDto() = projectMapper.map(this)
-fun ProjectPartner.toDto() = projectMapper.map(this)
+fun ProjectPartnerSummary.toDto() = projectMapper.map(this)
 
 fun ProjectDetail.toDto() = ProjectDetailDTO(
     id = id,
@@ -146,7 +146,7 @@ abstract class ProjectMapper {
     abstract fun map(preConditionCheckMessageList: List<PreConditionCheckMessage>): List<PreConditionCheckMessageDTO>
     abstract fun map(messageType: MessageType): MessageTypeDTO
 
-    abstract fun map(projectPartner: ProjectPartner): ProjectPartnerSummaryDTO
+    abstract fun map(projectPartner: ProjectPartnerSummary): ProjectPartnerSummaryDTO
 
     @Mapping(source = "totalCosts", target = "totalSum")
     abstract fun map(partnerBudget: PartnerBudget): ProjectPartnerBudgetDTO

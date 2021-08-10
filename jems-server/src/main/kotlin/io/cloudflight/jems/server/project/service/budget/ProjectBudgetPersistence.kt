@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.budget
 
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import java.math.BigDecimal
 
 interface ProjectBudgetPersistence {
@@ -15,6 +15,6 @@ interface ProjectBudgetPersistence {
     fun getLumpSumContributionPerPartner(partnerIds: Set<Long>, projectId: Long, version: String? = null): Map<Long, BigDecimal>
     fun getUnitCostsPerPartner(partnerIds: Set<Long>, projectId: Long, version: String? = null): Map<Long, BigDecimal>
 
-    fun getPartnersForProjectId(projectId: Long, version: String? = null): List<ProjectPartner>
+    fun getPartnersForProjectId(projectId: Long, version: String? = null): List<ProjectPartnerSummary>
 
 }
