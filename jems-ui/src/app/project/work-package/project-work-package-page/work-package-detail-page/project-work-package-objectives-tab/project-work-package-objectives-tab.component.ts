@@ -89,9 +89,6 @@ export class ProjectWorkPackageObjectivesTabComponent {
     this.form.get('objectiveAndAudience')?.patchValue(existing?.objectiveAndAudience || []);
     this.formService.resetEditable();
     this.form.controls.number.disable();
-    if (!existing?.id) {
-      this.formService.setCreation(!this.workPackageId);
-    }
   }
 
   private redirectToWorkPackageOverview(): void {
