@@ -5,28 +5,29 @@ services:
   jems-database:
     image: mariadb/server:10.3.13
     container_name: jems-database
-#    volumes:
-#      - ems-database-data:/var/lib/mariadb
+    #    volumes:
+    #      - ems-database-data:/var/lib/mariadb
     ports:
       - '3306:3306'
     environment:
       MYSQL_DATABASE: jemsdb
       MYSQL_ROOT_PASSWORD: Mariadb@2020
-    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
 
   jems-minio:
     image: minio/minio:RELEASE.2021-08-05T22-01-19Z
     container_name: jems-minio
-#    volumes:
-#      - ems-minio-data:/var/lib/minio
+    #    volumes:
+    #      - ems-minio-data:/var/lib/minio
     ports:
       - '9000:9000'
+      - '9001:9001'
     environment:
-      MINIO_ACCESS_KEY: jemsminio
-      MINIO_SECRET_KEY: Minio@2020
-    command: server /data
+      MINIO_ROOT_USER: jemsminio
+      MINIO_ROOT_PASSWORD: Minio@2020
+    command: server /data --console-address ":9001"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       interval: 30s
       timeout: 20s
       retries: 3
