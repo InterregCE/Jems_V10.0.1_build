@@ -75,7 +75,11 @@ export class ProgrammePageSidenavService {
             headline: {i18nKey: 'programme.tab.legal.status'},
             route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/legalStatus`,
           },
-          this.costsPage
+          this.costsPage,
+          {
+            headline: {i18nKey: 'programme.tab.state.aid'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/stateAid`,
+          },
         ]
       },
     ]);

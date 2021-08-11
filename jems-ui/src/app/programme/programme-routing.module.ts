@@ -13,6 +13,7 @@ import {ProgrammeUnitCostsSubmissionPageComponent} from './programme-page/contai
 import {ProgrammePriorityDetailPageComponent} from './priorities/programme-priority-list-page/programme-priority-detail-page/programme-priority-detail-page.component';
 import {ProgrammePriorityListPageComponent} from './priorities/programme-priority-list-page/programme-priority-list-page.component';
 import {TranslationManagementPageComponent} from './translation-management-page/translation-management-page.component';
+import {ProgrammeStateAidComponent} from './programme-page/containers/programme-state-aid/programme-state-aid.component';
 
 export const routes: Routes = [
   {
@@ -165,6 +166,11 @@ export const routes: Routes = [
             ]
           },
         ],
+      },
+      {
+        path: 'stateAid',
+        component: ProgrammeStateAidComponent,
+        data: {breadcrumb: 'programme.breadcrumb.state.aid'},
       },
     ]
   }
