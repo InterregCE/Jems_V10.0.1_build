@@ -26,14 +26,12 @@ internal class UpdateCoFinancingInteractorTest {
     companion object {
         private val fund = ProgrammeFundEntity(id = 1, selected = true)
 
-        private val financingOk = setOf(
+        private val financingOk = listOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(40.5),
                 fundId = null
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(59.5),
                 fundId = 1
             )
@@ -89,9 +87,9 @@ internal class UpdateCoFinancingInteractorTest {
     }
 
     private fun testWrongPercentage(percentages: List<BigDecimal?>, errorMsg: String) {
-        val testCoFinancing = percentages.mapTo(HashSet()) {
+        val testCoFinancing = percentages.map {
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                fundId = null,
                 percentage = it
             )
         }
@@ -107,15 +105,13 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test wrong amount of fundIds - 2 nulls`() {
-        ignoreFundIdsRetrieval()
-        val testCoFinancing = setOf(
+        every { persistence.getAvailableFundIds(1L) } returns setOf(101L, 102L, 103L)
+        val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(20),
                 fundId = null
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(80),
                 fundId = null
             )
@@ -130,14 +126,12 @@ internal class UpdateCoFinancingInteractorTest {
     @Test
     fun `test wrong amount of fundIds - no any null`() {
         ignoreFundIdsRetrieval()
-        val testCoFinancing = setOf(
+        val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(20),
                 fundId = 10
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(80),
                 fundId = 11
             )
@@ -151,20 +145,18 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test duplicate fundIds - no any null`() {
-        ignoreFundIdsRetrieval()
-        val testCoFinancing = setOf(
+        every { persistence.getAvailableFundIds(1L) } returns setOf(101L, 102L, 103L)
+
+        val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(20),
                 fundId = null
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(30),
                 fundId = 555
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
                 percentage = BigDecimal.valueOf(50),
                 fundId = 555
             )
@@ -177,29 +169,59 @@ internal class UpdateCoFinancingInteractorTest {
     }
 
     @Test
-    fun `wrong amount of funds - more than 2`() {
-        ignoreFundIdsRetrieval()
-        val testCoFinancing = setOf(
+    fun `wrong amount of funds - more than MAX`() {
+        every { persistence.getAvailableFundIds(1L) } returns setOf(101L, 102L, 103L, 104L, 105L)
+
+        val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(40),
                 fundId = null
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(20),
-                fundId = 1
+                fundId = 101
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
-                percentage = BigDecimal.valueOf(20),
-                fundId = 2
+                percentage = BigDecimal.valueOf(10),
+                fundId = 102
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
-                percentage = BigDecimal.valueOf(20),
-                fundId = 3
-            )
+                percentage = BigDecimal.valueOf(10),
+                fundId = 103
+            ),
+            UpdateProjectPartnerCoFinancing(
+                percentage = BigDecimal.valueOf(10),
+                fundId = 104
+            ),
+            UpdateProjectPartnerCoFinancing(
+                percentage = BigDecimal.valueOf(10),
+                fundId = 105
+            ),
+        )
+
+        val ex = assertThrows<I18nValidationException> {
+            updateInteractor.updateCoFinancing(1L, testCoFinancing, emptyList())
+        }
+        assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.maximum.partner.contributions")
+    }
+
+    @Test
+    fun `wrong amount of funds - not enough funds available MAX`() {
+        every { persistence.getAvailableFundIds(1L) } returns setOf(101L)
+
+        val testCoFinancing = listOf(
+            UpdateProjectPartnerCoFinancing(
+                percentage = BigDecimal.valueOf(40),
+                fundId = null
+            ),
+            UpdateProjectPartnerCoFinancing(
+                percentage = BigDecimal.valueOf(30),
+                fundId = 101
+            ),
+            UpdateProjectPartnerCoFinancing(
+                percentage = BigDecimal.valueOf(30),
+                fundId = 102
+            ),
         )
 
         val ex = assertThrows<I18nValidationException> {
@@ -212,14 +234,12 @@ internal class UpdateCoFinancingInteractorTest {
     fun `update financing forbidden or not-existing fund`() {
         every { persistence.getAvailableFundIds(5) } returns setOf(fund.id)
 
-        val toSave = setOf(
+        val toSave = listOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = -1,
                 percentage = BigDecimal.valueOf(20)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(80)
             )
@@ -234,7 +254,7 @@ internal class UpdateCoFinancingInteractorTest {
     fun `update financing OK and 1 contribution OK`() {
         every { persistence.getAvailableFundIds(1) } returns setOf(fund.id)
 
-        val slotFinances = slot<Collection<UpdateProjectPartnerCoFinancing>>()
+        val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()
         val slotPartnerContributions = slot<List<ProjectPartnerContribution>>()
         every {
             persistence.updateCoFinancingAndContribution(
@@ -254,12 +274,10 @@ internal class UpdateCoFinancingInteractorTest {
         )
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = fund.id,
                 percentage = BigDecimal.valueOf(59.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(40.5)
             )
@@ -358,7 +376,7 @@ internal class UpdateCoFinancingInteractorTest {
             ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = Public)
         )
 
-        val slotFinances = slot<Collection<UpdateProjectPartnerCoFinancing>>()
+        val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()
         val slotPartnerContributions = slot<List<ProjectPartnerContribution>>()
         every {
             persistence.updateCoFinancingAndContribution(
@@ -375,12 +393,10 @@ internal class UpdateCoFinancingInteractorTest {
         )
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = fund.id,
                 percentage = BigDecimal.valueOf(59.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(40.5)
             )

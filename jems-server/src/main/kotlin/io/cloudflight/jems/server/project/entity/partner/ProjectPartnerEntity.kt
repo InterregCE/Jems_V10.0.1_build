@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.entity.partner
 
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
@@ -82,9 +81,6 @@ class ProjectPartnerEntity(
 
     @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val motivation: Set<ProjectPartnerMotivationEntity> = emptySet(),
-
-    @OneToMany(mappedBy = "coFinancingFundId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val financing: Set<ProjectPartnerCoFinancingEntity> = emptySet(),
 
     @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val partnerContributions: List<ProjectPartnerContributionEntity> = emptyList()

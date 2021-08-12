@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Upda
 interface UpdateCoFinancingInteractor {
     fun updateCoFinancing(
         partnerId: Long,
-        finances: Collection<UpdateProjectPartnerCoFinancing>,
+        finances: List<UpdateProjectPartnerCoFinancing>,
         partnerContributions: List<ProjectPartnerContribution>
     ): ProjectPartnerCoFinancingAndContribution
 }

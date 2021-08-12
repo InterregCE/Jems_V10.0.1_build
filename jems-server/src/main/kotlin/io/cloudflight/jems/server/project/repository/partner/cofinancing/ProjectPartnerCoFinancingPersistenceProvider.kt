@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.partner.cofinancing
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.copy
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
@@ -16,6 +17,7 @@ import java.sql.Timestamp
 @Repository
 class ProjectPartnerCoFinancingPersistenceProvider(
     private val projectPartnerRepository: ProjectPartnerRepository,
+    private val projectPartnerCoFinancingRepository: ProjectPartnerCoFinancingRepository,
     private val projectVersionUtils: ProjectVersionUtils
 ) : ProjectPartnerCoFinancingPersistence {
 
@@ -34,7 +36,9 @@ class ProjectPartnerCoFinancingPersistenceProvider(
                 historicVersionFetcher = { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) }
             ),
             currentVersionFetcher = {
-                getPartnerOrThrow(partnerId).extractCoFinancingAndContribution()
+                getPartnerOrThrow(partnerId).extractCoFinancingAndContribution(
+                    finances = projectPartnerCoFinancingRepository.findAllByCoFinancingFundIdPartnerId(partnerId)
+                )
             },
             previousVersionFetcher = { timestamp ->
                 getPartnerCoFinancingAndContributions(partnerId, timestamp)
@@ -49,23 +53,27 @@ class ProjectPartnerCoFinancingPersistenceProvider(
     @Transactional
     override fun updateCoFinancingAndContribution(
         partnerId: Long,
-        finances: Collection<UpdateProjectPartnerCoFinancing>,
+        finances: List<UpdateProjectPartnerCoFinancing>,
         partnerContributions: List<ProjectPartnerContribution>
-    ): ProjectPartnerCoFinancingAndContribution =
-        getPartnerOrThrow(partnerId).let { entity ->
-            val savedEntity = projectPartnerRepository.save(
-                entity.copy(
-                    newFinancing = finances,
-                    newPartnerContributions = partnerContributions,
-                )
-            )
+    ): ProjectPartnerCoFinancingAndContribution {
+        val partner = getPartnerOrThrow(partnerId)
+        val availableFundsGroupedById = partner.project.call.funds.associateBy { it.id }
 
-            ProjectPartnerCoFinancingAndContribution(
-                finances = savedEntity.financing.toCoFinancingModel(),
-                partnerContributions = savedEntity.partnerContributions.toContributionModel(),
-                partnerAbbreviation = savedEntity.abbreviation
+        val updatedPartner = projectPartnerRepository.save(
+            partner.copy(
+                newPartnerContributions = partnerContributions,
             )
-        }
+        )
+
+        projectPartnerCoFinancingRepository.deleteByCoFinancingFundIdPartnerId(partnerId)
+        val financesSaved = projectPartnerCoFinancingRepository.saveAll(finances.toCoFinancingEntity(partnerId, availableFundsGroupedById))
+
+        return ProjectPartnerCoFinancingAndContribution(
+            finances = financesSaved.toCoFinancingModel(),
+            partnerContributions = updatedPartner.partnerContributions.toContributionModel(),
+            partnerAbbreviation = updatedPartner.abbreviation
+        )
+    }
 
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity =
         projectPartnerRepository.findById(partnerId).orElseThrow { ResourceNotFoundException("projectPartner") }
@@ -74,7 +82,7 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         partnerId: Long,
         timestamp: Timestamp,
     ): ProjectPartnerCoFinancingAndContribution {
-        val finances = projectPartnerRepository.findPartnerFinancingByIdAsOfTimestamp(partnerId, timestamp)
+        val finances = projectPartnerCoFinancingRepository.findPartnerFinancingByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerFinancingHistoricalData()
         val partnerContributions = projectPartnerRepository.findPartnerContributionByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerContributionHistoricalData()

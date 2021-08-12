@@ -56,25 +56,6 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     @Query(
         """
             SELECT
-             financing.*,
-             fund.id AS fundId,
-             fund.type AS fundType,
-             fund.selected AS selected,
-             fundTransl.*
-             FROM #{#entityName}_co_financing FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS financing
-             LEFT JOIN programme_fund AS fund ON financing.programme_fund_id = fund.id
-             LEFT JOIN programme_fund_transl AS fundTransl ON fund.id = fundTransl.source_entity_id
-             WHERE financing.partner_id = :partnerId
-             """,
-        nativeQuery = true
-    )
-    fun findPartnerFinancingByIdAsOfTimestamp(
-        partnerId: Long, timestamp: Timestamp
-    ): List<PartnerFinancingRow>
-
-    @Query(
-        """
-            SELECT
              contribution.*
              FROM #{#entityName}_contribution FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS contribution
              WHERE contribution.partner_id = :partnerId

@@ -30,7 +30,7 @@ internal class GetCoFinancingInteractorTest: UnitTest() {
 
     @Test
     fun `test get cofinancing`() {
-        val finances = setOf(
+        val finances = listOf(
             ProjectPartnerCoFinancing(
                 fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fund = fund,

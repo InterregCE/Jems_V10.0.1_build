@@ -224,7 +224,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
       builtFinances.push({
         fundId: this.additionalFundId.value,
         percentage: this.additionalFundPercentage.value,
-        fundType: ProjectPartnerCoFinancingInputDTO.FundTypeEnum.AdditionalFund,
+        fundType: ProjectPartnerCoFinancingInputDTO.FundTypeEnum.MainFund,
       } as ProjectPartnerCoFinancingInputDTO);
     }
 
@@ -296,18 +296,19 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
   }
 
   private resetForm(financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO): void {
-    const inputValues = financingAndContribution.finances.filter((x: ProjectPartnerCoFinancingOutputDTO) => !!x.fund);
-    if (inputValues[0]?.fundType === ProjectPartnerCoFinancingInputDTO.FundTypeEnum.AdditionalFund) {
-      this.fundId.setValue(inputValues[1]?.fund.id);
-      this.fundPercentage.setValue(inputValues[1]?.percentage || 0);
-      this.additionalFundId.setValue(inputValues[0]?.fund.id);
-      this.additionalFundPercentage.setValue(inputValues[0]?.percentage || 0);
-    } else {
-      this.fundId.setValue(inputValues[0]?.fund.id);
-      this.fundPercentage.setValue(inputValues[0]?.percentage || 0);
-      this.additionalFundId.setValue(inputValues[1]?.fund.id);
-      this.additionalFundPercentage.setValue(inputValues[1]?.percentage || 0);
-    }
+    const inputValues = financingAndContribution.finances.filter((x: ProjectPartnerCoFinancingOutputDTO) => x.fundType === ProjectPartnerCoFinancingInputDTO.FundTypeEnum.MainFund);
+    // TODO
+    // if (inputValues[0]?.fundType === ProjectPartnerCoFinancingInputDTO.FundTypeEnum.AdditionalFund) {
+    this.fundId.setValue(inputValues[1]?.fund.id);
+    this.fundPercentage.setValue(inputValues[1]?.percentage || 0);
+    this.additionalFundId.setValue(inputValues[0]?.fund.id);
+    this.additionalFundPercentage.setValue(inputValues[0]?.percentage || 0);
+    // } else {
+    //   this.fundId.setValue(inputValues[0]?.fund.id);
+    //   this.fundPercentage.setValue(inputValues[0]?.percentage || 0);
+    //   this.additionalFundId.setValue(inputValues[1]?.fund.id);
+    //   this.additionalFundPercentage.setValue(inputValues[1]?.percentage || 0);
+    // }
     this.resetPartnerContributions(financingAndContribution);
     this.hasASecondFundBeenAdded = false;
     this.formService.setDirty(false);

@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
@@ -14,12 +16,15 @@ import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPart
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toCoFinancingModel
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
@@ -65,7 +70,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     ) : PartnerIdentityRow
 
     protected class PreviousVersionOfCoFinancing(
-        override val type: ProjectPartnerCoFinancingFundTypeDTO,
+        override val order_nr: Int,
         override val percentage: BigDecimal,
         override val language: SystemLanguage?,
         override val fundId: Long?,
@@ -86,31 +91,25 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     private val previousFinances = setOf(
         ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundTypeDTO.MainFund),
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 1),
             percentage = BigDecimal.valueOf(15.5),
             programmeFund = null
         ),
         ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(
-                1,
-                ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
-            ),
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 2),
             percentage = BigDecimal.valueOf(25.5),
             programmeFund = null
         )
     )
 
-    private val currentFinances = setOf(
+    private val currentFinances = mutableListOf(
         ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundTypeDTO.MainFund),
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 1),
             percentage = BigDecimal.valueOf(19.5),
             programmeFund = fund
         ),
         ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(
-                1,
-                ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
-            ),
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 2),
             percentage = BigDecimal.valueOf(79.5),
             programmeFund = null
         )
@@ -157,7 +156,17 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     )
 
     private val previousValue = ProjectPartnerCoFinancingAndContribution(
-        finances = previousFinances.toCoFinancingModel(),
+        finances = listOf(
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                fund = ProgrammeFund(1, true, ProgrammeFundType.ERDF, emptySet(), emptySet()),
+                percentage =  BigDecimal.valueOf(15.5),
+            ),
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+                percentage = BigDecimal.valueOf(25.5),
+            ),
+        ),
         partnerContributions = previousContributions.toContributionModel(),
         partnerAbbreviation = "previous partner"
     )
@@ -171,28 +180,27 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecovery.Yes,
-        financing = currentFinances,
         partnerContributions = currentContributions
     )
 
     private val previousFinancingValues = listOf(
         PreviousVersionOfCoFinancing(
-            type = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+            order_nr = 1,
             percentage = BigDecimal.valueOf(15.5),
             language = null,
             abbreviation = null,
             description = null,
             fundId = 1,
-            fundType = null,
+            fundType = ProgrammeFundType.ERDF.name,
             selected = true
         ),
         PreviousVersionOfCoFinancing(
-            type = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+            order_nr = 2,
             percentage = BigDecimal.valueOf(25.5),
             language = null,
             abbreviation = null,
             description = null,
-            fundId = 1,
+            fundId = null,
             fundType = null,
             selected = true
         )
@@ -243,6 +251,9 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     @MockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
 
+    @MockK
+    lateinit var projectPartnerCoFinancingRepository: ProjectPartnerCoFinancingRepository
+
     lateinit var projectVersionUtils: ProjectVersionUtils
     protected lateinit var persistence: ProjectPartnerCoFinancingPersistence
 
@@ -252,6 +263,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
             projectPartnerRepository,
+            projectPartnerCoFinancingRepository,
             projectVersionUtils
         )
         every { projectPartnerRepository.getProjectIdForPartner(partnerId) } returns projectId
@@ -261,6 +273,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     @Test
     fun `should return current version of coFinancing`() {
         every { projectPartnerRepository.findById(partnerId) } returns Optional.of(projectPartner)
+        every { projectPartnerCoFinancingRepository.findAllByCoFinancingFundIdPartnerId(partnerId) } returns currentFinances
         assertThat(persistence.getCoFinancingAndContributions(1, null)).isEqualTo(currentValue)
     }
 
@@ -271,7 +284,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             previousProjectPartner
         )
         every {
-            projectPartnerRepository.findPartnerFinancingByIdAsOfTimestamp(
+            projectPartnerCoFinancingRepository.findPartnerFinancingByIdAsOfTimestamp(
                 partnerId,
                 timestamp
             )

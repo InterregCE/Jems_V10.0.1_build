@@ -13,9 +13,8 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 
-fun Collection<ProjectPartnerCoFinancingInputDTO>.toFinancingModel() = mapTo(HashSet()) {
+fun List<ProjectPartnerCoFinancingInputDTO>.toFinancingModel() = map {
     UpdateProjectPartnerCoFinancing(
-        fundType = it.fundType,
         fundId = it.fundId,
         percentage = it.percentage
     )

@@ -58,7 +58,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 )
             ),
             ProjectPartnerCoFinancingOutputDTO(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(30.5),
                 fund = ProgrammeFundDTO(id = 2, selected = true /* abbreviation missing for ids 1..9 */)
             ),
@@ -128,7 +128,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 )
             ),
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(30.5),
                 fund = ProgrammeFund(id = 2, selected = true)
             ),
@@ -345,7 +345,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 percentage = BigDecimal.valueOf(30.5)
             ),
             ProjectPartnerCoFinancingInputDTO(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = 10,
                 percentage = BigDecimal.valueOf(20.5)
             ),
@@ -357,7 +357,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         )
         val inputPartnerContributions = expectedDto.partnerContributions
 
-        val slotFinances = slot<Collection<UpdateProjectPartnerCoFinancing>>()
+        val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()
         val slotPartnerContributions = slot<List<ProjectPartnerContribution>>()
 
         every {
@@ -378,17 +378,14 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         // no matter the order
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = 2,
                 percentage = BigDecimal.valueOf(30.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.AdditionalFund,
                 fundId = 10,
                 percentage = BigDecimal.valueOf(20.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(50.5)
             )
