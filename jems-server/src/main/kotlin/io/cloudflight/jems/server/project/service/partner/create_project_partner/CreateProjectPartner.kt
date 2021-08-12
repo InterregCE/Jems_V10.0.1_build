@@ -24,7 +24,7 @@ class CreateProjectPartner(
         ifProjectPartnerIsValid(projectPartner).run {
 
             if (persistence.countByProjectId(projectId) >= MAX_NUMBER_OF_PROJECT_PARTNERS)
-                throw MaximumNumberOfPartnersReached()
+                throw MaximumNumberOfPartnersReached(MAX_NUMBER_OF_PROJECT_PARTNERS)
 
             if (projectPartner.role!!.isLead)
                 persistence.changeRoleOfLeadPartnerToPartnerIfItExists(projectId)
@@ -42,7 +42,7 @@ class CreateProjectPartner(
             generalValidator.notBlank(partner.abbreviation, "abbreviation"),
             generalValidator.maxLength(partner.abbreviation, 15, "abbreviation"),
             generalValidator.maxLength(partner.nameInOriginalLanguage, 100, "nameInOriginalLanguage"),
-            generalValidator.maxLength(partner.nameInEnglish, 100, "nameInOriginalLanguage"),
+            generalValidator.maxLength(partner.nameInEnglish, 100, "nameInEnglish"),
             generalValidator.notNull(partner.legalStatusId, "legalStatusId"),
             generalValidator.maxLength(partner.otherIdentifierNumber, 50, "otherIdentifierNumber"),
             generalValidator.maxLength(partner.otherIdentifierDescription, 100, "otherIdentifierDescription"),

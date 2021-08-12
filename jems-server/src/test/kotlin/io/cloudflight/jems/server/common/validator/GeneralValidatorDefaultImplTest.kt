@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.UnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowableOfType
 import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import java.math.BigDecimal
@@ -17,38 +18,41 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
 
     private val generalValidator = GeneralValidatorDefaultImpl()
 
-    @Test
-    fun `should return correct validation result when input length is more than max allowed length`() {
-        val input = "input text"
-        val maxLength = 3
-        val validationResult = generalValidator.maxLength(input, maxLength, "input")
+    @Nested
+    inner class MaxLength {
+        @Test
+        fun `should return correct validation result when input length is more than max allowed length`() {
+            val input = "input text"
+            val maxLength = 3
+            val validationResult = generalValidator.maxLength(input, maxLength, "input")
 
-        assertThat(validationResult["input"])
-            .isEqualTo(
-                I18nMessage(
-                    "common.error.field.max.length",
-                    mapOf("actualLength" to input.length.toString(), "requiredLength" to maxLength.toString())
-                )
-            )
-    }
-
-    @Test
-    fun `should return correct validation result when translations input length is more than max allowed length`() {
-        val input = mutableSetOf(InputTranslation(SystemLanguage.EN, "translation text"))
-        val maxLength = 3
-
-        val validationResult = generalValidator.maxLength(input, maxLength, "input")
-
-        assertThat(validationResult["input.${input.first().language.translationKey}"])
-            .isEqualTo(
-                I18nMessage(
-                    "common.error.field.max.length",
-                    mapOf(
-                        "actualLength" to input.first().translation!!.length.toString(),
-                        "requiredLength" to maxLength.toString()
+            assertThat(validationResult["input"])
+                .isEqualTo(
+                    I18nMessage(
+                        "common.error.field.max.length",
+                        mapOf("actualLength" to input.length.toString(), "requiredLength" to maxLength.toString())
                     )
                 )
-            )
+        }
+
+        @Test
+        fun `should return correct validation result when translations input length is more than max allowed length`() {
+            val input = mutableSetOf(InputTranslation(SystemLanguage.EN, "translation text"))
+            val maxLength = 3
+
+            val validationResult = generalValidator.maxLength(input, maxLength, "input")
+
+            assertThat(validationResult["input.${input.first().language.translationKey}"])
+                .isEqualTo(
+                    I18nMessage(
+                        "common.error.field.max.length",
+                        mapOf(
+                            "actualLength" to input.first().translation!!.length.toString(),
+                            "requiredLength" to maxLength.toString()
+                        )
+                    )
+                )
+        }
     }
 
     @Test
@@ -97,20 +101,6 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
 
 
     @Test
-    fun `should return correct validation result when input is less than min allowed value`() {
-        val input = BigDecimal(0)
-        val minValue = BigDecimal.ONE
-        val validationResult = generalValidator.minDecimal(input, minValue, "input")
-        assertThat(validationResult["input"])
-            .isEqualTo(
-                I18nMessage(
-                    "common.error.field.min.decimal",
-                    mapOf("minValue" to minValue.toString())
-                )
-            )
-    }
-
-    @Test
     fun `should return correct validation result when start date is after end date`() {
         val start = ZonedDateTime.now().plusDays(4)
         val end = ZonedDateTime.now()
@@ -150,7 +140,7 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
         val input = "aa"
         val emailRegex = "^(.+)@(.+)\$"
 
-        val validationResult = generalValidator.matches(input, emailRegex,"email" , "error.key")
+        val validationResult = generalValidator.matches(input, emailRegex, "email", "error.key")
 
         assertThat(validationResult["email"])
             .isEqualTo(I18nMessage(i18nKey = "error.key"))
@@ -159,121 +149,158 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
 
     @Test
     fun `should return correct validation result when input contains more items than max size`() {
-        val input = listOf(1,2,3,4)
-        val maxSize=2
+        val input = listOf(1, 2, 3, 4)
+        val maxSize = 2
 
-        val validationResult = generalValidator.maxSize(input,maxSize,"numbers")
+        val validationResult = generalValidator.maxSize(input, maxSize, "numbers")
 
         assertThat(validationResult["numbers"])
-            .isEqualTo(I18nMessage(
-                i18nKey = "common.error.field.max.size",
-                i18nArguments = mapOf("maxSize" to maxSize.toString())
-            ))
+            .isEqualTo(
+                I18nMessage(
+                    i18nKey = "common.error.field.max.size",
+                    i18nArguments = mapOf("maxSize" to maxSize.toString())
+                )
+            )
     }
 
     @Test
     fun `should return correct validation result when input contains less items than min size`() {
-        val input = listOf(1,2,3,4)
-        val minSize=6
+        val input = listOf(1, 2, 3, 4)
+        val minSize = 6
 
-        val validationResult = generalValidator.minSize(input,minSize,"numbers")
+        val validationResult = generalValidator.minSize(input, minSize, "numbers")
 
         assertThat(validationResult["numbers"])
-            .isEqualTo(I18nMessage(
-                i18nKey = "common.error.field.min.size",
-                i18nArguments = mapOf("minSize" to minSize.toString())
-            ))
-    }
-
-    @Test
-    fun `should return correct validation result when input fraction part length is more than max allowed length`() {
-        val input = BigDecimal(3.01)
-        val maxIntegerLength = 1
-        val maxFractionLength = 1
-        val validationResult = generalValidator.digits(input, maxIntegerLength, maxFractionLength, "input")
-
-        assertThat(validationResult["input"])
             .isEqualTo(
                 I18nMessage(
-                    "common.error.field.digit",
-                    mapOf(
-                        "maxInteger" to maxIntegerLength.toString(),
-                        "maxFraction" to maxFractionLength.toString(),
-                    )
+                    i18nKey = "common.error.field.min.size",
+                    i18nArguments = mapOf("minSize" to minSize.toString())
                 )
             )
     }
 
-    @Test
-    fun `should return correct validation result when input integer part length is more than max allowed length`() {
-        val input = BigDecimal(30.0)
-        val maxIntegerLength = 1
-        val maxFractionLength = 1
-        val validationResult = generalValidator.digits(input, maxIntegerLength, maxFractionLength, "input")
+    @Nested
+    inner class Digits {
+        @Test
+        fun `should return correct validation result when input fraction part length is more than max allowed length`() {
+            val input = BigDecimal(3.01)
+            val maxIntegerLength = 1
+            val maxFractionLength = 1
+            val validationResult = generalValidator.digits(input, maxIntegerLength, maxFractionLength, "input")
 
-        assertThat(validationResult["input"])
-            .isEqualTo(
-                I18nMessage(
-                    "common.error.field.digit",
-                    mapOf(
-                        "maxInteger" to maxIntegerLength.toString(),
-                        "maxFraction" to maxFractionLength.toString(),
+            assertThat(validationResult["input"])
+                .isEqualTo(
+                    I18nMessage(
+                        "common.error.field.digit",
+                        mapOf(
+                            "maxInteger" to maxIntegerLength.toString(),
+                            "maxFraction" to maxFractionLength.toString(),
+                        )
                     )
                 )
-            )
+        }
+
+
+        @Test
+        fun `should return correct validation result when input integer part length is more than max allowed length`() {
+            val input = BigDecimal(30.0)
+            val maxIntegerLength = 1
+            val maxFractionLength = 1
+            val validationResult = generalValidator.digits(input, maxIntegerLength, maxFractionLength, "input")
+
+            assertThat(validationResult["input"])
+                .isEqualTo(
+                    I18nMessage(
+                        "common.error.field.digit",
+                        mapOf(
+                            "maxInteger" to maxIntegerLength.toString(),
+                            "maxFraction" to maxFractionLength.toString(),
+                        )
+                    )
+                )
+        }
     }
 
-    @TestFactory
-    fun `should return correct validation result when input integer is not in the range`() =
-        listOf(
-            50, 110
-        ).map { input ->
-            DynamicTest.dynamicTest(
-                "should return correct validation result when input integer is not in the range - (input = ${input})"
-            ) {
-                val minValue = 60
-                val maxValue = 100
-                val validationResult = generalValidator.numberBetween(input, minValue, maxValue, "input")
 
-                assertThat(validationResult["input"])
-                    .isEqualTo(
-                        I18nMessage(
-                            "common.error.field.number.out.of.range",
-                            mapOf(
-                                "number" to "$input",
-                                "min" to "$minValue",
-                                "max" to "$maxValue",
-                            )
-                        )
-                    )
-            }
+    @Nested
+    inner class OnlyDigits {
+        @Test
+        fun `should return empty map as validation result when input contains only digits`() {
+            val validationResult = generalValidator.onlyDigits("99046728", "input")
+
+            assertThat(validationResult["input"]).isNull()
         }
 
-    @TestFactory
-    fun `should return correct validation result when input big decimal is not in the range`() =
-        listOf(
-            50, 110
-        ).map { input ->
-            DynamicTest.dynamicTest(
-                "should return correct validation result when input big decimal is not in the range - (input = ${input})"
-            ) {
-                val minValue = 60
-                val maxValue = 100
-                val validationResult = generalValidator.numberBetween(input, minValue, maxValue, "input")
+        @Test
+        fun `should return empty map as validation result when input is null`() {
+            val validationResult = generalValidator.onlyDigits(null, "input")
 
-                assertThat(validationResult["input"])
-                    .isEqualTo(
-                        I18nMessage(
-                            "common.error.field.number.out.of.range",
-                            mapOf(
-                                "number" to "$input",
-                                "min" to "$minValue",
-                                "max" to "$maxValue",
+            assertThat(validationResult["input"]).isNull()
+        }
+
+        @Test
+        fun `should return correct validation result when input contains characters other that digits`() {
+            val validationResult = generalValidator.onlyDigits("3823g76", "input")
+
+            assertThat(validationResult["input"])
+                .isEqualTo(I18nMessage("common.error.only.digits"))
+        }
+    }
+
+    @Nested
+    inner class NumberBetween {
+        @TestFactory
+        fun `should return correct validation result when input integer is not in the range`() =
+            listOf(
+                50, 110
+            ).map { input ->
+                DynamicTest.dynamicTest(
+                    "should return correct validation result when input integer is not in the range - (input = ${input})"
+                ) {
+                    val minValue = 60
+                    val maxValue = 100
+                    val validationResult = generalValidator.numberBetween(input, minValue, maxValue, "input")
+
+                    assertThat(validationResult["input"])
+                        .isEqualTo(
+                            I18nMessage(
+                                "common.error.field.number.out.of.range",
+                                mapOf(
+                                    "number" to "$input",
+                                    "min" to "$minValue",
+                                    "max" to "$maxValue",
+                                )
                             )
                         )
-                    )
+                }
             }
-        }
+
+        @TestFactory
+        fun `should return correct validation result when input big decimal is not in the range`() =
+            listOf(
+                50, 110
+            ).map { input ->
+                DynamicTest.dynamicTest(
+                    "should return correct validation result when input big decimal is not in the range - (input = ${input})"
+                ) {
+                    val minValue = 60
+                    val maxValue = 100
+                    val validationResult = generalValidator.numberBetween(input, minValue, maxValue, "input")
+
+                    assertThat(validationResult["input"])
+                        .isEqualTo(
+                            I18nMessage(
+                                "common.error.field.number.out.of.range",
+                                mapOf(
+                                    "number" to "$input",
+                                    "min" to "$minValue",
+                                    "max" to "$maxValue",
+                                )
+                            )
+                        )
+                }
+            }
+    }
 
     @Test
     fun `should throw AppInputValidationException when there is at least one validation error`() {

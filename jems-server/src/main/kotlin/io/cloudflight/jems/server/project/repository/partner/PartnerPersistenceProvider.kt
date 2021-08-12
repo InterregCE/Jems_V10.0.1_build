@@ -114,6 +114,8 @@ class PartnerPersistenceProvider(
     override fun changeRoleOfLeadPartnerToPartnerIfItExists(projectId: Long) {
         projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER).ifPresent {
             it.role = ProjectPartnerRole.PARTNER
+        }.also {
+            updateSortByRole(projectId)
         }
     }
 
@@ -123,37 +125,33 @@ class PartnerPersistenceProvider(
             throw PartnerAbbreviationNotUnique(abbreviation)
     }
 
-
     @Transactional
-    override fun create(projectId: Long, projectPartner: ProjectPartner): ProjectPartnerDetail {
-        val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
-        val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!)
-            .orElseThrow { ResourceNotFoundException("legalstatus") }
+    override fun create(projectId: Long, projectPartner: ProjectPartner): ProjectPartnerDetail =
+        projectPartnerRepository.save(
+            projectPartner.toEntity(
+                project = projectRepo.getReferenceIfExistsOrThrow(projectId),
+                legalStatus = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId)
+            )
+        ).also { updateSortByRole(projectId) }.toProjectPartnerDetail()
 
-        val partnerCreated =
-            projectPartnerRepository.save(projectPartner.toEntity(project = project, legalStatus = legalStatus))
-
-        updateSortByRole(projectId)
-        // entity is attached, number will have been updated
-        return partnerCreated.toProjectPartnerDetail()
-    }
 
     @Transactional
     override fun update(projectPartner: ProjectPartner): ProjectPartnerDetail =
         getPartnerOrThrow(projectPartner.id!!).also { oldPartner ->
-
-            if (oldPartner.role != ProjectPartnerRole.LEAD_PARTNER && projectPartner.role!!.isLead)
-                updateSortByRole(oldPartner.project.id)
 
             oldPartner.abbreviation = projectPartner.abbreviation!!
             oldPartner.role = projectPartner.role!!
             oldPartner.nameInOriginalLanguage = projectPartner.nameInOriginalLanguage
             oldPartner.nameInEnglish = projectPartner.nameInEnglish
             oldPartner.translatedValues = mutableSetOf<ProjectPartnerTranslEntity>().also {
-                it.addPartnerTranslations(oldPartner, projectPartner.department, projectPartner.otherIdentifierDescription)
+                it.addPartnerTranslations(
+                    oldPartner,
+                    projectPartner.department,
+                    projectPartner.otherIdentifierDescription
+                )
             }
             oldPartner.partnerType = projectPartner.partnerType
-            oldPartner.legalStatus = legalStatusRepo.getOne(projectPartner.legalStatusId!!)
+            oldPartner.legalStatus = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId!!)
             oldPartner.vat = projectPartner.vat
             oldPartner.vatRecovery = projectPartner.vatRecovery
 
@@ -260,7 +258,7 @@ class PartnerPersistenceProvider(
         timestamp: Timestamp,
     ): ProjectPartnerStateAid =
         projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(partnerId, timestamp).toModel()
-            ?: ProjectPartnerStateAid()
+            ?: ProjectPartnerStateAid(answer1 = null, answer2 = null, answer3 = null, answer4 = null)
 
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {
         return projectPartnerRepository.findById(partnerId)

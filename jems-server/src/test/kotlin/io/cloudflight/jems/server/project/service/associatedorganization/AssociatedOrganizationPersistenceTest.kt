@@ -7,7 +7,6 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectA
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -31,6 +30,8 @@ import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizati
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -70,10 +71,10 @@ class AssociatedOrganizationPersistenceTest {
             project = project,
             abbreviation = "abbreviation",
             sortNumber = 1,
-            role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+            role = ProjectPartnerRole.LEAD_PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 5L),
             addresses = setOf(ProjectPartnerAddressEntity(
-                addressId = ProjectPartnerAddressId(partnerId = 3L, ProjectPartnerAddressTypeDTO.Organization),
+                addressId = ProjectPartnerAddressId(partnerId = 3L, ProjectPartnerAddressType.Organization),
                 address = address
             ))
         )
@@ -109,7 +110,7 @@ class AssociatedOrganizationPersistenceTest {
             partner = ProjectPartnerSummaryDTO(
                 id = projectPartner.id,
                 abbreviation = projectPartner.abbreviation,
-                role = projectPartner.role,
+                role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name),
                 sortNumber = projectPartner.sortNumber,
                 country = "country"
             ),
@@ -181,7 +182,7 @@ class AssociatedOrganizationPersistenceTest {
         val mockPPRow: PartnerSimpleRow = mockk()
         every { mockPPRow.id } returns projectPartner.id
         every { mockPPRow.abbreviation } returns "abbreviation"
-        every { mockPPRow.role } returns ProjectPartnerRoleDTO.LEAD_PARTNER
+        every { mockPPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPPRow.sortNumber } returns 1
         every { mockPPRow.country } returns "country"
         val mockAOARow: AssociatedOrganizationAddressRow = mockk()

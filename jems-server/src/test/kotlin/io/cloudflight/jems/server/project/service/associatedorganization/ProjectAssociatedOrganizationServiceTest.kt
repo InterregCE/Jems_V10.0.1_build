@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -29,6 +30,7 @@ import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizati
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.toModel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.mockk.MockKAnnotations
@@ -98,7 +100,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         id = 1,
         project = project,
         abbreviation = "partner",
-        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+        role = ProjectPartnerRole.LEAD_PARTNER,
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
         sortNumber = 1,
     )
@@ -147,7 +149,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
                 PageImpl(listOf(organization(1, projectPartner, "test", 1)))
 
         assertThat(projectAssociatedOrganizationService.findAllByProjectId(1))
-            .containsExactly(outputOrganizationDetail(1, projectPartner.toModel(), "test", 1))
+            .containsExactly(outputOrganizationDetail(1, projectPartner.toModel().toDto(), "test", 1))
     }
 
     @Test

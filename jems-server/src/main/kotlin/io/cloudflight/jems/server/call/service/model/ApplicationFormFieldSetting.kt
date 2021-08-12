@@ -41,6 +41,22 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.partner.type",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PARTNER_SUB_TYPE(
+        "application.config.project.partner.sub.type",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_NACE_GROUP_LEVEL(
+        "application.config.project.partner.nace.group.level",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_OTHER_IDENTIFIER_NUMBER_AND_DESCRIPTION(
+        "application.config.project.partner.other.identifier.number.and.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_PIC(
+        "application.config.project.partner.pic",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PARTNER_LEGAL_STATUS(
         "application.config.project.partner.legal.status",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO)
@@ -51,7 +67,7 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     ),
     PARTNER_VAT_RECOVERY(
         "application.config.project.partner.recoverVat",
-        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PARTNER_MAIN_ADDRESS_COUNTRY_AND_NUTS(
         "application.config.project.partner.main-address.country.and.nuts",

@@ -52,14 +52,14 @@ data class ProjectPartnerEntity(
     var partnerType: ProjectTargetGroup? = null,
 
     @Enumerated(EnumType.STRING)
-    var partnerSubType: PartnerSubType?,
+    var partnerSubType: PartnerSubType? = null,
 
     @Enumerated(EnumType.STRING)
-    var nace: NaceGroupLevel?,
+    var nace: NaceGroupLevel? = null,
 
-    var otherIdentifierNumber: String?,
+    var otherIdentifierNumber: String? = null,
 
-    var pic: String?,
+    var pic: String? = null,
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "legal_status_id")

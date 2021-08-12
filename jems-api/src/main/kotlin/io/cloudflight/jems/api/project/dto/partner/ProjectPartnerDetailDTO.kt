@@ -14,7 +14,7 @@ data class ProjectPartnerDetailDTO (
     val department: Set<InputTranslation> = emptySet(),
     val partnerType: ProjectTargetGroupDTO?,
     val partnerSubType: PartnerSubTypeDTO?,
-    val nace: NaceGroupLevelDTO,
+    val nace: NaceGroupLevelDTO?,
     val otherIdentifierNumber: String?,
     val otherIdentifierDescription: Set<InputTranslation> = emptySet(),
     val pic: String?,

@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.budget.get_project_budget
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
@@ -12,6 +11,7 @@ import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersiste
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -28,14 +28,14 @@ class GetProjectBudgetInteractorTest : UnitTest() {
     private val partner1 = ProjectPartnerSummary(
         id = partner1Id,
         abbreviation = "PP 2",
-        role = ProjectPartnerRoleDTO.PARTNER,
+        role = ProjectPartnerRole.PARTNER,
         sortNumber = 2,
         country = "SK"
     )
     private val partner2 = ProjectPartnerSummary(
         id = partner2Id,
         abbreviation = "LP 1",
-        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+        role = ProjectPartnerRole.LEAD_PARTNER,
         sortNumber = 1
     )
 

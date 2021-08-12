@@ -47,6 +47,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries.GetProjectInvestmentSummariesInteractor
 import io.cloudflight.jems.server.toScaledBigDecimal
@@ -91,7 +92,7 @@ class ProjectControllerTest {
         private val partner1 = ProjectPartnerSummary(
             id = 2,
             abbreviation = "Partner 1",
-            role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+            role = ProjectPartnerRole.LEAD_PARTNER,
             sortNumber = 1,
             country = "AT",
         )
@@ -99,7 +100,7 @@ class ProjectControllerTest {
         private val partner2 = ProjectPartnerSummary(
             id = 1,
             abbreviation = "Partner 2",
-            role = ProjectPartnerRoleDTO.PARTNER,
+            role = ProjectPartnerRole.PARTNER,
             sortNumber = 2,
             country = "CZ",
         )

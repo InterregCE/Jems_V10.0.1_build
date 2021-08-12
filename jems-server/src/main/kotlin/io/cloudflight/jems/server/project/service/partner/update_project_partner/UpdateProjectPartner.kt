@@ -63,7 +63,7 @@ class UpdateProjectPartner(
             generalValidator.notBlank(partner.abbreviation, "abbreviation"),
             generalValidator.maxLength(partner.abbreviation, 15, "abbreviation"),
             generalValidator.maxLength(partner.nameInOriginalLanguage, 100, "nameInOriginalLanguage"),
-            generalValidator.maxLength(partner.nameInEnglish, 100, "nameInOriginalLanguage"),
+            generalValidator.maxLength(partner.nameInEnglish, 100, "nameInEnglish"),
             generalValidator.notNull(partner.legalStatusId, "legalStatusId"),
             generalValidator.maxLength(partner.otherIdentifierNumber, 50, "otherIdentifierNumber"),
             generalValidator.maxLength(partner.otherIdentifierDescription, 100, "otherIdentifierDescription"),

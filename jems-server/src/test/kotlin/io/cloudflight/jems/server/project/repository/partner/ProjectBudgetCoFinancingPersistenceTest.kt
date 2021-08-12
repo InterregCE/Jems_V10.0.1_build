@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
@@ -25,6 +24,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -72,7 +72,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
             id = PARTNER_ID,
             project = dummyProject(),
             abbreviation = "test abbr",
-            role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+            role = ProjectPartnerRole.LEAD_PARTNER,
             legalStatus = ProgrammeLegalStatusEntity()
         )
     }

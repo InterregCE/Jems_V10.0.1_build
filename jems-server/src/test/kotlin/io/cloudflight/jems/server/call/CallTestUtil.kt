@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.call
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
@@ -15,6 +14,7 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.User
@@ -68,8 +68,8 @@ fun partnerWithId(id: Long) = ProjectPartnerEntity(
     id = id,
     project = dummyProject,
     abbreviation = "test abbr",
-    role = ProjectPartnerRoleDTO.LEAD_PARTNER,
-    legalStatus = ProgrammeLegalStatusEntity()
+    role = ProjectPartnerRole.LEAD_PARTNER,
+    legalStatus = ProgrammeLegalStatusEntity(),
 )
 
 fun userWithId(id: Long) = LocalCurrentUser(

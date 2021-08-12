@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {
   ProjectContactDTO,
-  CreateProjectPartnerRequestDTO,
-  UpdateProjectPartnerRequestDTO,
+  ProjectPartnerDTO,
   ProjectPartnerSummaryDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerAddressDTO,
@@ -52,7 +51,7 @@ export class ProjectPartnerStore {
     this.partner$ = this.partner();
   }
 
-  savePartner(partner: UpdateProjectPartnerRequestDTO): Observable<ProjectPartnerDetailDTO> {
+  savePartner(partner: ProjectPartnerDTO): Observable<ProjectPartnerDetailDTO> {
     return this.partnerService.updateProjectPartner(partner)
       .pipe(
         tap(saved => this.updatedPartner$.next(saved)),
@@ -61,7 +60,7 @@ export class ProjectPartnerStore {
       );
   }
 
-  createPartner(partner: CreateProjectPartnerRequestDTO): Observable<ProjectPartnerDetailDTO> {
+  createPartner(partner: ProjectPartnerDTO): Observable<ProjectPartnerDetailDTO> {
     return this.partnerService.createProjectPartner(this.projectId, partner)
       .pipe(
         tap(created => this.updatedPartner$.next(created)),

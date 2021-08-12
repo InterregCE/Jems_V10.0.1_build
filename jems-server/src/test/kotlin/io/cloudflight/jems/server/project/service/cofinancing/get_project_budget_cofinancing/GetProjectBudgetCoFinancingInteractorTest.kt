@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.cofinancing.get_project_budget_cofinancing
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
@@ -8,6 +7,7 @@ import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofina
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
@@ -23,14 +23,14 @@ class GetProjectBudgetCoFinancingInteractorTest : UnitTest() {
     private val partner1 = ProjectPartnerSummary(
         id = partner1Id,
         abbreviation = "PP 2",
-        role = ProjectPartnerRoleDTO.PARTNER,
+        role = ProjectPartnerRole.PARTNER,
         sortNumber = 2,
         country = "SK"
     )
     private val partner2 = ProjectPartnerSummary(
         id = partner2Id,
         abbreviation = "LP 1",
-        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+        role = ProjectPartnerRole.LEAD_PARTNER,
         sortNumber = 1
     )
     private val projectPartnerCoFinancingAndContribution = ProjectPartnerCoFinancingAndContribution(

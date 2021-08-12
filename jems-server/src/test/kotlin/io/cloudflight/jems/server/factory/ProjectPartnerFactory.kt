@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.factory
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
@@ -8,6 +7,7 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -29,7 +29,7 @@ class ProjectPartnerFactory(
                 project = project,
                 abbreviation = "abbr",
                 legalStatus = legalStatus,
-                role = ProjectPartnerRoleDTO.PARTNER
+                role = ProjectPartnerRole.PARTNER
             )
         )
     }

@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.toOutputProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.service.associatedorganization.toOutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.mockk.every
@@ -80,7 +81,7 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
         id = 1,
         project = project,
         abbreviation = "partner",
-        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+        role = ProjectPartnerRole.LEAD_PARTNER,
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
         sortNumber = 1,
     )

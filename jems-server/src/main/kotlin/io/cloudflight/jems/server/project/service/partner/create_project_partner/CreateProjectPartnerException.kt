@@ -13,7 +13,7 @@ class CreateProjectPartnerException(cause: Throwable) : ApplicationException(
     cause = cause
 )
 
-class MaximumNumberOfPartnersReached : ApplicationUnprocessableException(
+class MaximumNumberOfPartnersReached(maxAmount: Int) : ApplicationUnprocessableException(
     code = "$CREATE_PROJECT_PARTNER_ERROR_CODE_PREFIX-005",
-    i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_ERROR_KEY_PREFIX.max.allowed.count.reached"),
+    i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_ERROR_KEY_PREFIX.max.allowed.count.reached", mapOf("maxAmount" to maxAmount.toString())),
 )

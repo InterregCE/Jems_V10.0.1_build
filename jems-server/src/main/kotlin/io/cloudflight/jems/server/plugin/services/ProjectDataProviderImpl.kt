@@ -4,7 +4,6 @@ import io.cloudflight.jems.plugin.contract.models.project.ProjectData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
-import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
@@ -58,17 +57,18 @@ class ProjectDataProviderImpl(
             val stateAid = partnerPersistence.getPartnerStateAid(partnerId = it.id)
             it.toDataModel(stateAid, budget)
         }.toSet()
-        val associatedOrganisations =
-            associatedOrganizationService.findAllByProjectId(projectId).map { it.toDataModel() }.toSet()
-        val sectionB = ProjectDataSectionB(partners, associatedOrganisations)
 
-        val workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId).toDataModel()
-        val results = resultPersistence.getResultsForProject(projectId, null).toResultDataModel()
-        val sectionC = projectDescriptionPersistence.getProjectDescription(projectId).toDataModel(workPackages, results)
+        val sectionB =
+            ProjectDataSectionB(partners, associatedOrganizationService.findAllByProjectId(projectId).toDataModel())
 
-        val projectLumpSums = projectLumpSumPersistence.getLumpSums(projectId)
-        val lumpSumsDetail = programmeLumpSumPersistence.getLumpSums(projectLumpSums.map { it.programmeLumpSumId })
-        val sectionE = ProjectDataSectionE(projectLumpSums.map { it.toDataModel(lumpSumsDetail) }.toList())
+        val sectionC = projectDescriptionPersistence.getProjectDescription(projectId).toDataModel(
+            workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId),
+            results = resultPersistence.getResultsForProject(projectId, null)
+        )
+
+        val sectionE = with(projectLumpSumPersistence.getLumpSums(projectId)) {
+            this.toDataModel(programmeLumpSumPersistence.getLumpSums(this.map { it.programmeLumpSumId }))
+        }
 
         logger.info("Retrieved project data for project id=$projectId via plugin.")
 

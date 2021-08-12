@@ -1,9 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -22,8 +19,13 @@ import io.cloudflight.jems.server.project.repository.partner.cofinancing.Project
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toCoFinancingModel
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
+import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -46,13 +48,18 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         override val id: Long,
         override val projectId: Long,
         override val abbreviation: String,
-        override val role: ProjectPartnerRoleDTO,
+        override val role: ProjectPartnerRole,
         override val sortNumber: Int,
         override val nameInOriginalLanguage: String?,
         override val nameInEnglish: String?,
-        override val partnerType: ProjectTargetGroupDTO?,
+        override val partnerType: ProjectTargetGroup?,
+        override val partnerSubType: PartnerSubType?,
+        override val nace: NaceGroupLevel?,
+        override val otherIdentifierNumber: String?,
+        override val otherIdentifierDescription: String?,
+        override val pic: String?,
         override val vat: String?,
-        override val vatRecovery: ProjectPartnerVatRecoveryDTO?,
+        override val vatRecovery: ProjectPartnerVatRecovery?,
         override val legalStatusId: Long,
         override val department: String?
     ) : PartnerIdentityRow
@@ -159,11 +166,11 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         id = 1,
         project = ProjectPartnerTestUtil.project,
         abbreviation = "partner",
-        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
-        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
+        role = ProjectPartnerRole.LEAD_PARTNER,
+        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
         vat = "test vat",
-        vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
+        vatRecovery = ProjectPartnerVatRecovery.Yes,
         financing = currentFinances,
         partnerContributions = currentContributions
     )
@@ -211,13 +218,18 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         id = 1,
         projectId = 1,
         abbreviation = "previous partner",
-        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+        role = ProjectPartnerRole.LEAD_PARTNER,
         sortNumber = 1,
         nameInOriginalLanguage = "",
         nameInEnglish = "",
-        partnerType = ProjectTargetGroupDTO.BusinessSupportOrganisation,
+        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerSubType = PartnerSubType.LARGE_ENTERPRISE,
+        nace= NaceGroupLevel.A,
+        otherIdentifierNumber= "32",
+        otherIdentifierDescription = "desc",
+        pic= "123",
         vat = "test vat",
-        vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
+        vatRecovery = ProjectPartnerVatRecovery.Yes,
         legalStatusId = 1,
         department = ""
     )

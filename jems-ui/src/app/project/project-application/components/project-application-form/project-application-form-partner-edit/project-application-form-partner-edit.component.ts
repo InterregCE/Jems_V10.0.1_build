@@ -4,8 +4,7 @@ import {
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
-  CreateProjectPartnerRequestDTO,
-  UpdateProjectPartnerRequestDTO,
+  ProjectPartnerDTO,
   InputTranslation,
   ProjectPartnerSummaryDTO,
   ProjectPartnerDetailDTO,
@@ -33,7 +32,7 @@ import {RoutingService} from '@common/services/routing.service';
 })
 export class ProjectApplicationFormPartnerEditComponent {
   RoleEnum = ProjectPartnerSummaryDTO.RoleEnum;
-  VatRecoveryEnum = CreateProjectPartnerRequestDTO.VatRecoveryEnum;
+  VatRecoveryEnum = ProjectPartnerDTO.VatRecoveryEnum;
   LANGUAGE = InputTranslation.LanguageEnum;
   APPLICATION_FORM = APPLICATION_FORM;
 
@@ -106,6 +105,7 @@ export class ProjectApplicationFormPartnerEditComponent {
   onSubmit(controls: any, oldPartnerId?: number): void {
     if (!controls.id?.value) {
       const partnerToCreate = {
+        id: 0,
         abbreviation: this.controls.abbreviation.value,
         role: this.controls.role.value,
         oldLeadPartnerId: oldPartnerId,
@@ -113,6 +113,11 @@ export class ProjectApplicationFormPartnerEditComponent {
         nameInEnglish: this.controls.nameInEnglish.value[0].translation,
         department: this.controls.department.value,
         partnerType: this.controls.partnerType.value,
+        partnerSubType: ProjectPartnerDTO.PartnerSubTypeEnum.LARGEENTERPRISE,
+        nace: ProjectPartnerDTO.NaceEnum.A,
+        otherIdentifierNumber: '12',
+        otherIdentifierDescription: [],
+        pic: '012',
         legalStatusId: this.controls.legalStatusId.value,
         vat: this.controls.vat.value,
         vatRecovery: this.controls.vatRecovery.value,
@@ -123,7 +128,7 @@ export class ProjectApplicationFormPartnerEditComponent {
         partnerToCreate.partnerType = null;
       }
 
-      this.partnerStore.createPartner(partnerToCreate as CreateProjectPartnerRequestDTO)
+      this.partnerStore.createPartner(partnerToCreate as ProjectPartnerDTO)
         .pipe(
           take(1),
           tap(created => this.redirectToPartnerDetail(created)),
@@ -139,6 +144,11 @@ export class ProjectApplicationFormPartnerEditComponent {
         nameInEnglish: this.controls.nameInEnglish.value[0].translation,
         department: this.controls.department.value,
         partnerType: this.controls.partnerType.value,
+        partnerSubType: ProjectPartnerDTO.PartnerSubTypeEnum.LARGEENTERPRISE,
+        nace: ProjectPartnerDTO.NaceEnum.A,
+        otherIdentifierNumber: '12',
+        otherIdentifierDescription: [],
+        pic: '012',
         legalStatusId: this.controls.legalStatusId.value,
         vat: this.controls.vat.value,
         vatRecovery: this.controls.vatRecovery.value,
@@ -148,7 +158,7 @@ export class ProjectApplicationFormPartnerEditComponent {
       if (!controls.partnerType.value) {
         partnerToUpdate.partnerType = null;
       }
-      this.partnerStore.savePartner(partnerToUpdate as UpdateProjectPartnerRequestDTO)
+      this.partnerStore.savePartner(partnerToUpdate as ProjectPartnerDTO)
         .pipe(
           take(1),
           tap(() => this.formService.setSuccess('project.partner.save.success')),
