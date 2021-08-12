@@ -150,7 +150,7 @@
                                     <mat-option
                                             [value]="partnerContributionStatus.Private">{{partnerContributionStatus.Private}}</mat-option>
                                     <mat-option
-                                            *ngIf="!partnerContribution?.value?.isPartner"
+                                            *ngIf="!partnerContribution?.value?.partner"
                                             [value]="partnerContributionStatus.AutomaticPublic">{{partnerContributionStatus.AutomaticPublic}}</mat-option>
                                 </mat-select>
                                 <mat-error>
@@ -173,7 +173,7 @@
                             </div>
                             <div>
                                 <button type="button" mat-icon-button color="accent"
-                                        *ngIf="!partnerContribution.value.isPartner && coFinancingForm.enabled"
+                                        *ngIf="!partnerContribution.value.partner && coFinancingForm.enabled"
                                         (click)="deletePartnerContribution(i)">
                                     <mat-icon>delete</mat-icon>
                                 </button>
