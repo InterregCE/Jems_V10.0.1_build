@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetRow
@@ -26,6 +26,10 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
+import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
+import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -192,11 +196,15 @@ class ProjectBudgetPersistenceTest {
                 id = 5,
                 project = ProjectPartnerTestUtil.project,
                 abbreviation = "partner",
-                role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                role = ProjectPartnerRole.LEAD_PARTNER,
                 legalStatus = ProgrammeLegalStatusEntity(1),
+                partnerSubType = PartnerSubType.LARGE_ENTERPRISE,
+                nace = NaceGroupLevel.A,
+                pic = "034",
+                otherIdentifierNumber = "id-12",
                 sortNumber = 1,
-                addresses = setOf(ProjectPartnerAddress(
-                    addressId = ProjectPartnerAddressId(5, ProjectPartnerAddressTypeDTO.Organization),
+                addresses = setOf(ProjectPartnerAddressEntity(
+                    addressId = ProjectPartnerAddressId(5, ProjectPartnerAddressType.Organization),
                     address = AddressEntity(country = "SK")
                 ))
             )
@@ -207,7 +215,7 @@ class ProjectBudgetPersistenceTest {
                 ProjectPartnerSummary(
                     id = 5,
                     abbreviation = "partner",
-                    role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                    role = ProjectPartnerRole.LEAD_PARTNER,
                     sortNumber = 1,
                     country = "SK"
                 )
@@ -219,7 +227,7 @@ class ProjectBudgetPersistenceTest {
         val mockPRow: PartnerSimpleRow = mockk()
         every { mockPRow.id } returns PARTNER_ID
         every { mockPRow.abbreviation } returns "abbreviation"
-        every { mockPRow.role } returns ProjectPartnerRoleDTO.LEAD_PARTNER
+        every { mockPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPRow.sortNumber } returns 1
         every { mockPRow.country } returns "AT"
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
@@ -229,7 +237,7 @@ class ProjectBudgetPersistenceTest {
             .containsExactly(ProjectPartnerSummary(
                 id = PARTNER_ID,
                 abbreviation = "abbreviation",
-                role = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                role = ProjectPartnerRole.LEAD_PARTNER,
                 sortNumber = 1,
                 country = "AT"
             ))

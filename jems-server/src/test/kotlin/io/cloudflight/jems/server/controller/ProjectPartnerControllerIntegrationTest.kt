@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.factory.CallFactory
 import io.cloudflight.jems.server.factory.ProgrammeDataFactory
@@ -57,7 +57,7 @@ class ProjectPartnerControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFileFactory.saveProject(userFactory.adminUser, call)
         programmeDataFactory.saveLegalStatus()
-        val projectPartnerRequest = CreateProjectPartnerRequestDTO("partner", ProjectPartnerRoleDTO.LEAD_PARTNER, legalStatusId = 1)
+        val projectPartnerRequest = ProjectPartnerDTO(0L, "partner", ProjectPartnerRoleDTO.LEAD_PARTNER, legalStatusId = 1)
 
         mockMvc.perform(
             post("/api/project/partner/toProjectId/${project.id}")
@@ -72,7 +72,7 @@ class ProjectPartnerControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project partner create fails with missing required fields`() {
-        val projectPartnerRequest = CreateProjectPartnerRequestDTO(null, null, legalStatusId = null)
+        val projectPartnerRequest = ProjectPartnerDTO(null, null, null, legalStatusId = null)
 
         mockMvc.perform(
             post("/api/project/partner/toProjectId/1")
@@ -92,7 +92,7 @@ class ProjectPartnerControllerIntegrationTest {
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFactory.saveProject(userFactory.adminUser, call)
 
-        val projectPartnerRequest = CreateProjectPartnerRequestDTO(RandomString.make(16), ProjectPartnerRoleDTO.LEAD_PARTNER, legalStatusId = 1)
+        val projectPartnerRequest = ProjectPartnerDTO(0L, RandomString.make(16), ProjectPartnerRoleDTO.LEAD_PARTNER, legalStatusId = 1)
 
         mockMvc.perform(
             post("/api/project/partner/toProjectId/${project.id}")

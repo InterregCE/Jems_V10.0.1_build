@@ -24,7 +24,7 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationTransl
 import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
@@ -72,7 +72,7 @@ class AssociatedOrganizationPersistenceTest {
             sortNumber = 1,
             role = ProjectPartnerRoleDTO.LEAD_PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 5L),
-            addresses = setOf(ProjectPartnerAddress(
+            addresses = setOf(ProjectPartnerAddressEntity(
                 addressId = ProjectPartnerAddressId(partnerId = 3L, ProjectPartnerAddressTypeDTO.Organization),
                 address = address
             ))

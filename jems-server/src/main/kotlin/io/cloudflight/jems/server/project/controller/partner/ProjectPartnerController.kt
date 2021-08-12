@@ -4,9 +4,8 @@ import io.cloudflight.jems.api.project.partner.ProjectPartnerApi
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
-import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
-import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.server.project.service.partner.create_project_partner.CreateProjectPartnerInteractor
@@ -29,37 +28,29 @@ class ProjectPartnerController(
     private val deleteProjectPartner: DeleteProjectPartnerInteractor,
 ) : ProjectPartnerApi {
 
-    override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<ProjectPartnerSummaryDTO> {
-        return getProjectPartner.findAllByProjectId(projectId, pageable, version)
-    }
+    override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<ProjectPartnerSummaryDTO> =
+       getProjectPartner.findAllByProjectId(projectId, pageable, version).toDto()
 
-    override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable, version: String?): List<ProjectPartnerSummaryDTO> {
-        return getProjectPartner.findAllByProjectIdForDropdown(projectId, pageable.sort, version)
-    }
+    override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable, version: String?): List<ProjectPartnerSummaryDTO> =
+       getProjectPartner.findAllByProjectIdForDropdown(projectId, pageable.sort, version).toDto()
 
-    override fun getProjectPartnerById(partnerId: Long, version: String?): ProjectPartnerDetailDTO {
-        return getProjectPartner.getById(partnerId, version)
-    }
+    override fun getProjectPartnerById(partnerId: Long, version: String?): ProjectPartnerDetailDTO =
+        getProjectPartner.getById(partnerId, version).toDto()
 
-    override fun createProjectPartner(projectId: Long, projectPartner: CreateProjectPartnerRequestDTO): ProjectPartnerDetailDTO {
-        return createProjectPartner.create(projectId = projectId, projectPartner = projectPartner)
-    }
+    override fun createProjectPartner(projectId: Long, projectPartner: ProjectPartnerDTO): ProjectPartnerDetailDTO =
+         createProjectPartner.create(projectId = projectId, projectPartner = projectPartner.toModel()).toDto()
 
-    override fun updateProjectPartner(projectPartner: UpdateProjectPartnerRequestDTO): ProjectPartnerDetailDTO {
-        return updateProjectPartner.update(projectPartner)
-    }
+    override fun updateProjectPartner(projectPartner: ProjectPartnerDTO): ProjectPartnerDetailDTO =
+        updateProjectPartner.update(projectPartner.toModel()).toDto()
 
-    override fun updateProjectPartnerAddress(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): ProjectPartnerDetailDTO {
-        return updateProjectPartner.updatePartnerAddresses(partnerId, addresses)
-    }
+    override fun updateProjectPartnerAddress(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): ProjectPartnerDetailDTO =
+        updateProjectPartner.updatePartnerAddresses(partnerId, addresses.toAddressModel()).toDto()
 
-    override fun updateProjectPartnerContact(partnerId: Long, contacts: Set<ProjectContactDTO>): ProjectPartnerDetailDTO {
-        return updateProjectPartner.updatePartnerContacts(partnerId, contacts)
-    }
+    override fun updateProjectPartnerContact(partnerId: Long, contacts: Set<ProjectContactDTO>): ProjectPartnerDetailDTO =
+        updateProjectPartner.updatePartnerContacts(partnerId, contacts.toContactModel()).toDto()
 
-    override fun updateProjectPartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): ProjectPartnerDetailDTO {
-        return updateProjectPartner.updatePartnerMotivation(partnerId, motivation)
-    }
+    override fun updateProjectPartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): ProjectPartnerDetailDTO =
+        updateProjectPartner.updatePartnerMotivation(partnerId, motivation.toModel()).toDto()
 
     override fun getProjectPartnerStateAid(partnerId: Long, version: String?): ProjectPartnerStateAidDTO =
         getProjectPartnerStateAid.getStateAidForPartnerId(partnerId, version).toDto()

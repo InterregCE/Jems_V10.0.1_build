@@ -13,22 +13,7 @@ class CreateProjectPartnerException(cause: Throwable) : ApplicationException(
     cause = cause
 )
 
-class PartnerAbbreviationNotUnique(abbreviation: Map<String, String>) : ApplicationUnprocessableException(
-    code = "$CREATE_PROJECT_PARTNER_ERROR_CODE_PREFIX-002",
-    i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_ERROR_KEY_PREFIX.abbreviation.not.unique", abbreviation),
-)
-
-class LeadPartnerAlreadyExists(args: Map<String, String>) : ApplicationUnprocessableException(
-    code = "$CREATE_PROJECT_PARTNER_ERROR_CODE_PREFIX-003",
-    i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_ERROR_KEY_PREFIX.role.lead.already.existing", args),
-)
-
-class PartnerIsNotLead() : ApplicationUnprocessableException(
-    code = "$CREATE_PROJECT_PARTNER_ERROR_CODE_PREFIX-004",
-    i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_ERROR_KEY_PREFIX.oldLeadPartnerId.is.not.lead"),
-)
-
-class MaximumNumberOfPartnersReached() : ApplicationUnprocessableException(
+class MaximumNumberOfPartnersReached : ApplicationUnprocessableException(
     code = "$CREATE_PROJECT_PARTNER_ERROR_CODE_PREFIX-005",
     i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_ERROR_KEY_PREFIX.max.allowed.count.reached"),
 )

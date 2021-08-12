@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.entity.partner
 
-import io.cloudflight.jems.api.project.dto.ProjectContactTypeDTO
+import io.cloudflight.jems.server.project.service.model.ProjectContactType
 
 interface PartnerContactRow {
-    val type: ProjectContactTypeDTO
+    val type: ProjectContactType
     val title: String?
     val firstName: String?
     val lastName: String?

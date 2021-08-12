@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.project.entity.partner.PartnerAddressRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
@@ -9,6 +8,7 @@ import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerFinancingRow
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -31,9 +31,10 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun findTop30ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartnerEntity>
 
-    fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRoleDTO): Optional<ProjectPartnerEntity>
+    fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole): Optional<ProjectPartnerEntity>
 
-    fun findFirstByProjectIdAndAbbreviation(projectId: Long, name: String): Optional<ProjectPartnerEntity>
+    fun existsByProjectIdAndAbbreviation(projectId: Long, name: String): Boolean
+
 
     fun countByProjectId(projectId: Long): Long
 

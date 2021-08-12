@@ -28,6 +28,8 @@ interface GeneralValidatorService {
 
     fun digits(input: BigDecimal?, maxIntegerLength: Int, maxFractionLength: Int, fieldName: String): Map<String, I18nMessage>
 
+    fun onlyDigits(input: String?, fieldName: String): Map<String, I18nMessage>
+
     fun startDateBeforeEndDate(start: ZonedDateTime?, end: ZonedDateTime?, startDateFieldName: String, endDateFieldName: String): Map<String, I18nMessage>
 
     fun dateNotInFuture(date: LocalDate, fieldName: String): Map<String, I18nMessage>

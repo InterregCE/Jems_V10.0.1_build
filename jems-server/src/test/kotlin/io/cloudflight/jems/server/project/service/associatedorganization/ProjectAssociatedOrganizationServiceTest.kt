@@ -27,7 +27,7 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.partner.toDto
+import io.cloudflight.jems.server.project.repository.partner.toModel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
@@ -147,7 +147,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
                 PageImpl(listOf(organization(1, projectPartner, "test", 1)))
 
         assertThat(projectAssociatedOrganizationService.findAllByProjectId(1))
-            .containsExactly(outputOrganizationDetail(1, projectPartner.toDto(), "test", 1))
+            .containsExactly(outputOrganizationDetail(1, projectPartner.toModel(), "test", 1))
     }
 
     @Test

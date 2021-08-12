@@ -3,9 +3,8 @@ package io.cloudflight.jems.api.project.partner
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
-import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
-import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.swagger.annotations.Api
@@ -62,13 +61,13 @@ interface ProjectPartnerApi {
     @PostMapping("/toProjectId/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProjectPartner(
         @PathVariable projectId: Long,
-        @RequestBody projectPartner: CreateProjectPartnerRequestDTO
+        @RequestBody projectPartner: ProjectPartnerDTO
     ): ProjectPartnerDetailDTO
 
     @ApiOperation("Update project partner")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartner(
-        @RequestBody projectPartner: UpdateProjectPartnerRequestDTO
+        @RequestBody projectPartner: ProjectPartnerDTO
     ): ProjectPartnerDetailDTO
 
     @ApiOperation("Update project partner addresses")

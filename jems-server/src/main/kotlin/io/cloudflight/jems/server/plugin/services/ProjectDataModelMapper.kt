@@ -6,13 +6,10 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySimple
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLumpSumData
@@ -81,9 +78,9 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
-import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
 import io.cloudflight.jems.server.project.service.model.ProjectDescription
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
 import io.cloudflight.jems.server.project.service.model.ProjectManagement
@@ -99,7 +96,11 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
@@ -179,7 +180,7 @@ fun ProjectRelevance.toDataModel() = ProjectRelevanceData(
     }?.toList(),
     projectStrategies = projectStrategies?.map {
         ProjectRelevanceStrategyData(
-            strategy = if(it.strategy != null) ProgrammeStrategyData.valueOf(it.strategy.name) else ProgrammeStrategyData.Other,
+            strategy = if (it.strategy != null) ProgrammeStrategyData.valueOf(it.strategy.name) else ProgrammeStrategyData.Other,
             specification = it.specification.map {
                 InputTranslationData(
                     SystemLanguageData.valueOf(it.language.name),
@@ -525,7 +526,7 @@ fun BudgetUnitCostEntry.toDataModel() = BudgetUnitCostEntryData(
     unitCostId = unitCostId
 )
 
-fun ProjectPartnerDetailDTO.toDataModel(stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData) = ProjectPartnerData(
+fun ProjectPartnerDetail.toDataModel(stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData) = ProjectPartnerData(
     id = id,
     abbreviation = abbreviation,
     role = ProjectPartnerRoleData.valueOf(role.name),
@@ -545,7 +546,7 @@ fun ProjectPartnerDetailDTO.toDataModel(stateAid: ProjectPartnerStateAid, budget
     budget = budget
 )
 
-fun ProjectPartnerAddressDTO.toDataModel() = ProjectPartnerAddressData(
+fun ProjectPartnerAddress.toDataModel() = ProjectPartnerAddressData(
     type = ProjectPartnerAddressTypeData.valueOf(type.name),
     country = country,
     nutsRegion2 = nutsRegion2,
@@ -557,6 +558,15 @@ fun ProjectPartnerAddressDTO.toDataModel() = ProjectPartnerAddressData(
     homepage = homepage
 )
 
+fun ProjectPartnerContact.toDataModel() = ProjectPartnerContactData(
+    type = ProjectContactTypeData.valueOf(type.name),
+    title = title,
+    firstName = firstName,
+    lastName = lastName,
+    email = email,
+    telephone = telephone
+)
+
 fun ProjectPartnerContactDTO.toDataModel() = ProjectPartnerContactData(
     type = ProjectContactTypeData.valueOf(type.name),
     title = title,
@@ -566,7 +576,7 @@ fun ProjectPartnerContactDTO.toDataModel() = ProjectPartnerContactData(
     telephone = telephone
 )
 
-fun ProjectPartnerMotivationDTO.toDataModel() = ProjectPartnerMotivationData(
+fun ProjectPartnerMotivation.toDataModel() = ProjectPartnerMotivationData(
     organizationRelevance = organizationRelevance.map {
         InputTranslationData(
             SystemLanguageData.valueOf(it.language.name),

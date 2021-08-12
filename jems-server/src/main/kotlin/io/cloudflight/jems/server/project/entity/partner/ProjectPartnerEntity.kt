@@ -1,12 +1,14 @@
 package io.cloudflight.jems.server.project.entity.partner
 
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
+import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -25,49 +27,58 @@ data class ProjectPartnerEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    var id: Long = 0,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     @field:NotNull
-    val project: ProjectEntity,
+    var project: ProjectEntity,
 
     @field:NotNull
-    val abbreviation: String,
+    var abbreviation: String,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val role: ProjectPartnerRoleDTO,
+    var role: ProjectPartnerRole,
 
     @field:NotNull
-    val sortNumber: Int = 0,
+    var sortNumber: Int = 0,
 
-    val nameInOriginalLanguage: String? = null,
+    var nameInOriginalLanguage: String? = null,
 
-    val nameInEnglish: String? = null,
-
-    // department
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.partnerId")
-    val translatedValues: MutableSet<ProjectPartnerTranslEntity> = mutableSetOf(),
+    var nameInEnglish: String? = null,
 
     @Enumerated(EnumType.STRING)
-    val partnerType: ProjectTargetGroupDTO? = null,
+    var partnerType: ProjectTargetGroup? = null,
+
+    @Enumerated(EnumType.STRING)
+    var partnerSubType: PartnerSubType?,
+
+    @Enumerated(EnumType.STRING)
+    var nace: NaceGroupLevel?,
+
+    var otherIdentifierNumber: String?,
+
+    var pic: String?,
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "legal_status_id")
     @field:NotNull
-    val legalStatus: ProgrammeLegalStatusEntity,
+    var legalStatus: ProgrammeLegalStatusEntity,
 
-    val vat: String? = null,
+    var vat: String? = null,
 
     @Enumerated(EnumType.STRING)
-    val vatRecovery: ProjectPartnerVatRecoveryDTO? = null,
+    var vatRecovery: ProjectPartnerVatRecovery? = null,
+
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
+    var translatedValues: MutableSet<ProjectPartnerTranslEntity> = mutableSetOf(),
 
     @OneToMany(mappedBy = "addressId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val addresses: Set<ProjectPartnerAddress>?= emptySet(),
+    val addresses: Set<ProjectPartnerAddressEntity>?= emptySet(),
 
     @OneToMany(mappedBy = "contactId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val contacts: Set<ProjectPartnerContact>? = emptySet(),
+    val contacts: Set<ProjectPartnerContactEntity>? = emptySet(),
 
     @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val motivation: Set<ProjectPartnerMotivationEntity> = emptySet(),

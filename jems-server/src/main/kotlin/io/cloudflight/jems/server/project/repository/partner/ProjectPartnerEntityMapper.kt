@@ -1,16 +1,10 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
-import io.cloudflight.jems.api.project.dto.partner.CreateProjectPartnerRequestDTO
-import io.cloudflight.jems.api.project.dto.partner.UpdateProjectPartnerRequestDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressTypeDTO
+import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
@@ -21,21 +15,27 @@ import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerMotivationRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddress
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContact
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationTranslEntity
-import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
-import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.PartnerStateAidRow
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
+import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidTranslEntity
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 
-fun CreateProjectPartnerRequestDTO.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
+fun ProjectPartner.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
     ProjectPartnerEntity(
         project = project,
         abbreviation = abbreviation!!,
@@ -44,78 +44,78 @@ fun CreateProjectPartnerRequestDTO.toEntity(project: ProjectEntity, legalStatus:
         nameInEnglish = nameInEnglish,
         // translatedValues - needs partnerId
         partnerType = partnerType,
+        partnerSubType = partnerSubType,
+        nace = nace,
+        otherIdentifierNumber = otherIdentifierNumber,
+        pic = pic,
         legalStatus = legalStatus,
         vat = vat,
         vatRecovery = vatRecovery,
+        translatedValues = mutableSetOf()
+    ).apply {
+        translatedValues.addPartnerTranslations(this, department, otherIdentifierDescription)
+    }
+
+fun MutableSet<ProjectPartnerTranslEntity>.addPartnerTranslations(
+    sourceEntity: ProjectPartnerEntity,
+    department: Set<InputTranslation>,
+    otherIdentifierDescription: Set<InputTranslation>
+) =
+    this.addTranslationEntities(
+        { language ->
+            ProjectPartnerTranslEntity(
+                translationId = TranslationId(sourceEntity, language),
+                department = department.extractTranslation(language),
+                otherIdentifierDescription = otherIdentifierDescription.extractTranslation(language),
+            )
+        }, arrayOf(department, otherIdentifierDescription)
     )
-
-fun CreateProjectPartnerRequestDTO.combineTranslatedValues(
-    partnerId: Long
-): MutableSet<ProjectPartnerTranslEntity> {
-    val departmentMap = department.associateBy({ it.language }, { it.translation })
-    val languages = departmentMap.keys.toMutableSet()
-
-    return languages.mapTo(HashSet()) {
-        ProjectPartnerTranslEntity(
-            TranslationPartnerId(partnerId, it),
-            departmentMap[it]
-        )
-    }
-}
-
-fun UpdateProjectPartnerRequestDTO.combineTranslatedValues(
-    partnerId: Long
-): MutableSet<ProjectPartnerTranslEntity> {
-    val departmentMap = department.associateBy({ it.language }, { it.translation })
-    val languages = departmentMap.keys.toMutableSet()
-
-    return languages.mapTo(HashSet()) {
-        ProjectPartnerTranslEntity(
-            TranslationPartnerId(partnerId, it),
-            departmentMap[it]
-        )
-    }
-}
 
 fun ProjectPartnerEntity.toProjectPartner() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
-    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressTypeDTO.Organization }?.address?.country
+    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
 )
 
 fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartner() }
 
 // todo remove when everything switched to Models
-fun ProjectPartnerEntity.toDto() = ProjectPartnerSummaryDTO(
+fun ProjectPartnerEntity.toModel() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
-    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressTypeDTO.Organization }?.address?.country
+    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
 )
 
-fun Iterable<ProjectPartnerEntity>.toDto() = map { it.toDto() }
+fun Iterable<ProjectPartnerEntity>.toModel() = map { it.toModel() }
 
-fun ProjectPartnerEntity.toProjectPartnerDetailDTO() = ProjectPartnerDetailDTO(
+fun ProjectPartnerEntity.toProjectPartnerDetail() = ProjectPartnerDetail(
+    projectId = project.id,
     id = id,
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
-    department = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.department) },
+    department = translatedValues.extractField { it.department },
     partnerType = partnerType,
+    partnerSubType = partnerSubType,
+    nace = nace,
+    otherIdentifierNumber = otherIdentifierNumber,
+    otherIdentifierDescription = translatedValues.extractField { it.otherIdentifierDescription },
+    pic = pic,
     legalStatusId = legalStatus.id,
     vat = vat,
     vatRecovery = vatRecovery,
-    addresses = addresses?.map { it.toDto() } ?: emptyList(),
-    contacts = contacts?.map { it.toProjectPartnerContactDTO() } ?: emptyList(),
-    motivation = motivation.map { it.toDto() }.firstOrNull(),
+    addresses = addresses?.map { it.toModel() } ?: emptyList(),
+    contacts = contacts?.map { it.toProjectPartnerContact() } ?: emptyList(),
+    motivation = motivation.map { it.toModel() }.firstOrNull(),
 )
 
-fun ProjectPartnerAddressDTO.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerAddress(
+fun ProjectPartnerAddress.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerAddressEntity(
     addressId = ProjectPartnerAddressId(partner.id, type),
     address = AddressEntity(
         country = country,
@@ -129,7 +129,7 @@ fun ProjectPartnerAddressDTO.toEntity(partner: ProjectPartnerEntity) = ProjectPa
     )
 )
 
-fun ProjectContactDTO.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerContact(
+fun ProjectPartnerContact.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerContactEntity(
     contactId = ProjectPartnerContactId(partner.id, type),
     contact = Contact(
         title = title,
@@ -140,7 +140,7 @@ fun ProjectContactDTO.toEntity(partner: ProjectPartnerEntity) = ProjectPartnerCo
     )
 )
 
-fun ProjectPartnerContact.toProjectPartnerContactDTO() = ProjectPartnerContactDTO(
+fun ProjectPartnerContactEntity.toProjectPartnerContact() = ProjectPartnerContact(
     type = contactId.type,
     title = contact?.title,
     firstName = contact?.firstName,
@@ -149,7 +149,7 @@ fun ProjectPartnerContact.toProjectPartnerContactDTO() = ProjectPartnerContactDT
     telephone = contact?.telephone
 )
 
-fun ProjectPartnerMotivationDTO.toEntity(partnerId: Long): Set<ProjectPartnerMotivationEntity> {
+fun ProjectPartnerMotivation.toEntity(partnerId: Long): Set<ProjectPartnerMotivationEntity> {
     val motivation = ProjectPartnerMotivationEntity(
         partnerId = partnerId,
         translatedValues = combineTranslatedValuesRelevance(
@@ -187,7 +187,7 @@ fun combineTranslatedValuesRelevance(
     }
 }
 
-fun ProjectPartnerMotivationEntity.toDto() = ProjectPartnerMotivationDTO(
+fun ProjectPartnerMotivationEntity.toModel() = ProjectPartnerMotivation(
     organizationRelevance = translatedValues.mapTo(HashSet()) {
         InputTranslation(
             it.translationId.language,
@@ -208,7 +208,7 @@ fun ProjectPartnerMotivationEntity.toDto() = ProjectPartnerMotivationDTO(
     }
 )
 
-fun ProjectPartnerAddress.toDto() = ProjectPartnerAddressDTO(
+fun ProjectPartnerAddressEntity.toModel() = ProjectPartnerAddress(
     type = addressId.type,
     country = address.country,
     nutsRegion2 = address.nutsRegion2,
@@ -222,7 +222,7 @@ fun ProjectPartnerAddress.toDto() = ProjectPartnerAddressDTO(
 
 fun Collection<PartnerAddressRow>.toProjectPartnerAddressHistoricalData() = map { it.toModel() }.toList()
 
-fun PartnerAddressRow.toModel() = ProjectPartnerAddressDTO(
+fun PartnerAddressRow.toModel() = ProjectPartnerAddress(
     type = type,
     country = country,
     nutsRegion2 = nutsRegion2,
@@ -236,7 +236,7 @@ fun PartnerAddressRow.toModel() = ProjectPartnerAddressDTO(
 
 fun Collection<PartnerContactRow>.toProjectPartnerContactHistoricalData() = map { it.toModel() }.toList()
 
-fun PartnerContactRow.toModel() = ProjectPartnerContactDTO(
+fun PartnerContactRow.toModel() = ProjectPartnerContact(
     type = type,
     title = title,
     firstName = firstName,
@@ -247,7 +247,7 @@ fun PartnerContactRow.toModel() = ProjectPartnerContactDTO(
 
 fun List<PartnerMotivationRow>.toProjectPartnerMotivationHistoricalData() =
     this.groupBy { it.partnerId }.map { groupedRows ->
-        ProjectPartnerMotivationDTO(
+        ProjectPartnerMotivation(
             organizationRelevance = groupedRows.value.extractField { it.organizationRelevance },
             organizationRole = groupedRows.value.extractField { it.organizationRole },
             organizationExperience = groupedRows.value.extractField { it.organizationExperience },
@@ -255,11 +255,10 @@ fun List<PartnerMotivationRow>.toProjectPartnerMotivationHistoricalData() =
     }.firstOrNull()
 
 fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
-    addresses: List<ProjectPartnerAddressDTO>,
-    contacts: List<ProjectPartnerContactDTO>,
-    motivation: ProjectPartnerMotivationDTO?
+    addresses: List<ProjectPartnerAddress>, contacts: List<ProjectPartnerContact>, motivation: ProjectPartnerMotivation?
 ) = this.groupBy { it.id }.map { groupedRows ->
-    ProjectPartnerDetailDTO(
+    ProjectPartnerDetail(
+        projectId = groupedRows.value.first().projectId,
         id = groupedRows.value.first().id,
         abbreviation = groupedRows.value.first().abbreviation,
         role = groupedRows.value.first().role,
@@ -268,6 +267,11 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
         nameInEnglish = groupedRows.value.first().nameInEnglish,
         department = groupedRows.value.extractField { it.department },
         partnerType = groupedRows.value.first().partnerType,
+        partnerSubType = groupedRows.value.first().partnerSubType,
+        nace = groupedRows.value.first().nace,
+        otherIdentifierNumber = groupedRows.value.first().otherIdentifierNumber,
+        otherIdentifierDescription = groupedRows.value.extractField { it.otherIdentifierDescription },
+        pic = groupedRows.value.first().pic,
         legalStatusId = groupedRows.value.first().legalStatusId,
         vat = groupedRows.value.first().vat,
         vatRecovery = groupedRows.value.first().vatRecovery,
@@ -285,7 +289,7 @@ fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartnerSummary(
     country = country
 )
 
-fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummaryDTO(
+fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
     role = role,
@@ -299,7 +303,13 @@ fun ProjectPartnerStateAid.toEntity(partnerId: Long) = ProjectPartnerStateAidEnt
     answer2 = answer2,
     answer3 = answer3,
     answer4 = answer4,
-    translatedValues = combineTranslatedValuesStateAid(partnerId, justification1, justification2, justification3, justification4),
+    translatedValues = combineTranslatedValuesStateAid(
+        partnerId,
+        justification1,
+        justification2,
+        justification3,
+        justification4
+    ),
 )
 
 private fun combineTranslatedValuesStateAid(
@@ -347,14 +357,14 @@ private inline fun Set<ProjectPartnerStateAidTranslEntity>.extractField(extractF
 
 fun List<PartnerStateAidRow>.toModel() =
     this.groupBy { it.partnerId }.map { groupedRows ->
-    ProjectPartnerStateAid(
-        answer1 = groupedRows.value.first().answer1,
-        justification1 = groupedRows.value.extractField { it.justification1 },
-        answer2 = groupedRows.value.first().answer2,
-        justification2 = groupedRows.value.extractField { it.justification2 },
-        answer3 = groupedRows.value.first().answer3,
-        justification3 = groupedRows.value.extractField { it.justification3 },
-        answer4 = groupedRows.value.first().answer4,
-        justification4 = groupedRows.value.extractField { it.justification4 },
-    )
-}.firstOrNull()
+        ProjectPartnerStateAid(
+            answer1 = groupedRows.value.first().answer1,
+            justification1 = groupedRows.value.extractField { it.justification1 },
+            answer2 = groupedRows.value.first().answer2,
+            justification2 = groupedRows.value.extractField { it.justification2 },
+            answer3 = groupedRows.value.first().answer3,
+            justification3 = groupedRows.value.extractField { it.justification3 },
+            answer4 = groupedRows.value.first().answer4,
+            justification4 = groupedRows.value.extractField { it.justification4 },
+        )
+    }.firstOrNull()

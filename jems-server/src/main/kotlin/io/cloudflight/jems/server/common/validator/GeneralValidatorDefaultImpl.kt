@@ -11,6 +11,7 @@ import java.util.regex.Pattern
 // password should have: at least 10 characters, one upper case letter, one lower case letter and one digit
 const val PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,}).+\$"
 const val EMAIL_REGEX = "^(.+)@(.+)\$"
+const val ONLY_DIGITS_REGEX = "\\d+\$"
 
 @Service
 class GeneralValidatorDefaultImpl : GeneralValidatorService {
@@ -113,6 +114,9 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                     )
             }
         }
+
+    override fun onlyDigits(input: String?, fieldName: String): Map<String, I18nMessage> =
+        matches(input, ONLY_DIGITS_REGEX, fieldName, "common.error.only.digits")
 
     override fun startDateBeforeEndDate(
         start: ZonedDateTime?,

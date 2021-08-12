@@ -6,7 +6,7 @@ import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
 @Entity(name = "project_partner_contact")
-data class ProjectPartnerContact(
+data class ProjectPartnerContactEntity(
 
     @EmbeddedId
     val contactId: ProjectPartnerContactId,

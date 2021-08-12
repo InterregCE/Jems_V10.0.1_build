@@ -1,23 +1,28 @@
 package io.cloudflight.jems.server.project.entity.partner
 
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.server.common.entity.TranslationView
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
+import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 
-interface PartnerIdentityRow: TranslationView {
+interface PartnerIdentityRow : TranslationView {
     val id: Long
     val projectId: Long
     val abbreviation: String
-    val role: ProjectPartnerRoleDTO
+    val role: ProjectPartnerRole
     val sortNumber: Int
     val nameInOriginalLanguage: String?
     val nameInEnglish: String?
-    val partnerType: ProjectTargetGroupDTO?
+    val partnerType: ProjectTargetGroup?
+    val partnerSubType: PartnerSubType?
+    val nace: NaceGroupLevel?
+    val otherIdentifierNumber: String?
+    val otherIdentifierDescription: String?
+    val pic: String?
     val vat: String?
-    val vatRecovery: ProjectPartnerVatRecoveryDTO?
+    val vatRecovery: ProjectPartnerVatRecovery?
     val legalStatusId: Long
-
-    //partner_transl
     val department: String?
 }
