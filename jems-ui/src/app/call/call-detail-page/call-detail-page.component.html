@@ -139,16 +139,17 @@
             </app-call-strategies>
 
             <h3>{{'call.funds.title' | translate}}</h3>
-            <h4>{{'call.funds.options' | translate}}</h4>
-            <mat-checkbox
-                    name="isAdditionalFundAllowed"
-                    formControlName="isAdditionalFundAllowed"
+            <span *ngIf="data.callIsEditable || callForm?.controls?.additionalFundAllowed.value">
+                <h4>{{'call.funds.options' | translate}}</h4>
+                <mat-checkbox
+                    name="additionalFundAllowed"
+                    formControlName="additionalFundAllowed"
                     (click)="$event.stopPropagation()"
-                    [disabled]="!data.callIsEditable && (!data.userCanApply && published && data.call.isAdditionalFundAllowed)"
-                    [checked]="callForm?.controls?.isAdditionalFundAllowed.value">
-                {{'call.multiple.funds.allowed' | translate}}
-            </mat-checkbox>
-
+                    [disabled]="!data.callIsEditable && (!data.userCanApply && published && data.call.additionalFundAllowed)"
+                    [checked]="callForm?.controls?.additionalFundAllowed.value">
+                    {{'call.multiple.funds.allowed' | translate}}
+                </mat-checkbox>
+            </span>
             <h4>{{'call.funds.select.funds' | translate}}</h4>
             <app-call-funds
                     [funds]="data.funds"

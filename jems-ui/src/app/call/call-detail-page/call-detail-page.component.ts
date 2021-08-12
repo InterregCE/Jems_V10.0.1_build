@@ -73,7 +73,7 @@ export class CallDetailPageComponent {
     endDateTime: ['', Validators.required],
     description: [[], Validators.maxLength(1000)],
     lengthOfPeriod: ['', [Validators.required, Validators.max(99), Validators.min(1)]],
-    isAdditionalFundAllowed: [false]
+    additionalFundAllowed: [false]
   });
 
   constructor(private router: Router,
@@ -223,7 +223,7 @@ export class CallDetailPageComponent {
       }
       this.callForm.controls.endDateTime.enable();
       if (!call.additionalFundAllowed) {
-        this.callForm.controls.isAdditionalFundAllowed.enable();
+        this.callForm.controls.additionalFundAllowed.enable();
       }
     }
   }
