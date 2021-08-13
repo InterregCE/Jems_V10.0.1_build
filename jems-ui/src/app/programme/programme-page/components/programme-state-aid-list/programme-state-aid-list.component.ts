@@ -84,6 +84,11 @@ export class ProgrammeStateAidListComponent extends ViewEditForm implements OnIn
     this.addControl();
   }
 
+  addNewStateAidAndChangeFormState(): void {
+    this.changeFormState$.next(FormState.EDIT);
+    this.addControl();
+  }
+
   addControl(stateAid?: ProgrammeStateAidDTO): void {
     this.stateAidsForm.push(this.formBuilder.group({
       id: [stateAid?.id],
@@ -144,6 +149,7 @@ export class ProgrammeStateAidListComponent extends ViewEditForm implements OnIn
     form.controls.threshold.patchValue(relation.threshold || null);
     form.controls.maxIntensity.patchValue(relation.maxIntensity || null);
     form.controls.comments.patchValue(relation.comments ? relation.comments : []);
+    form.controls.schemeNumber.patchValue(null);
   }
 
   selectionUnfocused(event: FocusEvent, form: FormGroup): void {

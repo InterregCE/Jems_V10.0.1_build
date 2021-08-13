@@ -1,6 +1,6 @@
 <form id="stateAids" appFormLayout [formGroup]="stateAidForm">
-    <div appMultiColumnRow>
-        <h3 class="mb-0">{{'programme.state.aid.list.title' | translate}}</h3>
+    <div>
+        <h3 class="mb-2">{{'programme.state.aid.list.title' | translate}}</h3>
         <button color="primary" mat-raised-button
                 *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length > 0"
                 (click)="changeFormState$.next(FormState.EDIT)">
@@ -8,7 +8,7 @@
         </button>
         <button mat-stroked-button
                 *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length == 0"
-                (click)="changeFormState$.next(FormState.EDIT)">
+                (click)="addNewStateAidAndChangeFormState()">
             <mat-icon>add</mat-icon>&nbsp;{{ 'programme.state.aid.add' | translate }}
         </button>
     </div>
@@ -16,7 +16,7 @@
                 *ngIf="stateAids.length > 0 || (changeFormState$ | async) !== FormState.VIEW"
                 appNoWidthLimit [useSystemLanguages]="true"
                 [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
-        <div [appTableConfig]="[{minInRem: 12},{minInRem: 17},{minInRem: 21},{minInRem: 7},{minInRem: 5},{minInRem: 10},{minInRem: 10},{maxInRem: 5}]">
+        <div [appTableConfig]="[{minInRem: 17},{minInRem: 15},{minInRem: 21},{minInRem: 7},{maxInRem: 5},{minInRem: 10},{minInRem: 10},{maxInRem: 5}]">
             <div>
                 <span class="mat-body-strong">{{ 'programme.state.aid.list.measure' | translate }}</span>
                 <span class="mat-body-strong">{{ 'programme.state.aid.list.name' | translate }}</span>
@@ -64,7 +64,7 @@
 
                         <app-multi-language-form-field
                                 formControlName="name"
-                                maxLength="150"
+                                maxLength="250"
                                 minRows="1"
                                 type="textarea"
                                 [useFallBackLanguage]="true">
