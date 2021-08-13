@@ -80,7 +80,7 @@ export class TopBarService {
           if (Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {
             menuItems.push(this.programmeItem);
           }
-          if (Permission.SYSTEM_MODULE_PERMISSIONS.every(perm => permissions.includes(perm))) {
+          if (Permission.SYSTEM_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {
             if (permissions.includes(PermissionsEnum.AuditRetrieve)) {
               this.systemItem.route = '/app/system/audit';
             } else if (permissions.includes(PermissionsEnum.UserRetrieve)) {

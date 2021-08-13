@@ -80,7 +80,8 @@
         </div>
     </form>
 
-    <ng-container>
+    <ng-container
+        *ngIf="details.canUpdatePassword">
         <app-user-password
                 *ngIf="details.user?.id"
                 class="mt-3 block"
