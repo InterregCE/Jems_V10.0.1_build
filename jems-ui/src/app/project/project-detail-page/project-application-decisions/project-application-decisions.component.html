@@ -24,7 +24,7 @@
                 <a *hasPermission="[Permissions.ProjectStatusDecideEligible, Permissions.ProjectStatusDecideIneligible]"
                    mat-stroked-button appFormFieldWidth="x-large"
                    [disabled]="!data.decision?.eligibilityAssessment"
-                   [routerLink]="['./assessment/eligibilityDecision', step]" queryParamsHandling="merge">
+                   [routerLink]="data.decision?.eligibilityAssessment ? ['./assessment/eligibilityDecision', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityDecision.assessment' | translate}}
                 </a>
             </ng-container>
@@ -32,7 +32,7 @@
                 <a *hasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!data.decision?.eligibilityDecision"
                    mat-stroked-button appFormFieldWidth="x-large"
-                   [routerLink]="['./assessment/eligibilityDecision', step]" queryParamsHandling="merge">
+                   [routerLink]="data.decision?.eligibilityDecision ? ['./assessment/eligibilityDecision', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
                 </a>
             </ng-container>
@@ -61,7 +61,7 @@
                    mat-stroked-button appFormFieldWidth="x-large"
                    [disabled]="!data.isFundingDecisionPreconditionOk"
                    [color]="data.projectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
-                   [routerLink]="['./assessment/fundingDecision', step]" queryParamsHandling="merge">
+                   [routerLink]="data.isFundingDecisionPreconditionOk ? ['./assessment/fundingDecision', step] : []" queryParamsHandling="merge">
                     {{ (data.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS ? 'project.assessment.fundingDecision.assessment.update' : 'project.assessment.fundingDecision.assessment') | translate}}
                 </a>
             </ng-container>
