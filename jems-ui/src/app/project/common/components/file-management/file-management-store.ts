@@ -146,6 +146,7 @@ export class FileManagementStore {
       .pipe(
         switchMap(projectId => this.projectService.getProjectInvestmentSummaries(projectId)),
         map(investmentSummeryDTOs => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
+        catchError(err => of([]))
       );
   }
 
@@ -154,7 +155,9 @@ export class FileManagementStore {
       .pipe(
         switchMap(projectId => this.partnerService.getProjectPartnersForDropdown(projectId, undefined)),
         map(projectPartners => projectPartners.map((projectPartner, index) =>
-          new ProjectPartner(projectPartner.id, index, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
+          new ProjectPartner(projectPartner.id, index, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))
+        ),
+        catchError(err => of([]))
       );
   }
 
@@ -165,7 +168,7 @@ export class FileManagementStore {
       this.projectStatus$,
       this.canChangeAssessmentFile$,
       this.canChangeApplicationFile$,
-      this.userIsProjectOwner$
+      this.userIsProjectOwner$,
     ]).pipe(
       map(([selectedCategory, currentVersionIsLatest, projectStatus, canUploadAssessmentFile, canUploadApplicationFile, userIsProjectOwner]) => {
         if (!currentVersionIsLatest) {
@@ -177,11 +180,10 @@ export class FileManagementStore {
         if (!ProjectUtil.isOpenForModifications(projectStatus)) {
           return false;
         }
-        if (selectedCategory?.type === FileCategoryEnum.APPLICATION) {
+        if (selectedCategory?.type === FileCategoryEnum.APPLICATION || selectedCategory?.id) {
           return canUploadApplicationFile || userIsProjectOwner;
         }
-        // if no assessment/application are selected the category must be either a partner or investment
-        return !!selectedCategory?.id;
+        return false;
       })
     );
   }
@@ -225,10 +227,11 @@ export class FileManagementStore {
       this.partners$,
       this.investments$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve),
-      this.canReadApplicationFile$
+      this.canReadApplicationFile$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectFormRetrieve),
     ]).pipe(
-      map(([projectTitle, partners, investments, canReadAssessment, canReadApplication]) =>
-        this.getCategories(projectTitle, partners, investments, canReadApplication, canReadAssessment)
+      map(([projectTitle, partners, investments, canReadAssessmentFiles, canReadApplicationFiles, canReadApplicationForm]) =>
+        this.getCategories(projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles, canReadApplicationForm)
       ),
       tap(filters => this.setParent(filters))
     );
@@ -238,17 +241,22 @@ export class FileManagementStore {
                         partners: ProjectPartner[],
                         investments: InvestmentSummary[],
                         canReadApplication: boolean,
-                        canReadAssessment: boolean): FileCategoryNode {
+                        canReadAssessment: boolean,
+                        canReadApplicationForm: boolean): FileCategoryNode {
     const root: FileCategoryNode = {
       name: {i18nKey: projectTitle},
       info: {type: FileCategoryEnum.ALL},
       children: []
     };
+    const applicationFiles: FileCategoryNode = {
+      name: {i18nKey: 'file.tree.type.attachments'},
+      info: {type: FileCategoryEnum.APPLICATION},
+      children: []
+    };
     if (canReadApplication) {
-      root.children?.push({
-        name: {i18nKey: 'file.tree.type.attachments'},
-        info: {type: FileCategoryEnum.APPLICATION},
-        children: [
+      root.children?.push(applicationFiles);
+      if (canReadApplicationForm) {
+        applicationFiles.children = [
           {
             name: {i18nKey: 'file.tree.type.partner'},
             info: {type: FileCategoryEnum.PARTNER},
@@ -268,8 +276,8 @@ export class FileManagementStore {
               info: {type: FileCategoryEnum.INVESTMENT, id: investment.id}
             }))
           }
-        ]
-      });
+        ];
+      }
     }
 
     if (canReadAssessment) {

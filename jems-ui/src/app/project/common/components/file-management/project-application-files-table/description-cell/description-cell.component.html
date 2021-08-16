@@ -4,7 +4,9 @@
     </label>
     <app-expandable-textarea
             *ngIf="editable"
-            [control]="descriptionForm.controls.description">
+            [control]="descriptionForm.controls.description"
+            [errors]="descriptionForm.controls.description.errors"
+            characterLimit="100">
     </app-expandable-textarea>
     <div class="mb-2 mt-2">
         <button (click)="onCancel()"
