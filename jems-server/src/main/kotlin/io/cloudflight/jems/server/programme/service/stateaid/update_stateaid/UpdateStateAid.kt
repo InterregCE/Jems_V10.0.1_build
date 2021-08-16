@@ -46,7 +46,7 @@ class UpdateStateAid(
         generalValidator.throwIfAnyIsInvalid(
             generalValidator.maxSize(stateAids, 20, "stateAids"),
             *stateAids.map {
-                generalValidator.maxLength(it.name, 150, "name")
+                generalValidator.maxLength(it.name, 250, "name")
             }.toTypedArray(),
             *stateAids.map {
                 generalValidator.maxLength(it.abbreviatedName, 50, "abbreviatedName")
