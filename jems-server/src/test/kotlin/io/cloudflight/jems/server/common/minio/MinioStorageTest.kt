@@ -157,6 +157,7 @@ class MinioStorageTest {
         logger.addAppender(listAppender)
 
         every { minioClient.listObjects(any()) } returns listOf()
+        every { minioClient.bucketExists(any()) } returns false
 
         minioStorage.deleteFile("bucket", "path")
         assertLinesMatch(
@@ -172,6 +173,7 @@ class MinioStorageTest {
         every { contents.lastModified() } returns ZonedDateTime.of(LocalDateTime.of(2020, 6, 15, 7, 30), zone)
         every { contents.objectName() } returns "file"
         every { minioClient.listObjects(any()) } returns mutableListOf(fileMetadata)
+        every { minioClient.bucketExists(any()) } returns true
 
         every {
             minioClient.removeObject(
@@ -206,6 +208,7 @@ class MinioStorageTest {
             )
         } returns Unit
 
+        every { minioClient.bucketExists(bucketExistsArgs(sourceBucketName)) } returns true
         minioStorage.moveFile(sourceBucketName, sourceObjectName, destinationBucketName, destinationObjectName)
 
         verifyOrder {
@@ -228,6 +231,7 @@ class MinioStorageTest {
         every { contents.objectName() } returns "file"
         every { minioClient.listObjects(any()) } returns mutableListOf(fileMetadata)
         every { minioClient.bucketExists(bucketExistsArgs(destinationBucketName)) } returns false
+        every { minioClient.bucketExists(bucketExistsArgs(sourceBucketName)) } returns true
         every { minioClient.makeBucket(MakeBucketArgs.builder().bucket(destinationBucketName).build()) } returns Unit
         every {
             minioClient.copyObject(any())
@@ -250,33 +254,6 @@ class MinioStorageTest {
             )
         }
     }
-
-
-//    @TestFactory
-//    fun `should return correctly when existence of file is being checked`() =
-//        listOf(
-//            Pair(ErrorCode.NO_SUCH_KEY, false),
-//            Pair(ErrorCode.NO_SUCH_OBJECT, false),
-//            Pair(ErrorCode.BUCKET_NOT_EMPTY, true)
-//        ).map { input ->
-//            DynamicTest.dynamicTest(
-//                "should return ${input.second} when existence of file is being checked"
-//            ) {
-//                every { minioClient.statObject(getStatObjectArgs(sourceBucketName, sourceObjectName)) } throws
-//                        ErrorResponseException(
-//                            ErrorResponse(input.first, sourceBucketName, sourceObjectName, null, null, null), null
-//                        )
-//                assertThat(minioStorage.exists(sourceBucketName, sourceObjectName)).isEqualTo(
-//                    input.second
-//                )
-//
-//            }
-//        }
-
-
-//    private fun getErrorResponse(errorCode: ErrorCode): ErrorResponse {
-//        return ErrorResponse(errorCode, null, null, null, null, null)
-//    }
 
     private fun getStatObjectArgs(bucket: String, filePath: String) =
         StatObjectArgs.builder().bucket(bucket).`object`(filePath).build()

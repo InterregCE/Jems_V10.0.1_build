@@ -71,7 +71,7 @@ class MinioStorageImpl(
         getObjectInfoOrNull(bucket, filePath) != null
 
     private fun makeBucketIfNotExists(bucket: String) {
-        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())) {
+        if (!bucketExists(bucket)) {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build())
         }
     }
@@ -81,12 +81,18 @@ class MinioStorageImpl(
             throw DuplicateFileException(it)
         }
 
-    private fun getObjectInfoOrNull(bucket: String, filePath: String): Item? =
-        with(
+    private fun getObjectInfoOrNull(bucket: String, filePath: String): Item? {
+        if (!bucketExists(bucket))
+            return null
+
+        return with(
             minioClient.listObjects(ListObjectsArgs.builder().bucket(bucket).prefix(filePath).build())
                 .map { it.get() }) {
             this.firstOrNull()
         }
+    }
 
+    private fun bucketExists(bucket: String): Boolean =
+        minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())
 
 }
