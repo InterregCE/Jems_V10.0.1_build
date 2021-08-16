@@ -20,12 +20,12 @@ import io.cloudflight.jems.server.project.repository.partner.cofinancing.toCoFin
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK

@@ -2,11 +2,11 @@ package io.cloudflight.jems.server.project.service.partner.create_project_partne
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.partner.PROJECT_ID
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.partner.projectPartner
-import io.cloudflight.jems.server.project.service.partner.projectPartnerDetail
+import io.cloudflight.jems.server.utils.partner.PROJECT_ID
+import io.cloudflight.jems.server.utils.partner.projectPartner
+import io.cloudflight.jems.server.utils.partner.projectPartnerDetail
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

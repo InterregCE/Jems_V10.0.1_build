@@ -12,8 +12,8 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.call
 import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.call
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

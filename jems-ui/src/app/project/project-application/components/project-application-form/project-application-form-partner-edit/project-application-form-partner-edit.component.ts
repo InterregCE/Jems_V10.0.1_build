@@ -88,7 +88,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
       );
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.filteredNace = this.partnerForm.controls.nace.valueChanges
       .pipe(
         startWith(''),

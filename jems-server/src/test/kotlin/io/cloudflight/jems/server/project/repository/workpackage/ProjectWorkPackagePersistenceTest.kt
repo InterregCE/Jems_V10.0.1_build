@@ -31,7 +31,6 @@ import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverableTranslatedValue
@@ -41,6 +40,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK

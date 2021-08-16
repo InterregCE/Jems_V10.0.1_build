@@ -17,10 +17,6 @@ import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.model.ProjectContactType
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.partner.PARTNER_ID
-import io.cloudflight.jems.server.project.service.partner.PROJECT_ID
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
-import io.cloudflight.jems.server.project.service.partner.legalStatusEntity
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
@@ -28,15 +24,19 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerCo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.partner.projectPartner
-import io.cloudflight.jems.server.project.service.partner.projectPartnerDetail
-import io.cloudflight.jems.server.project.service.partner.projectPartnerEntity
-import io.cloudflight.jems.server.project.service.partner.projectPartnerInclTransl
-import io.cloudflight.jems.server.project.service.partner.projectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.projectPartnerWithOrganizationEntity
-import io.cloudflight.jems.server.project.service.partner.stateAid
-import io.cloudflight.jems.server.project.service.partner.stateAidEmpty
-import io.cloudflight.jems.server.project.service.partner.stateAidEntity
+import io.cloudflight.jems.server.utils.partner.PARTNER_ID
+import io.cloudflight.jems.server.utils.partner.PROJECT_ID
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
+import io.cloudflight.jems.server.utils.partner.legalStatusEntity
+import io.cloudflight.jems.server.utils.partner.projectPartner
+import io.cloudflight.jems.server.utils.partner.projectPartnerDetail
+import io.cloudflight.jems.server.utils.partner.projectPartnerEntity
+import io.cloudflight.jems.server.utils.partner.projectPartnerInclTransl
+import io.cloudflight.jems.server.utils.partner.projectPartnerSummary
+import io.cloudflight.jems.server.utils.partner.projectPartnerWithOrganizationEntity
+import io.cloudflight.jems.server.utils.partner.stateAid
+import io.cloudflight.jems.server.utils.partner.stateAidEmpty
+import io.cloudflight.jems.server.utils.partner.stateAidEntity
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -53,7 +53,7 @@ import org.springframework.data.domain.Pageable
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
-import java.util.Optional
+import java.util.*
 
 class PartnerPersistenceProviderTest {
 
@@ -113,17 +113,19 @@ class PartnerPersistenceProviderTest {
     @Test
     fun `should change role of lead partner to partner in the project if it exists`() {
         val projectPartnerEntity = projectPartnerEntity()
-        every { projectPartnerRepository.findFirstByProjectIdAndRole(PROJECT_ID, ProjectPartnerRole.LEAD_PARTNER) } returns Optional.of(projectPartnerEntity)
-        every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns listOf(projectPartnerEntity)
-        every { projectPartnerRepository.saveAll(any()) } returnsArgument 0
-        assertDoesNotThrow { persistence.changeRoleOfLeadPartnerToPartnerIfItExists(PROJECT_ID)}
+        every {
+            projectPartnerRepository.findFirstByProjectIdAndRole(PROJECT_ID, ProjectPartnerRole.LEAD_PARTNER)
+        } returns Optional.of(projectPartnerEntity)
+        assertDoesNotThrow { persistence.changeRoleOfLeadPartnerToPartnerIfItExists(PROJECT_ID) }
     }
 
     @Test
     fun `should throw PartnerAbbreviationNotUnique when partner abbreviation alreay exists`() {
         val abbreviation = "abbreviation"
         every { projectPartnerRepository.existsByProjectIdAndAbbreviation(PROJECT_ID, abbreviation) } returns true
-        assertDoesNotThrow { persistence.throwIfPartnerAbbreviationAlreadyExists(PROJECT_ID, abbreviation)}
+        assertThrows<PartnerAbbreviationNotUnique> {
+            persistence.throwIfPartnerAbbreviationAlreadyExists(PROJECT_ID, abbreviation)
+        }
     }
 
 
@@ -236,8 +238,11 @@ class PartnerPersistenceProviderTest {
             projectPartner(PARTNER_ID, "updated", ProjectPartnerRole.PARTNER)
         val updatedProjectPartnerEntity =
             projectPartnerEntity(abbreviation = projectPartnerUpdate.abbreviation!!, role = projectPartnerUpdate.role!!)
+        val projectPartners = listOf(projectPartnerEntity(), projectPartnerWithOrganizationEntity)
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
         every { projectPartnerRepository.save(updatedProjectPartnerEntity) } returns updatedProjectPartnerEntity
+        every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
+        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
         every { legalStatusRepo.getReferenceIfExistsOrThrow(1) } returns legalStatusEntity
 
         assertThat(persistence.update(projectPartnerUpdate))
@@ -252,13 +257,27 @@ class PartnerPersistenceProviderTest {
     @Test
     fun `updateProjectPartner to lead when no other leads`() {
         val projectPartnerUpdate = projectPartner(3, "updated")
+        val projectPartners =
+            listOf(projectPartnerEntity(id = 3), projectPartnerEntity(id = 2, role = ProjectPartnerRole.PARTNER))
+        val updatedPartnersSlot = slot<Iterable<ProjectPartnerEntity>>()
+
         every { projectPartnerRepository.findById(3) } returns Optional.of(
             projectPartnerEntity(id = 3, role = ProjectPartnerRole.PARTNER)
         )
         every { legalStatusRepo.getReferenceIfExistsOrThrow(1) } returns legalStatusEntity
+        every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
+        every { projectPartnerRepository.saveAll(capture(updatedPartnersSlot)) } returnsArgument 0
 
         assertThat(persistence.update(projectPartnerUpdate).role)
             .isEqualTo(ProjectPartnerRole.LEAD_PARTNER)
+
+        assertThat(updatedPartnersSlot.captured)
+            .isEqualTo(
+                listOf(
+                    projectPartnerEntity(3, sortNumber = 1),
+                    projectPartnerEntity(2, role = ProjectPartnerRole.PARTNER, sortNumber = 2)
+                )
+            )
     }
 
     @Test
@@ -383,10 +402,13 @@ class PartnerPersistenceProviderTest {
             role = ProjectPartnerRole.PARTNER,
             department = setOf(InputTranslation(EN, "test"))
         )
+        val projectPartners = listOf(projectPartnerEntity(id = 2), projectPartnerWithOrganizationEntity)
+
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
         every { legalStatusRepo.getReferenceIfExistsOrThrow(legalStatusEntity.id) } returns legalStatusEntity
         every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns ProjectPartnerTestUtil.project
-
+        every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
+        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
         assertThat(persistence.update(projectPartnerUpdate))
             .isEqualTo(
                 projectPartnerDetail(
@@ -413,7 +435,9 @@ class PartnerPersistenceProviderTest {
             projectPartnerWithOrganization
         )
         every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id) } returns Unit
-        every { projectPartnerRepository.findTop30ByProjectId(ProjectPartnerTestUtil.project.id, any()) } returns emptySet()
+        every {
+            projectPartnerRepository.findTop30ByProjectId(ProjectPartnerTestUtil.project.id, any())
+        } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()
 
         assertDoesNotThrow { persistence.deletePartner(projectPartnerWithOrganization.id) }
@@ -424,7 +448,9 @@ class PartnerPersistenceProviderTest {
     fun deleteProjectPartnerWithoutOrganization() {
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
         every { projectPartnerRepository.deleteById(PARTNER_ID) } returns Unit
-        every { projectPartnerRepository.findTop30ByProjectId(ProjectPartnerTestUtil.project.id, any()) } returns emptySet()
+        every {
+            projectPartnerRepository.findTop30ByProjectId(ProjectPartnerTestUtil.project.id, any())
+        } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()
 
         assertDoesNotThrow { persistence.deletePartner(PARTNER_ID) }
@@ -491,7 +517,9 @@ class PartnerPersistenceProviderTest {
 
         every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(PARTNER_ID) } returns 909L
         every { projectVersionRepo.findTimestampByVersion(909L, version) } returns timestamp
-        every { projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(PARTNER_ID, timestamp) } returns listOf(
+        every {
+            projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(PARTNER_ID, timestamp)
+        } returns listOf(
             PartnerStateAidRowTest(EN, PARTNER_ID, answer1 = true, answer2 = false, justification1 = "Is true"),
             PartnerStateAidRowTest(SK, PARTNER_ID, answer1 = true, answer2 = false, justification2 = "Is false"),
         )
@@ -507,7 +535,9 @@ class PartnerPersistenceProviderTest {
 
         every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(PARTNER_ID) } returns 1029L
         every { projectVersionRepo.findTimestampByVersion(1029L, version) } returns timestamp
-        every { projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(PARTNER_ID, timestamp) } returns emptyList()
+        every {
+            projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(PARTNER_ID, timestamp)
+        } returns emptyList()
 
         assertThat(persistence.getPartnerStateAid(PARTNER_ID, version))
             .isEqualTo(stateAidEmpty)

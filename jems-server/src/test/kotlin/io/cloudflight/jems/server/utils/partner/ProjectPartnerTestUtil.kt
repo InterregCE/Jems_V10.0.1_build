@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.partner
+package io.cloudflight.jems.server.utils.partner
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -18,7 +18,7 @@ import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartne
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidTranslEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
@@ -117,12 +117,11 @@ val legalStatusEntity = ProgrammeLegalStatusEntity(id = 1)
 
 val projectPartnerInclTransl =
     projectPartnerEntity().also {
-        it.translatedValues = mutableSetOf(ProjectPartnerTranslEntity(TranslationId(it, SystemLanguage.EN), "test"))
+        it.translatedValues.add(ProjectPartnerTranslEntity(TranslationId(it, SystemLanguage.EN), "test"))
     }
 
-
 val projectPartnerWithOrganizationEntity = projectPartnerEntity().also {
-    it.translatedValues = mutableSetOf(ProjectPartnerTranslEntity(TranslationId(it, SystemLanguage.EN), "test"))
+    it.translatedValues.add(ProjectPartnerTranslEntity(TranslationId(it, SystemLanguage.EN), "test"))
 }
 
 fun projectPartnerEntity(id:Long = PARTNER_ID, role: ProjectPartnerRole = ProjectPartnerRole.LEAD_PARTNER, abbreviation: String = "partner", sortNumber: Int = 0) = ProjectPartnerEntity(

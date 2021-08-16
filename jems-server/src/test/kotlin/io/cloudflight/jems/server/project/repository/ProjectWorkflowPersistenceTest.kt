@@ -24,8 +24,8 @@ import io.cloudflight.jems.server.project.service.application.ApplicationActionI
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.states.ProjectStatusTestUtil.Companion.userSummary
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

@@ -9,11 +9,11 @@ import io.cloudflight.jems.server.project.repository.partner.toModel
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
-internal class GetProjectPartnerInteractorTest: UnitTest() {
+internal class GetProjectPartnerInteractorTest : UnitTest() {
     @MockK
     lateinit var persistence: PartnerPersistence
 

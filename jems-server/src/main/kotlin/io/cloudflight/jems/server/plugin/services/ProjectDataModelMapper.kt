@@ -126,6 +126,7 @@ import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkP
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.Mappings
+import org.mapstruct.ValueMapping
 import org.mapstruct.factory.Mappers
 
 fun ProjectFull.toDataModel() = pluginDataMapper.map(this)
@@ -226,6 +227,8 @@ abstract class PluginDataMapper {
     abstract fun map(budgetCosts: BudgetCosts): BudgetCostData
     abstract fun map(projectPartnerContributionStatusDTO: ProjectPartnerContributionStatusDTO): ProjectPartnerContributionStatusData
     abstract fun map(projectPartnerContribution: ProjectPartnerContribution): ProjectPartnerContributionData
+    //todo should be removed after merging MP2-1288
+    @ValueMapping(target = "PartnerContribution", source = "AdditionalFund")
     abstract fun map(projectPartnerCoFinancingFundTypeDTO: ProjectPartnerCoFinancingFundTypeDTO): ProjectPartnerCoFinancingFundTypeData
     abstract fun map(projectPartnerCoFinancing: ProjectPartnerCoFinancing): ProjectPartnerCoFinancingData
     abstract fun map(projectPartnerCoFinancingAndContribution: ProjectPartnerCoFinancingAndContribution): ProjectPartnerCoFinancingAndContributionData

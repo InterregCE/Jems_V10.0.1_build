@@ -22,8 +22,8 @@ import io.cloudflight.jems.server.project.entity.result.ProjectResultTransl
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK

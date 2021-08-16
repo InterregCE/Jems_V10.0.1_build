@@ -15,6 +15,6 @@ ALTER TABLE project_partner_transl
     CHANGE COLUMN partner_id source_entity_id INT UNSIGNED NOT NULL,
     ADD CONSTRAINT fk_project_partner_transl_to_partner
         FOREIGN KEY (source_entity_id) REFERENCES project_partner (id)
-            ON DELETE RESTRICT
-            ON UPDATE RESTRICT
+            ON DELETE CASCADE
+            ON UPDATE RESTRICT;
 

@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.repository.partner
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
@@ -114,8 +113,6 @@ class PartnerPersistenceProvider(
     override fun changeRoleOfLeadPartnerToPartnerIfItExists(projectId: Long) {
         projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER).ifPresent {
             it.role = ProjectPartnerRole.PARTNER
-        }.also {
-            updateSortByRole(projectId)
         }
     }
 
@@ -139,21 +136,28 @@ class PartnerPersistenceProvider(
     override fun update(projectPartner: ProjectPartner): ProjectPartnerDetail =
         getPartnerOrThrow(projectPartner.id!!).also { oldPartner ->
 
+            if (oldPartner.role != projectPartner.role!!) {
+                oldPartner.role = projectPartner.role
+                updateSortByRole(oldPartner.project.id)
+            }
             oldPartner.abbreviation = projectPartner.abbreviation!!
-            oldPartner.role = projectPartner.role!!
             oldPartner.nameInOriginalLanguage = projectPartner.nameInOriginalLanguage
             oldPartner.nameInEnglish = projectPartner.nameInEnglish
-            oldPartner.translatedValues = mutableSetOf<ProjectPartnerTranslEntity>().also {
-                it.addPartnerTranslations(
-                    oldPartner,
-                    projectPartner.department,
-                    projectPartner.otherIdentifierDescription
-                )
-            }
             oldPartner.partnerType = projectPartner.partnerType
+            oldPartner.partnerSubType = projectPartner.partnerSubType
+            oldPartner.nace = projectPartner.nace
+            oldPartner.otherIdentifierNumber = projectPartner.otherIdentifierNumber
+            oldPartner.pic = projectPartner.pic
             oldPartner.legalStatus = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId!!)
             oldPartner.vat = projectPartner.vat
             oldPartner.vatRecovery = projectPartner.vatRecovery
+
+            oldPartner.translatedValues.clear()
+            oldPartner.translatedValues.addPartnerTranslations(
+                oldPartner,
+                projectPartner.department,
+                projectPartner.otherIdentifierDescription
+            )
 
         }.toProjectPartnerDetail()
 

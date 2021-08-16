@@ -27,12 +27,12 @@ data class ProjectPartnerEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    val id: Long = 0,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     @field:NotNull
-    var project: ProjectEntity,
+    val project: ProjectEntity,
 
     @field:NotNull
     var abbreviation: String,
@@ -42,7 +42,7 @@ data class ProjectPartnerEntity(
     var role: ProjectPartnerRole,
 
     @field:NotNull
-    var sortNumber: Int = 0,
+    val sortNumber: Int = 0,
 
     var nameInOriginalLanguage: String? = null,
 
@@ -72,7 +72,7 @@ data class ProjectPartnerEntity(
     var vatRecovery: ProjectPartnerVatRecovery? = null,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
-    var translatedValues: MutableSet<ProjectPartnerTranslEntity> = mutableSetOf(),
+    val translatedValues: MutableSet<ProjectPartnerTranslEntity> = mutableSetOf(),
 
     @OneToMany(mappedBy = "addressId.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val addresses: Set<ProjectPartnerAddressEntity>?= emptySet(),

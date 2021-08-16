@@ -1,7 +1,5 @@
 package io.cloudflight.jems.server.project.repository.budget
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressTypeDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.partnerWithId
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -25,12 +23,12 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetUnitCostRepository
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
