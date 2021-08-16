@@ -10,6 +10,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
 import FileTypeEnum = TranslationFileMetaDataDTO.FileTypeEnum;
+import {ProgrammeEditableStateStore} from '../programme-page/services/programme-editable-state-store.service';
 
 @UntilDestroy()
 @Component({
@@ -44,7 +45,9 @@ export class TranslationManagementPageComponent {
     }
   }
 
-  constructor(public translationManagementStore: TranslationManagementStore, private programmePageSidenavService: ProgrammePageSidenavService) {
+  constructor(public translationManagementStore: TranslationManagementStore,
+              private programmePageSidenavService: ProgrammePageSidenavService,
+              public programmeEditableStateStore: ProgrammeEditableStateStore) {
 
     this.data$ = combineLatest([this.inProgressUploads$, this.error$, this.fileNameWarning$, this.translationManagementStore.systemLanguages$, this.translationManagementStore.applicationTranslationFileList$, this.translationManagementStore.systemTranslationFileList$]).pipe(
       map(([inProgressUploads, error, fileNameWarning, systemLanguages, applicationTranslationFiles, systemTranslationFiles]) => {

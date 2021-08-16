@@ -32,6 +32,7 @@
     <div appFormLayout>
         <h3> {{'programme.translation.management.' + fileType.toLowerCase() + '.translations' | translate}}</h3>
         <button mat-raised-button
+                *ngIf="(programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="downloadDefaultTranslationFile(fileType)"
                 color="primary">{{'programme.translation.management.get.default.translations' | translate}}</button>
         <mat-table [appTableConfig]="[{minInRem:8},{minInRem:10},{},{minInRem:5, maxInRem:5}]" [dataSource]="dataSource"
@@ -60,6 +61,7 @@
                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <button id="upload-button"
+                            *ngIf="(programmeEditableStateStore.hasEditPermission$ | async)"
                             (click)="setFileMetaDataToUpload(element?.fileType, element?.language); fileInput.click()"
                             mat-icon-button color="primary">
                         <mat-spinner *ngIf="isLoading(data.inProgressUploads,element?.fileType ,element?.language)"
@@ -70,6 +72,7 @@
                     </button>
 
                     <button class="fx-row fx-center-center"
+                            *ngIf="(programmeEditableStateStore.hasEditPermission$ | async)"
                             (click)="downloadTranslationFile(element?.fileType, element?.language)" color="accent"
                             [disabled]="element?.lastModified === undefined" mat-icon-button>
                         <mat-icon>download</mat-icon>
