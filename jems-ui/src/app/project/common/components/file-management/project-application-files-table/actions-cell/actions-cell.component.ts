@@ -32,11 +32,17 @@ export class ActionsCellComponent {
   delete = new EventEmitter<ProjectFileMetadataDTO>();
 
   canChangeFile(): boolean {
+    if (this.type === FileCategoryEnum.ALL) {
+      return false;
+    }
     return this.type === FileCategoryEnum.ASSESSMENT
       ? this.canChangeAssessmentFile() : this.canChangeApplicationFile();
   }
 
   canDeleteFile(): boolean {
+    if (this.type === FileCategoryEnum.ALL) {
+      return false;
+    }
     return this.type === FileCategoryEnum.ASSESSMENT
       ? this.canChangeAssessmentFile() : this.canDeleteApplicationFile();
   }
