@@ -1,6 +1,6 @@
 import {
   ChangeDetectionStrategy,
-  Component
+  Component, OnInit
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
@@ -10,7 +10,7 @@ import {
   ProjectPartnerDetailDTO,
   ProgrammeLegalStatusService,
 } from '@cat/api';
-import {catchError, take, tap} from 'rxjs/operators';
+import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
@@ -22,6 +22,7 @@ import {APIError} from '@common/models/APIError';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Tools} from '@common/utils/tools';
 import {RoutingService} from '@common/services/routing.service';
+import {ProjectApplicationFormPartnerEditConstants} from '@project/project-application/components/project-application-form/project-application-form-partner-edit/constants/project-application-form-partner-edit.constants';
 
 @Component({
   selector: 'app-project-application-form-partner-edit',
@@ -30,15 +31,18 @@ import {RoutingService} from '@common/services/routing.service';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerEditComponent {
+export class ProjectApplicationFormPartnerEditComponent implements OnInit {
   RoleEnum = ProjectPartnerSummaryDTO.RoleEnum;
   VatRecoveryEnum = ProjectPartnerDTO.VatRecoveryEnum;
+  ProjectApplicationFormPartnerEditConstants = ProjectApplicationFormPartnerEditConstants;
+  tools = Tools;
   LANGUAGE = InputTranslation.LanguageEnum;
   APPLICATION_FORM = APPLICATION_FORM;
 
   partnerId = this.router.getParameter(this.activatedRoute, 'partnerId');
   partner$: Observable<ProjectPartnerDetailDTO>;
   legalStatuses$ = this.programmeLegalStatusService.getProgrammeLegalStatusList();
+  filteredNace: Observable<string[]>;
 
   partnerForm: FormGroup = this.formBuilder.group({
     fakeRole: [], // needed for the fake role field in view mode
@@ -53,6 +57,11 @@ export class ProjectApplicationFormPartnerEditComponent {
     nameInEnglish: [[], Validators.maxLength(100)],
     department: [],
     partnerType: [''],
+    partnerSubType: [],
+    nace: [],
+    otherIdentifierNumber: ['', Validators.maxLength(50)],
+    otherIdentifierDescription: [],
+    pic: [Validators.max(999999999)],
     legalStatusId: ['', Validators.required],
     vat: ['', Validators.maxLength(50)],
     vatRecovery: ['']
@@ -64,25 +73,6 @@ export class ProjectApplicationFormPartnerEditComponent {
   legalStatusErrors = {
     required: 'project.partner.legal.status.should.not.be.empty'
   };
-
-  partnerTypeEnums = [
-    'LocalPublicAuthority',
-    'RegionalPublicAuthority',
-    'NationalPublicAuthority',
-    'SectoralAgency',
-    'InfrastructureAndServiceProvider',
-    'InterestGroups',
-    'HigherEducationOrganisations',
-    'EducationTrainingCentreAndSchool',
-    'EnterpriseExceptSme',
-    'Sme',
-    'BusinessSupportOrganisation',
-    'Egtc',
-    'InternationalOrganisationEeig',
-    'GeneralPublic',
-    'Hospitals',
-    'Other'
-  ];
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
@@ -98,6 +88,14 @@ export class ProjectApplicationFormPartnerEditComponent {
       );
   }
 
+  ngOnInit() {
+    this.filteredNace = this.partnerForm.controls.nace.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this.filter(value))
+      );
+  }
+
   get controls(): any {
     return this.partnerForm.controls;
   }
@@ -105,7 +103,6 @@ export class ProjectApplicationFormPartnerEditComponent {
   onSubmit(controls: any, oldPartnerId?: number): void {
     if (!controls.id?.value) {
       const partnerToCreate = {
-        id: 0,
         abbreviation: this.controls.abbreviation.value,
         role: this.controls.role.value,
         oldLeadPartnerId: oldPartnerId,
@@ -113,15 +110,15 @@ export class ProjectApplicationFormPartnerEditComponent {
         nameInEnglish: this.controls.nameInEnglish.value[0].translation,
         department: this.controls.department.value,
         partnerType: this.controls.partnerType.value,
-        partnerSubType: ProjectPartnerDTO.PartnerSubTypeEnum.LARGEENTERPRISE,
-        nace: ProjectPartnerDTO.NaceEnum.A,
-        otherIdentifierNumber: '12',
-        otherIdentifierDescription: [],
-        pic: '012',
+        partnerSubType: this.controls.partnerSubType.value,
+        nace: this.controls.nace.value,
+        otherIdentifierNumber: this.controls.otherIdentifierNumber.value,
+        otherIdentifierDescription: this.controls.otherIdentifierDescription.value,
+        pic: this.controls.pic.value,
         legalStatusId: this.controls.legalStatusId.value,
         vat: this.controls.vat.value,
         vatRecovery: this.controls.vatRecovery.value,
-      };
+      } as any;
 
       partnerToCreate.oldLeadPartnerId = oldPartnerId;
       if (!controls.partnerType.value) {
@@ -144,11 +141,11 @@ export class ProjectApplicationFormPartnerEditComponent {
         nameInEnglish: this.controls.nameInEnglish.value[0].translation,
         department: this.controls.department.value,
         partnerType: this.controls.partnerType.value,
-        partnerSubType: ProjectPartnerDTO.PartnerSubTypeEnum.LARGEENTERPRISE,
-        nace: ProjectPartnerDTO.NaceEnum.A,
-        otherIdentifierNumber: '12',
-        otherIdentifierDescription: [],
-        pic: '012',
+        partnerSubType: this.controls.partnerSubType.value,
+        nace: this.controls.nace.value,
+        otherIdentifierNumber: this.controls.otherIdentifierNumber.value,
+        otherIdentifierDescription: this.controls.otherIdentifierDescription.value,
+        pic: this.controls.pic.value,
         legalStatusId: this.controls.legalStatusId.value,
         vat: this.controls.vat.value,
         vatRecovery: this.controls.vatRecovery.value,
@@ -199,9 +196,14 @@ export class ProjectApplicationFormPartnerEditComponent {
     }]);
     this.controls.department.setValue(partner?.department);
     this.controls.partnerType.setValue(partner?.partnerType);
+    this.controls.partnerSubType.setValue(partner?.partnerSubType);
     this.controls.legalStatusId.setValue(partner?.legalStatusId);
+    this.controls.nace.setValue(partner?.nace);
     this.controls.vat.setValue(partner?.vat);
     this.controls.vatRecovery.setValue(partner?.vatRecovery);
+    this.controls.otherIdentifierNumber.setValue(partner?.otherIdentifierNumber);
+    this.controls.otherIdentifierDescription.setValue(partner?.otherIdentifierDescription);
+    this.controls.pic.setValue(partner?.pic);
     this.controls.sortNumber.setValue(partner?.sortNumber);
   }
 
@@ -225,6 +227,23 @@ export class ProjectApplicationFormPartnerEditComponent {
     });
   }
 
+  selectionUnfocused(event: FocusEvent): void {
+    if (this.selectOptionClicked(event)) {
+      return;
+    }
+    const selected = this.findByNace(this.controls?.nace.value);
+    if (!selected) {
+      this.controls?.nace.patchValue(null);
+    }
+  }
+
+  private filter(value: string): string[] {
+    const filterValue = (value || '').toLowerCase();
+    return this.ProjectApplicationFormPartnerEditConstants.naceEnums
+      .filter(nace => nace.toLowerCase().includes(filterValue))
+      .map(nace => nace);
+  }
+
   private redirectToPartnerOverview(): void {
     this.router.navigate(['..'], {relativeTo: this.activatedRoute});
   }
@@ -234,6 +253,14 @@ export class ProjectApplicationFormPartnerEditComponent {
       ['..', partner.id, 'identity'],
       {relativeTo: this.activatedRoute}
     );
+  }
+
+  private selectOptionClicked(event: FocusEvent): boolean {
+    return !!event.relatedTarget && (event.relatedTarget as any).tagName === 'MAT-OPTION';
+  }
+
+  private findByNace(value: string): string | undefined {
+    return this.ProjectApplicationFormPartnerEditConstants.naceEnums.find(nace => value === nace);
   }
 
 }

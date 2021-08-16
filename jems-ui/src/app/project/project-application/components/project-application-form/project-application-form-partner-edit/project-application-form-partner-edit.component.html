@@ -92,8 +92,17 @@
         <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.TYPE">
             <mat-label>{{'project.partner.type' | translate}}</mat-label>
             <mat-select name="partnerType" formControlName="partnerType">
-                <mat-option *ngFor="let type of partnerTypeEnums" [value]="type">
+                <mat-option *ngFor="let type of ProjectApplicationFormPartnerEditConstants.partnerTypeEnums" [value]="type">
                     {{'project.application.form.relevance.target.group.' + type | translate}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.SUB_TYPE">
+            <mat-label>{{'project.partner.subType' | translate}}</mat-label>
+            <mat-select name="partnerSubType" formControlName="partnerSubType">
+                <mat-option *ngFor="let subType of ProjectApplicationFormPartnerEditConstants.partnerSubTypeEnums" [value]="subType">
+                    {{'project.application.form.relevance.target.group.' + subType | translate}}
                 </mat-option>
             </mat-select>
         </mat-form-field>
@@ -109,6 +118,23 @@
                 <app-form-field-errors
                         [errors]="controls?.legalStatus?.errors"
                         [messages]="legalStatusErrors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.NACE_GROUP_LEVEL">
+            <mat-label>{{'project.partner.nace' | translate}}</mat-label>
+            <input name="nace" formControlName="nace" matInput
+                   [matAutocomplete]="nace"
+                   (focusout)="selectionUnfocused($event)">
+            <mat-autocomplete #nace="matAutocomplete">
+                <mat-option *ngFor="let naceValue of filteredNace | async" [value]="naceValue">
+                    {{naceValue}}
+                </mat-option>
+            </mat-autocomplete>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="controls?.nace?.errors">
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
@@ -140,5 +166,38 @@
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </ng-container>
+
+        <mat-form-field class="w-100" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.OTHER_IDENTIFIER_NUMBER_AND_DESCRIPTION">
+            <mat-label>{{'project.partner.other.identifier.number' | translate}}</mat-label>
+            <input #otherIdentifierNumberInput name="otherIdentifierNumber" formControlName="otherIdentifierNumber" matInput>
+            <mat-hint [appHintFor]="otherIdentifierNumberInput" [hide]="controls?.otherIdentifierNumber?.errors !== null">
+                <app-text-hint [currentLength]="otherIdentifierNumberInput?.value?.length" [maxLength]="50"></app-text-hint>
+            </mat-hint>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="controls?.otherIdentifierNumber?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <app-multi-language-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.OTHER_IDENTIFIER_NUMBER_AND_DESCRIPTION">
+            <app-multi-language-form-field
+                    label="project.partner.other.identifier.description"
+                    formControlName="otherIdentifierDescription"
+                    maxLength="100">
+            </app-multi-language-form-field>
+        </app-multi-language-container>
+
+        <mat-form-field class="w-100" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.PIC">
+            <mat-label>{{'project.partner.pic' | translate}}</mat-label>
+            <input type="number" name="pic" formControlName="pic" matInput
+                   (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="controls?.pic?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
     </form>
 </app-form>
