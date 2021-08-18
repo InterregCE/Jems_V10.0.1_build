@@ -33,6 +33,7 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectStatusDecideApprovedWithConditions("ProjectStatusDecideApprovedWithConditions"),
     ProjectStatusDecideNotApproved("ProjectStatusDecideNotApproved"),
     ProjectStatusDecisionRevert("ProjectStatusDecisionRevert"),
+    ProjectStartStepTwo("ProjectStartStepTwo"),
 
     AuditRetrieve("AuditRetrieve"),
 

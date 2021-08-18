@@ -37,6 +37,7 @@ enum class UserRolePermission(val key: String) {
     ProjectStatusDecideApprovedWithConditions("ProjectStatusDecideApprovedWithConditions"),
     ProjectStatusDecideNotApproved("ProjectStatusDecideNotApproved"),
     ProjectStatusDecisionRevert("ProjectStatusDecisionRevert"),
+    ProjectStartStepTwo("ProjectStartStepTwo"),
 
     // Module SYSTEM
     AuditRetrieve("AuditRetrieve"),

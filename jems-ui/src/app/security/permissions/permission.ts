@@ -120,6 +120,11 @@ export class Permission {
               mode: PermissionMode.TOGGLE_EDIT,
               editPermissions: [PermissionsEnum.ProjectStatusDecisionRevert],
             },
+            {
+              name: 'project.application.start.step.two.button.label',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectStartStepTwo],
+            },
           ],
         },
         {

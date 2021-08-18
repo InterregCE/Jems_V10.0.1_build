@@ -60,7 +60,7 @@
             {{ 'common.label.projectapplicationstatus.' + data.revertToStatus | translate }}
         </app-pending-button>
     </ng-container>
-    <ng-container *ngxPermissionsOnly="[UserRole.ADMINISTRATOR, UserRole.PROGRAMME_USER]">
+    <ng-container *hasPermission="Permissions.ProjectStartStepTwo">
         <app-pending-button *ngIf="data.startStepTwoAvailable"
                             class="mr-2 mt-2"
                             [pending]="actionPending"
