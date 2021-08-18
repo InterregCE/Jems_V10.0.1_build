@@ -6,9 +6,13 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityId
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerId
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityPartnerRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
@@ -39,6 +43,7 @@ import org.springframework.data.domain.Sort
 class WorkPackagePersistenceProvider(
     private val workPackageRepository: WorkPackageRepository,
     private val workPackageActivityRepository: WorkPackageActivityRepository,
+    private val workPackageActivityPartnerRepository: WorkPackageActivityPartnerRepository,
     private val workPackageOutputRepository: WorkPackageOutputRepository,
     private val workPackageInvestmentRepository: WorkPackageInvestmentRepository,
     private val outputIndicatorRepository: OutputIndicatorRepository,
@@ -215,7 +220,10 @@ class WorkPackagePersistenceProvider(
     override fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long, projectId: Long, version: String?): List<WorkPackageActivity> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                getWorkPackageOrThrow(workPackageId).activities.toModel()
+                getWorkPackageOrThrow(workPackageId).activities.toModel(
+                    workPackageActivityPartnerRepository.findAllByIdWorkPackageActivityIdWorkPackageId(workPackageId)
+                        .groupBy({ it.id.workPackageActivityId }, { it.id.projectPartnerId })
+                )
             },
             previousVersionFetcher = { timestamp ->
                 getActivitiesAndDeliverablesByWorkPackageId(workPackageId, timestamp)
@@ -227,12 +235,31 @@ class WorkPackagePersistenceProvider(
     override fun updateWorkPackageActivities(
         workPackageId: Long,
         workPackageActivities: List<WorkPackageActivity>
-    ): List<WorkPackageActivity> =
-        workPackageRepository.save(
+    ): List<WorkPackageActivity> {
+        val activities = workPackageRepository.save(
             getWorkPackageOrThrow(workPackageId).copy(
                 activities = workPackageActivities.toIndexedEntity(workPackageId)
             )
-        ).activities.toModel()
+        ).activities
+
+        workPackageActivityPartnerRepository.deleteAllByIdWorkPackageActivityIdWorkPackageId(workPackageId)
+        val partnersByActivities = workPackageActivityPartnerRepository.saveAll(workPackageActivities.toPartners())
+            .groupBy({ it.id.workPackageActivityId }, { it.id.projectPartnerId })
+
+        return activities.toModel(partnersByActivities)
+    }
+
+    private fun List<WorkPackageActivity>.toPartners(): Collection<WorkPackageActivityPartnerEntity> {
+        val workPackageId = this.firstOrNull()?.workPackageId ?: 0
+        val partners = associateBy({ it.activityNumber }, { it.partnerIds })
+        val result = mutableSetOf<WorkPackageActivityPartnerId>()
+        partners.forEach { (activityNumber, partnerIds) ->
+            partnerIds.forEach {
+                result.add(WorkPackageActivityPartnerId(WorkPackageActivityId(workPackageId, activityNumber), it))
+            }
+        }
+        return result.map { WorkPackageActivityPartnerEntity(it) }
+    }
 
     @Transactional(readOnly = true)
     override fun getProjectFromWorkPackageInvestment(workPackageInvestmentId: Long): ProjectApplicantAndStatus =

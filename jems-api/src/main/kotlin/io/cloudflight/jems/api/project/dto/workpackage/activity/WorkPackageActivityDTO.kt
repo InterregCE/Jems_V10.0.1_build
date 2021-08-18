@@ -9,7 +9,8 @@ data class WorkPackageActivityDTO(
     val startPeriod: Int? = null,
     val endPeriod: Int? = null,
     val description: Set<InputTranslation> = emptySet(),
-    val deliverables: List<WorkPackageActivityDeliverableDTO> = emptyList()
+    val deliverables: List<WorkPackageActivityDeliverableDTO> = emptyList(),
+    val partnerIds: Set<Long> = emptySet()
 )
 
 data class WorkPackageActivityDeliverableDTO(

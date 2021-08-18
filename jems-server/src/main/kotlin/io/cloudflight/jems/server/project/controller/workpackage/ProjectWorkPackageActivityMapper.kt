@@ -36,6 +36,7 @@ fun WorkPackageActivity.toDto() = WorkPackageActivityDTO(
     endPeriod = endPeriod,
     description = translatedValues.extractField { it.description },
     deliverables = deliverables.toDeliverableDto(),
+    partnerIds = partnerIds,
 )
 
 fun List<WorkPackageActivity>.toDto() = map { it.toDto() }

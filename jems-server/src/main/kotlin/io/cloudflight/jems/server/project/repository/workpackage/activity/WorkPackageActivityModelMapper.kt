@@ -63,16 +63,19 @@ fun WorkPackageActivityDeliverableTranslatedValue.toEntity(deliverableId: WorkPa
 fun Set<WorkPackageActivityDeliverableTranslatedValue>.toEntity(deliverableId: WorkPackageActivityDeliverableId) =
     mapTo(HashSet()) { it.toEntity(deliverableId) }
 
-fun WorkPackageActivityEntity.toModel() = WorkPackageActivity(
+fun WorkPackageActivityEntity.toModel(partnersByActivities: Map<WorkPackageActivityId, List<Long>>) = WorkPackageActivity(
     workPackageId = activityId.workPackageId,
     activityNumber = activityId.activityNumber,
     translatedValues = translatedValues.toModel(),
     startPeriod = startPeriod,
     endPeriod = endPeriod,
     deliverables = deliverables.sortedBy { it.deliverableId.deliverableNumber }.map { it.toModel() },
+    partnerIds = partnersByActivities.get(activityId)?.toSet() ?: emptySet(),
 )
 
-fun Iterable<WorkPackageActivityEntity>.toModel() = sortedBy { it.activityId.activityNumber }.map { it.toModel() }
+fun Iterable<WorkPackageActivityEntity>.toModel(
+    partnersByActivities: Map<WorkPackageActivityId, List<Long>>
+) = sortedBy { it.activityId.activityNumber }.map { it.toModel(partnersByActivities) }
 
 fun WorkPackageActivityDeliverableEntity.toModel() = WorkPackageActivityDeliverable(
     deliverableNumber = deliverableId.deliverableNumber,
