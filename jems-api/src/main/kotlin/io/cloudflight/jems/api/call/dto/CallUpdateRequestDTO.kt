@@ -17,4 +17,5 @@ data class CallUpdateRequestDTO (
     val priorityPolicies: Set<ProgrammeObjectivePolicy> = emptySet(),
     val strategies: Set<ProgrammeStrategy> = emptySet(),
     val fundIds: Set<Long> = emptySet(),
+    val stateAidIds: Set<Long> = emptySet(),
 )

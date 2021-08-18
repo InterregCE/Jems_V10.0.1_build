@@ -18,6 +18,7 @@ import {CallUnitCostsComponent} from './call-detail-page/call-unit-costs/call-un
 import {ProgrammeEditableStateStore} from '../programme/programme-page/services/programme-editable-state-store.service';
 import {CallDetailPageComponent} from './call-detail-page/call-detail-page.component';
 import {ApplicationFormConfigurationPageComponent} from './application-form-configuration-page/application-form-configuration-page.component';
+import { CallStateAidsComponent } from './call-detail-page/call-state-aids/call-state-aids.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import {ApplicationFormConfigurationPageComponent} from './application-form-conf
     CallUnitCostsComponent,
     CallDetailPageComponent,
     ApplicationFormConfigurationPageComponent,
+    CallStateAidsComponent,
   ],
   imports: [
     SharedModule,

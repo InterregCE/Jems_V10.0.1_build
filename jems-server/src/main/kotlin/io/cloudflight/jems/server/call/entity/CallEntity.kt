@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEnt
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
+import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import java.time.ZonedDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Column

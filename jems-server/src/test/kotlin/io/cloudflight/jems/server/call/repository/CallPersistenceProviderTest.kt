@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitisation
+import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.AtlanticStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -18,6 +19,8 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
+import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
+import io.cloudflight.jems.server.call.entity.StateAidSetupId
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -34,6 +37,7 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEn
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
@@ -41,11 +45,13 @@ import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSum
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
+import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
@@ -72,6 +78,7 @@ internal class CallPersistenceProviderTest {
         private const val CALL_ID = 15L
         private const val PROJECT_ID = 1L
         private const val FUND_ID = 24L
+        private const val STATE_AID_ID = 23L
         private const val LUMP_SUM_ID = 4L
         private const val UNIT_COST_ID = 3L
         private const val USER_ID = 302L
@@ -83,6 +90,12 @@ internal class CallPersistenceProviderTest {
             ApplicationFormFieldConfigurationEntity(
                 ApplicationFormFieldConfigurationId("fieldId" , callEntity),
                 FieldVisibilityStatus.STEP_ONE_AND_TWO
+            )
+        )
+
+        private fun stateAidEntities(callEntity: CallEntity)= mutableSetOf(
+            ProjectCallStateAidEntity(
+                StateAidSetupId(callEntity, stateAid)
             )
         )
 
@@ -109,6 +122,8 @@ internal class CallPersistenceProviderTest {
         val strategies = setOf(ProgrammeStrategyEntity(EUStrategyBalticSeaRegion, true), ProgrammeStrategyEntity(AtlanticStrategy, true))
 
         val fund=ProgrammeFundEntity(id = FUND_ID, selected = true)
+
+        val stateAid=ProgrammeStateAidEntity(id = STATE_AID_ID, measure = ProgrammeStateAidMeasure.OTHER_1, maxIntensity = BigDecimal.ZERO, threshold = BigDecimal.ZERO, schemeNumber = "")
         private fun callEntity(id: Long? = null): CallEntity {
             val call = callWithId(id ?: CALL_ID)
             call.startDate = START
@@ -170,6 +185,15 @@ internal class CallPersistenceProviderTest {
             )),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             funds = listOf(ProgrammeFund(id = FUND_ID, selected = true)),
+            stateAids = listOf(ProgrammeStateAid(
+                id = STATE_AID_ID,
+                measure = ProgrammeStateAidMeasure.OTHER_1,
+                threshold = BigDecimal.ZERO,
+                maxIntensity = BigDecimal.ZERO,
+                name = emptySet(),
+                abbreviatedName = emptySet(),
+                schemeNumber = ""
+            )),
             flatRates = sortedSetOf(ProjectCallFlatRate(type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 15, isAdjustable = true)),
             lumpSums = listOf(ProgrammeLumpSum(
                 id = LUMP_SUM_ID,
@@ -207,6 +231,7 @@ internal class CallPersistenceProviderTest {
             priorityPolicies = setOf(Digitisation, AdvancedTechnologies),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             fundIds = setOf(FUND_ID),
+            stateAidIds = setOf(STATE_AID_ID)
         )
 
         private val lumpSum2 = ProgrammeLumpSumEntity(
@@ -283,6 +308,12 @@ internal class CallPersistenceProviderTest {
     private lateinit var programmeFundRepo: ProgrammeFundRepository
 
     @MockK
+    private lateinit var projectCallStateAidRepository: ProjectCallStateAidRepository
+
+    @MockK
+    private lateinit var programmeStateAidRepo: ProgrammeStateAidRepository
+
+    @MockK
     private lateinit var projectPersistence: ProjectPersistence
 
     @InjectMockKs
@@ -309,6 +340,7 @@ internal class CallPersistenceProviderTest {
             ApplicationFormFieldConfiguration("fieldId-2", FieldVisibilityStatus.STEP_ONE_AND_TWO)
         )
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
+        every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         every { applicationFormFieldConfigurationRepository.saveAll(any<MutableSet<ApplicationFormFieldConfigurationEntity>>()) } returns newConfigs.toEntities(callEntity).toList()
         assertThat(persistence.saveApplicationFormFieldConfigurations(CALL_ID, newConfigs).applicationFormFieldConfigurations).containsAll(newConfigs)
     }
@@ -336,6 +368,7 @@ internal class CallPersistenceProviderTest {
         val callEntity= callEntity()
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(callEntity)
+        every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         assertThat(persistence.getCallById(CALL_ID)).isEqualTo(expectedCallDetail)
     }
 
@@ -351,6 +384,7 @@ internal class CallPersistenceProviderTest {
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(callEntity)
+        every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         assertThat(persistence.getCallByProjectId(PROJECT_ID)).isEqualTo(expectedCallDetail)
     }
 
@@ -395,6 +429,7 @@ internal class CallPersistenceProviderTest {
         every { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(setOf(EUStrategyBalticSeaRegion, AtlanticStrategy)) } returns strategies
         every { programmeFundRepo.getTop20ByIdInAndSelectedTrue(setOf(FUND_ID)) } returns setOf(fund)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(expectedResultEntity.id) } returns applicationFormFieldConfigurationEntities(expectedResultEntity)
+        every { projectCallStateAidRepository.findAllByIdCallId(expectedResultEntity.id) } returns stateAidEntities(expectedResultEntity)
         val slotCall = slot<CallEntity>()
         every { callRepo.save(capture(slotCall)) } returnsArgument 0
 
@@ -423,6 +458,7 @@ internal class CallPersistenceProviderTest {
         every { callRepo.findById(1L) } returns Optional.of(call)
 
         every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(call)
+        every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
 
         persistence.updateProjectCallFlatRate(1, setOf(
             ProjectCallFlatRate(type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 18, isAdjustable = false),
@@ -456,6 +492,7 @@ internal class CallPersistenceProviderTest {
         every { callRepo.findById(1L) } returns Optional.of(call)
         every { programmeLumpSumRepo.findAllById(setOf(2, 3)) } returns listOf(lumpSum2, lumpSum3)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(call)
+        every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
         persistence.updateProjectCallLumpSum(1, setOf(2, 3))
         assertThat(call.lumpSums).containsExactlyInAnyOrder(lumpSum2, lumpSum3)
     }
@@ -481,6 +518,7 @@ internal class CallPersistenceProviderTest {
         every { callRepo.findById(1L) } returns Optional.of(call)
         every { programmeUnitCostRepo.findAllById(setOf(2, 3)) } returns listOf(unitCost2, unitCost3)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(1) } returns applicationFormFieldConfigurationEntities(call)
+        every { projectCallStateAidRepository.findAllByIdCallId(1) } returns stateAidEntities(call)
         persistence.updateProjectCallUnitCost(1, setOf(2, 3))
         assertThat(call.unitCosts).containsExactlyInAnyOrder(unitCost2, unitCost3)
     }

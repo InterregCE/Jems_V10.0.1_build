@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpS
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
+import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
@@ -30,6 +31,8 @@ class CallPersistenceProvider(
     private val programmeSpecificObjectiveRepo: ProgrammeSpecificObjectiveRepository,
     private val programmeStrategyRepo: StrategyRepository,
     private val programmeFundRepo: ProgrammeFundRepository,
+    private val projectCallStateAidRepo: ProjectCallStateAidRepository,
+    private val programmeStateAidRepository: ProgrammeStateAidRepository,
     private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
     private val projectPersistence: ProjectPersistence,
 ) : CallPersistence {
@@ -46,7 +49,8 @@ class CallPersistenceProvider(
     override fun getCallById(callId: Long): CallDetail =
         callRepo.findById(callId).map {
             it.toDetailModel(
-                applicationFormFieldConfigurationRepository.findAllByCallId(callId)
+                applicationFormFieldConfigurationRepository.findAllByCallId(callId),
+                projectCallStateAidRepo.findAllByIdCallId(callId)
             )
         }.orElseThrow { CallNotFound() }
 
@@ -71,7 +75,8 @@ class CallPersistenceProvider(
                 retrieveFunds = { programmeFundRepo.getTop20ByIdInAndSelectedTrue(it).toSet() },
             )
         ).toDetailModel(
-            applicationFormFieldConfigurationRepository.findAllByCallId(call.id)
+            applicationFormFieldConfigurationRepository.findAllByCallId(call.id),
+            projectCallStateAidRepo.findAllByIdCallId(call.id)
         )
     }
 
@@ -80,6 +85,15 @@ class CallPersistenceProvider(
         val existingCall = callRepo.findById(call.id).orElseThrow { CallNotFound() }
 
         adjustTimeToLastNanoSec(call)
+
+        // check if the stateAids need to be update when call is updated and do so
+        val existingStateAidsForCall = projectCallStateAidRepo.findAllByIdCallId(call.id).map {it.setupId.stateAid.id}
+        if (call.stateAidIds != existingStateAidsForCall) {
+            projectCallStateAidRepo.deleteAllBySetupIdCallId(call.id)
+            projectCallStateAidRepo.saveAll(
+                programmeStateAidRepository.findAllById(call.stateAidIds).toMutableSet().toEntities(existingCall)
+            )
+        }
 
         return callRepo.save(
             call.toEntity(
@@ -90,7 +104,8 @@ class CallPersistenceProvider(
                 existingEntity = existingCall,
             )
         ).toDetailModel(
-            applicationFormFieldConfigurationRepository.findAllByCallId(call.id)
+            applicationFormFieldConfigurationRepository.findAllByCallId(call.id),
+            projectCallStateAidRepo.findAllByIdCallId(call.id)
         )
     }
 
@@ -99,7 +114,8 @@ class CallPersistenceProvider(
         val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
         call.updateFlatRateSetup(flatRates.toEntity(call))
         return call.toDetailModel(
-            applicationFormFieldConfigurationRepository.findAllByCallId(callId)
+            applicationFormFieldConfigurationRepository.findAllByCallId(callId),
+            projectCallStateAidRepo.findAllByIdCallId(callId)
         )
     }
 
@@ -113,7 +129,8 @@ class CallPersistenceProvider(
         call.lumpSums.clear()
         call.lumpSums.addAll(programmeLumpSumRepo.findAllById(lumpSumIds))
         return call.toDetailModel(
-            applicationFormFieldConfigurationRepository.findAllByCallId(callId)
+            applicationFormFieldConfigurationRepository.findAllByCallId(callId),
+            projectCallStateAidRepo.findAllByIdCallId(callId)
         )
     }
 
@@ -127,7 +144,8 @@ class CallPersistenceProvider(
         call.unitCosts.clear()
         call.unitCosts.addAll(programmeUnitCostRepo.findAllById(unitCostIds))
         return call.toDetailModel(
-            applicationFormFieldConfigurationRepository.findAllByCallId(callId)
+            applicationFormFieldConfigurationRepository.findAllByCallId(callId),
+            projectCallStateAidRepo.findAllByIdCallId(callId)
         )
     }
 
@@ -158,7 +176,22 @@ class CallPersistenceProvider(
         val configurations =
             applicationFormFieldConfigurationRepository.saveAll(applicationFormFieldConfigurations.toEntities(callEntity))
                 .toMutableSet()
-        return callEntity.toDetailModel(configurations)
+        return callEntity.toDetailModel(
+            configurations,
+            projectCallStateAidRepo.findAllByIdCallId(callId)
+        )
+    }
+
+    @Transactional
+    override fun updateProjectCallStateAids(callId: Long, stateAids: Set<Long>): CallDetail {
+        val callEntity = callRepo.findById(callId).orElseThrow { CallNotFound() }
+
+        val savedStateAids = projectCallStateAidRepo.saveAll(programmeStateAidRepository.findAllById(stateAids).toMutableSet().toEntities(callEntity)).toMutableSet()
+
+        return callEntity.toDetailModel(
+            applicationFormFieldConfigurationRepository.findAllByCallId(callId),
+            savedStateAids
+        )
     }
 
 

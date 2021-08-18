@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.common.CommonDTOMapper
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.programme.controller.priority.toDto
+import io.cloudflight.jems.server.programme.controller.stateaid.toDto
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
@@ -43,6 +44,7 @@ fun CallDetail.toDto() = CallDetailDTO(
     objectives = objectives.map { it.toDto() },
     strategies = strategies.sorted(),
     funds = funds.toDto(),
+    stateAids = stateAids.toDto(),
     flatRates = flatRates.toDto(),
     lumpSums = lumpSums.toDto(),
     unitCosts = unitCosts.toDto(),
@@ -61,6 +63,7 @@ fun CallUpdateRequestDTO.toModel() = Call(
     priorityPolicies = priorityPolicies,
     strategies = strategies,
     fundIds = fundIds,
+    stateAidIds = stateAidIds,
 )
 
 

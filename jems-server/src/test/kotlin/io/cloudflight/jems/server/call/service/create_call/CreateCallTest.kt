@@ -120,6 +120,12 @@ class CreateCallTest : UnitTest() {
                 ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
             )
         } returns expectedCallDetail
+        every {
+            persistence.updateProjectCallStateAids(
+                expectedCallDetail.id,
+                emptySet()
+            )
+        } returns expectedCallDetail
 
         assertThat(createCall.createCallInDraft(callToCreate)).isEqualTo(expectedCallDetail)
         assertThat(slotCall.captured).isEqualTo(callToCreate.copy(status = CallStatus.DRAFT))
@@ -193,6 +199,12 @@ class CreateCallTest : UnitTest() {
             persistence.saveApplicationFormFieldConfigurations(
                 expectedCallDetail.id,
                 ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+            )
+        } returns expectedCallDetail
+        every {
+            persistence.updateProjectCallStateAids(
+                expectedCallDetail.id,
+                emptySet()
             )
         } returns expectedCallDetail
 

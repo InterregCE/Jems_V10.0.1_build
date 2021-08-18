@@ -13,5 +13,4 @@ interface ProgrammeStateAidRepository : JpaRepository<ProgrammeStateAidEntity, L
 
     @EntityGraph(value = "ProgrammeStateAidEntity.fetchWithTranslations")
     override fun findAllById(ids: Iterable<Long>): List<ProgrammeStateAidEntity>
-
 }

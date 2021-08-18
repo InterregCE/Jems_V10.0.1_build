@@ -1,7 +1,14 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Tools} from '../../common/utils/tools';
 import {combineLatest, Observable} from 'rxjs';
-import {CallDetailDTO, CallDTO, CallUpdateRequestDTO, OutputProgrammeStrategy, ProgrammeFundDTO} from '@cat/api';
+import {
+  CallDetailDTO,
+  CallDTO,
+  CallUpdateRequestDTO,
+  OutputProgrammeStrategy,
+  ProgrammeFundDTO,
+  ProgrammeStateAidDTO
+} from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -15,6 +22,7 @@ import {CallDetailPageStore} from './call-detail-page-store.service';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {filter} from 'rxjs/internal/operators';
+import {CallStateAidDTO} from './call-state-aids/CallStateAidDTO';
 
 @Component({
   selector: 'app-call-detail-page',
@@ -43,7 +51,9 @@ export class CallDetailPageComponent {
     strategies: OutputProgrammeStrategy[],
     initialStrategies: OutputProgrammeStrategy[],
     funds: ProgrammeFundDTO[],
-    initialFunds: ProgrammeFundDTO[]
+    initialFunds: ProgrammeFundDTO[],
+    stateAids: CallStateAidDTO[],
+    initialStateAids: CallStateAidDTO[],
   }>;
 
   inputErrorMessages = {
@@ -92,10 +102,11 @@ export class CallDetailPageComponent {
       this.pageStore.callIsEditable$,
       this.pageStore.allPriorities$,
       this.pageStore.allActiveStrategies$,
-      this.pageStore.allFunds$
+      this.pageStore.allFunds$,
+      this.pageStore.allStateAids$
     ])
       .pipe(
-        map(([call, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allFunds]) => ({
+        map(([call, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allFunds, allStateAids]: any) => ({
           call,
           userCanApply,
           callIsEditable,
@@ -105,6 +116,8 @@ export class CallDetailPageComponent {
           initialStrategies: this.getStrategies(allActiveStrategies, call),
           funds: this.getFunds(allFunds, call),
           initialFunds: this.getFunds(allFunds, call),
+          stateAids: this.getStateAids(allStateAids, call),
+          initialStateAids: this.getStateAids(allStateAids, call),
         })),
         tap(data => this.resetForm(data.call, data.callIsEditable))
       );
@@ -113,12 +126,14 @@ export class CallDetailPageComponent {
   onSubmit(savedCall: CallDetailDTO,
            priorityCheckboxes: CallPriorityCheckbox[],
            strategies: OutputProgrammeStrategy[],
-           funds: ProgrammeFundDTO[]): void {
+           funds: ProgrammeFundDTO[],
+           stateAids: CallStateAidDTO[]): void {
     const call = this.callForm.getRawValue(); // get raw value to include disabled controls
     call.priorityPolicies = priorityCheckboxes
       .flatMap(checkbox => checkbox.getCheckedChildPolicies());
     call.strategies = strategies.filter(strategy => strategy.active).map(strategy => strategy.strategy);
     call.fundIds = funds.filter(fund => fund.selected).map(fund => fund.id);
+    call.stateAidIds = stateAids.filter(stateAid => stateAid.selected).map(stateAid => stateAid.id);
     if (!this.callForm.controls.is2Step.value) {
       call.endDateTimeStep1 = null;
       call.is2Step = null;
@@ -289,6 +304,23 @@ export class CallDetailPageComponent {
       .filter(element => callFundIds.includes(element.id))
       .forEach(element => element.selected = true);
     return savedFunds;
+  }
+
+  private getStateAids(allStateAids: ProgrammeStateAidDTO[], call: CallDetailDTO): CallStateAidDTO[] {
+    const savedStateAids = allStateAids
+      .map(element => ({
+        id: element.id,
+        abbreviatedName: element.abbreviatedName,
+        selected: false
+      } as CallStateAidDTO));
+    if (!call || !call.stateAids?.length) {
+      return savedStateAids;
+    }
+    const callStateAidIds = call.stateAids.map(element => element.id ? element.id : element);
+    savedStateAids
+      .filter(element => callStateAidIds.includes(element.id))
+      .forEach(element => element.selected = true);
+    return savedStateAids;
   }
 
 }

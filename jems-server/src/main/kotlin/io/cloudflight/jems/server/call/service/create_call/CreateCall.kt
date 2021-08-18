@@ -34,6 +34,7 @@ class CreateCall(
             call = call.apply { status = CallStatus.DRAFT },
             userId = securityService.currentUser?.user?.id!!,
         ).also {
+            persistence.updateProjectCallStateAids(it.id, call.stateAidIds)
             persistence.saveApplicationFormFieldConfigurations(it.id, ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations())
             auditPublisher.publishEvent(callCreated(this, it))
         }

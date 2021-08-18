@@ -59,12 +59,15 @@ class UpdateCall(
 
         val newSpecificObjectives: Set<ProgrammeObjectivePolicy> = call.priorityPolicies
         val newFundIds = call.fundIds
+        val newStateAidIds = call.stateAidIds
         val oldSpecificObjectives = oldCall.objectives.mergeAllSpecificObjectives()
         val oldFundIds = oldCall.funds.mapTo(HashSet()) { it.id }
+        val oldStateAidIds = oldCall.stateAids.mapTo(HashSet()) { it.id }
 
         val specificObjectivesRemoved = !newSpecificObjectives.containsAll(oldSpecificObjectives)
         val strategiesRemoved = !call.strategies.containsAll(oldCall.strategies)
         val fundsRemoved = !newFundIds.containsAll(oldFundIds)
+        val stateAidsRemoved = !newStateAidIds.containsAll(oldStateAidIds)
 
         if (startDateChanged
             || lengthOfPeriodChanged
@@ -72,6 +75,7 @@ class UpdateCall(
             || specificObjectivesRemoved
             || strategiesRemoved
             || fundsRemoved
+            || stateAidsRemoved
         )
             throw UpdateRestrictedFieldsWhenCallPublished()
 

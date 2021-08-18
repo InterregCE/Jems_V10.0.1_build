@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumListDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammePriorityDTO
+import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidDTO
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.time.ZonedDateTime
@@ -24,6 +25,7 @@ data class CallDetailDTO(
     val objectives: List<ProgrammePriorityDTO> = emptyList(),
     val strategies: List<ProgrammeStrategy> = emptyList(),
     val funds: List<ProgrammeFundDTO> = emptyList(),
+    val stateAids: List<ProgrammeStateAidDTO> = emptyList(),
     val flatRates: FlatRateSetupDTO,
     val lumpSums: List<ProgrammeLumpSumListDTO> = emptyList(),
     val unitCosts: List<ProgrammeUnitCostListDTO> = emptyList(),

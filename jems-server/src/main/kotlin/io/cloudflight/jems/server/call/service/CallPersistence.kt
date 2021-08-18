@@ -33,4 +33,6 @@ interface CallPersistence {
     fun saveApplicationFormFieldConfigurations(
         callId: Long, applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
     ): CallDetail
+
+    fun updateProjectCallStateAids(callId: Long, stateAids: Set<Long>): CallDetail
 }

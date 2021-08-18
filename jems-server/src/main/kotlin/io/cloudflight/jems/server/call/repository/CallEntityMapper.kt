@@ -9,6 +9,8 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
+import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
+import io.cloudflight.jems.server.call.entity.StateAidSetupId
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -20,9 +22,11 @@ import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.costoption.toModel
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.programme.repository.priority.toModel
+import io.cloudflight.jems.server.programme.repository.stateaid.toModel
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -44,7 +48,7 @@ fun CallEntity.toModel() = CallSummary(
 
 fun Page<CallEntity>.toModel() = map { it.toModel() }
 
-fun CallEntity.toDetailModel(applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>) = CallDetail(
+fun CallEntity.toDetailModel(applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>, stateAids: MutableSet<ProjectCallStateAidEntity>) = CallDetail(
     id = id,
     name = name,
     status = status,
@@ -57,6 +61,7 @@ fun CallEntity.toDetailModel(applicationFormFieldConfigurationEntities: MutableS
     objectives = prioritySpecificObjectives.groupSpecificObjectives(),
     strategies = strategies.mapTo(TreeSet()) { it.strategy },
     funds = funds.toModel(),
+    stateAids = stateAids.map { it.setupId.stateAid.toModel() },
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.toModel(),
     unitCosts = unitCosts.toModel(),
@@ -136,6 +141,9 @@ fun MutableSet<ApplicationFormFieldConfigurationEntity>.toModel() =
 
 fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(call: CallEntity) =
     map { callEntityMapper.map(call, it) }.toMutableSet()
+
+fun MutableSet<ProgrammeStateAidEntity>.toEntities(call: CallEntity) =
+    map { ProjectCallStateAidEntity(StateAidSetupId(call, it))}
 
 fun List<CallEntity>.toIdNamePair() =
     callEntityMapper.map(this)

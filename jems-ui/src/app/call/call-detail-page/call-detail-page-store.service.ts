@@ -6,7 +6,7 @@ import {
   OutputProgrammeStrategy,
   ProgrammeFundDTO,
   ProgrammeFundService,
-  ProgrammePriorityService,
+  ProgrammePriorityService, ProgrammeStateAidDTO, ProgrammeStateAidService,
   ProgrammeStrategyService,
 } from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
@@ -23,6 +23,7 @@ export class CallDetailPageStore {
   allPriorities$: Observable<CallPriorityCheckbox[]>;
   allActiveStrategies$: Observable<OutputProgrammeStrategy[]>;
   allFunds$: Observable<ProgrammeFundDTO[]>;
+  allStateAids$: Observable<ProgrammeStateAidDTO[]>;
   callIsReadable$: Observable<boolean>;
   callIsEditable$: Observable<boolean>;
   isFirstCall$: Observable<boolean>;
@@ -35,12 +36,14 @@ export class CallDetailPageStore {
               private programmePriorityService: ProgrammePriorityService,
               private programmeStrategyService: ProgrammeStrategyService,
               private programmeFundService: ProgrammeFundService,
+              private programmeStateAidService: ProgrammeStateAidService,
               private callService: CallService) {
     this.call$ = this.callStore.call$;
     this.userCanApply$ = this.callStore.userCanApply$;
     this.allPriorities$ = this.allPriorities();
     this.allActiveStrategies$ = this.allActiveStrategies();
     this.allFunds$ = this.allFunds();
+    this.allStateAids$ = this.allStateAids();
     this.callIsReadable$ = this.callStore.callIsReadable$;
     this.callIsEditable$ = this.callStore.callIsEditable$;
     this.isFirstCall$ = this.isFirstCall();
@@ -96,6 +99,13 @@ export class CallDetailPageStore {
     return this.programmeFundService.getProgrammeFundList()
       .pipe(
         tap(programmeFunds => Log.info('Fetched programme funds:', this, programmeFunds))
+      );
+  }
+
+  private allStateAids(): Observable<ProgrammeStateAidDTO[]> {
+    return this.programmeStateAidService.getProgrammeStateAidList()
+      .pipe(
+        tap(programmeStateAids => Log.info('Fetched programme state aids:', this, programmeStateAids))
       );
   }
 
