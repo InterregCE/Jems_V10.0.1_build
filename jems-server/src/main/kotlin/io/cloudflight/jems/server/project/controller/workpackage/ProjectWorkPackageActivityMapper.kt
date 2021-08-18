@@ -16,6 +16,7 @@ fun WorkPackageActivityDTO.toModel() = WorkPackageActivity(
     startPeriod = startPeriod,
     endPeriod = endPeriod,
     deliverables = deliverables.toDeliverableModel(),
+    partnerIds = partnerIds
 )
 
 fun List<WorkPackageActivityDTO>.toModel() = map { it.toModel() }

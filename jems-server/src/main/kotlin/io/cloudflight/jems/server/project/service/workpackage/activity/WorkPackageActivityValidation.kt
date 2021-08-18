@@ -26,3 +26,20 @@ fun validateWorkPackageActivities(workPackageActivities: Collection<WorkPackageA
     if (!workPackageActivities.all { it.deliverables.all { it.translatedValues.all { (it.description?.length ?: 0) <= 200 } } })
         throw I18nValidationException(i18nKey = "workPackage.activity.deliverable.description.size.too.long")
 }
+
+fun validateWorkPackageActivityPartners(
+    workPackageActivities: Collection<WorkPackageActivity>,
+    projectPartnerIds: List<Long>?
+) {
+    var assignedPartners = 0
+    var partnersIncorrect = false
+    workPackageActivities.forEach {
+        assignedPartners = assignedPartners.plus(it.partnerIds.size)
+        if (!projectPartnerIds.isNullOrEmpty() && !projectPartnerIds.containsAll(it.partnerIds)) {
+            partnersIncorrect = true
+        }
+    }
+    if ((projectPartnerIds.isNullOrEmpty() && assignedPartners > 0) || partnersIncorrect) {
+        throw I18nValidationException(i18nKey = "workPackage.activity.partner.not.assigned.to.project")
+    }
+}

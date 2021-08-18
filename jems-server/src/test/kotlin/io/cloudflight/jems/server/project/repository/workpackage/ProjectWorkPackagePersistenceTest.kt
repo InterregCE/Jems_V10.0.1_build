@@ -14,6 +14,9 @@ import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityId
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerId
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationId
@@ -28,6 +31,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageO
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTransl
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityPartnerRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
@@ -133,11 +137,18 @@ class ProjectWorkPackagePersistenceTest {
             startPeriod = 4,
             endPeriod = 6
         )
+        val activity1Partner1 = WorkPackageActivityPartnerEntity(
+            WorkPackageActivityPartnerId(
+                workPackageActivityId = activityId1,
+                projectPartnerId = 3
+            )
+        )
         val activity1_model = WorkPackageActivity(
             workPackageId = 1L,
             activityNumber = 1,
             startPeriod = 4,
-            endPeriod = 6
+            endPeriod = 6,
+            partnerIds = setOf(activity1Partner1.id.projectPartnerId)
         )
         val activity2 = WorkPackageActivityEntity(
             activityId = activityId2,
@@ -285,10 +296,10 @@ class ProjectWorkPackagePersistenceTest {
 
     @MockK
     lateinit var repository: WorkPackageRepository
-
     @MockK
     lateinit var repositoryActivity: WorkPackageActivityRepository
-
+    @MockK
+    lateinit var repositoryActivityPartner: WorkPackageActivityPartnerRepository
     @MockK
     lateinit var repositoryOutput: WorkPackageOutputRepository
 
@@ -312,6 +323,7 @@ class ProjectWorkPackagePersistenceTest {
         persistence = WorkPackagePersistenceProvider(
             repository,
             repositoryActivity,
+            repositoryActivityPartner,
             repositoryOutput,
             investmentRepository,
             outputIndicatorRepository,
@@ -331,22 +343,14 @@ class ProjectWorkPackagePersistenceTest {
                 workPackageWithActivities.copy(activities = emptyList(), outputs = emptyList()),
                 emptyWP
             )
+        val wkPackages = setOf(WORK_PACKAGE_ID, WORK_PACKAGE_ID_2)
         every {
-            repositoryActivity.findAllByActivityIdWorkPackageIdIn(
-                setOf(
-                    WORK_PACKAGE_ID,
-                    WORK_PACKAGE_ID_2
-                )
-            )
+            repositoryActivity.findAllByActivityIdWorkPackageIdIn(wkPackages)
         } returns listOf(activity2, activity1)
         every {
-            repositoryOutput.findAllByOutputIdWorkPackageIdIn(
-                setOf(
-                    WORK_PACKAGE_ID,
-                    WORK_PACKAGE_ID_2
-                )
-            )
+            repositoryOutput.findAllByOutputIdWorkPackageIdIn(wkPackages)
         } returns listOf(output2, output1)
+        every { repositoryActivityPartner.findAllByIdWorkPackageActivityIdWorkPackageIdIn(wkPackages) } returns listOf(activity1Partner1)
 
         val result = persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(1L, null)
         assertThat(result.size).isEqualTo(2)
@@ -363,6 +367,7 @@ class ProjectWorkPackagePersistenceTest {
         val version = "3.0"
         val id = 1L
         val wpId = 2L
+        val activityNumber = 3
         val mockWPRow: WorkPackageRow = mockk()
         every { mockWPRow.id } returns wpId
         every { mockWPRow.language } returns EN
@@ -372,12 +377,16 @@ class ProjectWorkPackagePersistenceTest {
         every { mockWPRow.objectiveAndAudience } returns "objectiveAndAudience"
         val mockWPARow: WorkPackageActivityRow = mockk()
         every { mockWPARow.workPackageId } returns wpId
-        every { mockWPARow.activityNumber } returns 3
+        every { mockWPARow.activityNumber } returns activityNumber
         every { mockWPARow.language } returns EN
         every { mockWPARow.startPeriod } returns 1
         every { mockWPARow.endPeriod } returns 2
         every { mockWPARow.title } returns "title"
         every { mockWPARow.description } returns "description"
+        val mockWPAPRow: WorkPackageActivityPartnerRow = mockk()
+        every { mockWPAPRow.workPackageId } returns wpId
+        every { mockWPAPRow.activityNumber } returns activityNumber
+        every { mockWPAPRow.projectPartnerId } returns 5
         val mockWPDRow: WorkPackageDeliverableRow = mockk()
         every { mockWPDRow.deliverableNumber } returns 4
         every { mockWPDRow.language } returns EN
@@ -405,12 +414,15 @@ class ProjectWorkPackagePersistenceTest {
         every {
             repositoryActivity.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(
                 wpId,
-                3,
+                activityNumber,
                 timestamp
             )
         } returns listOf(mockWPDRow)
         every { repositoryOutput.findAllByOutputIdWorkPackageIdAsOfTimestamp(setOf(wpId), timestamp) } returns listOf(
             mockWPORow
+        )
+        every { repositoryActivityPartner.findAllByWorkPackageIdsAsOfTimestamp(setOf(wpId), timestamp) } returns listOf(
+            mockWPAPRow
         )
 
         // test
@@ -453,7 +465,8 @@ class ProjectWorkPackagePersistenceTest {
                                 ),
                                 period = mockWPDRow.startPeriod
                             )
-                        )
+                        ),
+                        partnerIds = setOf(5)
                     )
                 ),
                 outputs = listOf(
@@ -486,8 +499,11 @@ class ProjectWorkPackagePersistenceTest {
 
     @Test
     fun `work package activities and deliverables are correctly mapped and sorted`() {
-        every { repository.findById(eq(1)) } returns Optional.of(workPackageWithActivities)
-        assertThat(persistence.getWorkPackageActivitiesForWorkPackage(1, 1L)).containsExactly(
+        every { repository.findById(eq(WORK_PACKAGE_ID)) } returns Optional.of(workPackageWithActivities)
+        val partnerList = mutableListOf(activity1Partner1)
+        every { repositoryActivityPartner.findAllByIdWorkPackageActivityIdWorkPackageId(WORK_PACKAGE_ID) } returns partnerList
+
+        assertThat(persistence.getWorkPackageActivitiesForWorkPackage(WORK_PACKAGE_ID, 1L)).containsExactly(
             activity1_model, activity2_model,
         )
     }
@@ -502,6 +518,8 @@ class ProjectWorkPackagePersistenceTest {
                 activities = emptyList()
             )
         )
+        every { repositoryActivityPartner.deleteAllByIdWorkPackageActivityIdWorkPackageId(WORK_PACKAGE_ID) } returns Unit
+        every { repositoryActivityPartner.saveAll(emptyList()) } returns emptyList()
         // we do not need to test mapping back to model as that is covered by getWorkPackageActivitiesForWorkPackage
         every { repository.save(capture(workPackageSlot)) } returnsArgument 0
 

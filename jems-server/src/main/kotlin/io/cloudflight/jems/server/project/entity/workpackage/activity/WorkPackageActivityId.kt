@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity.workpackage.activity
 
 import java.io.Serializable
-import java.util.*
+import java.util.Objects
 import javax.persistence.Embeddable
 import javax.validation.constraints.NotNull
 

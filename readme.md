@@ -66,11 +66,12 @@ Manual deployment using docker compose:
    - audit-analyzer (Kibana for additional Audit Log access)
  - run the jar (jems-server `./build/libs`) as Spring Boot application
    - the webapp uses flyway to automatically migrate the relational database (mariaDB)
-   - `--audit-service.enabled=true` can be used to enable/disable the logging into elastic search
    - `--audit-service.url-and-port=127.0.0.1:9200` can be specified to use a local elastic search instance
    - by default Spring Management endpoints are enabled on server port + 10000, e.g. when `server.port=8080` then
    `management.server.port=18080`, so to retrieve version of build use
    [localhost:18080/actuator/info](http://localhost:18080/actuator/info)
+ - use the following environment variables to control
+   - `AUDIT_ENABLED=false` to enable/disable logging into elastic search
 
 application.yaml can be added to root of the full executable jems-server.jar
 the properties specified will override the default ones within resources/application.yaml

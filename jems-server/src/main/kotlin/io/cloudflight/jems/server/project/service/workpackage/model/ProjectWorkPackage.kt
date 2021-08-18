@@ -8,5 +8,5 @@ data class ProjectWorkPackage(
     val workPackageNumber: Int,
     val translatedValues: Set<ProjectWorkPackageTranslatedValue> = emptySet(),
     var activities: List<WorkPackageActivity> = emptyList(),
-    var outputs: List<WorkPackageOutput> = emptyList(),
+    var outputs: List<WorkPackageOutput> = emptyList()
 )

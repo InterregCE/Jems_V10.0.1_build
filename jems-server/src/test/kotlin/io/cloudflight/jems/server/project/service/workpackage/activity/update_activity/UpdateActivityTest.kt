@@ -3,7 +3,10 @@ package io.cloudflight.jems.server.project.service.workpackage.activity.update_a
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
@@ -18,6 +21,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.data.domain.Sort
 import java.util.stream.Collectors
 
 @ExtendWith(MockKExtension::class)
@@ -42,24 +46,32 @@ internal class UpdateActivityTest {
                     )
                 )
             ),
+            partnerIds = setOf(3)
+        )
+
+        val projectPartnerIds = listOf(
+            ProjectPartnerSummaryDTO(id = 3, abbreviation = "lp1", role = ProjectPartnerRoleDTO.LEAD_PARTNER),
+            ProjectPartnerSummaryDTO(id = 5, abbreviation = "p2", role = ProjectPartnerRoleDTO.PARTNER)
         )
     }
 
     @MockK
     lateinit var persistence: WorkPackagePersistence
+    @MockK
+    lateinit var partnerPersistence: PartnerPersistence
 
     @InjectMockKs
     lateinit var updateActivity: UpdateActivity
 
     @MockK
     lateinit var veryBigActivitiesList: List<WorkPackageActivity>
-
     @MockK
     lateinit var veryBigDeliverablesList: List<WorkPackageActivityDeliverable>
 
     @Test
     fun updateActivitiesForWorkPackage() {
         every { persistence.updateWorkPackageActivities(1L, any()) } returnsArgument 1
+        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
         assertThat(updateActivity.updateActivitiesForWorkPackage(1L, 1L, listOf(activity1))).containsExactly(activity1)
     }
 
@@ -73,12 +85,14 @@ internal class UpdateActivityTest {
     @Test
     fun `update activities - empty activities should pass`() {
         every { persistence.updateWorkPackageActivities(3L, any()) } returns emptyList()
+        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
         assertDoesNotThrow { updateActivity.updateActivitiesForWorkPackage(1L, 3L, emptyList()) }
     }
 
     @Test
     fun `update activities - empty deliverables should pass`() {
         every { persistence.updateWorkPackageActivities(4L, any()) } returns emptyList()
+        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
         assertDoesNotThrow { updateActivity.updateActivitiesForWorkPackage(
             1L,
             4L,
@@ -99,6 +113,24 @@ internal class UpdateActivityTest {
         val toBeSaved = listOf(WorkPackageActivity(6L, startPeriod = 2568, endPeriod = 2567))
         val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 6L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.startPeriod.is.after.endPeriod")
+    }
+
+    @Test
+    fun `update activities without partners assigned`() {
+        every { persistence.updateWorkPackageActivities(1L, any()) } returnsArgument 1
+        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns emptyList()
+        val activity = activity1.copy(partnerIds = emptySet())
+        assertThat(updateActivity.updateActivitiesForWorkPackage(1L, 1L, listOf(activity)))
+            .containsExactly(activity)
+    }
+
+    @Test
+    fun `update activities when partner is not assigned to project`() {
+        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
+        val exception = assertThrows<I18nValidationException> {
+            updateActivity.updateActivitiesForWorkPackage(1L, 2L, listOf(activity1.copy(partnerIds = setOf(3, 10))))
+        }
+        assertThat(exception.i18nKey).isEqualTo("workPackage.activity.partner.not.assigned.to.project")
     }
 
     @Test

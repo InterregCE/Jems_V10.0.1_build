@@ -1,9 +1,10 @@
-package io.cloudflight.jems.server.project.repository.workpackage
+package io.cloudflight.jems.server.project.repository.workpackage.activity
 
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityId
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationId
@@ -70,7 +71,7 @@ fun WorkPackageActivityEntity.toModel(partnersByActivities: Map<WorkPackageActiv
     startPeriod = startPeriod,
     endPeriod = endPeriod,
     deliverables = deliverables.sortedBy { it.deliverableId.deliverableNumber }.map { it.toModel() },
-    partnerIds = partnersByActivities.get(activityId)?.toSet() ?: emptySet(),
+    partnerIds = partnersByActivities[activityId]?.toSet() ?: emptySet()
 )
 
 fun Iterable<WorkPackageActivityEntity>.toModel(
@@ -145,3 +146,6 @@ fun List<WorkPackageActivityRow>.toTimePlanActivityHistoricalData() =
             }
         )
     }
+
+fun List<WorkPackageActivityPartnerRow>.toActivityPartnersHistoricalData() =
+    this.map { it.projectPartnerId }.toSet()

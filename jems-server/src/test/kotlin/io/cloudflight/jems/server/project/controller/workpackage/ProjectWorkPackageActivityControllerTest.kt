@@ -45,6 +45,7 @@ class ProjectWorkPackageActivityControllerTest {
                     )
                 )
             ),
+            partnerIds = setOf(2)
         )
         val activity2 = WorkPackageActivity(
             workPackageId = 1L,
@@ -81,6 +82,7 @@ class ProjectWorkPackageActivityControllerTest {
                 deliverables = listOf(
                     WorkPackageActivityDeliverableDTO(deliverableNumber = 1, period = 1, description = setOf(InputTranslation(EN, "en_deliv_desc")))
                 ),
+                partnerIds = setOf(2)
             ),
             WorkPackageActivityDTO(
                 workPackageId = 1L,
@@ -101,27 +103,28 @@ class ProjectWorkPackageActivityControllerTest {
         every { updateActivityInteractor.updateActivitiesForWorkPackage(1L, 1L, capture(activitiesSlot)) } returns emptyList()
 
         val activityDto1 = WorkPackageActivityDTO(
-                workPackageId = 1L,
-                title = setOf(InputTranslation(EN, null), InputTranslation(CS, ""), InputTranslation(SK, "sk_title")),
-                startPeriod = 1,
-                endPeriod = 2,
-                description = setOf(InputTranslation(EN, "en_desc"), InputTranslation(CS, ""), InputTranslation(SK, "sk_desc")),
-                deliverables = listOf(
-                    WorkPackageActivityDeliverableDTO(period = 1, description = setOf(
-                        InputTranslation(EN, "en_deliv_desc"),
-                        InputTranslation(CS, ""),
-                        InputTranslation(SK, null),
-                    )),
-                    WorkPackageActivityDeliverableDTO(period = 2)
-                ),
+            workPackageId = 1L,
+            title = setOf(InputTranslation(EN, null), InputTranslation(CS, ""), InputTranslation(SK, "sk_title")),
+            startPeriod = 1,
+            endPeriod = 2,
+            description = setOf(InputTranslation(EN, "en_desc"), InputTranslation(CS, ""), InputTranslation(SK, "sk_desc")),
+            deliverables = listOf(
+                WorkPackageActivityDeliverableDTO(period = 1, description = setOf(
+                    InputTranslation(EN, "en_deliv_desc"),
+                    InputTranslation(CS, ""),
+                    InputTranslation(SK, null),
+                )),
+                WorkPackageActivityDeliverableDTO(period = 2)
+            ),
+            partnerIds = setOf(2, 3)
         )
         val activityDto2 = WorkPackageActivityDTO(
-                workPackageId = 1L,
-                title = emptySet(),
-                startPeriod = 3,
-                endPeriod = 4,
-                description = emptySet(),
-                deliverables = emptyList(),
+            workPackageId = 1L,
+            title = emptySet(),
+            startPeriod = 3,
+            endPeriod = 4,
+            description = emptySet(),
+            deliverables = emptyList()
         )
 
         controller.updateActivities(1L, 1L, listOf(activityDto1, activityDto2))
@@ -144,6 +147,7 @@ class ProjectWorkPackageActivityControllerTest {
                     ),
                     WorkPackageActivityDeliverable(period = 2)
                 ),
+                partnerIds = setOf(2, 3)
             ),
             WorkPackageActivity(
                 workPackageId = 1L,
@@ -151,6 +155,7 @@ class ProjectWorkPackageActivityControllerTest {
                 startPeriod = 3,
                 endPeriod = 4,
                 deliverables = emptyList(),
+                partnerIds = emptySet()
             )
         )
     }
