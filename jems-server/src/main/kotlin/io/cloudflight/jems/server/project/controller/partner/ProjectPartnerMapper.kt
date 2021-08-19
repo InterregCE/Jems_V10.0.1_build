@@ -45,6 +45,20 @@ abstract class ProjectPartnerDTOMapper {
     abstract fun map(projectPartnerDetail: ProjectPartnerDetail): ProjectPartnerDetailDTO
     abstract fun map(projectPartnerDTO: ProjectPartnerDTO): ProjectPartner
     abstract fun map(projectPartnerAddressDTO: ProjectPartnerAddressDTO): ProjectPartnerAddress
-    abstract fun map(projectPartnerMotivationDTO: ProjectPartnerMotivationDTO): ProjectPartnerMotivation
     abstract fun map(projectContactDTO: ProjectContactDTO): ProjectPartnerContact
+
+    fun map(projectPartnerMotivationDTO: ProjectPartnerMotivationDTO?): ProjectPartnerMotivation =
+        ProjectPartnerMotivation(
+            organizationRelevance = projectPartnerMotivationDTO?.organizationRelevance ?: emptySet(),
+            organizationRole = projectPartnerMotivationDTO?.organizationRole ?: emptySet(),
+            organizationExperience = projectPartnerMotivationDTO?.organizationExperience ?: emptySet()
+        )
+
+    fun map(projectPartnerMotivation: ProjectPartnerMotivation?): ProjectPartnerMotivationDTO =
+        ProjectPartnerMotivationDTO(
+            organizationRelevance = projectPartnerMotivation?.organizationRelevance ?: emptySet(),
+            organizationRole = projectPartnerMotivation?.organizationRole ?: emptySet(),
+            organizationExperience = projectPartnerMotivation?.organizationExperience ?: emptySet()
+        )
+
 }
