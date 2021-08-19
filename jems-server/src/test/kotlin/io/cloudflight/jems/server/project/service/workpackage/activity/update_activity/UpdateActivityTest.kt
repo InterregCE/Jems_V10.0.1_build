@@ -3,10 +3,10 @@ package io.cloudflight.jems.server.project.service.workpackage.activity.update_a
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
@@ -50,8 +50,8 @@ internal class UpdateActivityTest {
         )
 
         val projectPartnerIds = listOf(
-            ProjectPartnerSummaryDTO(id = 3, abbreviation = "lp1", role = ProjectPartnerRoleDTO.LEAD_PARTNER),
-            ProjectPartnerSummaryDTO(id = 5, abbreviation = "p2", role = ProjectPartnerRoleDTO.PARTNER)
+            ProjectPartnerSummary(id = 3, abbreviation = "lp1", role = ProjectPartnerRole.LEAD_PARTNER),
+            ProjectPartnerSummary(id = 5, abbreviation = "p2", role = ProjectPartnerRole.PARTNER)
         )
     }
 
