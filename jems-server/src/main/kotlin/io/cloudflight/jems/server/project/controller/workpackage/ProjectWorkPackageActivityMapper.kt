@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverableTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 
-fun WorkPackageActivityDTO.toModel() = WorkPackageActivity(
+fun WorkPackageActivityDTO.toModel(workPackageId: Long) = WorkPackageActivity(
     workPackageId = workPackageId,
     translatedValues = combineTranslations(title, description),
     startPeriod = startPeriod,
@@ -19,7 +19,7 @@ fun WorkPackageActivityDTO.toModel() = WorkPackageActivity(
     partnerIds = partnerIds
 )
 
-fun List<WorkPackageActivityDTO>.toModel() = map { it.toModel() }
+fun List<WorkPackageActivityDTO>.toModel(workPackageId: Long) = map { it.toModel(workPackageId) }
 
 fun WorkPackageActivityDeliverableDTO.toDeliverableModel() = WorkPackageActivityDeliverable(
     translatedValues = combineDeliverableTranslations(description),

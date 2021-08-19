@@ -37,6 +37,10 @@ export class ProjectWorkPackageActivitiesTabConstants {
     name: 'deliverables'
   };
 
+  public static PARTNERS: AppControl = {
+    name: 'partnerIds'
+  };
+
   public static DELIVERABLE: AppControl = {
     name: 'description',
     maxLength: 200,

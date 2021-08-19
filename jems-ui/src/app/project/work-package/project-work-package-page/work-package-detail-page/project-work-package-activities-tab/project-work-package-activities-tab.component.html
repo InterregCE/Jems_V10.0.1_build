@@ -64,6 +64,30 @@
                             </app-multi-language-form-field>
                         </app-multi-language-container>
 
+                        <mat-form-field class="example-chip-list" appearance="fill">
+                            <mat-label>{{ 'project.work.package.tab.activity.partnersInvolved' | translate }}</mat-label>
+                            <mat-chip-list #chipList>
+                                <mat-chip
+                                        *ngFor="let partner of partners(i).value;let partnerIndex = index"
+                                        [selectable]="false"
+                                        [removable]="true"
+                                        (removed)="removePartner(i, partnerIndex)">
+                                    {{ getAbbreviationForPartnerId(data.partners, partner.id)}}
+                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+                                <input
+                                        placeholder="{{ 'project.work.package.tab.activity.addPartner' | translate }}"
+                                        [matAutocomplete]="auto"
+                                        [matChipInputFor]="chipList"
+                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                            </mat-chip-list>
+                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addPartner(i, $event.option.value)">
+                                <mat-option *ngFor="let partner of getPartnersWithoutSelected(data.partners, i)" [value]="partner.id">
+                                    {{partner.abbreviation}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
                         <ng-container
                                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DELIVERABLES">
                             <h4>{{'Deliverables' | translate}}</h4>

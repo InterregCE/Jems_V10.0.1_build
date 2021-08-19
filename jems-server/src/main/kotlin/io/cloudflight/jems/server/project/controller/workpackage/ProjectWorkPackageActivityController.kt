@@ -20,6 +20,6 @@ class ProjectWorkPackageActivityController(
         workPackageId: Long,
         activities: List<WorkPackageActivityDTO>
     ): List<WorkPackageActivityDTO> =
-        updateActivityInteractor.updateActivitiesForWorkPackage(projectId, workPackageId, activities.toModel()).toDto()
+        updateActivityInteractor.updateActivitiesForWorkPackage(projectId, workPackageId, activities.toModel(workPackageId)).toDto()
 
 }
