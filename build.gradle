@@ -50,6 +50,8 @@ sonarqube {
         property "sonar.exclusions", "**/*.spec.ts"
         // exclude frontend files from code coverage
         property "sonar.coverage.exclusions", "**/*.ts, **/*.html, **/*.scss, **/*.properties"
+        // exclude certain big enums from code duplication checks
+        property "sonar.cpd.exclusions", "**/NaceGroupLevel.kt, **/NaceGroupLevelDTO.kt"
 
         property "sonar.issue.ignore.multicriteria", "e1,e2,e3"
         // ignore rule: readonly was decided to provide no big advantage
