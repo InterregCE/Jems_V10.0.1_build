@@ -127,9 +127,9 @@
             <input name="nace" formControlName="nace" matInput
                    [matAutocomplete]="nace"
                    (focusout)="selectionUnfocused($event)">
-            <mat-autocomplete #nace="matAutocomplete">
+            <mat-autocomplete #nace="matAutocomplete" [displayWith]="displayFn">
                 <mat-option *ngFor="let naceValue of filteredNace | async" [value]="naceValue">
-                    {{naceValue}}
+                    {{displayFn(naceValue)}}
                 </mat-option>
             </mat-autocomplete>
             <mat-error>
@@ -191,8 +191,9 @@
 
         <mat-form-field class="w-100" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.PIC">
             <mat-label>{{'project.partner.pic' | translate}}</mat-label>
-            <input type="number" name="pic" formControlName="pic" matInput
-                   (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
+            <input currencyMask type="integer" name="pic" formControlName="pic" matInput
+                   (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)"
+                   [options]="{min: 0, max: 999999999, nullable: true, thousands: ''}">
             <mat-error>
                 <app-form-field-errors
                         [errors]="controls?.pic?.errors">

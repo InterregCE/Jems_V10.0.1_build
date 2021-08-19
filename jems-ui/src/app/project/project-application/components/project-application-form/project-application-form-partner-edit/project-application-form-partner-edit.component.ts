@@ -172,6 +172,10 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     }
   }
 
+  displayFn(nace: string): string {
+    return nace ? nace.split('_').join('.') : '';
+  }
+
   private handleError(error: HttpErrorResponse): Observable<any> {
     const errorMessage = Tools.first((error?.error as APIError)?.details)?.i18nMessage;
     if (errorMessage?.i18nKey === 'use.case.update.project.partner.role.lead.already.existing'
@@ -240,7 +244,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
   private filter(value: string): string[] {
     const filterValue = (value || '').toLowerCase();
     return this.ProjectApplicationFormPartnerEditConstants.naceEnums
-      .filter(nace => nace.toLowerCase().includes(filterValue))
+      .filter(nace => nace.split('_').join('.').toLowerCase().includes(filterValue))
       .map(nace => nace);
   }
 
