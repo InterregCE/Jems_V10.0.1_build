@@ -1,0 +1,22 @@
+<app-form (discard)="resetForm(allowRealCosts)"
+          (save)="updateAllowRealCosts()"
+          *ngIf="allowRealCosts$ | async as allowRealCosts">
+    <h3>{{'call.allow.real.costs.title' | translate}}</h3>
+    <form [formGroup]="form" appFormLayout>
+        <mat-checkbox formControlName="allowRealStaffCosts">
+            {{'call.allow.real.costs.staff' | translate}}
+        </mat-checkbox>
+        <mat-checkbox formControlName="allowRealTravelAndAccommodationCosts">
+            {{'call.allow.real.costs.travel' | translate}}
+        </mat-checkbox>
+        <mat-checkbox formControlName="allowRealExternalExpertiseAndServicesCosts">
+            {{'call.allow.real.costs.external' | translate}}
+        </mat-checkbox>
+        <mat-checkbox formControlName="allowRealEquipmentCosts">
+            {{'call.allow.real.costs.equipment' | translate}}
+        </mat-checkbox>
+        <mat-checkbox formControlName="allowRealInfrastructureCosts">
+            {{'call.allow.real.costs.infrastructure' | translate}}
+        </mat-checkbox>
+    </form>
+</app-form>

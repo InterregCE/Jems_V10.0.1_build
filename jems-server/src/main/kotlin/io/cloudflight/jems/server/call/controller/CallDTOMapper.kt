@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.call.controller
 
+import io.cloudflight.jems.api.call.dto.AllowRealCostsDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.StepSelectionOptionDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormFieldConfigurationRequestDTO
+import io.cloudflight.jems.server.call.service.model.AllowRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -79,6 +81,9 @@ fun StepSelectionOptionDTO.toModel() =
 fun FieldVisibilityStatus.toDTO() =
     callDTOMapper.map(this)
 
+fun AllowRealCosts.toDto() = callDTOMapper.map(this)
+fun AllowRealCostsDTO.toModel() = callDTOMapper.map(this)
+
 private val callDTOMapper = Mappers.getMapper(CallDTOMapper::class.java)
 
 @Mapper(uses = [CommonDTOMapper::class])
@@ -86,6 +91,9 @@ abstract class CallDTOMapper {
 
     abstract fun map(fieldVisibilityStatus: FieldVisibilityStatus): StepSelectionOptionDTO
     abstract fun map(stepSelectionOptionDTO: StepSelectionOptionDTO): FieldVisibilityStatus
+
+    abstract fun map(allowRealCostsDTO: AllowRealCostsDTO): AllowRealCosts
+    abstract fun map(allowRealCosts: AllowRealCosts): AllowRealCostsDTO
 
     fun mapUpdateRequest(updateApplicationFormFieldConfigurationDTOs: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>): MutableSet<ApplicationFormFieldConfiguration> =
         updateApplicationFormFieldConfigurationDTOs.map {

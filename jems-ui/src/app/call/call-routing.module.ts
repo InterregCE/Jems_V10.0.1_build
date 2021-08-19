@@ -3,7 +3,7 @@ import {CallPageComponent} from './containers/call-page/call-page.component';
 import {RouteData} from '@common/utils/route-data';
 import {PermissionGuard} from '../security/permission.guard';
 import {CallNameResolver} from './services/call-name.resolver';
-import {CallBudgetSettingsPageComponent} from './containers/call-budget-settings-page/call-budget-settings-page.component';
+import {CallBudgetSettingsPageComponent} from './call-budget-settings-page/call-budget-settings-page.component';
 import {CallDetailPageComponent} from './call-detail-page/call-detail-page.component';
 import {UserRoleDTO} from '@cat/api';
 import {ApplicationFormConfigurationPageComponent} from './application-form-configuration-page/application-form-configuration-page.component';

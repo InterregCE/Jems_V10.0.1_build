@@ -1,23 +1,24 @@
 package io.cloudflight.jems.server.call.entity
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
-import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.ZonedDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Column
+import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.FetchType
-import javax.persistence.Id
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
+import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
 import javax.persistence.ManyToOne
@@ -103,6 +104,9 @@ class CallEntity(
         inverseJoinColumns = [JoinColumn(name = "programme_unit_cost_id")]
     )
     val unitCosts: MutableSet<ProgrammeUnitCostEntity> = mutableSetOf(),
+
+    @Embedded
+    var allowRealCosts: AllowRealCostsEntity = AllowRealCostsEntity()
 ) {
     fun updateFlatRateSetup(flatRates: Set<ProjectCallFlatRateEntity>) {
         val groupedByType = flatRates.associateBy { it.setupId.type }.toMutableMap()

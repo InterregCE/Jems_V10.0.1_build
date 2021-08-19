@@ -1,19 +1,22 @@
 package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.CallApi
+import io.cloudflight.jems.api.call.dto.AllowRealCostsDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
+import io.cloudflight.jems.server.call.service.get_allow_real_costs.GetAllowRealCostsInteractor
 import io.cloudflight.jems.server.call.service.get_call.GetCallInteractor
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
 import io.cloudflight.jems.server.call.service.publish_call.PublishCallInteractor
+import io.cloudflight.jems.server.call.service.update_allow_real_costs.UpdateAllowRealCostsInteractor
 import io.cloudflight.jems.server.call.service.update_call.UpdateCallInteractor
+import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
 import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallLumpSumsInteractor
 import io.cloudflight.jems.server.call.service.update_call_unit_costs.UpdateCallUnitCostsInteractor
-import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
 import io.cloudflight.jems.server.common.toDTO
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -27,6 +30,8 @@ class CallController(
     private val updateCall: UpdateCallInteractor,
     private val publishCall: PublishCallInteractor,
     private val updateCallFlatRates: UpdateCallFlatRatesInteractor,
+    private val updateAllowRealCosts: UpdateAllowRealCostsInteractor,
+    private val getAllowRealCosts: GetAllowRealCostsInteractor,
     private val updateCallLumpSums: UpdateCallLumpSumsInteractor,
     private val updateCallUnitCosts: UpdateCallUnitCostsInteractor,
 ) : CallApi {
@@ -54,6 +59,12 @@ class CallController(
 
     override fun updateCallFlatRateSetup(callId: Long, flatRateSetup: FlatRateSetupDTO) =
         updateCallFlatRates.updateFlatRateSetup(callId, flatRateSetup.toModel()).toDto()
+
+    override fun getAllowRealCosts(callId: Long): AllowRealCostsDTO =
+        getAllowRealCosts.getAllowRealCosts(callId).toDto()
+
+    override fun updateAllowRealCosts(callId: Long, allowRealCosts: AllowRealCostsDTO): AllowRealCostsDTO =
+        updateAllowRealCosts.updateAllowRealCosts(callId, allowRealCosts.toModel()).toDto()
 
     override fun updateCallLumpSums(callId: Long, lumpSumIds: Set<Long>) =
         updateCallLumpSums.updateLumpSums(callId, lumpSumIds).toDto()

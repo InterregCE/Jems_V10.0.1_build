@@ -21,10 +21,11 @@ import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
 import io.cloudflight.jems.server.call.entity.StateAidSetupId
+import io.cloudflight.jems.server.call.service.model.AllowRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
-import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
@@ -61,6 +62,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -549,6 +551,29 @@ internal class CallPersistenceProviderTest {
         every { callRepo.existsByStatus(CallStatus.PUBLISHED) } returns true
         assertThat(persistence.hasAnyCallPublished())
             .isEqualTo(true)
+    }
+
+    @Test
+    fun `update allow real costs`() {
+        val call = callWithId(1)
+        every { callRepo.findById(1L) } returns Optional.of(call)
+        every { callRepo.save(call) } returns call
+
+        persistence.updateAllowRealCosts(1, AllowRealCosts(true, true, true, true, true))
+
+        verify(exactly = 1) {
+            callRepo.save(call)
+        }
+    }
+
+    @Test
+    fun `get allow real costs`() {
+        every { callRepo.findById(1L) } returns Optional.of(callWithId(1))
+        persistence.getAllowRealCosts(1)
+
+        verify(exactly = 1) {
+            callRepo.findById(1)
+        }
     }
 
 }
