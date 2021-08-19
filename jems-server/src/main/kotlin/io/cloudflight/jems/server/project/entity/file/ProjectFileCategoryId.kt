@@ -15,4 +15,15 @@ class ProjectFileCategoryId(
     @field:NotNull
     val type: String
 
-) : Serializable
+) : Serializable  {
+    override fun equals(other: Any?) =
+        this === other ||
+            other !== null &&
+            other is ProjectFileCategoryId &&
+            fileId == other.fileId &&
+            type == other.type
+
+    override fun hashCode() =
+        fileId.hashCode().plus(type.hashCode())
+
+}

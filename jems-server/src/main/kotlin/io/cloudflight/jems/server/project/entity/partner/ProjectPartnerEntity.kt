@@ -23,7 +23,7 @@ import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_partner")
-data class ProjectPartnerEntity(
+class ProjectPartnerEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ data class ProjectPartnerEntity(
     var role: ProjectPartnerRole,
 
     @field:NotNull
-    val sortNumber: Int = 0,
+    var sortNumber: Int = 0,
 
     var nameInOriginalLanguage: String? = null,
 

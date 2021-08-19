@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.copy
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
@@ -50,23 +51,21 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         partnerId: Long,
         finances: Collection<UpdateProjectPartnerCoFinancing>,
         partnerContributions: List<ProjectPartnerContribution>
-    ): ProjectPartnerCoFinancingAndContribution {
-        val partner = getPartnerOrThrow(partnerId)
-        val availableFundsGroupedById = partner.project.call.funds.associateBy { it.id }
-
-        val updatedPartner = projectPartnerRepository.save(
-            partner.copy(
-                financing = finances.toCoFinancingEntity(partnerId, availableFundsGroupedById),
-                partnerContributions = partnerContributions.toContributionEntity(partnerId)
+    ): ProjectPartnerCoFinancingAndContribution =
+        getPartnerOrThrow(partnerId).let { entity ->
+            val savedEntity = projectPartnerRepository.save(
+                entity.copy(
+                    newFinancing = finances,
+                    newPartnerContributions = partnerContributions,
+                )
             )
-        )
 
-        return ProjectPartnerCoFinancingAndContribution(
-            finances = updatedPartner.financing.toCoFinancingModel(),
-            partnerContributions = updatedPartner.partnerContributions.toContributionModel(),
-            partnerAbbreviation = updatedPartner.abbreviation
-        )
-    }
+            ProjectPartnerCoFinancingAndContribution(
+                finances = savedEntity.financing.toCoFinancingModel(),
+                partnerContributions = savedEntity.partnerContributions.toContributionModel(),
+                partnerAbbreviation = savedEntity.abbreviation
+            )
+        }
 
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity =
         projectPartnerRepository.findById(partnerId).orElseThrow { ResourceNotFoundException("projectPartner") }

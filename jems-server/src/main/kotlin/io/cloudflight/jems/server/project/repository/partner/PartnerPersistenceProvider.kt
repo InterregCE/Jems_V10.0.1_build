@@ -134,72 +134,41 @@ class PartnerPersistenceProvider(
 
     @Transactional
     override fun update(projectPartner: ProjectPartner): ProjectPartnerDetail =
-        getPartnerOrThrow(projectPartner.id!!).also { oldPartner ->
-
-            if (oldPartner.role != projectPartner.role!!) {
-                oldPartner.role = projectPartner.role
-                updateSortByRole(oldPartner.project.id)
-            }
-            oldPartner.abbreviation = projectPartner.abbreviation!!
-            oldPartner.nameInOriginalLanguage = projectPartner.nameInOriginalLanguage
-            oldPartner.nameInEnglish = projectPartner.nameInEnglish
-            oldPartner.partnerType = projectPartner.partnerType
-            oldPartner.partnerSubType = projectPartner.partnerSubType
-            oldPartner.nace = projectPartner.nace
-            oldPartner.otherIdentifierNumber = projectPartner.otherIdentifierNumber
-            oldPartner.pic = projectPartner.pic
-            oldPartner.legalStatus = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId!!)
-            oldPartner.vat = projectPartner.vat
-            oldPartner.vatRecovery = projectPartner.vatRecovery
-
-            oldPartner.translatedValues.clear()
-            oldPartner.translatedValues.addPartnerTranslations(
-                oldPartner,
-                projectPartner.department,
-                projectPartner.otherIdentifierDescription
-            )
-
+        getPartnerOrThrow(projectPartner.id!!).let { entity ->
+            projectPartnerRepository.save(
+                entity.copy(
+                    projectPartner = projectPartner,
+                    legalStatusRef = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId)
+                )
+            ).also { updateSortByRole(entity.project.id) }
         }.toProjectPartnerDetail()
 
 
     @Transactional
     override fun updatePartnerAddresses(
-        partnerId: Long,
-        addresses: Set<ProjectPartnerAddress>
-    ): ProjectPartnerDetail {
-        val projectPartner = getPartnerOrThrow(partnerId)
-        return projectPartnerRepository.save(
-            projectPartner.copy(
-                addresses = addresses.mapTo(HashSet()) { it.toEntity(projectPartner) }
-            )
+        partnerId: Long, addresses: Set<ProjectPartnerAddress>
+    ): ProjectPartnerDetail =
+        projectPartnerRepository.save(
+            getPartnerOrThrow(partnerId).copy(newAddresses = addresses)
         ).toProjectPartnerDetail()
-    }
+
 
     @Transactional
     override fun updatePartnerContacts(
-        partnerId: Long,
-        contacts: Set<ProjectPartnerContact>
-    ): ProjectPartnerDetail {
-        val projectPartner = getPartnerOrThrow(partnerId)
-        return projectPartnerRepository.save(
-            projectPartner.copy(
-                contacts = contacts.mapTo(HashSet()) { it.toEntity(projectPartner) }
-            )
+        partnerId: Long, contacts: Set<ProjectPartnerContact>
+    ): ProjectPartnerDetail =
+        projectPartnerRepository.save(
+            getPartnerOrThrow(partnerId).copy(newContacts = contacts)
         ).toProjectPartnerDetail()
-    }
 
     @Transactional
     override fun updatePartnerMotivation(
-        partnerId: Long,
-        motivation: ProjectPartnerMotivation
-    ): ProjectPartnerDetail {
-        val projectPartner = getPartnerOrThrow(partnerId)
-        return projectPartnerRepository.save(
-            projectPartner.copy(
-                motivation = motivation.toEntity(projectPartner.id)
-            )
+        partnerId: Long, motivation: ProjectPartnerMotivation
+    ): ProjectPartnerDetail =
+        projectPartnerRepository.save(
+            getPartnerOrThrow(partnerId).copy(newMotivation = motivation)
         ).toProjectPartnerDetail()
-    }
+
 
     @Transactional(readOnly = true)
     override fun getPartnerStateAid(partnerId: Long, version: String?): ProjectPartnerStateAid {
@@ -238,9 +207,8 @@ class PartnerPersistenceProvider(
             )
         )
 
-        val projectPartners = projectPartnerRepository.findTop30ByProjectId(projectId, sort)
-            .mapIndexed { index, old -> old.copy(sortNumber = index.plus(1)) }
-        projectPartnerRepository.saveAll(projectPartners)
+        projectPartnerRepository.findTop30ByProjectId(projectId, sort)
+            .forEachIndexed { index, old -> old.sortNumber = index.plus(1) }
     }
 
     private fun getPartnerHistoricalDetail(

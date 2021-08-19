@@ -26,6 +26,10 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEnt
 import io.cloudflight.jems.server.project.entity.partner.state_aid.PartnerStateAidRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidTranslEntity
+import io.cloudflight.jems.server.project.repository.partner.cofinancing.toCoFinancingEntity
+import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionEntity
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
@@ -37,12 +41,12 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSu
 
 fun ProjectPartner.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
     ProjectPartnerEntity(
+        id = id ?: 0,
         project = project,
         abbreviation = abbreviation!!,
         role = role!!,
         nameInOriginalLanguage = nameInOriginalLanguage,
         nameInEnglish = nameInEnglish,
-        // translatedValues - needs partnerId
         partnerType = partnerType,
         partnerSubType = partnerSubType,
         nace = nace,
@@ -78,6 +82,41 @@ fun ProjectPartnerEntity.toProjectPartner() = ProjectPartnerSummary(
     sortNumber = sortNumber,
     country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
 )
+
+fun ProjectPartnerEntity.copy(
+    projectPartner: ProjectPartner? = null,
+    legalStatusRef: ProgrammeLegalStatusEntity? = null,
+    newAddresses: Set<ProjectPartnerAddress>? = null,
+    newContacts: Set<ProjectPartnerContact>? = null,
+    newMotivation: ProjectPartnerMotivation? = null,
+    newPartnerContributions: List<ProjectPartnerContribution>? = null,
+    newFinancing: Collection<UpdateProjectPartnerCoFinancing>? = null
+): ProjectPartnerEntity = ProjectPartnerEntity(
+    id = projectPartner?.id ?: id,
+    project = project,
+    abbreviation = projectPartner?.abbreviation ?: abbreviation,
+    role = projectPartner?.role ?: role,
+    sortNumber = sortNumber,
+    nameInOriginalLanguage = projectPartner?.nameInOriginalLanguage ?: nameInOriginalLanguage,
+    nameInEnglish = projectPartner?.nameInEnglish ?: nameInEnglish,
+    partnerType = projectPartner?.partnerType ?: partnerType,
+    partnerSubType = projectPartner?.partnerSubType ?: partnerSubType,
+    nace = projectPartner?.nace ?: nace,
+    otherIdentifierNumber = projectPartner?.otherIdentifierNumber ?: otherIdentifierNumber,
+    pic = projectPartner?.pic ?: pic,
+    legalStatus = legalStatusRef?: legalStatus,
+    vat = projectPartner?.vat ?: vat,
+    vatRecovery = projectPartner?.vatRecovery ?: vatRecovery,
+    translatedValues = if (projectPartner != null) mutableSetOf() else translatedValues,
+    addresses = newAddresses?.mapTo(HashSet()) { it.toEntity(this) } ?: addresses,
+    contacts = newContacts?.mapTo(HashSet()) { it.toEntity(this) } ?: contacts,
+    motivation = newMotivation?.toEntity(id) ?: motivation,
+    financing = newFinancing?.toCoFinancingEntity(id, project.call.funds.associateBy { it.id }) ?: financing,
+    partnerContributions = newPartnerContributions?.toContributionEntity(id) ?: partnerContributions
+).apply {
+    if(projectPartner!=null)
+        translatedValues.addPartnerTranslations(this, projectPartner.department, projectPartner.otherIdentifierDescription)
+}
 
 fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartner() }
 

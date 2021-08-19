@@ -27,11 +27,11 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVa
 import io.cloudflight.jems.server.utils.partner.PARTNER_ID
 import io.cloudflight.jems.server.utils.partner.PROJECT_ID
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.utils.partner.legalStatusEntity
 import io.cloudflight.jems.server.utils.partner.projectPartner
 import io.cloudflight.jems.server.utils.partner.projectPartnerDetail
 import io.cloudflight.jems.server.utils.partner.projectPartnerEntity
-import io.cloudflight.jems.server.utils.partner.projectPartnerInclTransl
 import io.cloudflight.jems.server.utils.partner.projectPartnerSummary
 import io.cloudflight.jems.server.utils.partner.projectPartnerWithOrganizationEntity
 import io.cloudflight.jems.server.utils.partner.stateAid
@@ -202,7 +202,7 @@ class PartnerPersistenceProviderTest {
         val projectPartnerRequest =
             ProjectPartner(0, "partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
         val projectPartnerWithProject = ProjectPartnerEntity(
-            0,
+            2,
             ProjectPartnerTestUtil.project,
             projectPartnerRequest.abbreviation!!,
             projectPartnerRequest.role!!,
@@ -211,15 +211,13 @@ class PartnerPersistenceProviderTest {
         every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns ProjectPartnerTestUtil.project
         every { legalStatusRepo.getReferenceIfExistsOrThrow(legalStatusEntity.id) } returns legalStatusEntity
 
-        every { projectPartnerRepository.save(projectPartnerWithProject) } returns projectPartnerEntity
-        every { projectPartnerRepository.save(projectPartnerEntity) } returns projectPartnerInclTransl
+        every { projectPartnerRepository.save(any()) } returns projectPartnerEntity
         // also handle sorting
         val projectPartners = listOf(projectPartnerEntity, projectPartnerWithProject)
         every { projectPartnerRepository.findTop30ByProjectId(1, any()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
 
-        assertThat(persistence.create(PROJECT_ID, projectPartnerRequest)).isEqualTo(projectPartnerDetail())
-        verify { projectPartnerRepository.save(projectPartnerWithProject) }
+        assertThat(persistence.create(PROJECT_ID, projectPartnerRequest)).isEqualTo(projectPartnerDetail(sortNumber = 1))
     }
 
     @Test
@@ -238,9 +236,9 @@ class PartnerPersistenceProviderTest {
             projectPartner(PARTNER_ID, "updated", ProjectPartnerRole.PARTNER)
         val updatedProjectPartnerEntity =
             projectPartnerEntity(abbreviation = projectPartnerUpdate.abbreviation!!, role = projectPartnerUpdate.role!!)
-        val projectPartners = listOf(projectPartnerEntity(), projectPartnerWithOrganizationEntity)
+        val projectPartners = listOf(projectPartnerEntity(), projectPartnerWithOrganizationEntity())
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
-        every { projectPartnerRepository.save(updatedProjectPartnerEntity) } returns updatedProjectPartnerEntity
+        every { projectPartnerRepository.save(any()) } returns updatedProjectPartnerEntity
         every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
         every { legalStatusRepo.getReferenceIfExistsOrThrow(1) } returns legalStatusEntity
@@ -256,28 +254,15 @@ class PartnerPersistenceProviderTest {
 
     @Test
     fun `updateProjectPartner to lead when no other leads`() {
-        val projectPartnerUpdate = projectPartner(3, "updated")
-        val projectPartners =
-            listOf(projectPartnerEntity(id = 3), projectPartnerEntity(id = 2, role = ProjectPartnerRole.PARTNER))
-        val updatedPartnersSlot = slot<Iterable<ProjectPartnerEntity>>()
-
         every { projectPartnerRepository.findById(3) } returns Optional.of(
             projectPartnerEntity(id = 3, role = ProjectPartnerRole.PARTNER)
         )
         every { legalStatusRepo.getReferenceIfExistsOrThrow(1) } returns legalStatusEntity
-        every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
-        every { projectPartnerRepository.saveAll(capture(updatedPartnersSlot)) } returnsArgument 0
+        every { projectPartnerRepository.save(any()) } returns projectPartnerEntity(3, abbreviation = "updated")
+        every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns listOf(projectPartnerEntity(id = 3), projectPartnerEntity(id = 2, role = ProjectPartnerRole.PARTNER))
 
-        assertThat(persistence.update(projectPartnerUpdate).role)
+        assertThat(persistence.update(projectPartner(3, "updated")).role)
             .isEqualTo(ProjectPartnerRole.LEAD_PARTNER)
-
-        assertThat(updatedPartnersSlot.captured)
-            .isEqualTo(
-                listOf(
-                    projectPartnerEntity(3, sortNumber = 1),
-                    projectPartnerEntity(2, role = ProjectPartnerRole.PARTNER, sortNumber = 2)
-                )
-            )
     }
 
     @Test
@@ -292,17 +277,17 @@ class PartnerPersistenceProviderTest {
         )
         val projectPartner = ProjectPartnerEntity(
             1,
-            ProjectPartnerTestUtil.project,
+            project,
             "updated",
             ProjectPartnerRole.PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 1),
             partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool
         )
-        val contactPersonsEntity = setOf(projectPartnerContactUpdate.toEntity(projectPartner))
-        val updatedProjectPartner = projectPartner.copy(contacts = contactPersonsEntity)
+
+        val updatedProjectPartner = projectPartner.copy(newContacts = setOf(projectPartnerContactUpdate))
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
-        every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
+        every { projectPartnerRepository.save(any()) } returns updatedProjectPartner
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatusEntity)
 
         assertThat(persistence.updatePartnerContacts(1, setOf(projectPartnerContactUpdate)))
@@ -340,17 +325,17 @@ class PartnerPersistenceProviderTest {
         )
         val projectPartner = ProjectPartnerEntity(
             1,
-            ProjectPartnerTestUtil.project,
+            project,
             "updated",
             ProjectPartnerRole.PARTNER,
             legalStatus = ProgrammeLegalStatusEntity(id = 1),
             partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool
         )
         val updatedProjectPartner =
-            projectPartner.copy(motivation = projectPartnerMotivationUpdate.toEntity(projectPartner.id))
+            projectPartner.copy(newMotivation = projectPartnerMotivationUpdate)
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
-        every { projectPartnerRepository.save(updatedProjectPartner) } returns updatedProjectPartner
+        every { projectPartnerRepository.save(any()) } returns updatedProjectPartner
         every { legalStatusRepo.findById(1) } returns Optional.of(legalStatusEntity)
 
         assertThat(persistence.updatePartnerMotivation(1, projectPartnerMotivationUpdate))
@@ -380,19 +365,19 @@ class PartnerPersistenceProviderTest {
         val projectPartnerRequest = projectPartner(
             department = setOf(InputTranslation(EN, "test"))
         )
+        val updatedEntity = projectPartnerWithOrganizationEntity()
         every { projectRepository.getReferenceIfExistsOrThrow(0) } throws ProjectNotFoundException()
-        every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns ProjectPartnerTestUtil.project
+        every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns project
         every { legalStatusRepo.getReferenceIfExistsOrThrow(legalStatusEntity.id) } returns legalStatusEntity
-        every { projectPartnerRepository.save(any()) } returns projectPartnerWithOrganizationEntity
+        every { projectPartnerRepository.save(any()) } returns updatedEntity
         // also handle sorting
-        val projectPartners = listOf(projectPartnerEntity(), projectPartnerWithOrganizationEntity)
+        val projectPartners = listOf(projectPartnerEntity(), updatedEntity)
         every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
-        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
 
         assertThrows<ProjectNotFoundException> { persistence.create(0, projectPartnerRequest) }
         assertThat(
             persistence.create(PROJECT_ID, projectPartnerRequest)
-        ).isEqualTo(projectPartnerDetail(department = setOf(InputTranslation(EN, "test"))))
+        ).isEqualTo(projectPartnerDetail(department = setOf(InputTranslation(EN, "test")), sortNumber = 2))
     }
 
     @Test
@@ -402,13 +387,13 @@ class PartnerPersistenceProviderTest {
             role = ProjectPartnerRole.PARTNER,
             department = setOf(InputTranslation(EN, "test"))
         )
-        val projectPartners = listOf(projectPartnerEntity(id = 2), projectPartnerWithOrganizationEntity)
+        val projectPartners = listOf(projectPartnerEntity(id = 2), projectPartnerWithOrganizationEntity())
 
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
         every { legalStatusRepo.getReferenceIfExistsOrThrow(legalStatusEntity.id) } returns legalStatusEntity
         every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns ProjectPartnerTestUtil.project
         every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
-        every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
+        every { projectPartnerRepository.save(any()) } returnsArgument 0
         assertThat(persistence.update(projectPartnerUpdate))
             .isEqualTo(
                 projectPartnerDetail(
@@ -421,27 +406,18 @@ class PartnerPersistenceProviderTest {
 
     @Test
     fun deleteProjectPartnerWithOrganization() {
-        val projectPartnerWithOrganization = ProjectPartnerEntity(
-            id = 1,
-            project = ProjectPartnerTestUtil.project,
-            abbreviation = "partner",
-            role = ProjectPartnerRole.LEAD_PARTNER,
-            nameInOriginalLanguage = projectPartnerWithOrganizationEntity.nameInOriginalLanguage,
-            nameInEnglish = projectPartnerWithOrganizationEntity.nameInEnglish,
-            translatedValues = projectPartnerWithOrganizationEntity.translatedValues,
-            legalStatus = ProgrammeLegalStatusEntity(id = 1)
-        )
+        val projectPartnerWithOrganization =projectPartnerWithOrganizationEntity()
         every { projectPartnerRepository.findById(projectPartnerWithOrganization.id) } returns Optional.of(
             projectPartnerWithOrganization
         )
         every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id) } returns Unit
         every {
-            projectPartnerRepository.findTop30ByProjectId(ProjectPartnerTestUtil.project.id, any())
+            projectPartnerRepository.findTop30ByProjectId(project.id, any())
         } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()
 
         assertDoesNotThrow { persistence.deletePartner(projectPartnerWithOrganization.id) }
-        verify { projectAssociatedOrganizationService.refreshSortNumbers(ProjectPartnerTestUtil.project.id) }
+        verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id) }
     }
 
     @Test

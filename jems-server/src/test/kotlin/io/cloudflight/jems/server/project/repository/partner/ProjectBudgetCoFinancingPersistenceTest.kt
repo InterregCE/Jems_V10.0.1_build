@@ -12,9 +12,6 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
-import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
-import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
-import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
@@ -116,39 +113,37 @@ class ProjectBudgetCoFinancingPersistenceTest {
     @Test
     fun `get co financing and contributions`() {
         val dummyFinancing = setOf(
-            ProjectPartnerCoFinancingEntity(
-                coFinancingFundId = ProjectPartnerCoFinancingFundId(
-                    partnerId = PARTNER_ID,
-                    type = ProjectPartnerCoFinancingFundTypeDTO.MainFund
-                ), percentage = BigDecimal.valueOf(24.5), programmeFund = fund1
+            UpdateProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                fundId = fund1Model.id,
+                percentage = BigDecimal.valueOf(24.5)
             ),
-            ProjectPartnerCoFinancingEntity(
-                coFinancingFundId = ProjectPartnerCoFinancingFundId(
-                    partnerId = PARTNER_ID,
-                    type = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
-                ), percentage = BigDecimal.valueOf(74.5), programmeFund = null
+            UpdateProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+                percentage = BigDecimal.valueOf(74.5),
+                fundId = null
             )
         )
         val dummyPartnerContributions = listOf(
-            ProjectPartnerContributionEntity(
+            ProjectPartnerContribution(
                 id = 1,
-                partnerId = PARTNER_ID,
                 name = null,
                 status = Public,
-                amount = BigDecimal.TEN
+                amount = BigDecimal.TEN,
+                isPartner = true
             ),
-            ProjectPartnerContributionEntity(
+            ProjectPartnerContribution(
                 id = 2,
-                partnerId = PARTNER_ID,
                 name = "source01",
                 status = Private,
-                amount = BigDecimal.ONE
-            )
+                amount = BigDecimal.ONE,
+                isPartner = false,
+                )
         )
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(
             dummyPartner.copy(
-                financing = dummyFinancing,
-                partnerContributions = dummyPartnerContributions
+                newFinancing = dummyFinancing,
+                newPartnerContributions = dummyPartnerContributions
             )
         )
 

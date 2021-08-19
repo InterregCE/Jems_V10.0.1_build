@@ -9,7 +9,7 @@ import javax.persistence.Entity
  * project partner lang table
  */
 @Entity(name = "project_partner_transl")
-data class ProjectPartnerTranslEntity(
+class ProjectPartnerTranslEntity(
 
     @EmbeddedId
     override val translationId: TranslationId<ProjectPartnerEntity>,
@@ -18,4 +18,4 @@ data class ProjectPartnerTranslEntity(
 
     val otherIdentifierDescription: String? = null,
 
-    ): TranslationEntity()
+    ) : TranslationEntity()

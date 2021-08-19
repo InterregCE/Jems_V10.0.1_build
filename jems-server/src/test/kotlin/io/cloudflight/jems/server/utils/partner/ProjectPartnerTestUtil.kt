@@ -115,12 +115,7 @@ fun projectPartnerDetail(
 
 val legalStatusEntity = ProgrammeLegalStatusEntity(id = 1)
 
-val projectPartnerInclTransl =
-    projectPartnerEntity().also {
-        it.translatedValues.add(ProjectPartnerTranslEntity(TranslationId(it, SystemLanguage.EN), "test"))
-    }
-
-val projectPartnerWithOrganizationEntity = projectPartnerEntity().also {
+fun projectPartnerWithOrganizationEntity(sortNumber: Int=0) = projectPartnerEntity(sortNumber = sortNumber).also {
     it.translatedValues.add(ProjectPartnerTranslEntity(TranslationId(it, SystemLanguage.EN), "test"))
 }
 

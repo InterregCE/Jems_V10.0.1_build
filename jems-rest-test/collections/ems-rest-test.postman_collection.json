@@ -690,7 +690,7 @@
 									"});\r",
 									"\r",
 									"pm.test('we have programme 1-category unit cost or we need to create one', function() {\r",
-									"    const response = pm.response.json().filter(unitCost => !unitCost.isOneCostCategory);\r",
+									"    const response = pm.response.json().filter(unitCost => !unitCost.oneCostCategory);\r",
 									"    if (response.length > 0) {\r",
 									"        console.log('There is already some 1-category unitCost ' + response[0].name + ' with id=' + response[0].id + ', which we will use for calls during this test');\r",
 									"        pm.environment.set('programmeUnitCostId', response[0].id);\r",
@@ -749,7 +749,7 @@
 									"        pm.response.to.have.status(200);\r",
 									"        console.log('We created new programme unit cost with id=' + response.id);\r",
 									"        pm.environment.set('programmeUnitCostId', response.id);\r",
-									"        pm.expect(response.isOneCostCategory).to.be.true;\r",
+									"        pm.expect(response.oneCostCategory).to.be.true;\r",
 									"    } else {\r",
 									"        pm.expect(pm.response.code).to.be.oneOf([400, 422]);\r",
 									"        console.log('We did an invalid POST to NOT create new unit cost.');\r",
@@ -766,7 +766,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"[API test] 1-category\"\r\n        }\r\n    ],\r\n    \"description\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{inputLanguage}} 1-category description \"\r\n        }\r\n    ],\r\n    \"type\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"type translated to {{inputLanguage}}\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 498.26,\r\n    \"isOneCostCategory\": true,\r\n    \"categories\": [\"EquipmentCosts\"]\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"[API test] 1-category\"\r\n        }\r\n    ],\r\n    \"description\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{inputLanguage}} 1-category description \"\r\n        }\r\n    ],\r\n    \"type\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"type translated to {{inputLanguage}}\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 498.26,\r\n    \"oneCostCategory\": true,\r\n    \"categories\": [\"EquipmentCosts\"]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1421,7 +1421,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"this should never be seen (ERR in API tests)\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 97851.32,\r\n    \"isOneCostCategory\": false,\r\n    \"categories\": [\r\n        \"OfficeAndAdministrationCosts\",\r\n        \"InfrastructureCosts\"\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"this should never be seen (ERR in API tests)\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 97851.32,\r\n    \"oneCostCategory\": false,\r\n    \"categories\": [\r\n        \"OfficeAndAdministrationCosts\",\r\n        \"InfrastructureCosts\"\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2554,7 +2554,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
+							"raw": "{{url}}/api/project/{{application_id}}/file/upload",
 							"host": [
 								"{{url}}"
 							],
@@ -2563,8 +2563,14 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"applicant"
-							]
+								"upload"
+							],
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              }
+                          ]
 						}
 					},
 					"response": []
@@ -2617,7 +2623,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
+							"raw": "{{url}}/api/project/{{application_id}}/file/list",
 							"host": [
 								"{{url}}"
 							],
@@ -2626,8 +2632,18 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"applicant"
-							]
+								"list"
+							],
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              },
+                              {
+                                "key": "id",
+                                "value": null
+                              }
+                            ]
 						}
 					},
 					"response": []
@@ -2682,15 +2698,10 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"description\": \"API test description\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "API test description"
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/applicant/{{file_id}}/description",
+							"raw": "{{url}}/api/project/{{application_id}}/file/{{file_id}}/description",
 							"host": [
 								"{{url}}"
 							],
@@ -2699,7 +2710,6 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"applicant",
 								"{{file_id}}",
 								"description"
 							]
@@ -2755,7 +2765,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/applicant/{{file_id}}",
+							"raw": "{{url}}/api/project/{{application_id}}/file/download/{{file_id}}",
 							"host": [
 								"{{url}}"
 							],
@@ -2764,7 +2774,7 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"applicant",
+								"download",
 								"{{file_id}}"
 							]
 						}
@@ -2815,7 +2825,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
+							"raw": "{{url}}/api/project/{{application_id}}/file/list",
 							"host": [
 								"{{url}}"
 							],
@@ -2824,8 +2834,18 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"applicant"
-							]
+								"list"
+							],
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              },
+                              {
+                                "key": "id",
+                                "value": null
+                              }
+                            ]
 						}
 					},
 					"response": []
@@ -2874,7 +2894,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/applicant/{{file_id}}",
+							"raw": "{{url}}/api/project/{{application_id}}/file/download/{{file_id}}",
 							"host": [
 								"{{url}}"
 							],
@@ -2883,7 +2903,7 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"applicant",
+								"download",
 								"{{file_id}}"
 							]
 						}
@@ -3176,7 +3196,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
+							"raw": "{{url}}/api/project/{{application_id}}/file/upload",
 							"host": [
 								"{{url}}"
 							],
@@ -3185,8 +3205,14 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"applicant"
-							]
+								"upload"
+							],
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              }
+                            ]
 						}
 					},
 					"response": []
@@ -3390,7 +3416,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
+							"raw": "{{url}}/api/project/{{application_id}}/file/upload",
 							"host": [
 								"{{url}}"
 							],
@@ -3399,8 +3425,14 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"applicant"
-							]
+								"upload"
+							],
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              }
+                            ]
 						}
 					},
 					"response": []
@@ -3453,7 +3485,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/applicant",
+							"raw": "{{url}}/api/project/{{application_id}}/file/list",
 							"host": [
 								"{{url}}"
 							],
@@ -3462,8 +3494,14 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"applicant"
-							]
+								"list"
+							],
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              }
+                            ]
 						}
 					},
 					"response": []
@@ -8190,80 +8228,7 @@
 					"response": []
 				},
 				{
-					"name": "make partner B LeadPartner - fail",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('applicant cannot update Partner B to be LEAD when A already is', function() {\r",
-									"    const error = pm.response.json();\r",
-									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.update.project.partner.role.lead.already.existing\");\r",
-									"});\r",
-									"\r",
-									"pm.test('correct id is sent to FE in error response', function() {\r",
-									"    const error = pm.response.json();\r",
-									"    pm.expect(error.details[0].i18nMessage.i18nArguments.currentLeadId).to.eql(pm.variables.get('partnerIdA') + \"\",);\r",
-									"    pm.expect(error.details[0].i18nMessage.i18nArguments.currentLeadAbbreviation).to.eql(pm.variables.get('partnerAbbreviationALead') + \"\");\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 2\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project/partner",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"partner"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "make partner B LeadPartner - force",
+					"name": "make partner B LeadPartner",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -8310,7 +8275,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\",\r\n    \"legalStatusId\": 2\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n  \"legalStatusId\": 2\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8326,148 +8291,6 @@
 								"api",
 								"project",
 								"partner"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create another project LeadPartner C - fail",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const error = pm.response.json();\r",
-									"\r",
-									"pm.test('applicant cannot create LeadPartner C cause B is now LeadPartner', function() {\r",
-									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.create.project.partner.role.lead.already.existing\");\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"partner",
-								"toProjectId",
-								"{{application_id}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create another project LeadPartner C - force fail",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const error = pm.response.json();\r",
-									"\r",
-									"pm.test('applicant cannot override LeadPartner A cause B is now LeadPartner', function() {\r",
-									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.create.project.partner.oldLeadPartnerId.is.not.lead\");\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"partner",
-								"toProjectId",
-								"{{application_id}}"
 							]
 						}
 					},
