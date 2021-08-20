@@ -162,6 +162,7 @@ export const APPLICATION_FORM = {
         DESCRIPTION: 'application.config.project.activities.description',
         START_PERIOD: 'application.config.project.activities.start.period',
         END_PERIOD: 'application.config.project.activities.end.period',
+        STATE_AID_PARTNERS_INVOLVED: 'application.config.project.activities.state.aid.partners.involved',
         DELIVERABLES: 'application.config.project.activities.deliverables',
       },
       OUTPUTS: {

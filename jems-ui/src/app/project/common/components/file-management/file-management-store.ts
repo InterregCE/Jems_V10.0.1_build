@@ -153,9 +153,9 @@ export class FileManagementStore {
   private partners(): Observable<ProjectPartner[]> {
     return this.projectStore.projectId$
       .pipe(
-        switchMap(projectId => this.partnerService.getProjectPartnersForDropdown(projectId, undefined)),
+        switchMap(projectId => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'])),
         map(projectPartners => projectPartners.map((projectPartner, index) =>
-          new ProjectPartner(projectPartner.id, index, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))
+          new ProjectPartner(projectPartner.id, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))
         ),
         catchError(err => of([]))
       );

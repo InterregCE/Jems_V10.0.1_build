@@ -46,10 +46,12 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
 
   ngOnInit(): void {
     combineLatest([
-      this.workPackageStore.activities$, this.formService.reset$.pipe(startWith(null))
+      this.workPackageStore.activities$,
+      this.partnerStore.partners$,
+      this.formService.reset$.pipe(startWith(null))
     ])
       .pipe(
-        map(([activities]) => this.resetForm(activities)),
+        map(([activities, partners]) => this.resetForm(activities, partners)),
         untilDestroyed(this)
       ).subscribe();
 
@@ -118,14 +120,14 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
     return this.form.enabled && this.deliverables(activityIndex).length < 20;
   }
 
-  addPartner(activityIndex: number, partnerId: number): void {
-    const values = this.getCurrentlySelectedPartnerIds(activityIndex);
-    values.push(partnerId);
-    values.sort((a, b) => a - b);
+  addPartner(activityIndex: number, partnerId: number, partnersSorted: ProjectPartner[]): void {
+    const values = this.getCurrentlySelectedPartnerIds(activityIndex).concat(partnerId);
+    const selectedPartnerIds = partnersSorted
+      .filter(partner => values.includes(partner.id))
+      .map(partner => partner.id);
 
-    this.partners(activityIndex).insert(values.indexOf(partnerId), this.formBuilder.group({
-      id: partnerId,
-    }));
+    this.partners(activityIndex).clear();
+    selectedPartnerIds.forEach(id => this.partners(activityIndex).push(this.formBuilder.group({id})));
     this.formService.setDirty(true);
   }
 
@@ -139,19 +141,20 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   }
 
   getAbbreviationForPartnerId(partners: ProjectPartner[], partnerId: number): string {
-    return partners.find(partner => partner.id === partnerId)?.abbreviation || '';
+    const partner = partners.find(p => p.id === partnerId);
+    return (partner?.toPartnerNumberString() || '-') + ' ' + (partner?.abbreviation || '-');
   }
 
   getPartnersWithoutSelected(partners: ProjectPartner[], activityIndex: number): ProjectPartner[] {
     return partners.filter(partner => !this.getCurrentlySelectedPartnerIds(activityIndex).includes(partner.id));
   }
 
-  private resetForm(activities: WorkPackageActivityDTO[]): void {
+  private resetForm(activities: WorkPackageActivityDTO[], partners: ProjectPartner[]): void {
     this.activities.clear();
     activities.forEach((activity, index) => {
       this.addActivity(activity);
       activity.deliverables?.forEach(deliverable => this.addDeliverable(index, deliverable));
-      activity.partnerIds?.forEach(partnerId => this.addPartner(index, partnerId));
+      activity.partnerIds?.forEach(partnerId => this.addPartner(index, partnerId, partners));
     });
     this.formService.resetEditable();
     this.formService.setDirty(false);

@@ -64,7 +64,8 @@
                             </app-multi-language-form-field>
                         </app-multi-language-container>
 
-                        <mat-form-field class="example-chip-list" appearance="fill">
+                        <mat-form-field class="example-chip-list" appearance="fill"
+                                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.STATE_AID_PARTNERS_INVOLVED">
                             <mat-label>{{ 'project.work.package.tab.activity.partnersInvolved' | translate }}</mat-label>
                             <mat-chip-list #chipList>
                                 <mat-chip
@@ -81,9 +82,9 @@
                                         [matChipInputFor]="chipList"
                                         [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
                             </mat-chip-list>
-                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addPartner(i, $event.option.value)">
+                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addPartner(i, $event.option.value, data.partners)">
                                 <mat-option *ngFor="let partner of getPartnersWithoutSelected(data.partners, i)" [value]="partner.id">
-                                    {{partner.abbreviation}}
+                                    {{ partner.toPartnerNumberString()}} {{partner.abbreviation}}
                                 </mat-option>
                             </mat-autocomplete>
                         </mat-form-field>
