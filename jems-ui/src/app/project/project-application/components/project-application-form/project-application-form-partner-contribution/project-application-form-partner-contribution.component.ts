@@ -45,7 +45,11 @@ export class ProjectApplicationFormPartnerContributionComponent {
   }
 
   resetForm(partner: ProjectPartnerDetailDTO): void {
-    this.partnerContributionForm.patchValue(partner?.motivation || {});
+    this.partnerContributionForm.patchValue(partner?.motivation || {
+      organizationRelevance: [],
+      organizationRole: [],
+      organizationExperience: [],
+    });
   }
 
   get controls(): any {
