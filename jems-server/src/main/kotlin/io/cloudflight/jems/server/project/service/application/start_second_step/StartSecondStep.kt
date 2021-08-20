@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.application.start_second_step
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanReturnApplicationToApplicant
+import io.cloudflight.jems.server.project.authorization.CanStartSecondStep
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
@@ -17,7 +17,7 @@ class StartSecondStep(
     private val auditPublisher: ApplicationEventPublisher,
 ) : StartSecondStepInteractor {
 
-    @CanReturnApplicationToApplicant
+    @CanStartSecondStep
     @Transactional
     @ExceptionWrapper(StartSecondStepException::class)
     override fun startSecondStep(projectId: Long): ApplicationStatus =

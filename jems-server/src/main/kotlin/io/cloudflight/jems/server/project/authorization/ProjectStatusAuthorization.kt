@@ -41,6 +41,10 @@ annotation class CanSetApplicationAsEligible
 annotation class CanSetApplicationAsIneligible
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectStartStepTwo')")
+annotation class CanStartSecondStep
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('ProjectStatusDecisionRevert')")
 annotation class CanRevertDecision
 
