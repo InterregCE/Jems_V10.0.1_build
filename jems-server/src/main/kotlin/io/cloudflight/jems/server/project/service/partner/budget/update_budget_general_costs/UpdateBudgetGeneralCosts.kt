@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -25,7 +26,8 @@ abstract class UpdateBudgetGeneralCosts(
     @CanUpdateProjectPartner
     override fun updateBudgetGeneralCosts(
         partnerId: Long,
-        budgetGeneralCosts: List<BudgetGeneralCostEntry>
+        budgetGeneralCosts: List<BudgetGeneralCostEntry>,
+        budgetCategory: BudgetCategory
     ): List<BudgetGeneralCostEntry> {
 
         budgetCostValidator.validateBaseEntries(budgetGeneralCosts)
@@ -39,6 +41,12 @@ abstract class UpdateBudgetGeneralCosts(
         )
 
         throwIfOtherCostFlatRateIsSet(budgetOptionsPersistence.getBudgetOptions(partnerId))
+
+        budgetCostValidator.validateAllowedRealCosts(
+            projectPersistence.getCallIdOfProject(partnerPersistence.getProjectIdForPartnerId(partnerId)),
+            budgetGeneralCosts,
+            budgetCategory
+        )
 
         deleteAllBudgetGeneralCostsExceptFor(
             partnerId = partnerId,

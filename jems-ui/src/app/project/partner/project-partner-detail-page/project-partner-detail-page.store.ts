@@ -12,12 +12,12 @@ import {
   BudgetUnitCostEntryDTO,
   CallDetailDTO,
   CallService,
-  ProjectPartnerDetailDTO,
   ProgrammeFundDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
   ProjectPartnerCoFinancingAndContributionOutputDTO,
+  ProjectPartnerDetailDTO,
   ProjectPartnerService,
   ProjectPartnerStateAidDTO,
   ProjectPeriodDTO
@@ -38,6 +38,7 @@ import {InvestmentSummary} from '../../work-package/project-work-package-page/wo
 import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
 import {ProjectVersionStore} from '../../common/services/project-version-store.service';
 import {Log} from '@common/utils/log';
+import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -54,6 +55,7 @@ export class ProjectPartnerDetailPageStore {
   multipleFundsAllowed$: Observable<boolean>;
   stateAid$: Observable<ProjectPartnerStateAidDTO>;
   partner$: Observable<ProjectPartnerDetailDTO>;
+  allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
 
   private updateBudgetOptionsEvent$ = new Subject();
   private updateBudgetEvent$ = new Subject();
@@ -86,6 +88,7 @@ export class ProjectPartnerDetailPageStore {
     this.multipleFundsAllowed$ = this.projectStore.projectCall$.pipe(map(it => it.multipleFundsAllowed));
     this.partner$ = this.partnerStore.partner$;
     this.stateAid$ = this.stateAid();
+    this.allowedBudgetCategories$ = this.projectStore.allowedBudgetCategories$;
   }
 
   updateBudgetOptions(budgetOptions: BudgetOptions): Observable<any> {
@@ -111,6 +114,25 @@ export class ProjectPartnerDetailPageStore {
     );
   }
 
+  updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
+    return of(model).pipe(
+      withLatestFrom(this.partnerStore.partner$),
+      switchMap(([finances, partner]) =>
+        this.projectPartnerBudgetService.updateProjectPartnerCoFinancing(partner.id, finances)
+      ),
+      tap(() => this.updateFinancingAndContributionEvent.next(true)),
+      share()
+    );
+  }
+
+  updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO): Observable<ProjectPartnerStateAidDTO> {
+    return this.projectPartnerService.updateProjectPartnerStateAid(partnerId, stateAid)
+      .pipe(
+        tap(saved => this.updatedStateAid$.next(saved)),
+        tap(saved => Log.info('Updated the partner state aid', this, saved))
+      );
+  }
+
   private getBudgetsToSave(partner: ProjectPartnerDetailDTO, newBudgets: PartnerBudgetTables, options: BudgetOptions): { [key: string]: Observable<any> } {
     if (options.otherCostsOnStaffCostsFlatRate) {
       return {staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts))};
@@ -129,25 +151,6 @@ export class ProjectPartnerDetailPageStore {
       }
       return requests;
     }
-  }
-
-  updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
-    return of(model).pipe(
-      withLatestFrom(this.partnerStore.partner$),
-      switchMap(([finances, partner]) =>
-        this.projectPartnerBudgetService.updateProjectPartnerCoFinancing(partner.id, finances)
-      ),
-      tap(() => this.updateFinancingAndContributionEvent.next(true)),
-      share()
-    );
-  }
-
-  updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO): Observable<ProjectPartnerStateAidDTO> {
-    return this.projectPartnerService.updateProjectPartnerStateAid(partnerId, stateAid)
-      .pipe(
-        tap(saved => this.updatedStateAid$.next(saved)),
-        tap(saved => Log.info('Updated the partner state aid', this, saved ))
-      );
   }
 
   private callFunds(): Observable<ProgrammeFundDTO[]> {
@@ -329,7 +332,7 @@ export class ProjectPartnerDetailPageStore {
       .pipe(
         filter(([partner]) => !!partner.id),
         switchMap(([partner, version]) => this.projectPartnerService.getProjectPartnerStateAid(partner.id, version)),
-        tap(stateAid => Log.info('Fetched the partner state aid', this, stateAid ))
+        tap(stateAid => Log.info('Fetched the partner state aid', this, stateAid))
       );
 
     return merge(initialStateAid$, this.updatedStateAid$);

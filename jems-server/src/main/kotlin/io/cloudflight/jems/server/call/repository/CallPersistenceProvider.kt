@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.call.repository
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.call.service.model.AllowRealCosts
+import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -152,15 +152,15 @@ class CallPersistenceProvider(
 
 
     @Transactional
-    override fun updateAllowRealCosts(callId: Long, allowRealCosts: AllowRealCosts): AllowRealCosts {
+    override fun updateAllowedRealCosts(callId: Long, allowedRealCosts: AllowedRealCosts): AllowedRealCosts {
         val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
-        call.allowRealCosts = allowRealCosts.toEntity()
-        return callRepo.save(call).allowRealCosts.toModel()
+        call.allowedRealCosts = allowedRealCosts.toEntity()
+        return allowedRealCosts
     }
 
     @Transactional(readOnly = true)
-    override fun getAllowRealCosts(callId: Long): AllowRealCosts =
-        callRepo.findById(callId).orElseThrow { CallNotFound() }.allowRealCosts.toModel()
+    override fun getAllowedRealCosts(callId: Long): AllowedRealCosts =
+        callRepo.findById(callId).orElseThrow { CallNotFound() }.allowedRealCosts.toModel()
 
     @Transactional
     override fun publishCall(callId: Long) =

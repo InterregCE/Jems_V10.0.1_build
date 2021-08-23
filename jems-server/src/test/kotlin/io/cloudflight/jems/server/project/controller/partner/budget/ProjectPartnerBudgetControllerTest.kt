@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.controller.partner.budget
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetPeriodDTO
@@ -245,7 +246,8 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         every {
             updateBudgetExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(
                 PARTNER_ID,
-                any()
+                any(),
+                BudgetCategory.ExternalCosts
             )
         } returns externals.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetExternal(PARTNER_ID, externals)).isEqualTo(externals)
@@ -257,7 +259,8 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         every {
             updateBudgetEquipmentCosts.updateBudgetGeneralCosts(
                 PARTNER_ID,
-                equipments.toBudgetGeneralCostEntryList()
+                equipments.toBudgetGeneralCostEntryList(),
+                BudgetCategory.EquipmentCosts
             )
         } returns equipments.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetEquipment(PARTNER_ID, equipments)).isEqualTo(equipments)
@@ -269,7 +272,8 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         every {
             updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(
                 PARTNER_ID,
-                infrastructures.toBudgetGeneralCostEntryList()
+                infrastructures.toBudgetGeneralCostEntryList(),
+                BudgetCategory.InfrastructureCosts
             )
         } returns infrastructures.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetInfrastructure(PARTNER_ID, infrastructures)).isEqualTo(infrastructures)

@@ -24,7 +24,7 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrate
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
-import io.cloudflight.jems.server.call.service.get_allow_real_costs.GetAllowRealCostsInteractor
+import io.cloudflight.jems.server.call.service.get_allow_real_costs.GetAllowedRealCostsInteractor
 import io.cloudflight.jems.server.call.service.get_call.GetCallInteractor
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsException
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
@@ -34,7 +34,7 @@ import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.publish_call.PublishCallInteractor
-import io.cloudflight.jems.server.call.service.update_allow_real_costs.UpdateAllowRealCostsInteractor
+import io.cloudflight.jems.server.call.service.update_allow_real_costs.UpdateAllowedRealCostsInteractor
 import io.cloudflight.jems.server.call.service.update_call.UpdateCallInteractor
 import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
 import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallLumpSumsInteractor
@@ -217,10 +217,10 @@ class CallControllerTest : UnitTest() {
     lateinit var publishCall: PublishCallInteractor
 
     @MockK
-    lateinit var getAllowRealCostsInteractor: GetAllowRealCostsInteractor
+    lateinit var getAllowedRealCostsInteractor: GetAllowedRealCostsInteractor
 
     @MockK
-    lateinit var updateAllowRealCostsInteractor: UpdateAllowRealCostsInteractor
+    lateinit var updateAllowedRealCostsInteractor: UpdateAllowedRealCostsInteractor
 
     @InjectMockKs
     private lateinit var controller: CallController

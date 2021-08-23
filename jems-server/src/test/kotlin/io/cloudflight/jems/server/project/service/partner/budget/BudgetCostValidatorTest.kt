@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.RelaxedMockK
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
@@ -15,6 +17,9 @@ import java.util.stream.IntStream
 import kotlin.streams.toList
 
 internal class BudgetCostValidatorTest : UnitTest() {
+
+    @RelaxedMockK
+    lateinit var callPersistence: CallPersistence
 
     @InjectMockKs
     lateinit var budgetCostValidator: BudgetCostValidator
@@ -27,6 +32,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
                 override val numberOfUnits = BigDecimal.ZERO
                 override val budgetPeriods = mutableSetOf<BudgetPeriod>()
                 override val rowSum = BigDecimal.ZERO
+                override val unitCostId = null
             }
         }
         val ex = assertThrows<I18nValidationException> {
@@ -44,18 +50,21 @@ internal class BudgetCostValidatorTest : UnitTest() {
                 override val numberOfUnits = BigDecimal.ZERO
                 override val budgetPeriods = mutableSetOf<BudgetPeriod>()
                 override val rowSum = BigDecimal.ZERO
+                override val unitCostId = null
             },
             object : BaseBudgetEntry {
                 override val id = 1L
                 override val numberOfUnits = BigDecimal.ZERO
                 override val budgetPeriods = mutableSetOf<BudgetPeriod>()
                 override val rowSum = BigDecimal.ZERO
+                override val unitCostId = null
             },
             object : BaseBudgetEntry {
                 override val id = 1L
                 override val numberOfUnits = BigDecimal.ZERO
                 override val budgetPeriods = mutableSetOf<BudgetPeriod>()
                 override val rowSum = BigDecimal.ZERO
+                override val unitCostId = null
             }
         )
         val ex = assertThrows<I18nValidationException> {
@@ -73,12 +82,14 @@ internal class BudgetCostValidatorTest : UnitTest() {
                 override val numberOfUnits = BigDecimal.ZERO
                 override val budgetPeriods = mutableSetOf<BudgetPeriod>()
                 override val rowSum = BigDecimal.ZERO
+                override val unitCostId = null
             },
             object : BaseBudgetEntry {
                 override val id: Long? = null
                 override val numberOfUnits = BigDecimal.ZERO
                 override val budgetPeriods = mutableSetOf<BudgetPeriod>()
                 override val rowSum = BigDecimal.ZERO
+                override val unitCostId = null
             },
         )
         val result = budgetCostValidator.validateBaseEntries(budgetCostEntries)
@@ -161,6 +172,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
                 override val numberOfUnits = BigDecimal.ZERO.truncate()
                 override val budgetPeriods = mutableSetOf<BudgetPeriod>()
                 override val rowSum = BigDecimal.ZERO.truncate()
+                override val unitCostId = null
             }
         }.plus(
             object : BaseBudgetEntry {
@@ -174,6 +186,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
                     )
                 ) else mutableSetOf()
                 override val rowSum = BigDecimal.ZERO.truncate()
+                override val unitCostId = null
             }
         )
 }

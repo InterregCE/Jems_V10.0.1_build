@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -36,6 +37,11 @@ class UpdateBudgetTravelAndAccommodationCosts(
         throwIfTravelOrOtherCostFlatRateAreSet(optionsPersistence.getBudgetOptions(partnerId))
 
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        budgetCostValidator.validateAllowedRealCosts(
+            projectPersistence.getCallIdOfProject(projectId),
+            travelCosts,
+            BudgetCategory.TravelAndAccommodationCosts
+        )
 
         budgetCostValidator.validateBudgetPeriods(
             travelCosts.map { it.budgetPeriods }.flatten().toSet(),

@@ -7,5 +7,5 @@ data class BudgetUnitCostEntry(
     override val numberOfUnits: BigDecimal,
     override val budgetPeriods: MutableSet<BudgetPeriod>,
     override var rowSum: BigDecimal?,
-    val unitCostId: Long
+    override val unitCostId: Long
 ) : BaseBudgetEntry

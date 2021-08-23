@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_external_expertise_and_services
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.UpdateBudgetGeneralCostsTest
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
@@ -18,6 +19,7 @@ internal class UpdateBudgetExternalExpertiseAndServicesCostsTest : UpdateBudgetG
 
     @Test
     fun `should update and return budget external expertise and services cost entries for the specified partner when there isn't any validation error`() {
+        val callId = 3L
         val pricePerUnits = budgetGeneralCostEntries.map { it.pricePerUnit }
         val periods = budgetGeneralCostEntries.map { it.budgetPeriods }.flatten().toSet()
         every { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) } returns Unit
@@ -26,6 +28,8 @@ internal class UpdateBudgetExternalExpertiseAndServicesCostsTest : UpdateBudgetG
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns null
+        every { projectPersistence.getCallIdOfProject(projectId) } returns callId
+        every { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) } returns Unit
         every {
             budgetCostsPersistence.deleteAllBudgetExternalExpertiseAndServicesCostsExceptFor(
                 partnerId,
@@ -41,7 +45,11 @@ internal class UpdateBudgetExternalExpertiseAndServicesCostsTest : UpdateBudgetG
         } returns budgetGeneralCostEntries
 
         val result =
-            updateExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(partnerId, budgetGeneralCostEntries)
+            updateExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(
+                partnerId,
+                budgetGeneralCostEntries,
+                BudgetCategory.InfrastructureCosts
+            )
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) }
         verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
@@ -49,6 +57,8 @@ internal class UpdateBudgetExternalExpertiseAndServicesCostsTest : UpdateBudgetG
         verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
         verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
+        verify(atLeast = 1) { projectPersistence.getCallIdOfProject(projectId) }
+        verify(atLeast = 1) { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
         verify(atLeast = 1) {
             budgetCostsPersistence.deleteAllBudgetExternalExpertiseAndServicesCostsExceptFor(
                 partnerId,
@@ -72,7 +82,11 @@ internal class UpdateBudgetExternalExpertiseAndServicesCostsTest : UpdateBudgetG
         every { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) } throws I18nValidationException()
 
         assertThrows<I18nValidationException> {
-            updateExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(partnerId, budgetGeneralCostEntries)
+            updateExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(
+                partnerId,
+                budgetGeneralCostEntries,
+                BudgetCategory.InfrastructureCosts
+            )
         }
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) }
@@ -87,7 +101,11 @@ internal class UpdateBudgetExternalExpertiseAndServicesCostsTest : UpdateBudgetG
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } throws I18nValidationException()
 
         assertThrows<I18nValidationException> {
-            updateExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(partnerId, budgetGeneralCostEntries)
+            updateExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(
+                partnerId,
+                budgetGeneralCostEntries,
+                BudgetCategory.InfrastructureCosts
+            )
         }
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) }
@@ -113,7 +131,8 @@ internal class UpdateBudgetExternalExpertiseAndServicesCostsTest : UpdateBudgetG
         assertThrows<I18nValidationException> {
             updateExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(
                 partnerId,
-                budgetGeneralCostEntriesWithInvalidPeriods
+                budgetGeneralCostEntriesWithInvalidPeriods,
+                BudgetCategory.InfrastructureCosts
             )
         }
 
@@ -141,7 +160,11 @@ internal class UpdateBudgetExternalExpertiseAndServicesCostsTest : UpdateBudgetG
 
 
         assertThrows<I18nValidationException> {
-            updateExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(partnerId, budgetGeneralCostEntries)
+            updateExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(
+                partnerId,
+                budgetGeneralCostEntries,
+                BudgetCategory.InfrastructureCosts
+            )
         }
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) }

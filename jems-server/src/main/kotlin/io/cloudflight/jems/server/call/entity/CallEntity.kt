@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEnt
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
-import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.ZonedDateTime
@@ -106,7 +105,7 @@ class CallEntity(
     val unitCosts: MutableSet<ProgrammeUnitCostEntity> = mutableSetOf(),
 
     @Embedded
-    var allowRealCosts: AllowRealCostsEntity = AllowRealCostsEntity()
+    var allowedRealCosts: AllowedRealCostsEntity = AllowedRealCostsEntity()
 ) {
     fun updateFlatRateSetup(flatRates: Set<ProjectCallFlatRateEntity>) {
         val groupedByType = flatRates.associateBy { it.setupId.type }.toMutableMap()

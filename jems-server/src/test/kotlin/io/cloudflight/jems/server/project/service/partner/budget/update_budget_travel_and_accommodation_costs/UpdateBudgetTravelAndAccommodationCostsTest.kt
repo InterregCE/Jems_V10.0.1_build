@@ -29,6 +29,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
 
     private val partnerId = 1L
     private val projectId = 2L
+    private val callId = 3L
     private val listBudgetEntriesIds = setOf(1L, 2L)
     private val validPeriodNumbers = IntStream.range(1, 4).toList().toSet()
     private val projectPeriods = createProjectPeriods(validPeriodNumbers)
@@ -43,6 +44,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
+
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
 
@@ -59,6 +61,8 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
     @BeforeAll
     fun setup() {
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { projectPersistence.getCallIdOfProject(projectId) } returns callId
+        every { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) } returns Unit
     }
 
     @Test
@@ -93,6 +97,8 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
         verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
         verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
+        verify(atLeast = 1) { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
+        verify(atLeast = 1) { projectPersistence.getCallIdOfProject(projectId) }
         verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
         verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
@@ -145,6 +151,8 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
 
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
         verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
+        verify(atLeast = 1) { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
+        verify(atLeast = 1) { projectPersistence.getCallIdOfProject(projectId) }
         confirmVerified(budgetCostValidator)
     }
 
@@ -220,6 +228,8 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntriesWithInvalidPeriods) }
         verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) }
         verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers) }
+        verify(atLeast = 1) { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
+        verify(atLeast = 1) { projectPersistence.getCallIdOfProject(projectId) }
         verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
         verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
@@ -230,14 +240,14 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
         listBudgetEntriesIds
             .map {
                 BudgetTravelAndAccommodationCostEntry(
-                    it, BigDecimal.ONE, BigDecimal.ONE,
-                    budgetPeriods, BigDecimal.ONE, emptySet(), emptySet()
+                    it, BigDecimal.ONE, BigDecimal.ONE, budgetPeriods,
+                    null, BigDecimal.ONE, emptySet(), emptySet()
                 )
             }
             .plus(
                 BudgetTravelAndAccommodationCostEntry(
-                    null, BigDecimal.ONE, BigDecimal.ONE,
-                    budgetPeriods, BigDecimal.ONE, emptySet(), emptySet()
+                    null, BigDecimal.ONE, BigDecimal.ONE, budgetPeriods,
+                    null, BigDecimal.ONE, emptySet(), emptySet()
                 )
             )
 

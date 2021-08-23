@@ -21,7 +21,7 @@ import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
 import io.cloudflight.jems.server.call.entity.StateAidSetupId
-import io.cloudflight.jems.server.call.service.model.AllowRealCosts
+import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -557,19 +557,18 @@ internal class CallPersistenceProviderTest {
     fun `update allow real costs`() {
         val call = callWithId(1)
         every { callRepo.findById(1L) } returns Optional.of(call)
-        every { callRepo.save(call) } returns call
 
-        persistence.updateAllowRealCosts(1, AllowRealCosts(true, true, true, true, true))
+        persistence.updateAllowedRealCosts(1, AllowedRealCosts(true, true, true, true, true))
 
         verify(exactly = 1) {
-            callRepo.save(call)
+            callRepo.findById(1L)
         }
     }
 
     @Test
     fun `get allow real costs`() {
         every { callRepo.findById(1L) } returns Optional.of(callWithId(1))
-        persistence.getAllowRealCosts(1)
+        persistence.getAllowedRealCosts(1)
 
         verify(exactly = 1) {
             callRepo.findById(1)

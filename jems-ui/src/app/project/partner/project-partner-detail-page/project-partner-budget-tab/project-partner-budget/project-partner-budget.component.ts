@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {catchError, distinctUntilChanged, map, startWith, tap} from 'rxjs/operators';
@@ -23,6 +23,7 @@ import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.serv
 import {BudgetCostCategoryEnum} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
 import {ProgrammeUnitCost} from '../../../../model/programmeUnitCost';
 import {InvestmentSummary} from '../../../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 
 @UntilDestroy()
 @Component({
@@ -36,6 +37,10 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
   constants = ProjectPartnerBudgetConstants;
   BudgetCostCategoryEnum = BudgetCostCategoryEnum;
+
+  @Input()
+  allowedBudgetCategories: AllowedBudgetCategories;
+
   budgetsForm = this.initForm();
 
   data: {
@@ -60,6 +65,30 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   private travelAndAccommodationTotal$: Observable<number>;
 
   constructor(private cdr: ChangeDetectorRef, private formService: FormService, private tabService: ProjectPartnerBudgetTabService, private formBuilder: FormBuilder, private pageStore: ProjectPartnerDetailPageStore) {
+  }
+
+  get staff(): FormGroup {
+    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.staff) as FormGroup;
+  }
+
+  get travel(): FormGroup {
+    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.travel) as FormGroup;
+  }
+
+  get equipment(): FormGroup {
+    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.equipment) as FormGroup;
+  }
+
+  get external(): FormGroup {
+    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.external) as FormGroup;
+  }
+
+  get infrastructure(): FormGroup {
+    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.infrastructure) as FormGroup;
+  }
+
+  get unitCosts(): FormGroup {
+    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.unitCost) as FormGroup;
   }
 
   ngOnInit(): void {
@@ -123,7 +152,6 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     });
   }
 
-
   updateBudgets(): void {
     this.pageStore.updateBudgets(this.formToBudgetTables()).pipe(
       tap(() => this.formService.setSuccess('project.partner.budget.save.success')),
@@ -177,11 +205,26 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
   private formToBudgetTables(): PartnerBudgetTables {
     return new PartnerBudgetTables(
-      new StaffCostsBudgetTable(this.getTotalOf(this.staff), this.staff?.value.items.map((item: any) => new StaffCostsBudgetTableEntry({...item, unitCostId: item.unitCost?.id}))),
-      new TravelAndAccommodationCostsBudgetTable(this.getTotalOf(this.travel), this.travel?.value.items.map((item: any) => new TravelAndAccommodationCostsBudgetTableEntry({...item, unitCostId: item.unitCost?.id}))),
-      new GeneralBudgetTable(this.getTotalOf(this.external), this.external?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item, unitCostId: item.unitCost?.id}))),
-      new GeneralBudgetTable(this.getTotalOf(this.equipment), this.equipment?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item, unitCostId: item.unitCost?.id}))),
-      new GeneralBudgetTable(this.getTotalOf(this.infrastructure), this.infrastructure?.value.items.map((item: any) => new GeneralBudgetTableEntry({...item, unitCostId: item.unitCost?.id}))),
+      new StaffCostsBudgetTable(this.getTotalOf(this.staff), this.staff?.value.items.map((item: any) => new StaffCostsBudgetTableEntry({
+        ...item,
+        unitCostId: item.unitCost?.id
+      }))),
+      new TravelAndAccommodationCostsBudgetTable(this.getTotalOf(this.travel), this.travel?.value.items.map((item: any) => new TravelAndAccommodationCostsBudgetTableEntry({
+        ...item,
+        unitCostId: item.unitCost?.id
+      }))),
+      new GeneralBudgetTable(this.getTotalOf(this.external), this.external?.value.items.map((item: any) => new GeneralBudgetTableEntry({
+        ...item,
+        unitCostId: item.unitCost?.id
+      }))),
+      new GeneralBudgetTable(this.getTotalOf(this.equipment), this.equipment?.value.items.map((item: any) => new GeneralBudgetTableEntry({
+        ...item,
+        unitCostId: item.unitCost?.id
+      }))),
+      new GeneralBudgetTable(this.getTotalOf(this.infrastructure), this.infrastructure?.value.items.map((item: any) => new GeneralBudgetTableEntry({
+        ...item,
+        unitCostId: item.unitCost?.id
+      }))),
       new UnitCostsBudgetTable(this.getTotalOf(this.unitCosts), this.unitCosts?.value.items.map((item: any) => new UnitCostsBudgetTableEntry({...item}, item.unitCost?.id)))
     );
   }
@@ -217,30 +260,6 @@ export class ProjectPartnerBudgetComponent implements OnInit {
 
   private getTotalOf(formGroup: FormGroup): number {
     return formGroup.get(this.constants.FORM_CONTROL_NAMES.total)?.value || 0;
-  }
-
-  get staff(): FormGroup {
-    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.staff) as FormGroup;
-  }
-
-  get travel(): FormGroup {
-    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.travel) as FormGroup;
-  }
-
-  get equipment(): FormGroup {
-    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.equipment) as FormGroup;
-  }
-
-  get external(): FormGroup {
-    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.external) as FormGroup;
-  }
-
-  get infrastructure(): FormGroup {
-    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.infrastructure) as FormGroup;
-  }
-
-  get unitCosts(): FormGroup {
-    return this.budgetsForm.get(this.constants.FORM_CONTROL_NAMES.unitCost) as FormGroup;
   }
 
 }

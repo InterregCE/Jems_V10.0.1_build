@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.call
 
-import io.cloudflight.jems.api.call.dto.AllowRealCostsDTO
+import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
@@ -69,16 +69,16 @@ interface CallApi {
         @RequestBody flatRateSetup: FlatRateSetupDTO
     ): CallDetailDTO
 
-    @ApiOperation("Update call allow real costs for partner budget")
-    @PutMapping("/byId/{callId}/allowRealCosts", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateAllowRealCosts(
+    @ApiOperation("Update allowed real costs for partner budget")
+    @PutMapping("/byId/{callId}/allowedRealCosts", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateAllowedRealCosts(
         @PathVariable callId: Long,
-        @RequestBody allowRealCosts: AllowRealCostsDTO
-    ): AllowRealCostsDTO
+        @RequestBody allowedRealCosts: AllowedRealCostsDTO
+    ): AllowedRealCostsDTO
 
-    @ApiOperation("Returns call allow real costs for partner budget")
-    @GetMapping("/byId/{callId}/allowRealCosts")
-    fun getAllowRealCosts(@PathVariable callId: Long): AllowRealCostsDTO
+    @ApiOperation("Returns allowed real costs for partner budget")
+    @GetMapping("/byId/{callId}/allowedRealCosts")
+    fun getAllowedRealCosts(@PathVariable callId: Long): AllowedRealCostsDTO
 
     @ApiOperation("Setup LumpSums available for Call")
     @PutMapping("/byId/{callId}/lumpSum", consumes = [MediaType.APPLICATION_JSON_VALUE])

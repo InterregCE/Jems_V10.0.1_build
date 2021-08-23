@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.call.service
 
-import io.cloudflight.jems.server.call.service.model.AllowRealCosts
+import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -27,8 +27,8 @@ interface CallPersistence {
     fun existsAllProgrammeUnitCostsByIds(ids: Set<Long>): Boolean
     fun updateProjectCallUnitCost(callId: Long, unitCostIds: Set<Long>): CallDetail
 
-    fun getAllowRealCosts(callId: Long): AllowRealCosts
-    fun updateAllowRealCosts(callId: Long, allowRealCosts: AllowRealCosts): AllowRealCosts
+    fun getAllowedRealCosts(callId: Long): AllowedRealCosts
+    fun updateAllowedRealCosts(callId: Long, allowedRealCosts: AllowedRealCosts): AllowedRealCosts
 
     fun publishCall(callId: Long): CallSummary
     fun hasAnyCallPublished(): Boolean

@@ -42,6 +42,7 @@ open class UpdateBudgetGeneralCostsTest : UnitTest() {
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
+
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
 
@@ -52,17 +53,17 @@ open class UpdateBudgetGeneralCostsTest : UnitTest() {
 
     private fun budgetGeneralCostEntries(listBudgetEntriesIds: Set<Long>, budgetPeriods: MutableSet<BudgetPeriod>) =
         listBudgetEntriesIds
-    .map {
-        BudgetGeneralCostEntry(
-            it, BigDecimal.ONE, BigDecimal.ONE,
-            budgetPeriods, BigDecimal.ONE, null, emptySet(), emptySet()
-        )
-    }.plus(
-            BudgetGeneralCostEntry(
-                null, BigDecimal.ONE, BigDecimal.ONE,
-                budgetPeriods, BigDecimal.ONE, null, emptySet(), emptySet()
+            .map {
+                BudgetGeneralCostEntry(
+                    it, BigDecimal.ONE, BigDecimal.ONE, budgetPeriods,
+                    null, BigDecimal.ONE, null, emptySet(), emptySet()
+                )
+            }.plus(
+                BudgetGeneralCostEntry(
+                    null, BigDecimal.ONE, BigDecimal.ONE, budgetPeriods,
+                    null, BigDecimal.ONE, null, emptySet(), emptySet()
+                )
             )
-        )
 
     private fun createBudgetPeriods(numbers: Set<Int>) =
         numbers.map { BudgetPeriod(it, BigDecimal.TEN.truncate()) }.toMutableSet()

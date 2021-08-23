@@ -14,4 +14,5 @@ interface BaseBudgetEntry {
     val numberOfUnits: BigDecimal
     val rowSum: BigDecimal?
     val budgetPeriods: MutableSet<BudgetPeriod>
+    val unitCostId: Long?
 }

@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.call.repository
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.call.entity.AllowRealCostsEntity
+import io.cloudflight.jems.server.call.entity.AllowedRealCostsEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
 import io.cloudflight.jems.server.call.entity.StateAidSetupId
-import io.cloudflight.jems.server.call.service.model.AllowRealCosts
+import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -113,7 +113,7 @@ fun Call.toEntity(
     translatedValues.addAll(description.combineDescriptionsToTranslations(this))
 }
 
-fun AllowRealCosts.toEntity() = AllowRealCostsEntity(
+fun AllowedRealCosts.toEntity() = AllowedRealCostsEntity(
     allowRealStaffCosts = allowRealStaffCosts,
     allowRealTravelAndAccommodationCosts = allowRealTravelAndAccommodationCosts,
     allowRealExternalExpertiseAndServicesCosts = allowRealExternalExpertiseAndServicesCosts,
@@ -121,7 +121,7 @@ fun AllowRealCosts.toEntity() = AllowRealCostsEntity(
     allowRealInfrastructureCosts = allowRealInfrastructureCosts
 )
 
-fun AllowRealCostsEntity.toModel() = AllowRealCosts(
+fun AllowedRealCostsEntity.toModel() = AllowedRealCosts(
     allowRealStaffCosts = allowRealStaffCosts,
     allowRealTravelAndAccommodationCosts = allowRealTravelAndAccommodationCosts,
     allowRealExternalExpertiseAndServicesCosts = allowRealExternalExpertiseAndServicesCosts,

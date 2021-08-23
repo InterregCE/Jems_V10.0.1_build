@@ -19,7 +19,7 @@ import {ProgrammeEditableStateStore} from '../programme/programme-page/services/
 import {CallDetailPageComponent} from './call-detail-page/call-detail-page.component';
 import {ApplicationFormConfigurationPageComponent} from './application-form-configuration-page/application-form-configuration-page.component';
 import {CallStateAidsComponent} from './call-detail-page/call-state-aids/call-state-aids.component';
-import {CallAllowRealCostsComponent} from './call-budget-settings-page/call-allow-real-costs/call-allow-real-costs.component';
+import {CallAllowedRealCostsComponent} from './call-budget-settings-page/call-allow-real-costs/call-allow-real-costs.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +35,7 @@ import {CallAllowRealCostsComponent} from './call-budget-settings-page/call-allo
     CallDetailPageComponent,
     ApplicationFormConfigurationPageComponent,
     CallStateAidsComponent,
-    CallAllowRealCostsComponent
+    CallAllowedRealCostsComponent
   ],
   imports: [
     SharedModule,

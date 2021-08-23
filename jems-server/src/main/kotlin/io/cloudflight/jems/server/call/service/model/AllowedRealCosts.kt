@@ -1,6 +1,6 @@
-package io.cloudflight.jems.api.call.dto
+package io.cloudflight.jems.server.call.service.model
 
-data class AllowRealCostsDTO(
+data class AllowedRealCosts(
     val allowRealStaffCosts: Boolean,
     val allowRealTravelAndAccommodationCosts: Boolean,
     var allowRealExternalExpertiseAndServicesCosts: Boolean,

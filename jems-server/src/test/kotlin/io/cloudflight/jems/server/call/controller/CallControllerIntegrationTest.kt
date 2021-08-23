@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.jems.api.call.dto.AllowRealCostsDTO
+import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -58,7 +58,7 @@ class CallControllerIntegrationTest {
     @Test
     @WithUserDetails(value = UserFactory.ADMINISTRATOR_EMAIL)
     @Transactional
-    fun `update allow real costs`() {
+    fun `update allowed real costs`() {
         val call = createCallInteractor.createCallInDraft(
             Call(
                 name = "New Call",
@@ -70,7 +70,7 @@ class CallControllerIntegrationTest {
             )
         )
 
-        val updateRealCosts = AllowRealCostsDTO(
+        val updateRealCosts = AllowedRealCostsDTO(
             allowRealStaffCosts = false,
             allowRealTravelAndAccommodationCosts = true,
             allowRealExternalExpertiseAndServicesCosts = false,
@@ -79,7 +79,7 @@ class CallControllerIntegrationTest {
         )
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/call/byId/${call.id}/allowRealCosts")
+            MockMvcRequestBuilders.put("/api/call/byId/${call.id}/allowedRealCosts")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(updateRealCosts))
@@ -95,7 +95,7 @@ class CallControllerIntegrationTest {
     @Test
     @WithUserDetails(value = UserFactory.ADMINISTRATOR_EMAIL)
     @Transactional
-    fun `get allow real costs`() {
+    fun `get allowed real costs`() {
         val call = createCallInteractor.createCallInDraft(
             Call(
                 name = "New Call",
@@ -108,7 +108,7 @@ class CallControllerIntegrationTest {
         )
 
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/call/byId/${call.id}/allowRealCosts")
+            MockMvcRequestBuilders.get("/api/call/byId/${call.id}/allowedRealCosts")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)

@@ -23,6 +23,7 @@ import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
 import {MatSelectChange} from '@angular/material/select/select';
 import {ProjectPartnerBudgetTabService} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.service';
 import {APPLICATION_FORM, ApplicationFormModel} from '@project/common/application-form-model';
+import {AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 
 const FIELD_KEYS =
   {
@@ -56,6 +57,8 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
   projectPeriods: ProjectPeriodDTO[];
   @Input()
   availableUnitCosts: ProgrammeUnitCost[];
+  @Input()
+  allowedBudgetCategory: AllowedBudgetCategory;
 
   budgetForm: FormGroup;
   dataSource: MatTableDataSource<AbstractControl>;
@@ -66,6 +69,18 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
 
   constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private budgetTabService: ProjectPartnerBudgetTabService) {
     this.budgetForm = this.controlContainer.control as FormGroup;
+  }
+
+  get table(): FormGroup {
+    return this.budgetForm.get(this.tableName) as FormGroup;
+  }
+
+  get items(): FormArray {
+    return this.table.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
+  }
+
+  get total(): FormControl {
+    return this.table.get(this.constants.FORM_CONTROL_NAMES.total) as FormControl;
   }
 
   ngOnInit(): void {
@@ -88,7 +103,10 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.DESCRIPTION), [{minInRem: 12}]),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.AWARD_PROCEDURE), [{minInRem: 12}]),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.INVESTMENT), [{minInRem: 5, maxInRem: 5}]),
-      ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.UNIT_TYPE_AND_NUMBER_OF_UNITS), [{minInRem: 12}, {minInRem: 5, maxInRem: 5}]),
+      ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.UNIT_TYPE_AND_NUMBER_OF_UNITS), [{minInRem: 12}, {
+        minInRem: 5,
+        maxInRem: 5
+      }]),
       {minInRem: 8, maxInRem: 8}, {minInRem: 8},
       ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods), {minInRem: 3, maxInRem: 3}
     ];
@@ -146,7 +164,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       id: null,
       description: [[]],
       unitType: [[]],
-      unitCost: [null],
+      unitCost: [null, [this.constants.requiredUnitCost(this.allowedBudgetCategory)]],
       awardProcedures: [[]],
       investmentId: [null],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -159,6 +177,21 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
     this.formService.setDirty(true);
   }
 
+  getUnitCost(formGroup: FormGroup): FormControl {
+    return formGroup.get(this.constants.FORM_CONTROL_NAMES.unitCost) as FormControl;
+  }
+
+  openForPeriods(rowIndex: number): FormControl {
+    return this.items.at(rowIndex).get(this.constants.FORM_CONTROL_NAMES.openForPeriods) as FormControl;
+  }
+
+  fieldEnabled(control: FormGroup): boolean {
+    if (this.allowedBudgetCategory.unitCostsOnly()) {
+      return !!this.getUnitCost(control)?.value;
+    }
+    return true;
+  }
+
   private resetTableFormGroup(commonBudgetTable: GeneralBudgetTable): void {
     this.total.setValue(commonBudgetTable.total);
     this.items.clear();
@@ -167,7 +200,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
         id: [item.id],
         description: [item.description],
         unitType: [item.unitType],
-        unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId) || null],
+        unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId) || null, [this.constants.requiredUnitCost(this.allowedBudgetCategory)]],
         awardProcedures: [item.awardProcedures],
         investmentId: [item.investmentId],
         numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -179,26 +212,6 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       this.budgetTabService.addPeriods(this.items, this.projectPeriods, item.budgetPeriods);
     });
     this.formService.resetEditable();
-  }
-
-  get table(): FormGroup {
-    return this.budgetForm.get(this.tableName) as FormGroup;
-  }
-
-  getUnitCost(formGroup: FormGroup): FormControl {
-    return formGroup.get(this.constants.FORM_CONTROL_NAMES.unitCost) as FormControl;
-  }
-
-  get items(): FormArray {
-    return this.table.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
-  }
-
-  get total(): FormControl {
-    return this.table.get(this.constants.FORM_CONTROL_NAMES.total) as FormControl;
-  }
-
-  openForPeriods(rowIndex: number): FormControl {
-    return this.items.at(rowIndex).get(this.constants.FORM_CONTROL_NAMES.openForPeriods) as FormControl;
   }
 
   private getFieldId(key: string): string {

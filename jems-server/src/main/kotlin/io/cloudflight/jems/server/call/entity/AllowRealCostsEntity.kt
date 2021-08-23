@@ -5,7 +5,7 @@ import javax.persistence.Embeddable
 import javax.validation.constraints.NotNull
 
 @Embeddable
-class AllowRealCostsEntity(
+class AllowedRealCostsEntity(
 
     @field:NotNull
     var allowRealStaffCosts: Boolean = true,

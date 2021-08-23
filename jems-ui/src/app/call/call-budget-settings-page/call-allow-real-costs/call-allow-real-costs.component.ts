@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CallBudgetSettingsPageStore} from '../call-budget-settings-page-store.service';
 import {FormBuilder} from '@angular/forms';
-import {AllowRealCostsDTO} from '@cat/api';
-import {Observable} from 'rxjs';
+import {AllowedRealCostsDTO} from '@cat/api';
+import {combineLatest, Observable} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
-import {catchError, take, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-call-allow-real-costs',
@@ -13,7 +13,7 @@ import {catchError, take, tap} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [FormService]
 })
-export class CallAllowRealCostsComponent {
+export class CallAllowedRealCostsComponent {
 
   form = this.formBuilder.group({
     allowRealStaffCosts: this.formBuilder.control(''),
@@ -23,20 +23,24 @@ export class CallAllowRealCostsComponent {
     allowRealInfrastructureCosts: this.formBuilder.control('')
   });
 
-  allowRealCosts$: Observable<AllowRealCostsDTO>;
+  data$: Observable<{
+    allowedRealCosts: AllowedRealCostsDTO,
+    callIsPublished: boolean
+  }>;
 
   constructor(private pageStore: CallBudgetSettingsPageStore,
               private formBuilder: FormBuilder,
               private formService: FormService) {
     this.formService.init(this.form, this.pageStore.callIsEditable$);
-    this.allowRealCosts$ = this.pageStore.allowRealCosts$
+    this.data$ = combineLatest([this.pageStore.allowedRealCosts$, this.pageStore.callIsPublished$])
       .pipe(
-        tap(allowRealCosts => this.resetForm(allowRealCosts))
+        map(([allowedRealCosts, callIsPublished]) => ({allowedRealCosts, callIsPublished})),
+        tap(data => this.resetForm(data.allowedRealCosts))
       );
   }
 
-  updateAllowRealCosts(): void {
-    this.pageStore.updateAllowRealCosts(this.form.value)
+  updateAllowedRealCosts(): void {
+    this.pageStore.updateAllowedRealCosts(this.form.value)
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('call.allow.real.costs.saved')),
@@ -44,7 +48,7 @@ export class CallAllowRealCostsComponent {
       ).subscribe();
   }
 
-  resetForm(allowRealCosts: AllowRealCostsDTO): void {
-    this.form.patchValue(allowRealCosts);
+  resetForm(allowedRealCosts: AllowedRealCostsDTO): void {
+    this.form.patchValue(allowedRealCosts);
   }
 }

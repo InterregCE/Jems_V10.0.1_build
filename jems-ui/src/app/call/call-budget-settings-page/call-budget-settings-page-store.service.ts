@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AllowRealCostsDTO, CallService} from '@cat/api';
+import {AllowedRealCostsDTO, CallService} from '@cat/api';
 import {merge, Observable, Subject} from 'rxjs';
 import {CallStore} from '../services/call-store.service';
 import {filter, switchMap, tap} from 'rxjs/operators';
@@ -8,35 +8,37 @@ import {Log} from '@common/utils/log';
 @Injectable()
 export class CallBudgetSettingsPageStore {
 
-  allowRealCosts$: Observable<AllowRealCostsDTO>;
+  allowedRealCosts$: Observable<AllowedRealCostsDTO>;
   callIsEditable$: Observable<boolean>;
+  callIsPublished$: Observable<boolean>;
 
-  private allowRealCostsSaved$ = new Subject<AllowRealCostsDTO>();
+  private allowedRealCostsSaved$ = new Subject<AllowedRealCostsDTO>();
 
   constructor(private callService: CallService,
               private callStore: CallStore) {
-    this.allowRealCosts$ = this.allowRealCosts();
+    this.allowedRealCosts$ = this.allowedRealCosts();
     this.callIsEditable$ = this.callStore.callIsEditable$;
+    this.callIsPublished$ = this.callStore.callIsPublished$;
   }
 
-  updateAllowRealCosts(allowRealCosts: AllowRealCostsDTO): Observable<AllowRealCostsDTO> {
+  updateAllowedRealCosts(allowedRealCosts: AllowedRealCostsDTO): Observable<AllowedRealCostsDTO> {
     return this.callStore.call$
       .pipe(
         filter(call => !!call?.id),
-        switchMap(call => this.callService.updateAllowRealCosts(call.id, allowRealCosts)),
-        tap(realCosts => this.allowRealCostsSaved$.next(realCosts)),
+        switchMap(call => this.callService.updateAllowedRealCosts(call.id, allowedRealCosts)),
+        tap(realCosts => this.allowedRealCostsSaved$.next(realCosts)),
         tap(realCosts => Log.info('Updated call allow real costs', this, realCosts))
       );
   }
 
-  private allowRealCosts(): Observable<AllowRealCostsDTO> {
-    const initialAllowRealCosts$ = this.callStore.call$
+  private allowedRealCosts(): Observable<AllowedRealCostsDTO> {
+    const initialAllowedRealCosts$ = this.callStore.call$
       .pipe(
         filter(call => !!call?.id),
-        switchMap(call => this.callService.getAllowRealCosts(call.id)),
-        tap(allowRealCosts => Log.info('Fetched call allow real costs', this, allowRealCosts))
+        switchMap(call => this.callService.getAllowedRealCosts(call.id)),
+        tap(allowedRealCosts => Log.info('Fetched call allow real costs', this, allowedRealCosts))
       );
 
-    return merge(initialAllowRealCosts$, this.allowRealCostsSaved$);
+    return merge(initialAllowedRealCosts$, this.allowedRealCostsSaved$);
   }
 }

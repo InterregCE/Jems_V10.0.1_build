@@ -29,6 +29,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
 
     private val partnerId = 1L
     private val projectId = 2L
+    private val callId = 3L
     private val listBudgetEntriesIds = setOf(1L, 2L)
     private val validPeriodNumbers = IntStream.range(1, 4).toList().toSet()
     private val projectPeriods = createProjectPeriods(validPeriodNumbers)
@@ -43,6 +44,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
+
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
 
@@ -58,6 +60,8 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
     @BeforeAll
     fun setup() {
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { projectPersistence.getCallIdOfProject(projectId) } returns callId
+        every { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) } returns Unit
     }
 
     @Test
@@ -84,6 +88,8 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetStaffCostEntries) }
         verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
         verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
+        verify(atLeast = 1) { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
+        verify(atLeast = 1) { projectPersistence.getCallIdOfProject(projectId) }
         verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
         verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
@@ -172,6 +178,8 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
         verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetStaffCostEntriesWithInvalidPeriods) }
         verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(budgetStaffCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) }
         verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers) }
+        verify(atLeast = 1) { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
+        verify(atLeast = 1) { projectPersistence.getCallIdOfProject(projectId) }
         verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
         verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
@@ -187,6 +195,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
                     BigDecimal.ONE,
                     BigDecimal.ONE,
                     budgetPeriods,
+                    null,
                     BigDecimal.ONE,
                     emptySet(),
                     emptySet(),
@@ -198,11 +207,11 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
                     BigDecimal.ONE,
                     BigDecimal.ONE,
                     budgetPeriods,
+                    1,
                     BigDecimal.ONE,
                     emptySet(),
                     emptySet(),
-                    emptySet(),
-                    1
+                    emptySet()
                 )
             )
 

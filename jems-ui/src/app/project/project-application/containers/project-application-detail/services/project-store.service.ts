@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {
+  CallService,
   InputProjectData,
   InvestmentSummaryDTO,
   ProjectAssessmentEligibilityDTO,
@@ -34,12 +35,13 @@ import {CallFlatRateSetting} from '@project/model/call-flat-rate-setting';
 import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
 import {LumpSumPhaseEnumUtils} from '@project/model/lump-sums/LumpSumPhaseEnum';
-import {BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCategoryEnum';
+import {BudgetCostCategoryEnum, BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectUtil} from '@project/common/project-util';
 import {SecurityService} from '../../../../../security/security.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {AllowedBudgetCategories, AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 
@@ -65,6 +67,7 @@ export class ProjectStore {
   projectCurrentDecisions$: Observable<ProjectDecisionDTO>;
   investmentSummaries$: Observable<InvestmentSummary[]>;
   userIsProjectOwner$: Observable<boolean>;
+  allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -98,7 +101,8 @@ export class ProjectStore {
               private router: RoutingService,
               private securityService: SecurityService,
               private permissionService: PermissionService,
-              private projectVersionStore: ProjectVersionStore) {
+              private projectVersionStore: ProjectVersionStore,
+              private callService: CallService) {
     this.router.routeParameterChanges(ProjectStore.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
@@ -120,6 +124,7 @@ export class ProjectStore {
     this.projectCurrentDecisions$ = this.projectCurrentDecisions();
     this.investmentSummaries$ = this.investmentSummaries();
     this.userIsProjectOwner$ = this.userIsProjectOwner();
+    this.allowedBudgetCategories$ = this.allowedBudgetCategories();
   }
 
   private static latestVersion(versions?: ProjectVersionDTO[]): number {
@@ -261,6 +266,36 @@ export class ProjectStore {
         )),
         shareReplay(1)
       );
+  }
+
+  private allowedBudgetCategories(): Observable<AllowedBudgetCategories> {
+    const allowedRealCosts$ = this.project$
+      .pipe(
+        map(project => project.callSettings.callId),
+        distinctUntilChanged(),
+        switchMap(callId => this.callService.getAllowedRealCosts(callId))
+      );
+
+    return combineLatest([allowedRealCosts$, this.projectCall$])
+      .pipe(
+        map(([allowedRealCosts, callSettings]) => (
+          new AllowedBudgetCategories([
+            this.allowedBudgetCategory(BudgetCostCategoryEnum.STAFF_COSTS, allowedRealCosts.allowRealStaffCosts, callSettings.unitCosts),
+            this.allowedBudgetCategory(BudgetCostCategoryEnum.TRAVEL_AND_ACCOMMODATION_COSTS, allowedRealCosts.allowRealTravelAndAccommodationCosts, callSettings.unitCosts),
+            this.allowedBudgetCategory(BudgetCostCategoryEnum.EXTERNAL_COSTS, allowedRealCosts.allowRealExternalExpertiseAndServicesCosts, callSettings.unitCosts),
+            this.allowedBudgetCategory(BudgetCostCategoryEnum.EQUIPMENT_COSTS, allowedRealCosts.allowRealEquipmentCosts, callSettings.unitCosts),
+            this.allowedBudgetCategory(BudgetCostCategoryEnum.INFRASTRUCTURE_COSTS, allowedRealCosts.allowRealInfrastructureCosts, callSettings.unitCosts)
+          ])
+        )),
+        shareReplay(1)
+      );
+  }
+
+  private allowedBudgetCategory(category: BudgetCostCategoryEnum,
+                                allowedRealCost: boolean,
+                                unitCosts: ProgrammeUnitCost[]): any {
+    const unitCostsEnabled = !!unitCosts.find(unitCost => unitCost.categories.includes(category));
+    return [category, new AllowedBudgetCategory(allowedRealCost, unitCostsEnabled)];
   }
 
   private callHasTwoSteps(): Observable<boolean> {

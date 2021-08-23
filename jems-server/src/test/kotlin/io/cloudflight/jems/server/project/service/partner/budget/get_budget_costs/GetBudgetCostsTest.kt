@@ -2,7 +2,10 @@ package io.cloudflight.jems.server.project.service.partner.budget.get_budget_cos
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
-import io.cloudflight.jems.server.project.service.partner.model.*
+import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -60,22 +63,22 @@ internal class GetBudgetCostsTest : UnitTest() {
             BigDecimal.ONE,
             BigDecimal.ONE,
             mutableSetOf(),
+            null,
             BigDecimal.ONE,
             emptySet(),
             emptySet(),
-            emptySet(),
-            null
+            emptySet()
         ),
         BudgetStaffCostEntry(
             2,
             BigDecimal.ONE,
             BigDecimal.ONE,
             mutableSetOf(),
+            1,
             BigDecimal.ONE,
             emptySet(),
             emptySet(),
             emptySet(),
-            1
         )
     )
 
@@ -85,6 +88,7 @@ internal class GetBudgetCostsTest : UnitTest() {
             BigDecimal.ONE,
             BigDecimal.ONE,
             mutableSetOf(),
+            null,
             BigDecimal.ONE,
             emptySet(),
             emptySet()
@@ -94,10 +98,10 @@ internal class GetBudgetCostsTest : UnitTest() {
             BigDecimal.ONE,
             BigDecimal.ONE,
             mutableSetOf(),
+            2,
             BigDecimal.ONE,
             emptySet(),
             emptySet(),
-            2
         )
     )
 
@@ -107,6 +111,7 @@ internal class GetBudgetCostsTest : UnitTest() {
             BigDecimal.ONE,
             BigDecimal.ONE,
             mutableSetOf(),
+            null,
             BigDecimal.ONE,
             0L,
             emptySet(),
@@ -118,12 +123,12 @@ internal class GetBudgetCostsTest : UnitTest() {
             BigDecimal.ONE,
             BigDecimal.ONE,
             mutableSetOf(),
+            3,
             BigDecimal.ONE,
             0L,
             emptySet(),
             emptySet(),
             emptySet(),
-            3
         )
     )
 

@@ -7,6 +7,7 @@ import {Log} from '@common/utils/log';
 import {combineLatest, Observable} from 'rxjs';
 import {NumberService} from '@common/services/number.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 
 @Component({
   selector: 'app-budget-page',
@@ -16,10 +17,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 })
 export class BudgetPageComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  displayedColumns: string[] = [
-    'partner', 'country', 'staffCosts', 'officeAndAdministrationCosts', 'travelCosts',
-    'externalCosts', 'equipmentCosts', 'infrastructureCosts', 'otherCosts', 'lumpSums', 'unitCosts', 'total'
-  ];
+  displayedColumns: string[];
 
   totalStaffCosts: number;
   totalOfficeAndAdministrationCosts: number;
@@ -37,12 +35,15 @@ export class BudgetPageComponent {
       .pipe(
         switchMap(version => this.projectService.getProjectBudget(this.projectId, version))
       ),
+    this.projectStore.allowedBudgetCategories$,
     this.projectService.getProjectCallSettingsById(this.projectId),
   ])
     .pipe(
-      tap(([, callSettings]) => this.hideEmptySimplifiedCostOptions(callSettings)),
+      tap(([, allowedBudgetCategories, callSettings]) => {
+        this.displayedColumns = this.getDisplayedColumns(allowedBudgetCategories, callSettings);
+      }),
+      tap(([budgets]) => this.calculateFooterSums(budgets)),
       map(([budgets]) => budgets),
-      tap(budgets => this.calculateFooterSums(budgets)),
       tap(budgets => Log.info('Fetching the project budget', this, budgets)),
     );
 
@@ -66,14 +67,33 @@ export class BudgetPageComponent {
     this.total = NumberService.sum(budgets.map(budget => budget.totalSum));
   }
 
-  private hideEmptySimplifiedCostOptions(callSettings: ProjectCallSettingsDTO): void {
-    if (callSettings.unitCosts?.length === 0) {
-      const unitCostsColumnIndex = this.displayedColumns.indexOf('unitCosts');
-      this.displayedColumns.splice(unitCostsColumnIndex, 1);
+  private getDisplayedColumns(allowedBudgetCategories: AllowedBudgetCategories,
+                              callSettings: ProjectCallSettingsDTO): string[] {
+    const columns: string[] = ['partner', 'country'];
+    if (allowedBudgetCategories.staff.realOrUnitCosts()) {
+      columns.push('staffCosts');
     }
-    if (callSettings.lumpSums?.length === 0) {
-      const lumpSumsColumnIndex = this.displayedColumns.indexOf('lumpSums');
-      this.displayedColumns.splice(lumpSumsColumnIndex, 1);
+    columns.push('officeAndAdministrationCosts');
+    if (allowedBudgetCategories.travel.realOrUnitCosts()) {
+      columns.push('travelCosts');
     }
+    if (allowedBudgetCategories.external.realOrUnitCosts()) {
+      columns.push('externalCosts');
+    }
+    if (allowedBudgetCategories.equipment.realOrUnitCosts()) {
+      columns.push('equipmentCosts');
+    }
+    if (allowedBudgetCategories.infrastructure.realOrUnitCosts()) {
+      columns.push('infrastructureCosts');
+    }
+    columns.push('otherCosts');
+    if (callSettings.lumpSums?.length) {
+      columns.push('lumpSums');
+    }
+    if (callSettings.unitCosts?.length) {
+      columns.push('unitCosts');
+    }
+    columns.push('total');
+    return columns;
   }
 }
