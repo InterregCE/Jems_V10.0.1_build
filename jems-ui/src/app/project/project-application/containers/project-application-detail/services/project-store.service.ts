@@ -48,7 +48,9 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 /**
  * Stores project related information.
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ProjectStore {
   public static PROJECT_DETAIL_PATH = '/app/project/detail/';
 
@@ -85,7 +87,7 @@ export class ProjectStore {
       withLatestFrom(this.projectId$),
       mergeMap(([assessment, id]) => this.projectStatusService.setEligibilityAssessment(id, assessment)),
       tap(saved => Log.info('Updated project eligibility assessment:', this, saved)),
-      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
+      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id, 'assessmentAndDecision']))
     );
 
   private changedQualityAssessment$ = this.newQualityAssessment$
@@ -93,7 +95,7 @@ export class ProjectStore {
       withLatestFrom(this.projectId$),
       mergeMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
       tap(saved => Log.info('Updated project quality assessment:', this, saved)),
-      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id]))
+      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id, 'assessmentAndDecision']))
     );
 
   constructor(private projectService: ProjectService,

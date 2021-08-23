@@ -68,7 +68,9 @@
   --app-bar: #{$app-bar};
   --underline-color: #{$underline-color};
   --outline-color: #{$outline};
-  --sidebar-color: #5FB3D9;
+  --sidebar-background-color: #5FB3D9;
+  --sidebar-dark-background-color: #4698bd;
+  --sidebar-color: #210C38;
 
   --body-strong-font-size: #{$body-strong-font-size};
   --body-strong-font-weight: #{$body-strong-font-weight};

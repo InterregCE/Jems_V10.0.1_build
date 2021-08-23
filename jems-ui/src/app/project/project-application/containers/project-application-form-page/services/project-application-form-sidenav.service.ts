@@ -14,6 +14,7 @@ import {FormVisibilityStatusService} from '@project/common/services/form-visibil
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {RoutingService} from '@common/services/routing.service';
+import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
@@ -83,9 +84,10 @@ export class ProjectApplicationFormSidenavService {
     .hasPermission(PermissionsEnum.ProjectAssessmentView);
 
   constructor(private sideNavService: SideNavService,
+              private partnerStore: ProjectPartnerStore,
               private workPackageService: WorkPackageService,
               private projectStore: ProjectStore,
-              private partnerStore: ProjectPartnerStore,
+              private fileManagementStore: FileManagementStore,
               private projectVersionStore: ProjectVersionStore,
               private translate: TranslateService,
               private permissionService: PermissionService,
@@ -95,6 +97,7 @@ export class ProjectApplicationFormSidenavService {
 
     const headlines$ = combineLatest([
       this.canSeeAssessments$,
+      this.fileManagementStore.canReadFiles$,
       this.projectStore.project$,
       this.partners$,
       this.packages$,
@@ -103,11 +106,11 @@ export class ProjectApplicationFormSidenavService {
     ])
       .pipe(
         filter(([, project]) => !!project),
-        tap(([canSeeAssessments, project, partners, packages, versionTemplate, canSeeProjectForm]) => {
+        tap(([canSeeAssessments, canReadFiles, project, partners, packages, versionTemplate, canSeeProjectForm]: any) => {
           const status = project.projectStatus.status;
           const callHas2Steps = !!project.callSettings.endDateStep1;
           const showAssessments = (callHas2Steps && status !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && status !== StatusEnum.DRAFT);
-          this.setHeadlines(canSeeAssessments && showAssessments, canSeeProjectForm, project, partners, packages, versionTemplate);
+          this.setHeadlines(canSeeAssessments && showAssessments, canSeeProjectForm, canReadFiles, project, partners, packages, versionTemplate);
         }),
         catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
       );
@@ -130,52 +133,39 @@ export class ProjectApplicationFormSidenavService {
 
   private setHeadlines(showAssessment: boolean,
                        showProjectForm: boolean,
+                       showApplicationAnnexes: boolean,
                        project: ProjectDetailDTO,
                        partners: HeadlineRoute[],
                        packages: HeadlineRoute[],
                        versionTemplate: TemplateRef<any>): void {
     showProjectForm ?
       this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH, [
-        this.getProjectOverviewHeadline(project, showAssessment),
-        this.getApplicationFormHeadline(project, partners, packages, versionTemplate)
+        this.getProjectOverviewHeadline(project),
+        this.getApplicationFormHeadline(project, partners, packages, versionTemplate, showApplicationAnnexes, showAssessment)
+
       ]) :
       this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH, [
-        this.getProjectOverviewHeadline(project, showAssessment)
+        this.getProjectOverviewHeadline(project)
       ]);
   }
 
-  private getProjectOverviewHeadline(project: ProjectDetailDTO, showAssessment: boolean): HeadlineRoute {
+  private getProjectOverviewHeadline(project: ProjectDetailDTO): HeadlineRoute {
     return {
       headline: {i18nKey: 'project.application.form.tree.title'},
-      bullets: [
-        {
-          headline: {i18nKey: 'project.application.form.lifecycle.title'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}`,
-          scrollToTop: true,
-          scrollRoute: ''
-        },
-        ...showAssessment ? [{
-          headline: {i18nKey: 'project.assessment.header'},
-          scrollRoute: 'applicationFormLifecycleAssessment',
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}`,
-          scrollToTop: false
-        }] : [],
-        {
-          headline: {i18nKey: 'file.tab.header'},
-          scrollRoute: 'applicationFormLifecycleAttachments',
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}`,
-          scrollToTop: false
-        }
-      ]
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}`,
+      scrollToTop: true,
+      scrollRoute: '',
+      icon: 'home'
     };
   }
 
-  private getApplicationFormHeadline(project: ProjectDetailDTO, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>): HeadlineRoute {
+  private getApplicationFormHeadline(project: ProjectDetailDTO, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>, showApplicationAnnexes: boolean, showAssessment: boolean): HeadlineRoute {
     return {
       headline: {i18nKey: 'project.application.form.title'},
       bullets: [
         {
-          headlineTemplate: versionTemplate
+          headlineTemplate: versionTemplate,
+          versionedSection: true
         },
         {
           headline: {i18nKey: 'project.application.form.section.part.a'},
@@ -184,7 +174,8 @@ export class ProjectApplicationFormSidenavService {
               headline: {i18nKey: 'project.application.form.section.part.a'},
               route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormIdentification`,
             },
-          ]
+          ],
+          versionedSection: true
         },
         {
           headline: {i18nKey: 'project.application.form.section.part.b'},
@@ -199,11 +190,13 @@ export class ProjectApplicationFormSidenavService {
                 headline: {i18nKey: 'project.application.form.section.part.b.associatedOrganizations'},
                 route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormAssociatedOrganization`,
               }] : []
-          ]
+          ],
+          versionedSection: true
         },
         {
           headline: {i18nKey: 'project.application.form.section.part.c'},
-          bullets: this.getSectionCHeadlines(project, packages)
+          bullets: this.getSectionCHeadlines(project, packages),
+          versionedSection: true
         },
         ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) ?
           [
@@ -218,7 +211,8 @@ export class ProjectApplicationFormSidenavService {
                   headline: {i18nKey: 'project.application.form.section.part.d.subsection.two'},
                   route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudget`,
                 }
-              ]
+              ],
+              versionedSection: true
             },
             {
               headline: {i18nKey: 'project.application.form.section.part.e'},
@@ -227,9 +221,13 @@ export class ProjectApplicationFormSidenavService {
                   headline: {i18nKey: 'project.application.form.section.part.e'},
                   route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormLumpSums`,
                 }
-              ]
+              ],
+              versionedSection: true
             }
           ] : [],
+        ...showApplicationAnnexes ? this.getApplicationAnnexesHeadline(project.id) : [],
+        ...this.isCheckAndSubmitVisible(project.projectStatus.status) ? this.getCheckAndSubmitHeadline(project.id) : [],
+        ...showAssessment ? this.getAssessmentAndDecisionHeadline(project.id) : []
       ]
     };
   }
@@ -278,4 +276,37 @@ export class ProjectApplicationFormSidenavService {
     ];
   }
 
+  private getApplicationAnnexesHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.form.section.application.annexes'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/annexes`,
+      scrollToTop: true,
+      scrollRoute: '',
+      icon: 'attachment'
+    }];
+  }
+
+  private getCheckAndSubmitHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.form.section.check.and.submit'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/checkAndSubmit`,
+      scrollToTop: true,
+      scrollRoute: '',
+      icon: `send`
+    }];
+  }
+
+  private getAssessmentAndDecisionHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.form.section.assessment.and.decision'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/assessmentAndDecision`,
+      scrollToTop: true,
+      scrollRoute: '',
+      icon: 'visibility'
+    }];
+  }
+
+  private isCheckAndSubmitVisible(projectStatus: ProjectStatusDTO.StatusEnum): boolean {
+    return projectStatus === ProjectStatusDTO.StatusEnum.DRAFT || projectStatus === ProjectStatusDTO.StatusEnum.STEP1DRAFT || projectStatus === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
+  }
 }

@@ -36,7 +36,7 @@
     <ng-container *ngIf="!status">
         <div appMultiColumnRow *hasPermission="[PermissionsEnum.ProjectStatusDecideApproved, PermissionsEnum.ProjectStatusDecideApprovedWithConditions, PermissionsEnum.ProjectStatusDecideNotApproved]">
             <button mat-stroked-button
-                    (click)="redirectToProject()">
+                    (click)="redirectToAssessmentAndDecisions()">
                 {{'project.assessment.fundingDecision.dialog.button.cancel' | translate}}
             </button>
 

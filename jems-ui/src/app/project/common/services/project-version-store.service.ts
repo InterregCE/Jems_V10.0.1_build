@@ -7,7 +7,9 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {filter} from 'rxjs/internal/operators';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ProjectVersionStore {
   versions$: Observable<ProjectVersionDTO[]>;
   currentRouteVersion$: Observable<string | undefined>;

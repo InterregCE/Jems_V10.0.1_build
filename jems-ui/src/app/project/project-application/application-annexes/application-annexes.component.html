@@ -1,0 +1,16 @@
+<app-project-page-template
+        [needsCard]="true"
+        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
+        subTitleKey="project.application.form.section.application.annexes"
+        >
+    <div appFormLayout>
+        <h3>
+            {{'file.tab.header' | translate}}
+            <app-context-info *ngIf="projectStore.callHasTwoSteps$ | async"
+                              infoPosition="right"
+                              infoText="{{'file.tab.info' | translate}}">
+            </app-context-info>
+        </h3>
+        <app-file-management [section]="fileManagementSection" appNoWidthLimit></app-file-management>
+    </div>
+</app-project-page-template>

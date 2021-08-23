@@ -1,99 +1,70 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {catchError, finalize, map, tap} from 'rxjs/operators';
-import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
-import {Alert} from '@common/components/forms/alert';
 import {Permission} from '../../../security/permissions/permission';
-import {TranslateService} from '@ngx-translate/core';
-import * as moment from 'moment';
-import {ProjectDetailPageStore} from '../project-detail-page-store';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
+import {TranslateService} from '@ngx-translate/core';
+import {ProjectDetailPageStore} from '@project/project-detail-page/project-detail-page-store';
+import {catchError, finalize, map, tap} from 'rxjs/operators';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import { Alert } from '@common/components/forms/alert';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {FileCategoryEnum, FileCategoryInfo} from '@project/common/components/file-management/file-category';
 
 @Component({
-  selector: 'app-project-application-actions',
-  templateUrl: './project-application-actions.component.html',
-  styleUrls: ['./project-application-actions.component.scss'],
+  selector: 'app-assessment-and-decision',
+  templateUrl: './assessment-and-decision.component.html',
+  styleUrls: ['./assessment-and-decision.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationActionsComponent {
+export class AssessmentAndDecisionComponent  {
+
   Alert = Alert;
-  // tslint:disable-next-line:variable-name
-  UserRole = Permission;
-  // tslint:disable-next-line:variable-name
-  Permissions = UserRoleDTO.PermissionsEnum;
+  Permission = Permission;
+  PermissionsEnum = UserRoleDTO.PermissionsEnum;
   STATUS = ProjectStatusDTO.StatusEnum;
+  fileManagementSection = {type: FileCategoryEnum.ASSESSMENT} as FileCategoryInfo;
 
   data$: Observable<{
+    project: ProjectDetailDTO,
+    projectTitle: string,
     projectStatus: ProjectStatusDTO.StatusEnum,
     projectId: number,
-    projectCallEndDateStep1: Date,
-    projectCallEndDate: Date,
     startStepTwoAvailable: boolean,
     returnToApplicantAvailable: boolean,
     revertToStatus: string | null,
-    isThisUserOwner: boolean,
-    hasPreConditionCheckSucceed: boolean
-    isProjectLatestVersion: boolean
+    isProjectLatestVersion: boolean,
+    callHasTwoSteps: boolean
   }>;
 
   // TODO: create a component
   successMessage: boolean;
   error$ = new BehaviorSubject<APIError | null>(null);
   actionPending = false;
-  preConditionCheckInProgress = false;
 
   constructor(public translate: TranslateService,
               private projectDetailStore: ProjectDetailPageStore,
+              private projectStore: ProjectStore,
               private changeDetectorRef: ChangeDetectorRef) {
     this.data$ = combineLatest([
-      this.projectDetailStore.project$,
-      this.projectDetailStore.callHasTwoSteps$,
+      this.projectStore.project$,
+      this.projectStore.projectTitle$,
+      this.projectStore.callHasTwoSteps$,
       this.projectDetailStore.revertToStatus$,
-      this.projectDetailStore.isThisUserOwner$,
-      this.projectDetailStore.preConditionCheckResult$.pipe(map(it => it ? it.submissionAllowed : false)),
-      this.projectDetailStore.isProjectLatestVersion$
+      this.projectStore.currentVersionIsLatest$
     ]).pipe(
-      map(([project, callHasTwoSteps, revertToStatus, isThisUserOwner, hasPreConditionCheckSucceed, isProjectLatestVersion]) => ({
+      map(([project, projectTitle, callHasTwoSteps, revertToStatus,  isProjectLatestVersion]) => ({
+        project,
+        projectTitle,
         projectStatus: project.projectStatus.status,
         projectId: project.id,
-        projectCallEndDate: project.callSettings?.endDate,
-        projectCallEndDateStep1: project.callSettings?.endDateStep1,
         startStepTwoAvailable: this.startStepTwoAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active, isProjectLatestVersion),
         returnToApplicantAvailable: this.returnToApplicantAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active, isProjectLatestVersion),
         revertToStatus,
-        isThisUserOwner,
-        hasPreConditionCheckSucceed,
-        isProjectLatestVersion
+        callHasTwoSteps,
+        isProjectLatestVersion,
       }))
     );
-  }
-
-  preConditionCheck(projectId: number): void {
-    this.preConditionCheckInProgress = true;
-    this.projectDetailStore.preConditionCheck(projectId).pipe(
-      catchError((error) => this.showErrorMessage(error.error)),
-      finalize(() => this.preConditionCheckInProgress = false)
-    ).subscribe();
-  }
-
-  submitProject(projectId: number): void {
-    this.actionPending = true;
-    this.projectDetailStore.submitApplication(projectId)
-      .pipe(
-        catchError((error) => this.showErrorMessage(error.error)),
-        finalize(() => this.actionPending = false)
-      ).subscribe();
-  }
-
-  resubmitProject(projectId: number): void {
-    this.actionPending = true;
-    this.projectDetailStore.submitApplication(projectId)
-      .pipe(
-        tap(() => this.showSuccessMessage()),
-        catchError((error) => this.showErrorMessage(error.error)),
-        finalize(() => this.actionPending = false)
-      ).subscribe();
   }
 
   returnToApplicant(projectId: number): void {
@@ -121,14 +92,6 @@ export class ProjectApplicationActionsComponent {
         catchError((error) => this.showErrorMessage(error.error)),
         finalize(() => this.actionPending = false)
       ).subscribe();
-  }
-
-  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, isProjectLatestVersion: boolean, projectStatus: ProjectStatusDTO.StatusEnum): boolean {
-    if (!isProjectLatestVersion) {
-      return true;
-    }
-    const currentDate = moment(new Date());
-    return !(currentDate.isBefore(projectCallEndDate) && (hasPreConditionCheckSucceed || projectStatus === this.STATUS.STEP1DRAFT));
   }
 
   getRevertConfirmation(projectStatus: ProjectStatusDTO.StatusEnum, revertToStatus: string): ConfirmDialogData {

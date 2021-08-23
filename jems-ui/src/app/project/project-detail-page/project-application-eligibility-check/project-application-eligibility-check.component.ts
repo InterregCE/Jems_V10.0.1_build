@@ -62,7 +62,7 @@ export class ProjectApplicationEligibilityCheckComponent {
   }
 
   onCancel(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId]);
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'assessmentAndDecision']);
   }
 
   assessmentChangeHandler(event: any): void {

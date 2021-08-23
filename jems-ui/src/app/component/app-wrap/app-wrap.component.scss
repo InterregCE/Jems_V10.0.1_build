@@ -46,7 +46,7 @@ ul {
 .side-nav-container {
   width: $sidebarSize;
   height: 100%;
-  background: var(--sidebar-color);
+  background: var(--sidebar-background-color);
   overflow: visible;
 }
 
@@ -69,7 +69,7 @@ ul {
   position: absolute;
   right: -1.25rem;
   top: 2rem;
-  color: var(--sidebar-color);
+  color: var(--sidebar-background-color);
   transform: rotate(180deg) scale(0.75);
   &:hover {
       background-color: var(--background-lighter);

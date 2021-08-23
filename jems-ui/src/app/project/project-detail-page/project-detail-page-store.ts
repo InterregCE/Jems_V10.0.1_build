@@ -17,7 +17,9 @@ import {PreConditionCheckResult} from '../model/plugin/PreConditionCheckResult';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ProjectDetailPageStore {
 
   project$: Observable<ProjectDetailDTO>;

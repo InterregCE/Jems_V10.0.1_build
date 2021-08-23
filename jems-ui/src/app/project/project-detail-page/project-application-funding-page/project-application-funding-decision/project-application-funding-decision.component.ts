@@ -3,7 +3,7 @@ import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO, UserRoleDT
 import {FormBuilder, Validators} from '@angular/forms';
 import {tap} from 'rxjs/operators';
 import {ProjectFundingDecisionStore} from '../project-funding-decision-store.service';
-import {RoutingService} from '../../../../common/services/routing.service';
+import {RoutingService} from '@common/services/routing.service';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/internal/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
@@ -72,12 +72,12 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
       .pipe(
         take(1),
         tap(() => this.actionPending = false),
-        tap(() => this.redirectToProject())
+        tap(() => this.redirectToAssessmentAndDecisions())
       ).subscribe();
   }
 
-  redirectToProject(): void {
-    this.router.navigate(['app', 'project', 'detail', this.project.id]);
+  redirectToAssessmentAndDecisions(): void {
+    this.router.navigate(['app', 'project', 'detail', this.project.id, 'assessmentAndDecision']);
   }
 
   private getDecisionAction(): Observable<string> {

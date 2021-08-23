@@ -10,7 +10,6 @@ import {ProjectApplicationEligibilityCheckComponent} from './project-detail-page
 import {ProjectApplicationQualityCheckComponent} from './project-detail-page/project-application-quality-check/project-application-quality-check.component';
 import {ActionsCellComponent} from './common/components/file-management/project-application-files-table/actions-cell/actions-cell.component';
 import {ProjectApplicationDecisionsComponent} from './project-detail-page/project-application-decisions/project-application-decisions.component';
-import {ProjectApplicationActionsComponent} from './project-detail-page/project-application-actions/project-application-actions.component';
 import {ProjectApplicationFundingPageComponent} from './project-detail-page/project-application-funding-page/project-application-funding-page.component';
 import {ProjectApplicationFundingDecisionComponent} from './project-detail-page/project-application-funding-page/project-application-funding-decision/project-application-funding-decision.component';
 import {ProjectApplicationEligibilityDecisionPageComponent} from './project-detail-page/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
@@ -43,7 +42,6 @@ import {DeleteActionCellComponent} from './project-application/components/projec
 import {ProjectPartnerBudgetTabComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.component';
 import {ProjectPartnerBudgetComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.component';
 import {ProjectApplicationFormStore} from './project-application/containers/project-application-form-page/services/project-application-form-store.service';
-import {ProjectPartnerStore} from './project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
 import {ProjectApplicationFormAssociatedOrganizationsListComponent} from './project-application/components/project-application-form/project-application-form-associated-organizations-list/project-application-form-associated-organizations-list.component';
 import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
@@ -77,7 +75,6 @@ import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/pro
 import {FilterUnitCostsPipe} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
 import {ProjectApplicationPreConditionCheckResultComponent} from './project-detail-page/project-application-pre-condition-check-result/project-application-pre-condition-check-result.component';
-import {ProjectStore} from './project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
 import {ProjectVersionStore} from './common/services/project-version-store.service';
 import {ProjectPageTemplateComponent} from './project-page-template/project-page-template.component';
@@ -90,6 +87,9 @@ import {PeriodsTotalPipe} from '@project/partner/project-partner-detail-page/pro
 import {FileManagementComponent} from './common/components/file-management/file-management.component';
 import {ProjectApplicationFilesTableComponent} from './common/components/file-management/project-application-files-table/project-application-files-table.component';
 import {ProjectPartnerFilterPipe} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-activities-tab/project-partner-filter.pipe';
+import {ApplicationAnnexesComponent} from './project-application/application-annexes/application-annexes.component';
+import {CheckAndSubmitComponent} from './project-application/check-and-submit/check-and-submit.component';
+import {AssessmentAndDecisionComponent} from './project-application/assessment-and-decision/assessment-and-decision.component';
 
 @NgModule({
   declarations: [
@@ -100,7 +100,6 @@ import {ProjectPartnerFilterPipe} from '@project/work-package/project-work-packa
     ProjectApplicationInformationComponent,
     ProjectApplicationAssessmentsComponent,
     ProjectApplicationDecisionsComponent,
-    ProjectApplicationActionsComponent,
     ProjectApplicationQualityCheckComponent,
     ProjectApplicationEligibilityCheckComponent,
     ProjectApplicationPreConditionCheckResultComponent,
@@ -173,6 +172,9 @@ import {ProjectPartnerFilterPipe} from '@project/work-package/project-work-packa
     ProjectApplicationFilesTreeComponent,
     ProjectApplicationFilesTableComponent,
     ProjectPartnerFilterPipe,
+    ApplicationAnnexesComponent,
+    CheckAndSubmitComponent,
+    AssessmentAndDecisionComponent,
   ],
   imports: [
     SharedModule,
@@ -183,12 +185,10 @@ import {ProjectPartnerFilterPipe} from '@project/work-package/project-work-packa
   ],
   providers: [
     DatePipe,
-    ProjectStore,
     ProjectVersionStore,
     ProjectApplicationFormSidenavService,
     ProjectApplicationFormStore,
     ProjectAcronymResolver,
-    ProjectPartnerStore,
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,
     ProjectLumpSumsPageStore,

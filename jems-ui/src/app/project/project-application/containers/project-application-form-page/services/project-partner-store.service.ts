@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
 import {
   ProjectContactDTO,
-  ProjectPartnerDTO,
-  ProjectPartnerSummaryDTO,
-  ProjectPartnerDetailDTO,
   ProjectPartnerAddressDTO,
+  ProjectPartnerDetailDTO,
+  ProjectPartnerDTO,
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
+  ProjectPartnerSummaryDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
@@ -17,7 +17,9 @@ import {ProjectPartnerRoleEnumUtil} from '@project/model/ProjectPartnerRoleEnum'
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ProjectPartnerStore {
   public static PARTNER_DETAIL_PATH = '/applicationFormPartner/';
   isProjectEditable$: Observable<boolean>;

@@ -1,0 +1,114 @@
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {APIError} from '@common/models/APIError';
+import {TranslateService} from '@ngx-translate/core';
+import {ProjectDetailPageStore} from '@project/project-detail-page/project-detail-page-store';
+import {catchError, finalize, map, tap} from 'rxjs/operators';
+import * as moment from 'moment';
+import {Alert} from '@common/components/forms/alert';
+import {PreConditionCheckResult} from '@project/model/plugin/PreConditionCheckResult';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {Router} from '@angular/router';
+
+@Component({
+  selector: 'app-check-and-submit',
+  templateUrl: './check-and-submit.component.html',
+  styleUrls: ['./check-and-submit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class CheckAndSubmitComponent {
+  Alert = Alert;
+  PermissionsEnum = UserRoleDTO.PermissionsEnum;
+  STATUS = ProjectStatusDTO.StatusEnum;
+
+  data$: Observable<{
+    projectStatus: ProjectStatusDTO.StatusEnum,
+    projectTitle: string,
+    projectId: number,
+    projectCallEndDate: Date,
+    isThisUserOwner: boolean,
+    hasPreConditionCheckSucceed: boolean,
+    preConditionCheckResults: PreConditionCheckResult | null,
+    isProjectLatestVersion: boolean
+  }>;
+
+  // TODO: create a component
+  error$ = new BehaviorSubject<APIError | null>(null);
+  actionPending = false;
+  preConditionCheckInProgress = false;
+
+  constructor(public translate: TranslateService,
+              private projectDetailStore: ProjectDetailPageStore,
+              private projectStore: ProjectStore,
+              private router: Router
+  ) {
+    this.data$ = combineLatest([
+      this.projectStore.project$,
+      this.projectStore.projectTitle$,
+      this.projectStore.userIsProjectOwner$,
+      this.projectDetailStore.preConditionCheckResult$,
+      this.projectStore.currentVersionIsLatest$
+    ]).pipe(
+      map(([project, projectTitle, isThisUserOwner, preConditionCheckResults, isProjectLatestVersion]) => ({
+        projectTitle,
+        projectStatus: project.projectStatus.status,
+        projectId: project.id,
+        projectCallEndDate: project.callSettings?.endDate,
+        isThisUserOwner,
+        hasPreConditionCheckSucceed: preConditionCheckResults?.submissionAllowed || false,
+        preConditionCheckResults,
+        isProjectLatestVersion
+      }))
+    );
+  }
+
+  preConditionCheck(projectId: number): void {
+    this.preConditionCheckInProgress = true;
+    this.projectDetailStore.preConditionCheck(projectId).pipe(
+      catchError((error) => this.showErrorMessage(error.error)),
+      finalize(() => this.preConditionCheckInProgress = false)
+    ).subscribe();
+  }
+
+  submitProject(projectId: number): void {
+    this.actionPending = true;
+    this.projectDetailStore.submitApplication(projectId)
+      .pipe(
+        tap(() => this.redirectToProjectOverview(projectId)),
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => this.actionPending = false)
+      ).subscribe();
+  }
+
+  resubmitProject(projectId: number): void {
+    this.actionPending = true;
+    this.projectDetailStore.submitApplication(projectId)
+      .pipe(
+        tap(() => this.redirectToProjectOverview(projectId)),
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => this.actionPending = false)
+      ).subscribe();
+  }
+
+  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, isProjectLatestVersion: boolean, projectStatus: ProjectStatusDTO.StatusEnum): boolean {
+    if (!isProjectLatestVersion) {
+      return true;
+    }
+    const currentDate = moment(new Date());
+    return !(currentDate.isBefore(projectCallEndDate) && (hasPreConditionCheckSucceed || projectStatus === this.STATUS.STEP1DRAFT));
+  }
+
+  private showErrorMessage(error: APIError): Observable<null> {
+    this.error$.next(error);
+    setTimeout(() => {
+      this.error$.next(null);
+    },         4000);
+    return of(null);
+  }
+
+  private redirectToProjectOverview(projectId: number): void {
+    this.router.navigate([`/app/project/detail/${projectId}`]);
+  }
+
+}

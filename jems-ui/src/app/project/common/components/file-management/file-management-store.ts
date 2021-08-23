@@ -5,8 +5,6 @@ import {
   PageProjectFileMetadataDTO,
   ProjectFileMetadataDTO,
   ProjectFileService,
-  ProjectPartnerService,
-  ProjectService,
   ProjectStatusDTO,
   UserRoleDTO
 } from '@cat/api';
@@ -21,13 +19,15 @@ import {
 } from '@project/common/components/file-management/file-category';
 import {APIError} from '@common/models/APIError';
 import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
-import {ProjectPartnerRoleEnumUtil} from '@project/model/ProjectPartnerRoleEnum';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {ProjectUtil} from '@project/common/project-util';
 import {I18nMessage} from '@common/models/I18nMessage';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class FileManagementStore {
 
   fileList$: Observable<PageProjectFileMetadataDTO>;
@@ -52,16 +52,10 @@ export class FileManagementStore {
   newSort$ = new Subject<Partial<MatSort>>();
   filesChanged$ = new Subject<void>();
 
-  // TODO: temporary observables without considering selected version => remove them and reuse the store ones
-  private partners$: Observable<ProjectPartner[]>;
-  private investments$: Observable<InvestmentSummary[]>;
-
   constructor(private projectFileService: ProjectFileService,
               private projectStore: ProjectStore,
-              private permissionService: PermissionService,
-              // temporary services for fetching partners/investments without considering selected version
-              private projectService: ProjectService,
-              private partnerService: ProjectPartnerService) {
+              private projectPartnerStore: ProjectPartnerStore,
+              private permissionService: PermissionService) {
     this.projectStatus$ = this.projectStore.projectStatus$;
     this.userIsProjectOwner$ = this.projectStore.userIsProjectOwner$;
 
@@ -70,12 +64,13 @@ export class FileManagementStore {
     this.canReadApplicationFile$ = this.canReadApplicationFile();
     this.canUpload$ = this.canUpload();
     this.canReadFiles$ = this.canReadFiles();
-
-    this.investments$ = this.investments();
-    this.partners$ = this.partners();
-    this.fileCategories$ = this.fileCategories();
     this.selectedCategoryPath$ = this.selectedCategoryPath();
     this.fileList$ = this.fileList();
+  }
+
+  setSection(section: FileCategoryInfo): void {
+    this.selectedCategory$.next(section);
+    this.fileCategories$ = this.fileCategories(section);
   }
 
   uploadFile(file: File): Observable<ProjectFileMetadataDTO> {
@@ -141,26 +136,6 @@ export class FileManagementStore {
     });
   }
 
-  private investments(): Observable<InvestmentSummary[]> {
-    return this.projectStore.projectId$
-      .pipe(
-        switchMap(projectId => this.projectService.getProjectInvestmentSummaries(projectId)),
-        map(investmentSummeryDTOs => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
-        catchError(err => of([]))
-      );
-  }
-
-  private partners(): Observable<ProjectPartner[]> {
-    return this.projectStore.projectId$
-      .pipe(
-        switchMap(projectId => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'])),
-        map(projectPartners => projectPartners.map((projectPartner, index) =>
-          new ProjectPartner(projectPartner.id, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))
-        ),
-        catchError(err => of([]))
-      );
-  }
-
   private canUpload(): Observable<boolean> {
     return combineLatest([
       this.selectedCategory$,
@@ -221,29 +196,30 @@ export class FileManagementStore {
       );
   }
 
-  private fileCategories(): Observable<FileCategoryNode> {
+  private fileCategories(section: FileCategoryInfo): Observable<FileCategoryNode> {
     return combineLatest([
       this.projectStore.projectTitle$,
-      this.partners$,
-      this.investments$,
+      this.projectPartnerStore.partners$,
+      this.projectStore.investmentSummaries$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve),
       this.canReadApplicationFile$,
       this.projectStore.callHasConfigWithInvestments$,
     ]).pipe(
       map(([projectTitle, partners, investments, canReadAssessmentFiles, canReadApplicationFiles, callHasConfigWithInvestments]) =>
-        this.getCategories(projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles, callHasConfigWithInvestments)
+        this.getCategories(section, projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles, callHasConfigWithInvestments)
       ),
       tap(filters => this.setParent(filters))
     );
   }
 
-  private getCategories(projectTitle: string,
+  private getCategories(section: FileCategoryInfo,
+                        projectTitle: string,
                         partners: ProjectPartner[],
                         investments: InvestmentSummary[],
                         canReadApplication: boolean,
                         canReadAssessment: boolean,
                         callHasConfigWithInvestments: boolean): FileCategoryNode {
-    const root: FileCategoryNode = {
+    const fullTree: FileCategoryNode = {
       name: {i18nKey: projectTitle},
       info: {type: FileCategoryEnum.ALL},
       children: []
@@ -254,7 +230,7 @@ export class FileManagementStore {
       children: []
     };
     if (canReadApplication) {
-      root.children?.push(applicationFiles);
+      fullTree.children?.push(applicationFiles);
       applicationFiles.children = [
         {
           name: {i18nKey: 'file.tree.type.partner'},
@@ -284,12 +260,27 @@ export class FileManagementStore {
     }
 
     if (canReadAssessment) {
-      root.children?.push({
+      fullTree.children?.push({
         name: {i18nKey: 'file.tree.type.assessment'},
         info: {type: FileCategoryEnum.ASSESSMENT}
       });
     }
-    return root;
+    return this.findRootForSection(fullTree, section) || {};
+  }
+
+  private findRootForSection(root: FileCategoryNode, section: FileCategoryInfo): FileCategoryNode | null {
+    if (root.info?.type === section.type && root.info?.id === section.id) {
+      return root;
+    }
+    if (root.children) {
+      for (const child of root.children) {
+        const potentialRoot = this.findRootForSection(child, section);
+        if (potentialRoot != null) {
+          return potentialRoot;
+        }
+      }
+    }
+    return null;
   }
 
   private canReadApplicationFile(): Observable<boolean> {

@@ -40,6 +40,9 @@ import {ProjectWorkPackageObjectivesTabComponent} from '@project/work-package/pr
 import {ProjectWorkPackageInvestmentsTabComponent} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-investments-tab/project-work-package-investments-tab.component';
 import {ProjectWorkPackageActivitiesTabComponent} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-activities-tab/project-work-package-activities-tab.component';
 import {ProjectWorkPackageOutputsTabComponent} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-outputs-tab/project-work-package-outputs-tab.component';
+import {ApplicationAnnexesComponent} from '@project/project-application/application-annexes/application-annexes.component';
+import {CheckAndSubmitComponent} from '@project/project-application/check-and-submit/check-and-submit.component';
+import {AssessmentAndDecisionComponent} from '@project/project-application/assessment-and-decision/assessment-and-decision.component';
 
 export const routes: Routes = [
   {
@@ -67,34 +70,54 @@ export const routes: Routes = [
             component: ProjectDetailPageComponent,
           },
           {
-            path: 'assessment',
-            data: {
-              skipBreadcrumb: true,
-              permissionsOnly: [PermissionsEnum.ProjectAssessmentView],
-            },
-            canActivate: [PermissionGuard],
+            path: 'annexes',
+            component: ApplicationAnnexesComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.application.annexes'},
+          },
+          {
+            path: 'checkAndSubmit',
+            component: CheckAndSubmitComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.check.and.submit'},
+          },
+          {
+            path: 'assessmentAndDecision',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.assessment.and.decision'},
             children: [
               {
-                path: 'eligibilityDecision/:step',
-                component: ProjectApplicationEligibilityDecisionPageComponent,
-                data: {breadcrumb: 'project.breadcrumb.eligibilityDecision'},
+                path: '',
+                component: AssessmentAndDecisionComponent,
               },
               {
-                path: 'qualityCheck/:step',
-                component: ProjectApplicationQualityCheckComponent,
-                data: {breadcrumb: 'project.breadcrumb.qualityCheck'},
+                path: 'assessment',
+                data: {
+                  skipBreadcrumb: true,
+                  permissionsOnly: [PermissionsEnum.ProjectAssessmentView],
+                },
+                canActivate: [PermissionGuard],
+                children: [
+                  {
+                    path: 'eligibilityDecision/:step',
+                    component: ProjectApplicationEligibilityDecisionPageComponent,
+                    data: {breadcrumb: 'project.breadcrumb.eligibilityDecision'},
+                  },
+                  {
+                    path: 'qualityCheck/:step',
+                    component: ProjectApplicationQualityCheckComponent,
+                    data: {breadcrumb: 'project.breadcrumb.qualityCheck'},
+                  },
+                  {
+                    path: 'eligibilityCheck/:step',
+                    component: ProjectApplicationEligibilityCheckComponent,
+                    data: {breadcrumb: 'project.breadcrumb.eligibilityCheck'},
+                  },
+                  {
+                    path: 'fundingDecision/:step',
+                    component: ProjectApplicationFundingPageComponent,
+                    data: {breadcrumb: 'project.breadcrumb.fundingDecision'},
+                  },
+                ],
               },
-              {
-                path: 'eligibilityCheck/:step',
-                component: ProjectApplicationEligibilityCheckComponent,
-                data: {breadcrumb: 'project.breadcrumb.eligibilityCheck'},
-              },
-              {
-                path: 'fundingDecision/:step',
-                component: ProjectApplicationFundingPageComponent,
-                data: {breadcrumb: 'project.breadcrumb.fundingDecision'},
-              },
-            ],
+            ]
           },
           {
             path: 'applicationFormIdentification',

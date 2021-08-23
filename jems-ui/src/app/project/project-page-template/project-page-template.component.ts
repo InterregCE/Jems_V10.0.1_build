@@ -29,6 +29,9 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   @Input() subTitleText: string;
   @Input() subTitleKey: string;
 
+  @Input() descriptionText: string;
+  @Input() descriptionKey: string;
+
   versionWarnData$: Observable<{
     current: ProjectVersionDTO | undefined,
     latest: ProjectVersionDTO | undefined,

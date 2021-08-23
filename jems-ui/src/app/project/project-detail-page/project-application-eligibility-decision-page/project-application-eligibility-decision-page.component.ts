@@ -68,8 +68,8 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
     this.notesForm.controls.decisionDate.setValue(eligibilityDecision?.decisionDate);
   }
 
-  redirectToProjectDetail(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId]);
+  redirectToAssessmentAndDecisions(): void {
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'assessmentAndDecision']);
   }
 
   submitEligibilityDecision(): void {
@@ -83,7 +83,7 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
       : this.eligibilityPageStore.setApplicationAsIneligible(this.projectId, statusInfo))
       .pipe(
         tap(() => this.actionPending = false),
-        tap(() => this.redirectToProjectDetail())
+        tap(() => this.redirectToAssessmentAndDecisions())
       ).subscribe();
   }
 

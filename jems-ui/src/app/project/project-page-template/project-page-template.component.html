@@ -1,8 +1,13 @@
 <app-main-page-template
         [needsCard]="needsCard"
         [headerTemplate]="versionWarn"
+        [titleKey]="titleKey"
         [titleText]="titleText"
-        [subTitleKey]="subTitleKey">
+        [subTitleKey]="subTitleKey"
+        [subTitleText]="subTitleText"
+        [descriptionKey]="descriptionKey"
+        [descriptionText]="descriptionText"
+>
     <ng-content></ng-content>
 </app-main-page-template>
 
@@ -28,7 +33,7 @@
 
 <ng-template #sidenavVersionSelect>
     <ng-container *ngIf="versionSelectData$ | async as data">
-        <mat-form-field *ngIf="data.versions.length" class="ml-4">
+        <mat-form-field *ngIf="data.versions.length" class="ml-4 mt-2">
             <mat-label>{{'project.versions.select.label' | translate}}</mat-label>
             <mat-select *ngIf="data.current?.version"
                         [value]="data.current"

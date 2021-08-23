@@ -64,7 +64,7 @@ export class ProjectApplicationQualityCheckComponent {
   }
 
   onCancel(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId]);
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'assessmentAndDecision']);
   }
 
   private confirmQualityAssessment(): void {

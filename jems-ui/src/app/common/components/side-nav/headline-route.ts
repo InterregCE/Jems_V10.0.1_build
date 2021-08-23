@@ -9,6 +9,8 @@ export class HeadlineRoute {
   bullets?: HeadlineRoute[] = [];
   badgeText?: string;
   badgeTooltip?: string;
+  icon?: string;
+  versionedSection ? = false;
 
   // TODO: refactor this out in a HeadlineTemplate or a generic base Headline
   headlineTemplate?: TemplateRef<any>;
