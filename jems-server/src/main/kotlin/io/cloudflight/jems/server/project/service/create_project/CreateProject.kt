@@ -46,11 +46,14 @@ class CreateProject(
         val status = if (call.is2StepCall()) ApplicationStatus.STEP1_DRAFT else ApplicationStatus.DRAFT
         val project = persistence.createProjectWithStatus(acronym = acronym, status = status, userId = userId, callId = callId)
 
+        val customIdentifier = getCustomIdentifierForProjectId(prefix = "TODO_", project.id!!)
+        persistence.updateProjectCustomIdentifier(project.id, customIdentifier)
+
         auditPublisher.publishEvent(projectApplicationCreated(this, project))
         auditPublisher.publishEvent(
             projectVersionRecorded(
                 context = this,
-                projectSummary = ProjectSummary(project.id!!, call.name, project.acronym, project.projectStatus.status),
+                projectSummary = ProjectSummary(project.id, customIdentifier, call.name, project.acronym, project.projectStatus.status),
                 userEmail = project.applicant.email,
             )
         )
@@ -63,5 +66,8 @@ class CreateProject(
             generalValidator.notBlank(acronym, "acronym"),
             generalValidator.maxLength(acronym, 25, "acronym"),
         )
+
+    private fun getCustomIdentifierForProjectId(prefix: String, projectId: Long): String =
+        "${prefix}%05d".format(projectId)
 
 }

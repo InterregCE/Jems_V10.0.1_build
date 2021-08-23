@@ -29,8 +29,11 @@ class ProjectFileFactory(
     val callStart = ZonedDateTime.now().plusDays(1)
     val callEnd = ZonedDateTime.now().plusDays(20)
 
+    var counter = 100L
+
     @Transactional
     fun saveProject(author: UserEntity, call: CallEntity): ProjectEntity {
+        counter++
         val projectStatus = projectStatusHistoryRepository.save(
             ProjectStatusHistoryEntity(
                 0,
@@ -44,6 +47,7 @@ class ProjectFileFactory(
         return projectRepository.save(
             ProjectEntity(
                 id = 0,
+                customIdentifier = "$counter",
                 call = call,
                 acronym = "test_project",
                 applicant = author,

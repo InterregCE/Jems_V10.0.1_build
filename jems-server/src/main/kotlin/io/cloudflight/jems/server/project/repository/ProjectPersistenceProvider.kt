@@ -139,6 +139,11 @@ class ProjectPersistenceProvider(
         )
     }
 
+    @Transactional
+    override fun updateProjectCustomIdentifier(projectId: Long, customIdentification: String) {
+        getProjectOrThrow(projectId).customIdentifier = customIdentification
+    }
+
     private fun getProjectOrThrow(projectId: Long) =
         projectRepository.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
 

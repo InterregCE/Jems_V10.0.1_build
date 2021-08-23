@@ -33,6 +33,7 @@ class SetApplicationAsEligibleInteractorTest : UnitTest() {
         private const val PROJECT_ID = 1L
         private val summary = ProjectSummary(
             id = PROJECT_ID,
+            customIdentifier = "01",
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.SUBMITTED
@@ -78,7 +79,7 @@ class SetApplicationAsEligibleInteractorTest : UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), name = "project acronym"),
+                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
                 description = "Project application status changed from SUBMITTED to ELIGIBLE"
             )
         )

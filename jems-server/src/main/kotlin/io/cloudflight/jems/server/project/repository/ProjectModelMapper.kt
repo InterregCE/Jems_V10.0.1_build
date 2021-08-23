@@ -59,6 +59,7 @@ fun CallEntity.toSettingsModel(applicationFormFieldConfigurationEntities: Mutabl
 
 fun ProjectEntity.toModel(assessmentStep1: ProjectAssessmentEntity?, assessmentStep2: ProjectAssessmentEntity?, applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>) = ProjectFull(
     id = id,
+    customIdentifier = customIdentifier,
     callSettings = call.toSettingsModel(applicationFormFieldConfigurationEntities),
     acronym = acronym,
     applicant = applicant.toUserSummary(),
@@ -81,6 +82,7 @@ fun ProjectEntity.toModel(assessmentStep1: ProjectAssessmentEntity?, assessmentS
 
 fun ProjectEntity.toDetailModel(assessmentStep1: ProjectAssessmentEntity?, assessmentStep2: ProjectAssessmentEntity?, applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>) = ProjectDetail(
     id = id,
+    customIdentifier = customIdentifier,
     callSettings = call.toSettingsModel(applicationFormFieldConfigurationEntities),
     acronym = acronym,
     title = projectData?.translatedValues?.mapTo(HashSet()) {
@@ -98,6 +100,7 @@ fun ProjectEntity.toDetailModel(assessmentStep1: ProjectAssessmentEntity?, asses
 
 fun ProjectEntity.toSummaryModel() = ProjectSummary(
     id = id,
+    customIdentifier = customIdentifier,
     callName = call.name,
     acronym = acronym,
     status = currentStatus.status,
@@ -119,6 +122,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
     this.groupBy { it.id }.map { groupedRows ->
         ProjectFull(
             id = groupedRows.key,
+            customIdentifier = groupedRows.value.first().customIdentifier,
             acronym = groupedRows.value.first().acronym,
             title = groupedRows.value.extractField { it.title },
             intro = groupedRows.value.extractField { it.intro },

@@ -23,6 +23,7 @@ val callSettings = ProjectCallSettings(
 
 fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMITTED) = ProjectFull(
     id = id,
+    customIdentifier = "01",
     callSettings = callSettings,
     acronym = "project acronym",
     applicant = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role")),

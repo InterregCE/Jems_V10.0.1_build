@@ -17,12 +17,16 @@ class ProjectFactory(
     val projectStatusHistoryRepository: ProjectStatusHistoryRepository
 ) {
 
+    var counter = 1L
+
     @Transactional
     fun saveProject(author: UserEntity, call: CallEntity): ProjectEntity {
+        counter++
         val projectStatus = projectStatusHistoryRepository.save(ProjectStatusHistoryEntity(0, null, ApplicationStatus.DRAFT, author, ZonedDateTime.now(), null))
         return projectRepository.save(
             ProjectEntity(
                 id = 0,
+                customIdentifier = "$counter",
                 call = call,
                 acronym = "test_project",
                 applicant = author,
@@ -31,6 +35,5 @@ class ProjectFactory(
             )
         )
     }
-
 
 }

@@ -21,8 +21,8 @@ export class ProjectApplicationListComponent {
     columns: [
       {
         displayedColumn: 'project.table.column.name.id',
-        elementProperty: 'id',
-        sortProperty: 'id'
+        elementProperty: 'customIdentifier',
+        sortProperty: 'customIdentifier'
       },
       {
         displayedColumn: 'project.table.column.name.acronym',

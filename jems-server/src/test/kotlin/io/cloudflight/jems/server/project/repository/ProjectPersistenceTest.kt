@@ -156,6 +156,7 @@ internal class ProjectPersistenceTest : UnitTest() {
             val call = dummyCall()
             return ProjectEntity(
                 id = PROJECT_ID,
+                customIdentifier = "01",
                 call = dummyCall(),
                 acronym = "Test Project",
                 applicant = call.creator,
@@ -252,6 +253,7 @@ internal class ProjectPersistenceTest : UnitTest() {
         assertThat(persistence.getProjectSummary(PROJECT_ID)).isEqualTo(
             ProjectSummary(
                 id = PROJECT_ID,
+                customIdentifier = "01",
                 callName = "call name",
                 acronym = project.acronym,
                 status = project.currentStatus.status,
@@ -342,6 +344,7 @@ internal class ProjectPersistenceTest : UnitTest() {
             .isEqualTo(
                 ProjectFull(
                     id = project.id,
+                    customIdentifier = "01",
                     intro = null,
                     title = null,
                     acronym = project.acronym,
@@ -406,6 +409,7 @@ internal class ProjectPersistenceTest : UnitTest() {
         val mockRow: ProjectRow = mockk()
         val mockPeriodRow: ProjectPeriodRow = mockk()
         every { mockRow.id } returns 1L
+        every { mockRow.customIdentifier } returns "01"
         every { mockRow.language } returns SystemLanguage.EN
         every { mockRow.acronym } returns "acronym"
         every { mockRow.duration } returns 12
@@ -431,6 +435,7 @@ internal class ProjectPersistenceTest : UnitTest() {
             .isEqualTo(
                 ProjectFull(
                     id = mockRow.id,
+                    customIdentifier = "01",
                     intro = setOf(InputTranslation(mockRow.language!!, mockRow.intro)),
                     title = setOf(InputTranslation(mockRow.language!!, mockRow.title)),
                     acronym = mockRow.acronym,
@@ -477,6 +482,7 @@ internal class ProjectPersistenceTest : UnitTest() {
         assertThat(result.elementAt(0)).isEqualTo(
             ProjectSummary(
                 id = PROJECT_ID,
+                customIdentifier = "01",
                 callName = "call name",
                 acronym = "Test Project",
                 status = ApplicationStatus.DRAFT,
@@ -499,6 +505,7 @@ internal class ProjectPersistenceTest : UnitTest() {
         assertThat(result.elementAt(0)).isEqualTo(
             ProjectSummary(
                 id = PROJECT_ID,
+                customIdentifier = "01",
                 callName = "call name",
                 acronym = "Test Project",
                 status = ApplicationStatus.DRAFT,

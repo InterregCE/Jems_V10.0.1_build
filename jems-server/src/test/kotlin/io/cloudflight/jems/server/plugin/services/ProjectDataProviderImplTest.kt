@@ -203,6 +203,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         )
         private val project = ProjectFull(
             id = 1L,
+            customIdentifier = "01",
             callSettings = callSettings,
             acronym = "acronym",
             applicant = user,
@@ -919,6 +920,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         val id = project.id!!
         every { projectPersistence.getProject(id) } returns ProjectFull(
             id = 1L,
+            customIdentifier = "01",
             callSettings = callSettings,
             acronym = "acronym",
             applicant = user,

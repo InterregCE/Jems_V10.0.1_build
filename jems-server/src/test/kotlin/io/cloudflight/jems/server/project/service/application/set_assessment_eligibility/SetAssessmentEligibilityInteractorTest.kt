@@ -37,6 +37,7 @@ class SetAssessmentEligibilityInteractorTest : UnitTest() {
             val project = projectWithId(PROJECT_ID, status)
             return ProjectSummary(
                 id = PROJECT_ID,
+                customIdentifier = project.customIdentifier,
                 callName = project.callSettings.callName,
                 acronym = project.acronym,
                 status = status,
@@ -88,7 +89,7 @@ class SetAssessmentEligibilityInteractorTest : UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED,
-                project = AuditProject(id = PROJECT_ID.toString(), name = "project acronym"),
+                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
                 description = "Project application eligibility assessment concluded as PASSED"
             )
         )
@@ -115,7 +116,7 @@ class SetAssessmentEligibilityInteractorTest : UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED,
-                project = AuditProject(id = PROJECT_ID.toString(), name = "project acronym"),
+                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
                 description = "Project application eligibility assessment (step 1) concluded as PASSED"
             )
         )

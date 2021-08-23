@@ -107,6 +107,7 @@ class ProjectControllerTest {
 
         private val projectSummary = ProjectSummary(
             id = 8L,
+            customIdentifier = "01",
             callName = "call name",
             acronym = "ACR",
             status = ApplicationStatus.SUBMITTED,
@@ -118,6 +119,7 @@ class ProjectControllerTest {
 
         private val outputProjectSimple = OutputProjectSimple(
             id = 8L,
+            customIdentifier = "01",
             callName = "call name",
             acronym = "ACR",
             projectStatus = ApplicationStatusDTO.SUBMITTED,
@@ -302,6 +304,7 @@ class ProjectControllerTest {
         val projectStatus = ProjectStatus(5L, ApplicationStatus.APPROVED, user, updated = startDate)
         val project = ProjectDetail(
             id = pId,
+            customIdentifier = "01",
             callSettings = callSettings,
             acronym = "acronym",
             applicant = user,
@@ -320,6 +323,7 @@ class ProjectControllerTest {
         assertThat(controller.getProjectById(pId)).isEqualTo(
             ProjectDetailDTO(
                 id = project.id,
+                customIdentifier = "01",
                 callSettings = ProjectCallSettingsDTO(
                     callSettings.callId,
                     callSettings.callName,

@@ -32,6 +32,7 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long>, CustomProjectR
         """
             SELECT
              entity.*,
+             entity.custom_identifier as customIdentifier,
              translation.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.project_id

@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.user.entity.UserEntity
 import javax.persistence.CascadeType
+import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -23,6 +24,10 @@ data class ProjectEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
+
+    @Column(unique = true)
+    @field:NotNull
+    var customIdentifier: String = "",
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_call_id")

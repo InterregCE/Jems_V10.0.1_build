@@ -43,6 +43,7 @@ fun combineTranslatedValuesProject(
 
 fun ProjectFull.getProjectWithoutFormData() = ProjectDetail(
     id = id,
+    customIdentifier = customIdentifier,
     callSettings = callSettings,
     acronym = acronym,
     applicant = applicant,

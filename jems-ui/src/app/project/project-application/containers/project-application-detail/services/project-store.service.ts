@@ -117,7 +117,7 @@ export class ProjectStore {
     this.projectCall$ = this.projectCallSettings();
     this.projectTitle$ = this.project$
       .pipe(
-        map(project => `${project.id} – ${project.acronym}`)
+        map(project => `${project.customIdentifier} – ${project.acronym}`)
       );
     this.callHasTwoSteps$ = this.callHasTwoSteps();
     this.projectCurrentDecisions$ = this.projectCurrentDecisions();

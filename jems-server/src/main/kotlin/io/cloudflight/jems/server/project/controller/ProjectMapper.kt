@@ -76,6 +76,7 @@ fun ProjectCallSettings.toDto() = projectMapper.map(this)
 
 fun ProjectDetail.toDto() = ProjectDetailDTO(
     id = id,
+    customIdentifier = customIdentifier,
     callSettings = callSettings.toDto(),
     acronym = acronym,
     applicant = applicant.toDto(),
@@ -114,6 +115,7 @@ fun ProjectPeriod.toDto(projectId: Long?) = ProjectPeriodDTO(
 fun Page<ProjectSummary>.toDto() = map {
     OutputProjectSimple(
         id = it.id,
+        customIdentifier = it.customIdentifier,
         callName = it.callName,
         acronym = it.acronym,
         projectStatus = ApplicationStatusDTO.valueOf(it.status.name),

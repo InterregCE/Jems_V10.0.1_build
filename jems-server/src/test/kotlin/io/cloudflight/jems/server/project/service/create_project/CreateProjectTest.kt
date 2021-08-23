@@ -79,6 +79,7 @@ internal class CreateProjectTest : UnitTest() {
         private fun dummyProjectWithStatus(acronym: String, status: ApplicationStatus): ProjectDetail {
             return ProjectDetail(
                 id = PROJECT_ID,
+                customIdentifier = "01",
                 callSettings = callSettings,
                 acronym = acronym,
                 applicant = user,
@@ -117,6 +118,7 @@ internal class CreateProjectTest : UnitTest() {
     @BeforeEach
     fun reset() {
         clearMocks(auditPublisher)
+        clearMocks(projectPersistence)
     }
 
     @Test
@@ -125,6 +127,7 @@ internal class CreateProjectTest : UnitTest() {
         every { securityService.currentUser!!.user.id } returns USER_ID
         every { projectPersistence.createProjectWithStatus("test application", DRAFT, USER_ID, CALL_ID) } returns
             dummyProjectWithStatus(acronym = "test application", status = DRAFT)
+        every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "TODO_00029") } answers {}
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
@@ -136,14 +139,15 @@ internal class CreateProjectTest : UnitTest() {
         assertThat(result.acronym).isEqualTo("test application")
         assertThat(result.applicant.email).isEqualTo("some@applicant")
 
+        verify(exactly = 1) { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "TODO_00029") }
         verify(exactly = 2) { auditPublisher.publishEvent(any()) }
         assertThat(slot[0].auditCandidate).isEqualTo(AuditCandidate(
             action = APPLICATION_STATUS_CHANGED,
-            project = AuditProject(id = "29", name = "test application"),
+            project = AuditProject(id = "29", customIdentifier = "01", name = "test application"),
             description = "Project application created with status DRAFT",
         ))
         assertThat(slot[1].auditCandidate.action).isEqualTo(APPLICATION_VERSION_RECORDED)
-        assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", name = "test application"))
+        assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", customIdentifier = "TODO_00029", name = "test application"))
         assertThat(slot[1].auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
     }
 
@@ -154,6 +158,7 @@ internal class CreateProjectTest : UnitTest() {
         val acronym = "test acronym"
         every { projectPersistence.createProjectWithStatus(acronym, STEP1_DRAFT, USER_ID, CALL_ID) } returns
             dummyProjectWithStatus(acronym = acronym, status = STEP1_DRAFT)
+        every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "TODO_00029") } answers {}
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
@@ -165,14 +170,15 @@ internal class CreateProjectTest : UnitTest() {
         assertThat(result.acronym).isEqualTo(acronym)
         assertThat(result.applicant.email).isEqualTo("some@applicant")
 
+        verify(exactly = 1) { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "TODO_00029") }
         verify(exactly = 2) { auditPublisher.publishEvent(any()) }
         assertThat(slot[0].auditCandidate).isEqualTo(AuditCandidate(
             action = APPLICATION_STATUS_CHANGED,
-            project = AuditProject(id = "29", name = acronym),
+            project = AuditProject(id = "29", customIdentifier = "01", name = acronym),
             description = "Project application created with status STEP1_DRAFT",
         ))
         assertThat(slot[1].auditCandidate.action).isEqualTo(APPLICATION_VERSION_RECORDED)
-        assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", name = acronym))
+        assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", customIdentifier = "TODO_00029", name = acronym))
         assertThat(slot[1].auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
     }
 

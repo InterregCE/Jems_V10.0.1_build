@@ -28,7 +28,7 @@ fun projectApplicationCreated(
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
-            .project(id = project.id!!, name = project.acronym)
+            .project(project)
             .description("Project application created with status ${project.projectStatus.status}")
             .build()
     )
@@ -39,7 +39,7 @@ fun projectStatusChanged(
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
-            .project(id = projectSummary.id, name = projectSummary.acronym)
+            .project(projectSummary)
             .description("Project application status changed from ${projectSummary.status} to $newStatus")
             .build()
     )
@@ -50,7 +50,7 @@ fun unsuccessfulProjectSubmission(
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
-            .project(id = projectSummary.id, name = projectSummary.acronym)
+            .project(projectSummary)
             .description("Unsuccessful attempt to submit an application from ${projectSummary.status}. Verification failed.")
             .build()
     )
@@ -62,7 +62,7 @@ fun projectVersionSnapshotCreated(
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.APPLICATION_VERSION_SNAPSHOT_CREATED)
-            .project(id = projectSummary.id, name = projectSummary.acronym)
+            .project(projectSummary)
             .description(
                 "New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on " +
                     "${projectVersion.createdAt.toLocalDateTime().withNano(0)
@@ -76,7 +76,7 @@ fun projectVersionRecorded(
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.APPLICATION_VERSION_RECORDED)
-            .project(id = projectSummary.id, name = projectSummary.acronym)
+            .project(projectSummary)
             .description(
                 "New project version \"V.$version\" is recorded by user: $userEmail on " +
                     "${ZonedDateTime.now(ZoneOffset.UTC).withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}"
@@ -103,7 +103,7 @@ fun qualityAssessmentStep1Concluded(context: Any, project: ProjectSummary, resul
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
-        .project(id = project.id, name = project.acronym)
+        .project(project)
         .description("Project application quality assessment (step 1) concluded as $result")
         .build()
     )
@@ -112,7 +112,7 @@ fun qualityAssessmentStep2Concluded(context: Any, project: ProjectSummary, resul
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
-            .project(id = project.id, name = project.acronym)
+            .project(project)
             .description("Project application quality assessment concluded as $result")
             .build()
     )
@@ -121,7 +121,7 @@ fun eligibilityAssessmentStep1Concluded(context: Any, project: ProjectSummary, r
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
-            .project(id = project.id, name = project.acronym)
+            .project(project)
             .description("Project application eligibility assessment (step 1) concluded as $result")
             .build()
     )
@@ -130,7 +130,7 @@ fun eligibilityAssessmentStep2Concluded(context: Any, project: ProjectSummary, r
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
-            .project(id = project.id, name = project.acronym)
+            .project(project)
             .description("Project application eligibility assessment concluded as $result")
             .build()
     )

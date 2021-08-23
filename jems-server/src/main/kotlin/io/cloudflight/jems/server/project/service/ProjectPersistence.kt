@@ -33,4 +33,6 @@ interface ProjectPersistence {
 
     fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): ProjectDetail
 
+    fun updateProjectCustomIdentifier(projectId: Long, customIdentification: String)
+
 }

@@ -37,6 +37,7 @@ class SetAssessmentQualityInteractorTest : UnitTest() {
             val project = projectWithId(PROJECT_ID, status)
             return ProjectSummary(
                 id = PROJECT_ID,
+                customIdentifier = "01",
                 callName = project.callSettings.callName,
                 acronym = project.acronym,
                 status = status,
@@ -88,7 +89,7 @@ class SetAssessmentQualityInteractorTest : UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.QUALITY_ASSESSMENT_CONCLUDED,
-                project = AuditProject(id = PROJECT_ID.toString(), name = "project acronym"),
+                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
                 description = "Project application quality assessment concluded as RECOMMENDED_FOR_FUNDING"
             )
         )
@@ -115,7 +116,7 @@ class SetAssessmentQualityInteractorTest : UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.QUALITY_ASSESSMENT_CONCLUDED,
-                project = AuditProject(id = PROJECT_ID.toString(), name = "project acronym"),
+                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
                 description = "Project application quality assessment (step 1) concluded as RECOMMENDED_FOR_FUNDING"
             )
         )

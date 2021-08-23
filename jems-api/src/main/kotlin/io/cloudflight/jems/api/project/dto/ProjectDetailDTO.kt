@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.user.dto.OutputUser
 
 data class ProjectDetailDTO(
     val id: Long?,
+    val customIdentifier: String,
     val callSettings: ProjectCallSettingsDTO,
     val acronym: String,
     val applicant: OutputUser,

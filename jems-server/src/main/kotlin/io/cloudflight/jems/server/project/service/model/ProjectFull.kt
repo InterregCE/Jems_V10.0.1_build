@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.user.service.model.UserSummary
 
 data class ProjectFull(
     val id: Long?,
+    val customIdentifier: String,
     val callSettings: ProjectCallSettings,
     val acronym: String,
     val applicant: UserSummary,

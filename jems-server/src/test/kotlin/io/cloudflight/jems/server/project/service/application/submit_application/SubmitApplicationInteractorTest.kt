@@ -108,7 +108,7 @@ class SubmitApplicationInteractorTest : UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = projectId.toString(), name = "project acronym"),
+                project = AuditProject(id = projectId.toString(), customIdentifier = projectId.toString(), name = "project acronym"),
                 description = "Project application status changed from DRAFT to SUBMITTED"
             )
         )
@@ -173,5 +173,5 @@ class SubmitApplicationInteractorTest : UnitTest() {
         id: Long = 1L, callName: String = "call name",
         acronym: String = "project acronym", status: ApplicationStatus
     ) =
-        ProjectSummary(id, callName, acronym, status)
+        ProjectSummary(id, id.toString(), callName, acronym, status)
 }
