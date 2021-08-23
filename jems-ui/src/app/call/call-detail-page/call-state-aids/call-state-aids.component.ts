@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {CallDetailPageStore} from '../call-detail-page-store.service';
 import {map} from 'rxjs/operators';

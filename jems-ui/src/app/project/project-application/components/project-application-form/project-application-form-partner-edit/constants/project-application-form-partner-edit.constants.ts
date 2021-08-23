@@ -19,10 +19,26 @@ export class ProjectApplicationFormPartnerEditConstants {
   ];
 
   public static partnerSubTypeEnums = [
-    'MICRO_ENTERPRISE',
-    'SMALL_ENTERPRISE',
-    'MEDIUM_SIZED_ENTERPRISE',
-    'LARGE_ENTERPRISE',
+    {
+      key: 'MICRO_ENTERPRISE',
+      value: 'MICRO_ENTERPRISE',
+    },
+    {
+      key: 'SMALL_ENTERPRISE',
+      value: 'SMALL_ENTERPRISE',
+    },
+    {
+      key: 'MEDIUM_SIZED_ENTERPRISE',
+      value: 'MEDIUM_SIZED_ENTERPRISE',
+    },
+    {
+      key: 'LARGE_ENTERPRISE',
+      value: 'LARGE_ENTERPRISE',
+    },
+    {
+      key: 'NOT_APPLICABLE',
+      value: null,
+    }
   ];
 
   public static naceEnums = [
