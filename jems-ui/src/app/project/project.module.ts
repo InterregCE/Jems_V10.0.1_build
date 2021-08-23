@@ -89,6 +89,7 @@ import {FormVisibilityStatusService} from '@project/common/services/form-visibil
 import {PeriodsTotalPipe} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/periods-total.pipe';
 import {FileManagementComponent} from './common/components/file-management/file-management.component';
 import {ProjectApplicationFilesTableComponent} from './common/components/file-management/project-application-files-table/project-application-files-table.component';
+import {ProjectPartnerFilterPipe} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-activities-tab/project-partner-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -171,6 +172,7 @@ import {ProjectApplicationFilesTableComponent} from './common/components/file-ma
     FileManagementComponent,
     ProjectApplicationFilesTreeComponent,
     ProjectApplicationFilesTableComponent,
+    ProjectPartnerFilterPipe,
   ],
   imports: [
     SharedModule,

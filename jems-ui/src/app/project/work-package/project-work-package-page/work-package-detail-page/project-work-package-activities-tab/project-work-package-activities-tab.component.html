@@ -78,12 +78,14 @@
                                 </mat-chip>
                                 <input
                                         placeholder="{{ 'project.work.package.tab.activity.addPartner' | translate }}"
+                                        #filterPartners
                                         [matAutocomplete]="auto"
                                         [matChipInputFor]="chipList"
                                         [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
                             </mat-chip-list>
-                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addPartner(i, $event.option.value, data.partners)">
-                                <mat-option *ngFor="let partner of getPartnersWithoutSelected(data.partners, i)" [value]="partner.id">
+                            <mat-autocomplete #auto="matAutocomplete"
+                                              (optionSelected)="addPartner(i, $event.option.value, data.partners); filterPartners.value = ''; filterPartners.blur()">
+                                <mat-option *ngFor="let partner of getPartnersWithoutSelected(data.partners, i) | filterPartner: filterPartners.value" [value]="partner.id">
                                     {{ partner.toPartnerNumberString()}} {{partner.abbreviation}}
                                 </mat-option>
                             </mat-autocomplete>
