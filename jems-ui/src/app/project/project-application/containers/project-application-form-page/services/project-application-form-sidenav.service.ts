@@ -1,8 +1,8 @@
 import {Injectable, TemplateRef} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, map, mergeMap, switchMap, tap} from 'rxjs/operators';
-import {ProjectDetailDTO, ProjectPartnerService, ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
+import {catchError, map, mergeMap, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '@common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
@@ -16,6 +16,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import {RoutingService} from '@common/services/routing.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 
 @Injectable()
 @UntilDestroy()
@@ -36,25 +37,19 @@ export class ProjectApplicationFormSidenavService {
   private partners$: Observable<HeadlineRoute[]> =
     this.canSeeProjectForm$.pipe(switchMap(canSeeProject => {
         return canSeeProject ?
-          combineLatest([merge(this.projectStore.projectId$, this.fetchPartners$), this.projectVersionStore.currentRouteVersion$])
-            .pipe(
-              mergeMap(([projectId, version]) => forkJoin([
-                  of(projectId),
-                  this.projectPartnerService.getProjectPartners(projectId, 0, 100, ['sortNumber,asc'], version)
-                ])
-              ),
-              tap(([, partners]) => Log.info('Fetched the project partners:', this, partners.content)),
-              map(([projectId, partners]) => partners.content
-                .map(partner => ({
-                    headline: {
-                      i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
-                      i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
-                    },
-                    route: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}/identity`,
-                  }
-                ))
-              )
-            ) : of([]);
+          this.partnerStore.partners$.pipe(
+            withLatestFrom(this.projectStore.projectId$),
+            map(([partners, projectId]) =>
+              partners.map(partner => ({
+                  headline: {
+                    i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
+                    i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
+                  },
+                  route: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}/identity`,
+                }
+              ))
+            )
+          ) : of([]);
       })
     );
 
@@ -88,9 +83,9 @@ export class ProjectApplicationFormSidenavService {
     .hasPermission(PermissionsEnum.ProjectAssessmentView);
 
   constructor(private sideNavService: SideNavService,
-              private projectPartnerService: ProjectPartnerService,
               private workPackageService: WorkPackageService,
               private projectStore: ProjectStore,
+              private partnerStore: ProjectPartnerStore,
               private projectVersionStore: ProjectVersionStore,
               private translate: TranslateService,
               private permissionService: PermissionService,

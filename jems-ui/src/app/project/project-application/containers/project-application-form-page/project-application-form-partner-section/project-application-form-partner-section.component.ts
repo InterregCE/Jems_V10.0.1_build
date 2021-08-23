@@ -10,6 +10,7 @@ import {ProjectApplicationFormSidenavService} from '../services/project-applicat
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 
 @Component({
   selector: 'app-project-application-form-partner-section',
@@ -46,13 +47,14 @@ export class ProjectApplicationFormPartnerSectionComponent {
 
   constructor(public projectStore: ProjectStore,
               private projectPartnerService: ProjectPartnerService,
+              private partnerStore: ProjectPartnerStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectVersionStore: ProjectVersionStore,
               private activatedRoute: ActivatedRoute) {
   }
 
   deletePartner(partnerId: number): void {
-    this.projectPartnerService.deleteProjectPartner(partnerId)
+    this.partnerStore.deletePartner(partnerId)
       .pipe(
         take(1),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),

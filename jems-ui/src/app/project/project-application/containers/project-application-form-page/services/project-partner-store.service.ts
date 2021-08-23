@@ -11,7 +11,6 @@ import {
 import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
-import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectPartner} from '@project/model/ProjectPartner';
 import {ProjectPartnerRoleEnumUtil} from '@project/model/ProjectPartnerRoleEnum';
@@ -31,7 +30,6 @@ export class ProjectPartnerStore {
   private updatedPartner$ = new Subject<ProjectPartnerDetailDTO>();
 
   constructor(private partnerService: ProjectPartnerService,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectStore: ProjectStore,
               private routingService: RoutingService,
               private projectVersionStore: ProjectVersionStore) {
@@ -66,7 +64,6 @@ export class ProjectPartnerStore {
         tap(created => this.updatedPartner$.next(created)),
         tap(() => this.partnerUpdateEvent$.next(null)),
         tap(created => Log.info('Created partner:', this, created)),
-        tap(() => this.projectApplicationFormSidenavService.refreshPartners(this.projectId)),
       );
   }
 
@@ -93,6 +90,15 @@ export class ProjectPartnerStore {
         tap(saved => Log.info('Updated partner motivation:', this, saved)),
       );
   }
+
+  deletePartner(partnerId: number): Observable<void> {
+    return this.partnerService.deleteProjectPartner(partnerId)
+      .pipe(
+        tap(() => this.partnerUpdateEvent$.next(null)),
+        tap(() => Log.info('Partner removed:', this, partnerId)),
+      );
+  }
+
 
   private partner(): Observable<ProjectPartnerDetailDTO> {
     const initialPartner$ = combineLatest([
