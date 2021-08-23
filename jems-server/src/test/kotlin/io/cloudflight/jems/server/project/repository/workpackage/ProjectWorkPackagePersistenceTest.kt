@@ -509,6 +509,39 @@ class ProjectWorkPackagePersistenceTest {
     }
 
     @Test
+    fun `work package historical activities are correctly mapped without translations`() {
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, "A") } returns timestamp
+        every { repositoryActivity.findAllActivitiesByWorkPackageIdAsOfTimestamp(WORK_PACKAGE_ID, timestamp) } returns listOf(
+            WorkPackageActivityRowImpl(null, WORK_PACKAGE_ID, 1, 1, 2, null, null)
+        )
+        every { repositoryActivity.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(WORK_PACKAGE_ID, 1, timestamp) } returns emptyList()
+        every { repositoryActivityPartner.findAllByWorkPackageIdAndActivityNumberAsOfTimestamp(WORK_PACKAGE_ID, 1, timestamp) } returns listOf(
+            WorkPackageActivityPartnerRowImpl(
+                WORK_PACKAGE_ID,
+                1,
+                207L
+            ),
+            WorkPackageActivityPartnerRowImpl(
+                WORK_PACKAGE_ID,
+                1,
+                208L
+            ),
+        )
+
+        assertThat(persistence.getWorkPackageActivitiesForWorkPackage(WORK_PACKAGE_ID, PROJECT_ID, "A")).containsExactly(
+            WorkPackageActivity(
+                workPackageId = WORK_PACKAGE_ID,
+                activityNumber = 1,
+                startPeriod = 1,
+                endPeriod = 2,
+                deliverables = emptyList(),
+                partnerIds = setOf(207L, 208L),
+            )
+        )
+    }
+
+    @Test
     fun updateWorkPackageActivities() {
         val workPackageSlot = slot<WorkPackageEntity>()
         every { repository.findById(WORK_PACKAGE_ID) } returns Optional.of(
@@ -703,5 +736,20 @@ class ProjectWorkPackagePersistenceTest {
         assertThat(persistence.throwIfInvestmentNotExistsInProject(PROJECT_ID, INVESTMENT_ID)).isEqualTo(Unit)
     }
 
+    data class WorkPackageActivityRowImpl(
+        override val language: SystemLanguage?,
+        override val workPackageId: Long,
+        override val activityNumber: Int,
+        override val startPeriod: Int?,
+        override val endPeriod: Int?,
+        override val title: String?,
+        override val description: String?
+    ): WorkPackageActivityRow
+
+    data class WorkPackageActivityPartnerRowImpl(
+        override val workPackageId: Long,
+        override val activityNumber: Int,
+        override val projectPartnerId: Long
+    ): WorkPackageActivityPartnerRow
 
 }

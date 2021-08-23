@@ -106,12 +106,13 @@ fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
             activityNumber = groupedRows.value.first().activityNumber,
             startPeriod = groupedRows.value.first().startPeriod,
             endPeriod = groupedRows.value.first().endPeriod,
-            translatedValues = groupedRows.value.mapTo(HashSet()) {
-                WorkPackageActivityTranslatedValue(
-                    language = it.language!!,
-                    description = it.description,
-                    title = it.title
-                )
+            translatedValues = groupedRows.value.mapNotNullTo(HashSet()) {
+                if (it.language == null) null else
+                    WorkPackageActivityTranslatedValue(
+                        language = it.language!!,
+                        description = it.description,
+                        title = it.title
+                    )
             }
         )
     }
