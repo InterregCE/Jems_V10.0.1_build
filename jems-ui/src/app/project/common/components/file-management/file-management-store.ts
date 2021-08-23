@@ -228,10 +228,10 @@ export class FileManagementStore {
       this.investments$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve),
       this.canReadApplicationFile$,
-      this.permissionService.hasPermission(PermissionsEnum.ProjectFormRetrieve),
+      this.projectStore.callHasConfigWithInvestments$,
     ]).pipe(
-      map(([projectTitle, partners, investments, canReadAssessmentFiles, canReadApplicationFiles, canReadApplicationForm]) =>
-        this.getCategories(projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles, canReadApplicationForm)
+      map(([projectTitle, partners, investments, canReadAssessmentFiles, canReadApplicationFiles, callHasConfigWithInvestments]) =>
+        this.getCategories(projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles, callHasConfigWithInvestments)
       ),
       tap(filters => this.setParent(filters))
     );
@@ -242,7 +242,7 @@ export class FileManagementStore {
                         investments: InvestmentSummary[],
                         canReadApplication: boolean,
                         canReadAssessment: boolean,
-                        canReadApplicationForm: boolean): FileCategoryNode {
+                        callHasConfigWithInvestments: boolean): FileCategoryNode {
     const root: FileCategoryNode = {
       name: {i18nKey: projectTitle},
       info: {type: FileCategoryEnum.ALL},
@@ -255,19 +255,22 @@ export class FileManagementStore {
     };
     if (canReadApplication) {
       root.children?.push(applicationFiles);
-      if (canReadApplicationForm) {
-        applicationFiles.children = [
-          {
-            name: {i18nKey: 'file.tree.type.partner'},
-            info: {type: FileCategoryEnum.PARTNER},
-            children: partners.map(partner => ({
-              name: {
-                i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
-                i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
-              },
-              info: {type: FileCategoryEnum.PARTNER, id: partner.id}
-            }))
-          },
+      applicationFiles.children = [
+        {
+          name: {i18nKey: 'file.tree.type.partner'},
+          info: {type: FileCategoryEnum.PARTNER},
+          children: partners.map(partner => ({
+            name: {
+              i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
+              i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
+            },
+            info: {type: FileCategoryEnum.PARTNER, id: partner.id}
+          }))
+        },
+      ];
+
+      if (callHasConfigWithInvestments) {
+        applicationFiles.children.push(
           {
             name: {i18nKey: 'file.tree.type.investment'},
             info: {type: FileCategoryEnum.INVESTMENT},
@@ -276,7 +279,7 @@ export class FileManagementStore {
               info: {type: FileCategoryEnum.INVESTMENT, id: investment.id}
             }))
           }
-        ];
+        );
       }
     }
 
