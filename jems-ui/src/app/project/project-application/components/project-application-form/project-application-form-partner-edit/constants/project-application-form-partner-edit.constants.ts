@@ -20,6 +20,10 @@ export class ProjectApplicationFormPartnerEditConstants {
 
   public static partnerSubTypeEnums = [
     {
+      key: 'NOT_APPLICABLE',
+      value: null,
+    },
+    {
       key: 'MICRO_ENTERPRISE',
       value: 'MICRO_ENTERPRISE',
     },
@@ -34,10 +38,6 @@ export class ProjectApplicationFormPartnerEditConstants {
     {
       key: 'LARGE_ENTERPRISE',
       value: 'LARGE_ENTERPRISE',
-    },
-    {
-      key: 'NOT_APPLICABLE',
-      value: null,
     }
   ];
 

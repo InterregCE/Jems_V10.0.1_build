@@ -102,7 +102,7 @@
             <mat-label>{{'project.partner.subType' | translate}}</mat-label>
             <mat-select name="partnerSubType" formControlName="partnerSubType">
                 <mat-option *ngFor="let subType of ProjectApplicationFormPartnerEditConstants.partnerSubTypeEnums" [value]="subType.value">
-                    {{'project.application.form.relevance.target.group.' + subType.key | translate}}
+                    {{subType.value ? ('project.application.form.relevance.target.group.' + subType.key | translate) : ''}}
                 </mat-option>
             </mat-select>
         </mat-form-field>
