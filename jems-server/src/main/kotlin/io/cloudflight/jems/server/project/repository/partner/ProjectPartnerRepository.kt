@@ -98,7 +98,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              entity.vat_recovery AS vatRecovery,
              translation.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.partner_id
+             LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.source_entity_id
              WHERE entity.id = :id
              ORDER BY entity.id
              """,
