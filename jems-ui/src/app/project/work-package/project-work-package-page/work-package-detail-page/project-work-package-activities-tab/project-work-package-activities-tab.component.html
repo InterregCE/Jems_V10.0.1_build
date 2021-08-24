@@ -67,17 +67,17 @@
                         <mat-form-field class="example-chip-list" appearance="fill"
                                         *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.STATE_AID_PARTNERS_INVOLVED">
                             <mat-label>{{ 'project.work.package.tab.activity.partnersInvolved' | translate }}</mat-label>
-                            <mat-chip-list #chipList>
+                            <mat-chip-list #chipList [disabled]="!data.isEditable">
                                 <mat-chip
                                         *ngFor="let partner of partners(i).value;let partnerIndex = index"
                                         [selectable]="false"
                                         [removable]="true"
                                         (removed)="removePartner(i, partnerIndex)">
                                     {{ getAbbreviationForPartnerId(data.partners, partner.id)}}
-                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                    <mat-icon *ngIf="data.isEditable" matChipRemove>cancel</mat-icon>
                                 </mat-chip>
                                 <input
-                                        placeholder="{{ 'project.work.package.tab.activity.addPartner' | translate }}"
+                                        [placeholder]="data.isEditable ? ('project.work.package.tab.activity.searchForPartner' | translate) : ''"
                                         #filterPartners
                                         [matAutocomplete]="auto"
                                         [matChipInputFor]="chipList"

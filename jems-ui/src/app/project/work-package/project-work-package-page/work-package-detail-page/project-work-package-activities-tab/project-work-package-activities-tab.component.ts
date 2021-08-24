@@ -34,7 +34,8 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
     activities: WorkPackageActivityDTO[],
     periods: ProjectPeriodDTO[],
     partners: ProjectPartner[],
-    workPackageNumber: number
+    workPackageNumber: number,
+    isEditable: boolean,
   }>;
 
   constructor(public formService: FormService,
@@ -60,12 +61,14 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
       this.workPackageStore.workPackage$,
       this.workPackageStore.projectForm$,
       this.partnerStore.partners$,
+      this.workPackageStore.isProjectEditable$,
     ]).pipe(
-      map(([activities, workPackage, projectForm, partners]) => ({
+      map(([activities, workPackage, projectForm, partners, isEditable]) => ({
           activities,
           periods: projectForm.periods,
           workPackageNumber: workPackage.number,
           partners,
+          isEditable,
         })
       ));
   }
