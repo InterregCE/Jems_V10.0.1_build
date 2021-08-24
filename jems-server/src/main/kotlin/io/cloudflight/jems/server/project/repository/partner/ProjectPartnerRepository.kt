@@ -169,7 +169,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              addresses.country as country
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses ON entity.id = addresses.partner_id
-             WHERE entity.project_id = :projectId AND addresses.type = 'Organization'
+             WHERE entity.project_id = :projectId AND (addresses.type = 'Organization' || addresses.type IS NULL)
              """,
         countQuery = """
              SELECT
@@ -190,13 +190,10 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              SELECT
              entity.*,
              entity.sort_number as sortNumber,
-             (SELECT
-                addresses.country
-                from project_partner_address
-                FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses
-                WHERE entity.id = addresses.partner_id AND addresses.type = 'Organization') as country
+             addresses.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             WHERE entity.project_id = :projectId
+             LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses ON entity.id = addresses.partner_id
+             WHERE entity.project_id = :projectId AND (addresses.type = 'Organization' || addresses.type IS NULL)
              ORDER BY entity.sort_number ASC
              LIMIT 30
              """,
