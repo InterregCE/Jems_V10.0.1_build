@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.workpackage.activity
 
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
+import io.cloudflight.jems.server.project.service.workpackage.activity.update_activity.PartnersNotFound
 
 private const val MAX_ALLOWED_ACTIVITIES = 20
 private const val MAX_ALLOWED_DELIVERABLES = 20
@@ -29,17 +30,11 @@ fun validateWorkPackageActivities(workPackageActivities: Collection<WorkPackageA
 
 fun validateWorkPackageActivityPartners(
     workPackageActivities: Collection<WorkPackageActivity>,
-    projectPartnerIds: List<Long>?
+    availablePartnerIds: Set<Long>
 ) {
-    var assignedPartners = 0
-    var partnersIncorrect = false
-    workPackageActivities.forEach {
-        assignedPartners = assignedPartners.plus(it.partnerIds.size)
-        if (!projectPartnerIds.isNullOrEmpty() && !projectPartnerIds.containsAll(it.partnerIds)) {
-            partnersIncorrect = true
-        }
-    }
-    if ((projectPartnerIds.isNullOrEmpty() && assignedPartners > 0) || partnersIncorrect) {
-        throw I18nValidationException(i18nKey = "workPackage.activity.partner.not.assigned.to.project")
-    }
+    val allPartnerIds = workPackageActivities.flatMapTo(HashSet()) { it.partnerIds }
+    val notAvailablePartnerIds = allPartnerIds subtract availablePartnerIds
+
+    if (notAvailablePartnerIds.isNotEmpty())
+        throw PartnersNotFound(notAvailablePartnerIds)
 }

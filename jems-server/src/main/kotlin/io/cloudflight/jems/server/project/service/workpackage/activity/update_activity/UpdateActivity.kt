@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.workpackage.activity.update_activity
 
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
@@ -18,15 +19,16 @@ class UpdateActivity(
 
     @CanUpdateProjectWorkPackage
     @Transactional
+    @ExceptionWrapper(UpdateActivityException::class)
     override fun updateActivitiesForWorkPackage(
         projectId: Long,
         workPackageId: Long,
         activities: List<WorkPackageActivity>
     ): List<WorkPackageActivity> {
         validateWorkPackageActivities(activities)
-        val projectPartnerIds = partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.unsorted())
-            .mapNotNull { it.id }
-        validateWorkPackageActivityPartners(activities, projectPartnerIds)
+        val availablePartnerIds = partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.unsorted())
+            .mapNotNullTo(HashSet()) { it.id }
+        validateWorkPackageActivityPartners(activities, availablePartnerIds)
 
         return persistence.updateWorkPackageActivities(workPackageId, activities)
     }

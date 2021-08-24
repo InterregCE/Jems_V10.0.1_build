@@ -127,10 +127,10 @@ internal class UpdateActivityTest {
     @Test
     fun `update activities when partner is not assigned to project`() {
         every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
-        val exception = assertThrows<I18nValidationException> {
+        val exception = assertThrows<PartnersNotFound> {
             updateActivity.updateActivitiesForWorkPackage(1L, 2L, listOf(activity1.copy(partnerIds = setOf(3, 10))))
         }
-        assertThat(exception.i18nKey).isEqualTo("workPackage.activity.partner.not.assigned.to.project")
+        assertThat(exception.message).isEqualTo("PartnerIds: 10")
     }
 
     @Test
