@@ -57,6 +57,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     isOfficeOnDirectFlatRateActive: boolean,
     isTravelAndAccommodationFlatRateActive: boolean,
     isOtherFlatRateBasedOnStaffCostActive: boolean,
+    unitCostsWithMultipleCategoriesDefined: boolean
   };
 
   private otherCostsFlatRateTotal$: Observable<number>;
@@ -143,6 +144,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
           isOfficeOnDirectFlatRateActive: !!budgetOptions.officeAndAdministrationOnDirectCostsFlatRate,
           isTravelAndAccommodationFlatRateActive: !!budgetOptions.travelAndAccommodationOnStaffCostsFlatRate,
           isOtherFlatRateBasedOnStaffCostActive: !!budgetOptions.otherCostsOnStaffCostsFlatRate,
+          unitCostsWithMultipleCategoriesDefined: unitCosts.some((cost: ProgrammeUnitCost) => !cost.isOneCostCategory)
         };
       }),
       untilDestroyed(this)

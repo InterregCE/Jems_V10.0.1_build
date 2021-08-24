@@ -107,7 +107,7 @@
                     </app-general-budget-table>
                 </ng-container>
 
-                <ng-container *ngIf="data.unitCosts?.length">
+                <ng-container *ngIf="data.unitCostsWithMultipleCategoriesDefined">
                     <h4>{{'project.partner.budget.unitcosts' | translate}}</h4>
                     <app-unit-costs-budget-table
                             *ngIf="unitCosts"
