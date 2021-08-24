@@ -20,6 +20,7 @@ fun List<ProjectResult>.toIndexedEntity(
         translatedValues = combineDescriptionsToTranslations(resultId, projectResult.description),
         periodNumber = projectResult.periodNumber,
         programmeResultIndicatorEntity = resolveProgrammeResultIndicatorEntity.invoke(projectResult.programmeResultIndicatorId),
+        baseline  = projectResult.baseline,
         targetValue = projectResult.targetValue,
     )
 }.toSet()
@@ -44,6 +45,7 @@ fun Iterable<ProjectResultEntity>.toModel() = sortedBy { it.resultId.resultNumbe
         resultNumber = it.resultId.resultNumber,
         programmeResultIndicatorId = it.programmeResultIndicatorEntity?.id,
         programmeResultIndicatorIdentifier = it.programmeResultIndicatorEntity?.identifier,
+        baseline = it.baseline,
         targetValue = it.targetValue,
         periodNumber = it.periodNumber,
         description = it.translatedValues.extractField { projectResultTransl -> projectResultTransl.description },
@@ -60,6 +62,7 @@ fun List<ProjectResultRow>.toProjectResultHistoricalData() =
             resultNumber = groupedRows.value.first().resultNumber,
             programmeResultIndicatorId = groupedRows.value.first().programmeResultIndicatorId,
             programmeResultIndicatorIdentifier = groupedRows.value.first().programmeResultIndicatorIdentifier,
+            baseline = groupedRows.value.first().baseline,
             targetValue = groupedRows.value.first().targetValue,
             periodNumber = groupedRows.value.first().periodNumber,
             description = groupedRows.value.extractField { it.description }

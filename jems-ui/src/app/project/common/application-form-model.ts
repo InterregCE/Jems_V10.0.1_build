@@ -176,6 +176,7 @@ export const APPLICATION_FORM = {
     PROJECT_RESULT: {
       PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT: 'application.config.project.result.indicator.and.measurement.unit',
       TARGET_VALUE: 'application.config.project.result.target.value',
+      BASELINE: 'application.config.project.result.baseline',
       DELIVERY_PERIOD: 'application.config.project.result.delivery.period',
       DESCRIPTION: 'application.config.project.result.description'
     },

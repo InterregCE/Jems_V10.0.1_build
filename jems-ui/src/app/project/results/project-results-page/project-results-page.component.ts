@@ -9,6 +9,7 @@ import {InputTranslation, ProjectPeriodDTO, ProjectResultDTO, ResultIndicatorSum
 import {take} from 'rxjs/internal/operators';
 import {ActivatedRoute} from '@angular/router';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {MatSelectChange} from '@angular/material/select/select';
 
 @Component({
   selector: 'app-project-results-page',
@@ -54,7 +55,7 @@ export class ProjectResultsPageComponent implements OnInit {
         map(([results, resultIndicators, periods, projectId, projectTitle]) => (
           {results, resultIndicators, periods, projectId, projectTitle})
         ),
-        tap(data => this.resetForm(data.results))
+        tap(data => this.resetForm(data.results, data.resultIndicators))
       );
   }
 
@@ -92,18 +93,29 @@ export class ProjectResultsPageComponent implements OnInit {
     return indicators.find(indicator => indicator.id === indicatorId)?.measurementUnit || [];
   }
 
-  resetForm(results: ProjectResultDTO[]): void {
+  resetForm(results: ProjectResultDTO[], resultIndicators: ResultIndicatorSummaryDTO[]): void {
     this.results.clear();
-    results.forEach((result) => this.addResult(result));
+    results.forEach((result) => this.addResult(result, resultIndicators));
     this.formService.resetEditable();
   }
 
-  private addResult(existing?: ProjectResultDTO): void {
+  updateBaseLineData(event: MatSelectChange, resultIndicators: ResultIndicatorSummaryDTO[], index: number): void {
+    const baselineValue = resultIndicators.find(indicator => indicator.id === event.value)?.baseline || 0;
+    this.results.controls[index]?.get(this.constants.BASELINE_MAX_VALUE.name)?.patchValue(baselineValue);
+    setTimeout(() => {
+      this.results.controls[index]?.get(this.constants.BASELINE.name)?.patchValue(baselineValue);
+    });
+  }
+
+  private addResult(existing?: ProjectResultDTO, resultIndicators?: ResultIndicatorSummaryDTO[]): void {
+    const baselineMaxValue =  resultIndicators?.find(it => it.id === existing?.programmeResultIndicatorId)?.baseline || 99_999_999;
     this.results.push(this.formBuilder.group(
       {
         programmeResultIndicatorId: this.formBuilder.control(existing?.programmeResultIndicatorId),
         resultNumber: this.formBuilder.control(existing?.resultNumber || this.results.length),
         targetValue: this.formBuilder.control(existing?.targetValue || 1),
+        baseline: this.formBuilder.control(existing?.baseline || 0),
+        baselineMaxValue: this.formBuilder.control(baselineMaxValue),
         periodNumber: this.formBuilder.control(existing?.periodNumber || ''),
         description: this.formBuilder.control(existing?.description || []),
       })

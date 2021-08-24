@@ -2,7 +2,7 @@
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle}"
                            subTitleKey="project.application.form.section.part.c">
     <app-form (save)="updateResults()"
-              (discard)="resetForm(data.results)">
+              (discard)="resetForm(data.results, data.resultIndicators)">
         <form appFormLayout [formGroup]="form">
             <h3>{{'project.application.form.section.part.c.subsection.five' | translate}}</h3>
             <p>{{'project.results.intro' | translate}}</p>
@@ -20,7 +20,8 @@
                         <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT" [class.mat-form-field-invalid]="!data.resultIndicators.length">
                             <mat-label>{{'project.results.result.indicator' | translate}}</mat-label>
                             <mat-select [disabled]="!data.resultIndicators.length"
-                                        [formControlName]="constants.RESULT_INDICATOR.name">
+                                        [formControlName]="constants.RESULT_INDICATOR.name"
+                                        (selectionChange)="updateBaseLineData($event, data.resultIndicators, i)">
                                 <mat-option *ngFor="let resultIndicator of data.resultIndicators"
                                             [value]="resultIndicator.id">
                                     {{resultIndicator.name | translateBySystemLanguage | async}}
@@ -39,9 +40,15 @@
                                        [disabled]="form.disabled">
                             </mat-form-field>
 
+                            <mat-form-field appFormFieldWidth="medium" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.BASELINE">
+                                <mat-label>{{'project.results.result.baseline' | translate}}</mat-label>
+                                <input currencyMask type="decimal" [options]="{min: 0, max: result.get(constants.BASELINE_MAX_VALUE.name)?.value, align: 'right'}"
+                                       name="baseline" formControlName="baseline" matInput>
+                            </mat-form-field>
+
                             <mat-form-field appFormFieldWidth="medium" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.TARGET_VALUE">
                                 <mat-label>{{'project.results.result.target.value' | translate}}</mat-label>
-                                <input currencyMask type="integer" [options]="{min: 1, max: 99999999, align: 'right'}"
+                                <input currencyMask type="decimal" [options]="{min: 1, max: 99999999, align: 'right'}"
                                        name="targetValue" formControlName="targetValue" matInput>
                             </mat-form-field>
 

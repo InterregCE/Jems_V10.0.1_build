@@ -16,7 +16,11 @@ interface GeneralValidatorService {
 
     fun numberBetween(number: Int?, minValue: Int, maxValue: Int, fieldName: String): Map<String, I18nMessage>
 
-    fun numberBetween(number: BigDecimal?, minValue: BigDecimal, maxValue: BigDecimal, fieldName: String): Map<String, I18nMessage>
+    fun numberBetween(
+        number: BigDecimal?, minValue: BigDecimal, maxValue: BigDecimal, fieldName: String
+    ): Map<String, I18nMessage>
+
+    fun scale(number: BigDecimal?, maxScale: Int, fieldName: String): Map<String, I18nMessage>
 
     fun notBlank(input: String?, fieldName: String): Map<String, I18nMessage>
 
@@ -28,11 +32,15 @@ interface GeneralValidatorService {
 
     fun minDecimal(input: BigDecimal?, minValue: BigDecimal, fieldName: String): Map<String, I18nMessage>
 
-    fun digits(input: BigDecimal?, maxIntegerLength: Int, maxFractionLength: Int, fieldName: String): Map<String, I18nMessage>
+    fun digits(
+        input: BigDecimal?, maxIntegerLength: Int, maxFractionLength: Int, fieldName: String
+    ): Map<String, I18nMessage>
 
     fun onlyDigits(input: String?, fieldName: String): Map<String, I18nMessage>
 
-    fun startDateBeforeEndDate(start: ZonedDateTime?, end: ZonedDateTime?, startDateFieldName: String, endDateFieldName: String): Map<String, I18nMessage>
+    fun startDateBeforeEndDate(
+        start: ZonedDateTime?, end: ZonedDateTime?, startDateFieldName: String, endDateFieldName: String
+    ): Map<String, I18nMessage>
 
     fun dateNotInFuture(date: LocalDate, fieldName: String): Map<String, I18nMessage>
 

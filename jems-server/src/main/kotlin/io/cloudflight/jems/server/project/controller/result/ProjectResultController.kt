@@ -4,19 +4,19 @@ import io.cloudflight.jems.api.project.dto.result.InputProjectResultDTO
 import io.cloudflight.jems.api.project.result.ProjectResultApi
 import io.cloudflight.jems.api.project.dto.result.ProjectResultDTO
 import io.cloudflight.jems.server.project.service.result.get_project_result.GetProjectResultInteractor
-import io.cloudflight.jems.server.project.service.result.update_project_result.UpdateProjectResultInteractor
+import io.cloudflight.jems.server.project.service.result.update_project_results.UpdateProjectResultsInteractor
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProjectResultController(
     private val getProjectResultInteractor: GetProjectResultInteractor,
-    private val updateProjectResultInteractor: UpdateProjectResultInteractor
+    private val updateProjectResultsInteractor: UpdateProjectResultsInteractor
 ) : ProjectResultApi {
     override fun getProjectResults(projectId: Long, version: String?): List<ProjectResultDTO> {
         return getProjectResultInteractor.getResultsForProject(projectId, version).toDto()
     }
 
     override fun updateProjectResults(projectId: Long, projectResults: List<InputProjectResultDTO>): List<ProjectResultDTO> {
-        return updateProjectResultInteractor.updateResultsForProject(projectId, projectResults.toModel()).toDto()
+        return updateProjectResultsInteractor.updateResultsForProject(projectId, projectResults.toModel()).toDto()
     }
 }

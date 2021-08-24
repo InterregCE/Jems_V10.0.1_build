@@ -153,4 +153,5 @@ fun ResultIndicatorEntity.toResultIndicatorSummary() =
         name = getName(),
         programmePriorityCode = programmePriorityPolicyEntity?.programmePriority?.code,
         measurementUnit = getMeasurementUnit(),
+        baseline = baseline
     )

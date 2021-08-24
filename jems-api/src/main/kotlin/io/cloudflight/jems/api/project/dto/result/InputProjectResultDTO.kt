@@ -5,6 +5,7 @@ import java.math.BigDecimal
 
 data class InputProjectResultDTO(
     val programmeResultIndicatorId: Long? = null,
+    val baseline: BigDecimal?,
     val targetValue: BigDecimal? = null,
     val periodNumber: Int? = null,
     val description: Set<InputTranslation> = emptySet()

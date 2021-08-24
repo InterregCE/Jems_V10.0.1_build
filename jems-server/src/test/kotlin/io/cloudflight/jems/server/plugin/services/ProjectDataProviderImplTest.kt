@@ -458,6 +458,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             resultNumber = 1,
             programmeResultIndicatorId = 2L,
             programmeResultIndicatorIdentifier = "ID01",
+            baseline = BigDecimal.ZERO,
             targetValue = BigDecimal.ONE,
             periodNumber = 2,
             description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description"))

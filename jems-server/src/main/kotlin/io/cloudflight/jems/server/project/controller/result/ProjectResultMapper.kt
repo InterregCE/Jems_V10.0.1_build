@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 fun List<InputProjectResultDTO>.toModel() = map {
     ProjectResult(
         programmeResultIndicatorId = it.programmeResultIndicatorId,
+        baseline = it.baseline,
         targetValue = it.targetValue,
         periodNumber = it.periodNumber,
         description = it.description
@@ -18,6 +19,7 @@ fun List<ProjectResult>.toDto() = map {
         resultNumber = it.resultNumber,
         programmeResultIndicatorId = it.programmeResultIndicatorId,
         programmeResultIndicatorIdentifier = it.programmeResultIndicatorIdentifier,
+        baseline = it.baseline,
         targetValue = it.targetValue,
         periodNumber = it.periodNumber,
         description = it.description

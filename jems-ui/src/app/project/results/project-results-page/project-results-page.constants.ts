@@ -18,6 +18,14 @@ export class ProjectResultsPageConstants {
     name: 'targetValue',
   };
 
+  public static BASELINE: AppControl = {
+    name: 'baseline',
+  };
+
+  public static BASELINE_MAX_VALUE: AppControl = {
+    name: 'baselineMaxValue',
+  };
+
   public static PERIOD: AppControl = {
     name: 'periodNumber',
   };

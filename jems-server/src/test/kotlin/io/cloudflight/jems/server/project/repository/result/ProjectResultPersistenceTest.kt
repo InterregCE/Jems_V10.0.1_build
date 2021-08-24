@@ -63,6 +63,7 @@ class ProjectResultPersistenceTest: UnitTest() {
             resultNumber = 1,
             programmeResultIndicatorId = INDICATOR_ID,
             programmeResultIndicatorIdentifier = "IND05",
+            baseline = BigDecimal.ZERO,
             targetValue = BigDecimal.ONE,
             periodNumber = 10,
             description = setOf(
@@ -74,6 +75,7 @@ class ProjectResultPersistenceTest: UnitTest() {
             resultNumber = 1,
             programmeResultIndicatorId = INDICATOR_ID,
             programmeResultIndicatorIdentifier = "IND05",
+            baseline = BigDecimal.ZERO,
             targetValue = BigDecimal.ONE,
             periodNumber = 10,
             description = setOf(
@@ -84,6 +86,7 @@ class ProjectResultPersistenceTest: UnitTest() {
         )
 
         val result2_model = ProjectResult(
+            baseline = BigDecimal.ZERO,
             resultNumber = 2,
             periodNumber = 20,
         )
@@ -97,10 +100,12 @@ class ProjectResultPersistenceTest: UnitTest() {
             ),
             periodNumber = 10,
             programmeResultIndicatorEntity = indicatorResult,
+            baseline = BigDecimal.ZERO,
             targetValue = BigDecimal.ONE,
         )
 
         val result2 = ProjectResultEntity(
+            baseline = BigDecimal.ZERO,
             resultId = resultId2,
             periodNumber = 20,
         )
@@ -159,6 +164,7 @@ class ProjectResultPersistenceTest: UnitTest() {
         val version = "2.0"
         val mockPRRow: ProjectResultRow = mockk()
         every { mockPRRow.resultNumber } returns result1_model.resultNumber
+        every { mockPRRow.baseline } returns result1_model.baseline
         every { mockPRRow.programmeResultIndicatorId } returns result1_model.programmeResultIndicatorId
         every { mockPRRow.programmeResultIndicatorIdentifier } returns result1_model.programmeResultIndicatorIdentifier
         every { mockPRRow.targetValue } returns result1_model.targetValue

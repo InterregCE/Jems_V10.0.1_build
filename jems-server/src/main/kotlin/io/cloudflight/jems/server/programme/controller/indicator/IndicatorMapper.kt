@@ -126,5 +126,6 @@ fun ResultIndicatorSummary.toResultIndicatorSummaryDTO() = ResultIndicatorSummar
     code = code,
     name = name,
     programmePriorityCode = programmePriorityCode,
-    measurementUnit = measurementUnit
+    measurementUnit = measurementUnit,
+    baseline = baseline
 )

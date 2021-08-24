@@ -18,6 +18,7 @@ class GetProjectResultTest: UnitTest() {
         resultNumber = 1,
         programmeResultIndicatorId = 74L,
         programmeResultIndicatorIdentifier = "DFG98",
+        baseline = BigDecimal.ZERO,
         targetValue = BigDecimal.TEN,
         periodNumber = 4,
         description = setOf(InputTranslation(language = EN, translation = "EN desc")),

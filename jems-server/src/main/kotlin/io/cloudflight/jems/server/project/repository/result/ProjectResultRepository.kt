@@ -12,6 +12,7 @@ interface ProjectResultRepository : CrudRepository<ProjectResultEntity, Long> {
     @Query(
         value ="""
              SELECT
+             entity.baseline,
              entity.result_number AS resultNumber,
              entity.indicator_result_id as programmeResultIndicatorId,
              (SELECT identifier

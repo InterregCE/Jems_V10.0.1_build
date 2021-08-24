@@ -26,6 +26,9 @@ data class ProjectResultEntity (
     val programmeResultIndicatorEntity: ResultIndicatorEntity? = null,
 
     @Column
+    val baseline: BigDecimal? = null,
+
+    @Column
     val targetValue: BigDecimal? = null,
 
     )

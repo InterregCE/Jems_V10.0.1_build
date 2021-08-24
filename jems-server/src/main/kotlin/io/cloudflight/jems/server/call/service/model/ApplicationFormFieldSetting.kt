@@ -441,6 +441,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.result.indicator.and.measurement.unit",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PROJECT_RESULTS_BASELINE(
+        "application.config.project.result.baseline",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PROJECT_RESULTS_TARGET_VALUE(
         "application.config.project.result.target.value",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -471,11 +475,11 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     ),
     PROJECT_COOPERATION_CRITERIA(
         "application.config.project.cooperation.criteria",
-        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_HORIZONTAL_PRINCIPLES(
         "application.config.project.horizontal.principles",
-        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_OWNERSHIP(
         "application.config.project.ownership",

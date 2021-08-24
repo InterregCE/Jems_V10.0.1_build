@@ -291,16 +291,18 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
             }
 
         @TestFactory
-        fun `should return correct validation result when input big decimal is not in the range`() =
+        fun `should return correct validation result when input big decimal is not in the range or scale is not correct`() =
             listOf(
-                50, 110
+                BigDecimal.TEN,
+                BigDecimal.valueOf(5999 ,2),
+                BigDecimal.valueOf(101),
             ).map { input ->
                 DynamicTest.dynamicTest(
                     "should return correct validation result when input big decimal is not in the range - (input = ${input})"
                 ) {
-                    val minValue = 60
-                    val maxValue = 100
-                    val validationResult = generalValidator.numberBetween(input, minValue, maxValue, "input")
+                    val minValue = BigDecimal.valueOf(60)
+                    val maxValue = BigDecimal.valueOf(100)
+                    val validationResult = generalValidator.numberBetween(input, minValue, maxValue,  "input")
 
                     assertThat(validationResult["input"])
                         .isEqualTo(
@@ -316,6 +318,30 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
                 }
             }
     }
+
+    @TestFactory
+    fun `should return correct validation result when number scale is not valid`() =
+        listOf(
+            BigDecimal.valueOf(99, 3 ),
+            BigDecimal.valueOf(69999, 4)
+        ).map { input ->
+            DynamicTest.dynamicTest(
+                "should return correct validation result when number scale is not valid - (input = ${input})"
+            ) {
+                val validationResult = generalValidator.scale(input,2,  "input")
+
+                assertThat(validationResult["input"])
+                    .isEqualTo(
+                        I18nMessage(
+                            "common.error.field.number.scale.is.not.valid",
+                            mapOf(
+                                "number" to "$input",
+                                "maxScale" to 2.toString(),
+                            )
+                        )
+                    )
+            }
+        }
 
     @Test
     fun `should throw AppInputValidationException when there is at least one validation error`() {

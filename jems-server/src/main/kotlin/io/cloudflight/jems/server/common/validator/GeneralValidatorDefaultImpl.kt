@@ -62,6 +62,19 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                 )
         }
 
+    override fun scale(number: BigDecimal?, maxScale: Int, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (number != null && number.scale() > maxScale)
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.field.number.scale.is.not.valid",
+                    i18nArguments = mapOf(
+                        "number" to "$number",
+                        "maxScale" to "$maxScale",
+                    )
+                )
+        }
+
+
     override fun numberBetween(number: BigDecimal?, minValue: BigDecimal, maxValue: BigDecimal, fieldName: String) =
         mutableMapOf<String, I18nMessage>().apply {
             if (number != null && (number < minValue || number > maxValue))
