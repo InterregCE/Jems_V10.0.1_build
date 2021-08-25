@@ -50,6 +50,7 @@ management:
 info:
   helpdesk-url: "https://helpdesk.interact-eu.net"
   accessibility-statement-url: ""
+  terms-privacy-policy-url: ""
 app:
   security:
     default-password-prefix: Jems@2020

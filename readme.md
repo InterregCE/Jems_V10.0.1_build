@@ -119,6 +119,7 @@ You can define following startup parameters (see also [application.yaml](jems-se
   - `minio-storage.secretKey` with secret key for Minio (or env variable `MINIO_SECRET_KEY`)
 - `info.helpdesk-url` URL, which is available in the main HELP tooltip
 - `info.accessibility-statement-url` URL for accessibility statement, which is available in the login page that can be modified by the user
+- `info.terms-privacy-policy-url` URL for the Terms of service and privacy policy page, that is available in the login and register pages and can be modified by the user
 - `app.translations-folder` Path for translations folder that will be uploaded by the users
 
 

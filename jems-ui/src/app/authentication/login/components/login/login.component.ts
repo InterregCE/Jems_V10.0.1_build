@@ -28,6 +28,7 @@ export class LoginComponent extends AbstractForm {
   largeLogo$ = this.resourceStore.largeLogo$;
 
   accessibilityStatementUrl$: Observable<string>;
+  termsAndPrivacyPolicyUrl$: Observable<string>;
 
   constructor(private readonly formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef,
@@ -37,6 +38,10 @@ export class LoginComponent extends AbstractForm {
     super(changeDetectorRef, translationService);
     this.accessibilityStatementUrl$ = this.infoService.getVersionInfo().pipe(
       map(info => info.accessibilityStatementUrl)
+    );
+
+    this.termsAndPrivacyPolicyUrl$ = this.infoService.getVersionInfo().pipe(
+      map(info => info.termsAndPrivacyPolicyUrl)
     );
   }
 
