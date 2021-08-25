@@ -442,7 +442,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             translatedValues = setOf(WorkPackageActivityTranslatedValue(SystemLanguage.EN, "title", "description")),
             startPeriod = 3,
             endPeriod = 4,
-            deliverables = listOf(WorkPackageActivityDeliverable())
+            deliverables = listOf(WorkPackageActivityDeliverable()),
+            partnerIds = setOf(5, 6)
         )
         private val workPackageOutput = WorkPackageOutput(
             workPackageId = 1L,
@@ -721,7 +722,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                         deliverableNumber = 0,
                                         period = null
                                     )
-                                )
+                                ),
+                                partnerIds = activity.partnerIds
                             )
                         ),
                         outputs = listOf(

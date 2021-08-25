@@ -145,7 +145,8 @@ fun List<WorkPackageActivity>.toActivityDataModel() = map {
         title = it.translatedValues.extractField { it.title }.toDataModel(),
         startPeriod = it.startPeriod,
         endPeriod = it.endPeriod,
-        deliverables = it.deliverables.toDeliverableDataModel()
+        deliverables = it.deliverables.toDeliverableDataModel(),
+        partnerIds = it.partnerIds
     )
 }.toList()
 
