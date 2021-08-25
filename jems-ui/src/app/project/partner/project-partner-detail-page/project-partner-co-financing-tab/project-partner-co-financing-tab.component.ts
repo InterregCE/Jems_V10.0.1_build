@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   FormControl,
@@ -25,7 +26,7 @@ import {NumberService} from '@common/services/number.service';
 import {ProjectPartnerDetailPageStore} from '../project-partner-detail-page.store';
 import {ProjectPartnerCoFinancingTabConstants} from './project-partner-co-financing-tab.constants';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import { APPLICATION_FORM } from '@project/common/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 
 const totalContributionValidator = (expectedAmount: number): ValidatorFn => (formArray: FormArray) => {
@@ -64,6 +65,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
   }>;
 
   coFinancingForm: FormGroup;
+  multipleFundsAllowed: boolean;
 
   private publicContributionSubTotal$: Observable<number>;
   private privateContributionSubTotal$: Observable<number>;
@@ -72,23 +74,40 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
   private showTotalContributionWarning$: Observable<boolean>;
   private partnerContributionErrorsArgs$: Observable<{}>;
 
-  multipleFundsAllowed: boolean;
-  hasASecondFundBeenAdded = false;
-
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,
               private pageStore: ProjectPartnerDetailPageStore) {
   }
 
+  get partnerAmount(): FormControl {
+    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.partnerAmount) as FormControl;
+  }
+
+  get partnerPercentage(): FormControl {
+    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.partnerPercentage) as FormControl;
+  }
+
+  get partnerContributions(): FormArray {
+    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.partnerContributions) as FormArray;
+  }
+
+  get finances(): FormArray {
+    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.finances) as FormArray;
+  }
+
+  getMaxFundPercentage(fund: AbstractControl): number {
+    const totalPercentageLeft = NumberService.sum(
+      this.finances.controls
+        .filter(control => control !== fund)
+        .map(control => control.get(this.constants.FORM_CONTROL_NAMES.fundPercentage)?.value || 0)
+    );
+    return NumberService.minus(100, totalPercentageLeft);
+  }
+
   ngOnInit(): void {
-
     this.initForm();
-
     this.handleResetForm();
-
     this.handleTotalContributionCalculations();
-
-    this.handleCoFinancingCalculations();
 
     this.showTotalContributionWarning$ = combineLatest([this.contributionTotal$, this.formService.dirty$.pipe(startWith(false))]).pipe(
       map(([total, dirty]) => total !== this.partnerAmount.value && !dirty)
@@ -123,7 +142,8 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
           partnerContributionErrorsArgs,
           editable
         };
-      }));
+      })
+    );
 
   }
 
@@ -154,41 +174,69 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     ).subscribe();
   }
 
-  addAdditionalFund(): void {
-    this.hasASecondFundBeenAdded = true;
-    this.coFinancingForm.markAsDirty();
-    this.additionalFundId.setValidators([Validators.required]);
-    this.additionalFundPercentage.setValidators([Validators.required]);
-    this.additionalFundId.patchValue(null);
-    this.additionalFundPercentage.patchValue(0);
-    this.additionalFundId.updateValueAndValidity();
-    this.additionalFundPercentage.updateValueAndValidity();
+  addAdditionalFund(fund?: ProjectPartnerCoFinancingOutputDTO): void {
+    this.finances.push(this.formBuilder.group({
+      fundId: this.formBuilder.control(fund?.fund?.id, Validators.required),
+      fundType: ProjectPartnerCoFinancingInputDTO.FundTypeEnum.MainFund,
+      percentage: this.formBuilder.control(fund?.percentage || 0, Validators.required),
+    }));
   }
 
-  filteredFunds(allFunds: ProgrammeFundDTO[], selectedFund: number | null): ProgrammeFundDTO[] {
-    if (selectedFund) {
-      return allFunds.filter((fund: ProgrammeFundDTO) => fund.id !== selectedFund);
+  notSelectedFunds(allFunds: ProgrammeFundDTO[], currentFund?: AbstractControl): ProgrammeFundDTO[] {
+    const selectedFundIds = this.finances.controls.map(
+      control => control.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value
+    );
+    const currentFundId = currentFund?.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value;
+    return allFunds.filter((fund: ProgrammeFundDTO) =>
+      currentFundId && currentFundId === fund.id ? true : !selectedFundIds.includes(fund.id)
+    );
+  }
+
+  deleteAdditionalFund(fundIndex: number, totalBudget: number): void {
+    this.coFinancingForm.markAsDirty();
+    this.finances.removeAt(fundIndex);
+    this.financesPercentsChanged(totalBudget);
+  }
+
+  canAddFund(allFunds: ProgrammeFundDTO[], editable: boolean): boolean {
+    return this.multipleFundsAllowed && editable
+      && this.finances.length < this.constants.MAX_NUMBER_OF_FINANCES
+      && !this.finances.controls.find(control => !control.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value)
+      && !!this.notSelectedFunds(allFunds)?.length;
+  }
+
+  getFundAmount(fund: AbstractControl, totalBudget: number): number {
+    const fundPercentage = fund.get(this.constants.FORM_CONTROL_NAMES.fundPercentage)?.value || 0;
+    return NumberService.truncateNumber(NumberService.product([totalBudget, (fundPercentage / 100)]));
+  }
+
+  financesPercentsChanged(totalBudget: number): void {
+    const financesTotalPercent = NumberService.sum(
+      this.finances.controls
+        .map(control => control.get(this.constants.FORM_CONTROL_NAMES.fundPercentage)?.value || 0)
+    );
+    const financesTotalAmount = NumberService.sum(
+      this.finances.controls.map(control => this.getFundAmount(control, totalBudget))
+    );
+
+    this.partnerPercentage.setValue(NumberService.minus(100, financesTotalPercent));
+    this.partnerAmount.setValue(NumberService.minus(totalBudget, financesTotalAmount));
+    this.partnerContributions.setValidators([totalContributionValidator(this.partnerAmount.value), Validators.maxLength(this.constants.MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS)]);
+    this.partnerContributions.updateValueAndValidity();
+  }
+
+  private resetForm(financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO, totalBudget: number): void {
+    const mainFunds = financingAndContribution.finances.filter(
+      x => x.fundType === ProjectPartnerCoFinancingInputDTO.FundTypeEnum.MainFund
+    );
+    this.finances.clear();
+    mainFunds.forEach(fund => this.addAdditionalFund(fund));
+    if (!mainFunds.length) {
+      this.addAdditionalFund();
     }
-    return allFunds;
-  }
 
-  deleteAdditionalFund(): void {
-    this.hasASecondFundBeenAdded = false;
-    this.coFinancingForm.markAsDirty();
-    this.additionalFundId.patchValue(null);
-    this.additionalFundId.setValidators(null);
-    this.additionalFundId.updateValueAndValidity();
-    this.additionalFundPercentage.patchValue(0);
-    this.additionalFundPercentage.setValidators(null);
-    this.additionalFundPercentage.updateValueAndValidity();
-  }
-
-  private handleCoFinancingCalculations(): void {
-    combineLatest([this.pageStore.totalBudget$, this.fundPercentage.valueChanges, this.additionalFundPercentage.valueChanges])
-      .pipe(
-        tap(([totalBudget, percentage, additionalPercentage]) => this.updateCoFinancingCalculations(totalBudget, percentage, additionalPercentage)),
-        untilDestroyed(this)
-      ).subscribe();
+    this.financesPercentsChanged(totalBudget);
+    this.resetPartnerContributions(financingAndContribution);
   }
 
   private partnerContributionsErrorArgs(): Observable<{}> {
@@ -208,28 +256,16 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
   }
 
   private formToProjectPartnerCoFinancingAndContributionInputDTO(): ProjectPartnerCoFinancingAndContributionInputDTO {
-    const builtFinances = [
-      {
-        fundId: this.fundId.value,
-        percentage: this.fundPercentage.value,
-        fundType: ProjectPartnerCoFinancingInputDTO.FundTypeEnum.MainFund,
-      } as ProjectPartnerCoFinancingInputDTO,
+    const finances = [
+      ...this.finances.value,
       {
         percentage: this.partnerPercentage.value,
         fundType: ProjectPartnerCoFinancingInputDTO.FundTypeEnum.PartnerContribution,
       } as ProjectPartnerCoFinancingInputDTO,
     ];
 
-    if (this.additionalFundId.value) {
-      builtFinances.push({
-        fundId: this.additionalFundId.value,
-        percentage: this.additionalFundPercentage.value,
-        fundType: ProjectPartnerCoFinancingInputDTO.FundTypeEnum.MainFund,
-      } as ProjectPartnerCoFinancingInputDTO);
-    }
-
     return {
-      finances: builtFinances,
+      finances,
       partnerContributions: this.partnerContributions.value as ProjectPartnerContributionDTO[]
     } as ProjectPartnerCoFinancingAndContributionInputDTO;
   }
@@ -255,15 +291,6 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     );
   }
 
-  private updateCoFinancingCalculations(totalBudget: number, percentage: number, additionalPercentage: number): void {
-    this.partnerPercentage.setValue(NumberService.minus(100, NumberService.sum([percentage, additionalPercentage])));
-    this.fundAmount.setValue(NumberService.truncateNumber(NumberService.product([totalBudget, (percentage / 100)])));
-    this.additionalFundAmount.setValue(NumberService.truncateNumber(NumberService.product([totalBudget, (additionalPercentage / 100)])));
-    this.partnerAmount.setValue(NumberService.minus(totalBudget, NumberService.sum([this.fundAmount.value, this.additionalFundAmount.value])));
-    this.partnerContributions.setValidators([totalContributionValidator(this.partnerAmount.value), Validators.maxLength(this.constants.MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS)]);
-    this.partnerContributions.updateValueAndValidity();
-  }
-
   private getPartnerContributionTotal(partnerContributions: ProjectPartnerContributionDTO[], partnerStatus?: ProjectPartnerContributionDTO.StatusEnum): number {
     return NumberService.truncateNumber(NumberService.sum(partnerContributions
       .filter(source => source.status === partnerStatus || !partnerStatus)
@@ -271,14 +298,20 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     ));
   }
 
+  private handleResetForm(): void {
+    combineLatest([
+      this.pageStore.financingAndContribution$,
+      this.pageStore.totalBudget$,
+      this.formService.reset$.pipe(startWith(null)),
+    ]).pipe(
+      tap(([financingAndContribution, totalBudget]) => this.resetForm(financingAndContribution, totalBudget)),
+      untilDestroyed(this)
+    ).subscribe();
+  }
+
   private initForm(): void {
     this.coFinancingForm = this.formBuilder.group({
-      fundId: [null, Validators.required],
-      fundAmount: [0],
-      fundPercentage: [0, [Validators.required]],
-      additionalFundId: [null],
-      additionalFundAmount: [0],
-      additionalFundPercentage: [0],
+      finances: this.formBuilder.array([]),
       partnerPercentage: [0, [Validators.required]],
       partnerAmount: [0],
       partnerContributions: this.formBuilder.array([], {
@@ -288,82 +321,11 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     this.formService.init(this.coFinancingForm, this.pageStore.isProjectEditable$);
   }
 
-  private handleResetForm(): void {
-    combineLatest([this.formService.reset$.pipe(startWith(null)), this.pageStore.financingAndContribution$]).pipe(
-      tap(([, financingAndContribution]) => this.resetForm(financingAndContribution)),
-      untilDestroyed(this)
-    ).subscribe();
-  }
-
-  private resetForm(financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO): void {
-    const inputValues = financingAndContribution.finances.filter((x: ProjectPartnerCoFinancingOutputDTO) => x.fundType === ProjectPartnerCoFinancingInputDTO.FundTypeEnum.MainFund);
-    // TODO
-    // if (inputValues[0]?.fundType === ProjectPartnerCoFinancingInputDTO.FundTypeEnum.AdditionalFund) {
-    this.fundId.setValue(inputValues[1]?.fund.id);
-    this.fundPercentage.setValue(inputValues[1]?.percentage || 0);
-    this.additionalFundId.setValue(inputValues[0]?.fund.id);
-    this.additionalFundPercentage.setValue(inputValues[0]?.percentage || 0);
-    // } else {
-    //   this.fundId.setValue(inputValues[0]?.fund.id);
-    //   this.fundPercentage.setValue(inputValues[0]?.percentage || 0);
-    //   this.additionalFundId.setValue(inputValues[1]?.fund.id);
-    //   this.additionalFundPercentage.setValue(inputValues[1]?.percentage || 0);
-    // }
-    this.resetPartnerContributions(financingAndContribution);
-    this.hasASecondFundBeenAdded = false;
-    this.formService.setDirty(false);
-  }
-
   private resetPartnerContributions(financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO): void {
     this.partnerContributions.clear();
     financingAndContribution.partnerContributions.forEach((item: ProjectPartnerContributionDTO) => {
       this.addNewPartnerContribution(item);
     });
     this.formService.resetEditable();
-  }
-
-
-  get fundId(): FormControl {
-    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.fundId) as FormControl;
-  }
-
-  get fundAmount(): FormControl {
-    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.fundAmount) as FormControl;
-  }
-
-  get partnerAmount(): FormControl {
-    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.partnerAmount) as FormControl;
-  }
-
-  get partnerPercentage(): FormControl {
-    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.partnerPercentage) as FormControl;
-  }
-
-  get fundPercentage(): FormControl {
-    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.fundPercentage) as FormControl;
-  }
-
-  get partnerContributions(): FormArray {
-    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.partnerContributions) as FormArray;
-  }
-
-  get additionalFundId(): FormControl {
-    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.additionalFundId) as FormControl;
-  }
-
-  get additionalFundAmount(): FormControl {
-    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.additionalFundAmount) as FormControl;
-  }
-
-  get additionalFundPercentage(): FormControl {
-    return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.additionalFundPercentage) as FormControl;
-  }
-
-  get maxFundPercentage(): number {
-    return NumberService.minus(100, this.additionalFundPercentage.value);
-  }
-
-  get maxAdditionalFundPercentage(): number {
-    return NumberService.minus(100, this.fundPercentage.value);
   }
 }
