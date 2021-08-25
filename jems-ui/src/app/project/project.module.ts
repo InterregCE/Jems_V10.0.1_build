@@ -82,7 +82,6 @@ import {ProjectWorkPackagePageComponent} from './work-package/project-work-packa
 import {FormFieldVisibilityStatusDirective} from './common/directives/form-field-visibility-status.directive';
 import {ProjectPartnerStateAidTabComponent} from './partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
 import {ProjectApplicationFilesTreeComponent} from './common/components/file-management/project-application-files-tree/project-application-files-tree.component';
-import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {PeriodsTotalPipe} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/periods-total.pipe';
 import {FileManagementComponent} from './common/components/file-management/file-management.component';
 import {ProjectApplicationFilesTableComponent} from './common/components/file-management/project-application-files-table/project-application-files-table.component';
@@ -191,8 +190,7 @@ import {AssessmentAndDecisionComponent} from './project-application/assessment-a
     ProjectAcronymResolver,
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,
-    ProjectLumpSumsPageStore,
-    FormVisibilityStatusService
+    ProjectLumpSumsPageStore
   ]
 })
 export class ProjectModule {

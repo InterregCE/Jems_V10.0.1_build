@@ -31,6 +31,10 @@ annotation class CanDeleteProjectWorkPackageInvestment
 @PreAuthorize("hasAuthority('ProjectFormRetrieve') || @projectWorkPackageAuthorization.isUserOwnerOfInvestment(#projectId, #investmentId, #version)")
 annotation class CanRetrieveProjectWorkPackageInvestment
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectFormRetrieve') || hasAuthority('ProjectFileApplicationRetrieve') || @projectAuthorization.isUserOwnerOfProject(#projectId)")
+annotation class CanRetrieveProjectWorkPackageInvestmentSummaries
+
 @Component
 class ProjectWorkPackageAuthorization(
     override val securityService: SecurityService,

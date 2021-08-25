@@ -43,7 +43,6 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories, AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 /**
  * Stores project related information.
@@ -65,7 +64,6 @@ export class ProjectStore {
   projectEditable$: Observable<boolean>;
   projectTitle$: Observable<string>;
   callHasTwoSteps$: Observable<boolean>;
-  callHasConfigWithInvestments$: Observable<boolean>;
   projectCurrentDecisions$: Observable<ProjectDecisionDTO>;
   investmentSummaries$: Observable<InvestmentSummary[]>;
   userIsProjectOwner$: Observable<boolean>;
@@ -122,7 +120,6 @@ export class ProjectStore {
         map(project => `${project.id} – ${project.acronym}`)
       );
     this.callHasTwoSteps$ = this.callHasTwoSteps();
-    this.callHasConfigWithInvestments$ = this.callHasConfigWithInvestments();
     this.projectCurrentDecisions$ = this.projectCurrentDecisions();
     this.investmentSummaries$ = this.investmentSummaries();
     this.userIsProjectOwner$ = this.userIsProjectOwner();
@@ -304,36 +301,6 @@ export class ProjectStore {
     return this.projectCall$
       .pipe(
         map(call => !!call.endDateStep1)
-      );
-  }
-
-  // for file management we need to show investment section in tree only if at least one investment field is active, even if there is no application form read permission
-  private callHasConfigWithInvestments(): Observable<boolean> {
-    return this.projectCall$
-      .pipe(
-        map(
-          call => {
-            return call.applicationFormFieldConfigurations
-              .filter(
-                field => field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION.CROSS_BORDER_TRANSNATIONAL_RELEVANCE_OF_INVESTMENT ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION.WHY_IS_INVESTMENT_NEEDED ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION.PILOT_CLARIFICATION ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION.WHO_IS_BENEFITING ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.STREET ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.CITY ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.COUNTRY_AND_NUTS ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.HOUSE_NUMBER ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.POSTAL_CODE ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.RISK ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.DOCUMENTATION ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.OWNERSHIP.OWNERSHIP_AFTER_END_OF_PROJECT ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.OWNERSHIP.WHO_OWNS_THE_INVESTMENT_SITE ||
-                  field.id === APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.OWNERSHIP.MAINTENANCE
-              )
-              .filter(field => field.visible).length > 0;
-          }
-        )
       );
   }
 

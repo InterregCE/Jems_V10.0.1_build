@@ -6,7 +6,9 @@ import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import AvailableInStepEnum = ApplicationFormFieldConfigurationDTO.AvailableInStepEnum;
 
-@Injectable()
+@Injectable(
+  {providedIn: 'root'}
+)
 export class FormVisibilityStatusService {
 
   constructor(private projectStore: ProjectStore) {

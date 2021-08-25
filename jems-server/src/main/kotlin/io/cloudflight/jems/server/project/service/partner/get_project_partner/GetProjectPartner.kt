@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.get_project_partner
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartnerSummaries
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
@@ -29,7 +30,7 @@ class GetProjectPartner(
     override fun getById(partnerId: Long, version: String?): ProjectPartnerDetail =
         persistence.getById(partnerId, version)
 
-    @CanRetrieveProjectForm
+    @CanRetrieveProjectPartnerSummaries
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerByProjectIdForDropdownException::class)
     override fun findAllByProjectIdForDropdown(

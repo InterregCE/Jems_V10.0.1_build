@@ -19,6 +19,10 @@ annotation class CanUpdateProjectPartner
 annotation class CanRetrieveProjectPartner
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectFormRetrieve') || hasAuthority('ProjectFileApplicationRetrieve') || @projectAuthorization.isUserOwnerOfProject(#projectId)")
+annotation class CanRetrieveProjectPartnerSummaries
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectPartnerAuthorization.canUpdatePartner(#projectPartner.id)")
 annotation class CanUpdateProjectPartnerBase
 

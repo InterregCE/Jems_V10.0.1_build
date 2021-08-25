@@ -36,7 +36,7 @@ export class ProjectAssociatedOrganizationStore {
               private nutsStore: NutsStore) {
     this.associatedOrganization$ = this.associatedOrganization();
     this.nuts$ = this.nutsStore.getNuts();
-    this.dropdownPartners$ = this.partnerStore.dropdownPartners$;
+    this.dropdownPartners$ = this.partnerStore.partnerSummaries$;
     this.organizationEditable$ = this.projectStore.projectEditable$;
     this.projectTitle$ = this.projectStore.projectTitle$;
   }

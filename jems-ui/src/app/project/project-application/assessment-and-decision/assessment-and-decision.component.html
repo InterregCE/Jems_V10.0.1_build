@@ -2,7 +2,7 @@
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle}"
                            subTitleKey="project.application.form.section.assessment.and.decision">
     <div appFormLayout>
-        <div appNoWidthLimit>
+        <div appNoWidthLimit *hasPermission="PermissionsEnum.ProjectAssessmentView">
             <ng-container *hasPermission="PermissionsEnum.ProjectStatusReturnToApplicant">
                 <app-pending-button *ngIf="data.returnToApplicantAvailable"
                                     class="mr-2 mt-2"
@@ -55,14 +55,16 @@
                 </ng-container>
             </div>
         </div>
-        <h3>
-            {{'file.tab.header' | translate}}
-            <app-context-info *ngIf="data.callHasTwoSteps"
-                              infoPosition="right"
-                              infoText="{{'file.tab.info' | translate}}">
-            </app-context-info>
-        </h3>
-        <app-file-management [section]="fileManagementSection" appNoWidthLimit></app-file-management>
+        <ng-container *hasPermission="PermissionsEnum.ProjectFileAssessmentRetrieve">
+            <h3>
+                {{'file.tab.header' | translate}}
+                <app-context-info *ngIf="data.callHasTwoSteps"
+                                  infoPosition="right"
+                                  infoText="{{'file.tab.info' | translate}}">
+                </app-context-info>
+            </h3>
+            <app-file-management [section]="fileManagementSection" appNoWidthLimit></app-file-management>
+        </ng-container>
         <ng-template #revertNotPossible>
             <button class="mr-2 mt-2" *hasPermission="PermissionsEnum.ProjectStatusDecisionRevert"
                     mat-raised-button disabled

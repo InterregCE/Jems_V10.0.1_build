@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {ProjectPartner} from '@project/model/ProjectPartner';
 import {
   PageProjectFileMetadataDTO,
   ProjectFileMetadataDTO,
   ProjectFileService,
+  ProjectPartnerSummaryDTO,
   ProjectStatusDTO,
   UserRoleDTO
 } from '@cat/api';
@@ -24,6 +24,8 @@ import {ProjectUtil} from '@project/common/project-util';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +43,7 @@ export class FileManagementStore {
   canUpload$: Observable<boolean>;
   canChangeAssessmentFile$: Observable<boolean>;
   canChangeApplicationFile$: Observable<boolean>;
+  canReadAssessmentFile$: Observable<boolean>;
   canReadApplicationFile$: Observable<boolean>;
   canReadFiles$: Observable<boolean>;
 
@@ -55,13 +58,15 @@ export class FileManagementStore {
   constructor(private projectFileService: ProjectFileService,
               private projectStore: ProjectStore,
               private projectPartnerStore: ProjectPartnerStore,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              private visibilityStatusService: FormVisibilityStatusService
+  ) {
     this.projectStatus$ = this.projectStore.projectStatus$;
     this.userIsProjectOwner$ = this.projectStore.userIsProjectOwner$;
-
     this.canChangeAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate);
     this.canChangeApplicationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate);
     this.canReadApplicationFile$ = this.canReadApplicationFile();
+    this.canReadAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve);
     this.canUpload$ = this.canUpload();
     this.canReadFiles$ = this.canReadFiles();
     this.selectedCategoryPath$ = this.selectedCategoryPath();
@@ -199,14 +204,13 @@ export class FileManagementStore {
   private fileCategories(section: FileCategoryInfo): Observable<FileCategoryNode> {
     return combineLatest([
       this.projectStore.projectTitle$,
-      this.projectPartnerStore.partners$,
+      this.projectPartnerStore.partnerSummaries$,
       this.projectStore.investmentSummaries$,
-      this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve),
       this.canReadApplicationFile$,
-      this.projectStore.callHasConfigWithInvestments$,
+      this.canReadAssessmentFile$
     ]).pipe(
-      map(([projectTitle, partners, investments, canReadAssessmentFiles, canReadApplicationFiles, callHasConfigWithInvestments]) =>
-        this.getCategories(section, projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles, callHasConfigWithInvestments)
+      map(([projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles]) =>
+        this.getCategories(section, projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles)
       ),
       tap(filters => this.setParent(filters))
     );
@@ -214,39 +218,35 @@ export class FileManagementStore {
 
   private getCategories(section: FileCategoryInfo,
                         projectTitle: string,
-                        partners: ProjectPartner[],
+                        partners: ProjectPartnerSummaryDTO[],
                         investments: InvestmentSummary[],
-                        canReadApplication: boolean,
-                        canReadAssessment: boolean,
-                        callHasConfigWithInvestments: boolean): FileCategoryNode {
+                        canReadApplicationFiles: boolean,
+                        canReadAssessmentFiles: boolean): FileCategoryNode {
     const fullTree: FileCategoryNode = {
       name: {i18nKey: projectTitle},
       info: {type: FileCategoryEnum.ALL},
       children: []
     };
-    const applicationFiles: FileCategoryNode = {
-      name: {i18nKey: 'file.tree.type.attachments'},
-      info: {type: FileCategoryEnum.APPLICATION},
-      children: []
-    };
-    if (canReadApplication) {
-      fullTree.children?.push(applicationFiles);
-      applicationFiles.children = [
-        {
-          name: {i18nKey: 'file.tree.type.partner'},
-          info: {type: FileCategoryEnum.PARTNER},
-          children: partners.map(partner => ({
-            name: {
-              i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
-              i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
-            },
-            info: {type: FileCategoryEnum.PARTNER, id: partner.id}
-          }))
-        },
-      ];
-
-      if (callHasConfigWithInvestments) {
-        applicationFiles.children.push(
+    if (canReadApplicationFiles) {
+      const applicationFiles: FileCategoryNode = {
+        name: {i18nKey: 'file.tree.type.attachments'},
+        info: {type: FileCategoryEnum.APPLICATION},
+        children: []
+      };
+      applicationFiles.children?.push(
+          {
+            name: {i18nKey: 'file.tree.type.partner'},
+            info: {type: FileCategoryEnum.PARTNER},
+            children: partners.map(partner => ({
+              name: {
+                i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
+                i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
+              },
+              info: {type: FileCategoryEnum.PARTNER, id: partner.id}
+            }))
+          });
+      if (this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS)) {
+        applicationFiles.children?.push(
           {
             name: {i18nKey: 'file.tree.type.investment'},
             info: {type: FileCategoryEnum.INVESTMENT},
@@ -257,9 +257,9 @@ export class FileManagementStore {
           }
         );
       }
+      fullTree.children?.push(applicationFiles);
     }
-
-    if (canReadAssessment) {
+    if (canReadAssessmentFiles) {
       fullTree.children?.push({
         name: {i18nKey: 'file.tree.type.assessment'},
         info: {type: FileCategoryEnum.ASSESSMENT}

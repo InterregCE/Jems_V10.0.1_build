@@ -25,7 +25,7 @@ export class ProjectPartnerStore {
   isProjectEditable$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   partners$: Observable<ProjectPartner[]>;
-  dropdownPartners$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   private partnerId: number;
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
@@ -36,7 +36,7 @@ export class ProjectPartnerStore {
               private routingService: RoutingService,
               private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
-    this.dropdownPartners$ = this.dropdownPartners();
+    this.partnerSummaries$ = this.partnerSummaries();
 
     this.partners$ = combineLatest([
       this.projectStore.project$,
@@ -131,8 +131,8 @@ export class ProjectPartnerStore {
       );
   }
 
-  private dropdownPartners(): Observable<ProjectPartnerSummaryDTO[]> {
-    return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$])
+  private partnerSummaries(): Observable<ProjectPartnerSummaryDTO[]> {
+    return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$, this.partnerUpdateEvent$])
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, undefined, version))
       );
