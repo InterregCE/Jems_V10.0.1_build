@@ -8,6 +8,8 @@ import java.time.ZonedDateTime
 
 interface GeneralValidatorService {
 
+    fun exactLength(input: String?, length: Int, fieldName: String): Map<String, I18nMessage>
+
     fun maxLength(input: String?, maxLength: Int, fieldName: String): Map<String, I18nMessage>
 
     fun maxLength(translations: Set<InputTranslation>, maxLength: Int, fieldName: String): Map<String, I18nMessage>

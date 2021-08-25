@@ -63,7 +63,7 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
         verify(exactly = 1) {
             generalValidator.maxLength(projectPartner.otherIdentifierDescription, 100, "otherIdentifierDescription")
         }
-        verify(exactly = 1) { generalValidator.maxLength(projectPartner.pic, 9, "pic") }
+        verify(exactly = 1) { generalValidator.exactLength(projectPartner.pic, 9, "pic") }
         verify(exactly = 1) { generalValidator.onlyDigits(projectPartner.pic, "pic") }
         verify(exactly = 1) { generalValidator.maxLength(projectPartner.vat, 50, "vat") }
     }

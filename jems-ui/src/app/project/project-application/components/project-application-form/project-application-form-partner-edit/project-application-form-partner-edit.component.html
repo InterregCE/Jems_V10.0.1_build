@@ -191,9 +191,8 @@
 
         <mat-form-field class="w-100" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.PIC">
             <mat-label>{{'project.partner.pic' | translate}}</mat-label>
-            <input currencyMask type="integer" name="pic" formControlName="pic" matInput
-                   (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)"
-                   [options]="{min: 0, max: 999999999, nullable: true, thousands: ''}">
+            <input name="pic" formControlName="pic" matInput (paste)="tools.checkDigitsOnPaste($event)"
+                   (keypress)="tools.checkDigitsOnInput($event)">
             <mat-error>
                 <app-form-field-errors
                         [errors]="controls?.pic?.errors">

@@ -61,7 +61,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     nace: [],
     otherIdentifierNumber: ['', Validators.maxLength(50)],
     otherIdentifierDescription: [],
-    pic: [Validators.max(999999999)],
+    pic: ['', [Validators.minLength(9) , Validators.maxLength(9)]],
     legalStatusId: ['', Validators.required],
     vat: ['', Validators.maxLength(50)],
     vatRecovery: ['']

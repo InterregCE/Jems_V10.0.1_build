@@ -46,7 +46,7 @@ class CreateProjectPartner(
             generalValidator.notNull(partner.legalStatusId, "legalStatusId"),
             generalValidator.maxLength(partner.otherIdentifierNumber, 50, "otherIdentifierNumber"),
             generalValidator.maxLength(partner.otherIdentifierDescription, 100, "otherIdentifierDescription"),
-            generalValidator.maxLength(partner.pic, 9, "pic"),
+            generalValidator.exactLength(partner.pic, 9, "pic"),
             generalValidator.onlyDigits(partner.pic, "pic"),
             generalValidator.maxLength(partner.vat, 50, "vat"),
         )

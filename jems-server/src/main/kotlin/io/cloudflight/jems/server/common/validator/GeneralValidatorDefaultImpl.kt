@@ -16,6 +16,15 @@ const val ONLY_DIGITS_REGEX = "\\d+\$"
 @Service
 class GeneralValidatorDefaultImpl : GeneralValidatorService {
 
+    override fun exactLength(input: String?, length: Int, fieldName: String) =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (!input.isNullOrBlank() && input.length != length)
+                this[fieldName] = I18nMessage(
+                    "common.error.field.length",
+                    mapOf("actualLength" to input.length.toString(), "requiredLength" to length.toString())
+                )
+        }
+
     override fun maxLength(input: String?, maxLength: Int, fieldName: String) =
         mutableMapOf<String, I18nMessage>().apply {
             if (!input.isNullOrBlank() && input.length > maxLength)

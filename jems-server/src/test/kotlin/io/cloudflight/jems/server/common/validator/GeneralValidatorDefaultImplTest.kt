@@ -18,6 +18,21 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
 
     private val generalValidator = GeneralValidatorDefaultImpl()
 
+    @Test
+    fun `should return correct validation result when input length is not equal to the required length`() {
+        val input = "input text"
+        val requiredLength = 11
+        val validationResult = generalValidator.exactLength(input, requiredLength, "input")
+
+        assertThat(validationResult["input"])
+            .isEqualTo(
+                I18nMessage(
+                    "common.error.field.length",
+                    mapOf("actualLength" to input.length.toString(), "requiredLength" to requiredLength.toString())
+                )
+            )
+    }
+
     @Nested
     inner class MaxLength {
         @Test
