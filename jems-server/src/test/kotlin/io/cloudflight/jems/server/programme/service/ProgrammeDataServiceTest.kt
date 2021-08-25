@@ -47,7 +47,9 @@ internal class ProgrammeDataServiceTest {
             null,
             null,
             null,
-            null
+            null,
+            "SK-AT",
+            false
         )
 
     @MockK
@@ -80,7 +82,7 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun get() {
         val programmeDataInput =
-            OutputProgrammeData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyList())
+            OutputProgrammeData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, "SK-AT", false, emptyList(),)
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
 
         val programmeData = programmeDataService.get()
@@ -91,11 +93,11 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun `update existing programme data`() {
         val programmeDataInput =
-            InputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null)
+            InputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, "", false)
         val programmeDataUpdated =
-            ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null)
+            ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,"", false)
         val programmeDataExpectedOutput =
-            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, emptyList())
+            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,  "", false, emptyList())
 
         every { programmeDataRepository.save(any<ProgrammeData>()) } returns programmeDataUpdated
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
@@ -119,7 +121,7 @@ internal class ProgrammeDataServiceTest {
             InputProgrammeData("cci-updated", "title-updated", "version-updated", 2021, 2025,
                 LocalDate.of(2020, 1, 1), LocalDate.of(2021, 2, 2),
                 "d1",  LocalDate.of(2022, 3, 3),
-                "d2", LocalDate.of(2022, 4, 4))
+                "d2", LocalDate.of(2022, 4, 4), "CZ-DE", true)
         val programmeDataUpdated = programmeDataInput.toEntity(emptySet(), null)
         val programmeDataExpectedOutput = programmeDataUpdated.toOutputProgrammeData()
 
@@ -145,7 +147,9 @@ internal class ProgrammeDataServiceTest {
                 "commissionDecisionNumber changed from null to d1,\n" +
                 "commissionDecisionDate changed from null to 2022-03-03,\n" +
                 "programmeAmendingDecisionNumber changed from null to d2,\n" +
-                "programmeAmendingDecisionDate changed from null to 2022-04-04")
+                "programmeAmendingDecisionDate changed from null to 2022-04-04,\n" +
+                "programme abbreviation changed from SK-AT to CZ-DE,\n" +
+                "use call id in project ID changed from false to true")
         }
     }
 

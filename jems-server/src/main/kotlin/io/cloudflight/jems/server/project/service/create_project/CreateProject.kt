@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.programme.service.ProgrammeDataService
 import io.cloudflight.jems.server.project.authorization.CanCreateProject
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -24,6 +25,7 @@ class CreateProject(
     private val generalValidator: GeneralValidatorService,
     private val auditPublisher: ApplicationEventPublisher,
     private val securityService: SecurityService,
+    private val programmeService: ProgrammeDataService,
 ) : CreateProjectInteractor {
 
     @CanCreateProject
@@ -46,7 +48,8 @@ class CreateProject(
         val status = if (call.is2StepCall()) ApplicationStatus.STEP1_DRAFT else ApplicationStatus.DRAFT
         val project = persistence.createProjectWithStatus(acronym = acronym, status = status, userId = userId, callId = callId)
 
-        val customIdentifier = getCustomIdentifierForProjectId(prefix = "TODO_", project.id!!)
+        val projectIdPrefix = getProjectIdPrefix(callId = callId)
+        val customIdentifier = getCustomIdentifierForProjectId(prefix = projectIdPrefix, project.id!!)
         persistence.updateProjectCustomIdentifier(project.id, customIdentifier)
 
         auditPublisher.publishEvent(projectApplicationCreated(this, project))
@@ -69,5 +72,12 @@ class CreateProject(
 
     private fun getCustomIdentifierForProjectId(prefix: String, projectId: Long): String =
         "${prefix}%05d".format(projectId)
+
+    private fun getProjectIdPrefix(callId: Long): String {
+        val setup = programmeService.get()
+        val callIdPart = if (setup.projectIdUseCallId) "%02d".format(callId) else ""
+
+        return "${setup.cci}$callIdPart"
+    }
 
 }

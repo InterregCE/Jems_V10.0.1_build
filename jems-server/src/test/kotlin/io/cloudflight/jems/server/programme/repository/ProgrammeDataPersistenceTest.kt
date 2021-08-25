@@ -31,6 +31,8 @@ class ProgrammeDataPersistenceTest : UnitTest() {
             commissionDecisionDate = LocalDate.of(2020, 1, 1),
             programmeAmendingDecisionNumber = "",
             programmeAmendingDecisionDate = LocalDate.of(2020, 1, 1),
+            projectIdProgrammeAbbreviation = "NL-DE_",
+            projectIdUseCallId = true,
             defaultUserRoleId = 1L
         )
     }

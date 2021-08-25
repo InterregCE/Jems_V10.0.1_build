@@ -16,6 +16,8 @@ data class OutputProgrammeData(
     val commissionDecisionDate: LocalDate?,
     val programmeAmendingDecisionNumber: String?,
     val programmeAmendingDecisionDate: LocalDate?,
+    val projectIdProgrammeAbbreviation: String?,
+    val projectIdUseCallId: Boolean,
     val programmeNuts: List<OutputNuts>
 ) {
     fun getChange(newData: OutputProgrammeData): Map<String, Pair<Any?, Any?>> {
@@ -54,6 +56,14 @@ data class OutputProgrammeData(
         if (programmeAmendingDecisionDate != newData.programmeAmendingDecisionDate) {
             changes["programmeAmendingDecisionDate"] =
                 Pair(programmeAmendingDecisionDate, newData.programmeAmendingDecisionDate)
+        }
+        if (projectIdProgrammeAbbreviation != newData.projectIdProgrammeAbbreviation) {
+            changes["programme abbreviation"] =
+                Pair(projectIdProgrammeAbbreviation, newData.projectIdProgrammeAbbreviation)
+        }
+        if (projectIdUseCallId != newData.projectIdUseCallId) {
+            changes["use call id in project ID"] =
+                Pair(projectIdUseCallId, newData.projectIdUseCallId)
         }
 
         return changes

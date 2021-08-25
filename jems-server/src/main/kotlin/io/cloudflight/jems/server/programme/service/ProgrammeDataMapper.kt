@@ -23,6 +23,8 @@ fun InputProgrammeData.toEntity(
     commissionDecisionDate = commissionDecisionDate,
     programmeAmendingDecisionNumber = programmeAmendingDecisionNumber,
     programmeAmendingDecisionDate = programmeAmendingDecisionDate,
+    projectIdProgrammeAbbreviation = projectIdProgrammeAbbreviation,
+    projectIdUseCallId = projectIdUseCallId,
     programmeNuts = programmeNuts,
     defaultUserRoleId = defaultUserRoleId
 )
@@ -39,6 +41,8 @@ fun ProgrammeData.toOutputProgrammeData() = OutputProgrammeData(
     commissionDecisionDate = commissionDecisionDate,
     programmeAmendingDecisionNumber = programmeAmendingDecisionNumber,
     programmeAmendingDecisionDate = programmeAmendingDecisionDate,
+    projectIdProgrammeAbbreviation = projectIdProgrammeAbbreviation,
+    projectIdUseCallId = projectIdUseCallId,
     programmeNuts = programmeNuts.toDto()
 )
 

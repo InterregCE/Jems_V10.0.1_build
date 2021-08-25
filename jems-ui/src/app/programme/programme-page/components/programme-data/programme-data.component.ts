@@ -47,6 +47,8 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     commissionDecisionDate: [''],
     programmeAmendingDecisionNumber: ['', Validators.maxLength(255)],
     programmeAmendingDecisionDate: [''],
+    projectIdProgrammeAbbreviation: ['', Validators.maxLength(255)],
+    projectIdUseCallId: false,
   },                                     {
     validator: this.firstYearBeforeLastYear
   });
@@ -110,6 +112,8 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     controls.commissionDecisionDate.setValue(this.programme.commissionDecisionDate);
     controls.programmeAmendingDecisionNumber.setValue(this.getSizedValue(this.programme.programmeAmendingDecisionNumber));
     controls.programmeAmendingDecisionDate.setValue(this.programme.programmeAmendingDecisionDate);
+    controls.projectIdProgrammeAbbreviation.setValue(this.programme.projectIdProgrammeAbbreviation);
+    controls.projectIdUseCallId.setValue(this.programme.projectIdUseCallId);
   }
 
   protected enterEditMode(): void {
@@ -135,7 +139,9 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
       commissionDecisionNumber: controls?.commissionDecisionNumber?.value,
       commissionDecisionDate: controls?.commissionDecisionDate?.value,
       programmeAmendingDecisionNumber: controls?.programmeAmendingDecisionNumber?.value,
-      programmeAmendingDecisionDate: controls?.programmeAmendingDecisionDate?.value
+      programmeAmendingDecisionDate: controls?.programmeAmendingDecisionDate?.value,
+      projectIdProgrammeAbbreviation: controls?.projectIdProgrammeAbbreviation?.value,
+      projectIdUseCallId: controls?.projectIdUseCallId?.value,
     });
   }
 

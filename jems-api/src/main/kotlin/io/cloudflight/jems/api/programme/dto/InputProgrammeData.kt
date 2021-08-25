@@ -18,6 +18,10 @@ data class InputProgrammeData(
     val commissionDecisionDate: LocalDate?,
 
     val programmeAmendingDecisionNumber: String?,
-    val programmeAmendingDecisionDate: LocalDate?
+    val programmeAmendingDecisionDate: LocalDate?,
+
+    val projectIdProgrammeAbbreviation: String?,
+    val projectIdUseCallId: Boolean
+
 )
 

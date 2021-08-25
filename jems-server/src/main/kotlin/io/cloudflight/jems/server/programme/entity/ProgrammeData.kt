@@ -7,6 +7,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
 import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity(name = "programme_data")
 data class ProgrammeData(
@@ -29,6 +30,10 @@ data class ProgrammeData(
 
     val programmeAmendingDecisionNumber: String?,
     val programmeAmendingDecisionDate: LocalDate?,
+
+    val projectIdProgrammeAbbreviation: String?,
+    @field:NotNull
+    val projectIdUseCallId: Boolean,
 
     val defaultUserRoleId: Long? = null,
 
