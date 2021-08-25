@@ -23,7 +23,6 @@ import io.cloudflight.jems.server.project.repository.partner.cofinancing.toCoFin
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
@@ -70,7 +69,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     ) : PartnerIdentityRow
 
     protected class PreviousVersionOfCoFinancing(
-        override val order_nr: Int,
+        override val orderNr: Int,
         override val percentage: BigDecimal,
         override val language: SystemLanguage?,
         override val fundId: Long?,
@@ -185,7 +184,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     private val previousFinancingValues = listOf(
         PreviousVersionOfCoFinancing(
-            order_nr = 1,
+            orderNr = 1,
             percentage = BigDecimal.valueOf(15.5),
             language = null,
             abbreviation = null,
@@ -195,7 +194,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             selected = true
         ),
         PreviousVersionOfCoFinancing(
-            order_nr = 2,
+            orderNr = 2,
             percentage = BigDecimal.valueOf(25.5),
             language = null,
             abbreviation = null,

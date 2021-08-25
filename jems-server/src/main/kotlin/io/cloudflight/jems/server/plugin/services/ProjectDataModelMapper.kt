@@ -228,8 +228,6 @@ abstract class PluginDataMapper {
     abstract fun map(budgetCosts: BudgetCosts): BudgetCostData
     abstract fun map(projectPartnerContributionStatusDTO: ProjectPartnerContributionStatusDTO): ProjectPartnerContributionStatusData
     abstract fun map(projectPartnerContribution: ProjectPartnerContribution): ProjectPartnerContributionData
-    //todo should be removed after merging MP2-1288
-    @ValueMapping(target = "PartnerContribution", source = "AdditionalFund")
     abstract fun map(projectPartnerCoFinancingFundTypeDTO: ProjectPartnerCoFinancingFundTypeDTO): ProjectPartnerCoFinancingFundTypeData
     abstract fun map(projectPartnerCoFinancing: ProjectPartnerCoFinancing): ProjectPartnerCoFinancingData
     abstract fun map(projectPartnerCoFinancingAndContribution: ProjectPartnerCoFinancingAndContribution): ProjectPartnerCoFinancingAndContributionData

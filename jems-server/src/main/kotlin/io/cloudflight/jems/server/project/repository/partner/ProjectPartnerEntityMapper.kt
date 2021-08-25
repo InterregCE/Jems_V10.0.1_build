@@ -111,7 +111,6 @@ fun ProjectPartnerEntity.copy(
     addresses = newAddresses?.mapTo(HashSet()) { it.toEntity(this) } ?: addresses,
     contacts = newContacts?.mapTo(HashSet()) { it.toEntity(this) } ?: contacts,
     motivation = newMotivation?.toEntity(id) ?: motivation,
-    financing = newFinancing?.toCoFinancingEntity(id, project.call.funds.associateBy { it.id }) ?: financing,
     partnerContributions = newPartnerContributions?.toContributionEntity(id) ?: partnerContributions
 ).apply {
     if(projectPartner!=null)

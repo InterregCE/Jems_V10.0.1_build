@@ -35,7 +35,7 @@ fun ProjectPartnerCoFinancingEntity.toModel() = ProjectPartnerCoFinancing(
     percentage = percentage
 )
 
-fun Collection<PartnerFinancingRow>.toProjectPartnerFinancingHistoricalData() = this.groupBy { it.order_nr }
+fun Collection<PartnerFinancingRow>.toProjectPartnerFinancingHistoricalData() = this.groupBy { it.orderNr }
     .toSortedMap()
     .map { groupedRows ->
         ProjectPartnerCoFinancing(

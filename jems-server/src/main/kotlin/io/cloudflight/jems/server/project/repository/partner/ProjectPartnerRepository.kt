@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.project.entity.partner.PartnerMotivationRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
-import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerFinancingRow
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
