@@ -1,4 +1,7 @@
 SET @@system_versioning_alter_history = 1;
-DELETE FROM project WHERE id IS NOT NULL;
 ALTER TABLE project
     ADD COLUMN custom_identifier VARCHAR(31) DEFAULT NULL UNIQUE AFTER id;
+
+-- insert id for old values to keep old test data, 'PREC0000id'
+update project set custom_identifier = CONCAT('PREC', LPAD(id, 6, 0))
+    WHERE id is not NULL;

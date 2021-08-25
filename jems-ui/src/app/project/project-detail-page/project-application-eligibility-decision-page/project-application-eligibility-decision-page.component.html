@@ -1,7 +1,7 @@
 <app-project-page-template [needsCard]="true" *ngIf="data$ | async as data"
                            titleKey="project.application.form.lifecycle.title">
     <div page-sub-title appFormLayout appNoWidthLimit>
-        <h2>{{data.project.id}} – {{data.project.acronym}}</h2>
+        <h2>{{data.project.customIdentifier}} – {{data.project.acronym}}</h2>
         <app-project-application-information appNoWidthLimit [project]="data.project">
         </app-project-application-information>
     </div>
