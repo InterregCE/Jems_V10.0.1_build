@@ -31,7 +31,7 @@
                            [ngxMatDatetimePicker]="start">
                     <mat-datepicker-toggle matSuffix [for]="start">
                     </mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #start></ngx-mat-datetime-picker>
+                    <ngx-mat-datetime-picker [enableMeridian]="true" #start></ngx-mat-datetime-picker>
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>{{'audit.end.date' | translate | dateFormatInfo : true}}</mat-label>
@@ -39,7 +39,7 @@
                            [ngxMatDatetimePicker]="end">
                     <mat-datepicker-toggle matSuffix [for]="end">
                     </mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #end></ngx-mat-datetime-picker>
+                    <ngx-mat-datetime-picker [enableMeridian]="true" #end></ngx-mat-datetime-picker>
                 </mat-form-field>
             </div>
         </div>

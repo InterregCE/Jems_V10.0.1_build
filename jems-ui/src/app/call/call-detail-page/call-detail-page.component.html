@@ -48,7 +48,7 @@
                            [ngxMatDatetimePicker]="start">
                     <mat-datepicker-toggle matSuffix [for]="start" [disabled]="published">
                     </mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #start></ngx-mat-datetime-picker>
+                    <ngx-mat-datetime-picker [enableMeridian]="true" #start></ngx-mat-datetime-picker>
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="callForm?.controls?.startDateTime?.errors"
@@ -68,7 +68,7 @@
                            [ngxMatDatetimePicker]="endStep1">
                     <mat-datepicker-toggle matSuffix [for]="endStep1">
                     </mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #endStep1></ngx-mat-datetime-picker>
+                    <ngx-mat-datetime-picker [enableMeridian]="true" #endStep1></ngx-mat-datetime-picker>
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="callForm?.controls?.endDateTimeStep1?.errors"
@@ -84,7 +84,7 @@
                            [ngxMatDatetimePicker]="end">
                     <mat-datepicker-toggle matSuffix [for]="end">
                     </mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #end></ngx-mat-datetime-picker>
+                    <ngx-mat-datetime-picker [enableMeridian]="true" #end></ngx-mat-datetime-picker>
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="callForm?.controls?.endDateTime?.errors"
