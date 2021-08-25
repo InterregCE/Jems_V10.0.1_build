@@ -89,7 +89,7 @@ class ProgrammeDataServiceImpl(
             generalValidator.numberBetween(basicData.lastYear, 1000,9999, "lastYear"),
             generalValidator.maxLength(basicData.commissionDecisionNumber, 255, "commissionDecisionNumber"),
             generalValidator.maxLength(basicData.programmeAmendingDecisionNumber, 255, "programmeAmendingDecisionNumber"),
-
+            generalValidator.maxLength(basicData.projectIdProgrammeAbbreviation, 31, "projectIdProgrammeAbbreviation"),
         )
     }
 }

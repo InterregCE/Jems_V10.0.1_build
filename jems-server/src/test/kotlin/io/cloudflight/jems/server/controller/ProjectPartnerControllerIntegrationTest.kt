@@ -54,9 +54,10 @@ class ProjectPartnerControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project partner created`() {
+        programmeDataFactory.saveProgrammeData()
+        programmeDataFactory.saveLegalStatus()
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val project = projectFileFactory.saveProject(userFactory.adminUser, call)
-        programmeDataFactory.saveLegalStatus()
         val projectPartnerRequest = ProjectPartnerDTO(0L, "partner", ProjectPartnerRoleDTO.LEAD_PARTNER, legalStatusId = 1)
 
         mockMvc.perform(

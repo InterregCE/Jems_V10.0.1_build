@@ -132,6 +132,7 @@ class ProjectControllerTest {
         private val projectPeriod = ProjectPeriod(number = 1, start = 1, end = 12)
         private val projectForm = ProjectForm(
             id = projectId,
+            customIdentifier = "CUST$projectId",
             callSettings = callSettings,
             acronym = "acronym",
             duration = 12,
@@ -143,6 +144,7 @@ class ProjectControllerTest {
         )
         private val projectDetailFormDTO = ProjectDetailFormDTO(
             id = projectId,
+            customIdentifier = "CUST$projectId",
             callSettings = callSettings.toDto(),
             acronym = projectForm.acronym,
             title = projectForm.title!!,

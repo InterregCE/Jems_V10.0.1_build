@@ -197,7 +197,7 @@ class ProjectServiceTest : UnitTest() {
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         val slot = slot<ProjectEntity>()
         every { projectRepository.save(capture(slot)) } returnsArgument 0
-        every { getProjectInteractor.getProjectForm(1L) } returns ProjectForm(id = 4L, callSettings = callSettings, acronym = "acronym", duration = 12)
+        every { getProjectInteractor.getProjectForm(1L) } returns ProjectForm(id = 4L, customIdentifier = "CUST-04", callSettings = callSettings, acronym = "acronym", duration = 12)
 
         projectService.update(1, projectData)
 

@@ -144,6 +144,26 @@
             </mat-error>
         </mat-form-field>
     </div>
+    <h3>{{'programme.data.field.project.id' | translate}}</h3>
+    <span>{{'programme.data.field.project.id.description' | translate}}</span>
+    <div appMultiColumnRow stretch class="mb-3">
+        <div>
+            <mat-form-field>
+                <mat-label>{{'programme.data.field.project.id.programme.abbreviation' | translate }}</mat-label>
+                <input name="projectIdProgrammeAbbreviation" formControlName="projectIdProgrammeAbbreviation" matInput>
+                <mat-error>
+                    <app-form-field-errors [errors]="programmeForm?.controls?.projectIdProgrammeAbbreviation?.errors"></app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+            <mat-checkbox class="pl-3" name="projectIdUseCallId" formControlName="projectIdUseCallId">
+                {{'programme.data.field.project.id.use.call.id' | translate }}
+            </mat-checkbox>
+        </div>
+        <div>
+            <mat-label>{{'programme.data.field.project.id.preview' | translate }}</mat-label>
+            <div>{{ projectIdExample$ | async }}</div>
+        </div>
+    </div>
 
     <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
         <button mat-stroked-button

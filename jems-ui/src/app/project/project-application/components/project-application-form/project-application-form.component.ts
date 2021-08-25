@@ -102,6 +102,14 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       .subscribe(duration =>
         this.applicationForm.controls.projectPeriodCount.setValue(this.projectPeriodCount(duration))
       );
+
+    this.projectStore.projectEditable$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(() => {
+        this.applicationForm.controls.projectId.disable();
+        this.applicationForm.controls.projectPeriodLength.disable();
+        this.applicationForm.controls.projectPeriodCount.disable();
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -154,9 +162,6 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       this.applicationForm.controls.programmePriority.setValue(null);
       this.applicationForm.controls.specificObjective.setValue(null);
     }
-    this.applicationForm.controls.projectId.disable();
-    this.applicationForm.controls.projectPeriodLength.disable();
-    this.applicationForm.controls.projectPeriodCount.disable();
   }
 
   private projectPeriodCount(projectDuration: number): number {

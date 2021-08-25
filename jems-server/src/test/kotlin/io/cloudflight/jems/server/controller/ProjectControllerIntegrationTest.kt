@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.jems.api.project.dto.ProjectCreateDTO
 import io.cloudflight.jems.server.factory.CallFactory
+import io.cloudflight.jems.server.factory.ProgrammeDataFactory
 import io.cloudflight.jems.server.factory.UserFactory
 import io.cloudflight.jems.server.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
 import net.bytebuddy.utility.RandomString
@@ -28,6 +29,9 @@ class ProjectControllerIntegrationTest {
     private lateinit var callFactory: CallFactory
 
     @Autowired
+    private lateinit var programmeDataFactory: ProgrammeDataFactory
+
+    @Autowired
     private lateinit var userFactory: UserFactory
 
     @Autowired
@@ -38,6 +42,7 @@ class ProjectControllerIntegrationTest {
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
 
     fun `project created`() {
+        programmeDataFactory.saveProgrammeData()
         val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
         val inputProject = ProjectCreateDTO(acronym = "acronym", projectCallId = call.id)
         mockMvc.perform(

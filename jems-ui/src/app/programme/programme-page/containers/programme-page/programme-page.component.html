@@ -9,7 +9,7 @@
                 [programme]="programme"
                 (saveProgrammeData)="saveProgrammeData$.next($event)">
         </app-programme-data>
-        <app-programme-basic-funds class="mt-4 block"
+        <app-programme-basic-funds class="mt-5 block"
                 *ngIf="funds$ | async as funds"
                 [success$]="fundsSaveSuccess$"
                 [error$]="fundsSaveError$"

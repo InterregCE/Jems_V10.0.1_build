@@ -11,12 +11,13 @@ import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../common/utils/forms';
-import {filter, take, takeUntil} from 'rxjs/operators';
+import {filter, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {Permission} from '../../../../security/permissions/permission';
 import {InputProgrammeData, OutputProgrammeData} from '@cat/api';
 import {Tools} from '../../../../common/utils/tools';
 import {TranslateService} from '@ngx-translate/core';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
+import {combineLatest, Observable} from 'rxjs';
 
 @Component({
   selector: 'app-programme-data',
@@ -47,11 +48,13 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     commissionDecisionDate: [''],
     programmeAmendingDecisionNumber: ['', Validators.maxLength(255)],
     programmeAmendingDecisionDate: [''],
-    projectIdProgrammeAbbreviation: ['', Validators.maxLength(255)],
+    projectIdProgrammeAbbreviation: ['', Validators.maxLength(31)],
     projectIdUseCallId: false,
   },                                     {
     validator: this.firstYearBeforeLastYear
   });
+
+  projectIdExample$: Observable<string>;
 
   yearErrorsArgs = {
     min: {min: 1000, max: 9999},
@@ -93,6 +96,12 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
 
   ngOnInit(): void {
     super.ngOnInit();
+    this.projectIdExample$ = combineLatest([
+      this.programmeForm.controls.projectIdProgrammeAbbreviation.valueChanges.pipe(startWith(this.programme.projectIdProgrammeAbbreviation)),
+      this.programmeForm.controls.projectIdUseCallId.valueChanges.pipe(startWith(this.programme.projectIdUseCallId)),
+    ]).pipe(
+      map(([abbreviation, useCallId]) => `${abbreviation}${useCallId ? '01' : ''}00001`),
+    );
   }
 
   getForm(): FormGroup | null {
