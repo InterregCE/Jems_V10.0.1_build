@@ -130,7 +130,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   }
 
   resetForm(): void {
-    this.applicationForm.controls.projectId.setValue(this.projectForm.id);
+    this.applicationForm.controls.projectId.setValue(this.projectForm.customIdentifier);
     this.applicationForm.controls.acronym.setValue(this.projectForm.acronym);
     this.applicationForm.controls.title.setValue(this.projectForm?.title);
     this.applicationForm.controls.duration.setValue(this.projectForm?.duration);

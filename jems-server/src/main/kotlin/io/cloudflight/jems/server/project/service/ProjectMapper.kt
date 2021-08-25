@@ -11,7 +11,6 @@ import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 
-
 fun ProjectEntity.toApplicantAndStatus() = ProjectApplicantAndStatus(
     applicantId = applicant.id,
     projectStatus = currentStatus.status,
@@ -59,6 +58,7 @@ fun ProjectFull.getProjectWithoutFormData() = ProjectDetail(
 
 fun ProjectFull.getOnlyFormRelatedData() = ProjectForm(
     id = id!!,
+    customIdentifier = customIdentifier,
     callSettings = callSettings,
     acronym = acronym,
     title = title,

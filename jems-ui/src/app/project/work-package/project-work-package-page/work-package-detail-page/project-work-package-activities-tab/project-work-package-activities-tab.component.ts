@@ -145,7 +145,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
 
   getAbbreviationForPartnerId(partners: ProjectPartner[], partnerId: number): string {
     const partner = partners.find(p => p.id === partnerId);
-    return (partner?.toPartnerNumberString() || '-') + ' ' + (partner?.abbreviation || '-');
+    return `${partner?.toPartnerNumberString() || '-'} ${partner?.abbreviation || '-'}`;
   }
 
   getPartnersWithoutSelected(partners: ProjectPartner[], activityIndex: number): ProjectPartner[] {

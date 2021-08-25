@@ -28,7 +28,6 @@ import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.project.controller.partner.ProjectPartnerDTOMapper
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
@@ -93,6 +92,7 @@ fun ProjectDetail.toDto() = ProjectDetailDTO(
 
 fun ProjectForm.toDto() = ProjectDetailFormDTO(
     id = id,
+    customIdentifier = customIdentifier,
     callSettings = callSettings.toDto(),
     acronym = acronym,
     title = title ?: emptySet(),

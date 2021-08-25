@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 
 data class ProjectForm(
     val id: Long,
+    val customIdentifier: String,
     val callSettings: ProjectCallSettings,
     val acronym: String,
     val title: Set<InputTranslation>? = emptySet(),

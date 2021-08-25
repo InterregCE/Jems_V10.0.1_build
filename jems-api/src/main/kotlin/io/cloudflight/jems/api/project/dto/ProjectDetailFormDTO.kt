@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySim
 
 data class ProjectDetailFormDTO(
     val id: Long,
+    val customIdentifier: String,
     val callSettings: ProjectCallSettingsDTO,
     val acronym: String,
     val title: Set<InputTranslation> = emptySet(),

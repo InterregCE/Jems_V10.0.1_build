@@ -93,11 +93,11 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun `update existing programme data`() {
         val programmeDataInput =
-            InputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, "", false)
+            InputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, "SK-AT", false)
         val programmeDataUpdated =
-            ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,"", false)
+            ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,"SK-AT", false)
         val programmeDataExpectedOutput =
-            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,  "", false, emptyList())
+            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,  "SK-AT", false, emptyList())
 
         every { programmeDataRepository.save(any<ProgrammeData>()) } returns programmeDataUpdated
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
