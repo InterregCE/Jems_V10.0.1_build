@@ -24,9 +24,11 @@
                        }">
                     <a class="nav-link" *ngIf="item.isInternal"
                        (click)="isNavBarCollapsed = true; router.navigate([item.route])">
+                        <mat-icon *ngIf="item.icon">{{item.icon}}</mat-icon>
                         {{item.name | translate}}
                     </a>
                     <a class="nav-link" *ngIf="!item.isInternal" [href]="item.route" target="_blank">
+                        <mat-icon *ngIf="item.icon">{{item.icon}}</mat-icon>
                         {{item.name | translate}}
                     </a>
                 </li>

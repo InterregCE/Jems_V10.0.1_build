@@ -5,4 +5,5 @@ export interface MenuItemConfiguration {
   isInternal: boolean;
   // the route to be used.
   route: string;
+  icon?: string;
 }

@@ -5,6 +5,7 @@ import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditi
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.repository.PluginStatusRepository
+import io.cloudflight.jems.server.project.authorization.CanCheckApplicationForm
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,6 +22,7 @@ class ExecutePreConditionCheck(
 
     @ExceptionWrapper(ExecutePreConditionCheckException::class)
     @Transactional(readOnly = true)
+    @CanCheckApplicationForm
     override fun execute(projectId: Long): PreConditionCheckResult =
         if (isPluginEnabled())
             projectPersistence.getProjectCallSettings(projectId).let { callSettings ->

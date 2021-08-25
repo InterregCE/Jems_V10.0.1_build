@@ -17,26 +17,31 @@ export class TopBarService {
     name: 'topbar.main.dashboard',
     isInternal: true,
     route: '/app/dashboard',
+    icon: 'dashboard'
   };
   private applicationsItem: MenuItemConfiguration = {
     name: 'topbar.main.project',
     isInternal: true,
     route: '/app/project',
+    icon: 'description'
   };
   private programmeItem: MenuItemConfiguration = {
     name: 'topbar.main.programme',
     isInternal: true,
     route: '/app/programme',
+    icon: 'business'
   };
   private callsItem: MenuItemConfiguration = {
     name: 'topbar.main.call',
     isInternal: true,
     route: '/app/call',
+    icon: 'campaign'
   };
   private systemItem: MenuItemConfiguration = {
     name: 'topbar.main.system',
     isInternal: true,
     route: '/app/system',
+    icon: 'settings'
   };
 
   constructor(private permissionService: PermissionService,

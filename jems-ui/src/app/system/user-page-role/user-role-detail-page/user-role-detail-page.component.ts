@@ -27,8 +27,15 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 })
 export class UserRoleDetailPageComponent {
 
-  treeControl = new FlatTreeControl<RolePermissionRow>(
+  treeControlCreateAndCollaborate = new FlatTreeControl<RolePermissionRow>(
     node => node.level, node => node.expandable);
+
+  treeControlInspect = new FlatTreeControl<RolePermissionRow>(
+    node => node.level, node => node.expandable);
+
+  treeControlTopNavigation = new FlatTreeControl<RolePermissionRow>(
+    node => node.level, node => node.expandable);
+
   PermissionState = PermissionState;
   PermissionMode = PermissionMode;
   roleId = this.activatedRoute?.snapshot?.params?.roleId;
@@ -43,8 +50,13 @@ export class UserRoleDetailPageComponent {
       Validators.minLength(1),
     ]],
     defaultForRegisteredUser: [false, []],
-    permissions: this.formBuilder.array([])
+    permissionsInspect: this.formBuilder.array([]),
+    permissionsTopBar: this.formBuilder.array([])
   });
+
+  roleHasProjectCreate = false;
+  roleHasProjectMonitor = false;
+
   private treeFlattener = new MatTreeFlattener<AbstractControl, RolePermissionRow>(
     (form: AbstractControl, level: number) => ({
       expandable: !!this.subtree(form),
@@ -61,7 +73,9 @@ export class UserRoleDetailPageComponent {
     node => node.expandable,
     form => this.subtree(form).controls || []
   );
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+  dataSourceCreateProjects = new MatTreeFlatDataSource(this.treeControlCreateAndCollaborate, this.treeFlattener);
+  dataSourceInspectProjects = new MatTreeFlatDataSource(this.treeControlInspect, this.treeFlattener);
+  dataSourceTopNavigation = new MatTreeFlatDataSource(this.treeControlTopNavigation, this.treeFlattener);
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
@@ -94,14 +108,19 @@ export class UserRoleDetailPageComponent {
     return this.userRoleForm.get('defaultForRegisteredUser') as FormControl;
   }
 
-  get permissions(): FormArray {
-    return this.userRoleForm.get('permissions') as FormArray;
+  get permissionsInspect(): FormArray {
+    return this.userRoleForm.get('permissionsInspect') as FormArray;
+  }
+
+  get permissionsTopBar(): FormArray {
+    return this.userRoleForm.get('permissionsTopBar') as FormArray;
   }
 
   save(role: UserRoleDTO): void {
     const user: UserRoleDTO = {
       id: role.id,
-      ...this.userRoleForm.value,
+      name: role.name,
+      defaultForRegisteredUser: role.defaultForRegisteredUser,
       permissions: this.getFormPermissions()
     };
     if (role?.id) {
@@ -135,14 +154,31 @@ export class UserRoleDetailPageComponent {
   resetUserRole(role: UserRoleDTO, isUpdateAllowed: boolean): void {
     this.name?.patchValue(role?.name);
     this.defaultForRegisteredUser?.patchValue(role?.defaultForRegisteredUser);
-    this.permissions.clear();
-    const groups = Permission.DEFAULT_PERMISSIONS.map((perm, index) =>
+    this.roleHasProjectCreate = role.permissions ? role.permissions.filter((permission: any) => permission === PermissionsEnum.ProjectCreate).length > 0 : false;
+    this.permissionsInspect.clear();
+    this.permissionsTopBar.clear();
+
+    const createAndCollaborateGroups = Permission.DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS.map((perm, index) =>
       this.extractFormPermissionSubGroup(perm, role.permissions, index)
     );
-    groups.forEach(group => this.permissions.push(group));
 
-    this.dataSource.data = groups;
-    this.treeControl.expandAll();
+    const inspectGroups = Permission.DEFAULT_USER_INSPECT_PERMISSIONS.map((perm, index) =>
+      this.extractFormPermissionSubGroup(perm, role.permissions, index)
+    );
+    inspectGroups.forEach(group => this.permissionsInspect.push(group));
+    this.roleHasProjectMonitor = this.hasMonitoringrivileges();
+
+    const groups = Permission.TOP_NAVIGATION_PERMISSIONS.map((perm, index) =>
+      this.extractFormPermissionSubGroup(perm, role.permissions, index)
+    );
+    groups.forEach(group => this.permissionsTopBar.push(group));
+
+    this.dataSourceCreateProjects.data = createAndCollaborateGroups;
+    this.dataSourceInspectProjects.data = inspectGroups;
+    this.dataSourceTopNavigation.data = groups;
+    this.treeControlCreateAndCollaborate.expandAll();
+    this.treeControlInspect.expandAll();
+    this.treeControlTopNavigation.expandAll();
     if (this.roleId) {
       this.formService.resetEditable();
     } else {
@@ -180,8 +216,30 @@ export class UserRoleDetailPageComponent {
     return control.get('state') as AbstractControl;
   }
 
+  viewTooltip(control: AbstractControl): AbstractControl {
+    return control.get('viewTooltip') as AbstractControl;
+  }
+
+  icon(control: AbstractControl): AbstractControl {
+    return control.get('icon') as AbstractControl;
+  }
+
+  editTooltip(control: AbstractControl): AbstractControl {
+    return control.get('editTooltip') as AbstractControl;
+  }
+
   formChanged(): void {
     this.formService.setDirty(true);
+  }
+
+  grantProjectCreate(): void {
+    this.roleHasProjectCreate = !this.roleHasProjectCreate;
+    this.formChanged();
+  }
+
+  grantProjectMonitor(): void {
+    this.roleHasProjectMonitor = !this.roleHasProjectMonitor;
+    this.formChanged();
   }
 
   private extractFormPermissionSubGroup(perm: PermissionNode,
@@ -194,12 +252,16 @@ export class UserRoleDetailPageComponent {
         mode: perm.mode,
         // TODO remove 'disabled' when all permissions are used correctly and not just mocked
         disabled: perm.temporarilyDisabled,
-        state: this.getCurrentState(perm, currentRolePermissions)
+        state: perm.state ? perm.state : this.getCurrentState(perm, currentRolePermissions),
+        viewTooltip: perm.viewTooltip,
+        editTooltip: perm.editTooltip,
+        icon: perm.icon
       });
     } else {
       return this.formBuilder.group({
         name: perm.name,
         parentIndex,
+        icon: perm.icon,
         subtree: this.formBuilder.array(
           perm.children.map(child => this.extractFormPermissionSubGroup(child, currentRolePermissions, parentIndex))
         ),
@@ -228,8 +290,28 @@ export class UserRoleDetailPageComponent {
   }
 
   private getFormPermissions(): PermissionsEnum[] {
-    return Permission.DEFAULT_PERMISSIONS.flatMap((perm: PermissionNode, index: number) =>
-      this.extractChildrenPermissions(this.permissions.at(index), perm));
+    const permissions: PermissionsEnum[] = [];
+
+    if (!this.roleHasProjectMonitor) {
+      this.permissionsInspect.clear();
+    } else {
+      Permission.DEFAULT_USER_INSPECT_PERMISSIONS.flatMap((perm: PermissionNode, index: number) =>
+        this.extractChildrenPermissions(this.permissionsInspect.at(index), perm)).forEach(permission => permissions.push(permission));
+    }
+
+    Permission.TOP_NAVIGATION_PERMISSIONS.flatMap((perm: PermissionNode, index: number) =>
+      this.extractChildrenPermissions(this.permissionsTopBar.at(index), perm)).forEach(permission => permissions.push(permission));
+
+    // the project create cannot be assigned without the CallPublishedRetrieve.If the checkbox is checked, both should be added but not duplicated.
+    if (this.roleHasProjectCreate && permissions.filter(permission => permission === PermissionsEnum.CallPublishedRetrieve).length <= 0) {
+      permissions.push(PermissionsEnum.CallPublishedRetrieve);
+    }
+
+    if (this.roleHasProjectCreate && permissions.filter(permission => permission === PermissionsEnum.CallPublishedRetrieve).length > 0) {
+      permissions.push(PermissionsEnum.ProjectCreate);
+    }
+
+    return permissions;
   }
 
   private extractChildrenPermissions(nodeForm: AbstractControl, permissionNode: PermissionNode): PermissionsEnum[] {
@@ -240,5 +322,20 @@ export class UserRoleDetailPageComponent {
 
     return permissionNode.children.flatMap((node: PermissionNode, index: number) =>
       this.extractChildrenPermissions(this.subtree(nodeForm).at(index), node));
+  }
+
+  private hasMonitoringrivileges(): boolean {
+    return Permission.DEFAULT_USER_INSPECT_PERMISSIONS.flatMap((perm: PermissionNode, index: number) =>
+      this.hasAnyStateNotHidden(this.permissionsInspect.at(index), perm)).filter(isNotHidden => isNotHidden).length > 0;
+  }
+
+  private hasAnyStateNotHidden(nodeForm: AbstractControl, permissionNode: PermissionNode): boolean[] {
+    if (!permissionNode.children?.length) {
+      const state = this.state(nodeForm)?.value;
+      return [state !== PermissionState.HIDDEN];
+    }
+
+    return permissionNode.children.flatMap((node: PermissionNode, index: number) =>
+      this.hasAnyStateNotHidden(this.subtree(nodeForm).at(index), node));
   }
 }

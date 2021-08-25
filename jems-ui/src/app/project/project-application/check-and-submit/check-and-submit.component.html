@@ -9,7 +9,7 @@
             {{'project.application.form.section.check.and.submit.info.line.2' | translate }}
         </div>
 
-        <ng-container *hasPermission="PermissionsEnum.ProjectSubmission; alternativeCondition data.isThisUserOwner">
+        <ng-container *hasPermission="[PermissionsEnum.ProjectCheckApplicationForm, PermissionsEnum.ProjectSubmission]; alternativeCondition data.isThisUserOwner">
 
             <ng-container
                     *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT">
@@ -18,24 +18,28 @@
             </ng-container>
 
             <div appNoWidthLimit>
-                <app-pending-button
-                        class="mr-2 mt-2"
-                        *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
-                        [disabled]="!data.isProjectLatestVersion"
-                        [pending]="preConditionCheckInProgress"
-                        (clicked)="preConditionCheck(data.projectId)">
-                    {{'project.detail.button.pre.condition.check' | translate}}
-                </app-pending-button>
+                <ng-container *hasPermission="PermissionsEnum.ProjectCheckApplicationForm; alternativeCondition data.isThisUserOwner">
+                    <app-pending-button
+                            class="mr-2 mt-2"
+                            *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
+                            [disabled]="!data.isProjectLatestVersion"
+                            [pending]="preConditionCheckInProgress"
+                            (clicked)="preConditionCheck(data.projectId)">
+                        {{'project.detail.button.pre.condition.check' | translate}}
+                    </app-pending-button>
+                </ng-container>
 
-                <app-pending-button
-                        class="mr-2 mt-2"
-                        *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT"
-                        [confirm]="{title: 'project.detail.submit.dialog.title', message: 'project.detail.submit.dialog.message'}"
-                        [disabled]="isSubmitDisabled(data.projectCallEndDate, data.hasPreConditionCheckSucceed, data.isProjectLatestVersion, data.projectStatus)"
-                        [pending]="actionPending"
-                        (clicked)="submitProject(data.projectId)">
-                    {{'project.detail.button.submit' | translate}}
-                </app-pending-button>
+                <ng-container *hasPermission="PermissionsEnum.ProjectSubmission; alternativeCondition data.isThisUserOwner">
+                    <app-pending-button
+                            class="mr-2 mt-2"
+                            *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT"
+                            [confirm]="{title: 'project.detail.submit.dialog.title', message: 'project.detail.submit.dialog.message'}"
+                            [disabled]="isSubmitDisabled(data.projectCallEndDate, data.hasPreConditionCheckSucceed, data.isProjectLatestVersion, data.projectStatus)"
+                            [pending]="actionPending"
+                            (clicked)="submitProject(data.projectId)">
+                        {{'project.detail.button.submit' | translate}}
+                    </app-pending-button>
+                </ng-container>
 
                 <app-pending-button
                         class="mr-2 mt-2"

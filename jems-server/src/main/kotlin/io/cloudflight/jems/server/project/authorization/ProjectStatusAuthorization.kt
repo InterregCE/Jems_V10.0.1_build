@@ -17,6 +17,10 @@ import org.springframework.stereotype.Component
 annotation class CanSubmitApplication
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectStatusAuthorization.canCheckApplication(#projectId)")
+annotation class CanCheckApplicationForm
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('ProjectStatusReturnToApplicant')")
 annotation class CanReturnApplicationToApplicant
 
@@ -59,6 +63,18 @@ class ProjectStatusAuthorization(
         val isOwner = isActiveUserIdEqualTo(userId = project.applicantId)
 
         if (isOwner || hasPermission(UserRolePermission.ProjectSubmission))
+            return project.projectStatus.isDraftOrReturned()
+        else if (hasPermission(UserRolePermission.ProjectRetrieve))
+            return false
+        else
+            throw ResourceNotFoundException("project")
+    }
+
+    fun canCheckApplication(projectId: Long): Boolean {
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+        val isOwner = isActiveUserIdEqualTo(userId = project.applicantId)
+
+        if (isOwner || hasPermission(UserRolePermission.ProjectCheckApplicationForm))
             return project.projectStatus.isDraftOrReturned()
         else if (hasPermission(UserRolePermission.ProjectRetrieve))
             return false

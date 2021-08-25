@@ -25,6 +25,7 @@ enum class UserRolePermission(val key: String) {
     ProjectFileAssessmentUpdate("ProjectFileAssessmentUpdate"),
 
     // Module APPLICATION LIFECYCLE
+    ProjectCheckApplicationForm("ProjectCheckApplicationForm"),
     ProjectSubmission("ProjectSubmission"),
 
     ProjectAssessmentView("ProjectAssessmentView"),

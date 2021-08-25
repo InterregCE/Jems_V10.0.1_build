@@ -1,4 +1,4 @@
-import {PermissionMode, PermissionNode} from './permission-node';
+import {PermissionMode, PermissionNode, PermissionState} from './permission-node';
 import {UserRoleCreateDTO} from '@cat/api';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
@@ -25,12 +25,123 @@ export class Permission {
     PermissionsEnum.ProgrammeSetupUpdate,
   ];
 
-  public static readonly DEFAULT_PERMISSIONS: PermissionNode[] = [
+  public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
+    {
+      name: 'project.application.form.title',
+      children: [
+        {
+          name: 'project.application.form.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          temporarilyDisabled: true,
+          state: PermissionState.EDIT
+        },
+        {
+          name: 'file.tab.application',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          temporarilyDisabled: true,
+          state: PermissionState.EDIT
+        },
+        {
+          name: 'project.application.check.submit',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          temporarilyDisabled: true,
+          state: PermissionState.EDIT
+        },
+        {
+          name: 'project.assessment.and.decision.header',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          temporarilyDisabled: true,
+          state: PermissionState.HIDDEN
+        },
+      ]
+    }
+  ];
+
+  public static readonly DEFAULT_USER_INSPECT_PERMISSIONS: PermissionNode[] = [
+    {
+      name: 'project.application.form.title',
+      children: [
+        {
+          name: 'project.application.form.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectFormRetrieve],
+          editPermissions: [PermissionsEnum.ProjectFormUpdate],
+        },
+        {
+          name: 'file.tab.application',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectFileApplicationRetrieve],
+          editPermissions: [PermissionsEnum.ProjectFileApplicationUpdate],
+        },
+        {
+          name: 'project.application.check.submit',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectCheckApplicationForm],
+          editPermissions: [PermissionsEnum.ProjectSubmission],
+          viewTooltip: 'project.application.check.submit.view.tooltip',
+          editTooltip: 'project.application.check.submit.edit.tooltip'
+        },
+        {
+          name: 'project.assessment.and.decision.header',
+          children: [
+            {
+              name: 'project.assessment.and.decision.panel',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [
+                PermissionsEnum.ProjectAssessmentView,
+              ],
+              editPermissions: [
+                PermissionsEnum.ProjectAssessmentQualityEnter,
+                PermissionsEnum.ProjectAssessmentEligibilityEnter,
+                PermissionsEnum.ProjectStatusDecideEligible,
+                PermissionsEnum.ProjectStatusDecideIneligible,
+                PermissionsEnum.ProjectStatusDecideApproved,
+                PermissionsEnum.ProjectStatusDecideApprovedWithConditions,
+                PermissionsEnum.ProjectStatusDecideNotApproved,
+              ],
+            },
+            {
+              name: 'project.application.revert.status.dialog.title',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectStatusDecisionRevert],
+            },
+            {
+              name: 'project.detail.button.return.applicant',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectStatusReturnToApplicant],
+            },
+            {
+              name: 'project.application.start.step.two.button.label',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectStartStepTwo],
+            },
+            {
+              name: 'file.tab.assessment',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectFileAssessmentRetrieve],
+              editPermissions: [PermissionsEnum.ProjectFileAssessmentUpdate],
+            },
+          ],
+        },
+      ]
+    }
+  ];
+
+  public static readonly TOP_NAVIGATION_PERMISSIONS: PermissionNode[] = [
     {
       name: 'topbar.main.dashboard',
       mode: PermissionMode.HIDDEN_VIEW,
       viewPermissions: ['Dashboard-to-be-done' as PermissionsEnum],
       temporarilyDisabled: true,
+      icon: 'dashboard',
       children: [
         {
           name: 'call.applications.title',
@@ -41,13 +152,11 @@ export class Permission {
         },
         {
           name: 'call.list.open.title',
-          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          mode: PermissionMode.HIDDEN_VIEW,
           viewPermissions: [
             PermissionsEnum.CallPublishedRetrieve,
           ],
-          editPermissions: [
-            PermissionsEnum.ProjectCreate,
-          ],
+          viewTooltip: 'call.list.open.title.view.tooltip'
         },
       ],
     },
@@ -55,21 +164,25 @@ export class Permission {
       name: 'topbar.main.project',
       mode: PermissionMode.HIDDEN_VIEW,
       viewPermissions: [PermissionsEnum.ProjectRetrieve],
+      icon: 'description',
     },
     {
       name: 'Calls',
       mode: PermissionMode.HIDDEN_VIEW_EDIT,
       viewPermissions: [PermissionsEnum.CallRetrieve],
       editPermissions: [PermissionsEnum.CallUpdate],
+      icon: 'campaign',
     },
     {
       name: 'topbar.main.programme',
       mode: PermissionMode.HIDDEN_VIEW_EDIT,
       viewPermissions: [PermissionsEnum.ProgrammeSetupRetrieve],
       editPermissions: [PermissionsEnum.ProgrammeSetupUpdate],
+      icon: 'business',
     },
     {
       name: 'topbar.main.system',
+      icon: 'settings',
       children: [
         {
           name: 'topbar.main.user.management',
@@ -92,81 +205,6 @@ export class Permission {
           viewPermissions: [PermissionsEnum.AuditRetrieve],
         },
       ]
-    },
-    {
-      name: 'project.application.form.title',
-      children: [
-        {
-          name: 'project.application.form.lifecycle.title',
-          children: [
-            {
-              name: 'Check AF',
-              mode: PermissionMode.TOGGLE_EDIT,
-              editPermissions: ['Check AF-to-be-done' as PermissionsEnum],
-              temporarilyDisabled: true,
-            },
-            {
-              name: 'project.detail.button.submit',
-              mode: PermissionMode.TOGGLE_EDIT,
-              editPermissions: [PermissionsEnum.ProjectSubmission],
-            },
-            {
-              name: 'project.detail.button.return.applicant',
-              mode: PermissionMode.TOGGLE_EDIT,
-              editPermissions: [PermissionsEnum.ProjectStatusReturnToApplicant],
-            },
-            {
-              name: 'project.application.revert.status.dialog.title',
-              mode: PermissionMode.TOGGLE_EDIT,
-              editPermissions: [PermissionsEnum.ProjectStatusDecisionRevert],
-            },
-            {
-              name: 'project.application.start.step.two.button.label',
-              mode: PermissionMode.TOGGLE_EDIT,
-              editPermissions: [PermissionsEnum.ProjectStartStepTwo],
-            },
-          ],
-        },
-        {
-          name: 'project.assessment.header',
-          mode: PermissionMode.HIDDEN_VIEW_EDIT,
-          viewPermissions: [
-            PermissionsEnum.ProjectAssessmentView,
-          ],
-          editPermissions: [
-            PermissionsEnum.ProjectAssessmentQualityEnter,
-            PermissionsEnum.ProjectAssessmentEligibilityEnter,
-            PermissionsEnum.ProjectStatusDecideEligible,
-            PermissionsEnum.ProjectStatusDecideIneligible,
-            PermissionsEnum.ProjectStatusDecideApproved,
-            PermissionsEnum.ProjectStatusDecideApprovedWithConditions,
-            PermissionsEnum.ProjectStatusDecideNotApproved,
-          ],
-        },
-        {
-          name: 'file.tab.header',
-          children: [
-            {
-              name: 'file.tab.application',
-              mode: PermissionMode.VIEW_EDIT,
-              viewPermissions: [PermissionsEnum.ProjectFileApplicationRetrieve],
-              editPermissions: [PermissionsEnum.ProjectFileApplicationUpdate],
-            },
-            {
-              name: 'file.tab.assessment',
-              mode: PermissionMode.HIDDEN_VIEW_EDIT,
-              viewPermissions: [PermissionsEnum.ProjectFileAssessmentRetrieve],
-              editPermissions: [PermissionsEnum.ProjectFileAssessmentUpdate],
-            },
-          ],
-        },
-        {
-          name: 'project.application.form.title',
-          mode: PermissionMode.HIDDEN_VIEW_EDIT,
-          viewPermissions: [PermissionsEnum.ProjectFormRetrieve],
-          editPermissions: [PermissionsEnum.ProjectFormUpdate],
-        },
-      ]
-    },
+    }
   ];
 }
