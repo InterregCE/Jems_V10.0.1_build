@@ -77,7 +77,7 @@ class CreateProject(
         val setup = programmeService.get()
         val callIdPart = if (setup.projectIdUseCallId) "%02d".format(callId) else ""
 
-        return "${setup.projectIdProgrammeAbbreviation}$callIdPart"
+        return "${setup.projectIdProgrammeAbbreviation.orEmpty()}$callIdPart"
     }
 
 }

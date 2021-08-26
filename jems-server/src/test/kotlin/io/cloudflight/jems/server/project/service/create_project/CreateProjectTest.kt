@@ -98,7 +98,7 @@ internal class CreateProjectTest : UnitTest() {
             description = "Attempted unsuccessfully to submit or to apply for call 'call name' (id=54) that is not open.",
         )
 
-        private fun getProgrammeData(projectIdProgrammeAbbreviation: String, projectIdUseCallId: Boolean) = OutputProgrammeData(
+        private fun getProgrammeData(projectIdProgrammeAbbreviation: String?, projectIdUseCallId: Boolean) = OutputProgrammeData(
             "cci",
             "title",
             "version",
@@ -204,6 +204,21 @@ internal class CreateProjectTest : UnitTest() {
         assertThat(slot[1].auditCandidate.action).isEqualTo(APPLICATION_VERSION_RECORDED)
         assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", customIdentifier = "CZ-DE00029", name = acronym))
         assertThat(slot[1].auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
+    }
+
+    @Test
+    fun `createProject - null programme prefix`() {
+        every { callPersistence.getCallById(CALL_ID) } returns call
+        every { securityService.currentUser!!.user.id } returns USER_ID
+        val acronym = "test acronym"
+        every { projectPersistence.createProjectWithStatus(acronym, STEP1_DRAFT, USER_ID, CALL_ID) } returns
+            dummyProjectWithStatus(acronym = acronym, status = STEP1_DRAFT)
+        every { programmeService.get() } returns getProgrammeData(null, false)
+        every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, any()) } answers {}
+        every { auditPublisher.publishEvent(any()) } answers { }
+
+        createProject.createProject(acronym, CALL_ID)
+        verify(exactly = 1) { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "00029") }
     }
 
     @Test
