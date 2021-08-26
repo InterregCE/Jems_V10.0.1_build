@@ -12,7 +12,7 @@
             </div>
             <ng-container *ngIf="isAssessmentEditable(decisions?.eligibilityAssessment, data.isProjectLatestVersion)">
                 <a *hasPermission="Permissions.ProjectAssessmentEligibilityEnter"
-                   mat-stroked-button appFormFieldWidth="x-large"
+                   mat-stroked-button
                    [routerLink]="['./assessment/eligibilityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment' | translate}}
                 </a>
@@ -20,7 +20,7 @@
             <ng-container *ngIf="!isAssessmentEditable(decisions?.eligibilityAssessment, data.isProjectLatestVersion)">
                 <a *hasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!decisions?.eligibilityAssessment"
-                   mat-stroked-button appFormFieldWidth="x-large"
+                   mat-stroked-button
                    [routerLink]="['./assessment/eligibilityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
                 </a>
@@ -35,7 +35,7 @@
             </div>
             <ng-container *ngIf="isAssessmentEditable(decisions?.qualityAssessment, data.isProjectLatestVersion)">
                 <a *hasPermission="Permissions.ProjectAssessmentQualityEnter"
-                   mat-stroked-button appFormFieldWidth="x-large"
+                   mat-stroked-button
                    [disabled]="projectStatus.status === stepStatus.ineligible"
                    [routerLink]="['./assessment/qualityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment' | translate}}
@@ -44,7 +44,7 @@
             <ng-container *ngIf="!isAssessmentEditable(decisions?.qualityAssessment, data.isProjectLatestVersion)">
                 <a *hasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!decisions?.qualityAssessment"
-                   mat-stroked-button appFormFieldWidth="x-large"
+                   mat-stroked-button
                    [routerLink]="['./assessment/qualityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment.view' | translate}}
                 </a>

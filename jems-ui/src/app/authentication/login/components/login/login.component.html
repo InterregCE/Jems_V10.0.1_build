@@ -38,7 +38,7 @@
                     {{'user.terms.login.firstText' | translate}} <span class="terms-link"><a [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} </a></span>
                 </div>
 
-                <button appFormFieldWidth="small" mat-raised-button
+                <button mat-raised-button
                         color="primary"
                         type="submit"
                         [disabled]="!loginForm.valid || submitted">
