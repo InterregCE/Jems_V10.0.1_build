@@ -15,6 +15,8 @@ export class HelpMenuComponent implements OnInit {
 
   version: string;
   helpdeskUrl: string;
+  accessibilityStatementUrl: string;
+  termsAndPrivacyPolicyUrl: string;
 
   constructor(private infoService: InfoService) {
   }
@@ -24,6 +26,8 @@ export class HelpMenuComponent implements OnInit {
       tap(info => {
         this.version = info.version;
         this.helpdeskUrl = info.helpdeskUrl;
+        this.accessibilityStatementUrl = info.accessibilityStatementUrl;
+        this.termsAndPrivacyPolicyUrl = info.termsAndPrivacyPolicyUrl;
       }),
       untilDestroyed(this),
     ).subscribe();
