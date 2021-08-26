@@ -48,7 +48,7 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
     commissionDecisionDate: [''],
     programmeAmendingDecisionNumber: ['', Validators.maxLength(255)],
     programmeAmendingDecisionDate: [''],
-    projectIdProgrammeAbbreviation: ['', Validators.maxLength(31)],
+    projectIdProgrammeAbbreviation: ['', Validators.maxLength(12)],
     projectIdUseCallId: false,
   },                                     {
     validator: this.firstYearBeforeLastYear
