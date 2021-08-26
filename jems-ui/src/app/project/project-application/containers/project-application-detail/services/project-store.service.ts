@@ -293,7 +293,7 @@ export class ProjectStore {
   private allowedBudgetCategory(category: BudgetCostCategoryEnum,
                                 allowedRealCost: boolean,
                                 unitCosts: ProgrammeUnitCost[]): any {
-    const unitCostsEnabled = !!unitCosts.find(unitCost => unitCost.categories.includes(category));
+    const unitCostsEnabled = !!unitCosts.find(unitCost => unitCost.isOneCostCategory && unitCost.categories.includes(category));
     return [category, new AllowedBudgetCategory(allowedRealCost, unitCostsEnabled)];
   }
 
