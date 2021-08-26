@@ -100,7 +100,7 @@ export class ProgrammeDataComponent extends ViewEditForm implements OnInit {
       this.programmeForm.controls.projectIdProgrammeAbbreviation.valueChanges.pipe(startWith(this.programme.projectIdProgrammeAbbreviation)),
       this.programmeForm.controls.projectIdUseCallId.valueChanges.pipe(startWith(this.programme.projectIdUseCallId)),
     ]).pipe(
-      map(([abbreviation, useCallId]) => `${abbreviation}${useCallId ? '01' : ''}00001`),
+      map(([abbreviation, useCallId]) => `${abbreviation || ''}${useCallId ? '01' : ''}00001`),
     );
   }
 
