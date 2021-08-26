@@ -98,6 +98,10 @@
             </mat-select>
         </mat-form-field>
 
+        <p>
+            {{'project.partner.subType.intro.text.one' | translate}}
+            <a [href]="ProjectApplicationFormPartnerEditConstants.EUROSTAT_WEBSITE" target="_blank">{{'project.partner.subType.intro.text.one.link' | translate}}</a>
+        </p>
         <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.SUB_TYPE">
             <mat-label>{{'project.partner.subType' | translate}}</mat-label>
             <mat-select name="partnerSubType" formControlName="partnerSubType">

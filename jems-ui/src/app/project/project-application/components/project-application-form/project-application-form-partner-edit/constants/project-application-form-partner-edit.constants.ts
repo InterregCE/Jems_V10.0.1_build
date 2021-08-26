@@ -1,4 +1,7 @@
 export class ProjectApplicationFormPartnerEditConstants {
+
+  public static EUROSTAT_WEBSITE = 'https://ec.europa.eu/eurostat/ramon/nomenclatures/index.cfm?TargetUrl=LST_NOM_DTL&StrNom=NACE_REV2&StrLanguageCode=EN&IntPcKey=&StrLayoutCode=HIERARCHIC';
+
   public static partnerTypeEnums = [
     'LocalPublicAuthority',
     'RegionalPublicAuthority',
