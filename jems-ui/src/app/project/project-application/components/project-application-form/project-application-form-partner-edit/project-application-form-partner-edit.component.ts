@@ -1,28 +1,25 @@
-import {
-  ChangeDetectionStrategy,
-  Component, OnInit
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
-  ProjectPartnerDTO,
   InputTranslation,
-  ProjectPartnerSummaryDTO,
-  ProjectPartnerDetailDTO,
   ProgrammeLegalStatusService,
+  ProjectPartnerDetailDTO,
+  ProjectPartnerDTO,
+  ProjectPartnerSummaryDTO,
 } from '@cat/api';
 import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
-import {HttpErrorResponse} from '@angular/common/http';
-import {Observable, of} from 'rxjs';
+import {combineLatest, Observable, of, pipe} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
-import {APIError} from '@common/models/APIError';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Tools} from '@common/utils/tools';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectApplicationFormPartnerEditConstants} from '@project/project-application/components/project-application-form/project-application-form-partner-edit/constants/project-application-form-partner-edit.constants';
+import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
+import {ProjectPartner} from '@project/model/ProjectPartner';
 
 @Component({
   selector: 'app-project-application-form-partner-edit',
@@ -40,9 +37,13 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
   APPLICATION_FORM = APPLICATION_FORM;
 
   partnerId = this.router.getParameter(this.activatedRoute, 'partnerId');
-  partner$: Observable<ProjectPartnerDetailDTO>;
   legalStatuses$ = this.programmeLegalStatusService.getProgrammeLegalStatusList();
   filteredNace: Observable<string[]>;
+
+  data$: Observable<{
+    partner: ProjectPartnerDetailDTO,
+    partners: ProjectPartner[]
+  }>;
 
   partnerForm: FormGroup = this.formBuilder.group({
     fakeRole: [], // needed for the fake role field in view mode
@@ -82,9 +83,10 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private programmeLegalStatusService: ProgrammeLegalStatusService) {
     this.formService.init(this.partnerForm, this.partnerStore.isProjectEditable$);
-    this.partner$ = this.partnerStore.partner$
+    this.data$ = combineLatest([this.partnerStore.partners$, this.partnerStore.partner$])
       .pipe(
-        tap(partner => this.resetForm(partner))
+        map(([partners, partner]) => ({partners, partner})),
+        tap((data: any) => this.resetForm(data.partner))
       );
   }
 
@@ -100,68 +102,88 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     return this.partnerForm.controls;
   }
 
-  onSubmit(controls: any, oldPartnerId?: number): void {
-    if (!controls.id?.value) {
-      const partnerToCreate = {
-        abbreviation: this.controls.abbreviation.value,
-        role: this.controls.role.value,
-        oldLeadPartnerId: oldPartnerId,
-        nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
-        nameInEnglish: this.controls.nameInEnglish.value[0].translation,
-        department: this.controls.department.value,
-        partnerType: this.controls.partnerType.value,
-        partnerSubType: this.controls.partnerSubType.value,
-        nace: this.controls.nace.value,
-        otherIdentifierNumber: this.controls.otherIdentifierNumber.value,
-        otherIdentifierDescription: this.controls.otherIdentifierDescription.value,
-        pic: this.controls.pic.value,
-        legalStatusId: this.controls.legalStatusId.value,
-        vat: this.controls.vat.value,
-        vatRecovery: this.controls.vatRecovery.value,
-      } as any;
+  onSubmit(controls: any, partners: ProjectPartner[]): void {
+    this.confirmLeadPartnerChange(partners).subscribe(confirmed => {
+      if (confirmed) {
+        if (!controls.id?.value) {
+          const partnerToCreate = {
+            abbreviation: this.controls.abbreviation.value,
+            role: this.controls.role.value,
+            nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
+            nameInEnglish: this.controls.nameInEnglish.value[0].translation,
+            department: this.controls.department.value,
+            partnerType: this.controls.partnerType.value,
+            partnerSubType: this.controls.partnerSubType.value,
+            nace: this.controls.nace.value,
+            otherIdentifierNumber: this.controls.otherIdentifierNumber.value,
+            otherIdentifierDescription: this.controls.otherIdentifierDescription.value,
+            pic: this.controls.pic.value,
+            legalStatusId: this.controls.legalStatusId.value,
+            vat: this.controls.vat.value,
+            vatRecovery: this.controls.vatRecovery.value,
+          } as any;
 
-      partnerToCreate.oldLeadPartnerId = oldPartnerId;
-      if (!controls.partnerType.value) {
-        partnerToCreate.partnerType = null;
+          if (!controls.partnerType.value) {
+            partnerToCreate.partnerType = null;
+          }
+
+          this.partnerStore.createPartner(partnerToCreate as ProjectPartnerDTO)
+            .pipe(
+              take(1),
+              tap(created => this.redirectToPartnerDetail(created)),
+              catchError(error => this.formService.setError(error))
+            ).subscribe();
+        } else {
+          const partnerToUpdate = {
+            id: this.controls.id.value,
+            abbreviation: this.controls.abbreviation.value,
+            role: this.controls.role.value,
+            nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
+            nameInEnglish: this.controls.nameInEnglish.value[0].translation,
+            department: this.controls.department.value,
+            partnerType: this.controls.partnerType.value,
+            partnerSubType: this.controls.partnerSubType.value,
+            nace: this.controls.nace.value,
+            otherIdentifierNumber: this.controls.otherIdentifierNumber.value,
+            otherIdentifierDescription: this.controls.otherIdentifierDescription.value,
+            pic: this.controls.pic.value,
+            legalStatusId: this.controls.legalStatusId.value,
+            vat: this.controls.vat.value,
+            vatRecovery: this.controls.vatRecovery.value,
+          };
+
+          if (!controls.partnerType.value) {
+            partnerToUpdate.partnerType = null;
+          }
+
+          this.partnerStore.savePartner(partnerToUpdate as ProjectPartnerDTO)
+            .pipe(
+              take(1),
+              tap(() => this.formService.setSuccess('project.partner.save.success')),
+              catchError(error => this.formService.setError(error))
+            ).subscribe();
+        }
+      } else {
+        this.formService.setDirty(true);
       }
+    });
+  }
 
-      this.partnerStore.createPartner(partnerToCreate as ProjectPartnerDTO)
-        .pipe(
-          take(1),
-          tap(created => this.redirectToPartnerDetail(created)),
-          catchError(error => this.handleError(error))
-        ).subscribe();
-    } else {
-      const partnerToUpdate = {
-        id: this.controls.id.value,
-        abbreviation: this.controls.abbreviation.value,
-        role: this.controls.role.value,
-        oldLeadPartnerId: oldPartnerId,
-        nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
-        nameInEnglish: this.controls.nameInEnglish.value[0].translation,
-        department: this.controls.department.value,
-        partnerType: this.controls.partnerType.value,
-        partnerSubType: this.controls.partnerSubType.value,
-        nace: this.controls.nace.value,
-        otherIdentifierNumber: this.controls.otherIdentifierNumber.value,
-        otherIdentifierDescription: this.controls.otherIdentifierDescription.value,
-        pic: this.controls.pic.value,
-        legalStatusId: this.controls.legalStatusId.value,
-        vat: this.controls.vat.value,
-        vatRecovery: this.controls.vatRecovery.value,
-      };
-
-      partnerToUpdate.oldLeadPartnerId = oldPartnerId;
-      if (!controls.partnerType.value) {
-        partnerToUpdate.partnerType = null;
-      }
-      this.partnerStore.savePartner(partnerToUpdate as ProjectPartnerDTO)
-        .pipe(
-          take(1),
-          tap(() => this.formService.setSuccess('project.partner.save.success')),
-          catchError(error => this.handleError(error))
-        ).subscribe();
-    }
+  private confirmLeadPartnerChange(partners: ProjectPartner[]): Observable<boolean>{
+        const leadPartner = partners.find(it => it.role === ProjectPartnerRoleEnum.LEAD_PARTNER);
+        if ( leadPartner === undefined || leadPartner === null || leadPartner.id === this.controls.id.value){
+          return of(true);
+        }else{
+          return Forms.confirmDialog(
+            this.dialog,
+            'project.partner.role.lead.already.existing.title',
+            'project.partner.role.lead.already.existing',
+            {
+              old_name: leadPartner.abbreviation,
+              new_name: this.controls.abbreviation.value
+            }
+          );
+        }
   }
 
   discard(partner?: ProjectPartnerDetailDTO): void {
@@ -174,16 +196,6 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
 
   displayFn(nace: string): string {
     return nace ? nace.split('_').join('.') : '';
-  }
-
-  private handleError(error: HttpErrorResponse): Observable<any> {
-    const errorMessage = Tools.first((error?.error as APIError)?.details)?.i18nMessage;
-    if (errorMessage?.i18nKey === 'use.case.update.project.partner.role.lead.already.existing'
-      || errorMessage?.i18nKey === 'use.case.create.project.partner.role.lead.already.existing') {
-      this.handleLeadAlreadyExisting(this.controls, errorMessage.i18nArguments);
-      return of(null);
-    }
-    return this.formService.setError(error);
   }
 
   private resetForm(partner?: ProjectPartnerDetailDTO): void {
@@ -209,26 +221,6 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     this.controls.otherIdentifierDescription.setValue(partner?.otherIdentifierDescription);
     this.controls.pic.setValue(partner?.pic);
     this.controls.sortNumber.setValue(partner?.sortNumber);
-  }
-
-  private handleLeadAlreadyExisting(controls: any, errorArgs: { [key: string]: string; }): void {
-    Forms.confirmDialog(
-      this.dialog,
-      'project.partner.role.lead.already.existing.title',
-      'project.partner.role.lead.already.existing',
-      {
-        old_name: errorArgs.currentLeadAbbreviation,
-        new_name: controls.abbreviation.value
-      }
-    ).pipe(
-      take(1),
-    ).subscribe(change => {
-      if (change) {
-        this.onSubmit(controls, errorArgs.currentLeadId as any);
-      } else {
-        this.formService.setDirty(true);
-      }
-    });
   }
 
   selectionUnfocused(event: FocusEvent): void {

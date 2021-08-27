@@ -1,10 +1,10 @@
-<app-form *ngIf="partner$ | async as partner"
-          (save)="onSubmit(controls)"
-          (discard)="discard(partner)">
+<app-form *ngIf="data$ | async as data"
+          (save)="onSubmit(controls, data.partners)"
+          (discard)="discard(data.partner)">
     <form appFormLayout id="partner-form" [formGroup]="partnerForm">
         <h3>{{'project.partner.detail.title' | translate}}</h3>
 
-        <mat-form-field *ngIf="!partnerForm.enabled && partner.sortNumber">
+        <mat-form-field *ngIf="!partnerForm.enabled && data.partner.sortNumber">
             <mat-label>{{'project.application.form.partner.table.number' | translate}}</mat-label>
             <input name="sortNumber" formControlName="sortNumber" matInput>
         </mat-form-field>
