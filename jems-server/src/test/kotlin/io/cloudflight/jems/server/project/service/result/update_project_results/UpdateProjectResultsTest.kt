@@ -107,12 +107,12 @@ class UpdateProjectResultsTest : UnitTest() {
         verify(exactly = 1) { generalValidator.maxLength(result2.description, 500, "description") }
         verify(exactly = 1) {
             generalValidator.numberBetween(
-                result1.targetValue, BigDecimal.ZERO, BigDecimal.valueOf(99_999_999), "targetValue"
+                result1.targetValue, BigDecimal.ZERO, BigDecimal.valueOf(999_999_999_99, 2), "targetValue"
             )
         }
         verify(exactly = 1) {
             generalValidator.numberBetween(
-                result2.targetValue, BigDecimal.ZERO, BigDecimal.valueOf(99_999_999), "targetValue"
+                result2.targetValue, BigDecimal.ZERO, BigDecimal.valueOf(999_999_999_99, 2), "targetValue"
             )
         }
         verify(exactly = 1) { generalValidator.scale(result1.targetValue, 2, "targetValue") }
@@ -120,12 +120,12 @@ class UpdateProjectResultsTest : UnitTest() {
 
         verify(exactly = 1) {
             generalValidator.numberBetween(
-                result1.baseline, BigDecimal.ZERO, BigDecimal.valueOf(99_999_999), "baseline"
+                result1.baseline, BigDecimal.ZERO, BigDecimal.valueOf(999_999_999_99, 2), "baseline"
             )
         }
         verify(exactly = 1) {
             generalValidator.numberBetween(
-                result2.baseline, BigDecimal.ZERO, BigDecimal.valueOf(99_999_999), "baseline"
+                result2.baseline, BigDecimal.ZERO, BigDecimal.valueOf(999_999_999_99, 2), "baseline"
             )
         }
         verify(exactly = 1) { generalValidator.scale(result1.baseline, 2, "baseline") }

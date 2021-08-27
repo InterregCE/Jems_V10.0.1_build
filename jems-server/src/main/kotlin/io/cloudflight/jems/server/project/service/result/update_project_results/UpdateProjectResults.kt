@@ -40,13 +40,13 @@ class UpdateProjectResults(
                 .toTypedArray(),
             *projectResults.map {
                 generalValidatorService.numberBetween(
-                    it.targetValue, BigDecimal.ZERO, BigDecimal.valueOf(99_999_999), "targetValue"
+                    it.targetValue, BigDecimal.ZERO, BigDecimal.valueOf(999_999_999_99, 2), "targetValue"
                 )
             }.toTypedArray(),
             *projectResults.map { generalValidatorService.scale(it.targetValue, 2, "targetValue") }.toTypedArray(),
             *projectResults.map {
                 generalValidatorService.numberBetween(
-                    it.baseline, BigDecimal.ZERO, BigDecimal.valueOf(99_999_999), "baseline"
+                    it.baseline, BigDecimal.ZERO, BigDecimal.valueOf(999_999_999_99, 2), "baseline"
                 )
             }.toTypedArray(),
             *projectResults.map { generalValidatorService.scale(it.baseline, 2, "baseline") }.toTypedArray(),

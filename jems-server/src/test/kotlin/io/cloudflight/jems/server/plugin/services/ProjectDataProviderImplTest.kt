@@ -802,6 +802,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         resultNumber = projectResult.resultNumber,
                         programmeResultIndicatorId = projectResult.programmeResultIndicatorId,
                         programmeResultIndicatorIdentifier = projectResult.programmeResultIndicatorIdentifier,
+                        baseline = BigDecimal.ZERO,
                         targetValue = projectResult.targetValue,
                         periodNumber = projectResult.periodNumber,
                         description = projectResult.description.toDataModel()
