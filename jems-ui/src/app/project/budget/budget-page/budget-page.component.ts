@@ -70,11 +70,13 @@ export class BudgetPageComponent {
   private getDisplayedColumns(allowedBudgetCategories: AllowedBudgetCategories,
                               callSettings: ProjectCallSettingsDTO): string[] {
     const columns: string[] = ['partner', 'country'];
-    if (allowedBudgetCategories.staff.realOrUnitCosts()) {
+    if (allowedBudgetCategories.staff.realOrUnitCosts() || callSettings.flatRates?.staffCostFlatRateSetup) {
       columns.push('staffCosts');
     }
-    columns.push('officeAndAdministrationCosts');
-    if (allowedBudgetCategories.travel.realOrUnitCosts()) {
+    if (callSettings.flatRates?.officeAndAdministrationOnDirectCostsFlatRateSetup) {
+      columns.push('officeAndAdministrationCosts');
+    }
+    if (allowedBudgetCategories.travel.realOrUnitCosts() || callSettings.flatRates?.travelAndAccommodationOnStaffCostsFlatRateSetup) {
       columns.push('travelCosts');
     }
     if (allowedBudgetCategories.external.realOrUnitCosts()) {
@@ -86,7 +88,9 @@ export class BudgetPageComponent {
     if (allowedBudgetCategories.infrastructure.realOrUnitCosts()) {
       columns.push('infrastructureCosts');
     }
-    columns.push('otherCosts');
+    if (callSettings.flatRates?.otherCostsOnStaffCostsFlatRateSetup) {
+      columns.push('otherCosts');
+    }
     if (callSettings.lumpSums?.length) {
       columns.push('lumpSums');
     }

@@ -271,7 +271,6 @@ export class ProjectStore {
     const allowedRealCosts$ = this.project$
       .pipe(
         map(project => project.callSettings.callId),
-        distinctUntilChanged(),
         switchMap(callId => this.callService.getAllowedRealCosts(callId))
       );
 
