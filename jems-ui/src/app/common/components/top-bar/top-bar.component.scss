@@ -413,12 +413,14 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     }
   }
 
+  .left-side-menu>.nav-item{
+    height: 2.7rem;
+  }
 
   .nav-link {
     display: block;
     padding: $nav-link-padding-y $nav-link-padding-x;
     text-decoration: none;
-
     @include hover-focus() {
       text-decoration: none;
     }
@@ -584,4 +586,10 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     font-size: .875rem;
     color: var(--font-text-link) !important;
   }
+}
+
+.icon-text {
+  margin-left: 0.2rem;
+  line-height: 1.6rem;
+  vertical-align: top;
 }

@@ -14,7 +14,7 @@
 
     <!-- Content -->
     <div class="navbar-collapse collapse" [ngClass]="{'show': !isNavBarCollapsed}" id="navbarSupportedContent">
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav ml-auto left-side-menu">
 
             <ng-container *ngIf="currentUser">
                 <li class="nav-item" *ngFor="let item of menuItems$ | async"
@@ -24,12 +24,12 @@
                        }">
                     <a class="nav-link" *ngIf="item.isInternal"
                        (click)="isNavBarCollapsed = true; router.navigate([item.route])">
-                        <mat-icon *ngIf="item.icon">{{item.icon}}</mat-icon>
-                        {{item.name | translate}}
+                        <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
+                        <span class="icon-text">{{item.name | translate}}</span>
                     </a>
                     <a class="nav-link" *ngIf="!item.isInternal" [href]="item.route" target="_blank">
                         <mat-icon *ngIf="item.icon">{{item.icon}}</mat-icon>
-                        {{item.name | translate}}
+                        <span class="icon-text">{{item.name | translate}}</span>
                     </a>
                 </li>
             </ng-container>
