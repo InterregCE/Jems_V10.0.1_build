@@ -77,7 +77,7 @@ export class ProjectStore {
   private projectAcronym$ = new ReplaySubject<string>(1);
   private newEligibilityAssessment$ = new Subject<ProjectAssessmentEligibilityDTO>();
   private newQualityAssessment$ = new Subject<ProjectAssessmentQualityDTO>();
-  private updatedProjectData$ = new Subject<ProjectDetailDTO>();
+  private updatedProjectData$ = new Subject<void>();
   private updatedProjectForm$ = new Subject<ProjectDetailFormDTO>();
 
   private changedEligibilityAssessment$ = this.newEligibilityAssessment$
@@ -136,6 +136,7 @@ export class ProjectStore {
         switchMap(id => this.projectService.updateProjectForm(id, data)),
         tap(projectForm => this.updatedProjectForm$.next(projectForm)),
         tap(saved => Log.info('Updated project data:', this, saved)),
+        tap(() => this.updatedProjectData$.next()),
       );
   }
 
@@ -185,12 +186,19 @@ export class ProjectStore {
         tap(project => Log.info('Fetched project:', this, project))
       );
 
+    const byProjectDataChanged$ = this.updatedProjectData$
+      .pipe(
+        withLatestFrom(this.projectId$),
+        switchMap(([, id]) => this.projectService.getProjectById(id)),
+        tap(project => Log.info('Fetched project due to updated data:', this, project))
+      );
+
     return merge(
       byId$,
       byStatusChanged$,
       this.changedEligibilityAssessment$,
       this.changedQualityAssessment$,
-      this.updatedProjectData$
+      byProjectDataChanged$
     )
       .pipe(
         tap(project => this.projectAcronym$.next(project?.acronym)),
