@@ -92,7 +92,8 @@
         <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.TYPE">
             <mat-label>{{'project.partner.type' | translate}}</mat-label>
             <mat-select name="partnerType" formControlName="partnerType">
-                <mat-option *ngFor="let type of ProjectApplicationFormPartnerEditConstants.partnerTypeEnums" [value]="type">
+                <mat-option *ngFor="let type of ProjectApplicationFormPartnerEditConstants.partnerTypeEnums"
+                            [value]="type">
                     {{'project.application.form.relevance.target.group.' + type | translate}}
                 </mat-option>
             </mat-select>
@@ -101,7 +102,8 @@
         <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.SUB_TYPE">
             <mat-label>{{'project.partner.subType' | translate}}</mat-label>
             <mat-select name="partnerSubType" formControlName="partnerSubType">
-                <mat-option *ngFor="let subType of ProjectApplicationFormPartnerEditConstants.partnerSubTypeEnums" [value]="subType.value">
+                <mat-option *ngFor="let subType of ProjectApplicationFormPartnerEditConstants.partnerSubTypeEnums"
+                            [value]="subType.value">
                     {{subType.value ? ('project.application.form.relevance.target.group.' + subType.key | translate) : ''}}
                 </mat-option>
             </mat-select>
@@ -122,26 +124,29 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.NACE_GROUP_LEVEL">
+        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.NACE_GROUP_LEVEL">
             <p>
-                {{'project.partner.subType.intro.text.one' | translate}}
-                <a [href]="ProjectApplicationFormPartnerEditConstants.EUROSTAT_WEBSITE" target="_blank">{{'project.partner.subType.intro.text.one.link' | translate}}</a>
+                {{'project.partner.nace.intro.text.one' | translate}}
+                <a [href]="ProjectApplicationFormPartnerEditConstants.EUROSTAT_WEBSITE"
+                   target="_blank">{{'project.partner.nace.intro.text.one.link' | translate}}</a>
             </p>
-            <mat-label>{{'project.partner.nace' | translate}}</mat-label>
-            <input name="nace" formControlName="nace" matInput
-                   [matAutocomplete]="nace"
-                   (focusout)="selectionUnfocused($event)">
-            <mat-autocomplete #nace="matAutocomplete" [displayWith]="displayFn">
-                <mat-option *ngFor="let naceValue of filteredNace | async" [value]="naceValue">
-                    {{displayFn(naceValue)}}
-                </mat-option>
-            </mat-autocomplete>
-            <mat-error>
-                <app-form-field-errors
-                        [errors]="controls?.nace?.errors">
-                </app-form-field-errors>
-            </mat-error>
-        </mat-form-field>
+            <mat-form-field>
+                <mat-label>{{'project.partner.nace' | translate}}</mat-label>
+                <input name="nace" formControlName="nace" matInput
+                       [matAutocomplete]="nace"
+                       (focusout)="selectionUnfocused($event)">
+                <mat-autocomplete #nace="matAutocomplete" [displayWith]="displayFn">
+                    <mat-option *ngFor="let naceValue of filteredNace | async" [value]="naceValue">
+                        {{displayFn(naceValue)}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-error>
+                    <app-form-field-errors
+                            [errors]="controls?.nace?.errors">
+                    </app-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </ng-container>
 
         <mat-form-field class="w-100" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.VAT_IDENTIFIER">
             <mat-label>{{'project.partner.vat' | translate}}</mat-label>
