@@ -4,12 +4,12 @@ import {ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
-import {ProjectDetailPageStore} from '@project/project-detail-page/project-detail-page-store';
 import {catchError, finalize, map, tap} from 'rxjs/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
-import { Alert } from '@common/components/forms/alert';
+import {Alert} from '@common/components/forms/alert';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {FileCategoryEnum, FileCategoryInfo} from '@project/common/components/file-management/file-category';
+import {AssessmentAndDecisionStore} from '@project/project-application/assessment-and-decision/assessment-and-decision-store.service';
 
 @Component({
   selector: 'app-assessment-and-decision',
@@ -17,7 +17,7 @@ import {FileCategoryEnum, FileCategoryInfo} from '@project/common/components/fil
   styleUrls: ['./assessment-and-decision.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AssessmentAndDecisionComponent  {
+export class AssessmentAndDecisionComponent {
 
   Alert = Alert;
   Permission = Permission;
@@ -43,17 +43,17 @@ export class AssessmentAndDecisionComponent  {
   actionPending = false;
 
   constructor(public translate: TranslateService,
-              private projectDetailStore: ProjectDetailPageStore,
+              private assessmentAndDecisionStore: AssessmentAndDecisionStore,
               private projectStore: ProjectStore,
               private changeDetectorRef: ChangeDetectorRef) {
     this.data$ = combineLatest([
       this.projectStore.project$,
       this.projectStore.projectTitle$,
       this.projectStore.callHasTwoSteps$,
-      this.projectDetailStore.revertToStatus$,
+      this.assessmentAndDecisionStore.revertToStatus$,
       this.projectStore.currentVersionIsLatest$
     ]).pipe(
-      map(([project, projectTitle, callHasTwoSteps, revertToStatus,  isProjectLatestVersion]) => ({
+      map(([project, projectTitle, callHasTwoSteps, revertToStatus, isProjectLatestVersion]) => ({
         project,
         projectTitle,
         projectStatus: project.projectStatus.status,
@@ -69,7 +69,7 @@ export class AssessmentAndDecisionComponent  {
 
   returnToApplicant(projectId: number): void {
     this.actionPending = true;
-    this.projectDetailStore.returnApplicationToApplicant(projectId)
+    this.assessmentAndDecisionStore.returnApplicationToApplicant(projectId)
       .pipe(
         finalize(() => this.actionPending = false),
         tap(() => this.showSuccessMessage())
@@ -78,7 +78,7 @@ export class AssessmentAndDecisionComponent  {
 
   revertProjectStatus(projectId: number): void {
     this.actionPending = true;
-    this.projectDetailStore.revertApplicationDecision(projectId)
+    this.assessmentAndDecisionStore.revertApplicationDecision(projectId)
       .pipe(
         finalize(() => this.actionPending = false),
       ).subscribe();
@@ -86,7 +86,7 @@ export class AssessmentAndDecisionComponent  {
 
   startStepTwo(projectId: number): void {
     this.actionPending = true;
-    this.projectDetailStore.returnApplicationToDraft(projectId)
+    this.assessmentAndDecisionStore.returnApplicationToDraft(projectId)
       .pipe(
         tap(() => this.actionPending = false),
         catchError((error) => this.showErrorMessage(error.error)),

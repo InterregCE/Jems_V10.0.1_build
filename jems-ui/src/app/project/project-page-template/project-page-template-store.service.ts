@@ -6,7 +6,9 @@ import {ProjectVersionDTO} from '@cat/api';
 import {distinctUntilChanged, map, shareReplay} from 'rxjs/operators';
 import {ProjectUtil} from '../common/project-util';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ProjectPageTemplateStore {
 
   versions$: Observable<ProjectVersionDTO[]>;

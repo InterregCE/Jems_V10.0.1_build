@@ -3,13 +3,13 @@ import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
-import {ProjectDetailPageStore} from '@project/project-detail-page/project-detail-page-store';
 import {catchError, finalize, map, tap} from 'rxjs/operators';
 import * as moment from 'moment';
 import {Alert} from '@common/components/forms/alert';
 import {PreConditionCheckResult} from '@project/model/plugin/PreConditionCheckResult';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {Router} from '@angular/router';
+import {CheckAndSubmitStore} from '@project/project-application/check-and-submit/check-and-submit-store.service';
 
 @Component({
   selector: 'app-check-and-submit',
@@ -39,7 +39,7 @@ export class CheckAndSubmitComponent {
   preConditionCheckInProgress = false;
 
   constructor(public translate: TranslateService,
-              private projectDetailStore: ProjectDetailPageStore,
+              private checkAndSubmitStore: CheckAndSubmitStore,
               private projectStore: ProjectStore,
               private router: Router
   ) {
@@ -47,7 +47,7 @@ export class CheckAndSubmitComponent {
       this.projectStore.project$,
       this.projectStore.projectTitle$,
       this.projectStore.userIsProjectOwner$,
-      this.projectDetailStore.preConditionCheckResult$,
+      this.checkAndSubmitStore.preConditionCheckResult$,
       this.projectStore.currentVersionIsLatest$
     ]).pipe(
       map(([project, projectTitle, isThisUserOwner, preConditionCheckResults, isProjectLatestVersion]) => ({
@@ -65,7 +65,7 @@ export class CheckAndSubmitComponent {
 
   preConditionCheck(projectId: number): void {
     this.preConditionCheckInProgress = true;
-    this.projectDetailStore.preConditionCheck(projectId).pipe(
+    this.checkAndSubmitStore.preConditionCheck(projectId).pipe(
       catchError((error) => this.showErrorMessage(error.error)),
       finalize(() => this.preConditionCheckInProgress = false)
     ).subscribe();
@@ -73,7 +73,7 @@ export class CheckAndSubmitComponent {
 
   submitProject(projectId: number): void {
     this.actionPending = true;
-    this.projectDetailStore.submitApplication(projectId)
+    this.checkAndSubmitStore.submitApplication(projectId)
       .pipe(
         tap(() => this.redirectToProjectOverview(projectId)),
         catchError((error) => this.showErrorMessage(error.error)),
@@ -83,7 +83,7 @@ export class CheckAndSubmitComponent {
 
   resubmitProject(projectId: number): void {
     this.actionPending = true;
-    this.projectDetailStore.submitApplication(projectId)
+    this.checkAndSubmitStore.submitApplication(projectId)
       .pipe(
         tap(() => this.redirectToProjectOverview(projectId)),
         catchError((error) => this.showErrorMessage(error.error)),

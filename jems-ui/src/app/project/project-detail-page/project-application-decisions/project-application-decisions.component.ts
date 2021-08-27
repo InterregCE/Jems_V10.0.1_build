@@ -2,9 +2,9 @@ import {ChangeDetectionStrategy, Component, Input, OnChanges} from '@angular/cor
 import {ProjectDecisionDTO, ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {ProjectStepStatus} from '../project-step-status';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectDetailPageStore} from '../project-detail-page-store';
 import {map} from 'rxjs/operators';
 import {PermissionService} from '../../../security/permissions/permission.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import StatusEnum = ProjectStatusDTO.StatusEnum;
 import Permissions = UserRoleDTO.PermissionsEnum;
 
@@ -38,13 +38,13 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
   }>;
 
   constructor(
-    private projectDetailPageStore: ProjectDetailPageStore,
+    private projectStore: ProjectStore,
     private permissionService: PermissionService,
   ) {
     this.data$ = combineLatest([
-      this.projectDetailPageStore.isProjectLatestVersion$,
-      this.projectDetailPageStore.callHasTwoSteps$,
-      this.projectDetailPageStore.project$,
+      this.projectStore.currentVersionIsLatest$,
+      this.projectStore.callHasTwoSteps$,
+      this.projectStore.project$,
       this.permissionService.hasPermission([Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideApprovedWithConditions, Permissions.ProjectStatusDecideNotApproved]),
     ])
       .pipe(

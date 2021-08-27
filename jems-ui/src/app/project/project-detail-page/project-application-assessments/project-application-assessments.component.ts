@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges} from '@angular/core';
 import {ProjectDecisionDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {ProjectStepStatus} from '../project-step-status';
-import {ProjectDetailPageStore} from '../project-detail-page-store';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import Permissions = UserRoleDTO.PermissionsEnum;
 
 @Component({
@@ -29,10 +29,10 @@ export class ProjectApplicationAssessmentsComponent implements OnChanges {
     callHasTwoSteps: boolean
   }>;
 
-  constructor(private projectDetailPageStore: ProjectDetailPageStore) {
+  constructor(private projectStore: ProjectStore) {
     this.data$ = combineLatest([
-      this.projectDetailPageStore.isProjectLatestVersion$,
-      this.projectDetailPageStore.callHasTwoSteps$
+      this.projectStore.currentVersionIsLatest$,
+      this.projectStore.callHasTwoSteps$
     ])
       .pipe(
         map(([isProjectLatestVersion, callHasTwoSteps]) => ({isProjectLatestVersion, callHasTwoSteps}))

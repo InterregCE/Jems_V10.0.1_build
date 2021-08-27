@@ -11,7 +11,6 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
   selector: 'app-project-page-template',
   templateUrl: './project-page-template.component.html',
   styleUrls: ['./project-page-template.component.scss'],
-  providers: [ProjectPageTemplateStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectPageTemplateComponent implements AfterViewInit {
