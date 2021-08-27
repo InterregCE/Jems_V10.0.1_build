@@ -34,7 +34,7 @@ export class Permission {
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [],
           editPermissions: [],
-          temporarilyDisabled: true,
+          disabled: true,
           state: PermissionState.EDIT
         },
         {
@@ -42,7 +42,7 @@ export class Permission {
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [],
           editPermissions: [],
-          temporarilyDisabled: true,
+          disabled: true,
           state: PermissionState.EDIT
         },
         {
@@ -50,7 +50,7 @@ export class Permission {
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [],
           editPermissions: [],
-          temporarilyDisabled: true,
+          disabled: true,
           state: PermissionState.EDIT
         },
         {
@@ -58,7 +58,7 @@ export class Permission {
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [],
           editPermissions: [],
-          temporarilyDisabled: true,
+          disabled: true,
           state: PermissionState.HIDDEN
         },
       ]
@@ -140,7 +140,7 @@ export class Permission {
       name: 'topbar.main.dashboard',
       mode: PermissionMode.HIDDEN_VIEW,
       viewPermissions: ['Dashboard-to-be-done' as PermissionsEnum],
-      temporarilyDisabled: true,
+      disabled: true,
       icon: 'dashboard',
       children: [
         {

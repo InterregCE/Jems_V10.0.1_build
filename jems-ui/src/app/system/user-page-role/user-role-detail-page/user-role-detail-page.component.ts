@@ -166,7 +166,7 @@ export class UserRoleDetailPageComponent {
       this.extractFormPermissionSubGroup(perm, role.permissions, index)
     );
     inspectGroups.forEach(group => this.permissionsInspect.push(group));
-    this.roleHasProjectMonitor = this.hasMonitoringrivileges();
+    this.roleHasProjectMonitor = this.hasMonitoringPrivileges();
 
     const groups = Permission.TOP_NAVIGATION_PERMISSIONS.map((perm, index) =>
       this.extractFormPermissionSubGroup(perm, role.permissions, index)
@@ -251,7 +251,7 @@ export class UserRoleDetailPageComponent {
         parentIndex,
         mode: perm.mode,
         // TODO remove 'disabled' when all permissions are used correctly and not just mocked
-        disabled: perm.temporarilyDisabled,
+        disabled: perm.disabled,
         state: perm.state ? perm.state : this.getCurrentState(perm, currentRolePermissions),
         viewTooltip: perm.viewTooltip,
         editTooltip: perm.editTooltip,
@@ -324,7 +324,7 @@ export class UserRoleDetailPageComponent {
       this.extractChildrenPermissions(this.subtree(nodeForm).at(index), node));
   }
 
-  private hasMonitoringrivileges(): boolean {
+  private hasMonitoringPrivileges(): boolean {
     return Permission.DEFAULT_USER_INSPECT_PERMISSIONS.flatMap((perm: PermissionNode, index: number) =>
       this.hasAnyStateNotHidden(this.permissionsInspect.at(index), perm)).filter(isNotHidden => isNotHidden).length > 0;
   }

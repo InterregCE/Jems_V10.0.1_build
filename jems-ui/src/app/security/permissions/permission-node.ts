@@ -22,7 +22,7 @@ export class PermissionNode {
   // this is just for demo purpose
   // TODO remove this when all permissions are used correctly and not just mocked
   // tslint:disable-next-line:no-inferrable-types
-  temporarilyDisabled?: boolean = false;
+  disabled?: boolean = false;
   // state is only to be used when creating a fake view or if a permission will always have the same value (i.e is locked)
   state?: PermissionState;
   icon?: string;
