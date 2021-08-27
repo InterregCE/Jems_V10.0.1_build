@@ -2,7 +2,7 @@
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle}"
                            subTitleKey="project.application.form.section.assessment.and.decision">
     <div appFormLayout>
-        <div appNoWidthLimit *hasPermission="PermissionsEnum.ProjectAssessmentView">
+        <div appNoWidthLimit>
             <ng-container *hasPermission="PermissionsEnum.ProjectStatusReturnToApplicant">
                 <app-pending-button *ngIf="data.returnToApplicantAvailable"
                                     class="mr-2 mt-2"

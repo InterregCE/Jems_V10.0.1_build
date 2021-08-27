@@ -49,10 +49,17 @@ export class ProjectApplicationFormSidenavService {
     this.projectStore.projectStatus$.pipe(map(it => it.status)),
     this.projectStore.callHasTwoSteps$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectAssessmentView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectStatusReturnToApplicant),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectStartStepTwo),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectStatusDecisionRevert),
     this.fileManagementStore.canReadAssessmentFile$,
   ]).pipe(
-    map(([projectStatus, callHas2Steps, hasAssessmentViewPermission, canReadAssessmentFiles]) => {
-      return canReadAssessmentFiles || (hasAssessmentViewPermission && ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT)));
+    map(([projectStatus, callHas2Steps, hasAssessmentViewPermission, hasReturnToaApplicantPermission, hasStartStepTwoPermission, hasRevertDecisionPermission, canReadAssessmentFiles]: any) => {
+      return canReadAssessmentFiles ||
+        (
+          (hasAssessmentViewPermission || hasReturnToaApplicantPermission || hasStartStepTwoPermission || hasRevertDecisionPermission)
+          && ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT))
+        );
     }),
   );
 
