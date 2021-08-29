@@ -1,4 +1,4 @@
-import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ApplicationFormModel} from '@project/common/application-form-model';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
@@ -20,7 +20,7 @@ export class FormFieldVisibilityStatusDirective {
     });
   }
 
-  constructor(private templateRef: TemplateRef<any>, private viewContainer: ViewContainerRef, private visibilityStatusService: FormVisibilityStatusService) {
+  constructor(private templateRef: TemplateRef<any>, private viewContainer: ViewContainerRef, private visibilityStatusService: FormVisibilityStatusService, private changeDetectorRef: ChangeDetectorRef) {
   }
 
   private handleElementVisibility(shouldBeVisible: boolean): void {
@@ -28,10 +28,12 @@ export class FormFieldVisibilityStatusDirective {
       if (!this.hasView) {
         this.viewContainer.createEmbeddedView(this.templateRef);
         this.hasView = true;
+        this.changeDetectorRef.markForCheck();
       }
     } else if (this.hasView) {
       this.viewContainer.clear();
       this.hasView = false;
+      this.changeDetectorRef.markForCheck();
     }
   }
 
