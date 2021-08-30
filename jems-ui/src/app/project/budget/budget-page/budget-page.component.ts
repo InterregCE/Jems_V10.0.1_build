@@ -73,7 +73,7 @@ export class BudgetPageComponent {
     if (allowedBudgetCategories.staff.realOrUnitCosts() || callSettings.flatRates?.staffCostFlatRateSetup) {
       columns.push('staffCosts');
     }
-    if (callSettings.flatRates?.officeAndAdministrationOnDirectCostsFlatRateSetup) {
+    if (callSettings.flatRates?.officeAndAdministrationOnDirectCostsFlatRateSetup || callSettings.flatRates?.officeAndAdministrationOnStaffCostsFlatRateSetup) {
       columns.push('officeAndAdministrationCosts');
     }
     if (allowedBudgetCategories.travel.realOrUnitCosts() || callSettings.flatRates?.travelAndAccommodationOnStaffCostsFlatRateSetup) {
