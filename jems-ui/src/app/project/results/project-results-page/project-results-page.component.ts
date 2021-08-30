@@ -108,7 +108,8 @@ export class ProjectResultsPageComponent implements OnInit {
   }
 
   private addResult(existing?: ProjectResultDTO, resultIndicators?: ResultIndicatorSummaryDTO[]): void {
-    const baselineMaxValue =  resultIndicators?.find(it => it.id === existing?.programmeResultIndicatorId)?.baseline || 99_999_999;
+    const baselineFromIndicator = resultIndicators?.find(it => it.id === existing?.programmeResultIndicatorId)?.baseline;
+    const baselineMaxValue = (baselineFromIndicator || baselineFromIndicator === 0) ? baselineFromIndicator : 999_999_999.99;
     this.results.push(this.formBuilder.group(
       {
         programmeResultIndicatorId: this.formBuilder.control(existing?.programmeResultIndicatorId),
