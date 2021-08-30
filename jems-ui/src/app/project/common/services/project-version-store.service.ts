@@ -4,8 +4,8 @@ import {ProjectService, ProjectVersionDTO} from '@cat/api';
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {RoutingService} from '@common/services/routing.service';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {filter} from 'rxjs/internal/operators';
+import {ProjectPaths} from '@project/common/project-util';
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +18,11 @@ export class ProjectVersionStore {
   private projectId$ = new ReplaySubject<number>();
 
   constructor(private router: RoutingService,
-              private projectService: ProjectService,
-              private routingService: RoutingService) {
+              private projectService: ProjectService) {
     this.versions$ = this.versions();
     this.currentRouteVersion$ = this.currentRouteVersion();
 
-    this.router.routeParameterChanges(ProjectStore.PROJECT_DETAIL_PATH, 'projectId')
+    this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         tap(id => this.projectId$.next(id as number))
       ).subscribe();
@@ -31,7 +30,7 @@ export class ProjectVersionStore {
 
   changeVersion(versionDTO: ProjectVersionDTO): void {
     const queryParams = versionDTO.status ? {version: versionDTO.version} : {};
-    this.routingService.navigate([], {queryParams});
+    this.router.navigate([], {queryParams});
   }
 
   private versions(): Observable<ProjectVersionDTO[]> {
@@ -45,7 +44,7 @@ export class ProjectVersionStore {
   }
 
   private currentRouteVersion(): Observable<string | undefined> {
-    return this.router.routeParameterChanges(ProjectStore.PROJECT_DETAIL_PATH, 'version')
+    return this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'version')
       .pipe(
         distinctUntilChanged(),
         map(version => version ? String(version) : undefined)

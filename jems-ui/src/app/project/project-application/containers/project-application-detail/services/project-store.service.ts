@@ -37,7 +37,7 @@ import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
 import {LumpSumPhaseEnumUtils} from '@project/model/lump-sums/LumpSumPhaseEnum';
 import {BudgetCostCategoryEnum, BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 import {RoutingService} from '@common/services/routing.service';
-import {ProjectUtil} from '@project/common/project-util';
+import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import {SecurityService} from '../../../../../security/security.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
@@ -51,7 +51,6 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
   providedIn: 'root'
 })
 export class ProjectStore {
-  public static PROJECT_DETAIL_PATH = '/app/project/detail/';
 
   projectId$ = new ReplaySubject<number>(1);
   projectStatusChanged$ = new Subject();
@@ -103,7 +102,7 @@ export class ProjectStore {
               private permissionService: PermissionService,
               private projectVersionStore: ProjectVersionStore,
               private callService: CallService) {
-    this.router.routeParameterChanges(ProjectStore.PROJECT_DETAIL_PATH, 'projectId')
+    this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
         tap(id => this.projectId$.next(id as number))

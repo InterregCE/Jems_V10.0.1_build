@@ -14,6 +14,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import {ProjectPartnerStore} from './project-partner-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {NutsStore} from '@common/services/nuts.store';
+import {ProjectPaths} from '@project/common/project-util';
 
 @Injectable()
 export class ProjectAssociatedOrganizationStore {
@@ -67,14 +68,13 @@ export class ProjectAssociatedOrganizationStore {
       this.projectVersionStore.currentRouteVersion$
     ]).pipe(
       tap(([organizationId, projectId]) => {
-        // this.organizationId = Number(organizationId);
         this.projectId = Number(projectId);
       }),
       switchMap(([organizationId, projectId, version]) => organizationId
         ? this.associatedOrganizationService.getAssociatedOrganizationById(organizationId as number, projectId, version)
           .pipe(
             catchError(() => {
-              this.router.navigate([ProjectStore.PROJECT_DETAIL_PATH, projectId]);
+              this.router.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId]);
               return of({});
             })
           )

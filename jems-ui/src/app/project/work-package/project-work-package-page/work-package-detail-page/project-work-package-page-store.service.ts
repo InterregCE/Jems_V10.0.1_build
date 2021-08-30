@@ -19,6 +19,7 @@ import {Log} from '@common/utils/log';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectStore} from '../../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '../../../common/services/project-version-store.service';
+import {ProjectPaths} from '@project/common/project-util';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
@@ -106,7 +107,7 @@ export class ProjectWorkPackagePageStore {
         ? this.workPackageService.getWorkPackageById(projectId, Number(workPackageId), version)
           .pipe(
             catchError(() => {
-              this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, this.projectId]);
               return of({} as OutputWorkPackage);
             })
           )

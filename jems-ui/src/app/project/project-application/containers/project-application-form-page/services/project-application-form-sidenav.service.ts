@@ -18,6 +18,7 @@ import {FileManagementStore} from '@project/common/components/file-management/fi
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
+import {ProjectPaths} from '@project/common/project-util';
 
 @Injectable()
 @UntilDestroy()
@@ -166,7 +167,7 @@ export class ProjectApplicationFormSidenavService {
                        partners: HeadlineRoute[],
                        packages: HeadlineRoute[],
                        versionTemplate: TemplateRef<any>): void {
-    this.sideNavService.setHeadlines(ProjectStore.PROJECT_DETAIL_PATH, [
+    this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
       this.getProjectOverviewHeadline(project),
       this.getApplicationFormHeadline(project, partners, packages, versionTemplate, showApplicationAnnexes, showAssessment, canSubmitApplication, showProjectForm)
     ]);

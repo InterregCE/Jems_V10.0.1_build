@@ -16,6 +16,7 @@ import {ProjectPartner} from '@project/model/ProjectPartner';
 import {ProjectPartnerRoleEnumUtil} from '@project/model/ProjectPartnerRoleEnum';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {ProjectPaths} from '@project/common/project-util';
 
 @Injectable({
   providedIn: 'root'
@@ -116,7 +117,7 @@ export class ProjectPartnerStore {
         ? this.partnerService.getProjectPartnerById(Number(partnerId), version)
           .pipe(
             catchError(() => {
-              this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, this.projectId]);
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, this.projectId]);
               return of({} as ProjectPartnerDetailDTO);
             })
           )

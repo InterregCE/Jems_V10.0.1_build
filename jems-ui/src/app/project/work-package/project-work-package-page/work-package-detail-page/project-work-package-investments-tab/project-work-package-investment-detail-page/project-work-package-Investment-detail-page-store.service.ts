@@ -9,6 +9,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import {RoutingService} from '@common/services/routing.service';
 import {NutsStore} from '@common/services/nuts.store';
 import {filter, take} from 'rxjs/internal/operators';
+import {ProjectPaths} from '@project/common/project-util';
 
 @Injectable()
 export class ProjectWorkPackageInvestmentDetailPageStore {
@@ -69,7 +70,7 @@ export class ProjectWorkPackageInvestmentDetailPageStore {
           ? this.workPackageInvestmentService.getWorkPackageInvestment(Number(investmentId), projectId, workPackage.id, version)
             .pipe(
               catchError(() => {
-                this.routingService.navigate([ProjectStore.PROJECT_DETAIL_PATH, projectId]);
+                this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId]);
                 return of({});
                 }
               ),

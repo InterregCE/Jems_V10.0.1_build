@@ -1,5 +1,9 @@
 import {ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
 
+export enum ProjectPaths {
+  PROJECT_DETAIL_PATH = '/app/project/detail/',
+}
+
 export class ProjectUtil {
 
   static isDraft(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
