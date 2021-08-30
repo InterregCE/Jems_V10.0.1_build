@@ -16,5 +16,6 @@ enum class ProjectTargetGroupDTO {
     InternationalOrganisationEeig,
     GeneralPublic,
     Hospitals,
-    Other,
+    CrossBorderLegalBody,
+    Other
 }

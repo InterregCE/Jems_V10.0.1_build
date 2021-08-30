@@ -12,5 +12,7 @@ enum class ProgrammeStrategy {
     SeaBasinStrategyOutermostRegions,
     SeaBasinStrategyAdriaticIonianSea,
     MediterraneanSeaBasin,
-    AtlanticStrategy
+    AtlanticStrategy,
+    EuropeanGreenDeal,
+    TerritorialAgenda2030
 }

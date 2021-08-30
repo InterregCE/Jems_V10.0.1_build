@@ -18,6 +18,7 @@ export class ProjectApplicationFormPartnerEditConstants {
     'InternationalOrganisationEeig',
     'GeneralPublic',
     'Hospitals',
+    'CrossBorderLegalBody',
     'Other'
   ];
 
