@@ -62,7 +62,8 @@
                                                         *ngIf="node.mode === PermissionMode.HIDDEN_VIEW || node.mode === PermissionMode.HIDDEN_VIEW_EDIT"
                                                         [checked]="state(node.form)?.value === PermissionState.HIDDEN"
                                                         (click)="$event.stopPropagation()"
-                                                        (change)="changeState(node.form, PermissionState.HIDDEN);">
+                                                        (change)="changeState(node.form, PermissionState.HIDDEN);"
+                                                        matTooltip="{{hideTooltip(node.form)?.value | translate}}">
                                                     <span>
                                                         <mat-icon>visibility_off</mat-icon>
                                                         {{'common.permission.hide' | translate}}
@@ -81,7 +82,8 @@
                                                         *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.VIEW_EDIT"
                                                         [checked]="state(node.form)?.value === PermissionState.EDIT"
                                                         (click)="$event.stopPropagation()"
-                                                        (change)="changeState(node.form, PermissionState.EDIT)">
+                                                        (change)="changeState(node.form, PermissionState.EDIT)"
+                                                        matTooltip="{{editTooltip(node.form)?.value | translate}}">
                                                     <span>
                                                         <mat-icon>edit</mat-icon>
                                                         {{'common.permission.edit' | translate}}
@@ -158,8 +160,9 @@
                                                 <mat-button-toggle
                                                         [checked]="state(node.form)?.value === PermissionState.VIEW"
                                                         (click)="$event.stopPropagation()"
-                                                        (change)="changeState(node.form, PermissionState.VIEW)">
-                                                    <span matTooltip="{{viewTooltip(node.form)?.value | translate}}">
+                                                        (change)="changeState(node.form, PermissionState.VIEW)"
+                                                        matTooltip="{{viewTooltip(node.form)?.value | translate}}">
+                                                    <span>
                                                         <mat-icon>visibility</mat-icon>
                                                         {{'common.permission.view' | translate}}
                                                     </span>
@@ -168,8 +171,9 @@
                                                         *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.VIEW_EDIT"
                                                         [checked]="state(node.form)?.value === PermissionState.EDIT"
                                                         (click)="$event.stopPropagation()"
-                                                        (change)="changeState(node.form, PermissionState.EDIT)">
-                                                    <span matTooltip="{{editTooltip(node.form)?.value | translate}}">
+                                                        (change)="changeState(node.form, PermissionState.EDIT)"
+                                                        matTooltip="{{editTooltip(node.form)?.value | translate}}">
+                                                    <span>
                                                         <mat-icon>edit</mat-icon>
                                                         {{'common.permission.edit' | translate}}
                                                     </span>
@@ -228,7 +232,7 @@
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
                                 <button mat-icon-button disabled></button>
-                                <mat-icon>{{icon(node.form)?.value}}</mat-icon>
+                                <mat-icon class="mr-1 mb-1">{{icon(node.form)?.value}}</mat-icon>
                                 <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
 
                                 <div class="controls">
@@ -251,8 +255,9 @@
                                                 <mat-button-toggle
                                                         [checked]="state(node.form)?.value === PermissionState.VIEW"
                                                         (click)="$event.stopPropagation()"
-                                                        (change)="changeState(node.form, PermissionState.VIEW)">
-                                                    <span matTooltip="{{viewTooltip(node.form)?.value | translate}}">
+                                                        (change)="changeState(node.form, PermissionState.VIEW)"
+                                                        matTooltip="{{viewTooltip(node.form)?.value | translate}}">
+                                                    <span>
                                                         <mat-icon>visibility</mat-icon>
                                                         {{'common.permission.view' | translate}}
                                                     </span>
@@ -261,7 +266,8 @@
                                                         *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.VIEW_EDIT"
                                                         [checked]="state(node.form)?.value === PermissionState.EDIT"
                                                         (click)="$event.stopPropagation()"
-                                                        (change)="changeState(node.form, PermissionState.EDIT)">
+                                                        (change)="changeState(node.form, PermissionState.EDIT)"
+                                                        matTooltip="{{editTooltip(node.form)?.value | translate}}">
                                                     <span>
                                                         <mat-icon>edit</mat-icon>
                                                         {{'common.permission.edit' | translate}}
@@ -294,7 +300,7 @@
                                         {{treeControlTopNavigation.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                                     </mat-icon>
                                 </button>
-                                <mat-icon>{{icon(node.form)?.value}}</mat-icon>
+                                <mat-icon class="mr-1 mb-1">{{icon(node.form)?.value}}</mat-icon>
                                 <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
                                 <div class="controls">
                                     <div class="controls-wrapper"></div>

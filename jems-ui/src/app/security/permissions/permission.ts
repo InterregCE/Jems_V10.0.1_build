@@ -35,7 +35,8 @@ export class Permission {
           viewPermissions: [],
           editPermissions: [],
           disabled: true,
-          state: PermissionState.EDIT
+          state: PermissionState.EDIT,
+          editTooltip: 'permission.create.application.form'
         },
         {
           name: 'file.tab.application',
@@ -43,7 +44,8 @@ export class Permission {
           viewPermissions: [],
           editPermissions: [],
           disabled: true,
-          state: PermissionState.EDIT
+          state: PermissionState.EDIT,
+          editTooltip: 'permission.create.application.annexes'
         },
         {
           name: 'project.application.check.submit',
@@ -51,7 +53,8 @@ export class Permission {
           viewPermissions: [],
           editPermissions: [],
           disabled: true,
-          state: PermissionState.EDIT
+          state: PermissionState.EDIT,
+          editTooltip: 'permission.create.check.and.submit'
         },
         {
           name: 'project.assessment.and.decision.header',
@@ -59,7 +62,8 @@ export class Permission {
           viewPermissions: [],
           editPermissions: [],
           disabled: true,
-          state: PermissionState.HIDDEN
+          state: PermissionState.HIDDEN,
+          hideTooltip: 'permission.create.assessment.and.decision'
         },
       ]
     }
@@ -74,12 +78,14 @@ export class Permission {
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [PermissionsEnum.ProjectFormRetrieve],
           editPermissions: [PermissionsEnum.ProjectFormUpdate],
+          editTooltip: 'permission.inspect.application.form'
         },
         {
           name: 'file.tab.application',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [PermissionsEnum.ProjectFileApplicationRetrieve],
           editPermissions: [PermissionsEnum.ProjectFileApplicationUpdate],
+          editTooltip: 'permission.inspect.application.annexes'
         },
         {
           name: 'project.application.check.submit',
@@ -107,6 +113,7 @@ export class Permission {
                 PermissionsEnum.ProjectStatusDecideApprovedWithConditions,
                 PermissionsEnum.ProjectStatusDecideNotApproved,
               ],
+              editTooltip: 'permission.inspect.assessment.and.decision.panel'
             },
             {
               name: 'project.application.revert.status.dialog.title',
@@ -128,6 +135,7 @@ export class Permission {
               mode: PermissionMode.HIDDEN_VIEW_EDIT,
               viewPermissions: [PermissionsEnum.ProjectFileAssessmentRetrieve],
               editPermissions: [PermissionsEnum.ProjectFileAssessmentUpdate],
+              editTooltip: 'permission.inspect.annexes'
             },
           ],
         },
@@ -172,6 +180,7 @@ export class Permission {
       viewPermissions: [PermissionsEnum.CallRetrieve],
       editPermissions: [PermissionsEnum.CallUpdate],
       icon: 'campaign',
+      editTooltip: 'permission.top.bar.calls'
     },
     {
       name: 'topbar.main.programme',
@@ -179,6 +188,7 @@ export class Permission {
       viewPermissions: [PermissionsEnum.ProgrammeSetupRetrieve],
       editPermissions: [PermissionsEnum.ProgrammeSetupUpdate],
       icon: 'business',
+      editTooltip: 'permission.top.bar.programme.data'
     },
     {
       name: 'topbar.main.system',
@@ -198,6 +208,7 @@ export class Permission {
             PermissionsEnum.RoleCreate,
             PermissionsEnum.RoleUpdate,
           ],
+          editTooltip: 'permission.top.bar.user.management'
         },
         {
           name: 'topbar.main.audit',

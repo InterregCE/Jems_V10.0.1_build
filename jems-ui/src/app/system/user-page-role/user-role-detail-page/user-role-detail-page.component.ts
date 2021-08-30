@@ -119,8 +119,8 @@ export class UserRoleDetailPageComponent {
   save(role: UserRoleDTO): void {
     const user: UserRoleDTO = {
       id: role.id,
-      name: role.name,
-      defaultForRegisteredUser: role.defaultForRegisteredUser,
+      name: this.userRoleForm.value.name,
+      defaultForRegisteredUser: this.userRoleForm.value.defaultForRegisteredUser,
       permissions: this.getFormPermissions()
     };
     if (role?.id) {
@@ -216,6 +216,10 @@ export class UserRoleDetailPageComponent {
     return control.get('state') as AbstractControl;
   }
 
+  hideTooltip(control: AbstractControl): AbstractControl {
+    return control.get('hideTooltip') as AbstractControl;
+  }
+
   viewTooltip(control: AbstractControl): AbstractControl {
     return control.get('viewTooltip') as AbstractControl;
   }
@@ -253,6 +257,7 @@ export class UserRoleDetailPageComponent {
         // TODO remove 'disabled' when all permissions are used correctly and not just mocked
         disabled: perm.disabled,
         state: perm.state ? perm.state : this.getCurrentState(perm, currentRolePermissions),
+        hideTooltip: perm.hideTooltip,
         viewTooltip: perm.viewTooltip,
         editTooltip: perm.editTooltip,
         icon: perm.icon

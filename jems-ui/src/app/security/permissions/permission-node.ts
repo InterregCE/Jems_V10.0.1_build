@@ -26,6 +26,7 @@ export class PermissionNode {
   // state is only to be used when creating a fake view or if a permission will always have the same value (i.e is locked)
   state?: PermissionState;
   icon?: string;
+  hideTooltip?: string;
   viewTooltip?: string;
   editTooltip?: string;
 }
