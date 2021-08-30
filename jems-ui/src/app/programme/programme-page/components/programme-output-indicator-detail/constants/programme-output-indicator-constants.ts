@@ -8,367 +8,367 @@ export class ProgrammeOutputIndicatorConstants {
 
   static indicatorCodes: OutputIndicatorCodeRelation[] = [
     {
-      code: 'RCO001',
+      code: 'RCO1',
       name: 'Enterprises supported (of which: micro, small, medium, large)',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO002',
+      code: 'RCO2',
       name: 'Enterprises supported by grants',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO003',
+      code: 'RCO3',
       name: 'Enterprises supported by financial instruments',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO004',
+      code: 'RCO4',
       name: 'Enterprises with non-financial support',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO005',
+      code: 'RCO5',
       name: 'New enterprises supported',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO006',
+      code: 'RCO6',
       name: 'Researchers working in supported research facilities',
       measurementUnit: 'annual FTEs',
     },
     {
-      code: 'RCO007',
-      name: 'Research institutions participating in joint research projects',
+      code: 'RCO7',
+      name: 'Research organisations participating in joint research projects',
       measurementUnit: 'research institutions',
     },
     {
-      code: 'RCO008',
+      code: 'RCO8',
       name: 'Nominal value of research and innovation equipment',
       measurementUnit: 'euro',
     },
     {
-      code: 'RCO010',
-      name: 'Enterprises cooperating with research institutions',
+      code: 'RCO10',
+      name: 'Enterprises cooperating with research organisations',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO013',
+      code: 'RCO13',
       name: 'Value of digital services, products and processes developed for enterprises',
       measurementUnit: 'euro',
     },
     {
-      code: 'RCO014',
+      code: 'RCO14',
       name: 'Public institutions supported to develop digital services, products and processes',
       measurementUnit: 'public institutions',
     },
     {
-      code: 'RCO015',
+      code: 'RCO15',
       name: 'Capacity of incubation created',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO016',
+      code: 'RCO16',
       name: 'Participations of institutional stakeholders in entrepreneurial discovery process',
       measurementUnit: 'participations of institutional stakeholders',
     },
     {
-      code: 'RCO018',
+      code: 'RCO18',
       name: 'Dwellings with improved energy performance',
       measurementUnit: 'dwellings',
     },
     {
-      code: 'RCO019',
+      code: 'RCO19',
       name: 'Public buildings with improved energy performance',
       measurementUnit: 'square meters',
     },
     {
-      code: 'RCO020',
+      code: 'RCO20',
       name: 'District heating and cooling network lines newly constructed and improved',
       measurementUnit: 'km',
     },
     {
-      code: 'RCO022',
+      code: 'RCO22',
       name: 'Additional production capacity for renewable energy (of which: electricity, thermal)',
       measurementUnit: 'MW',
     },
     {
-      code: 'RCO023',
+      code: 'RCO23',
       name: 'Digital management systems for smart energy systems',
-      measurementUnit: 'systems',
+      measurementUnit: 'system components',
     },
     {
-      code: 'RCO024',
+      code: 'RCO24',
       name: 'Investments in new or upgraded disaster monitoring, preparedness, warning and response systems against natural disasters',
       measurementUnit: 'euro',
     },
     {
-      code: 'RCO025',
+      code: 'RCO25',
       name: 'Coastal strip, river bank and lakeshore flood protection newly built or consolidated',
       measurementUnit: 'km',
     },
     {
-      code: 'RCO026',
+      code: 'RCO26',
       name: 'Green infrastructure built or upgraded for adaptation to climate change',
       measurementUnit: 'hectares',
     },
     {
-      code: 'RCO027',
+      code: 'RCO27',
       name: 'National and sub-national strategies addressing climate change adaptation',
       measurementUnit: 'strategies',
     },
     {
-      code: 'RCO028',
+      code: 'RCO28',
       name: 'Area covered by protection measures against wildfires',
       measurementUnit: 'hectares',
     },
     {
-      code: 'RCO030',
+      code: 'RCO30',
       name: 'Area covered by protection measures against wildfires',
       measurementUnit: 'hectares',
     },
     {
-      code: 'RCO031',
+      code: 'RCO31',
       name: 'Length of new or upgraded pipes for the distribution systems of public water supply',
       measurementUnit: 'km',
     },
     {
-      code: 'RCO032',
+      code: 'RCO32',
       name: 'New or upgraded capacity for waste water treatment',
       measurementUnit: 'population equivalent',
     },
     {
-      code: 'RCO034',
+      code: 'RCO34',
       name: 'Additional capacity for waste recycling',
       measurementUnit: 'tonnes/year',
     },
     {
-      code: 'RCO036',
+      code: 'RCO36',
       name: 'Green infrastructure supported for other purposes than adaptation to climate change',
       measurementUnit: 'hectares',
     },
     {
-      code: 'RCO037',
+      code: 'RCO37',
       name: 'Surface of Natura 2000 sites covered by protection and restoration measures',
       measurementUnit: 'hectares'
     },
     {
-      code: 'RCO038',
+      code: 'RCO38',
       name: 'Surface area of rehabilitated land supported',
       measurementUnit: 'hectares'
     },
     {
-      code: 'RCO039',
+      code: 'RCO39',
       name: 'Area covered by systems for monitoring air pollution installed',
       measurementUnit: 'hectares'
     },
     {
-      code: 'RCO041',
+      code: 'RCO41',
       name: 'Additional dwellings with broadband access of very high capacity',
       measurementUnit: 'dwellings'
     },
     {
-      code: 'RCO042',
+      code: 'RCO42',
       name: 'Additional enterprises with broadband access of very high capacity',
       measurementUnit: 'enterprises'
     },
     {
-      code: 'RCO043',
+      code: 'RCO43',
       name: 'Length of new or upgraded roads - TEN-T',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO044',
-      name: 'Length of new or upgraded roads –non-TEN-T',
+      code: 'RCO44',
+      name: 'Length of new or upgraded roads - non-TEN-T',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO045',
+      code: 'RCO45',
       name: 'Length of roads reconstructed or modernised - TEN-T',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO046',
+      code: 'RCO46',
       name: 'Length of roads reconstructed or modernised - non-TEN-T',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO047',
+      code: 'RCO47',
       name: 'Length of new or upgraded rail - TEN-T',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO048',
+      code: 'RCO48',
       name: 'Length of new or upgraded rail - non-TEN-T',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO049',
+      code: 'RCO49',
       name: 'Length of rail reconstructed or modernised - TEN-T',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO050',
-      name: 'Length of rail reconstructed or modernised – non-TEN-T',
+      code: 'RCO50',
+      name: 'Length of rail reconstructed or modernised - non-TEN-T',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO051',
+      code: 'RCO51',
       name: 'Length of new, upgraded or modernised inland waterways - TEN-T',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO052',
-      name: 'Length of new, upgraded or modernised inland waterways –non-TEN-T',
+      code: 'RCO52',
+      name: 'Length of new, upgraded or modernised inland waterways - non-TEN-T',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO053',
+      code: 'RCO53',
       name: 'New or modernised railway stations and stops',
       measurementUnit: 'stations and stops'
     },
     {
-      code: 'RCO054',
+      code: 'RCO54',
       name: 'New or modernised intermodal connections',
       measurementUnit: 'intermodal connections'
     },
     {
-      code: 'RCO055',
+      code: 'RCO55',
       name: 'Length of new tram and metro lines',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO056',
+      code: 'RCO56',
       name: 'Length of reconstructed or modernised tram and metro lines',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO057',
+      code: 'RCO57',
       name: 'Capacity of environmentally friendly rolling stock for collective public transport',
       measurementUnit: 'passengers'
     },
     {
-      code: 'RCO058',
+      code: 'RCO58',
       name: 'Dedicated cycling infrastructure supported',
       measurementUnit: 'km'
     },
     {
-      code: 'RCO059',
+      code: 'RCO59',
       name: 'Alternative fuels infrastructure (refuelling/ recharging points)',
       measurementUnit: 'refuelling/recharging points'
     },
     {
-      code: 'RCO060',
+      code: 'RCO60',
       name: 'Cities and towns with new or modernised digitised urban transport systems',
       measurementUnit: 'cities and towns'
     },
     {
-      code: 'RCO061',
+      code: 'RCO61',
       name: 'Surface of new or modernised facilities for employment services',
       measurementUnit: 'square metres'
     },
     {
-      code: 'RCO063',
+      code: 'RCO63',
       name: 'Capacity of new or modernised temporary reception facilities',
       measurementUnit: 'persons'
     },
     {
-      code: 'RCO065',
+      code: 'RCO65',
       name: 'Capacity of new or modernised social housing',
       measurementUnit: 'persons'
     },
     {
-      code: 'RCO066',
+      code: 'RCO66',
       name: 'Classroom capacity of new or modernised childcare facilities',
       measurementUnit: 'persons'
     },
     {
-      code: 'RCO067',
+      code: 'RCO67',
       name: 'Classroom capacity of new or modernised education facilities',
       measurementUnit: 'persons'
     },
     {
-      code: 'RCO069',
+      code: 'RCO69',
       name: 'Capacity of new or modernised health care facilities',
       measurementUnit: 'persons/year'
     },
     {
-      code: 'RCO070',
+      code: 'RCO70',
       name: 'Capacity of new or modernised social care facilities (other than housing)',
       measurementUnit: 'persons/year'
     },
     {
-      code: 'RCO074',
+      code: 'RCO74',
       name: 'Population covered by projects in the framework of strategies for integrated territorial development',
       measurementUnit: 'persons'
     },
     {
-      code: 'RCO075',
+      code: 'RCO75',
       name: 'Strategies for integrated territorial development supported',
-      measurementUnit: 'strategies'
+      measurementUnit: 'contributions to strategies'
     },
     {
-      code: 'RCO076',
+      code: 'RCO76',
       name: 'Integrated projects for territorial development',
       measurementUnit: 'projects'
     },
     {
-      code: 'RCO077',
+      code: 'RCO77',
       name: 'Number of cultural and tourism sites supported',
       measurementUnit: 'cultural and tourism sites'
     },
     {
-      code: 'RCO080',
+      code: 'RCO80',
       name: 'Community-led local development strategies supported',
-      measurementUnit: 'strategies'
+      measurementUnit: 'contributions to strategies'
     },
     {
-      code: 'RCO081',
+      code: 'RCO81',
       name: 'Participations in joint actions across borders',
-      measurementUnit: 'participation'
+      measurementUnit: 'participations'
     },
     {
-      code: 'RCO082',
+      code: 'RCO82',
       name: 'Participations in joint actions promoting gender equality, equal opportunities and social inclusion',
-      measurementUnit: 'participation'
+      measurementUnit: 'participations'
     },
     {
-      code: 'RCO083',
+      code: 'RCO83',
       name: 'Strategies and action plans jointly developed',
-      measurementUnit: 'Strategy/action plan'
+      measurementUnit: 'strategy/action plan'
     },
     {
-      code: 'RCO084',
+      code: 'RCO84',
       name: 'Pilot actions developed jointly and implemented in projects ',
       measurementUnit: 'pilot actions'
     },
     {
-      code: 'RCO085',
+      code: 'RCO85',
       name: 'Participations in joint training schemes',
-      measurementUnit: 'participation'
+      measurementUnit: 'participations'
     },
     {
-      code: 'RCO086',
+      code: 'RCO86',
       name: 'Joint administrative or legal agreements signed',
-      measurementUnit: 'Legal or administrative agreement'
+      measurementUnit: 'legal or administrative agreement'
     },
     {
-      code: 'RCO087',
+      code: 'RCO87',
       name: 'Organisations cooperating across borders',
       measurementUnit: 'organisations'
     },
     {
-      code: 'RCO090',
+      code: 'RCO90',
       name: 'Projects for innovation networks across borders',
       measurementUnit: 'projects'
     },
     {
-      code: 'RCO096',
-      name: 'Interregional investments for innovation in EU projects',
+      code: 'RCO96',
+      name: 'Interregional investments for innovation in Union projects',
       measurementUnit: 'euro'
     },
     {
-      code: 'RCO097',
+      code: 'RCO97',
       name: 'Renewable energy communities supported',
       measurementUnit: 'renewable energy communities'
     },
@@ -404,28 +404,28 @@ export class ProgrammeOutputIndicatorConstants {
     },
     {
       code: 'RCO108',
-      name: 'Length of roads with new or modernised traffic management systems – TEN-T',
+      name: 'Length of roads with new or modernised traffic management systems - TEN-T',
       measurementUnit: 'km'
     },
     {
       code: 'RCO109',
-      name: 'Length of European Rail Traffic Management System equipped railways in operation – TEN-T',
+      name: 'Length of European Rail Traffic Management System equipped railways in operation - TEN-T',
       measurementUnit: 'km'
     },
     {
       code: 'RCO110',
-      name: 'Length of roads with new or modernised traffic management systems – non-TEN-T',
+      name: 'Length of roads with new or modernised traffic management systems - non-TEN-T',
       measurementUnit: 'km'
     },
     {
       code: 'RCO111',
-      name: 'Length of European Rail Traffic Management System equipped railways in operation – non-TEN-T',
+      name: 'Length of European Rail Traffic Management System equipped railways in operation - non-TEN-T',
       measurementUnit: 'km'
     },
     {
       code: 'RCO112',
       name: 'Stakeholders involved in the preparation and implementation of strategies for integrated territorial development',
-      measurementUnit: 'participations of institutional stakeholders'
+      measurementUnit: 'participations of stakeholders'
     },
     {
       code: 'RCO113',
@@ -445,12 +445,12 @@ export class ProgrammeOutputIndicatorConstants {
     {
       code: 'RCO116',
       name: 'Jointly developed solutions',
-      measurementUnit: 'solutions developed'
+      measurementUnit: 'solutions'
     },
     {
       code: 'RCO117',
       name: 'Solutions for legal or administrative obstacles across border identified',
-      measurementUnit: 'solution identified for obstacles'
+      measurementUnit: 'solutions'
     },
     {
       code: 'RCO118',
