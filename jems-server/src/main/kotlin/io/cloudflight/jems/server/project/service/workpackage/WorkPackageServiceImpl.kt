@@ -5,7 +5,6 @@ import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.service.language.get_languages.GetLanguagesInteractor
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackage
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
@@ -41,25 +40,18 @@ class WorkPackageServiceImpl(
             throw I18nValidationException(i18nKey = "project.workPackage.max.allowed.reached")
 
         val workPackageCreated = workPackageRepository.save(inputWorkPackageCreate.toEntity(project))
-        val workPackageSavedWithTranslations = workPackageRepository.save(
-            workPackageCreated.copy(
-                translatedValues = inputWorkPackageCreate.combineTranslatedValues(workPackageCreated.id))
-        )
+
         updateSortOnNumber(projectId)
         // entity is attached, number will have been updated
-        return workPackageSavedWithTranslations.toOutputWorkPackage()
+        return workPackageCreated.toOutputWorkPackage()
     }
 
     @PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectWorkPackage(#inputWorkPackageUpdate.id)")
     @Transactional
     override fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage {
         val oldWorkPackage = getWorkPackageOrThrow(inputWorkPackageUpdate.id)
-
-        val toUpdate = oldWorkPackage.copy(
-            translatedValues = inputWorkPackageUpdate.combineTranslatedValues(oldWorkPackage.id)
-        )
-
-        return workPackageRepository.save(toUpdate).toOutputWorkPackage()
+        return workPackageRepository.save(oldWorkPackage.copy(inputWorkPackageUpdate.toTranslatedValues(oldWorkPackage)))
+            .toOutputWorkPackage()
     }
 
     @CanUpdateProjectWorkPackage
@@ -72,9 +64,8 @@ class WorkPackageServiceImpl(
     private fun updateSortOnNumber(projectId: Long) {
         val sort = Sort.by(Sort.Direction.ASC, "id")
 
-        val projectWorkPackages = workPackageRepository.findAllByProjectId(projectId, sort)
-            .mapIndexed { index, old -> old.copy(number = index.plus(1)) }
-        workPackageRepository.saveAll(projectWorkPackages)
+        workPackageRepository.findAllByProjectId(projectId, sort)
+            .mapIndexed { index, old -> old.number = index.plus(1) }
     }
 
     private fun getWorkPackageOrThrow(workPackageId: Long): WorkPackageEntity =

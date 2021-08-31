@@ -1,7 +1,9 @@
 package io.cloudflight.jems.server.project.service.workpackage.activity.model
 
+import io.cloudflight.jems.api.project.dto.InputTranslation
+
 data class WorkPackageActivityDeliverable(
     val deliverableNumber: Int = 0,
-    val translatedValues: Set<WorkPackageActivityDeliverableTranslatedValue> = emptySet(),
+    val description : Set<InputTranslation> = emptySet(),
     val period: Int? = null,
 )

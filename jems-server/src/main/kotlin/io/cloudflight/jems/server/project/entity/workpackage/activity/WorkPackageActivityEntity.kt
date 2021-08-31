@@ -25,13 +25,13 @@ import javax.persistence.OneToMany
         ]
     )
 )
-data class WorkPackageActivityEntity(
+class WorkPackageActivityEntity(
 
     @EmbeddedId
     val activityId: WorkPackageActivityId,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.activityId")
-    val translatedValues: Set<WorkPackageActivityTranslationEntity> = emptySet(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
+    val translatedValues: MutableSet<WorkPackageActivityTranslationEntity> = mutableSetOf(),
 
     val startPeriod: Int? = null,
 

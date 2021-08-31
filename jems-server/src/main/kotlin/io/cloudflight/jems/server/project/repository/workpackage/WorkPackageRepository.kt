@@ -18,8 +18,6 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
 
     fun findAllByProjectId(projectId: Long, sort: Sort): Iterable<WorkPackageEntity>
 
-    fun findFirstByProjectIdAndId(projectId: Long, workPackageId: Long): WorkPackageEntity
-
     fun countAllByProjectId(projectId: Long): Long
 
     @Query(
@@ -29,7 +27,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              entity.number as number,
              workPackageTransl.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageTransl ON entity.id = workPackageTransl.work_package_id
+             LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageTransl ON entity.id = workPackageTransl.source_entity_id
              WHERE entity.project_id = :projectId
              ORDER BY entity.id
              """,
@@ -49,7 +47,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              workPackageTransl.specific_objective as specificObjective,
              workPackageTransl.objective_and_audience as objectiveAndAudience
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageTransl ON entity.id = workPackageTransl.work_package_id
+             LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageTransl ON entity.id = workPackageTransl.source_entity_id
              WHERE entity.id = :workPackageId
              """,
         nativeQuery = true

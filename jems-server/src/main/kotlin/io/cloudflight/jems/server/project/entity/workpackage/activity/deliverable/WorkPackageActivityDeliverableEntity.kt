@@ -6,20 +6,20 @@ import javax.persistence.Entity
 import javax.persistence.OneToMany
 
 @Entity(name = "project_work_package_activity_deliverable")
-data class WorkPackageActivityDeliverableEntity(
+class WorkPackageActivityDeliverableEntity(
 
     @EmbeddedId
     val deliverableId: WorkPackageActivityDeliverableId,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.deliverableId")
-    val translatedValues: Set<WorkPackageActivityDeliverableTranslationEntity> = emptySet(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
+    val translatedValues: MutableSet<WorkPackageActivityDeliverableTranslationEntity> = mutableSetOf(),
 
     val startPeriod: Int? = null,
 ) {
-    override fun equals(other: Any?) = (other is WorkPackageActivityDeliverableEntity)
+    override fun equals(other: Any?) =
+        this === other ||
+        (other is WorkPackageActivityDeliverableEntity)
         && deliverableId == other.deliverableId
-        && translatedValues == other.translatedValues
-        && startPeriod == other.startPeriod
 
     override fun hashCode() = deliverableId.hashCode()
 }

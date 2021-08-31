@@ -40,10 +40,10 @@ import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackag
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageOutputHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
-import java.sql.Timestamp
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.data.domain.Sort
+import java.sql.Timestamp
 
 @Repository
 class WorkPackagePersistenceProvider(
@@ -53,11 +53,14 @@ class WorkPackagePersistenceProvider(
     private val workPackageOutputRepository: WorkPackageOutputRepository,
     private val workPackageInvestmentRepository: WorkPackageInvestmentRepository,
     private val outputIndicatorRepository: OutputIndicatorRepository,
-    private val projectVersionUtils: ProjectVersionUtils,
+    private val projectVersionUtils: ProjectVersionUtils
 ) : WorkPackagePersistence {
 
     @Transactional(readOnly = true)
-    override fun getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId: Long, version: String?): List<ProjectWorkPackage> {
+    override fun getWorkPackagesWithOutputsAndActivitiesByProjectId(
+        projectId: Long,
+        version: String?
+    ): List<ProjectWorkPackage> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 getWorkPackagesForTimePlanInCurrentVersion(projectId)
@@ -84,9 +87,10 @@ class WorkPackagePersistenceProvider(
             .groupBy { it.outputId.workPackageId }
 
         // fetch projectPartnerIds in 1 request
-        val projectPartnerIds = workPackageActivityPartnerRepository.findAllByIdWorkPackageActivityIdWorkPackageIdIn(workPackageIds)
-            .groupBy { it.id.workPackageActivityId.workPackageId }
-            .mapValues { it.value.groupBy ( { it.id.workPackageActivityId }, { it.id.projectPartnerId } ) }
+        val projectPartnerIds =
+            workPackageActivityPartnerRepository.findAllByIdWorkPackageActivityIdWorkPackageIdIn(workPackageIds)
+                .groupBy { it.id.workPackageActivityId.workPackageId }
+                .mapValues { it.value.groupBy({ it.id.workPackageActivityId }, { it.id.projectPartnerId }) }
 
         // fetch all investments
         val investmentsByWorkPackages = workPackageInvestmentRepository.findInvestmentsByProjectId(projectId)
@@ -109,7 +113,8 @@ class WorkPackagePersistenceProvider(
                 workPackageRepository.findAllByProjectId(projectId).map { it.toOutputWorkPackageSimple() }
             },
             previousVersionFetcher = { timestamp ->
-                workPackageRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp).toOutputWorkPackageSimpleHistoricalData()
+                workPackageRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp)
+                    .toOutputWorkPackageSimpleHistoricalData()
             }
         ) ?: emptyList()
     }
@@ -121,7 +126,8 @@ class WorkPackagePersistenceProvider(
                 getWorkPackageOrThrow(workPackageId).toOutputWorkPackage()
             },
             previousVersionFetcher = { timestamp ->
-                workPackageRepository.findByIdAsOfTimestamp(workPackageId, timestamp).toOutputWorkPackageHistoricalData()
+                workPackageRepository.findByIdAsOfTimestamp(workPackageId, timestamp)
+                    .toOutputWorkPackageHistoricalData()
             }
         ) ?: throw ApplicationVersionNotFoundException()
     }
@@ -131,23 +137,35 @@ class WorkPackagePersistenceProvider(
         workPackageId: Long,
         workPackageOutputs: List<WorkPackageOutput>
     ): List<WorkPackageOutput> {
-        val workPackage = getWorkPackageOrThrow(workPackageId = workPackageId)
 
-        val outputsUpdated = workPackageOutputs.toIndexedEntity(
+        throwIfWorkPackageNotFound(workPackageId)
+
+        val outputsToBeSaved = workPackageOutputs.toIndexedEntity(
             workPackageId = workPackageId,
             resolveProgrammeIndicatorEntity = { getIndicatorOrThrow(it) }
         )
-        return workPackageRepository.save(workPackage.copy(outputs = outputsUpdated)).outputs.toModel()
+        val currentOutputs = workPackageOutputRepository.findAllByOutputIdWorkPackageId(workPackageId)
+
+        workPackageOutputRepository.deleteAll(currentOutputs.filter {
+            !outputsToBeSaved.map { it.outputId }.contains(it.outputId)
+        })
+
+        return workPackageOutputRepository.saveAll(outputsToBeSaved).toModel()
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageOutputsForWorkPackage(workPackageId: Long, projectId: Long, version: String?): List<WorkPackageOutput>{
+    override fun getWorkPackageOutputsForWorkPackage(
+        workPackageId: Long,
+        projectId: Long,
+        version: String?
+    ): List<WorkPackageOutput> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 getWorkPackageOrThrow(workPackageId).outputs.toModel()
             },
             previousVersionFetcher = { timestamp ->
-                workPackageRepository.findOutputsByWorkPackageIdAsOfTimestamp(workPackageId, timestamp).toWorkPackageOutputsHistoricalData()
+                workPackageRepository.findOutputsByWorkPackageIdAsOfTimestamp(workPackageId, timestamp)
+                    .toWorkPackageOutputsHistoricalData()
             }
         ) ?: emptyList()
     }
@@ -159,25 +177,35 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestment(workPackageInvestmentId: Long, projectId: Long, version: String?): WorkPackageInvestment {
+    override fun getWorkPackageInvestment(
+        workPackageInvestmentId: Long,
+        projectId: Long,
+        version: String?
+    ): WorkPackageInvestment {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 getWorkPackageInvestmentOrThrow(workPackageInvestmentId).toWorkPackageInvestment()
             },
             previousVersionFetcher = { timestamp ->
-                workPackageInvestmentRepository.findByIdAsOfTimestamp(workPackageInvestmentId, timestamp).toWorkPackageInvestmentHistoricalData()
+                workPackageInvestmentRepository.findByIdAsOfTimestamp(workPackageInvestmentId, timestamp)
+                    .toWorkPackageInvestmentHistoricalData()
             }
         ) ?: throw ApplicationVersionNotFoundException()
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageInvestments(workPackageId: Long, projectId: Long, version: String?): List<WorkPackageInvestment> {
+    override fun getWorkPackageInvestments(
+        workPackageId: Long,
+        projectId: Long,
+        version: String?
+    ): List<WorkPackageInvestment> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 workPackageInvestmentRepository.findAllByWorkPackageId(workPackageId).toWorkPackageInvestmentList()
             },
             previousVersionFetcher = { timestamp ->
-                workPackageInvestmentRepository.findAllByWorkPackageIdAsOfTimestamp(workPackageId, timestamp).toWorkPackageInvestmentHistoricalList()
+                workPackageInvestmentRepository.findAllByWorkPackageIdAsOfTimestamp(workPackageId, timestamp)
+                    .toWorkPackageInvestmentHistoricalList()
             }
         ) ?: emptyList()
     }
@@ -229,7 +257,11 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long, projectId: Long, version: String?): List<WorkPackageActivity> {
+    override fun getWorkPackageActivitiesForWorkPackage(
+        workPackageId: Long,
+        projectId: Long,
+        version: String?
+    ): List<WorkPackageActivity> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 getWorkPackageOrThrow(workPackageId).activities.toModel(
@@ -248,17 +280,22 @@ class WorkPackagePersistenceProvider(
         workPackageId: Long,
         workPackageActivities: List<WorkPackageActivity>
     ): List<WorkPackageActivity> {
-        val activities = workPackageRepository.save(
-            getWorkPackageOrThrow(workPackageId).copy(
-                activities = workPackageActivities.toIndexedEntity(workPackageId)
-            )
-        ).activities
+
+        throwIfWorkPackageNotFound(workPackageId)
+        val activitiesToBeSaved = workPackageActivities.toIndexedEntity(workPackageId)
 
         workPackageActivityPartnerRepository.deleteAllByIdWorkPackageActivityIdWorkPackageId(workPackageId)
         val partnersByActivities = workPackageActivityPartnerRepository.saveAll(workPackageActivities.toPartners())
             .groupBy({ it.id.workPackageActivityId }, { it.id.projectPartnerId })
 
-        return activities.toModel(partnersByActivities)
+        val currentActivities = workPackageActivityRepository.findAllByActivityIdWorkPackageId(workPackageId)
+        workPackageActivityRepository.deleteAll(
+            currentActivities.filter {
+                !activitiesToBeSaved.map { it.activityId }.contains(it.activityId)
+            }
+        )
+        return workPackageActivityRepository.saveAll(activitiesToBeSaved)
+            .toModel(partnersByActivities)
     }
 
     private fun List<WorkPackageActivity>.toPartners(): Collection<WorkPackageActivityPartnerEntity> {
@@ -266,7 +303,7 @@ class WorkPackagePersistenceProvider(
         val result = mutableSetOf<WorkPackageActivityPartnerId>()
         this.forEachIndexed { index, activity ->
             activity.partnerIds.forEach {
-                result.add(WorkPackageActivityPartnerId(WorkPackageActivityId(workPackageId, index+1), it))
+                result.add(WorkPackageActivityPartnerId(WorkPackageActivityId(workPackageId, index + 1), it))
             }
         }
         return result.map { WorkPackageActivityPartnerEntity(it) }
@@ -278,6 +315,12 @@ class WorkPackagePersistenceProvider(
 
     private fun getWorkPackageOrThrow(workPackageId: Long): WorkPackageEntity =
         workPackageRepository.findById(workPackageId).orElseThrow { ResourceNotFoundException("workPackage") }
+
+    private fun throwIfWorkPackageNotFound(workPackageId: Long) {
+        workPackageRepository.existsById(workPackageId).also {
+            if (!it) ResourceNotFoundException("workPackage")
+        }
+    }
 
     private fun getWorkPackageInvestmentOrThrow(workPackageInvestmentId: Long): WorkPackageInvestmentEntity =
         workPackageInvestmentRepository.findById(workPackageInvestmentId)
@@ -297,24 +340,43 @@ class WorkPackagePersistenceProvider(
         workPackageInvestmentRepository.saveAll(workPackageInvestments)
     }
 
-    private fun getActivitiesAndDeliverablesByWorkPackageId(workPackageId: Long, timestamp: Timestamp): List<WorkPackageActivity> {
-        val activities = workPackageActivityRepository.findAllActivitiesByWorkPackageIdAsOfTimestamp(workPackageId, timestamp).toActivityHistoricalData()
+    private fun getActivitiesAndDeliverablesByWorkPackageId(
+        workPackageId: Long,
+        timestamp: Timestamp
+    ): List<WorkPackageActivity> {
+        val activities =
+            workPackageActivityRepository.findAllActivitiesByWorkPackageIdAsOfTimestamp(workPackageId, timestamp)
+                .toActivityHistoricalData()
 
-        activities.forEach{
-            it.deliverables = workPackageActivityRepository.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(workPackageId, it.activityNumber, timestamp).toDeliverableHistoricalData()
-            it.partnerIds = workPackageActivityPartnerRepository.findAllByWorkPackageIdAndActivityNumberAsOfTimestamp(workPackageId, it.activityNumber, timestamp).toActivityPartnersHistoricalData()
+        activities.forEach {
+            it.deliverables =
+                workPackageActivityRepository.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(
+                    workPackageId,
+                    it.activityNumber,
+                    timestamp
+                ).toDeliverableHistoricalData()
+            it.partnerIds = workPackageActivityPartnerRepository.findAllByWorkPackageIdAndActivityNumberAsOfTimestamp(
+                workPackageId,
+                it.activityNumber,
+                timestamp
+            ).toActivityPartnersHistoricalData()
         }
 
         return activities
     }
 
-    private fun getWorkPackageInvestmentSummaryHistoricalData(projectId: Long, timestamp: Timestamp): List<InvestmentSummary> {
+    private fun getWorkPackageInvestmentSummaryHistoricalData(
+        projectId: Long,
+        timestamp: Timestamp
+    ): List<InvestmentSummary> {
         val workPackages = workPackageRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp)
             .toOutputWorkPackageSimpleHistoricalData()
         var investments = mutableListOf<InvestmentSummary>()
 
         workPackages.forEach {
-            val investmentsForWorkPackage = workPackageInvestmentRepository.findAllSummariesByWorkPackageIdAsOfTimestamp(it.id, timestamp).toWorkPackageInvestmentSummaryList(it.number)
+            val investmentsForWorkPackage =
+                workPackageInvestmentRepository.findAllSummariesByWorkPackageIdAsOfTimestamp(it.id, timestamp)
+                    .toWorkPackageInvestmentSummaryList(it.number)
             investments = investments.plus(investmentsForWorkPackage) as MutableList<InvestmentSummary>
         }
 
@@ -335,9 +397,10 @@ class WorkPackagePersistenceProvider(
             .groupBy { it.outputId.workPackageId }
 
         // fetch projectPartnerIds in 1 request
-        val projectPartnerIds = workPackageActivityPartnerRepository.findAllByIdWorkPackageActivityIdWorkPackageIdIn(workPackageIds)
-            .groupBy { it.id.workPackageActivityId.workPackageId }
-            .mapValues { it.value.groupBy ( { it.id.workPackageActivityId }, { it.id.projectPartnerId } ) }
+        val projectPartnerIds =
+            workPackageActivityPartnerRepository.findAllByIdWorkPackageActivityIdWorkPackageIdIn(workPackageIds)
+                .groupBy { it.id.workPackageActivityId.workPackageId }
+                .mapValues { it.value.groupBy({ it.id.workPackageActivityId }, { it.id.projectPartnerId }) }
 
         return workPackages.map { wp ->
             wp.toModel(
@@ -348,31 +411,47 @@ class WorkPackagePersistenceProvider(
         }
     }
 
-    private fun getWorkPackagesForTimePlanInPreviousVersion(projectId: Long, timestamp: Timestamp): List<ProjectWorkPackage> {
+    private fun getWorkPackagesForTimePlanInPreviousVersion(
+        projectId: Long,
+        timestamp: Timestamp
+    ): List<ProjectWorkPackage> {
         // fetch all work packages in 1 request
-        val workPackages = workPackageRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp).toTimePlanWorkPackageHistoricalData()
+        val workPackages = workPackageRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp)
+            .toTimePlanWorkPackageHistoricalData()
         val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
 
-        val activities = workPackageActivityRepository.findAllByActivityIdWorkPackageIdAsOfTimestamp(workPackageIds, timestamp).toTimePlanActivityHistoricalData()
+        val activities =
+            workPackageActivityRepository.findAllByActivityIdWorkPackageIdAsOfTimestamp(workPackageIds, timestamp)
+                .toTimePlanActivityHistoricalData()
         // fetch projectPartnerIds in 1 request
-        val partnerIdsGroupedBy = workPackageActivityPartnerRepository.findAllByWorkPackageIdsAsOfTimestamp(workPackageIds, timestamp)
-            .groupBy { it.workPackageId }
-            .mapValues { it.value.groupBy ( { it.activityNumber }, { it.projectPartnerId } ) }
+        val partnerIdsGroupedBy =
+            workPackageActivityPartnerRepository.findAllByWorkPackageIdsAsOfTimestamp(workPackageIds, timestamp)
+                .groupBy { it.workPackageId }
+                .mapValues { it.value.groupBy({ it.activityNumber }, { it.projectPartnerId }) }
 
-        activities.forEach{
-            it.deliverables = workPackageActivityRepository.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(it.workPackageId, it.activityNumber, timestamp)
-                .toDeliverableHistoricalData()
+        activities.forEach {
+            it.deliverables =
+                workPackageActivityRepository.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(
+                    it.workPackageId,
+                    it.activityNumber,
+                    timestamp
+                )
+                    .toDeliverableHistoricalData()
             it.partnerIds = partnerIdsGroupedBy[it.workPackageId]?.get(it.activityNumber)?.toSet().orEmpty()
         }
         val activitiesByWorkPackages = activities.groupBy { it.workPackageId }
 
         // fetch all outputs in 1 request
-        val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdAsOfTimestamp(workPackageIds, timestamp).toTimePlanWorkPackageOutputHistoricalData()
-            .groupBy { it.workPackageId }
+        val outputsByWorkPackages =
+            workPackageOutputRepository.findAllByOutputIdWorkPackageIdAsOfTimestamp(workPackageIds, timestamp)
+                .toTimePlanWorkPackageOutputHistoricalData()
+                .groupBy { it.workPackageId }
 
         workPackages.forEach {
-            it.activities = if (activitiesByWorkPackages[it.id]?.isNotEmpty() == true) activitiesByWorkPackages[it.id]!! else emptyList()
-            it.outputs = if (outputsByWorkPackages[it.id]?.isNotEmpty() == true) outputsByWorkPackages[it.id]!! else emptyList()
+            it.activities =
+                if (activitiesByWorkPackages[it.id]?.isNotEmpty() == true) activitiesByWorkPackages[it.id]!! else emptyList()
+            it.outputs =
+                if (outputsByWorkPackages[it.id]?.isNotEmpty() == true) outputsByWorkPackages[it.id]!! else emptyList()
         }
         return workPackages
     }

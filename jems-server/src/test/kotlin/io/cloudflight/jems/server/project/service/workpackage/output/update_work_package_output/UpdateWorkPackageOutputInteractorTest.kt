@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -19,7 +19,8 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
     companion object {
         private val testOutput = WorkPackageOutput(
             workPackageId = 1L,
-            translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test")),
+            title = setOf(InputTranslation(SystemLanguage.EN, "Test")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "Test")),
             periodNumber = 10,
             programmeOutputIndicatorId = 7L,
             targetValue = BigDecimal.ONE,

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.workpackage.activity.update_a
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -10,8 +11,6 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSu
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverableTranslatedValue
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -30,20 +29,22 @@ internal class UpdateActivityTest {
     companion object {
         val activity1 = WorkPackageActivity(
             workPackageId = 1L,
-            translatedValues = setOf(
-                WorkPackageActivityTranslatedValue(language = EN, title = null, description = "en_desc"),
-                WorkPackageActivityTranslatedValue(language = CS, title = "", description = null),
-                WorkPackageActivityTranslatedValue(language = SK, title = "sk_title", description = "sk_desc"),
+            title = setOf(
+                InputTranslation(language = EN, translation = null),
+                InputTranslation(language = CS, translation = ""),
+                InputTranslation(language = SK, translation = "sk_title"),
+            ),
+            description = setOf(
+                InputTranslation(language = EN, translation = "en_desc"),
+                InputTranslation(language = CS, translation = null),
+                InputTranslation(language = SK, translation = "sk_desc"),
             ),
             startPeriod = 1,
             endPeriod = 3,
             deliverables = listOf(
                 WorkPackageActivityDeliverable(
                     period = 1,
-                    translatedValues = setOf(
-                        WorkPackageActivityDeliverableTranslatedValue(language = EN, description = "en_deliv_desc"),
-                        WorkPackageActivityDeliverableTranslatedValue(language = CS, description = null),
-                    )
+                    description = setOf(InputTranslation(language = EN, translation = "en_deliv_desc"))
                 )
             ),
             partnerIds = setOf(3)
@@ -135,33 +136,33 @@ internal class UpdateActivityTest {
 
     @Test
     fun `update activities when title is too long`() {
-        val translation = WorkPackageActivityTranslatedValue(
+        val title = setOf(InputTranslation(
             language = CS,
-            title = getStringOfLength(201)
-        )
-        val toBeSaved = listOf(WorkPackageActivity(7L, translatedValues = setOf(translation)))
+            translation = getStringOfLength(201)
+        ))
+        val toBeSaved = listOf(WorkPackageActivity(7L, title = title))
         val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 7L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.title.size.too.long")
     }
 
     @Test
     fun `update activities when description is too long`() {
-        val translation = WorkPackageActivityTranslatedValue(
+        val description = setOf(InputTranslation(
             language = SK,
-            description = getStringOfLength(501)
-        )
-        val toBeSaved = listOf(WorkPackageActivity(8L, translatedValues = setOf(translation)))
+            translation = getStringOfLength(501)
+        ))
+        val toBeSaved = listOf(WorkPackageActivity(8L, description = description))
         val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 8L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.description.size.too.long")
     }
 
     @Test
     fun `update activity deliverables when description is too long`() {
-        val translation = WorkPackageActivityDeliverableTranslatedValue(
+        val descreption = InputTranslation(
             language = EN,
-            description = getStringOfLength(201)
+            translation = getStringOfLength(201)
         )
-        val toBeSaved = listOf(WorkPackageActivity(9L, deliverables = listOf(WorkPackageActivityDeliverable(translatedValues = setOf(translation)))))
+        val toBeSaved = listOf(WorkPackageActivity(9L, deliverables = listOf(WorkPackageActivityDeliverable(description = setOf(descreption)))))
         val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 9L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.deliverable.description.size.too.long")
     }

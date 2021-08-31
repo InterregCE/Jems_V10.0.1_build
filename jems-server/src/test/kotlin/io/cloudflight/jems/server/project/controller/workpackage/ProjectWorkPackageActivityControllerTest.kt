@@ -1,62 +1,56 @@
 package io.cloudflight.jems.server.project.controller.workpackage
 
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivityDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivityDeliverableDTO
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.workpackage.activity.get_activity.GetActivityInteractor
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverableTranslatedValue
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.activity.update_activity.UpdateActivityInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(MockKExtension::class)
-class ProjectWorkPackageActivityControllerTest {
+class ProjectWorkPackageActivityControllerTest : UnitTest() {
 
-    companion object {
-        val activity1 = WorkPackageActivity(
-            workPackageId = 1L,
-            activityNumber = 1,
-            translatedValues = setOf(
-                WorkPackageActivityTranslatedValue(language = EN, title = null, description = "en_desc"),
-                WorkPackageActivityTranslatedValue(language = CS, title = "", description = null),
-                WorkPackageActivityTranslatedValue(language = SK, title = "sk_title", description = "sk_desc"),
-            ),
-            startPeriod = 1,
-            endPeriod = 3,
-            deliverables = listOf(
-                WorkPackageActivityDeliverable(
-                    deliverableNumber = 1,
-                    period = 1,
-                    translatedValues = setOf(
-                        WorkPackageActivityDeliverableTranslatedValue(language = EN, description = "en_deliv_desc"),
-                        WorkPackageActivityDeliverableTranslatedValue(language = CS, description = null),
-                    )
+    private val activity1 = WorkPackageActivity(
+        workPackageId = 1L,
+        activityNumber = 1,
+        title = setOf(
+            InputTranslation(language = SK, translation = "sk_title"),
+        ),
+        description = setOf(
+            InputTranslation(language = EN, translation = "en_desc"),
+            InputTranslation(language = SK, translation = "sk_desc"),
+        ),
+        startPeriod = 1,
+        endPeriod = 3,
+        deliverables = listOf(
+            WorkPackageActivityDeliverable(
+                deliverableNumber = 1,
+                period = 1,
+                description = setOf(
+                    InputTranslation(language = EN, translation = "en_deliv_desc")
                 )
-            ),
-            partnerIds = setOf(2)
-        )
-        val activity2 = WorkPackageActivity(
-            workPackageId = 1L,
-            activityNumber = 2,
-            translatedValues = emptySet(),
-            startPeriod = 4,
-            endPeriod = 6,
-            deliverables = emptyList(),
-        )
-
-    }
+            )
+        ),
+        partnerIds = setOf(2)
+    )
+    private val activity2 = WorkPackageActivity(
+        workPackageId = 1L,
+        activityNumber = 2,
+        title = emptySet(),
+        description = emptySet(),
+        startPeriod = 4,
+        endPeriod = 6,
+        deliverables = emptyList(),
+    )
 
     @MockK
     lateinit var getActivityInteractor: GetActivityInteractor
@@ -78,9 +72,15 @@ class ProjectWorkPackageActivityControllerTest {
                 title = setOf(InputTranslation(SK, "sk_title")),
                 startPeriod = 1,
                 endPeriod = 3,
-                description = setOf(InputTranslation(EN, "en_desc"), InputTranslation(SK, "sk_desc")),
+                description = setOf(
+                    InputTranslation(EN, "en_desc"), InputTranslation(SK, "sk_desc")
+                ),
                 deliverables = listOf(
-                    WorkPackageActivityDeliverableDTO(deliverableNumber = 1, period = 1, description = setOf(InputTranslation(EN, "en_deliv_desc")))
+                    WorkPackageActivityDeliverableDTO(
+                        deliverableNumber = 1,
+                        period = 1,
+                        description = setOf(InputTranslation(EN, "en_deliv_desc"))
+                    )
                 ),
                 partnerIds = setOf(2)
             ),
@@ -100,20 +100,29 @@ class ProjectWorkPackageActivityControllerTest {
     fun updateActivities() {
         val activitiesSlot = slot<List<WorkPackageActivity>>()
         // we test retrieval login in getActivities test
-        every { updateActivityInteractor.updateActivitiesForWorkPackage(1L, 1L, capture(activitiesSlot)) } returns emptyList()
+        every {
+            updateActivityInteractor.updateActivitiesForWorkPackage(
+                1L,
+                1L,
+                capture(activitiesSlot)
+            )
+        } returns emptyList()
 
         val activityDto1 = WorkPackageActivityDTO(
             workPackageId = 1L,
-            title = setOf(InputTranslation(EN, null), InputTranslation(CS, ""), InputTranslation(SK, "sk_title")),
+            title = setOf(InputTranslation(SK, "sk_title")),
             startPeriod = 1,
             endPeriod = 2,
-            description = setOf(InputTranslation(EN, "en_desc"), InputTranslation(CS, ""), InputTranslation(SK, "sk_desc")),
+            description = setOf(
+                InputTranslation(EN, "en_desc"),
+                InputTranslation(SK, "sk_desc")
+            ),
             deliverables = listOf(
-                WorkPackageActivityDeliverableDTO(period = 1, description = setOf(
-                    InputTranslation(EN, "en_deliv_desc"),
-                    InputTranslation(CS, ""),
-                    InputTranslation(SK, null),
-                )),
+                WorkPackageActivityDeliverableDTO(
+                    period = 1, description = setOf(
+                        InputTranslation(EN, "en_deliv_desc"),
+                    )
+                ),
                 WorkPackageActivityDeliverableDTO(period = 2)
             ),
             partnerIds = setOf(2, 3)
@@ -132,17 +141,20 @@ class ProjectWorkPackageActivityControllerTest {
         assertThat(activitiesSlot.captured).containsExactly(
             WorkPackageActivity(
                 workPackageId = 1L,
-                translatedValues = setOf(
-                    WorkPackageActivityTranslatedValue(language = EN, title = null, description = "en_desc"),
-                    WorkPackageActivityTranslatedValue(language = SK, title = "sk_title", description = "sk_desc"),
+                title = setOf(
+                    InputTranslation(language = SK, translation = "sk_title"),
+                ),
+                description = setOf(
+                    InputTranslation(language = EN, translation = "en_desc"),
+                    InputTranslation(language = SK, translation = "sk_desc"),
                 ),
                 startPeriod = 1,
                 endPeriod = 2,
                 deliverables = listOf(
                     WorkPackageActivityDeliverable(
                         period = 1,
-                        translatedValues = setOf(
-                            WorkPackageActivityDeliverableTranslatedValue(language = EN, description = "en_deliv_desc"),
+                        description = setOf(
+                            InputTranslation(language = EN, translation = "en_deliv_desc"),
                         )
                     ),
                     WorkPackageActivityDeliverable(period = 2)
@@ -151,7 +163,8 @@ class ProjectWorkPackageActivityControllerTest {
             ),
             WorkPackageActivity(
                 workPackageId = 1L,
-                translatedValues = emptySet(),
+                title = emptySet(),
+                description = emptySet(),
                 startPeriod = 3,
                 endPeriod = 4,
                 deliverables = emptyList(),

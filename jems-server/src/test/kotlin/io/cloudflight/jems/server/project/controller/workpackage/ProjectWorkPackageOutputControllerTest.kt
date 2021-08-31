@@ -5,45 +5,46 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputDTO
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.workpackage.output.get_work_package_output.GetWorkPackageOutputInteractor
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output.UpdateWorkPackageOutputInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 
-@ExtendWith(MockKExtension::class)
-class ProjectWorkPackageOutputControllerTest {
+class ProjectWorkPackageOutputControllerTest : UnitTest() {
 
-    companion object {
-        val output1 = WorkPackageOutput(
+
+        private val output1 = WorkPackageOutput(
             workPackageId = 1L,
             outputNumber = 1,
-            translatedValues = setOf(
-                WorkPackageOutputTranslatedValue(language = EN, title = null, description = "en_desc"),
-                WorkPackageOutputTranslatedValue(language = CS, title = "", description = null),
-                WorkPackageOutputTranslatedValue(language = SK, title = "sk_title", description = "sk_desc"),
+            title = setOf(
+                InputTranslation(language = EN, translation = null),
+                InputTranslation(language = CS, translation = ""),
+                InputTranslation(language = SK, translation = "sk_title"),
+            ),
+            description = setOf(
+                InputTranslation(language = EN, translation = "en_desc"),
+                InputTranslation(language = CS, translation = null),
+                InputTranslation(language = SK, translation = "sk_desc"),
             ),
             periodNumber = 1,
             programmeOutputIndicatorId = 50L,
             programmeOutputIndicatorIdentifier = "ID.50",
             targetValue = BigDecimal.ONE,
         )
-        val output2 = WorkPackageOutput(
+        private val output2 = WorkPackageOutput(
             workPackageId = 1L,
             outputNumber = 2,
-            translatedValues = emptySet(),
+            title = emptySet(),
+            description = emptySet(),
             periodNumber = 3,
         )
-
-    }
 
     @MockK
     lateinit var getOutputInteractor: GetWorkPackageOutputInteractor
@@ -62,11 +63,13 @@ class ProjectWorkPackageOutputControllerTest {
             WorkPackageOutputDTO(
                 workPackageId = 1L,
                 outputNumber = 1,
-                title = setOf(InputTranslation(SK, "sk_title")),
+                title = setOf(InputTranslation(EN, null), InputTranslation(CS, ""), InputTranslation(SK, "sk_title")),
                 periodNumber = 1,
                 programmeOutputIndicatorId = 50L,
                 programmeOutputIndicatorIdentifier = "ID.50",
-                description = setOf(InputTranslation(EN, "en_desc"), InputTranslation(SK, "sk_desc")),
+                description = setOf(
+                    InputTranslation(EN, "en_desc"), InputTranslation(CS, null), InputTranslation(SK, "sk_desc")
+                ),
                 targetValue = BigDecimal.ONE,
             ),
             WorkPackageOutputDTO(
@@ -87,7 +90,11 @@ class ProjectWorkPackageOutputControllerTest {
             title = setOf(InputTranslation(EN, null), InputTranslation(CS, ""), InputTranslation(SK, "sk_title")),
             periodNumber = 1,
             programmeOutputIndicatorId = 15,
-            description = setOf(InputTranslation(EN, "en_desc"), InputTranslation(CS, ""), InputTranslation(SK, "sk_desc")),
+            description = setOf(
+                InputTranslation(EN, "en_desc"),
+                InputTranslation(CS, ""),
+                InputTranslation(SK, "sk_desc")
+            ),
             targetValue = BigDecimal.ONE,
         )
         val outputDto2 = WorkPackageOutputDTO(
@@ -102,9 +109,15 @@ class ProjectWorkPackageOutputControllerTest {
             WorkPackageOutput(
                 workPackageId = 1L,
                 outputNumber = 0,
-                translatedValues = setOf(
-                    WorkPackageOutputTranslatedValue(language = EN, title = null, description = "en_desc"),
-                    WorkPackageOutputTranslatedValue(language = SK, title = "sk_title", description = "sk_desc"),
+                title = setOf(
+                    InputTranslation(language = EN, translation = null),
+                    InputTranslation(language = CS, translation = ""),
+                    InputTranslation(language = SK, translation = "sk_title"),
+                ),
+                description = setOf(
+                    InputTranslation(language = EN, translation = "en_desc"),
+                    InputTranslation(language = CS, translation = ""),
+                    InputTranslation(language = SK, translation = "sk_desc"),
                 ),
                 periodNumber = 1,
                 programmeOutputIndicatorId = 15,

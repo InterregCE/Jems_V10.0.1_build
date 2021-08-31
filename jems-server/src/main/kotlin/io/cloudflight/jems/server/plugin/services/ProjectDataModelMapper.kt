@@ -78,7 +78,6 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
-import io.cloudflight.jems.server.project.controller.workpackage.extractField
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -126,7 +125,6 @@ import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkP
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.Mappings
-import org.mapstruct.ValueMapping
 import org.mapstruct.factory.Mappers
 
 fun ProjectFull.toDataModel() = pluginDataMapper.map(this)
@@ -141,8 +139,8 @@ fun ProjectDescription.toDataModel(workPackages: List<ProjectWorkPackageFull>, r
 fun List<WorkPackageActivity>.toActivityDataModel() = map {
     WorkPackageActivityData(
         activityNumber = it.activityNumber,
-        description = it.translatedValues.extractField { it.description }.toDataModel(),
-        title = it.translatedValues.extractField { it.title }.toDataModel(),
+        description = it.description.toDataModel(),
+        title = it.title.toDataModel(),
         startPeriod = it.startPeriod,
         endPeriod = it.endPeriod,
         deliverables = it.deliverables.toDeliverableDataModel(),
@@ -153,7 +151,7 @@ fun List<WorkPackageActivity>.toActivityDataModel() = map {
 fun List<WorkPackageActivityDeliverable>.toDeliverableDataModel() = map {
     WorkPackageActivityDeliverableData(
         deliverableNumber = it.deliverableNumber,
-        description = it.translatedValues.extractField { it.description }.toDataModel(),
+        description = it.description.toDataModel(),
         period = it.period
     )
 }.toList()
@@ -165,8 +163,8 @@ fun List<WorkPackageOutput>.toOutputDataModel() = map {
         programmeOutputIndicatorIdentifier = it.programmeOutputIndicatorIdentifier,
         targetValue = it.targetValue,
         periodNumber = it.periodNumber,
-        description = it.translatedValues.extractField { it.description }.toDataModel(),
-        title = it.translatedValues.extractField { it.title }.toDataModel()
+        description = it.description.toDataModel(),
+        title = it.title.toDataModel()
     )
 }.toList()
 
@@ -276,9 +274,9 @@ abstract class PluginDataMapper {
             ProjectWorkPackageData(
                 id = it.id,
                 workPackageNumber = it.workPackageNumber,
-                name = it.translatedValues.extractField { it.name }.toDataModel(),
-                specificObjective = it.translatedValues.extractField { it.specificObjective }.toDataModel(),
-                objectiveAndAudience = it.translatedValues.extractField { it.objectiveAndAudience }.toDataModel(),
+                name = it.name.toDataModel(),
+                specificObjective = it.specificObjective.toDataModel(),
+                objectiveAndAudience = it.objectiveAndAudience.toDataModel(),
                 activities = it.activities.toActivityDataModel(),
                 outputs = it.outputs.toOutputDataModel(),
                 investments = pluginDataMapper.map(it.investments)

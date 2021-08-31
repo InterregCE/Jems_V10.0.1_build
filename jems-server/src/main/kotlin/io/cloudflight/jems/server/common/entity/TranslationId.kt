@@ -11,16 +11,16 @@ import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 
 @Embeddable
-class TranslationId<T>(
+open class TranslationId<T>(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_entity_id")
     @field:NotNull
-    val sourceEntity: T,
+    open val sourceEntity: T,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val language: SystemLanguage
+    open val language: SystemLanguage
 
 ) : Serializable {
     override fun equals(other: Any?) =

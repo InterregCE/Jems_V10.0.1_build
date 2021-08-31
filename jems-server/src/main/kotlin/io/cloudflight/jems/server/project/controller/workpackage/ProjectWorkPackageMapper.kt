@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 fun ProjectWorkPackage.toDto() = ProjectWorkPackageDTO(
     id = id,
     workPackageNumber = workPackageNumber,
-    name = translatedValues.extractField { it.name },
+    name = name,
     activities = activities.toDto(),
     outputs = outputs.toDto(),
 )

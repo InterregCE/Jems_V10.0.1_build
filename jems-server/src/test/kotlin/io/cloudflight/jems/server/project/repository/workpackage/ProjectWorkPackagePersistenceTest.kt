@@ -4,11 +4,12 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
+import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
-import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
-import io.cloudflight.jems.server.project.entity.TranslationWorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
@@ -28,7 +29,6 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverabl
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputRow
-import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTransl
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityPartnerRepository
@@ -37,19 +37,14 @@ import io.cloudflight.jems.server.project.repository.workpackage.investment.Work
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverableTranslatedValue
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
-import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -57,7 +52,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Sort
 import java.math.BigDecimal
@@ -65,8 +59,7 @@ import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.Optional
 
-@ExtendWith(MockKExtension::class)
-class ProjectWorkPackagePersistenceTest {
+class ProjectWorkPackagePersistenceTest : UnitTest() {
 
     companion object {
         private const val WORK_PACKAGE_ID = 1L
@@ -79,58 +72,49 @@ class ProjectWorkPackagePersistenceTest {
         private val outputId1 = WorkPackageOutputId(workPackageId = WORK_PACKAGE_ID, outputNumber = 1)
         private val outputId2 = WorkPackageOutputId(workPackageId = WORK_PACKAGE_ID, outputNumber = 2)
 
-        private fun trIdAct(activityId: WorkPackageActivityId, lang: SystemLanguage) = WorkPackageActivityTranslationId(
-            activityId = activityId,
-            language = lang
-        )
-
-        private fun trIdActDel(deliverableId: WorkPackageActivityDeliverableId, lang: SystemLanguage) =
-            WorkPackageActivityDeliverableTranslationId(
-                deliverableId = deliverableId,
+        private fun trIdAct(activityEntity: WorkPackageActivityEntity, lang: SystemLanguage) =
+            WorkPackageActivityTranslationId(
+                sourceEntity = activityEntity,
                 language = lang
             )
 
-        private fun trIdOut(outputId: WorkPackageOutputId, lang: SystemLanguage) = TranslationWorkPackageOutputId(
-            workPackageOutputId = outputId,
-            language = lang,
-        )
+        private fun trIdActDel(deliverableEntity: WorkPackageActivityDeliverableEntity, lang: SystemLanguage) =
+            WorkPackageActivityDeliverableTranslationId(
+                sourceEntity = deliverableEntity,
+                language = lang
+            )
 
         private val deliverableId1_activityId1 =
             WorkPackageActivityDeliverableId(activityId = activityId1, deliverableNumber = 1)
         private val deliverableId2_activityId1 =
             WorkPackageActivityDeliverableId(activityId = activityId1, deliverableNumber = 2)
 
-        private val deliverableId1_activityId2 =
-            WorkPackageActivityDeliverableId(activityId = activityId2, deliverableNumber = 1)
-        private val deliverableId2_activityId2 =
-            WorkPackageActivityDeliverableId(activityId = activityId2, deliverableNumber = 2)
-        private val deliverableId3_activityId2 = WorkPackageActivityDeliverableId(
-            activityId = activityId2,
-            deliverableNumber = 3
-        )
-
-        val deliverable2_2 = WorkPackageActivityDeliverableEntity(
+        private val deliverable2_2 = WorkPackageActivityDeliverableEntity(
             deliverableId = deliverableId2_activityId1,
             startPeriod = 2
         )
-        val deliverable2_1 = WorkPackageActivityDeliverableEntity(
+        private val deliverable2_1 = WorkPackageActivityDeliverableEntity(
             deliverableId = deliverableId1_activityId1,
             startPeriod = 1,
-            translatedValues = setOf(
-                WorkPackageActivityDeliverableTranslationEntity(
-                    translationId = trIdActDel(deliverableId1_activityId1, SK),
-                    description = "sk_deliverable_desc"
-                ),
-                WorkPackageActivityDeliverableTranslationEntity(
-                    translationId = trIdActDel(deliverableId1_activityId1, CS),
-                    description = ""
-                ),
-                WorkPackageActivityDeliverableTranslationEntity(
-                    translationId = trIdActDel(deliverableId1_activityId1, EN),
-                    description = null
+            translatedValues = mutableSetOf()
+        ).apply {
+            translatedValues.addAll(
+                setOf(
+                    WorkPackageActivityDeliverableTranslationEntity(
+                        translationId = trIdActDel(this, SK),
+                        description = "sk_deliverable_desc"
+                    ),
+                    WorkPackageActivityDeliverableTranslationEntity(
+                        translationId = trIdActDel(this, CS),
+                        description = ""
+                    ),
+                    WorkPackageActivityDeliverableTranslationEntity(
+                        translationId = trIdActDel(this, EN),
+                        description = null
+                    )
                 )
             )
-        )
+        }
 
         val activity1 = WorkPackageActivityEntity(
             activityId = activityId1,
@@ -154,32 +138,37 @@ class ProjectWorkPackagePersistenceTest {
             activityId = activityId2,
             startPeriod = 1,
             endPeriod = 3,
-            translatedValues = setOf(
-                WorkPackageActivityTranslationEntity(
-                    translationId = trIdAct(activityId1, SK),
-                    title = "sk_title",
-                    description = ""
-                ),
-                WorkPackageActivityTranslationEntity(
-                    translationId = trIdAct(activityId1, CS),
-                    title = null,
-                    description = "cs_desc"
-                ),
-                WorkPackageActivityTranslationEntity(
-                    translationId = trIdAct(activityId1, EN),
-                    title = " ",
-                    description = " "
-                )
-            ),
+            translatedValues = mutableSetOf(),
             deliverables = setOf(deliverable2_2, deliverable2_1)
-        )
+        ).apply {
+            translatedValues.addAll(
+                setOf(
+                    WorkPackageActivityTranslationEntity(
+                        translationId = trIdAct(this, SK),
+                        title = "sk_title",
+                        description = ""
+                    ),
+                    WorkPackageActivityTranslationEntity(
+                        translationId = trIdAct(this, CS),
+                        title = null,
+                        description = "cs_desc"
+                    ),
+                    WorkPackageActivityTranslationEntity(
+                        translationId = trIdAct(this, EN),
+                        title = " ",
+                        description = " "
+                    )
+                )
+            )
+        }
         val activity2_model = WorkPackageActivity(
             workPackageId = 1L,
             activityNumber = 2,
-            translatedValues = setOf(
-                WorkPackageActivityTranslatedValue(language = SK, title = "sk_title", description = ""),
-                WorkPackageActivityTranslatedValue(language = CS, title = null, description = "cs_desc"),
-                WorkPackageActivityTranslatedValue(language = EN, title = " ", description = " ")
+            title = setOf(
+                InputTranslation(language = SK, translation = "sk_title"),
+            ),
+            description = setOf(
+                InputTranslation(language = CS, translation = "cs_desc"),
             ),
             startPeriod = 1,
             endPeriod = 3,
@@ -187,13 +176,11 @@ class ProjectWorkPackagePersistenceTest {
                 WorkPackageActivityDeliverable(
                     deliverableNumber = 1,
                     period = 1,
-                    translatedValues = setOf(
-                        WorkPackageActivityDeliverableTranslatedValue(
+                    description = setOf(
+                        InputTranslation(
                             language = SK,
-                            description = "sk_deliverable_desc"
+                            translation = "sk_deliverable_desc"
                         ),
-                        WorkPackageActivityDeliverableTranslatedValue(language = CS, description = ""),
-                        WorkPackageActivityDeliverableTranslatedValue(language = EN, description = null)
                     )
                 ),
                 WorkPackageActivityDeliverable(
@@ -239,31 +226,34 @@ class ProjectWorkPackagePersistenceTest {
             id = WORK_PACKAGE_ID,
             project = project,
             number = 1,
-            activities = listOf(activity2, activity1), // for testing sorting
-            translatedValues = setOf(
-                WorkPackageTransl(
-                    translationId = TranslationWorkPackageId(WORK_PACKAGE_ID, CS),
-                    name = "WP CS name"
+            activities = mutableListOf(activity2, activity1), // for testing sorting
+            translatedValues = mutableSetOf()
+        ).apply {
+            translatedValues.addAll(
+                setOf(
+                    WorkPackageTransl(
+                        translationId = TranslationId(this, CS),
+                        name = "WP CS name"
+                    )
                 )
             )
-        )
+        }
 
         val activity = WorkPackageActivity(
             workPackageId = 1L,
-            translatedValues = setOf(
-                WorkPackageActivityTranslatedValue(language = EN, title = null, description = "en_desc"),
-                WorkPackageActivityTranslatedValue(language = CS, title = "", description = null),
-                WorkPackageActivityTranslatedValue(language = SK, title = "sk_title", description = "sk_desc")
+            title = setOf(
+                InputTranslation(language = SK, translation = "sk_title")
+            ),
+            description = setOf(
+                InputTranslation(language = EN, translation = "en_desc"),
+                InputTranslation(language = SK, translation = "sk_desc")
             ),
             startPeriod = 1,
             endPeriod = 3,
             deliverables = listOf(
                 WorkPackageActivityDeliverable(
                     period = 1,
-                    translatedValues = setOf(
-                        WorkPackageActivityDeliverableTranslatedValue(language = EN, description = "en_deliv_desc"),
-                        WorkPackageActivityDeliverableTranslatedValue(language = CS, description = null)
-                    )
+                    description = setOf(InputTranslation(language = EN, translation = "en_deliv_desc"))
                 )
             )
         )
@@ -271,10 +261,13 @@ class ProjectWorkPackagePersistenceTest {
         val output = WorkPackageOutput(
             workPackageId = 1L,
             outputNumber = 1,
-            translatedValues = setOf(
-                WorkPackageOutputTranslatedValue(language = EN, title = null, description = "en_desc"),
-                WorkPackageOutputTranslatedValue(language = CS, title = "", description = null),
-                WorkPackageOutputTranslatedValue(language = SK, title = "sk_title", description = "sk_desc"),
+            title = setOf(
+
+                InputTranslation(language = SK, translation = "sk_title"),
+            ),
+            description = setOf(
+                InputTranslation(language = EN, translation = "en_desc"),
+                InputTranslation(language = SK, translation = "sk_desc"),
             ),
             periodNumber = 3,
             programmeOutputIndicatorId = INDICATOR_ID,
@@ -284,7 +277,7 @@ class ProjectWorkPackagePersistenceTest {
         val workPackageWithOutputs = WorkPackageEntity(
             id = WORK_PACKAGE_ID,
             project = project,
-            outputs = listOf(output2, output1),
+            outputs = mutableListOf(output2, output1),
         )
 
         val workPackageInvestment = WorkPackageInvestment(
@@ -296,10 +289,13 @@ class ProjectWorkPackagePersistenceTest {
 
     @MockK
     lateinit var repository: WorkPackageRepository
+
     @MockK
     lateinit var repositoryActivity: WorkPackageActivityRepository
+
     @MockK
     lateinit var repositoryActivityPartner: WorkPackageActivityPartnerRepository
+
     @MockK
     lateinit var repositoryOutput: WorkPackageOutputRepository
 
@@ -340,7 +336,10 @@ class ProjectWorkPackagePersistenceTest {
         )
         every { repository.findAllByProjectId(eq(1)) } returns
             listOf(
-                workPackageWithActivities.copy(activities = emptyList(), outputs = emptyList()),
+                workPackageWithActivities.also {
+                    it.activities.clear()
+                    it.outputs.clear()
+                },
                 emptyWP
             )
         val wkPackages = setOf(WORK_PACKAGE_ID, WORK_PACKAGE_ID_2)
@@ -350,13 +349,15 @@ class ProjectWorkPackagePersistenceTest {
         every {
             repositoryOutput.findAllByOutputIdWorkPackageIdIn(wkPackages)
         } returns listOf(output2, output1)
-        every { repositoryActivityPartner.findAllByIdWorkPackageActivityIdWorkPackageIdIn(wkPackages) } returns listOf(activity1Partner1)
+        every { repositoryActivityPartner.findAllByIdWorkPackageActivityIdWorkPackageIdIn(wkPackages) } returns listOf(
+            activity1Partner1
+        )
 
         val result = persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(1L, null)
         assertThat(result.size).isEqualTo(2)
         assertThat(result.map { it.id }).containsExactly(WORK_PACKAGE_ID, WORK_PACKAGE_ID_2)
         assertThat(result.map { it.workPackageNumber }).containsExactly(1, 2)
-        assertThat(result[0].translatedValues).containsExactly(ProjectWorkPackageTranslatedValue(CS, "WP CS name"))
+        assertThat(result[0].name).containsExactly(InputTranslation(CS, "WP CS name"))
         assertThat(result[0].activities).containsExactly(activity1_model, activity2_model)
         assertThat(result[0].outputs).containsExactly(output1_model, output2_model)
     }
@@ -433,35 +434,22 @@ class ProjectWorkPackagePersistenceTest {
             ProjectWorkPackage(
                 id = mockWPRow.id,
                 workPackageNumber = mockWPRow.number!!,
-                translatedValues = setOf(
-                    ProjectWorkPackageTranslatedValue(
-                        language = EN,
-                        name = mockWPRow.name,
-                        specificObjective = mockWPRow.specificObjective,
-                        objectiveAndAudience = mockWPRow.objectiveAndAudience
-                    )
-                ),
+                name = setOf(InputTranslation(mockWPRow.language!!, mockWPRow.name)),
+                specificObjective = setOf(InputTranslation(mockWPRow.language!!, mockWPRow.specificObjective)),
+                objectiveAndAudience = setOf(InputTranslation(mockWPRow.language!!, mockWPRow.objectiveAndAudience)),
                 activities = listOf(
                     WorkPackageActivity(
                         activityNumber = mockWPARow.activityNumber,
                         workPackageId = mockWPARow.workPackageId,
-                        translatedValues = setOf(
-                            WorkPackageActivityTranslatedValue(
-                                EN,
-                                mockWPARow.title,
-                                mockWPARow.description
-                            )
-                        ),
+                        title = setOf(InputTranslation(mockWPARow.language!!, mockWPARow.title)),
+                        description = setOf(InputTranslation(mockWPARow.language!!, mockWPARow.description)),
                         startPeriod = mockWPARow.startPeriod,
                         endPeriod = mockWPARow.endPeriod,
                         deliverables = listOf(
                             WorkPackageActivityDeliverable(
                                 deliverableNumber = mockWPDRow.deliverableNumber,
-                                translatedValues = setOf(
-                                    WorkPackageActivityDeliverableTranslatedValue(
-                                        EN,
-                                        mockWPDRow.description
-                                    )
+                                description = setOf(
+                                    InputTranslation(EN, mockWPDRow.description)
                                 ),
                                 period = mockWPDRow.startPeriod
                             )
@@ -477,13 +465,8 @@ class ProjectWorkPackagePersistenceTest {
                         programmeOutputIndicatorIdentifier = mockWPORow.programmeOutputIndicatorIdentifier,
                         targetValue = mockWPORow.targetValue,
                         periodNumber = mockWPORow.periodNumber,
-                        translatedValues = setOf(
-                            WorkPackageOutputTranslatedValue(
-                                EN,
-                                mockWPORow.title,
-                                mockWPORow.description
-                            )
-                        )
+                        title = setOf(InputTranslation(mockWPORow.language!!, mockWPORow.title)),
+                        description = setOf(InputTranslation(mockWPORow.language!!, mockWPORow.description))
                     )
                 )
             )
@@ -512,11 +495,28 @@ class ProjectWorkPackagePersistenceTest {
     fun `work package historical activities are correctly mapped without translations`() {
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
         every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, "A") } returns timestamp
-        every { repositoryActivity.findAllActivitiesByWorkPackageIdAsOfTimestamp(WORK_PACKAGE_ID, timestamp) } returns listOf(
+        every {
+            repositoryActivity.findAllActivitiesByWorkPackageIdAsOfTimestamp(
+                WORK_PACKAGE_ID,
+                timestamp
+            )
+        } returns listOf(
             WorkPackageActivityRowImpl(null, WORK_PACKAGE_ID, 1, 1, 2, null, null)
         )
-        every { repositoryActivity.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(WORK_PACKAGE_ID, 1, timestamp) } returns emptyList()
-        every { repositoryActivityPartner.findAllByWorkPackageIdAndActivityNumberAsOfTimestamp(WORK_PACKAGE_ID, 1, timestamp) } returns listOf(
+        every {
+            repositoryActivity.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(
+                WORK_PACKAGE_ID,
+                1,
+                timestamp
+            )
+        } returns emptyList()
+        every {
+            repositoryActivityPartner.findAllByWorkPackageIdAndActivityNumberAsOfTimestamp(
+                WORK_PACKAGE_ID,
+                1,
+                timestamp
+            )
+        } returns listOf(
             WorkPackageActivityPartnerRowImpl(
                 WORK_PACKAGE_ID,
                 1,
@@ -529,7 +529,13 @@ class ProjectWorkPackagePersistenceTest {
             ),
         )
 
-        assertThat(persistence.getWorkPackageActivitiesForWorkPackage(WORK_PACKAGE_ID, PROJECT_ID, "A")).containsExactly(
+        assertThat(
+            persistence.getWorkPackageActivitiesForWorkPackage(
+                WORK_PACKAGE_ID,
+                PROJECT_ID,
+                "A"
+            )
+        ).containsExactly(
             WorkPackageActivity(
                 workPackageId = WORK_PACKAGE_ID,
                 activityNumber = 1,
@@ -543,18 +549,15 @@ class ProjectWorkPackagePersistenceTest {
 
     @Test
     fun updateWorkPackageActivities() {
-        val workPackageSlot = slot<WorkPackageEntity>()
-        every { repository.findById(WORK_PACKAGE_ID) } returns Optional.of(
-            WorkPackageEntity(
-                id = WORK_PACKAGE_ID,
-                project = project,
-                activities = emptyList()
-            )
-        )
+        val slot = slot<List<WorkPackageActivityEntity>>()
+        every { repository.existsById(WORK_PACKAGE_ID) } returns true
+        every { repositoryActivity.findAllByActivityIdWorkPackageId(WORK_PACKAGE_ID) } returns mutableListOf()
+        every { repositoryActivity.deleteAll(any()) } returns Unit
+        every { repositoryActivity.saveAll(capture(slot)) } returnsArgument 0
+        every { repositoryActivity.saveAll(capture(slot)) } returnsArgument 0
+
         every { repositoryActivityPartner.deleteAllByIdWorkPackageActivityIdWorkPackageId(WORK_PACKAGE_ID) } returns Unit
         every { repositoryActivityPartner.saveAll(emptyList()) } returns emptyList()
-        // we do not need to test mapping back to model as that is covered by getWorkPackageActivitiesForWorkPackage
-        every { repository.save(capture(workPackageSlot)) } returnsArgument 0
 
         val toBeSaved = listOf(
             activity,
@@ -570,77 +573,26 @@ class ProjectWorkPackagePersistenceTest {
             )
         )
 
-        persistence.updateWorkPackageActivities(WORK_PACKAGE_ID, toBeSaved)
+        val activities = persistence.updateWorkPackageActivities(WORK_PACKAGE_ID, toBeSaved)
 
-        assertThat(workPackageSlot.captured.activities).containsExactly(
-            WorkPackageActivityEntity(
-                activityId = activityId1,
-                translatedValues = setOf(
-                    WorkPackageActivityTranslationEntity(
-                        translationId = trIdAct(activityId1, EN),
-                        title = null,
-                        description = "en_desc"
-                    ),
-                    WorkPackageActivityTranslationEntity(
-                        translationId = trIdAct(activityId1, CS),
-                        title = "",
-                        description = null
-                    ),
-                    WorkPackageActivityTranslationEntity(
-                        translationId = trIdAct(activityId1, SK),
-                        title = "sk_title",
-                        description = "sk_desc"
-                    )
-                ),
-                startPeriod = 1,
-                endPeriod = 3,
-                deliverables = setOf(
-                    WorkPackageActivityDeliverableEntity(
-                        deliverableId = deliverableId1_activityId1,
-                        startPeriod = 1,
-                        translatedValues = setOf(
-                            WorkPackageActivityDeliverableTranslationEntity(
-                                translationId = trIdActDel(
-                                    deliverableId1_activityId1,
-                                    EN
-                                ), description = "en_deliv_desc"
-                            ),
-                            WorkPackageActivityDeliverableTranslationEntity(
-                                translationId = trIdActDel(
-                                    deliverableId1_activityId1,
-                                    CS
-                                ), description = null
-                            )
-                        )
-                    )
-                )
-            ),
-            WorkPackageActivityEntity(
-                activityId = activityId2,
-                startPeriod = 4,
-                endPeriod = 6,
-                deliverables = setOf(
-                    WorkPackageActivityDeliverableEntity(deliverableId = deliverableId1_activityId2, startPeriod = 4),
-                    WorkPackageActivityDeliverableEntity(deliverableId = deliverableId2_activityId2, startPeriod = 5),
-                    WorkPackageActivityDeliverableEntity(deliverableId = deliverableId3_activityId2, startPeriod = 6)
-                )
+        assertThat(activities).containsExactly(*toBeSaved.mapIndexed { index, it ->
+            it.copy(activityNumber = index.plus(1),
+                deliverables = it.deliverables.mapIndexed { i, deliverable ->
+                    deliverable.copy(deliverableNumber = i.plus(1))
+                }
             )
-        )
+        }.toTypedArray())
     }
 
     @Test
     fun updateWorkPackageOutputs() {
-        val workPackageSlot = slot<WorkPackageEntity>()
-        every { repository.findById(WORK_PACKAGE_ID) } returns Optional.of(
-            WorkPackageEntity(
-                id = WORK_PACKAGE_ID,
-                project = project,
-                outputs = emptyList(),
-            )
-        )
+        val slot = slot<List<WorkPackageOutputEntity>>()
+        every { repository.existsById(WORK_PACKAGE_ID) } returns true
+        every { repositoryOutput.findAllByOutputIdWorkPackageId(WORK_PACKAGE_ID) } returns mutableListOf()
+        every { repositoryOutput.deleteAll(any()) } returns Unit
+        every { repositoryOutput.saveAll(capture(slot)) } returnsArgument 0
+
         every { outputIndicatorRepository.findById(INDICATOR_ID) } returns Optional.of(indicatorOutput)
-        // we do not need to test mapping back to model as that is covered by getWorkPackageOutputsForWorkPackage
-        every { repository.save(capture(workPackageSlot)) } returnsArgument 0
 
         val toBeSaved = listOf(
             output,
@@ -651,33 +603,15 @@ class ProjectWorkPackagePersistenceTest {
             )
         )
 
-        persistence.updateWorkPackageOutputs(WORK_PACKAGE_ID, toBeSaved)
+        val updatedOutputs = persistence.updateWorkPackageOutputs(WORK_PACKAGE_ID, toBeSaved)
 
-        assertThat(workPackageSlot.captured.outputs).containsExactly(
-            WorkPackageOutputEntity(
-                outputId = outputId1,
-                translatedValues = setOf(
-                    WorkPackageOutputTransl(
-                        translationId = trIdOut(outputId1, EN),
-                        title = null,
-                        description = "en_desc"
-                    ),
-                    WorkPackageOutputTransl(translationId = trIdOut(outputId1, CS), title = "", description = null),
-                    WorkPackageOutputTransl(
-                        translationId = trIdOut(outputId1, SK),
-                        title = "sk_title",
-                        description = "sk_desc"
-                    ),
-                ),
-                periodNumber = 3,
-                programmeOutputIndicatorEntity = indicatorOutput,
-                targetValue = BigDecimal.TEN
-            ),
-            WorkPackageOutputEntity(
-                outputId = outputId2,
-                periodNumber = 7,
-                programmeOutputIndicatorEntity = null,
-            ),
+        assertThat(updatedOutputs).containsExactly(
+            *toBeSaved.mapIndexed { index, output ->
+                output.copy(
+                    outputNumber = index.plus(1),
+                    programmeOutputIndicatorIdentifier = if (index == 0) indicatorOutput.identifier else null
+                )
+            }.toTypedArray()
         )
     }
 
@@ -744,12 +678,12 @@ class ProjectWorkPackagePersistenceTest {
         override val endPeriod: Int?,
         override val title: String?,
         override val description: String?
-    ): WorkPackageActivityRow
+    ) : WorkPackageActivityRow
 
     data class WorkPackageActivityPartnerRowImpl(
         override val workPackageId: Long,
         override val activityNumber: Int,
         override val projectPartnerId: Long
-    ): WorkPackageActivityPartnerRow
+    ) : WorkPackageActivityPartnerRow
 
 }

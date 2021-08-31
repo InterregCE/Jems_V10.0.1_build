@@ -72,7 +72,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
-import io.cloudflight.jems.server.project.controller.workpackage.extractField
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -124,7 +123,6 @@ import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
@@ -440,7 +438,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         private val activity = WorkPackageActivity(
             workPackageId = 1L,
             activityNumber = 2,
-            translatedValues = setOf(WorkPackageActivityTranslatedValue(SystemLanguage.EN, "title", "description")),
+            title = setOf(InputTranslation(SystemLanguage.EN, "title")),
+            description = setOf(InputTranslation(SystemLanguage.EN,"description")),
             startPeriod = 3,
             endPeriod = 4,
             deliverables = listOf(WorkPackageActivityDeliverable()),
@@ -453,7 +452,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             programmeOutputIndicatorIdentifier = "id",
             targetValue = BigDecimal.TEN,
             periodNumber = 1,
-            translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "title", "description"))
+            title = setOf(InputTranslation(SystemLanguage.EN, "title")),
+            description = setOf(InputTranslation(SystemLanguage.EN,"description")),
         )
         private val projectResult = ProjectResult(
             resultNumber = 1,
@@ -467,8 +467,14 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         private val workPackage = ProjectWorkPackageFull(
             id = 1L,
             workPackageNumber = 1,
-            translatedValues = setOf(
-                ProjectWorkPackageTranslatedValue(SystemLanguage.EN, "name", "objective", "audience")
+            name = setOf(
+                InputTranslation(SystemLanguage.EN, "name")
+            ),
+            specificObjective = setOf(
+                InputTranslation(SystemLanguage.EN, "objective")
+            ),
+            objectiveAndAudience = setOf(
+                InputTranslation(SystemLanguage.EN, "audience")
             ),
             activities = listOf(activity),
             outputs = listOf(workPackageOutput),
@@ -715,8 +721,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         activities = listOf(
                             WorkPackageActivityData(
                                 activityNumber = activity.activityNumber,
-                                description = activity.translatedValues.extractField { it.description }.toDataModel(),
-                                title = activity.translatedValues.extractField { it.title }.toDataModel(),
+                                description = activity.description.toDataModel(),
+                                title = activity.title.toDataModel(),
                                 startPeriod = activity.startPeriod,
                                 endPeriod = activity.endPeriod,
                                 deliverables = listOf(
@@ -735,9 +741,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                 programmeOutputIndicatorIdentifier = workPackageOutput.programmeOutputIndicatorIdentifier,
                                 targetValue = workPackageOutput.targetValue,
                                 periodNumber = workPackageOutput.periodNumber,
-                                description = workPackageOutput.translatedValues.extractField { it.description }
-                                    .toDataModel(),
-                                title = workPackageOutput.translatedValues.extractField { it.title }.toDataModel()
+                                description = workPackageOutput.description.toDataModel(),
+                                title = workPackageOutput.title.toDataModel()
                             )
                         ),
                         investments = listOf(

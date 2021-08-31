@@ -1,7 +1,10 @@
 package io.cloudflight.jems.server.project.repository.workpackage.output
 
+import io.cloudflight.jems.server.common.entity.addTranslationEntities
+import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
-import io.cloudflight.jems.server.project.entity.TranslationWorkPackageOutputId
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTranslationId
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTransl
@@ -17,11 +20,21 @@ fun WorkPackageOutput.toEntity(
     val outputId = WorkPackageOutputId(workPackageId, index)
     return WorkPackageOutputEntity(
         outputId = outputId,
-        translatedValues = translatedValues.toEntity(outputId),
+        translatedValues = mutableSetOf(),
         periodNumber = periodNumber,
         programmeOutputIndicatorEntity = resolveProgrammeIndicatorEntity.invoke(programmeOutputIndicatorId),
         targetValue = targetValue
-    )
+    ).apply {
+        translatedValues.addTranslationEntities(
+            { language ->
+                WorkPackageOutputTransl(
+                    translationId = WorkPackageOutputTranslationId(this, language),
+                    title = title.extractTranslation(language),
+                    description = description.extractTranslation(language),
+                )
+            }, arrayOf(title, description)
+        )
+    }
 }
 
 fun List<WorkPackageOutput>.toIndexedEntity(
@@ -33,21 +46,14 @@ fun Iterable<WorkPackageOutputEntity>.toModel() = map {
     WorkPackageOutput(
         workPackageId = it.outputId.workPackageId,
         outputNumber = it.outputId.outputNumber,
-        translatedValues = it.translatedValues.toModel(),
+        title = it.translatedValues.extractField { it.title },
+        description = it.translatedValues.extractField { it.description },
         periodNumber = it.periodNumber,
         programmeOutputIndicatorId = it.programmeOutputIndicatorEntity?.id,
         programmeOutputIndicatorIdentifier = it.programmeOutputIndicatorEntity?.identifier,
         targetValue = it.targetValue
     )
 }.sortedBy { it.outputNumber }
-
-fun Set<WorkPackageOutputTranslatedValue>.toEntity(outputId: WorkPackageOutputId) = mapTo(HashSet()) { it.toEntity(outputId) }
-
-fun WorkPackageOutputTranslatedValue.toEntity(workPackageOutputId: WorkPackageOutputId) = WorkPackageOutputTransl(
-    translationId = TranslationWorkPackageOutputId(workPackageOutputId = workPackageOutputId, language = language),
-    title = title,
-    description = description,
-)
 
 fun Set<WorkPackageOutputTransl>.toModel() = mapTo(HashSet()) {
     WorkPackageOutputTranslatedValue(

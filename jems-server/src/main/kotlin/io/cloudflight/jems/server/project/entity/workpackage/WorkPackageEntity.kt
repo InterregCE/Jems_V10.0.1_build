@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull
         attributeNodes = [NamedAttributeNode(value = "translatedValues")],
     ),
 )
-data class WorkPackageEntity(
+class WorkPackageEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,14 +37,26 @@ data class WorkPackageEntity(
     val project: ProjectEntity,
 
     @Column
-    val number: Int? = null,
+    var number: Int? = null,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.workPackageId", fetch = FetchType.EAGER)
-    val translatedValues: Set<WorkPackageTransl> = mutableSetOf(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity", fetch = FetchType.EAGER)
+    val translatedValues: MutableSet<WorkPackageTransl> = mutableSetOf(),
 
     @OneToMany(mappedBy = "outputId.workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val outputs: List<WorkPackageOutputEntity> = emptyList(),
+    val outputs: MutableList<WorkPackageOutputEntity> = mutableListOf(),
 
     @OneToMany(mappedBy = "activityId.workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val activities: List<WorkPackageActivityEntity> = emptyList(),
-)
+    val activities: MutableList<WorkPackageActivityEntity> = mutableListOf(),
+){
+
+    fun copy(translatedValues: MutableSet<WorkPackageTransl>?): WorkPackageEntity =
+        WorkPackageEntity(
+            id = this.id,
+            project = this.project,
+            number = this.number,
+            translatedValues = translatedValues ?: this.translatedValues,
+            outputs = this.outputs,
+            activities = this.activities
+        )
+
+}

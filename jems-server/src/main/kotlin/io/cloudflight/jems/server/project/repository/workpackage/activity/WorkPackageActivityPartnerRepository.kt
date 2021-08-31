@@ -39,7 +39,7 @@ interface WorkPackageActivityPartnerRepository : JpaRepository<WorkPackageActivi
         value = """
              SELECT
              entity.work_package_id AS workPackageId,
-             entity.output_number AS outputNumber,
+             entity.activity_number AS activityNumber,
              entity.project_partner_id as projectPartnerId
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              WHERE entity.work_package_id IN :workPackageIds

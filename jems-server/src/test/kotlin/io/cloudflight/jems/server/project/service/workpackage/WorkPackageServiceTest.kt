@@ -10,18 +10,15 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.programme.service.language.get_languages.GetLanguagesInteractor
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
-import io.cloudflight.jems.server.project.entity.TranslationWorkPackageId
-import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.user.entity.UserEntity
-import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
+import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -82,17 +79,15 @@ class WorkPackageServiceTest {
         applicant = account,
         currentStatus = statusDraft,
     )
+    private val mockWorkPackage = WorkPackageEntity(
+        1, project, 1, mutableSetOf()
+    ).apply {
+        translatedValues.add(WorkPackageTransl(TranslationId(this, SystemLanguage.EN), "Test"))
+    }
 
-    private val translatedNameInEntity = WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test")
     private val translatedNameInModel = InputTranslation(SystemLanguage.EN, "Test")
     private val translatedSpecificObjectiveInModel = InputTranslation(SystemLanguage.EN, "Specific Objective")
 
-    private val mockWorkPackage = WorkPackageEntity(
-        1,
-        project,
-        1,
-        mutableSetOf(translatedNameInEntity)
-    )
 
     private val mockWorkPackageToCreate = InputWorkPackageCreate(
         setOf(translatedNameInModel)
@@ -126,12 +121,11 @@ class WorkPackageServiceTest {
     fun `createWorkPackage - valid`() {
         every { projectRepository.findById(1L) } returns Optional.of(project)
         every { workPackageRepository.countAllByProjectId(1L) } returns 7
-        every { workPackageRepository.save(any<WorkPackageEntity>()) } returns WorkPackageEntity(
-            2,
-            project,
-            2,
-            mutableSetOf(WorkPackageTransl(TranslationWorkPackageId(1, SystemLanguage.EN), "Test"))
-        )
+        every { workPackageRepository.save(any()) } returns WorkPackageEntity(
+            2, project, 2, mutableSetOf()
+        ).apply {
+            translatedValues.add(WorkPackageTransl(TranslationId(this, SystemLanguage.EN), "Test"))
+        }
 
         val result = workPackageService.createWorkPackage(1, mockWorkPackageToCreate)
 
@@ -153,20 +147,15 @@ class WorkPackageServiceTest {
     @Test
     fun updateWorkPackage() {
         val workPackageUpdated = WorkPackageEntity(
-            1,
-            project,
-            1,
-            mutableSetOf(
-                WorkPackageTransl(
-                    TranslationWorkPackageId(1, SystemLanguage.EN),
-                    "Test",
-                    "Specific Objective"
-                )
+            1, project, 1, mutableSetOf()
+        ).apply {
+            translatedValues.add(
+                WorkPackageTransl(TranslationId(this, SystemLanguage.EN), "Test", "Specific Objective")
             )
-        )
+        }
 
         every { workPackageRepository.findById(1L) } returns Optional.of(workPackageUpdated)
-        every { workPackageRepository.save(any<WorkPackageEntity>()) } returnsArgument 0
+        every { workPackageRepository.save(any()) } returnsArgument 0
 
         val expectedData = OutputWorkPackage(
             id = 1,
@@ -193,12 +182,12 @@ class WorkPackageServiceTest {
 
     @Test
     fun deleteWorkPackage_notExisting() {
-        every { workPackageRepository.findById(100) } returns Optional.of(mockWorkPackage.copy(id = 100))
-        every { workPackageRepository.deleteById(100) } returns Unit
-        every { workPackageRepository.findAllByProjectId(project.id, any<Sort>()) } returns emptySet()
+        every { workPackageRepository.findById(1) } returns Optional.of(mockWorkPackage)
+        every { workPackageRepository.deleteById(1) } returns Unit
+        every { workPackageRepository.findAllByProjectId(project.id, any()) } returns emptySet()
         every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
 
-        assertDoesNotThrow { workPackageService.deleteWorkPackage(1L, 100) }
+        assertDoesNotThrow { workPackageService.deleteWorkPackage(1L, 1) }
     }
 
 }

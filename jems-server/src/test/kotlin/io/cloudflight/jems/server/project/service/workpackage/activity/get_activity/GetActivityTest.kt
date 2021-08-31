@@ -1,43 +1,46 @@
 package io.cloudflight.jems.server.project.service.workpackage.activity.get_activity
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverableTranslatedValue
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(MockKExtension::class)
-internal class GetActivityTest {
+internal class GetActivityTest : UnitTest() {
 
-    companion object {
-        val activity1 = WorkPackageActivity(
-            workPackageId = 1L,
-            translatedValues = setOf(
-                WorkPackageActivityTranslatedValue(language = SystemLanguage.EN, title = null, description = "en_desc"),
-                WorkPackageActivityTranslatedValue(language = SystemLanguage.CS, title = "", description = null),
-                WorkPackageActivityTranslatedValue(language = SystemLanguage.SK, title = "sk_title", description = "sk_desc"),
-            ),
-            startPeriod = 1,
-            endPeriod = 3,
-            deliverables = listOf(
-                WorkPackageActivityDeliverable(
-                    period = 1,
-                    translatedValues = setOf(
-                        WorkPackageActivityDeliverableTranslatedValue(language = SystemLanguage.EN, description = "en_deliv_desc"),
-                        WorkPackageActivityDeliverableTranslatedValue(language = SystemLanguage.CS, description = null),
-                    )
+    private val activity1 = WorkPackageActivity(
+        workPackageId = 1L,
+        title = setOf(
+            InputTranslation(language = SystemLanguage.EN, translation = null),
+            InputTranslation(language = SystemLanguage.CS, translation = ""),
+            InputTranslation(language = SystemLanguage.SK, translation = "sk_title"),
+        ),
+        description = setOf(
+            InputTranslation(language = SystemLanguage.EN, translation = "en_desc"),
+            InputTranslation(language = SystemLanguage.CS, translation = null),
+            InputTranslation(language = SystemLanguage.SK, translation = "sk_desc"),
+        ),
+        startPeriod = 1,
+        endPeriod = 3,
+        deliverables = listOf(
+            WorkPackageActivityDeliverable(
+                period = 1,
+                description = setOf(
+                    InputTranslation(
+                        language = SystemLanguage.EN,
+                        translation = "en_deliv_desc"
+                    ),
+                    InputTranslation(language = SystemLanguage.CS, translation = null),
                 )
-            ),
-        )
-    }
+            )
+        ),
+    )
 
     @MockK
     lateinit var persistence: WorkPackagePersistence
