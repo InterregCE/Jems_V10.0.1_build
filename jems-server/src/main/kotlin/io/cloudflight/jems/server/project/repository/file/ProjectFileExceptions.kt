@@ -14,3 +14,8 @@ class ProjectFileNotFoundException : ApplicationUnprocessableException(
     code = "$PROJECT_FILE_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$PROJECT_FILE_ERROR_KEY_PREFIX.not.found")
 )
+
+class ProjectFileTypeNotSupported : ApplicationUnprocessableException(
+    code = "$PROJECT_FILE_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$PROJECT_FILE_ERROR_KEY_PREFIX.type.not.supported")
+)

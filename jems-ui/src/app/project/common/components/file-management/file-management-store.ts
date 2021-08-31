@@ -5,7 +5,7 @@ import {
   ProjectFileMetadataDTO,
   ProjectFileService,
   ProjectPartnerSummaryDTO,
-  ProjectStatusDTO,
+  ProjectStatusDTO, SettingsService,
   UserRoleDTO
 } from '@cat/api';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
@@ -56,6 +56,7 @@ export class FileManagementStore {
   filesChanged$ = new Subject<void>();
 
   constructor(private projectFileService: ProjectFileService,
+              private settingsService: SettingsService,
               private projectStore: ProjectStore,
               private projectPartnerStore: ProjectPartnerStore,
               private permissionService: PermissionService,
@@ -323,5 +324,9 @@ export class FileManagementStore {
 
   private shouldFetchApplicationCategories(section: FileCategoryInfo, canReadApplicationFile: boolean): boolean {
     return section.type !== FileCategoryEnum.ASSESSMENT && canReadApplicationFile;
+  }
+
+  getMaximumAllowedFileSize(): Observable<number> {
+    return this.settingsService.getMaximumAllowedFileSize();
   }
 }

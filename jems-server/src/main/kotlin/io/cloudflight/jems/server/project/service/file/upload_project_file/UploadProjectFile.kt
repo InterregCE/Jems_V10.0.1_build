@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.file.upload_project_file
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanUploadFileInCategory
+import io.cloudflight.jems.server.project.repository.file.ProjectFileTypeNotSupported
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
@@ -14,6 +15,7 @@ import io.cloudflight.jems.server.project.service.projectFileUploadFailed
 import io.cloudflight.jems.server.project.service.projectFileUploadSucceed
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
+import org.apache.commons.io.FilenameUtils
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -35,6 +37,7 @@ class UploadProjectFile(
     override fun upload(
         projectId: Long, projectFileCategory: ProjectFileCategory, projectFile: ProjectFile
     ): ProjectFileMetadata {
+        throwIfFileTypeIsNotAllowed(projectFile)
         throwIfUploadToCategoryIsNotAllowed(projectFileCategory)
         projectPersistence.throwIfNotExists(projectId)
         userPersistence.throwIfNotExists(securityService.currentUser?.user?.id!!)
@@ -74,5 +77,14 @@ class UploadProjectFile(
             fileTypeCategory.type == ProjectFileCategoryType.PARTNER && fileTypeCategory.id == null ||
             fileTypeCategory.type == ProjectFileCategoryType.INVESTMENT && fileTypeCategory.id == null
         ) throw UploadInCategoryIsNotAllowedExceptions()
+    }
+
+    private fun throwIfFileTypeIsNotAllowed(projectFile: ProjectFile) {
+        val acceptedFilesTypes = arrayOf("csv", "dat", "db", "dbf", "log", "mdb", "xml", "email", "eml", "emlx", "msg", "oft", "ost", "pst", "vcf", "bmp", "gif", "jpeg", "jpg", "png", "psd", "svg", "tif", "tiff", "htm", "html", "key", "odp", "pps", "ppt", "ppt", "pptx", "ods", "xls", "xlsm", "xlsx", "doc", "docx", "odt", "pdf", "rtf", "tex", "txt", "wpd", "mov", "avi", "mp4", "zip", "rar", "ace", "7z", "url");
+        val fileType = FilenameUtils.getExtension(projectFile.name)
+
+        if (!acceptedFilesTypes.contains(fileType)) {
+            throw ProjectFileTypeNotSupported();
+        }
     }
 }

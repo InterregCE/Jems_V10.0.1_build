@@ -6,11 +6,13 @@ import {Tables} from '@common/utils/tables';
 import {Alert} from '@common/components/forms/alert';
 import {FileCategoryInfo} from '@project/common/components/file-management/file-category';
 import {MatTableDataSource} from '@angular/material/table';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {APIError} from '@common/models/APIError';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-project-application-files-table',
   templateUrl: './project-application-files-table.component.html',
@@ -21,8 +23,11 @@ export class ProjectApplicationFilesTableComponent {
   Alert = Alert;
   Tables = Tables;
 
+  acceptedFilesTypes = ['.csv', '.dat', '.db', '.dbf', '.log', '.mdb', '.xml', '.email', '.eml', '.emlx', '.msg', '.oft', '.ost', '.pst', '.vcf', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.psd', '.svg', '.tif', '.tiff', '.htm', '.html', '.key', '.odp', '.pps', '.ppt', '.ppt', '.pptx', '.ods', '.xls', '.xlsm', '.xlsx', '.doc', '.docx', '.odt', '.pdf', '.rtf', '.tex', '.txt', '.wpd', '.mov', '.avi', '.mp4', '.zip', '.rar', '.ace', '.7z', '.url'];
   displayedColumns: string[] = ['name', 'uploadDate', 'user', 'description', 'actions'];
   dataSource = new MatTableDataSource<ProjectFileMetadataDTO>();
+  maximumAllowedFileSize: number;
+  fileSizeOverLimitError = new Subject<number | null>();
 
   data$: Observable<{
     files: PageProjectFileMetadataDTO,
@@ -47,12 +52,22 @@ export class ProjectApplicationFilesTableComponent {
         })),
         tap(data => this.dataSource.data = data.files?.content)
       );
+    this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSize = maxAllowedSize);
   }
 
   uploadFile(target: any): void {
     if (!target) {
       return;
     }
+    const sizeConvertedToMB = Math.round(target?.files[0].size / 1024 / 1024);
+    this.fileSizeOverLimitError.next(null);
+    this.fileManagementStore.error$.next(null);
+
+    if (sizeConvertedToMB > this.maximumAllowedFileSize) {
+      this.fileSizeOverLimitError.next(this.maximumAllowedFileSize);
+      return;
+    }
+
     this.fileManagementStore.uploadFile(target?.files[0])
       .pipe(take(1))
       .subscribe();

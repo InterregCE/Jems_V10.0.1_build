@@ -55,3 +55,4 @@ app:
   security:
     default-password-prefix: Jems@2020
   translations-folder: resources/translations/
+
