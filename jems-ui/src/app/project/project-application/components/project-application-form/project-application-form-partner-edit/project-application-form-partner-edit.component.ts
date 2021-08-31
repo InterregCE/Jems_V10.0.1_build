@@ -171,9 +171,9 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
 
   private confirmLeadPartnerChange(partners: ProjectPartner[]): Observable<boolean>{
         const leadPartner = partners.find(it => it.role === ProjectPartnerRoleEnum.LEAD_PARTNER);
-        if ( leadPartner === undefined || leadPartner === null || leadPartner.id === this.controls.id.value){
+        if (leadPartner === undefined || leadPartner === null || leadPartner.id === this.controls.id.value || this.controls.role.value === ProjectPartnerRoleEnum.PARTNER){
           return of(true);
-        }else{
+        }else {
           return Forms.confirmDialog(
             this.dialog,
             'project.partner.role.lead.already.existing.title',
