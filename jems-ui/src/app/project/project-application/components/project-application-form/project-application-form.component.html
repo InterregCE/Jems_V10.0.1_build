@@ -8,6 +8,26 @@
             <input name="projectId" formControlName="projectId" matInput>
         </mat-form-field>
 
+        <mat-form-field appFormFieldWidth="half"
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION">
+            <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartner' | translate}}</mat-label>
+            <input name="nameOfTheLeadPartner" formControlName="nameOfTheLeadPartner" matInput>
+            <mat-hint *ngIf="!applicationForm?.controls?.nameOfTheLeadPartner?.value && (projectStore.projectEditable$ | async)"
+                      class="mat-error">
+                {{'project.application.form.name.of.the.lead.partner.required' | translate}}
+            </mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appFormFieldWidth="half"
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION">
+            <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartnerInEnglish' | translate}}</mat-label>
+            <input name="nameOfTheLeadPartnerInEnglish" formControlName="nameOfTheLeadPartnerInEnglish" matInput>
+            <mat-hint *ngIf="!applicationForm?.controls?.nameOfTheLeadPartnerInEnglish?.value && (projectStore.projectEditable$ | async)"
+                      class="mat-error">
+                {{'project.application.form.nameOfTheLeadPartnerInEnglish.required' | translate}}
+            </mat-hint>
+        </mat-form-field>
+
         <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ACRONYM">
             <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
             <input #projectAcronym name="acronym" formControlName="acronym" matInput>

@@ -13,7 +13,7 @@ import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectPartner} from '@project/model/ProjectPartner';
-import {ProjectPartnerRoleEnumUtil} from '@project/model/ProjectPartnerRoleEnum';
+import {ProjectPartnerRoleEnum, ProjectPartnerRoleEnumUtil} from '@project/model/ProjectPartnerRoleEnum';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectPaths} from '@project/common/project-util';
@@ -26,6 +26,7 @@ export class ProjectPartnerStore {
   isProjectEditable$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   partners$: Observable<ProjectPartner[]>;
+  leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
   partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   private partnerId: number;
   private projectId: number;
@@ -50,6 +51,13 @@ export class ProjectPartnerStore {
       shareReplay(1)
     );
     this.partner$ = this.partner();
+
+    this.leadPartner$ = this.partners$.pipe(
+      switchMap(partners => {
+        const leadPartnerId = partners.find(partner => partner.role === ProjectPartnerRoleEnum.LEAD_PARTNER)?.id;
+        return leadPartnerId ? this.partnerService.getProjectPartnerById(leadPartnerId) : of(null);
+      }),
+    );
   }
 
   savePartner(partner: ProjectPartnerDTO): Observable<ProjectPartnerDetailDTO> {

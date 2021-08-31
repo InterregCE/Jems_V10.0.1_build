@@ -13,7 +13,7 @@ import {
   InputTranslation,
   OutputProgrammePrioritySimple,
   ProjectDetailDTO,
-  ProjectDetailFormDTO
+  ProjectDetailFormDTO, ProjectPartnerDetailDTO
 } from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {Tools} from '@common/utils/tools';
@@ -41,6 +41,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   @Input()
   projectForm: ProjectDetailFormDTO;
   @Input()
+  leadPartner: ProjectPartnerDetailDTO | null;
+  @Input()
   priorities: OutputProgrammePrioritySimple[];
   @Input()
   objectivesWithPolicies: { [key: string]: InputProjectData.SpecificObjectiveEnum[] };
@@ -51,6 +53,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
 
   applicationForm: FormGroup = this.formBuilder.group({
     projectId: [''],
+    nameOfTheLeadPartner: [''],
+    nameOfTheLeadPartnerInEnglish: [''],
     acronym: ['', Validators.compose([
       Validators.maxLength(25),
       Validators.required])
@@ -107,6 +111,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       .pipe(takeUntil(this.destroyed$))
       .subscribe(() => {
         this.applicationForm.controls.projectId.disable();
+        this.applicationForm.controls.nameOfTheLeadPartner.disable();
+        this.applicationForm.controls.nameOfTheLeadPartnerInEnglish.disable();
         this.applicationForm.controls.projectPeriodLength.disable();
         this.applicationForm.controls.projectPeriodCount.disable();
       });
@@ -139,6 +145,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
 
   resetForm(): void {
     this.applicationForm.controls.projectId.setValue(this.projectForm.customIdentifier);
+    this.applicationForm.controls.nameOfTheLeadPartner.setValue(this.leadPartner?.nameInOriginalLanguage);
+    this.applicationForm.controls.nameOfTheLeadPartnerInEnglish.setValue(this.leadPartner?.nameInEnglish);
     this.applicationForm.controls.acronym.setValue(this.projectForm.acronym);
     this.applicationForm.controls.title.setValue(this.projectForm?.title);
     this.applicationForm.controls.duration.setValue(this.projectForm?.duration);
