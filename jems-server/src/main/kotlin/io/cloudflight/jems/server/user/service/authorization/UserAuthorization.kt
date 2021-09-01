@@ -21,6 +21,10 @@ annotation class CanCreateUser
 @PreAuthorize("hasAuthority('UserUpdate')")
 annotation class CanUpdateUser
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('UserUpdatePassword')")
+annotation class CanUpdateUserPassword
+
 @Component
 class UserAuthorization(
     override val securityService: SecurityService,
