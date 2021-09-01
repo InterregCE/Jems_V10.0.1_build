@@ -21,7 +21,13 @@ class IdentifierIsUsedException : ApplicationBadRequestException(
 
 class SpecificObjectiveCannotBeChangedException : ApplicationBadRequestException(
     code = "$UPDATE_RESULT_INDICATOR_ERROR_CODE_PREFIX-003",
-    i18nMessage = I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_CODE_PREFIX.specific.objective.cannot.be.changed.after.first.published.call"),
-    formErrors = mapOf("specificObjective" to I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_CODE_PREFIX.specific.objective.cannot.be.changed.after.first.published.call")),
+    i18nMessage = I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.specific.objective.cannot.be.changed.after.first.published.call"),
+    formErrors = mapOf("specificObjective" to I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.specific.objective.cannot.be.changed.after.first.published.call")),
+    cause = null
+)
+class BaselineCannotBeDecreasedException : ApplicationBadRequestException(
+    code = "$UPDATE_RESULT_INDICATOR_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.baseline.cannot.be.decreased.after.first.published.call"),
+    formErrors = mapOf("baseline" to I18nMessage("$UPDATE_RESULT_INDICATOR_ERROR_KEY_PREFIX.baseline.cannot.be.decreased.after.first.published.call")),
     cause = null
 )

@@ -12,7 +12,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
-import {Forms} from '../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {
   InputTranslation,
   ProgrammePriorityDTO,
@@ -21,13 +21,13 @@ import {
   ResultIndicatorUpdateRequestDTO
 } from '@cat/api';
 import {
-  ResultIndicatorCodeRelation,
-  ProgrammeResultIndicatorConstants
+  ProgrammeResultIndicatorConstants,
+  ResultIndicatorCodeRelation
 } from './constants/programme-result-indicator-constants';
 import {TranslateService} from '@ngx-translate/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
-import {LanguageStore} from '../../../../common/services/language-store.service';
+import {LanguageStore} from '@common/services/language-store.service';
 @UntilDestroy()
 @Component({
   selector: 'app-programme-result-indicator-detail',
@@ -39,6 +39,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
   programmeResultIndicatorConstants = ProgrammeResultIndicatorConstants;
   isProgrammeSetupLocked: boolean;
+  baselineOption = {min: 0};
 
   @Input()
   resultIndicator: ResultIndicatorDetailDTO;
@@ -173,6 +174,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
   protected enterEditMode(): void {
     if (this.isProgrammeSetupLocked && !this.isCreate) {
       this.resultIndicatorForm.controls.specificObjective.disable();
+      this.baselineOption = {min: this.resultIndicator.baseline};
     }
   }
 

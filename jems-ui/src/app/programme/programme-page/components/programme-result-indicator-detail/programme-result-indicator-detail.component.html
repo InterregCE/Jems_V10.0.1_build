@@ -67,6 +67,7 @@
     <mat-form-field>
         <mat-label>{{'result.indicator.form.field.baseline' | translate}}</mat-label>
         <input currencyMask type="decimal"
+               [options]="baselineOption"
                name="baseline" formControlName="baseline" matInput>
         <mat-error>
             <app-form-field-errors [errors]="resultIndicatorForm?.controls?.baseline?.errors">

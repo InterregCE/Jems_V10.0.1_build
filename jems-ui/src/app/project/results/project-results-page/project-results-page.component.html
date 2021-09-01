@@ -17,7 +17,9 @@
                             </button>
                         </div>
 
-                        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT" [class.mat-form-field-invalid]="!data.resultIndicators.length">
+                        <mat-form-field
+                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT"
+                                [class.mat-form-field-invalid]="!data.resultIndicators.length">
                             <mat-label>{{'project.results.result.indicator' | translate}}</mat-label>
                             <mat-select [disabled]="!data.resultIndicators.length"
                                         [formControlName]="constants.RESULT_INDICATOR.name"
@@ -32,7 +34,8 @@
                             </mat-hint>
                         </mat-form-field>
                         <div appMultiColumnRow stretch>
-                            <mat-form-field appFormFieldWidth="large" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">
+                            <mat-form-field appFormFieldWidth="large"
+                                            *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">
                                 <mat-label>{{'project.results.result.measurement.unit' | translate}}</mat-label>
                                 <input readonly matInput
                                        value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)
@@ -40,13 +43,20 @@
                                        [disabled]="form.disabled">
                             </mat-form-field>
 
-                            <mat-form-field appFormFieldWidth="medium" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.BASELINE">
+                            <mat-form-field appFormFieldWidth="medium"
+                                            *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.BASELINE">
                                 <mat-label>{{'project.results.result.baseline' | translate}}</mat-label>
-                                <input currencyMask type="decimal" [options]="{min: 0, max: result.get(constants.BASELINE_MAX_VALUE.name)?.value, align: 'right'}"
+                                <input currencyMask type="decimal"
+                                       [options]="{min: 0, max: result.get(constants.BASELINE_MAX_VALUE.name)?.value, align: 'right'}"
                                        name="baseline" formControlName="baseline" matInput>
+                                <app-context-info infoPosition="above"
+                                                  infoText="{{'project.results.result.baseline.info.text' | translate}}">
+                                </app-context-info>
                             </mat-form-field>
 
-                            <mat-form-field appFormFieldWidth="medium" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.TARGET_VALUE">
+
+                            <mat-form-field appFormFieldWidth="medium"
+                                            *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.TARGET_VALUE">
                                 <mat-label>{{'project.results.result.target.value' | translate}}</mat-label>
                                 <input currencyMask type="decimal" [options]="{min: 1, max: 99999999, align: 'right'}"
                                        name="targetValue" formControlName="targetValue" matInput>
@@ -61,7 +71,8 @@
                             </app-project-periods-select>
                         </div>
 
-                        <app-multi-language-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DESCRIPTION">
+                        <app-multi-language-container
+                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DESCRIPTION">
                             <app-multi-language-form-field
                                     type="textarea"
                                     label="project.results.result.description"

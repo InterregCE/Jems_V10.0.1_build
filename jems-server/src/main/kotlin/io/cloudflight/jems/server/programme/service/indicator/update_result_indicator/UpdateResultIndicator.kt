@@ -67,7 +67,11 @@ class UpdateResultIndicator(
         resultIndicator: ResultIndicator,
         oldResultIndicatorDetail: ResultIndicatorDetail
     ) {
-        if (oldResultIndicatorDetail.programmeObjectivePolicy != resultIndicator.programmeObjectivePolicy && callPersistence.hasAnyCallPublished())
-            throw SpecificObjectiveCannotBeChangedException()
+        if (callPersistence.hasAnyCallPublished()) {
+            if (oldResultIndicatorDetail.programmeObjectivePolicy != resultIndicator.programmeObjectivePolicy)
+                throw SpecificObjectiveCannotBeChangedException()
+            if (oldResultIndicatorDetail.baseline ?: BigDecimal.ZERO > resultIndicator.baseline)
+                throw BaselineCannotBeDecreasedException()
+        }
     }
 }

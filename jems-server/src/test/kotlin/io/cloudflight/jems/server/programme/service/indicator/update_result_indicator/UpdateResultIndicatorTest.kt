@@ -16,6 +16,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.assertj.core.api.Assertions.catchThrowableOfType
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 
 internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
 
@@ -116,6 +117,23 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
             )
         } returns false
         assertThatExceptionOfType(SpecificObjectiveCannotBeChangedException::class.java).isThrownBy {
+            updateResultIndicator.updateResultIndicator(newResultIndicator)
+        }
+    }
+
+    @Test
+    fun `should throw BaselineCannotBeDecreasedException when baseline in the new result indicator is decreased and there is a published call`() {
+        val newResultIndicator = buildResultIndicatorInstance(baseline = BigDecimal.ONE)
+        val oldResultIndicatorDetail = buildResultIndicatorDetailInstance()
+        every { persistence.getResultIndicator(newResultIndicator.id!!) } returns oldResultIndicatorDetail
+        every { callPersistence.hasAnyCallPublished() } returns true
+        every {
+            persistence.isIdentifierUsedByAnotherResultIndicator(
+                newResultIndicator.id,
+                newResultIndicator.identifier
+            )
+        } returns false
+        assertThatExceptionOfType(BaselineCannotBeDecreasedException::class.java).isThrownBy {
             updateResultIndicator.updateResultIndicator(newResultIndicator)
         }
     }
