@@ -23,9 +23,9 @@ import {PermissionService} from '../../../../security/permissions/permission.ser
 import {ProjectUtil} from '@project/common/project-util';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable({
   providedIn: 'root'
@@ -204,8 +204,8 @@ export class FileManagementStore {
   private fileCategories(section: FileCategoryInfo): Observable<FileCategoryNode> {
     return combineLatest([
       this.projectStore.projectTitle$,
-      this.projectPartnerStore.partnerSummaries$,
-      this.projectStore.investmentSummaries$,
+      this.canReadApplicationFile$.pipe(switchMap(canReadApplicationFile => this.shouldFetchApplicationCategories(section, canReadApplicationFile) ? this.projectPartnerStore.partnerSummaries$ : of([]))),
+      this.canReadApplicationFile$.pipe(switchMap(canReadApplicationFile => this.shouldFetchApplicationCategories(section, canReadApplicationFile) ? this.projectStore.investmentSummaries$ : of([]))),
       this.canReadApplicationFile$,
       this.canReadAssessmentFile$
     ]).pipe(
@@ -234,17 +234,17 @@ export class FileManagementStore {
         children: []
       };
       applicationFiles.children?.push(
-          {
-            name: {i18nKey: 'file.tree.type.partner'},
-            info: {type: FileCategoryEnum.PARTNER},
-            children: partners.map(partner => ({
-              name: {
-                i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
-                i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
-              },
-              info: {type: FileCategoryEnum.PARTNER, id: partner.id}
-            }))
-          });
+        {
+          name: {i18nKey: 'file.tree.type.partner'},
+          info: {type: FileCategoryEnum.PARTNER},
+          children: partners.map(partner => ({
+            name: {
+              i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
+              i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
+            },
+            info: {type: FileCategoryEnum.PARTNER, id: partner.id}
+          }))
+        });
       if (this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS)) {
         applicationFiles.children?.push(
           {
@@ -319,5 +319,9 @@ export class FileManagementStore {
     }
 
     return [{i18nKey: 'INVALID_PATH'}];
+  }
+
+  private shouldFetchApplicationCategories(section: FileCategoryInfo, canReadApplicationFile: boolean): boolean {
+    return section.type !== FileCategoryEnum.ASSESSMENT && canReadApplicationFile;
   }
 }

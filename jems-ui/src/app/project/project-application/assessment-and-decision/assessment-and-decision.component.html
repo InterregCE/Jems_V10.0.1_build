@@ -58,10 +58,7 @@
         <ng-container *hasPermission="PermissionsEnum.ProjectFileAssessmentRetrieve">
             <h3>
                 {{'file.tab.header' | translate}}
-                <app-context-info *ngIf="data.callHasTwoSteps"
-                                  infoPosition="right"
-                                  infoText="{{'file.tab.info' | translate}}">
-                </app-context-info>
+                <app-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></app-context-info>
             </h3>
             <app-file-management [section]="fileManagementSection" appNoWidthLimit></app-file-management>
         </ng-container>
