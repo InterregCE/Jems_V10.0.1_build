@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Tools} from '../../common/utils/tools';
-import {combineLatest, Observable} from 'rxjs';
+import {Tools} from '@common/utils/tools';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {
   CallDetailDTO,
   CallDTO,
@@ -14,7 +14,7 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallPageSidenavService} from '../services/call-page-sidenav.service';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, map, take, tap, withLatestFrom} from 'rxjs/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import moment from 'moment';
 import {Alert} from '@common/components/forms/alert';
@@ -35,6 +35,7 @@ export class CallDetailPageComponent {
   private static readonly DATE_SHOULD_BE_VALID = 'common.date.should.be.valid';
   private static readonly CALL_INVALID_PERIOD = 'call.lengthOfPeriod.invalid.period';
 
+  private resetEvent$ = new BehaviorSubject<void | null>(null);
   Alert = Alert;
   tools = Tools;
 
@@ -103,7 +104,8 @@ export class CallDetailPageComponent {
       this.pageStore.allPriorities$,
       this.pageStore.allActiveStrategies$,
       this.pageStore.allFunds$,
-      this.pageStore.allStateAids$
+      this.pageStore.allStateAids$,
+      this.resetEvent$
     ])
       .pipe(
         map(([call, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allFunds, allStateAids]: any) => ({
@@ -185,9 +187,9 @@ export class CallDetailPageComponent {
       ).subscribe();
   }
 
-  onCancel(call: CallDetailDTO, callIsEditable: boolean): void {
+  onCancel(call: CallDetailDTO): void {
     if (call?.id) {
-      this.resetForm(call, callIsEditable);
+      this.resetEvent$.next();
       return;
     }
     this.callNavService.redirectToCallOverview();
@@ -209,11 +211,11 @@ export class CallDetailPageComponent {
       ).subscribe();
   }
 
-  publishingRequirementsNotAchieved(priorityCheckboxes: CallPriorityCheckbox[],
-                                    funds: ProgrammeFundDTO[]): boolean {
-    return (priorityCheckboxes && !priorityCheckboxes.some(priority => priority.checked || priority.someChecked())
-      || !this.callForm.get('lengthOfPeriod')?.value
-      || funds.filter(fund => fund.selected).map(fund => fund.id).length === 0);
+  isPublishDisabled(call: CallDetailDTO): Observable<boolean> {
+    return of(true).pipe(
+      withLatestFrom(this.formService.dirty$, this.formService.pending$),
+      map(([, dirty, pending]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0)
+    );
   }
 
   formChanged(): void {

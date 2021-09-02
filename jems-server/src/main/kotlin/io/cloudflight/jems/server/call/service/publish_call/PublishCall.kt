@@ -19,6 +19,15 @@ class PublishCall(
     @Transactional
     @ExceptionWrapper(PublishCallException::class)
     override fun publishCall(callId: Long): CallSummary =
-        persistence.publishCall(callId).also { auditPublisher.publishEvent(callPublished(this, it)) }
+        ifCallCanBePublished(callId).let {
+            persistence.publishCall(callId).also {
+                auditPublisher.publishEvent(callPublished(this, it)) }
+        }
+
+    private fun ifCallCanBePublished(callId: Long) =
+        with(persistence.getCallById(callId)) {
+            if (this.funds.isNullOrEmpty() || this.objectives.isNullOrEmpty())
+                throw CannotPublishCallException()
+        }
 
 }

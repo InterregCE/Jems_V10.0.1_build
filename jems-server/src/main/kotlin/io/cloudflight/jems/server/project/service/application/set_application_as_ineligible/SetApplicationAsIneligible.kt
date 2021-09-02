@@ -25,7 +25,7 @@ class SetApplicationAsIneligible(
     @Transactional
     @ExceptionWrapper(SetApplicationAsIneligibleException::class)
     override fun setAsIneligible(projectId: Long, actionInfo: ApplicationActionInfo): ApplicationStatus =
-        actionInfo.ifIsValid(generalValidatorService).run {
+        actionInfo.ifIsValid(generalValidatorService).let {
             val project = projectPersistence.getProject(projectId)
             val assessment = if (project.isInStep2()) project.assessmentStep2 else project.assessmentStep1
 

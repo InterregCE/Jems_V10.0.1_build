@@ -1,6 +1,6 @@
 <app-main-page-template *ngIf="data$ | async as data" titleKey="call.detail.title"
                         subTitleKey="call.general.settings">
-    <app-form (discard)="onCancel(data.call, data.callIsEditable)"
+    <app-form (discard)="onCancel(data.call)"
               (save)="onSubmit(data.call, data.priorityCheckboxes, data.strategies, data.funds, data.stateAids)">
         <app-alert [show]="published && data.callIsEditable"
                    [type]="Alert.WARNING">
@@ -14,7 +14,7 @@
             <app-pending-button
                     *ngIf="data.call?.id && data.callIsEditable && !published"
                     [confirm]="confirmData() | async"
-                    [disabled]="publishingRequirementsNotAchieved(data.priorityCheckboxes, data.funds)"
+                    [disabled]="isPublishDisabled(data.call) | async"
                     [pending]="publishPending"
                     (clicked)="publishCall()">
                 {{'call.detail.button.publish' | translate}}
