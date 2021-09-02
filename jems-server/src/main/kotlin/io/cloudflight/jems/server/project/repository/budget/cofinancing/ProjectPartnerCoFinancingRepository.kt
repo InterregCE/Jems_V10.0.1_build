@@ -19,10 +19,10 @@ interface ProjectPartnerCoFinancingRepository : JpaRepository<ProjectPartnerCoFi
         """
             SELECT
              financing.*,
+             financing.order_nr AS orderNr,
              fund.id AS fundId,
              fund.type AS fundType,
              fund.selected AS selected,
-             fund.order_nr AS orderNr,
              fundTransl.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS financing
              LEFT JOIN programme_fund AS fund ON financing.programme_fund_id = fund.id
