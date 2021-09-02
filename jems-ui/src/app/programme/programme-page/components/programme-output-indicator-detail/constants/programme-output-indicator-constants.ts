@@ -8,42 +8,42 @@ export class ProgrammeOutputIndicatorConstants {
 
   static indicatorCodes: OutputIndicatorCodeRelation[] = [
     {
-      code: 'RCO1',
+      code: 'RCO01',
       name: 'Enterprises supported (of which: micro, small, medium, large)',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO2',
+      code: 'RCO02',
       name: 'Enterprises supported by grants',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO3',
+      code: 'RCO03',
       name: 'Enterprises supported by financial instruments',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO4',
+      code: 'RCO04',
       name: 'Enterprises with non-financial support',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO5',
+      code: 'RCO05',
       name: 'New enterprises supported',
       measurementUnit: 'enterprises',
     },
     {
-      code: 'RCO6',
+      code: 'RCO06',
       name: 'Researchers working in supported research facilities',
       measurementUnit: 'annual FTEs',
     },
     {
-      code: 'RCO7',
+      code: 'RCO07',
       name: 'Research organisations participating in joint research projects',
       measurementUnit: 'research institutions',
     },
     {
-      code: 'RCO8',
+      code: 'RCO08',
       name: 'Nominal value of research and innovation equipment',
       measurementUnit: 'euro',
     },
