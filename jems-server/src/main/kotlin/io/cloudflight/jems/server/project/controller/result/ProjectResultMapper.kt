@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.controller.result
 
-import io.cloudflight.jems.api.project.dto.result.InputProjectResultDTO
+import io.cloudflight.jems.api.project.dto.result.ProjectResultUpdateRequestDTO
 import io.cloudflight.jems.api.project.dto.result.ProjectResultDTO
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 
-fun List<InputProjectResultDTO>.toModel() = map {
+fun List<ProjectResultUpdateRequestDTO>.toModel() = map {
     ProjectResult(
         programmeResultIndicatorId = it.programmeResultIndicatorId,
         baseline = it.baseline,

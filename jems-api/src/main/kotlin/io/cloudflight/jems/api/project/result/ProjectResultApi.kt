@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.result
 
-import io.cloudflight.jems.api.project.dto.result.InputProjectResultDTO
+import io.cloudflight.jems.api.project.dto.result.ProjectResultUpdateRequestDTO
 import io.cloudflight.jems.api.project.dto.result.ProjectResultDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -22,6 +22,6 @@ interface ProjectResultApi {
 
     @ApiOperation("Creates or updates project results")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectResults(@PathVariable projectId: Long, @RequestBody projectResults: List<InputProjectResultDTO>): List<ProjectResultDTO>
+    fun updateProjectResults(@PathVariable projectId: Long, @RequestBody projectResultUpdateRequests: List<ProjectResultUpdateRequestDTO>): List<ProjectResultDTO>
 
 }

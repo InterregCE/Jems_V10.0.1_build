@@ -7,7 +7,7 @@ interface ProjectResultRow: TranslationView {
     val resultNumber: Int
     val programmeResultIndicatorId: Long?
     val programmeResultIndicatorIdentifier: String?
-    val baseline: BigDecimal?
+    val baseline: BigDecimal
     val targetValue: BigDecimal?
     val periodNumber: Int?
     val description: String?

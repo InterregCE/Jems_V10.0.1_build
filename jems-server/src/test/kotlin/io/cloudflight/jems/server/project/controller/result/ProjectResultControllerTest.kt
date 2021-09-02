@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.result.InputProjectResultDTO
+import io.cloudflight.jems.api.project.dto.result.ProjectResultUpdateRequestDTO
 import io.cloudflight.jems.api.project.dto.result.ProjectResultDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.result.get_project_result.GetProjectResultInteractor
@@ -76,14 +76,14 @@ class ProjectResultControllerTest: UnitTest() {
         val resultSlot = slot<List<ProjectResult>>()
         every { updateResults.updateResultsForProject(1L, capture(resultSlot)) } returns emptyList()
 
-        val resultDto1 = InputProjectResultDTO(
+        val resultDto1 = ProjectResultUpdateRequestDTO(
             programmeResultIndicatorId = 15L,
             baseline = BigDecimal.ZERO,
             targetValue = BigDecimal.ONE,
             periodNumber = 7,
             description = setOf(InputTranslation(EN, "en desc"), InputTranslation(CS, ""), InputTranslation(SK, null)),
         )
-        val resultDto2 = InputProjectResultDTO(baseline = BigDecimal.ZERO)
+        val resultDto2 = ProjectResultUpdateRequestDTO(baseline = BigDecimal.ZERO)
 
         controller.updateProjectResults(1L, listOf(resultDto1, resultDto2))
         assertThat(resultSlot.captured).containsExactly(
