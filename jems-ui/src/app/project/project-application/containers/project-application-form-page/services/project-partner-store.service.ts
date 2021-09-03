@@ -143,7 +143,7 @@ export class ProjectPartnerStore {
   private partnerSummaries(): Observable<ProjectPartnerSummaryDTO[]> {
     return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$, this.partnerUpdateEvent$])
       .pipe(
-        switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, undefined, version))
+        switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
       );
   }
 }
