@@ -12,7 +12,6 @@ import {NumberService} from '../../../common/services/number.service';
 import {ProjectPartnerDetailPageStore} from '../../partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ProjectPartnerBudgetModel} from './models/ProjectPartnerBudgetModel';
 import {ProjectPartnerBudgetAndContribution} from './models/ProjectPartnerBudgetAndContribution';
-import {take} from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-budget-page-per-partner',
@@ -144,4 +143,7 @@ export class BudgetPagePerPartnerComponent {
     return NumberService.truncateNumber(NumberService.product([100, perEligibleBudget]), 0);
   }
 
+  public getTotalPercentageRounded(fund: ProgrammeFundDTO, totalEligibleBudget: number): number {
+    return NumberService.roundNumber(((this.getTotalBudgetAmountForFund(fund) / totalEligibleBudget) * 100), 1);
+  }
 }

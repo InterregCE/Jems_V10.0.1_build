@@ -85,6 +85,13 @@ export class NumberService {
   }
 
   /**
+   * Rounds a number mathematically to a fixed number of decimals (default = 2).
+   */
+  static roundNumber(value: number, precision = 2) {
+    return Number(Big(value).round(precision));
+  }
+
+  /**
    * Customizable later.
    */
   getPrecision(): number {

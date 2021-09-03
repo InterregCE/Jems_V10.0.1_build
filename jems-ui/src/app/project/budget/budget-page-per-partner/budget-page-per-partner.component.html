@@ -44,7 +44,7 @@
                     <div matSuffix class="pl-1">%</div>
                 </mat-cell>
                 <mat-footer-cell *matFooterCellDef class="justify-end m-1">
-                    {{this.getTotalBudgetAmountForFund(fund) | percentage: totalEligibleBudget : 2 | asMoney}} %
+                    {{getTotalPercentageRounded(fund, totalEligibleBudget) | asMoney}} %
                 </mat-footer-cell>
             </ng-container>
         </ng-container>
