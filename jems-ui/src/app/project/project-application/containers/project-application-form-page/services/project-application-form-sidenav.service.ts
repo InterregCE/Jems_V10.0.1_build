@@ -16,9 +16,9 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import {RoutingService} from '@common/services/routing.service';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {ProjectPaths} from '@project/common/project-util';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
-import {ProjectPaths} from '@project/common/project-util';
 
 @Injectable()
 @UntilDestroy()
@@ -56,11 +56,9 @@ export class ProjectApplicationFormSidenavService {
     this.fileManagementStore.canReadAssessmentFile$,
   ]).pipe(
     map(([projectStatus, callHas2Steps, hasAssessmentViewPermission, hasReturnToaApplicantPermission, hasStartStepTwoPermission, hasRevertDecisionPermission, canReadAssessmentFiles]: any) => {
-      return canReadAssessmentFiles ||
-        (
-          (hasAssessmentViewPermission || hasReturnToaApplicantPermission || hasStartStepTwoPermission || hasRevertDecisionPermission)
-          && ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT))
-        );
+      return ((canReadAssessmentFiles || hasAssessmentViewPermission || hasRevertDecisionPermission) && ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT)))
+        || (hasStartStepTwoPermission && (projectStatus === StatusEnum.STEP1APPROVED || projectStatus === StatusEnum.STEP1APPROVEDWITHCONDITIONS))
+        || (hasReturnToaApplicantPermission && (projectStatus === StatusEnum.SUBMITTED || projectStatus === StatusEnum.APPROVED || projectStatus === StatusEnum.APPROVEDWITHCONDITIONS || projectStatus === StatusEnum.ELIGIBLE));
     }),
   );
 

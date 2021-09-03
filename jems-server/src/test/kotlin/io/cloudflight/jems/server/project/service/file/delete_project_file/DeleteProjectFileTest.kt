@@ -84,4 +84,22 @@ internal class DeleteProjectFileTest : UnitTest() {
             "document $FILE_NAME deleted from project application $PROJECT_ID by $USER_ID"
         )
     }
+
+    @Test
+    fun `should delete assessment file when there is no problem`() {
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { projectPersistence.throwIfNotExists(PROJECT_ID) } returns Unit
+        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID)
+        every { filePersistence.getFileMetadata(FILE_ID) } returns fileMetadata(ZonedDateTime.now().minusDays(10))
+        every { filePersistence.getFileCategoryTypeSet(FILE_ID) } returns setOf(ProjectFileCategoryType.ASSESSMENT)
+        every { filePersistence.deleteFile(PROJECT_ID, FILE_ID, FILE_NAME) } returns Unit
+        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+
+        deleteProjectFile.delete(PROJECT_ID, FILE_ID)
+
+        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROJECT_FILE_DELETED)
+        assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
+            "document $FILE_NAME deleted from project application $PROJECT_ID by $USER_ID"
+        )
+    }
 }

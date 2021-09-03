@@ -36,7 +36,9 @@ class DeleteProjectFile(
     private fun throwIfFileCannotBeRemoved(
         fileMetadata: ProjectFileMetadata, fileCategories: Set<ProjectFileCategoryType>, project: ProjectFull
     ) {
-        if (fileCategories.isNotEmpty() && fileCategories.any { it != ProjectFileCategoryType.ASSESSMENT }
+        if (fileCategories.isNotEmpty() && fileCategories.any {
+                it == ProjectFileCategoryType.APPLICATION || it == ProjectFileCategoryType.PARTNER || it == ProjectFileCategoryType.INVESTMENT
+            }
             && fileMetadata.uploadedAt.isBefore(project.projectStatus.updated)
         ) throw DeletingOldFileFromApplicationCategoryIsNotAllowedException()
     }
