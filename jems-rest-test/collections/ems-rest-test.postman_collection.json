@@ -923,7 +923,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"staffCostFlatRateSetup\": {\r\n        \"rate\": 20,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"officeAndAdministrationOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 15,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"officeAndAdministrationOnDirectCostsFlatRateSetup\": {\r\n        \"rate\": 25,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"travelAndAccommodationOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 15,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"otherCostsOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 40,\r\n        \"isAdjustable\": true\r\n    }\r\n}\r\n",
+							"raw": "{\r\n    \"staffCostFlatRateSetup\": {\r\n        \"rate\": 20,\r\n        \"adjustable\": true\r\n    },\r\n    \"officeAndAdministrationOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 15,\r\n        \"adjustable\": true\r\n    },\r\n    \"officeAndAdministrationOnDirectCostsFlatRateSetup\": {\r\n        \"rate\": 25,\r\n        \"adjustable\": true\r\n    },\r\n    \"travelAndAccommodationOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 15,\r\n        \"adjustable\": true\r\n    },\r\n    \"otherCostsOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 40,\r\n        \"isAdjustable\": true\r\n    }\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"

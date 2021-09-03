@@ -20,7 +20,6 @@ import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssessment
 import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
@@ -204,7 +203,7 @@ class ProjectControllerTest {
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
             flatRates = setOf(
-                ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, isAdjustable = true),
+                ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, adjustable = true),
             ),
             lumpSums = listOf(
                 ProgrammeLumpSum(

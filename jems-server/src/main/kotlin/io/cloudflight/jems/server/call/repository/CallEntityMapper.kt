@@ -141,7 +141,7 @@ fun Set<ProjectCallFlatRateEntity>.toModel() = mapTo(TreeSet()) {
     ProjectCallFlatRate(
         type = it.setupId.type,
         rate = it.rate,
-        isAdjustable = it.isAdjustable
+        adjustable = it.isAdjustable
     )
 }
 
@@ -149,7 +149,7 @@ fun Set<ProjectCallFlatRate>.toEntity(call: CallEntity) = mapTo(HashSet()) {
     ProjectCallFlatRateEntity(
         setupId = FlatRateSetupId(call = call, type = it.type),
         rate = it.rate,
-        isAdjustable = it.isAdjustable
+        isAdjustable = it.adjustable
     )
 }
 

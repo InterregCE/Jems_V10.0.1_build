@@ -441,13 +441,13 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
     private fun notAdjustableRate(type: FlatRateType, rate: Int) = ProjectCallFlatRate(
         type = type,
         rate = rate,
-        isAdjustable = false
+        adjustable = false
     )
 
     private fun adjustableRate(type: FlatRateType, rate: Int) = ProjectCallFlatRate(
         type = type,
         rate = rate,
-        isAdjustable = true
+        adjustable = true
     )
 
 }

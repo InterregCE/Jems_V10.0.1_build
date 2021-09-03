@@ -9,11 +9,11 @@ export class CallFlatRateSetting {
   otherCostsOnStaffCostsFlatRateSetup: FlatRateSetting | null;
 
   constructor(staffCostFlatRateSetup: FlatRateDTO | null, officeAndAdministrationOnStaffCostsFlatRateSetup: FlatRateDTO | null, officeAndAdministrationOnDirectCostsFlatRateSetup: FlatRateDTO | null, travelAndAccommodationOnStaffCostsFlatRateSetup: FlatRateDTO | null, otherCostsOnStaffCostsFlatRateSetup: FlatRateDTO | null) {
-    this.staffCostFlatRateSetup = staffCostFlatRateSetup ? {rate: staffCostFlatRateSetup.rate, isAdjustable: staffCostFlatRateSetup.adjustable} : null;
-    this.officeAndAdministrationOnStaffCostsFlatRateSetup = officeAndAdministrationOnStaffCostsFlatRateSetup ? {rate: officeAndAdministrationOnStaffCostsFlatRateSetup.rate, isAdjustable: officeAndAdministrationOnStaffCostsFlatRateSetup.adjustable} : null;
-    this.officeAndAdministrationOnDirectCostsFlatRateSetup = officeAndAdministrationOnDirectCostsFlatRateSetup ? {rate: officeAndAdministrationOnDirectCostsFlatRateSetup.rate, isAdjustable: officeAndAdministrationOnDirectCostsFlatRateSetup.adjustable} : null;
-    this.travelAndAccommodationOnStaffCostsFlatRateSetup = travelAndAccommodationOnStaffCostsFlatRateSetup ? {rate: travelAndAccommodationOnStaffCostsFlatRateSetup.rate, isAdjustable: travelAndAccommodationOnStaffCostsFlatRateSetup.adjustable} : null;
-    this.otherCostsOnStaffCostsFlatRateSetup = otherCostsOnStaffCostsFlatRateSetup ? {rate: otherCostsOnStaffCostsFlatRateSetup.rate, isAdjustable: otherCostsOnStaffCostsFlatRateSetup.adjustable} : null;
+    this.staffCostFlatRateSetup = staffCostFlatRateSetup ? {rate: staffCostFlatRateSetup.rate, adjustable: staffCostFlatRateSetup.adjustable} : null;
+    this.officeAndAdministrationOnStaffCostsFlatRateSetup = officeAndAdministrationOnStaffCostsFlatRateSetup ? {rate: officeAndAdministrationOnStaffCostsFlatRateSetup.rate, adjustable: officeAndAdministrationOnStaffCostsFlatRateSetup.adjustable} : null;
+    this.officeAndAdministrationOnDirectCostsFlatRateSetup = officeAndAdministrationOnDirectCostsFlatRateSetup ? {rate: officeAndAdministrationOnDirectCostsFlatRateSetup.rate, adjustable: officeAndAdministrationOnDirectCostsFlatRateSetup.adjustable} : null;
+    this.travelAndAccommodationOnStaffCostsFlatRateSetup = travelAndAccommodationOnStaffCostsFlatRateSetup ? {rate: travelAndAccommodationOnStaffCostsFlatRateSetup.rate, adjustable: travelAndAccommodationOnStaffCostsFlatRateSetup.adjustable} : null;
+    this.otherCostsOnStaffCostsFlatRateSetup = otherCostsOnStaffCostsFlatRateSetup ? {rate: otherCostsOnStaffCostsFlatRateSetup.rate, adjustable: otherCostsOnStaffCostsFlatRateSetup.adjustable} : null;
   }
 }
 

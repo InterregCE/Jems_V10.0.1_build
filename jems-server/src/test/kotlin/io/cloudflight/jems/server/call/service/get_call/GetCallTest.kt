@@ -9,7 +9,6 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.D
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallSummary
@@ -20,16 +19,12 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUn
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
-import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
-import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
-import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.userApplicant
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime
@@ -66,7 +61,7 @@ class GetCallTest: UnitTest() {
                 ProjectCallFlatRate(
                     type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
                     rate = 5,
-                    isAdjustable = true
+                    adjustable = true
                 ),
             ),
             lumpSums = listOf(

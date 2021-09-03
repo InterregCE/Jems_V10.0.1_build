@@ -91,7 +91,7 @@ private fun validateFlatRate(
                     i18nKey = "$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.range.error",
                     i18nArguments = hashMapOf(Pair("maxValue", restriction.rate.toString()))
                 )
-        else if (!restriction.isAdjustable && restriction.rate != value)
+        else if (!restriction.adjustable && restriction.rate != value)
             errors[type.key] =
                 I18nMessage(i18nKey = "$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.flat.rate.not.adjustable.error")
     }

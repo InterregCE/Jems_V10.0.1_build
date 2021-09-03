@@ -98,7 +98,7 @@ class CallControllerTest : UnitTest() {
                 ProgrammeFund(id = 10L, selected = true),
             ),
             flatRates = sortedSetOf(
-                ProjectCallFlatRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 5, isAdjustable = true),
+                ProjectCallFlatRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 5, adjustable = true),
             ),
             lumpSums = listOf(
                 ProgrammeLumpSum(splittingAllowed = true),
@@ -286,7 +286,7 @@ class CallControllerTest : UnitTest() {
         every { updateCallFlatRates.updateFlatRateSetup(30L, capture(slotFlatRate)) } returns callDetail
         controller.updateCallFlatRateSetup(30L, FlatRateSetupDTO(staffCostFlatRateSetup = FlatRateDTO(15, true)))
         assertThat(slotFlatRate.captured).containsExactly(
-            ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, isAdjustable = true)
+            ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, adjustable = true)
         )
     }
 

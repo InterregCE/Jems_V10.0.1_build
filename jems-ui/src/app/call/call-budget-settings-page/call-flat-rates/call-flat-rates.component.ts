@@ -85,31 +85,31 @@ export class CallFlatRatesComponent {
       isStaffCostFlatRateActive: [!!flatRateSetup.staffCostFlatRateSetup],
       staffCostFlatRateSetup: this.formBuilder.group({
         rate: [flatRateSetup.staffCostFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.STAFF_COST), Validators.min(this.constants.FLAT_RATE_MIN_VALUES)]],
-        isAdjustable: [flatRateSetup.staffCostFlatRateSetup?.adjustable]
+        adjustable: [flatRateSetup.staffCostFlatRateSetup?.adjustable]
       }),
 
       isOfficeOnStaffFlatRateActive: [!!flatRateSetup.officeAndAdministrationOnStaffCostsFlatRateSetup],
       officeOnStaffFlatRateSetup: this.formBuilder.group({
         rate: [flatRateSetup.officeAndAdministrationOnStaffCostsFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_STAFF), Validators.min(this.constants.FLAT_RATE_MIN_VALUES)]],
-        isAdjustable: [flatRateSetup.officeAndAdministrationOnStaffCostsFlatRateSetup?.adjustable]
+        adjustable: [flatRateSetup.officeAndAdministrationOnStaffCostsFlatRateSetup?.adjustable]
       }),
 
       isOfficeOnOtherFlatRateActive: [!!flatRateSetup.officeAndAdministrationOnDirectCostsFlatRateSetup],
       officeOnOtherFlatRateSetup: this.formBuilder.group({
         rate: [flatRateSetup.officeAndAdministrationOnDirectCostsFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.OFFICE_ON_OTHER), Validators.min(this.constants.FLAT_RATE_MIN_VALUES)]],
-        isAdjustable: [flatRateSetup.officeAndAdministrationOnDirectCostsFlatRateSetup?.adjustable]
+        adjustable: [flatRateSetup.officeAndAdministrationOnDirectCostsFlatRateSetup?.adjustable]
       }),
 
       isTravelOnStaffFlatRateActive: [!!flatRateSetup.travelAndAccommodationOnStaffCostsFlatRateSetup],
       travelOnStaffFlatRateSetup: this.formBuilder.group({
         rate: [flatRateSetup.travelAndAccommodationOnStaffCostsFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.TRAVEL_ON_STAFF), Validators.min(this.constants.FLAT_RATE_MIN_VALUES)]],
-        isAdjustable: [flatRateSetup.travelAndAccommodationOnStaffCostsFlatRateSetup?.adjustable]
+        adjustable: [flatRateSetup.travelAndAccommodationOnStaffCostsFlatRateSetup?.adjustable]
       }),
 
       isOtherOnStaffFlatRateActive: [!!flatRateSetup.otherCostsOnStaffCostsFlatRateSetup],
       otherOnStaffFlatRateSetup: this.formBuilder.group({
         rate: [flatRateSetup.otherCostsOnStaffCostsFlatRateSetup?.rate, [Validators.max(this.constants.FLAT_RATE_MAX_VALUES.OTHER_ON_STAFF), Validators.min(this.constants.FLAT_RATE_MIN_VALUES)]],
-        isAdjustable: [flatRateSetup.otherCostsOnStaffCostsFlatRateSetup?.adjustable]
+        adjustable: [flatRateSetup.otherCostsOnStaffCostsFlatRateSetup?.adjustable]
       })
     });
     this.formService.init(this.callFlatRateForm);
@@ -133,7 +133,7 @@ export class CallFlatRatesComponent {
   }
 
   get staffCostFlatRateType(): FormControl {
-    return this.staffCostFlatRateSetup.get('isAdjustable') as FormControl;
+    return this.staffCostFlatRateSetup.get('adjustable') as FormControl;
   }
 
   get isOfficeOnStaffFlatRateActive(): FormControl {
@@ -149,7 +149,7 @@ export class CallFlatRatesComponent {
   }
 
   get officeOnStaffFlatRateType(): FormControl {
-    return this.officeOnStaffFlatRateSetup.get('isAdjustable') as FormControl;
+    return this.officeOnStaffFlatRateSetup.get('adjustable') as FormControl;
   }
 
   get isOfficeOnOtherFlatRateActive(): FormControl {
@@ -165,7 +165,7 @@ export class CallFlatRatesComponent {
   }
 
   get officeOnOtherFlatRateType(): FormControl {
-    return this.officeOnOtherFlatRateSetup.get('isAdjustable') as FormControl;
+    return this.officeOnOtherFlatRateSetup.get('adjustable') as FormControl;
   }
 
   get isTravelOnStaffFlatRateActive(): FormControl {
@@ -181,7 +181,7 @@ export class CallFlatRatesComponent {
   }
 
   get travelOnStaffFlatRateType(): FormControl {
-    return this.travelOnStaffFlatRateSetup.get('isAdjustable') as FormControl;
+    return this.travelOnStaffFlatRateSetup.get('adjustable') as FormControl;
   }
 
   get isOtherOnStaffFlatRateActive(): FormControl {
@@ -193,7 +193,7 @@ export class CallFlatRatesComponent {
   }
 
   get otherOnStaffFlatRateType(): FormControl {
-    return this.otherOnStaffFlatRateSetup.get('isAdjustable') as FormControl;
+    return this.otherOnStaffFlatRateSetup.get('adjustable') as FormControl;
   }
 
   get otherOnStaffFlatRate(): FormControl {

@@ -69,7 +69,7 @@ class ApplicationFormConfigurationControllerTest: UnitTest() {
                 ProgrammeFund(id = 10L, selected = true),
             ),
             flatRates = sortedSetOf(
-                ProjectCallFlatRate(type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 5, isAdjustable = true),
+                ProjectCallFlatRate(type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 5, adjustable = true),
             ),
             lumpSums = listOf(
                 ProgrammeLumpSum(splittingAllowed = true),

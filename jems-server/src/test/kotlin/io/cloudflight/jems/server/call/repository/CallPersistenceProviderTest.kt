@@ -196,7 +196,7 @@ internal class CallPersistenceProviderTest {
                 abbreviatedName = emptySet(),
                 schemeNumber = ""
             )),
-            flatRates = sortedSetOf(ProjectCallFlatRate(type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 15, isAdjustable = true)),
+            flatRates = sortedSetOf(ProjectCallFlatRate(type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 15, adjustable = true)),
             lumpSums = listOf(ProgrammeLumpSum(
                 id = LUMP_SUM_ID,
                 cost = BigDecimal.ONE,
@@ -463,7 +463,7 @@ internal class CallPersistenceProviderTest {
         every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
 
         persistence.updateProjectCallFlatRate(1, setOf(
-            ProjectCallFlatRate(type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 18, isAdjustable = false),
+            ProjectCallFlatRate(type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 18, adjustable = false),
         ))
 
         assertThat(call.flatRates).containsExactlyInAnyOrder(ProjectCallFlatRateEntity(

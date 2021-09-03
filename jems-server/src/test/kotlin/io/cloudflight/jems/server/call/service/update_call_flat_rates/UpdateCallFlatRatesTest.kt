@@ -55,12 +55,12 @@ class UpdateCallFlatRatesTest {
         val existing = ProjectCallFlatRate(
             type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
             rate = 10,
-            isAdjustable = false
+            adjustable = false
         )
         val toBeCreated = ProjectCallFlatRate(
             type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
             rate = 5,
-            isAdjustable = true
+            adjustable = true
         )
 
         val call = callWithStatus(id = ID, CallStatus.PUBLISHED).copy(flatRates = sortedSetOf(existing))
@@ -82,10 +82,10 @@ class UpdateCallFlatRatesTest {
             entityRelatedId = ID,
             description = "Configuration of published call id=9 name='' changed:\n" +
                 "flatRates changed from [\n" +
-                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=10, isAdjustable=false)\n" +
+                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=10, adjustable=false)\n" +
                 "] to [\n" +
-                "  ProjectCallFlatRate(type=OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate=5, isAdjustable=true)\n" +
-                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=10, isAdjustable=false)\n" +
+                "  ProjectCallFlatRate(type=OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate=5, adjustable=true)\n" +
+                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=10, adjustable=false)\n" +
                 "]",
         ))
     }
@@ -96,17 +96,17 @@ class UpdateCallFlatRatesTest {
         val existingToBeRemoved = ProjectCallFlatRate(
             type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS,
             rate = 7,
-            isAdjustable = false
+            adjustable = false
         )
         val existingToBeUpdated = ProjectCallFlatRate(
             type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
             rate = 7,
-            isAdjustable = false
+            adjustable = false
         )
         val newToBeUpdated = ProjectCallFlatRate(
             type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
             rate = 10,
-            isAdjustable = true
+            adjustable = true
         )
 
         val call = callWithStatus(id = ID, CallStatus.DRAFT).copy(flatRates = sortedSetOf(existingToBeRemoved, existingToBeUpdated))
@@ -129,10 +129,10 @@ class UpdateCallFlatRatesTest {
             entityRelatedId = ID,
             description = "Configuration of not-published call id=10 name='' changed:\n" +
                 "flatRates changed from [\n" +
-                "  ProjectCallFlatRate(type=OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate=7, isAdjustable=false)\n" +
-                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=7, isAdjustable=false)\n" +
+                "  ProjectCallFlatRate(type=OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate=7, adjustable=false)\n" +
+                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=7, adjustable=false)\n" +
                 "] to [\n" +
-                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=10, isAdjustable=true)\n" +
+                "  ProjectCallFlatRate(type=OTHER_COSTS_ON_STAFF_COSTS, rate=10, adjustable=true)\n" +
                 "]",
         ))
     }
@@ -143,7 +143,7 @@ class UpdateCallFlatRatesTest {
         val existing = ProjectCallFlatRate(
             type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS,
             rate = 7,
-            isAdjustable = false
+            adjustable = false
         )
         val call = callWithStatus(id = ID, CallStatus.PUBLISHED).copy(flatRates = sortedSetOf(existing))
         every { persistence.getCallById(ID) } returns call
@@ -160,7 +160,7 @@ class UpdateCallFlatRatesTest {
         val existing = ProjectCallFlatRate(
             type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS,
             rate = 7,
-            isAdjustable = false
+            adjustable = false
         )
         val call = callWithStatus(id = ID, CallStatus.PUBLISHED).copy(flatRates = sortedSetOf(existing))
         every { persistence.getCallById(ID) } returns call
@@ -177,12 +177,12 @@ class UpdateCallFlatRatesTest {
             ProjectCallFlatRate(
                 type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
                 rate = 5,
-                isAdjustable = true
+                adjustable = true
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
                 rate = 9,
-                isAdjustable = false
+                adjustable = false
             )
         )
         assertThrows<DuplicateFlatRateTypesDefined> { updateCallFlatRates.updateFlatRateSetup(1, toBeSet) }
@@ -194,27 +194,27 @@ class UpdateCallFlatRatesTest {
             ProjectCallFlatRate(
                 type = FlatRateType.STAFF_COSTS,
                 rate = 21,
-                isAdjustable = true,
+                adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS,
                 rate = 16,
-                isAdjustable = true,
+                adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
                 rate = 26,
-                isAdjustable = true,
+                adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS,
                 rate = 16,
-                isAdjustable = true,
+                adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
                 rate = 41,
-                isAdjustable = true,
+                adjustable = true,
             )
         )
         val ex = assertThrows<FlatRateOutOfBounds> { updateCallFlatRates.updateFlatRateSetup(1, toBeSet) }
@@ -233,27 +233,27 @@ class UpdateCallFlatRatesTest {
             ProjectCallFlatRate(
                 type = FlatRateType.STAFF_COSTS,
                 rate = 0,
-                isAdjustable = true,
+                adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS,
                 rate = 0,
-                isAdjustable = true,
+                adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
                 rate = 0,
-                isAdjustable = true,
+                adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS,
                 rate = 0,
-                isAdjustable = true,
+                adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
                 rate = 0,
-                isAdjustable = true,
+                adjustable = true,
             )
         )
         val ex = assertThrows<FlatRateOutOfBounds> { updateCallFlatRates.updateFlatRateSetup(1, toBeSet) }

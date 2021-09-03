@@ -24,14 +24,14 @@ fun FlatRateSetupDTO.toModel(): Set<ProjectCallFlatRate> =
             ProjectCallFlatRate(
                 type = it.first,
                 rate = it.second!!.rate,
-                isAdjustable = it.second!!.adjustable
+                adjustable = it.second!!.adjustable
             )
         }
         .collect(Collectors.toSet())
 
 fun ProjectCallFlatRate.toDto() = FlatRateDTO(
     rate = rate,
-    adjustable = isAdjustable,
+    adjustable = adjustable,
 )
 
 fun Set<ProjectCallFlatRate>.toDto(): FlatRateSetupDTO {

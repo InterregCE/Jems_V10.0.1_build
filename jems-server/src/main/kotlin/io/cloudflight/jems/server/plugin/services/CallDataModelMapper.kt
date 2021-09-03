@@ -87,7 +87,7 @@ fun Set<ProjectCallFlatRate>.toDataModel(): FlatRateSetupData {
 
 fun ProjectCallFlatRate.toDataModel() = FlatRateData(
     rate = rate,
-    isAdjustable = isAdjustable,
+    isAdjustable = adjustable,
 )
 
 fun MutableSet<ApplicationFormFieldConfiguration>.toDataModel() = map {
