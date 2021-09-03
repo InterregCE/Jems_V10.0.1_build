@@ -49,6 +49,8 @@ dependencies {
     testImplementation('com.h2database:h2')
     testImplementation('io.cloudflight.platform:platform-test-jpa')
 
+    implementation ('au.com.console:kotlin-jpa-specification-dsl:2.0.0')
+
     constraints {
         implementation('commons-io:commons-io:2.8.0')
         implementation('io.minio:minio:8.3.0')
@@ -59,6 +61,10 @@ dependencies {
         implementation("io.cloudflight.jems.plugin.contract:jems-plugin-contract:$jemsPluginContractVersion")
         toDownload("io.cloudflight.jems.plugin.standard:jems-standard-plugin:$jemsStandardPluginVersion")
     }
+}
+
+repositories {
+    jcenter()
 }
 
 task download(type: Copy) {

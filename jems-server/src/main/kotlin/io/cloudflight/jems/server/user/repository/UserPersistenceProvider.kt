@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.user.repository.userrole.toModel
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
+import io.cloudflight.jems.server.user.service.model.UserSearchRequest
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import org.springframework.data.domain.Page
@@ -24,6 +25,7 @@ class UserPersistenceProvider(
     private val userRepo: UserRepository,
     private val userRoleRepo: UserRoleRepository,
     private val userRolePermissionRepo: UserRolePermissionRepository,
+    private val userSpecification: UserSpecification
 ) : UserPersistence {
 
     @Transactional(readOnly = true)
@@ -85,4 +87,8 @@ class UserPersistenceProvider(
     override fun emailExists(email: String): Boolean =
         userRepo.existsByEmail(email)
 
+    @Transactional(readOnly = true)
+    override fun filter(pageable: Pageable, userSearchRequest: UserSearchRequest): Page<UserSummary> =
+        userSpecification.filter(userSearchRequest)
+    
 }

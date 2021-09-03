@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.user.service.authorization.CanRetrieveUser
 import io.cloudflight.jems.server.user.service.authorization.CanRetrieveUsers
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.user.service.model.UserSearchRequest
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -19,6 +20,11 @@ class GetUser(private val persistence: UserPersistence) : GetUserInteractor {
     @ExceptionWrapper(GetUserException::class)
     override fun getUsers(pageable: Pageable): Page<UserSummary> =
         persistence.findAll(pageable)
+
+    @CanRetrieveUsers
+    @Transactional(readOnly = true)
+    override fun getUsers(pageable: Pageable, searchRequest: UserSearchRequest): Page<UserSummary> =
+        persistence.filter(pageable, searchRequest)
 
     @CanRetrieveUser
     @Transactional(readOnly = true)
