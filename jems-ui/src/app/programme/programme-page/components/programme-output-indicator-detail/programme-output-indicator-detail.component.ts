@@ -72,8 +72,8 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
     indicatorName: [[]],
     specificObjective: ['', Validators.required],
     measurementUnit: [[]],
-    milestone: [null],
-    finalTarget: [null],
+    milestone: [0],
+    finalTarget: [0],
     resultIndicatorId: [null]
   });
 

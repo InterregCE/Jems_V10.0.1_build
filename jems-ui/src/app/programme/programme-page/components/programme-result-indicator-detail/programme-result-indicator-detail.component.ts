@@ -62,9 +62,9 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
     indicatorName: [[]],
     specificObjective: ['', Validators.required],
     measurementUnit: [[]],
-    baseline: [null],
+    baseline: [0],
     referenceYear: ['', Validators.maxLength(10)],
-    finalTarget: [null],
+    finalTarget: [0],
     sourceOfData: [[]],
     comments: ['', Validators.maxLength(1000)]
   });
