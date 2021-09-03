@@ -2,3 +2,15 @@
   display: flex;
   flex-direction: column;
 }
+
+.text-color {
+  color: gray;
+}
+
+.background-color {
+  background-color: lightgray;
+}
+
+.same-line-text {
+  display: inline-block;
+}

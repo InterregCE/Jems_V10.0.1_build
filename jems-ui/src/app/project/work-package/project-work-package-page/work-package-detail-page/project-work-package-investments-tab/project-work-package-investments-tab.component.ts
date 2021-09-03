@@ -4,7 +4,7 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Observable} from 'rxjs';
 import {filter, map, take, tap} from 'rxjs/operators';
-import {ProjectWorkPackagePageStore} from '../project-work-package-page-store.service';
+import {WorkPackagePageStore} from '../project-work-package-page-store.service';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
@@ -39,7 +39,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   investments$: Observable<WorkPackageInvestmentDTO[]>;
 
   constructor(private activatedRoute: ActivatedRoute,
-              public workPackageStore: ProjectWorkPackagePageStore,
+              public workPackageStore: WorkPackagePageStore,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private projectVersionStore: ProjectVersionStore,
               public projectStore: ProjectStore,

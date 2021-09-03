@@ -63,7 +63,7 @@ import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/pr
 import {StaffCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/staff-costs-budget-table/staff-costs-budget-table.component';
 import {BudgetFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/budget-flat-rate-table/budget-flat-rate-table.component';
 import {GeneralBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-table/general-budget-table.component';
-import {ProjectWorkPackagePageStore} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-page-store.service';
+import {WorkPackagePageStore} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-page-store.service';
 import {ProjectPartnerDetailPageStore} from './partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
 import {UnitCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/unit-costs-budget-table/unit-costs-budget-table.component';
@@ -89,6 +89,8 @@ import {ProjectPartnerFilterPipe} from '@project/work-package/project-work-packa
 import {ApplicationAnnexesComponent} from './project-application/application-annexes/application-annexes.component';
 import {CheckAndSubmitComponent} from './project-application/check-and-submit/check-and-submit.component';
 import {AssessmentAndDecisionComponent} from './project-application/assessment-and-decision/assessment-and-decision.component';
+import {ProjectWorkPackageActivitiesFilterPipe} from '@project/partner/project-partner-detail-page/project-partner-state-aid-tab/work-package-activities-filter.pipe';
+import {ProjectWorkPackagePageStore} from '@project/work-package/project-work-package-page/project-work-package-page-store.service';
 
 @NgModule({
   declarations: [
@@ -174,6 +176,7 @@ import {AssessmentAndDecisionComponent} from './project-application/assessment-a
     ApplicationAnnexesComponent,
     CheckAndSubmitComponent,
     AssessmentAndDecisionComponent,
+    ProjectWorkPackageActivitiesFilterPipe,
   ],
   imports: [
     SharedModule,
@@ -188,6 +191,7 @@ import {AssessmentAndDecisionComponent} from './project-application/assessment-a
     ProjectApplicationFormSidenavService,
     ProjectApplicationFormStore,
     ProjectAcronymResolver,
+    WorkPackagePageStore,
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,
     ProjectLumpSumsPageStore

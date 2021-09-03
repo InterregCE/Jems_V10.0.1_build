@@ -1,100 +1,150 @@
 <app-form *ngIf="data$ | async as data"
           (save)="updateStateAid()"
-          (discard)="resetForm(data.stateAid)">
+          (discard)="resetForm(data.stateAid, data.activities)">
     <form appFormLayout [formGroup]="form">
         <h3>{{ 'project.partner.state.aid.title' | translate }}</h3>
-        <app-multi-language-container>
-            <div [appTableConfig]="[{},{maxInRem:6},{}]">
-                <span class="table-header mt-2">
-                    <h4 class="mt-2">{{'project.partner.state.aid.economic.title' | translate}}</h4>
-                    <span></span>
-                    <h5 class="ml-2">{{'project.partner.state.aid.table.subtitle' | translate}}</h5>
-                </span>
-                <div class="mat-body-strong">
-                    <span>{{'project.partner.state.aid.question' | translate }}</span>
-                    <span>{{'project.partner.state.aid.answer' | translate }}</span>
-                    <span>{{'project.partner.state.aid.justification' | translate }}</span>
-                </div>
+        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING">
+            <app-multi-language-container>
+                <div [appTableConfig]="[{},{maxInRem:6},{}]">
+                    <span class="table-header mt-2">
+                        <h4 class="mt-2">{{'project.partner.state.aid.economic.title' | translate}}</h4>
+                        <span></span>
+                        <h5 class="ml-2">{{'project.partner.state.aid.table.subtitle' | translate}}</h5>
+                    </span>
+                    <div class="mat-body-strong">
+                        <span>{{'project.partner.state.aid.question' | translate }}</span>
+                        <span>{{'project.partner.state.aid.answer' | translate }}</span>
+                        <span>{{'project.partner.state.aid.justification' | translate }}</span>
+                    </div>
 
-                <div>
-                    <span>{{'project.partner.state.aid.economic.q1' | translate}}</span>
                     <div>
-                        <mat-button-toggle-group formControlName="answer1">
-                            <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
-                            <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
-                        </mat-button-toggle-group>
+                        <span>{{'project.partner.state.aid.economic.q1' | translate}}</span>
+                        <div>
+                            <mat-button-toggle-group formControlName="answer1">
+                                <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                                <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                            </mat-button-toggle-group>
+                        </div>
+                        <div>
+                            <app-multi-language-form-field formControlName="justification1" maxLength="1000"
+                                                           type="textarea"
+                                                           label="common.textarea.enter.text">
+                            </app-multi-language-form-field>
+                        </div>
                     </div>
-                    <div>
-                        <app-multi-language-form-field formControlName="justification1" maxLength="1000"
-                                                       type="textarea"
-                                                       label="common.textarea.enter.text">
-                        </app-multi-language-form-field>
-                    </div>
-                </div>
 
-                <div>
-                    <span>{{'project.partner.state.aid.economic.q2' | translate}}</span>
                     <div>
-                        <mat-button-toggle-group formControlName="answer2">
-                            <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
-                            <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
-                        </mat-button-toggle-group>
-                    </div>
-                    <div>
-                        <app-multi-language-form-field formControlName="justification2" maxLength="1000"
-                                                       type="textarea"
-                                                       label="common.textarea.enter.text">
-                        </app-multi-language-form-field>
+                        <span>{{'project.partner.state.aid.economic.q2' | translate}}</span>
+                        <div>
+                            <mat-button-toggle-group formControlName="answer2">
+                                <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                                <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                            </mat-button-toggle-group>
+                        </div>
+                        <div>
+                            <app-multi-language-form-field formControlName="justification2" maxLength="1000"
+                                                           type="textarea"
+                                                           label="common.textarea.enter.text">
+                            </app-multi-language-form-field>
+                        </div>
                     </div>
                 </div>
+            </app-multi-language-container>
+
+            <app-multi-language-container class="mt-3">
+                <div [appTableConfig]="[{},{maxInRem:6},{}]">
+                    <span class="table-header mt-2">
+                        <h4 class="mt-2">{{'project.partner.state.aid.advantage.title' | translate}}</h4>
+                        <span></span>
+                        <h5 class="ml-2">{{'project.partner.state.aid.table.subtitle' | translate}}</h5>
+                    </span>
+                    <div class="mat-body-strong">
+                        <span>{{'project.partner.state.aid.question' | translate }}</span>
+                        <span>{{'project.partner.state.aid.answer' | translate }}</span>
+                        <span>{{'project.partner.state.aid.justification' | translate }}</span>
+                    </div>
+
+                    <div>
+                        <span>{{'project.partner.state.aid.advantage.q1' | translate}}</span>
+                        <div>
+                            <mat-button-toggle-group formControlName="answer3">
+                                <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                                <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                            </mat-button-toggle-group>
+                        </div>
+                        <div>
+                            <app-multi-language-form-field formControlName="justification3" maxLength="1000"
+                                                           type="textarea"
+                                                           label="common.textarea.enter.text">
+                            </app-multi-language-form-field>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span>{{'project.partner.state.aid.advantage.q2' | translate}}</span>
+                        <div>
+                            <mat-button-toggle-group formControlName="answer4">
+                                <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                                <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                            </mat-button-toggle-group>
+                        </div>
+                        <div>
+                            <app-multi-language-form-field formControlName="justification4" maxLength="1000"
+                                                           type="textarea"
+                                                           label="common.textarea.enter.text">
+                            </app-multi-language-form-field>
+                        </div>
+                    </div>
+                </div>
+            </app-multi-language-container>
+
+            <div class="pt-3 pb-2 pl-1 mb-5 mt-2 background-color">
+                <h3 class="mr-5 same-line-text">{{ 'project.partner.state.aid.check.result' | translate }}</h3>
+                <span class="text-color" *ngIf="getStateAidCheck() === ''">{{'project.partner.state.aid.complete.form.first' | translate}}</span>
+                <span *ngIf="getStateAidCheck() !== ''">{{getStateAidCheck() | translate}}</span>
             </div>
-        </app-multi-language-container>
+        </ng-container>
 
-        <app-multi-language-container class="mt-3">
-            <div [appTableConfig]="[{},{maxInRem:6},{}]">
-                <span class="table-header mt-2">
-                    <h4 class="mt-2">{{'project.partner.state.aid.advantage.title' | translate}}</h4>
-                    <span></span>
-                    <h5 class="ml-2">{{'project.partner.state.aid.table.subtitle' | translate}}</h5>
-                </span>
-                <div class="mat-body-strong">
-                    <span>{{'project.partner.state.aid.question' | translate }}</span>
-                    <span>{{'project.partner.state.aid.answer' | translate }}</span>
-                    <span>{{'project.partner.state.aid.justification' | translate }}</span>
-                </div>
+        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING" class="example-chip-list" appearance="fill">
+            <mat-label>{{ 'project.partner.state.aid.relevant.activities' | translate }}</mat-label>
+            <mat-chip-list #chipList>
+                <mat-chip
+                        *ngFor="let activity of activities().value;let activityIndex = index"
+                        [selectable]="false"
+                        [removable]="true"
+                        (removed)="removeActivity(activityIndex)">
+                    {{ getDisplayValueForActivityNumber(data.activities, activity)}}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input
+                        #filterActivities
+                        [matAutocomplete]="auto"
+                        [matChipInputFor]="chipList"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+            </mat-chip-list>
+            <mat-autocomplete #auto="matAutocomplete"
+                              (optionSelected)="addActivity($event.option.value, data.activities); filterActivities.value = ''; filterActivities.blur()">
+                <mat-optgroup *ngFor="let group of data.displayActivities" [label]="getDisplayValueForWorkPackageNumber(group.workpackageNumber)">
+                    <mat-option *ngFor="let activity of getActivitiesWithoutSelected(group.activities) | filterActivities: filterActivities.value" [value]="activity">
+                        {{ getDisplayValueForActivityNumber(data.activities, activity)}}
+                    </mat-option>
+                </mat-optgroup>
+            </mat-autocomplete>
+        </mat-form-field>
 
-                <div>
-                    <span>{{'project.partner.state.aid.advantage.q1' | translate}}</span>
-                    <div>
-                        <mat-button-toggle-group formControlName="answer3">
-                            <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
-                            <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
-                        </mat-button-toggle-group>
-                    </div>
-                    <div>
-                        <app-multi-language-form-field formControlName="justification3" maxLength="1000"
-                                                       type="textarea"
-                                                       label="common.textarea.enter.text">
-                        </app-multi-language-form-field>
-                    </div>
-                </div>
-
-                <div>
-                    <span>{{'project.partner.state.aid.advantage.q2' | translate}}</span>
-                    <div>
-                        <mat-button-toggle-group formControlName="answer4">
-                            <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
-                            <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
-                        </mat-button-toggle-group>
-                    </div>
-                    <div>
-                        <app-multi-language-form-field formControlName="justification4" maxLength="1000"
-                                                       type="textarea"
-                                                       label="common.textarea.enter.text">
-                        </app-multi-language-form-field>
-                    </div>
-                </div>
-            </div>
-        </app-multi-language-container>
+        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING">
+            <mat-label>{{'project.partner.state.aid.scheme' | translate}}</mat-label>
+            <mat-select formControlName="stateAidScheme"
+                        (selectionChange)="updateSelectedScheme($event.value)">
+                <mat-option *ngFor="let schemes of data.project.callSettings.stateAids" [value]="schemes">
+                    {{schemes.abbreviatedName | translateBySystemLanguage | async}}
+                </mat-option>
+            </mat-select>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]='form.controls?.stateAidScheme.errors'>
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
     </form>
 </app-form>

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {WorkPackageService} from '@cat/api';
-import {ProjectWorkPackagePageStore} from './project-work-package-page-store.service';
+import {WorkPackagePageStore} from './project-work-package-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 
@@ -19,7 +19,7 @@ export class ProjectWorkPackageDetailPageComponent {
   constructor(private workPackageService: WorkPackageService,
               private activatedRoute: ActivatedRoute,
               private router: RoutingService,
-              public workPackageStore: ProjectWorkPackagePageStore) {
+              public workPackageStore: WorkPackagePageStore) {
   }
 
   activeTab(route: string): boolean {

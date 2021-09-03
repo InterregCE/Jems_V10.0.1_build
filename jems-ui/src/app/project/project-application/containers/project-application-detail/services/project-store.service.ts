@@ -16,6 +16,7 @@ import {
   ProjectStatusService,
   ProjectVersionDTO,
   UserRoleCreateDTO,
+  WorkPackageActivitySummaryDTO,
 } from '@cat/api';
 import {
   distinctUntilChanged,
@@ -67,6 +68,7 @@ export class ProjectStore {
   investmentSummaries$: Observable<InvestmentSummary[]>;
   userIsProjectOwner$: Observable<boolean>;
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
+  activities$: Observable<WorkPackageActivitySummaryDTO[]>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -123,6 +125,7 @@ export class ProjectStore {
     this.investmentSummaries$ = this.investmentSummaries();
     this.userIsProjectOwner$ = this.userIsProjectOwner();
     this.allowedBudgetCategories$ = this.allowedBudgetCategories();
+    this.activities$ = this.projectActivities();
   }
 
   private static latestVersion(versions?: ProjectVersionDTO[]): number {
@@ -359,4 +362,17 @@ export class ProjectStore {
       );
   }
 
+  private projectActivities(): Observable<WorkPackageActivitySummaryDTO[]> {
+    return combineLatest([
+      this.project$,
+      this.projectVersionStore.currentRouteVersion$
+    ])
+      .pipe(
+        switchMap(([project, version]) =>
+          this.projectService.getProjectActivities(project.id, version)
+        ),
+        tap(activities => Log.info('Fetched project activities', activities)),
+        shareReplay(1)
+      );
+  }
 }

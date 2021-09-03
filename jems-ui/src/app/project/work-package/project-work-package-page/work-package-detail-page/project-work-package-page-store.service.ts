@@ -22,7 +22,7 @@ import {ProjectVersionStore} from '../../../common/services/project-version-stor
 import {ProjectPaths} from '@project/common/project-util';
 
 @Injectable()
-export class ProjectWorkPackagePageStore {
+export class WorkPackagePageStore {
   public static WORK_PACKAGE_DETAIL_PATH = '/applicationFormWorkPackage/';
 
   private workPackageId: number;
@@ -94,7 +94,7 @@ export class ProjectWorkPackagePageStore {
 
   private workPackage(): Observable<OutputWorkPackage> {
     const initialPackage$ = combineLatest([
-      this.routingService.routeParameterChanges(ProjectWorkPackagePageStore.WORK_PACKAGE_DETAIL_PATH, 'workPackageId'),
+      this.routingService.routeParameterChanges(WorkPackagePageStore.WORK_PACKAGE_DETAIL_PATH, 'workPackageId'),
       this.projectStore.projectId$,
       this.projectVersionStore.currentRouteVersion$,
     ]).pipe(
