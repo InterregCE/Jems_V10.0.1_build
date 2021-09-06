@@ -199,6 +199,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
+            stateAids = emptyList(),
             isAdditionalFundAllowed = false,
             applicationFormFieldConfigurations = mutableSetOf()
         )

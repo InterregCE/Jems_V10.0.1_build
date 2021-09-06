@@ -16,7 +16,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 fun WorkPackageEntity.toModel(
     getActivitiesForWorkPackageId: (Long) -> Collection<WorkPackageActivityEntity>?,
     getOutputsForWorkPackageId: (Long) -> Collection<WorkPackageOutputEntity>?,
-    getActivityPartnersForWorkPackageId: (Long) -> Map<WorkPackageActivityId, List<Long>>?
+    getActivityPartnersForWorkPackageId: (Long) -> Map<Long, List<Long>>?
 ) = ProjectWorkPackage (
     id = id,
     workPackageNumber = number ?: throw NullPointerException("There is work package without any number in database."),
@@ -40,7 +40,7 @@ fun WorkPackageEntity.toModelFull(
     getActivitiesForWorkPackageId: (Long) -> Collection<WorkPackageActivityEntity>?,
     getOutputsForWorkPackageId: (Long) -> Collection<WorkPackageOutputEntity>?,
     getInvestmentsForWorkPackageId: (Long) -> Collection<WorkPackageInvestmentEntity>?,
-    getActivityPartnersForWorkPackageId: (Long) -> Map<WorkPackageActivityId, List<Long>>?
+    getActivityPartnersForWorkPackageId: (Long) -> Map<Long, List<Long>>?
 ) = ProjectWorkPackageFull (
     id = id,
     workPackageNumber = number!!,

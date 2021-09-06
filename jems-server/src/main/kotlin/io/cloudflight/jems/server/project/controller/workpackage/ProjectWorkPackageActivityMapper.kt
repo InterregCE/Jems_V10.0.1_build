@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.project.controller.workpackage
 
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivityDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivityDeliverableDTO
+import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 
@@ -45,3 +47,10 @@ fun WorkPackageActivityDeliverable.toDeliverableDto() = WorkPackageActivityDeliv
 )
 
 fun List<WorkPackageActivityDeliverable>.toDeliverableDto() = map { it.toDeliverableDto() }
+
+fun WorkPackageActivitySummary.toDto() = WorkPackageActivitySummaryDTO(
+    workPackageNumber = workPackageNumber,
+    activityNumber = activityNumber
+)
+
+fun List<WorkPackageActivitySummary>.toSummariesDto() = this.map { it.toDto() }

@@ -84,6 +84,7 @@ class ProjectControllerTest {
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
+            stateAids = emptyList(),
             isAdditionalFundAllowed = false,
             applicationFormFieldConfigurations = mutableSetOf()
         )
@@ -227,6 +228,7 @@ class ProjectControllerTest {
                     categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                 ),
             ),
+            stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf()
         )
         every { getProjectInteractor.getProjectCallSettings(1L) } returns callSettings
@@ -264,6 +266,7 @@ class ProjectControllerTest {
                         categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
                     )
                 ),
+                stateAids = emptyList(),
                 applicationFormFieldConfigurations = mutableSetOf()
             )
         )
@@ -334,6 +337,7 @@ class ProjectControllerTest {
                     callSettings.lengthOfPeriod,
                     callSettings.isAdditionalFundAllowed,
                     FlatRateSetupDTO(),
+                    emptyList(),
                     emptyList(),
                     emptyList(),
                     callSettings.applicationFormFieldConfigurations.toDTO()

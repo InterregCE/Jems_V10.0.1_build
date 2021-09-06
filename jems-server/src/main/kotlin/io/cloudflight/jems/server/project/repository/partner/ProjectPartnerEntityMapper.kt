@@ -348,6 +348,8 @@ fun ProjectPartnerStateAid.toEntity(partnerId: Long) = ProjectPartnerStateAidEnt
         justification3,
         justification4
     ),
+    activities = emptyList(),
+    stateAidScheme = null
 )
 
 private fun combineTranslatedValuesStateAid(

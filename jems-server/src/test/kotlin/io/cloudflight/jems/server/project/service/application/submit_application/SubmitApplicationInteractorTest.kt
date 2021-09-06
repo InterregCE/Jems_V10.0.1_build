@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.plugin.entity.PluginStatusEntity
 import io.cloudflight.jems.server.plugin.repository.PluginStatusRepository
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -161,11 +162,12 @@ class SubmitApplicationInteractorTest : UnitTest() {
         isAdditionalFundAllowed: Boolean = true,
         flatRates: Set<ProjectCallFlatRate> = emptySet(),
         lumpSums: List<ProgrammeLumpSum> = emptyList(),
-        unitCosts: List<ProgrammeUnitCost> = emptyList()
+        unitCosts: List<ProgrammeUnitCost> = emptyList(),
+        stateAids : List<ProgrammeStateAid> = emptyList(),
     ) =
         ProjectCallSettings(
             callId, callName, startDate, endDate, endDateStep1,
-            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts,
+            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
             applicationFormFieldConfigurations = mutableSetOf()
         )
 

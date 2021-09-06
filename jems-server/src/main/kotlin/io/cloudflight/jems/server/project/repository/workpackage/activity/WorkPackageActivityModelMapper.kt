@@ -16,16 +16,18 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverabl
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageDeliverableRow
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 
 fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageActivityEntity {
-    val activityId = WorkPackageActivityId(workPackageId, index)
+    val activityEmbeddedId = WorkPackageActivityId(workPackageId, index)
     return WorkPackageActivityEntity(
-        activityId = activityId,
+        workPackageId = workPackageId,
+        activityNumber = index,
         translatedValues = mutableSetOf(),
         startPeriod = startPeriod,
         endPeriod = endPeriod,
-        deliverables = deliverables.toIndexedEntity(activityId),
+        deliverables = deliverables.toIndexedEntity(activityEmbeddedId),
     ).apply {
         translatedValues.addTranslationEntities(
             { language ->
@@ -43,12 +45,13 @@ fun List<WorkPackageActivity>.toIndexedEntity(workPackageId: Long) =
     mapIndexed { index, activity -> activity.toEntity(workPackageId, index.plus(1)) }
 
 fun WorkPackageActivityDeliverable.toEntity(
-    activityId: WorkPackageActivityId,
+    activityId: Long,
     index: Int
 ): WorkPackageActivityDeliverableEntity {
-    val deliverableId = WorkPackageActivityDeliverableId(activityId = activityId, deliverableNumber = index)
     return WorkPackageActivityDeliverableEntity(
         deliverableId = deliverableId,
+        activity = activityId,
+        deliverableNumber = index,
         translatedValues = mutableSetOf(),
         startPeriod = period,
     ).apply {
@@ -63,27 +66,36 @@ fun WorkPackageActivityDeliverable.toEntity(
     }
 }
 
-fun List<WorkPackageActivityDeliverable>.toIndexedEntity(activityId: WorkPackageActivityId) =
+fun List<WorkPackageActivityDeliverable>.toIndexedEntity(activityId: Long, index: Int) =
     mapIndexedTo(HashSet()) { index, deliverable -> deliverable.toEntity(activityId, index.plus(1)) }
 
-fun WorkPackageActivityEntity.toModel(partnersByActivities: Map<WorkPackageActivityId, List<Long>>) =
+fun WorkPackageActivityEntity.toModel(partnersByActivities: Map<Long, List<Long>>) =
     WorkPackageActivity(
-        workPackageId = activityId.workPackageId,
-        activityNumber = activityId.activityNumber,
+        workPackageId = workPackageId,
+        activityNumber = activityNumber,
         title = translatedValues.extractField { it.title },
         description = translatedValues.extractField { it.description },
         startPeriod = startPeriod,
         endPeriod = endPeriod,
-        deliverables = deliverables.sortedBy { it.deliverableId.deliverableNumber }.map { it.toModel() },
+        deliverables = deliverables.sortedBy { it.deliverableNumber }.map { it.toModel() },
         partnerIds = partnersByActivities[activityId]?.toSet() ?: emptySet()
     )
 
 fun Iterable<WorkPackageActivityEntity>.toModel(
-    partnersByActivities: Map<WorkPackageActivityId, List<Long>>
-) = sortedBy { it.activityId.activityNumber }.map { it.toModel(partnersByActivities) }
+    partnersByActivities: Map<Long, List<Long>>
+) = sortedBy { it.activityNumber }.map { it.toModel(partnersByActivities) }
+
+fun WorkPackageActivityEntity.toSummaryModel() = WorkPackageActivitySummary (
+    workPackageNumber = 1,
+    activityNumber = activityNumber
+)
+
+fun Iterable<WorkPackageActivityEntity>.toSummaryModel() = map { it.toSummaryModel() }
 
 fun WorkPackageActivityDeliverableEntity.toModel() = WorkPackageActivityDeliverable(
-    deliverableNumber = deliverableId.deliverableNumber,
+    deliverableId = deliverableId,
+    activityId = activityId,
+    deliverableNumber = deliverableNumber,
     description = translatedValues.extractField { it.description },
     period = startPeriod,
 )
@@ -111,6 +123,7 @@ fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
 fun List<WorkPackageDeliverableRow>.toDeliverableHistoricalData() =
     this.groupBy { it.deliverableNumber }.map { groupedRows ->
         WorkPackageActivityDeliverable(
+            activityId = groupedRows.value.first().activityId,
             deliverableNumber = groupedRows.value.first().deliverableNumber,
             period = groupedRows.value.first().startPeriod,
             description = groupedRows.value.extractField { it.description }

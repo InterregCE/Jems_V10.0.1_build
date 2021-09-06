@@ -117,13 +117,16 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         }
 
         val activity1 = WorkPackageActivityEntity(
-            activityId = activityId1,
+            activityId = 1L,
+            workPackageId = WORK_PACKAGE_ID,
+            activityNumber = 1,
             startPeriod = 4,
             endPeriod = 6
         )
         val activity1Partner1 = WorkPackageActivityPartnerEntity(
             WorkPackageActivityPartnerId(
-                workPackageActivityId = activityId1,
+                workPackageId = WORK_PACKAGE_ID,
+                activityNumber = 1,
                 projectPartnerId = 3
             )
         )
@@ -135,7 +138,9 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
             partnerIds = setOf(activity1Partner1.id.projectPartnerId)
         )
         val activity2 = WorkPackageActivityEntity(
-            activityId = activityId2,
+            activityId = 2L,
+            workPackageId = WORK_PACKAGE_ID_2,
+            activityNumber = 2,
             startPeriod = 1,
             endPeriod = 3,
             translatedValues = mutableSetOf(),
@@ -349,7 +354,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         every {
             repositoryOutput.findAllByOutputIdWorkPackageIdIn(wkPackages)
         } returns listOf(output2, output1)
-        every { repositoryActivityPartner.findAllByIdWorkPackageActivityIdWorkPackageIdIn(wkPackages) } returns listOf(
+        every { repositoryActivityPartner.findAllByIdWorkPackageIdIn(wkPackages) } returns listOf(
             activity1Partner1
         )
 
@@ -484,7 +489,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
     fun `work package activities and deliverables are correctly mapped and sorted`() {
         every { repository.findById(eq(WORK_PACKAGE_ID)) } returns Optional.of(workPackageWithActivities)
         val partnerList = mutableListOf(activity1Partner1)
-        every { repositoryActivityPartner.findAllByIdWorkPackageActivityIdWorkPackageId(WORK_PACKAGE_ID) } returns partnerList
+        every { repositoryActivityPartner.findAllByIdWorkPackageId(WORK_PACKAGE_ID) } returns partnerList
 
         assertThat(persistence.getWorkPackageActivitiesForWorkPackage(WORK_PACKAGE_ID, 1L)).containsExactly(
             activity1_model, activity2_model,
@@ -556,7 +561,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         every { repositoryActivity.saveAll(capture(slot)) } returnsArgument 0
         every { repositoryActivity.saveAll(capture(slot)) } returnsArgument 0
 
-        every { repositoryActivityPartner.deleteAllByIdWorkPackageActivityIdWorkPackageId(WORK_PACKAGE_ID) } returns Unit
+        every { repositoryActivityPartner.deleteAllByIdWorkPackageId(WORK_PACKAGE_ID) } returns Unit
         every { repositoryActivityPartner.saveAll(emptyList()) } returns emptyList()
 
         val toBeSaved = listOf(

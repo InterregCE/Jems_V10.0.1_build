@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.workpackage.activity.model
 import io.cloudflight.jems.api.project.dto.InputTranslation
 
 data class WorkPackageActivity(
+    val activityId: Long = 0,
     val workPackageId: Long,
     val activityNumber: Int = 0,
     val title: Set<InputTranslation> = emptySet(),

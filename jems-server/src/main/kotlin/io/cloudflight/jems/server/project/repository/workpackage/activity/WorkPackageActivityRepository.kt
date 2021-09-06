@@ -70,4 +70,6 @@ interface WorkPackageActivityRepository : PagingAndSortingRepository<WorkPackage
         nativeQuery = true
     )
     fun findAllByActivityIdWorkPackageIdAsOfTimestamp(workPackageIds: Collection<Long>, timestamp: Timestamp): List<WorkPackageActivityRow>
+
+//    fun findAllByActivityId
 }

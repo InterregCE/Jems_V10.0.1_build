@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
@@ -31,5 +32,7 @@ interface WorkPackagePersistence {
 
     fun getWorkPackageActivitiesForWorkPackage(workPackageId: Long, projectId: Long, version: String? = null): List<WorkPackageActivity>
     fun updateWorkPackageActivities(workPackageId: Long, workPackageActivities: List<WorkPackageActivity>): List<WorkPackageActivity>
+    fun getWorkPackageActivitiesForProject(projectId: Long, version: String? = null): List<WorkPackageActivitySummary>
+
     fun getProjectFromWorkPackageInvestment(workPackageInvestmentId: Long): ProjectApplicantAndStatus
 }

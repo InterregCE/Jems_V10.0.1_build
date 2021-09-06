@@ -11,11 +11,11 @@ import java.sql.Timestamp
 @Repository
 interface WorkPackageActivityPartnerRepository : JpaRepository<WorkPackageActivityPartnerEntity, WorkPackageActivityPartnerId> {
 
-    fun findAllByIdWorkPackageActivityIdWorkPackageId(workPackageId: Long): MutableList<WorkPackageActivityPartnerEntity>
+    fun findAllByIdWorkPackageId(workPackageId: Long): MutableList<WorkPackageActivityPartnerEntity>
 
-    fun findAllByIdWorkPackageActivityIdWorkPackageIdIn(workPackageIds: Collection<Long>): Iterable<WorkPackageActivityPartnerEntity>
+    fun findAllByIdWorkPackageIdIn(workPackageIds: Collection<Long>): Iterable<WorkPackageActivityPartnerEntity>
 
-    fun deleteAllByIdWorkPackageActivityIdWorkPackageId(workPackageId: Long)
+    fun deleteAllByIdWorkPackageId(workPackageId: Long)
 
     @Query(
         value = """

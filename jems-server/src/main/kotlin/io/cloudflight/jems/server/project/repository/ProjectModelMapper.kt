@@ -54,6 +54,7 @@ fun CallEntity.toSettingsModel(applicationFormFieldConfigurationEntities: Mutabl
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.map { it.toModel() }.sortedBy { it.id },
     unitCosts = unitCosts.toProgrammeUnitCost(),
+    stateAids = emptyList(),
     applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
 )
 

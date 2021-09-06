@@ -2,13 +2,16 @@ package io.cloudflight.jems.server.project.entity.workpackage.activity
 
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
 import javax.persistence.CascadeType
-import javax.persistence.EmbeddedId
 import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
 import javax.persistence.NamedAttributeNode
 import javax.persistence.NamedEntityGraph
 import javax.persistence.NamedEntityGraphs
 import javax.persistence.NamedSubgraph
 import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_work_package_activity")
 @NamedEntityGraphs(
@@ -27,8 +30,15 @@ import javax.persistence.OneToMany
 )
 class WorkPackageActivityEntity(
 
-    @EmbeddedId
-    val activityId: WorkPackageActivityId,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val activityId: Long = 0,
+
+    @field:NotNull
+    val workPackageId: Long,
+
+    @field:NotNull
+    val activityNumber: Int,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<WorkPackageActivityTranslationEntity> = mutableSetOf(),
@@ -37,6 +47,6 @@ class WorkPackageActivityEntity(
 
     val endPeriod: Int? = null,
 
-    @OneToMany(mappedBy = "deliverableId.activityId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val deliverables: Set<WorkPackageActivityDeliverableEntity> = emptySet(),
+//    @OneToMany(mappedBy = "deliverableId", cascade = [CascadeType.ALL], orphanRemoval = true)
+//    val deliverables: Set<WorkPackageActivityDeliverableEntity> = emptySet(),
 )

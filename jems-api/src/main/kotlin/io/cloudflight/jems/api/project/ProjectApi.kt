@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
+import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
 import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -96,4 +97,10 @@ interface ProjectApi {
         @PathVariable projectId: Long,
         @RequestParam(required = false) version: String? = null
     ): List<InvestmentSummaryDTO>
+
+    @GetMapping("/{projectId}/activities")
+    fun getProjectActivities(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<WorkPackageActivitySummaryDTO>
 }

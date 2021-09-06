@@ -44,6 +44,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             flatRates = emptySet(),
             lumpSums = lumpSums,
             unitCosts = listOf(),
+            stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf()
         )
 

@@ -192,6 +192,7 @@ class ProjectServiceTest : UnitTest() {
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
+            stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf()
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)

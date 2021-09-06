@@ -74,7 +74,9 @@ class ProjectWorkPackageActivityEntityTest: UnitTest() {
     @Test
     fun `WorkPackageActivityEntity deliverables should be equal based on data`() {
         val activity = WorkPackageActivityEntity(
-            activityId = WorkPackageActivityId(workPackageId = 546L, activityNumber = 256),
+            activityId = 1L,
+            workPackageId = 546L,
+            activityNumber = 256,
             deliverables = setOf(deliverable1, deliverable2)
         )
         assertThat(activity.deliverables).containsExactly(deliverable1)

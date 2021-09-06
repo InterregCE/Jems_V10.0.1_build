@@ -18,6 +18,7 @@ val callSettings = ProjectCallSettings(
     flatRates = emptySet(),
     lumpSums = emptyList(),
     unitCosts = emptyList(),
+    stateAids = emptyList(),
     applicationFormFieldConfigurations = mutableSetOf()
 )
 
