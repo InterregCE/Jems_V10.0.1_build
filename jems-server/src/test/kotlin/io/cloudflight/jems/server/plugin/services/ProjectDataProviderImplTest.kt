@@ -76,6 +76,8 @@ import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
+import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -100,6 +102,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCostInteractor
@@ -166,16 +169,16 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     lateinit var coFinancingPersistence: ProjectPartnerCoFinancingPersistence
 
     @RelaxedMockK
-    lateinit var getBudgetCosts: GetBudgetCostsInteractor
-
-    @RelaxedMockK
-    lateinit var getBudgetTotalCost: GetBudgetTotalCostInteractor
-
-    @RelaxedMockK
     lateinit var projectLumpSumPersistence: ProjectLumpSumPersistence
 
     @RelaxedMockK
     lateinit var programmeLumpSumPersistence: ProgrammeLumpSumPersistence
+
+    @RelaxedMockK
+    lateinit var getBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence
+
+    @RelaxedMockK
+    lateinit var budgetCostsCalculator: BudgetCostsCalculatorService
 
     @InjectMockKs
     lateinit var projectDataProvider: ProjectDataProviderImpl
@@ -505,8 +508,25 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { partnerPersistence.findAllByProjectId(id) } returns listOf(projectPartner)
         every { budgetOptionsPersistence.getBudgetOptions(projectPartner.id) } returns partnerBudgetOptions
         every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
-        every { getBudgetCosts.getBudgetCosts(projectPartner.id) } returns budgetCosts
-        every { getBudgetTotalCost.getBudgetTotalCost(projectPartner.id) } returns totalCost
+        every { getBudgetCostsPersistence.getBudgetStaffCosts(projectPartner.id) } returns listOf(
+            BudgetStaffCostEntry(
+                id = 3L,
+                numberOfUnits = BigDecimal.ONE,
+                rowSum = BigDecimal.TEN,
+                budgetPeriods = mutableSetOf(BudgetPeriod(number = 1, amount = BigDecimal.ONE)),
+                pricePerUnit = BigDecimal.TEN,
+                description = setOf(),
+                comment = setOf(InputTranslation(SystemLanguage.EN, "comment")),
+                unitType = setOf(InputTranslation(SystemLanguage.EN, "unitType")),
+                unitCostId = 4L
+            )
+        )
+        every { getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(projectPartner.id) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(projectPartner.id) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetEquipmentCosts(projectPartner.id) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(projectPartner.id) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetUnitCosts(projectPartner.id) } returns emptyList()
+        every { budgetCostsCalculator.calculateCosts(any(), any(), any(), any(), any(), any(), any(), any()) } returns BudgetCostsCalculationResult(staffCosts = BigDecimal.TEN, totalCosts = totalCost)
         every { associatedOrganizationService.findAllByProjectId(id) } returns listOf(associatedOrganization)
         every { resultPersistence.getResultsForProject(id, null) } returns listOf(projectResult)
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns listOf(workPackage)

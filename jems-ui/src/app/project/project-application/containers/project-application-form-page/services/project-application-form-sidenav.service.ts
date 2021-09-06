@@ -16,7 +16,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import {RoutingService} from '@common/services/routing.service';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {ProjectPaths} from '@project/common/project-util';
+import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
 
@@ -37,13 +37,23 @@ export class ProjectApplicationFormSidenavService {
   );
 
   private canSubmitApplication$: Observable<boolean> = combineLatest([
-    this.projectStore.projectStatus$.pipe(map(it => it.status)),
+    this.projectStore.projectStatus$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectSubmission),
     this.projectStore.userIsProjectOwner$,
   ]).pipe(
-    map(([projectStatus, hasPermission, isOwner]) => {
-      return (hasPermission || isOwner) && (projectStatus === ProjectStatusDTO.StatusEnum.DRAFT || projectStatus === ProjectStatusDTO.StatusEnum.STEP1DRAFT || projectStatus === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT);
-    }),
+    map(([projectStatus, hasPermission, isOwner]) =>
+      (hasPermission || isOwner) && ProjectUtil.isOpenForModifications(projectStatus)
+    ),
+  );
+
+  private canCheckApplication$: Observable<boolean> = combineLatest([
+    this.projectStore.projectStatus$,
+    this.permissionService.hasPermission(PermissionsEnum.ProjectCheckApplicationForm),
+    this.projectStore.userIsProjectOwner$,
+  ]).pipe(
+    map(([projectStatus, hasPermission, isOwner]) =>
+      (hasPermission || isOwner) && ProjectUtil.isOpenForModifications(projectStatus)
+    ),
   );
 
   private canSeeAssessments$: Observable<boolean> = combineLatest([
@@ -126,6 +136,7 @@ export class ProjectApplicationFormSidenavService {
     const headlines$ = combineLatest([
       this.canSeeAssessments$,
       this.canSubmitApplication$,
+      this.canCheckApplication$,
       this.fileManagementStore.canReadApplicationFile$,
       this.partners$,
       this.packages$,
@@ -135,8 +146,8 @@ export class ProjectApplicationFormSidenavService {
     ])
       .pipe(
         filter(([, , , , , , , project]: any) => !!project),
-        tap(([canSeeAssessments, canSubmitApplication, canReadApplicationFiles, partners, packages, versionTemplate, canSeeProjectForm, project]: any) => {
-          this.setHeadlines(canSeeAssessments, canSubmitApplication, canSeeProjectForm, canReadApplicationFiles, project, partners, packages, versionTemplate);
+        tap(([canSeeAssessments, canSubmitApplication, canCheckApplication, canReadApplicationFiles, partners, packages, versionTemplate, canSeeProjectForm, project]: any) => {
+          this.setHeadlines(canSeeAssessments, canSubmitApplication, canCheckApplication, canSeeProjectForm, canReadApplicationFiles, project, partners, packages, versionTemplate);
         }),
         catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
       );
@@ -159,6 +170,7 @@ export class ProjectApplicationFormSidenavService {
 
   private setHeadlines(showAssessment: boolean,
                        canSubmitApplication: boolean,
+                       canCheckApplication: boolean,
                        showProjectForm: boolean,
                        showApplicationAnnexes: boolean,
                        project: ProjectDetailDTO,
@@ -167,7 +179,7 @@ export class ProjectApplicationFormSidenavService {
                        versionTemplate: TemplateRef<any>): void {
     this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
       this.getProjectOverviewHeadline(project),
-      this.getApplicationFormHeadline(project, partners, packages, versionTemplate, showApplicationAnnexes, showAssessment, canSubmitApplication, showProjectForm)
+      this.getApplicationFormHeadline(project, partners, packages, versionTemplate, showApplicationAnnexes, showAssessment, canSubmitApplication || canCheckApplication, showProjectForm)
     ]);
   }
 
@@ -181,13 +193,13 @@ export class ProjectApplicationFormSidenavService {
     };
   }
 
-  private getApplicationFormHeadline(project: ProjectDetailDTO, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>, showApplicationAnnexes: boolean, showAssessment: boolean, canSubmitApplication: boolean, showProjectForm: boolean): HeadlineRoute {
+  private getApplicationFormHeadline(project: ProjectDetailDTO, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>, showApplicationAnnexes: boolean, showAssessment: boolean, canCheckOrSubmitApplication: boolean, showProjectForm: boolean): HeadlineRoute {
     return {
       headline: {i18nKey: 'project.application.form.title'},
       bullets: [
         ...showProjectForm ? this.getApplicationFormVersionedSections(project, partners, packages, versionTemplate) : [],
         ...showApplicationAnnexes ? this.getApplicationAnnexesHeadline(project.id) : [],
-        ...canSubmitApplication ? this.getCheckAndSubmitHeadline(project.id) : [],
+        ...canCheckOrSubmitApplication ? this.getCheckAndSubmitHeadline(project.id) : [],
         ...showAssessment ? this.getAssessmentAndDecisionHeadline(project.id) : []
       ]
     };

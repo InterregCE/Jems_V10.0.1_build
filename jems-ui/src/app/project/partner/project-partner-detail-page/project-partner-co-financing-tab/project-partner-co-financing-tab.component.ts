@@ -151,7 +151,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     this.partnerContributions.push(this.formBuilder.group({
       name: [initialValue ? initialValue.name : '', [Validators.required, Validators.maxLength(255)]],
       status: [initialValue ? initialValue.status : '', [Validators.required]],
-      amount: [initialValue ? initialValue.amount : 0, [Validators.required, Validators.min(0)]],
+      amount: [initialValue?.amount || 0, [Validators.required, Validators.min(0)]],
       partner: [initialValue ? initialValue.partner : false]
     }));
     if (!initialValue) {

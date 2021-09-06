@@ -9,17 +9,20 @@ import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumP
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
+import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCostsInteractor
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCostInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Service
 class ProjectDataProviderImpl(
@@ -32,9 +35,9 @@ class ProjectDataProviderImpl(
     private val associatedOrganizationService: ProjectAssociatedOrganizationService,
     private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     private val coFinancingPersistence: ProjectPartnerCoFinancingPersistence,
-    private val getBudgetCosts: GetBudgetCostsInteractor,
-    private val getBudgetTotalCost: GetBudgetTotalCostInteractor,
-    private val projectLumpSumPersistence: ProjectLumpSumPersistence
+    private val getBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
+    private val budgetCostsCalculator: BudgetCostsCalculatorService,
+    private val projectLumpSumPersistence: ProjectLumpSumPersistence,
 ) : ProjectDataProvider {
 
     companion object {
@@ -49,10 +52,15 @@ class ProjectDataProviderImpl(
         val partners = partnerPersistence.findAllByProjectId(projectId).map {
             val budgetOptions = budgetOptionsPersistence.getBudgetOptions(it.id)?.toDataModel()
             val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(it.id).toDataModel()
-            //TODO getBudgetCosts should be replaced by persistence/service call without permissions
-            val budgetCosts = getBudgetCosts.getBudgetCosts(it.id).toDataModel()
-            //TODO getBudgetTotalCost should be replaced by persistence/service call without permissions
-            val budgetTotalCost = getBudgetTotalCost.getBudgetTotalCost(it.id)
+            val budgetCosts = BudgetCosts(
+                staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(it.id),
+                travelCosts = getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(it.id),
+                externalCosts = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(it.id),
+                equipmentCosts = getBudgetCostsPersistence.getBudgetEquipmentCosts(it.id),
+                infrastructureCosts = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(it.id),
+                unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(it.id),
+            ).toDataModel()
+            val budgetTotalCost = getBudgetTotalCosts(it.id).totalCosts
             val budget = PartnerBudgetData(budgetOptions, coFinancing, budgetCosts, budgetTotalCost)
             val stateAid = partnerPersistence.getPartnerStateAid(partnerId = it.id)
             it.toDataModel(stateAid, budget)
@@ -75,6 +83,36 @@ class ProjectDataProviderImpl(
         return ProjectData(
             sectionA, sectionB, sectionC, sectionE,
             lifecycleData = ProjectLifecycleData(status = project.projectStatus.status.toDataModel())
+        )
+    }
+
+    private fun getBudgetTotalCosts(partnerId: Long): BudgetCostsCalculationResult {
+        val budgetOptions = budgetOptionsPersistence.getBudgetOptions(partnerId)
+        val unitCostTotal = getBudgetCostsPersistence.getBudgetUnitCostTotal(partnerId)
+        val lumpSumsTotal = getBudgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId)
+        val equipmentCostTotal = getBudgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId)
+        val externalCostTotal = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId)
+        val infrastructureCostTotal = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId)
+
+        val travelCostTotal = if (budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate == null)
+            getBudgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId)
+        else
+            BigDecimal.ZERO
+
+        val staffCostTotal = if (budgetOptions?.staffCostsFlatRate == null)
+            getBudgetCostsPersistence.getBudgetStaffCostTotal(partnerId)
+        else
+            BigDecimal.ZERO
+
+        return budgetCostsCalculator.calculateCosts(
+            budgetOptions,
+            unitCostTotal,
+            lumpSumsTotal,
+            externalCostTotal,
+            equipmentCostTotal,
+            infrastructureCostTotal,
+            travelCostTotal,
+            staffCostTotal
         )
     }
 }
