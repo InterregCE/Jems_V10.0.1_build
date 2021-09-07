@@ -134,6 +134,7 @@ export class ProjectApplicationFormSidenavService {
   ) {
 
     const headlines$ = combineLatest([
+      this.projectStore.project$,
       this.canSeeAssessments$,
       this.canSubmitApplication$,
       this.canCheckApplication$,
@@ -142,11 +143,10 @@ export class ProjectApplicationFormSidenavService {
       this.packages$,
       this.versionSelectTemplate$,
       this.canSeeProjectForm$,
-      this.projectStore.project$,
     ])
       .pipe(
-        filter(([, , , , , , , project]: any) => !!project),
-        tap(([canSeeAssessments, canSubmitApplication, canCheckApplication, canReadApplicationFiles, partners, packages, versionTemplate, canSeeProjectForm, project]: any) => {
+        filter(([project, , , , , , , , ]: any) => !!project),
+        tap(([project, canSeeAssessments, canSubmitApplication, canCheckApplication, canReadApplicationFiles, partners, packages, versionTemplate, canSeeProjectForm]: any) => {
           this.setHeadlines(canSeeAssessments, canSubmitApplication, canCheckApplication, canSeeProjectForm, canReadApplicationFiles, project, partners, packages, versionTemplate);
         }),
         catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
