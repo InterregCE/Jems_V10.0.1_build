@@ -10,8 +10,6 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.common.exception.I18nFieldError
-import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -36,7 +34,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
 
     private val inputErrorMap = mapOf("error" to I18nMessage("error.key"))
 
-    val initialLumpSum = ProgrammeLumpSum(
+    private val initialLumpSum = ProgrammeLumpSum(
         id = 4,
         name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
         description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
@@ -83,10 +81,10 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             phase = null,
             categories = setOf(OfficeAndAdministrationCosts),
         )
-        val ex = assertThrows<I18nValidationException> { updateLumpSum.updateLumpSum(wrongLumpSum) }
-        assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "cost" to I18nFieldError(i18nKey = "lump.sum.out.of.range"),
-            "categories" to I18nFieldError(i18nKey = "programme.lumpSum.categories.min.2"),
+        val ex = assertThrows<LumpSumIsInvalid> { updateLumpSum.updateLumpSum(wrongLumpSum) }
+        assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
+            "cost" to I18nMessage(i18nKey = "lump.sum.out.of.range"),
+            "categories" to I18nMessage(i18nKey = "programme.lumpSum.categories.min.2"),
         ))
     }
 
@@ -160,7 +158,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             phase = Implementation,
         )
 
-        assertThrows<I18nValidationException>("when updating id cannot be invalid") {
+        assertThrows<LumpSumIsInvalid>("when updating id cannot be invalid") {
             updateLumpSum.updateLumpSum(lumpSum.copy(id = 0)) }
     }
 
