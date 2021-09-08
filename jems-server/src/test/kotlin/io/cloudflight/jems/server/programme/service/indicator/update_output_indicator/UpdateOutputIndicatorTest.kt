@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.programme.service.indicator.update_output_ind
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorsBaseTest
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
@@ -14,9 +14,9 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.assertj.core.api.Assertions.catchThrowableOfType
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 
 internal class UpdateOutputIndicatorTest : IndicatorsBaseTest() {
@@ -52,9 +52,9 @@ internal class UpdateOutputIndicatorTest : IndicatorsBaseTest() {
         assertThat(updateOutputIndicator.updateOutputIndicator(newOutputIndicator))
             .isEqualTo(savedOutputIndicatorDetail)
 
-        val auditLog1 = slot<AuditCandidate>()
-        verify { auditService.logEvent(capture(auditLog1)) }
-        with(auditLog1.captured) {
+        val auditLog1 = slot<AuditCandidateEvent>()
+        verify { auditPublisher.publishEvent(capture(auditLog1)) }
+        with(auditLog1.captured.auditCandidate) {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_EDITED)
             assertThat(description)
                 .isEqualTo("Programme indicator ID01 edited:\ncode changed from ioCODE to new code")
@@ -80,9 +80,9 @@ internal class UpdateOutputIndicatorTest : IndicatorsBaseTest() {
         assertThat(updateOutputIndicator.updateOutputIndicator(newOutputIndicator))
             .isEqualTo(savedOutputIndicatorDetail)
 
-        val auditLog = slot<AuditCandidate>()
-        verify { auditService.logEvent(capture(auditLog)) }
-        with(auditLog.captured) {
+        val auditLog = slot<AuditCandidateEvent>()
+        verify { auditPublisher.publishEvent(capture(auditLog)) }
+        with(auditLog.captured.auditCandidate) {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_EDITED)
             assertThat(description)
                 .isEqualTo("Programme indicator newID edited:\nidentifier changed from ID01 to newID")
@@ -104,7 +104,7 @@ internal class UpdateOutputIndicatorTest : IndicatorsBaseTest() {
             IdentifierIsUsedException::class.java
         )
 
-        assertThat(exception.formErrors["identifier"]).isEqualTo(I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.identifier.is.used"))
+        assertThat(exception.formErrors["identifier"]).isEqualTo(I18nMessage("use.case.update.output.indicator.identifier.is.used"))
 
     }
 
@@ -127,11 +127,11 @@ internal class UpdateOutputIndicatorTest : IndicatorsBaseTest() {
             InvalidResultIndicatorException::class.java
         )
 
-        assertThat(exception.formErrors["resultIndicatorId"]).isEqualTo(I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.invalid.result.indicator"))
+        assertThat(exception.formErrors["resultIndicatorId"]).isEqualTo(I18nMessage("use.case.update.output.indicator.invalid.result.indicator"))
     }
 
     @Test
-    fun `should throw SpecificObjectiveCannotBeChangedException when specific objective in the new output indicator is changed and there is a published call`() {
+    fun `should throw Exception when specific objective in the new output indicator is changed and there is a published call`() {
         val newOutputIndicator = buildOutputIndicatorInstance(programmeObjectivePolicy = ProgrammeObjectivePolicy.Digitisation)
         val oldOutputIndicatorDetail = buildOutputIndicatorDetailInstance()
         every { persistence.getOutputIndicator(newOutputIndicator.id!!) } returns oldOutputIndicatorDetail
@@ -142,8 +142,9 @@ internal class UpdateOutputIndicatorTest : IndicatorsBaseTest() {
                 newOutputIndicator.identifier
             )
         } returns false
-        assertThatExceptionOfType(SpecificObjectiveCannotBeChangedException::class.java).isThrownBy {
+        val ex = assertThrows<OutputIndicatorCannotBeChangedAfterCallIsPublished> {
             updateOutputIndicator.updateOutputIndicator(newOutputIndicator)
         }
+        assertThat(ex.formErrors.keys).containsExactly("specificObjective")
     }
 }

@@ -37,7 +37,7 @@ data class OutputIndicatorDetail(
         if (milestone != other.milestone) {
             changes["milestone"] = Pair(milestone, other.milestone)
         }
-        if (finalTarget != other.finalTarget) {
+        if ((finalTarget ?: BigDecimal.ZERO).compareTo(other.finalTarget) != 0) {
             changes["finalTarget"] = Pair(finalTarget, other.finalTarget)
         }
         if (resultIndicatorDetail != other.resultIndicatorDetail) {

@@ -18,9 +18,14 @@ class DeletionIsNotAllowedException : ApplicationUnprocessableException(
     i18nMessage = I18nMessage("$UPDATE_STATE_AIDS_ERROR_KEY_PREFIX.deletion.is.not.allowed"),
 )
 
+class MeasureChangeIsNotAllowed : ApplicationUnprocessableException(
+    code = "$UPDATE_STATE_AIDS_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$UPDATE_STATE_AIDS_ERROR_KEY_PREFIX.measure.change.is.not.allowed"),
+)
+
 class MaxAllowedStateAidsReachedException(maxAmount: Int) :
     ApplicationUnprocessableException(
-        code = "$UPDATE_STATE_AIDS_ERROR_CODE_PREFIX-002",
+        code = "$UPDATE_STATE_AIDS_ERROR_CODE_PREFIX-003",
         i18nMessage = I18nMessage(
             "$UPDATE_STATE_AIDS_ERROR_KEY_PREFIX.max.allowed.amount.reached",
             mapOf("maxSize" to maxAmount.toString())

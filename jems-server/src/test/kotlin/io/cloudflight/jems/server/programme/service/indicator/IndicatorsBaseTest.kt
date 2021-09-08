@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicator
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorDetail
@@ -13,20 +12,21 @@ import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndica
 import io.mockk.clearMocks
 import io.mockk.impl.annotations.RelaxedMockK
 import org.junit.jupiter.api.BeforeEach
+import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 
 
 abstract class IndicatorsBaseTest : UnitTest() {
 
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
 
     @BeforeEach
     fun resetAuditService() {
-        clearMocks(auditService)
+        clearMocks(auditPublisher)
     }
 
     private val indicatorId = 1L

@@ -5,8 +5,8 @@ import io.cloudflight.jems.server.common.exception.ApplicationBadRequestExceptio
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 
-const val UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX = "S-IND-UOI"
-const val UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX = "use.case.update.output.indicator"
+private const val UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX = "S-IND-UOI"
+private const val UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX = "use.case.update.output.indicator"
 
 class UpdateOutputIndicatorException(cause: Throwable) : ApplicationException(
     code = UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX,
@@ -28,9 +28,8 @@ class InvalidResultIndicatorException : ApplicationBadRequestException(
     cause = null
 )
 
-class SpecificObjectiveCannotBeChangedException : ApplicationBadRequestException(
-    code = "$UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX-004",
-    i18nMessage = I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.specific.objective.cannot.be.changed.after.first.published.call"),
-    formErrors = mapOf("specificObjective" to I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.specific.objective.cannot.be.changed.after.first.published.call")),
-    cause = null
+class OutputIndicatorCannotBeChangedAfterCallIsPublished(fields: Set<String>): ApplicationUnprocessableException(
+    code = "$UPDATE_OUTPUT_INDICATOR_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$UPDATE_OUTPUT_INDICATOR_ERROR_KEY_PREFIX.indicator.cannot.be.changed.after.first.published.call"),
+    formErrors = fields.mapTo(HashSet()) { Pair(it, I18nMessage("forbidden.to.change.this.field.when.call.is.published")) }.toMap(),
 )

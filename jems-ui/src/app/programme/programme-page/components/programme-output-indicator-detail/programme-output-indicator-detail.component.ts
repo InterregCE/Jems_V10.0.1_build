@@ -192,6 +192,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
 
   protected enterEditMode(): void {
     if (this.isProgrammeSetupLocked && !this.isCreate) {
+      this.outputIndicatorForm.controls.indicatorCode.disable();
       this.outputIndicatorForm.controls.specificObjective.disable();
     }
   }

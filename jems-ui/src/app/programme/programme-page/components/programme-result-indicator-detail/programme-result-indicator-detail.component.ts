@@ -173,6 +173,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
   protected enterEditMode(): void {
     if (this.isProgrammeSetupLocked && !this.isCreate) {
+      this.resultIndicatorForm.controls.indicatorCode.disable();
       this.resultIndicatorForm.controls.specificObjective.disable();
       this.baselineOption = {min: this.resultIndicator.baseline};
     }

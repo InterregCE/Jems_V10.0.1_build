@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
@@ -82,6 +83,9 @@ internal class UpdateStateAidInteractorTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @MockK
+    lateinit var callPersistence: CallPersistence
 
     @InjectMockKs
     lateinit var updateStateAid: UpdateStateAid

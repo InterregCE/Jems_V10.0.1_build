@@ -37,13 +37,13 @@ data class ResultIndicatorDetail(
         if (measurementUnit != other.measurementUnit) {
             changes["measurementUnit"] = Pair(measurementUnit, other.measurementUnit)
         }
-        if (baseline != other.baseline) {
+        if (getBaselineOrDefault().compareTo(other.getBaselineOrDefault()) != 0) {
             changes["baseline"] = Pair(baseline, other.baseline)
         }
         if (referenceYear != other.referenceYear) {
             changes["referenceYear"] = Pair(referenceYear, other.referenceYear)
         }
-        if (finalTarget != other.finalTarget) {
+        if ((finalTarget ?: BigDecimal.ZERO).compareTo(other.finalTarget) != 0) {
             changes["finalTarget"] = Pair(finalTarget, other.finalTarget)
         }
         if (sourceOfData != other.sourceOfData) {
@@ -54,4 +54,6 @@ data class ResultIndicatorDetail(
         }
         return changes
     }
+
+    fun getBaselineOrDefault(): BigDecimal = this.baseline ?: BigDecimal.ZERO
 }

@@ -130,6 +130,9 @@ export class ProgrammeStateAidListComponent extends ViewEditForm implements OnIn
 
   protected enterEditMode(): void {
     this.toDeleteIds = [];
+    if (this.isProgrammeSetupRestricted) {
+      this.stateAidsForm.controls.forEach(control => control.get('measure')?.disable());
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -185,7 +188,7 @@ export class ProgrammeStateAidListComponent extends ViewEditForm implements OnIn
       filterValue = (value || '').toLowerCase();
     }
     else {
-      filterValue = value.measureDisplayValue;
+      filterValue = value?.measureDisplayValue || '';
     }
     if (filterValue === '') {
       return measures;

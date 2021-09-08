@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.programme.service.indicator.create_result_indicator
 
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
@@ -8,6 +7,7 @@ import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPer
 import io.cloudflight.jems.server.programme.service.indicator.indicatorAdded
 import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndicator
 import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndicatorDetail
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -18,7 +18,7 @@ private const val MAX_COUNT_OF_RESULT_INDICATORS = 50
 class CreateResultIndicator(
     private val persistence: ResultIndicatorPersistence,
     private val generalValidator: GeneralValidatorService,
-    private val auditService: AuditService
+    private val auditPublisher: ApplicationEventPublisher,
 ) : CreateResultIndicatorInteractor {
 
     @Transactional
@@ -31,7 +31,7 @@ class CreateResultIndicator(
         validateResultIndicatorDetail(resultIndicator)
 
         return persistence.saveResultIndicator(resultIndicator).apply {
-            auditService.logEvent(indicatorAdded(resultIndicator.identifier))
+            auditPublisher.publishEvent(indicatorAdded(this, resultIndicator.identifier))
         }
     }
 

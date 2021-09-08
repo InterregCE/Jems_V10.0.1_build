@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStat
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.lang.Exception
 import java.math.BigDecimal
 
 private const val MAX_ALLOWED_AMOUNT_OF_STATE_AIDS = 20
@@ -29,11 +28,8 @@ class UpdateStateAid(
     override fun updateStateAids(
         toDeleteIds: Set<Long>, toPersist: Collection<ProgrammeStateAid>
     ): List<ProgrammeStateAid> {
-
         validateInput(toPersist)
-
-        if (isProgrammeSetupLocked.isLocked() && toDeleteIds.isNotEmpty())
-            throw DeletionIsNotAllowedException()
+        validateAllowedChangesWhenCallIsPublished(toDeleteIds, toPersist)
 
         return persistence.updateStateAids(toDeleteIds, toPersist).also { stateAids ->
             if (stateAids.size > MAX_ALLOWED_AMOUNT_OF_STATE_AIDS)
@@ -61,4 +57,23 @@ class UpdateStateAid(
                 generalValidator.numberBetween(it.maxIntensity, BigDecimal(0), BigDecimal(100), "maxIntensity")
             }.toTypedArray()
         )
+
+    private fun validateAllowedChangesWhenCallIsPublished(toDeleteIds: Set<Long>, toPersist: Collection<ProgrammeStateAid>) {
+        if (!isProgrammeSetupLocked.isLocked())
+            return
+
+        if (toDeleteIds.isNotEmpty())
+            throw DeletionIsNotAllowedException()
+
+        val existingStateAidMap = persistence.getStateAidList().associateBy({ it.id }, { it.measure })
+        val existingStateAidIds = existingStateAidMap.keys
+
+        val toUpdateStateAidMap = toPersist
+            .filter { existingStateAidIds.contains(it.id) }
+            .associateBy({ it.id }, { it.measure })
+
+        if (existingStateAidMap != toUpdateStateAidMap)
+            throw MeasureChangeIsNotAllowed()
+    }
+
 }
