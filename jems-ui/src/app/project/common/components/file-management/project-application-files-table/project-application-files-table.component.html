@@ -81,10 +81,10 @@
            [type]="Alert.ERROR">
     <p>{{errorMessage(error) | translate}}</p>
 </app-alert>
-<app-alert *ngIf="fileSizeOverLimitError | async as maximumAllowedSize"
-           [show]="!!fileSizeOverLimitError"
+<app-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+           [show]="showError"
            [type]="Alert.ERROR">
-    <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedSize}} MB</p>
+    <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSize}} MB</p>
 </app-alert>
 
 <ng-template #noFiles>

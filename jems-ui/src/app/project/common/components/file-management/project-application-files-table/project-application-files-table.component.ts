@@ -27,7 +27,7 @@ export class ProjectApplicationFilesTableComponent {
   displayedColumns: string[] = ['name', 'uploadDate', 'user', 'description', 'actions'];
   dataSource = new MatTableDataSource<ProjectFileMetadataDTO>();
   maximumAllowedFileSize: number;
-  fileSizeOverLimitError = new Subject<number | null>();
+  fileSizeOverLimitError$ = new Subject<boolean>();
 
   data$: Observable<{
     files: PageProjectFileMetadataDTO,
@@ -59,12 +59,13 @@ export class ProjectApplicationFilesTableComponent {
     if (!target) {
       return;
     }
+
     const sizeConvertedToMB = Math.round(target?.files[0].size / 1024 / 1024);
-    this.fileSizeOverLimitError.next(null);
+    this.fileSizeOverLimitError$.next(false);
     this.fileManagementStore.error$.next(null);
 
     if (sizeConvertedToMB > this.maximumAllowedFileSize) {
-      this.fileSizeOverLimitError.next(this.maximumAllowedFileSize);
+      setTimeout(() => this.fileSizeOverLimitError$.next(true), 10);
       return;
     }
 
