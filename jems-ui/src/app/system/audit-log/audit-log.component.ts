@@ -9,7 +9,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {AuditLogStore} from './audit-log-store.service';
 import {SystemPageSidenavService} from '../services/system-page-sidenav.service';
-import {LocaleDatePipe} from '../../common/pipe/locale-date.pipe';
+import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 
 @UntilDestroy()
 @Component({
@@ -36,6 +36,9 @@ export class AuditLogComponent implements OnInit {
 
   @ViewChild('actionField', {static: true})
   actionField: TemplateRef<any>;
+
+  @ViewChild('descriptionCell', {static: true})
+  descriptionCell: TemplateRef<any>;
 
   auditTableConfiguration: TableConfiguration;
   filteredActions: Observable<string[]>;
@@ -125,7 +128,7 @@ export class AuditLogComponent implements OnInit {
         },
         {
           displayedColumn: 'audit.table.description',
-          elementProperty: 'description'
+          customCellTemplate: this.descriptionCell,
         }
       ]
     });
@@ -199,16 +202,22 @@ export class AuditLogComponent implements OnInit {
     return this.filtersForm.at(index).get('values') as FormArray;
   }
 
-  private filter(value: string, actions: string[]): string[] {
-    const filterValue = (value || '').toLowerCase();
-    return actions
-      .filter(action => action.toLowerCase().includes(filterValue));
-  }
-
   formatDateValueInChip(filterItem: any): string {
     if (filterItem instanceof Date) {
       return this.localeDatePipe.transform(filterItem, 'L', 'LT');
     }
     return filterItem;
+  }
+
+  getDescription(description: string): string {
+    return description
+      .split('\n').join('<br/>')
+      .split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp');
+  }
+
+  private filter(value: string, actions: string[]): string[] {
+    const filterValue = (value || '').toLowerCase();
+    return actions
+      .filter(action => action.toLowerCase().includes(filterValue));
   }
 }

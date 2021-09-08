@@ -78,7 +78,7 @@ class UserRolePersistenceProvider(
         userRoleRepo.findByName(name).map { it.toModel(null) }
 
     @Transactional(readOnly = true)
-    override fun existsById(id: Long): Boolean =
-        userRoleRepo.existsById(id)
+    override fun findById(id: Long): Optional<UserRoleSummary> =
+        userRoleRepo.findById(id).map { it.toModel(null) }
 
 }

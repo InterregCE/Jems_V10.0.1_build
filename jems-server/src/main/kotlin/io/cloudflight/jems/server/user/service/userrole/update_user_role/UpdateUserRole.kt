@@ -5,7 +5,9 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.authorization.CanUpdateRole
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.userrole.userRoleUpdated
 import io.cloudflight.jems.server.user.service.userrole.validateUserRoleCommon
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateUserRole(
     private val persistence: UserRolePersistence,
     private val generalValidator: GeneralValidatorService,
+    private val auditPublisher: ApplicationEventPublisher
 ) : UpdateUserRoleInteractor {
 
     @CanUpdateRole
@@ -20,15 +23,12 @@ class UpdateUserRole(
     @ExceptionWrapper(UpdateUserRoleException::class)
     override fun updateUserRole(userRole: UserRole): UserRole {
         validateUserRoleCommon(generalValidator, userRole.name)
-        validateUserRoleExists(userRole.id)
+        val existingRole = persistence.findById(userRole.id).orElseThrow { UserRoleNotFound() }
         validateUserRoleNameNotTaken(userRole)
 
-        return persistence.update(userRole)
-    }
-
-    private fun validateUserRoleExists(userRoleId: Long) {
-        if (!persistence.existsById(userRoleId))
-            throw UserRoleNotFound()
+        return persistence.update(userRole).also {
+            auditPublisher.publishEvent(userRoleUpdated(this, it, existingRole.name))
+        }
     }
 
     private fun validateUserRoleNameNotTaken(userRole: UserRole) {
