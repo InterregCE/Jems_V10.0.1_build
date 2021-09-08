@@ -12,8 +12,18 @@ class CreateLumpSumException(cause: Throwable) : ApplicationException(
     i18nMessage = I18nMessage("$CREATE_LUMP_SUM_ERROR_KEY_PREFIX.failed"), cause = cause
 )
 
-class LumpSumIsInvalid(errors: Map<String, I18nMessage>) : ApplicationUnprocessableException(
+class IdHasToBeNull() : ApplicationUnprocessableException(
     code = "$CREATE_LUMP_SUM_ERROR_CODE_PREFIX-001",
+    i18nMessage = I18nMessage("$CREATE_LUMP_SUM_ERROR_KEY_PREFIX.id.not.allowed"),
+)
+
+class MaxAllowedLumpSumsReached() : ApplicationUnprocessableException(
+    code = "$CREATE_LUMP_SUM_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$CREATE_LUMP_SUM_ERROR_KEY_PREFIX.max.allowed.reached"),
+)
+
+class LumpSumIsInvalid(errors: Map<String, I18nMessage>) : ApplicationUnprocessableException(
+    code = "$CREATE_LUMP_SUM_ERROR_CODE_PREFIX-003",
     i18nMessage = I18nMessage("$CREATE_LUMP_SUM_ERROR_KEY_PREFIX.invalid"),
     formErrors = errors,
 )

@@ -84,8 +84,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createLumpSum.createLumpSum(lumpSum) }
-        assertThat(ex.i18nKey).isEqualTo("programme.lumpSum.max.allowed.reached")
+        assertThrows<MaxAllowedLumpSumsReached> { createLumpSum.createLumpSum(lumpSum) }
     }
 
     @Test
@@ -122,7 +121,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             phase = Implementation,
         )
 
-        assertThrows<I18nValidationException>("when creating id cannot be filled in") {
+        assertThrows<IdHasToBeNull>("when creating id cannot be filled in") {
             createLumpSum.createLumpSum(lumpSum) }
     }
 

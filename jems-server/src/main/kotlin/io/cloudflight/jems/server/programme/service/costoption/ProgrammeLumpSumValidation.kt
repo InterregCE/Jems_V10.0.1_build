@@ -1,7 +1,8 @@
 package io.cloudflight.jems.server.programme.service.costoption
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
-import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.costoption.create_lump_sum.IdHasToBeNull
+import io.cloudflight.jems.server.programme.service.costoption.create_lump_sum.MaxAllowedLumpSumsReached
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import java.math.BigDecimal
 import io.cloudflight.jems.server.programme.service.costoption.update_lump_sum.LumpSumIsInvalid as UpdateLumpSumIsInvalid
@@ -12,9 +13,9 @@ private const val MAX_ALLOWED_LUMP_SUMS = 100
 
 fun validateCreateLumpSum(lumpSumToValidate: ProgrammeLumpSum, currentCount: Long) {
     if (lumpSumToValidate.id != 0L)
-        throw I18nValidationException(i18nKey = "programme.lumpSum.id.not.allowed")
+        throw IdHasToBeNull()
     if (currentCount >= MAX_ALLOWED_LUMP_SUMS)
-        throw I18nValidationException(i18nKey = "programme.lumpSum.max.allowed.reached")
+        throw MaxAllowedLumpSumsReached()
     validateCommonLumpSum(lumpSum = lumpSumToValidate, false)
 }
 
