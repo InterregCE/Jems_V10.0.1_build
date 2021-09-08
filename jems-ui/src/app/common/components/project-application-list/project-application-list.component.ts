@@ -44,7 +44,7 @@ export class ProjectApplicationListComponent {
       {
         displayedColumn: 'project.table.column.name.priority',
         elementProperty: 'programmePriorityCode',
-        sortProperty: 'projectData.priorityPolicy.programmePriority.code',
+        sortProperty: 'priorityPolicy.programmePriority.code',
         tooltip: {
           tooltipContent: 'programmePriority.title'
         }
@@ -52,7 +52,7 @@ export class ProjectApplicationListComponent {
       {
         displayedColumn: 'project.table.column.name.objective',
         elementProperty: 'specificObjectiveCode',
-        sortProperty: 'projectData.priorityPolicy.code',
+        sortProperty: 'priorityPolicy.code',
         tooltip: {
           tooltipContent: 'specificObjective.programmeObjectivePolicy',
           tooltipTranslationKey: 'programme.policy'
@@ -62,7 +62,7 @@ export class ProjectApplicationListComponent {
         displayedColumn: 'project.table.column.name.status',
         elementProperty: 'projectStatus',
         elementTranslationKey: 'common.label.projectapplicationstatus',
-        sortProperty: 'projectStatus.status'
+        sortProperty: 'currentStatus.status'
       },
       {
         displayedColumn: 'project.table.column.name.related',
