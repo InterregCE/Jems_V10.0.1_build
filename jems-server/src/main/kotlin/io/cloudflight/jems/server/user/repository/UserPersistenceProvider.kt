@@ -24,8 +24,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserPersistenceProvider(
     private val userRepo: UserRepository,
     private val userRoleRepo: UserRoleRepository,
-    private val userRolePermissionRepo: UserRolePermissionRepository,
-    private val userSpecification: UserSpecification
+    private val userRolePermissionRepo: UserRolePermissionRepository
 ) : UserPersistence {
 
     @Transactional(readOnly = true)
@@ -47,8 +46,8 @@ class UserPersistenceProvider(
         }
 
     @Transactional(readOnly = true)
-    override fun findAll(pageable: Pageable): Page<UserSummary> =
-        userRepo.findAll(pageable).toModel()
+    override fun findAll(pageable: Pageable, userSearchRequest: UserSearchRequest?): Page<UserSummary> =
+        userRepo.findAll(pageable, userSearchRequest).toModel()
 
     @Transactional
     override fun create(user: UserChange, passwordEncoded: String): User =
@@ -87,8 +86,4 @@ class UserPersistenceProvider(
     override fun emailExists(email: String): Boolean =
         userRepo.existsByEmail(email)
 
-    @Transactional(readOnly = true)
-    override fun filter(pageable: Pageable, userSearchRequest: UserSearchRequest): Page<UserSummary> =
-        userSpecification.filter(userSearchRequest)
-    
 }

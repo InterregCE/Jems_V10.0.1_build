@@ -22,12 +22,8 @@ class UserController(
     private val updateUserPasswordInteractor: UpdateUserPasswordInteractor,
 ) : UserApi {
 
-    override fun list(pageable: Pageable): Page<UserSummaryDTO> =
-        getUserInteractor.getUsers(pageable).toDto()
-
-    //TODO: Implement the mapping of the searchRequest
-    override fun getUsers(pageable: Pageable, searchRequest: UserSearchRequestDTO): Page<UserSummaryDTO> =
-        getUserInteractor.getUsers(pageable, searchRequest.toModel()).toDto()
+    override fun list(pageable: Pageable, searchRequest: UserSearchRequestDTO?): Page<UserSummaryDTO> =
+        getUserInteractor.getUsers(pageable, searchRequest?.toModel()).toDto()
 
     override fun createUser(user: UserChangeDTO): UserDTO =
         createUserInteractor.createUser(user.toModel()).toDto()

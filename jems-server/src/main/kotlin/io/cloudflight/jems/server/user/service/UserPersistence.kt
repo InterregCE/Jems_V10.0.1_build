@@ -16,7 +16,7 @@ interface UserPersistence {
 
     fun getByEmail(email: String): UserWithPassword?
 
-    fun findAll(pageable: Pageable): Page<UserSummary>
+    fun findAll(pageable: Pageable, userSearchRequest: UserSearchRequest?): Page<UserSummary>
 
     fun create(user: UserChange, passwordEncoded: String): User
 
@@ -27,7 +27,5 @@ interface UserPersistence {
     fun userRoleExists(roleId: Long): Boolean
 
     fun emailExists(email: String): Boolean
-
-    fun filter(pageable: Pageable, userSearchRequest: UserSearchRequest): Page<UserSummary>
 
 }

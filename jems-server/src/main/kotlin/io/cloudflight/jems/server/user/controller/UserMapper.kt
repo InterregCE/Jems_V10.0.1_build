@@ -5,16 +5,15 @@ import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
 import io.cloudflight.jems.api.user.dto.UserDTO
 import io.cloudflight.jems.api.user.dto.UserRegistrationDTO
+import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
 import io.cloudflight.jems.api.user.dto.UserSummaryDTO
-import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.user.service.model.Password
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRegistration
+import io.cloudflight.jems.server.user.service.model.UserSearchRequest
 import io.cloudflight.jems.server.user.service.model.UserSummary
-import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import org.springframework.data.domain.Page
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 fun UserChangeDTO.toModel() = UserChange(
     id = id ?: 0,
@@ -22,6 +21,13 @@ fun UserChangeDTO.toModel() = UserChange(
     name = name,
     surname = surname,
     userRoleId = userRoleId,
+)
+
+fun UserSearchRequestDTO.toModel() = UserSearchRequest(
+    name = name,
+    email = email,
+    surname = surname,
+    roles = roles,
 )
 
 fun UserRegistrationDTO.toModel() = UserRegistration(

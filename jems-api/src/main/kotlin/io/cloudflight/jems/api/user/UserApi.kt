@@ -29,17 +29,8 @@ interface UserApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping
-    fun list(pageable: Pageable): Page<UserSummaryDTO>
-
-    @ApiOperation("Search for users")
-    @ApiImplicitParams(
-        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
-        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
-        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
-    )
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun getUsers(pageable: Pageable, @RequestBody(required = false) searchRequest: UserSearchRequestDTO): Page<UserSummaryDTO>
+    @PostMapping("list",consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun list(pageable: Pageable, @RequestBody(required = false) searchRequest: UserSearchRequestDTO?): Page<UserSummaryDTO>
 
     @ApiOperation("Creates new User")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

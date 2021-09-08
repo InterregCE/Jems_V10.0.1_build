@@ -6,7 +6,7 @@
             <div appNoWidthLimit *ngFor="let activity of activities.controls;let i=index">
                 <ng-container [formArrayName]="constants.ACTIVITIES.name">
                     <div appFormLayout [formGroupName]="i" class="activity-container">
-                        <div class="activity-header" appNoWidthLimit appMultiColumnRow itemsAlign="space-between">
+                        <div class="activity-header" appNoWidthLimit appMultiColumnRow justifyContent="space-between">
                             <h4 appMultiColumnRow class="mb-0">
                                 <span>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
                                 <span appFormFieldWidth="44rem"
