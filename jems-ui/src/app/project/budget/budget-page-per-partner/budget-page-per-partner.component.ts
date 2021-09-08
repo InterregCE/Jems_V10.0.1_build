@@ -144,6 +144,6 @@ export class BudgetPagePerPartnerComponent {
   }
 
   public getTotalPercentageRounded(fund: ProgrammeFundDTO, totalEligibleBudget: number): number {
-    return NumberService.roundNumber(((this.getTotalBudgetAmountForFund(fund) / totalEligibleBudget) * 100), 1);
+    return NumberService.roundNumber((NumberService.product([NumberService.divide(this.getTotalBudgetAmountForFund(fund), totalEligibleBudget), 100])), 1);
   }
 }
