@@ -37,7 +37,7 @@ class UploadProjectFile(
     override fun upload(
         projectId: Long, projectFileCategory: ProjectFileCategory, projectFile: ProjectFile
     ): ProjectFileMetadata {
-        throwIfFileTypeIsNotAllowed(projectFile)
+        throwIfFileTypeIsNotAllowed(projectFile.name)
         throwIfUploadToCategoryIsNotAllowed(projectFileCategory)
         projectPersistence.throwIfNotExists(projectId)
         userPersistence.throwIfNotExists(securityService.currentUser?.user?.id!!)
@@ -79,12 +79,9 @@ class UploadProjectFile(
         ) throw UploadInCategoryIsNotAllowedExceptions()
     }
 
-    private fun throwIfFileTypeIsNotAllowed(projectFile: ProjectFile) {
-        val acceptedFilesTypes = arrayOf("csv", "dat", "db", "dbf", "log", "mdb", "xml", "email", "eml", "emlx", "msg", "oft", "ost", "pst", "vcf", "bmp", "gif", "jpeg", "jpg", "png", "psd", "svg", "tif", "tiff", "htm", "html", "key", "odp", "pps", "ppt", "ppt", "pptx", "ods", "xls", "xlsm", "xlsx", "doc", "docx", "odt", "pdf", "rtf", "tex", "txt", "wpd", "mov", "avi", "mp4", "zip", "rar", "ace", "7z", "url");
-        val fileType = FilenameUtils.getExtension(projectFile.name)
-
-        if (!acceptedFilesTypes.contains(fileType)) {
+    private fun throwIfFileTypeIsNotAllowed(fileName: String) {
+        if (!arrayOf("csv","dat","db","dbf","log","mdb","xml","email","eml","emlx","msg","oft","ost","pst","vcf","bmp","gif","jpeg","jpg","png","psd","svg","tif","tiff","htm","html","key","odp","pps","ppt","pptx","ods","xls","xlsm","xlsx","doc","docx","odt","pdf","rtf","tex","txt","wpd","mov","avi","mp4","zip","rar","ace","7z","url")
+                .contains(FilenameUtils.getExtension(fileName).toLowerCase()))
             throw ProjectFileTypeNotSupported();
-        }
     }
 }
