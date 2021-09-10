@@ -7,10 +7,7 @@ import javax.validation.constraints.NotNull
 class WorkPackageActivityPartnerId(
 
     @field:NotNull
-    val workPackageId: Long,
-
-    @field:NotNull
-    val activityNumber: Int,
+    val activityId: Long,
 
     @field:NotNull
     val projectPartnerId: Long

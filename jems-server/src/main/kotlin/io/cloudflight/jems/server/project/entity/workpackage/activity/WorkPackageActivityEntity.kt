@@ -32,7 +32,7 @@ class WorkPackageActivityEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val activityId: Long = 0,
+    val id: Long = 0,
 
     @field:NotNull
     val workPackageId: Long,
@@ -47,6 +47,6 @@ class WorkPackageActivityEntity(
 
     val endPeriod: Int? = null,
 
-//    @OneToMany(mappedBy = "deliverableId", cascade = [CascadeType.ALL], orphanRemoval = true)
-//    val deliverables: Set<WorkPackageActivityDeliverableEntity> = emptySet(),
+    @OneToMany(mappedBy = "id", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val deliverables: Set<WorkPackageActivityDeliverableEntity> = emptySet()
 )

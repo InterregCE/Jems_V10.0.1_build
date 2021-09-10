@@ -20,8 +20,10 @@ fun WorkPackageActivityDTO.toModel(workPackageId: Long) = WorkPackageActivity(
 fun List<WorkPackageActivityDTO>.toModel(workPackageId: Long) = map { it.toModel(workPackageId) }
 
 fun WorkPackageActivityDeliverableDTO.toDeliverableModel() = WorkPackageActivityDeliverable(
+    activityId = activityId,
+    deliverableId = deliverableId,
     description = description,
-    period = period,
+    period = period
 )
 
 fun List<WorkPackageActivityDeliverableDTO>.toDeliverableModel() = map { it.toDeliverableModel() }
@@ -41,14 +43,17 @@ fun WorkPackageActivity.toDto() = WorkPackageActivityDTO(
 fun List<WorkPackageActivity>.toDto() = map { it.toDto() }
 
 fun WorkPackageActivityDeliverable.toDeliverableDto() = WorkPackageActivityDeliverableDTO(
+    activityId = activityId,
+    deliverableId = deliverableId,
     deliverableNumber = deliverableNumber,
     description = description,
-    period = period,
+    period = period
 )
 
 fun List<WorkPackageActivityDeliverable>.toDeliverableDto() = map { it.toDeliverableDto() }
 
 fun WorkPackageActivitySummary.toDto() = WorkPackageActivitySummaryDTO(
+    activityId = activityId,
     workPackageNumber = workPackageNumber,
     activityNumber = activityNumber
 )

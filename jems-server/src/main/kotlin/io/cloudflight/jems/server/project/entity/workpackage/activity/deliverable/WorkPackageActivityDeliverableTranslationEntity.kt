@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable
 
 import io.cloudflight.jems.server.common.entity.TranslationEntity
+import io.cloudflight.jems.server.common.entity.TranslationId
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
@@ -8,7 +9,7 @@ import javax.persistence.Entity
 data class WorkPackageActivityDeliverableTranslationEntity(
 
     @EmbeddedId
-    override val translationId: WorkPackageActivityDeliverableTranslationId,
+    override val translationId: TranslationId<WorkPackageActivityDeliverableEntity>,
 
     val description: String? = null,
 

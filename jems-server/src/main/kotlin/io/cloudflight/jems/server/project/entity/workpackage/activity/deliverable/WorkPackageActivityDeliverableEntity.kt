@@ -18,7 +18,7 @@ class WorkPackageActivityDeliverableEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val deliverableId: Long = 0,
+    val id: Long = 0,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id")
@@ -37,7 +37,7 @@ class WorkPackageActivityDeliverableEntity(
     override fun equals(other: Any?) =
         this === other ||
         (other is WorkPackageActivityDeliverableEntity)
-        && deliverableId == other.deliverableId
+        && id == other.id
 
-    override fun hashCode() = deliverableId.hashCode()
+    override fun hashCode() = id.hashCode()
 }

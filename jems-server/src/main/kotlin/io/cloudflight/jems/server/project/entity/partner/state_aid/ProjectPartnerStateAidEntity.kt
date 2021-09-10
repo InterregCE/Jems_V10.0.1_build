@@ -22,7 +22,7 @@ class ProjectPartnerStateAidEntity(
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.partnerId")
     val translatedValues: Set<ProjectPartnerStateAidTranslEntity> = emptySet(),
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "activityId")
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "id")
     val activities: List<WorkPackageActivityEntity>? = emptyList(),
 
     @ManyToOne

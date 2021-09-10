@@ -14,6 +14,8 @@ data class WorkPackageActivityDTO(
 )
 
 data class WorkPackageActivityDeliverableDTO(
+    val deliverableId: Long,
+    val activityId: Long,
     val deliverableNumber: Int? = null,
     val description: Set<InputTranslation> = emptySet(),
     val period: Int? = null
