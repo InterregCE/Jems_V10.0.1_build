@@ -45,7 +45,7 @@ class WorkPackageEntity(
     @OneToMany(mappedBy = "outputId.workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val outputs: MutableList<WorkPackageOutputEntity> = mutableListOf(),
 
-    @OneToMany(mappedBy = "activityId.workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val activities: MutableList<WorkPackageActivityEntity> = mutableListOf(),
 ){
 

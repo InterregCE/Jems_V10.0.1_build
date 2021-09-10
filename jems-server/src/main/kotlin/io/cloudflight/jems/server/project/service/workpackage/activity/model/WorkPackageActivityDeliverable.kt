@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 
 data class WorkPackageActivityDeliverable(
     val deliverableId: Long = 0,
-    val activityId: Long,
     val deliverableNumber: Int = 0,
     val description : Set<InputTranslation> = emptySet(),
     val period: Int? = null,

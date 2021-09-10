@@ -81,18 +81,19 @@ class WorkPackagePersistenceProvider(
         val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
 
         // fetch all activities and deliverables in 1 request
-        val activitiesByWorkPackages = workPackageActivityRepository.findAllByActivityIdWorkPackageIdIn(workPackageIds)
+        val activitiesByWorkPackages = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds)
             .groupBy { it.workPackageId }
 
         // fetch all outputs in 1 request
         val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
             .groupBy { it.outputId.workPackageId }
 
-        // fetch projectPartnerIds in 1 request
+        // fetch projectPartnerIds in 1 request, maybe 2
+        val activityIds = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds).mapTo(HashSet()) { it.id }
         val projectPartnerIds =
-            workPackageActivityPartnerRepository.findAllByIdWorkPackageIdIn(workPackageIds)
-                .groupBy { it.id.workPackageId }
-                .mapValues { it.value.groupBy({ it.id.workPackageId }, { it.id.projectPartnerId }) }
+            workPackageActivityPartnerRepository.findAllByIdActivityIdIn(activityIds)
+                .groupBy { it.id.activityId }
+                .mapValues { it.value.groupBy({ it.id.activityId }, { it.id.projectPartnerId }) }
 
         // fetch all investments
         val investmentsByWorkPackages = workPackageInvestmentRepository.findInvestmentsByProjectId(projectId)
@@ -266,9 +267,10 @@ class WorkPackagePersistenceProvider(
     ): List<WorkPackageActivity> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                getWorkPackageOrThrow(workPackageId).activities.toModel(
-                    workPackageActivityPartnerRepository.findAllByIdWorkPackageId(workPackageId)
-                        .groupBy({ it.id.workPackageId }, { it.id.projectPartnerId })
+                val workPackage = getWorkPackageOrThrow(workPackageId)
+                workPackage.activities.toModel(
+                    workPackageActivityPartnerRepository.findAllByIdActivityIdIn(workPackage.activities.map { it.id })
+                        .groupBy({ it.id.activityId }, { it.id.projectPartnerId })
                 )
             },
             previousVersionFetcher = { timestamp ->
@@ -288,12 +290,12 @@ class WorkPackagePersistenceProvider(
 
         workPackageActivityPartnerRepository.deleteAllByIdWorkPackageId(workPackageId)
         val partnersByActivities = workPackageActivityPartnerRepository.saveAll(workPackageActivities.toPartners())
-            .groupBy({ it.id.workPackageId }, { it.id.projectPartnerId })
+            .groupBy({ it.id.activityId }, { it.id.projectPartnerId })
 
-        val currentActivities = workPackageActivityRepository.findAllByActivityIdWorkPackageId(workPackageId)
+        val currentActivities = workPackageActivityRepository.findAllByWorkPackageId(workPackageId)
         workPackageActivityRepository.deleteAll(
             currentActivities.filter {
-                !activitiesToBeSaved.map { it.activityId }.contains(it.activityId)
+                !activitiesToBeSaved.map { it.id }.contains(it.id)
             }
         )
         return workPackageActivityRepository.saveAll(activitiesToBeSaved)
@@ -311,15 +313,14 @@ class WorkPackagePersistenceProvider(
         val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
 
         // fetch all activities and deliverables in 1 request
-        return workPackageActivityRepository.findAllByActivityIdWorkPackageIdIn(workPackageIds).toSummaryModel()
+        return workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds).toSummaryModel()
     }
 
     private fun List<WorkPackageActivity>.toPartners(): Collection<WorkPackageActivityPartnerEntity> {
-        val workPackageId = this.firstOrNull()?.workPackageId ?: 0
         val result = mutableSetOf<WorkPackageActivityPartnerId>()
-        this.forEachIndexed { index, activity ->
+        this.forEach { activity ->
             activity.partnerIds.forEach {
-                result.add(WorkPackageActivityPartnerId(workPackageId, index + 1, it))
+                result.add(WorkPackageActivityPartnerId(activity.activityId, it))
             }
         }
         return result.map { WorkPackageActivityPartnerEntity(it) }
@@ -405,18 +406,19 @@ class WorkPackagePersistenceProvider(
         val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
 
         // fetch all activities and deliverables in 1 request
-        val activitiesByWorkPackages = workPackageActivityRepository.findAllByActivityIdWorkPackageIdIn(workPackageIds)
+        val activitiesByWorkPackages = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds)
             .groupBy { it.workPackageId }
 
         // fetch all outputs in 1 request
         val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
             .groupBy { it.outputId.workPackageId }
 
-        // fetch projectPartnerIds in 1 request
+        // fetch projectPartnerIds in 1 request, maybe 2
+        val activityIds = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds).mapTo(HashSet()) { it.id }
         val projectPartnerIds =
-            workPackageActivityPartnerRepository.findAllByIdWorkPackageIdIn(workPackageIds)
-                .groupBy { it.id.workPackageId }
-                .mapValues { it.value.groupBy({ it.id.workPackageId }, { it.id.projectPartnerId }) }
+            workPackageActivityPartnerRepository.findAllByIdActivityIdIn(activityIds)
+                .groupBy { it.id.activityId }
+                .mapValues { it.value.groupBy({ it.id.activityId }, { it.id.projectPartnerId }) }
 
         return workPackages.map { wp ->
             wp.toModel(

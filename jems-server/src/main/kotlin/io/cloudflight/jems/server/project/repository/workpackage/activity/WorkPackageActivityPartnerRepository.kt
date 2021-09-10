@@ -11,9 +11,7 @@ import java.sql.Timestamp
 @Repository
 interface WorkPackageActivityPartnerRepository : JpaRepository<WorkPackageActivityPartnerEntity, WorkPackageActivityPartnerId> {
 
-    fun findAllByIdWorkPackageId(workPackageId: Long): MutableList<WorkPackageActivityPartnerEntity>
-
-    fun findAllByIdWorkPackageIdIn(workPackageIds: Collection<Long>): Iterable<WorkPackageActivityPartnerEntity>
+    fun findAllByIdActivityIdIn(activityIds: Collection<Long>): MutableList<WorkPackageActivityPartnerEntity>
 
     fun deleteAllByIdWorkPackageId(workPackageId: Long)
 

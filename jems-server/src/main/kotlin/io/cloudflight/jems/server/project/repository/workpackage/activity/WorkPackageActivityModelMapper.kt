@@ -1,18 +1,15 @@
 package io.cloudflight.jems.server.project.repository.workpackage.activity
 
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
-import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationEntity
-import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
-import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationEntity
-import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageDeliverableRow
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
@@ -20,19 +17,19 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 
 fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageActivityEntity {
-    val activityEmbeddedId = WorkPackageActivityId(workPackageId, index)
     return WorkPackageActivityEntity(
+        id = activityId,
         workPackageId = workPackageId,
         activityNumber = index,
         translatedValues = mutableSetOf(),
         startPeriod = startPeriod,
         endPeriod = endPeriod,
-        deliverables = deliverables.toIndexedEntity(activityEmbeddedId),
+        deliverables = deliverables.toIndexedEntity(),
     ).apply {
         translatedValues.addTranslationEntities(
             { language ->
                 WorkPackageActivityTranslationEntity(
-                    translationId = WorkPackageActivityTranslationId(this, language),
+                    translationId = TranslationId(this, language),
                     description = description.extractTranslation(language),
                     title = title.extractTranslation(language),
                 )
@@ -45,12 +42,10 @@ fun List<WorkPackageActivity>.toIndexedEntity(workPackageId: Long) =
     mapIndexed { index, activity -> activity.toEntity(workPackageId, index.plus(1)) }
 
 fun WorkPackageActivityDeliverable.toEntity(
-    activityId: Long,
     index: Int
 ): WorkPackageActivityDeliverableEntity {
     return WorkPackageActivityDeliverableEntity(
-        deliverableId = deliverableId,
-        activity = activityId,
+        id = deliverableId,
         deliverableNumber = index,
         translatedValues = mutableSetOf(),
         startPeriod = period,
@@ -58,7 +53,7 @@ fun WorkPackageActivityDeliverable.toEntity(
         translatedValues.addTranslationEntities(
             { language ->
                 WorkPackageActivityDeliverableTranslationEntity(
-                    translationId = WorkPackageActivityDeliverableTranslationId(this, language),
+                    translationId = TranslationId(this, language),
                     description = description.extractTranslation(language),
                 )
             }, arrayOf(description)
@@ -66,8 +61,8 @@ fun WorkPackageActivityDeliverable.toEntity(
     }
 }
 
-fun List<WorkPackageActivityDeliverable>.toIndexedEntity(activityId: Long, index: Int) =
-    mapIndexedTo(HashSet()) { index, deliverable -> deliverable.toEntity(activityId, index.plus(1)) }
+fun List<WorkPackageActivityDeliverable>.toIndexedEntity() =
+    mapIndexedTo(HashSet()) { index, deliverable -> deliverable.toEntity(index.plus(1)) }
 
 fun WorkPackageActivityEntity.toModel(partnersByActivities: Map<Long, List<Long>>) =
     WorkPackageActivity(
@@ -78,7 +73,7 @@ fun WorkPackageActivityEntity.toModel(partnersByActivities: Map<Long, List<Long>
         startPeriod = startPeriod,
         endPeriod = endPeriod,
         deliverables = deliverables.sortedBy { it.deliverableNumber }.map { it.toModel() },
-        partnerIds = partnersByActivities[activityId]?.toSet() ?: emptySet()
+        partnerIds = partnersByActivities[id]?.toSet() ?: emptySet()
     )
 
 fun Iterable<WorkPackageActivityEntity>.toModel(
@@ -93,8 +88,7 @@ fun WorkPackageActivityEntity.toSummaryModel() = WorkPackageActivitySummary (
 fun Iterable<WorkPackageActivityEntity>.toSummaryModel() = map { it.toSummaryModel() }
 
 fun WorkPackageActivityDeliverableEntity.toModel() = WorkPackageActivityDeliverable(
-    deliverableId = deliverableId,
-    activityId = activityId,
+    deliverableId = id,
     deliverableNumber = deliverableNumber,
     description = translatedValues.extractField { it.description },
     period = startPeriod,
@@ -123,7 +117,7 @@ fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
 fun List<WorkPackageDeliverableRow>.toDeliverableHistoricalData() =
     this.groupBy { it.deliverableNumber }.map { groupedRows ->
         WorkPackageActivityDeliverable(
-            activityId = groupedRows.value.first().activityId,
+            deliverableId = groupedRows.value.first().deliverableId,
             deliverableNumber = groupedRows.value.first().deliverableNumber,
             period = groupedRows.value.first().startPeriod,
             description = groupedRows.value.extractField { it.description }

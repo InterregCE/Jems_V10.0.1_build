@@ -13,9 +13,9 @@ import org.springframework.stereotype.Repository
 interface WorkPackageActivityRepository : PagingAndSortingRepository<WorkPackageActivityEntity, Long> {
 
     @EntityGraph(value = "WorkPackageActivityEntity.full")
-    fun findAllByActivityIdWorkPackageIdIn(workPackageIds: Collection<Long>): Iterable<WorkPackageActivityEntity>
+    fun findAllByWorkPackageIdIn(workPackageIds: Collection<Long>): Iterable<WorkPackageActivityEntity>
 
-    fun findAllByActivityIdWorkPackageId(workPackageId: Long): Iterable<WorkPackageActivityEntity>
+    fun findAllByWorkPackageId(workPackageId: Long): Iterable<WorkPackageActivityEntity>
 
     @Query(
         """
