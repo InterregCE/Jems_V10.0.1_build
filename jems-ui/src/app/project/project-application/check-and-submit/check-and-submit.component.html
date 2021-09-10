@@ -39,17 +39,17 @@
                             (clicked)="submitProject(data.projectId)">
                         {{'project.detail.button.submit' | translate}}
                     </app-pending-button>
-                </ng-container>
 
-                <app-pending-button
-                        class="mr-2 mt-2"
-                        *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
-                        [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
-                        [disabled]="!data.isProjectLatestVersion || !data.hasPreConditionCheckSucceed"
-                        [pending]="actionPending"
-                        (clicked)="resubmitProject(data.projectId)">
-                    {{'project.detail.button.resubmit' | translate}}
-                </app-pending-button>
+                    <app-pending-button
+                            class="mr-2 mt-2"
+                            *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
+                            [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
+                            [disabled]="!data.isProjectLatestVersion || !data.hasPreConditionCheckSucceed"
+                            [pending]="actionPending"
+                            (clicked)="resubmitProject(data.projectId)">
+                        {{'project.detail.button.resubmit' | translate}}
+                    </app-pending-button>
+                </ng-container>
 
                 <app-project-application-pre-condition-check-result
                         *ngIf="data.preConditionCheckResults"
