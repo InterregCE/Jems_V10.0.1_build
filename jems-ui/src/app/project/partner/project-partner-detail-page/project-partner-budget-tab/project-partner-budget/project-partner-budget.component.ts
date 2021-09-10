@@ -4,25 +4,25 @@ import {combineLatest, Observable} from 'rxjs';
 import {catchError, distinctUntilChanged, map, startWith, tap} from 'rxjs/operators';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {BudgetOptions} from '../../../../model/budget/budget-options';
-import {NumberService} from '../../../../../common/services/number.service';
+import {BudgetOptions} from '@project/model/budget/budget-options';
+import {NumberService} from '@common/services/number.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectPartnerBudgetConstants} from './project-partner-budget.constants';
-import {GeneralBudgetTableEntry} from '../../../../model/budget/general-budget-table-entry';
+import {GeneralBudgetTableEntry} from '@project/model/budget/general-budget-table-entry';
 import {HttpErrorResponse} from '@angular/common/http';
-import {StaffCostsBudgetTable} from '../../../../model/budget/staff-costs-budget-table';
-import {StaffCostsBudgetTableEntry} from '../../../../model/budget/staff-costs-budget-table-entry';
-import {PartnerBudgetTables} from '../../../../model/budget/partner-budget-tables';
-import {GeneralBudgetTable} from '../../../../model/budget/general-budget-table';
-import {TravelAndAccommodationCostsBudgetTable} from '../../../../model/budget/travel-and-accommodation-costs-budget-table';
-import {TravelAndAccommodationCostsBudgetTableEntry} from '../../../../model/budget/travel-and-accommodation-costs-budget-table-entry';
+import {StaffCostsBudgetTable} from '@project/model/budget/staff-costs-budget-table';
+import {StaffCostsBudgetTableEntry} from '@project/model/budget/staff-costs-budget-table-entry';
+import {PartnerBudgetTables} from '@project/model/budget/partner-budget-tables';
+import {GeneralBudgetTable} from '@project/model/budget/general-budget-table';
+import {TravelAndAccommodationCostsBudgetTable} from '@project/model/budget/travel-and-accommodation-costs-budget-table';
+import {TravelAndAccommodationCostsBudgetTableEntry} from '@project/model/budget/travel-and-accommodation-costs-budget-table-entry';
 import {ProjectPeriodDTO} from '@cat/api';
-import {UnitCostsBudgetTable} from '../../../../model/budget/unit-costs-budget-table';
-import {UnitCostsBudgetTableEntry} from '../../../../model/budget/unit-costs-budget-table-entry';
+import {UnitCostsBudgetTable} from '@project/model/budget/unit-costs-budget-table';
+import {UnitCostsBudgetTableEntry} from '@project/model/budget/unit-costs-budget-table-entry';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
-import {BudgetCostCategoryEnum} from '../../../../model/lump-sums/BudgetCostCategoryEnum';
-import {ProgrammeUnitCost} from '../../../../model/programmeUnitCost';
-import {InvestmentSummary} from '../../../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
+import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 
 @UntilDestroy()
@@ -150,7 +150,9 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       untilDestroyed(this)
     ).subscribe(data => {
       this.data = data;
-      this.cdr.markForCheck();
+      setTimeout(() => {
+        this.cdr.markForCheck();
+      });
     });
   }
 
