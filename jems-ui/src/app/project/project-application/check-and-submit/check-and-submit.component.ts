@@ -21,6 +21,7 @@ export class CheckAndSubmitComponent {
   Alert = Alert;
   PermissionsEnum = UserRoleDTO.PermissionsEnum;
   STATUS = ProjectStatusDTO.StatusEnum;
+  private preConditionCheckResult$ = new BehaviorSubject<PreConditionCheckResult | null>(null);
 
   data$: Observable<{
     projectStatus: ProjectStatusDTO.StatusEnum,
@@ -47,7 +48,7 @@ export class CheckAndSubmitComponent {
       this.projectStore.project$,
       this.projectStore.projectTitle$,
       this.projectStore.userIsProjectOwner$,
-      this.checkAndSubmitStore.preConditionCheckResult$,
+      this.preConditionCheckResult$,
       this.projectStore.currentVersionIsLatest$
     ]).pipe(
       map(([project, projectTitle, isThisUserOwner, preConditionCheckResults, isProjectLatestVersion]) => ({
@@ -66,6 +67,7 @@ export class CheckAndSubmitComponent {
   preConditionCheck(projectId: number): void {
     this.preConditionCheckInProgress = true;
     this.checkAndSubmitStore.preConditionCheck(projectId).pipe(
+      tap(result => this.preConditionCheckResult$.next(result)),
       catchError((error) => this.showErrorMessage(error.error)),
       finalize(() => this.preConditionCheckInProgress = false)
     ).subscribe();
