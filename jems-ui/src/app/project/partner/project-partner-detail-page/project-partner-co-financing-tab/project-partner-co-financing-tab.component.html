@@ -23,6 +23,10 @@
                                         {{callFund.abbreviation | translateBySystemLanguage | async}}
                                     </mat-option>
                                 </mat-select>
+                                <mat-hint   *ngIf="!fund.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value"
+                                          class="mat-error">
+                                    {{'project.partner.coFinancing.required' | translate}}
+                                </mat-hint>
                                 <mat-error>
                                     <app-form-field-errors
                                             [errors]="fund.get(constants.FORM_CONTROL_NAMES.fundId)?.errors"
@@ -98,6 +102,10 @@
                             <mat-form-field
                                     *ngIf="!partnerContribution.get(constants.FORM_CONTROL_NAMES.partner)?.value">
                                 <input [formControlName]="constants.FORM_CONTROL_NAMES.name" matInput required>
+                                <mat-hint   *ngIf="!partnerContribution?.value?.name"
+                                            class="mat-error">
+                                    {{'project.partner.coFinancing.required' | translate}}
+                                </mat-hint>
                                 <mat-error>
                                     <app-form-field-errors
                                             [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.name)?.errors"
@@ -115,6 +123,10 @@
                                             *ngIf="!partnerContribution?.value?.partner"
                                             [value]="partnerContributionStatus.AutomaticPublic">{{partnerContributionStatus.AutomaticPublic}}</mat-option>
                                 </mat-select>
+                                <mat-hint   *ngIf="!partnerContribution?.value?.status"
+                                            class="mat-error">
+                                    {{'project.partner.coFinancing.required' | translate}}
+                                </mat-hint>
                                 <mat-error>
                                     <app-form-field-errors
                                             [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.status)?.errors"
