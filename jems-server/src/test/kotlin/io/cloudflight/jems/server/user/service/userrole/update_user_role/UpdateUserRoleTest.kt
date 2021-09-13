@@ -50,7 +50,7 @@ internal class UpdateUserRoleTest {
 
     @Test
     fun `updateUserRole - change to different role - OK`() {
-        every { persistence.findById(ROLE_ID) } returns Optional.of(userRoleSummary)
+        every { persistence.findById(ROLE_ID) } returns userRoleSummary
         every { persistence.findUserRoleByName(userRoleUpdate.name) } returns Optional.empty()
         every { persistence.update(any()) } returnsArgument 0
 
@@ -61,7 +61,7 @@ internal class UpdateUserRoleTest {
 
     @Test
     fun `updateUserRole - no change in role - OK`() {
-        every { persistence.findById(ROLE_ID) } returns Optional.of(userRoleSummary)
+        every { persistence.findById(ROLE_ID) } returns userRoleSummary
         every { persistence.findUserRoleByName(userRoleUpdate.name) } returns Optional.of(
             UserRoleSummary(
                 id = ROLE_ID,
@@ -75,14 +75,8 @@ internal class UpdateUserRoleTest {
     }
 
     @Test
-    fun `updateUserRole - role does not exist`() {
-        every { persistence.findById(ROLE_ID) } returns Optional.empty()
-        assertThrows<UserRoleNotFound> { updateUserRole.updateUserRole(userRoleUpdate) }
-    }
-
-    @Test
     fun `updateUserRole - role name already taken`() {
-        every { persistence.findById(ROLE_ID) } returns Optional.of(userRoleSummary)
+        every { persistence.findById(ROLE_ID) } returns userRoleSummary
         every { persistence.findUserRoleByName(userRoleUpdate.name) } returns Optional.of(
             UserRoleSummary(
                 id = 126L,

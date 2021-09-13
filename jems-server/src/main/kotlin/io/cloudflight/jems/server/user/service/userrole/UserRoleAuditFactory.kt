@@ -8,10 +8,17 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermissionNode
 import io.cloudflight.jems.server.user.service.model.UserRolePermissionNodeType
 
+val DEFAULT_PROJECT_PERMISSIONS =
+    UserRolePermissionNode(
+        name = "Allow user to create/collaborate",
+        editPermissions = setOf(UserRolePermission.ProjectCreate),
+        type = UserRolePermissionNodeType.TOGGLE_SECTION,
+    )
+
 val DEFAULT_USER_INSPECT_PERMISSIONS =
     UserRolePermissionNode(
-        name = "Allow user to monitor projects (Programme authority: Officers, FLC, EE...)",
-        type = UserRolePermissionNodeType.SECTION_HEADER,
+        name = "Allow user to monitor projects",
+        type = UserRolePermissionNodeType.TOGGLE_SECTION,
         children = listOf(
             UserRolePermissionNode(
                 name = "Application form",
@@ -170,6 +177,7 @@ private fun getRoleAsString(role: UserRole): String {
     val default = if (role.isDefault) "YES" else "NO"
     auditString.append("\nDefault role [$default]\n")
 
+    appendToAudit(role.permissions, DEFAULT_PROJECT_PERMISSIONS, "", auditString)
     appendToAudit(role.permissions, DEFAULT_USER_INSPECT_PERMISSIONS, "", auditString)
     appendToAudit(role.permissions, DEFAULT_TOP_NAVIGATION_PERMISSIONS, "", auditString)
     return auditString.toString()
@@ -200,6 +208,16 @@ private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: S
         val edit = node.editPermissions.any { it in permissions }
         return if (edit) "[ACTIVE]" else "[HIDE]"
     }
+    if (node.type == UserRolePermissionNodeType.TOGGLE_SECTION) {
+        return if (sectionIsChecked(node, permissions)) "[CHECKED]" else "[UNCHECKED]"
+    }
     return ""
 }
+
+private fun sectionIsChecked(node: UserRolePermissionNode, permissions: Set<UserRolePermission>): Boolean {
+    return node.editPermissions.any { it in permissions }
+        || node.viewPermissions.any { it in permissions }
+        || node.children.any { sectionIsChecked(it, permissions) }
+}
+
 

@@ -23,10 +23,10 @@ class UpdateUserRole(
     @ExceptionWrapper(UpdateUserRoleException::class)
     override fun updateUserRole(userRole: UserRole): UserRole {
         validateUserRoleCommon(generalValidator, userRole.name)
-        val existingRole = persistence.findById(userRole.id).orElseThrow { UserRoleNotFound() }
         validateUserRoleNameNotTaken(userRole)
 
         return persistence.update(userRole).also {
+            val existingRole = persistence.findById(userRole.id)
             auditPublisher.publishEvent(userRoleUpdated(this, it, existingRole.name))
         }
     }

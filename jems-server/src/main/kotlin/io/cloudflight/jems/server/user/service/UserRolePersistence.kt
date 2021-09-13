@@ -19,6 +19,6 @@ interface UserRolePersistence {
 
     fun findUserRoleByName(name: String): Optional<UserRoleSummary>
 
-    fun findById(id: Long): Optional<UserRoleSummary>
+    fun findById(id: Long): UserRoleSummary
 
 }
