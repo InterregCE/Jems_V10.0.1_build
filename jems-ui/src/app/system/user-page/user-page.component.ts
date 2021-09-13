@@ -77,10 +77,6 @@ export class UserPageComponent implements OnInit {
     ).subscribe();
   }
 
-  getRolesForDropdown(roles: UserRoleSummaryDTO[]): UserRoleSummaryDTO[] {
-    return roles.filter(role => this.roles.value.indexOf(role.id) < 0);
-  }
-
   getRoleName(roles: UserRoleSummaryDTO[], roleId: number): string {
     return roles.find(it => it.id === roleId)?.name || '';
   }

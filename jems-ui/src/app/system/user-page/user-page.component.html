@@ -82,7 +82,7 @@
                 </mat-chip-list>
                 <mat-autocomplete #auto="matAutocomplete"
                                   (optionSelected)="addRoleToFilters($event.option.value); filterRoles.value = ''; filterRoles.blur()">
-                    <mat-option *ngFor="let role of getRolesForDropdown(userRoles)" [value]="role.id">
+                    <mat-option *ngFor="let role of userRoles | userRoleFilter : this.roles.value :  filterRoles.value" [value]="role.id">
                         {{ role.name}}
                     </mat-option>
                 </mat-autocomplete>
