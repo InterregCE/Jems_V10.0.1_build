@@ -18,10 +18,10 @@ class WorkPackageActivityDeliverableEntity(
 
     @Column(name = "deliverable_number")
     @field:NotNull
-    val deliverableNumber: Int,
+    var deliverableNumber: Int,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<WorkPackageActivityDeliverableTranslationEntity> = mutableSetOf(),
 
-    val startPeriod: Int? = null,
+    var startPeriod: Int? = null,
 )

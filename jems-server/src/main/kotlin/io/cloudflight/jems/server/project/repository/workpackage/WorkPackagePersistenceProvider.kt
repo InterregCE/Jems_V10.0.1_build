@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
-import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerId
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
@@ -89,7 +88,8 @@ class WorkPackagePersistenceProvider(
             .groupBy { it.outputId.workPackageId }
 
         // fetch projectPartnerIds in 1 request, maybe 2
-        val activityIds = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds).mapTo(HashSet()) { it.id }
+        val activityIds =
+            workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds).mapTo(HashSet()) { it.id }
         val projectPartnerIds =
             workPackageActivityPartnerRepository.findAllByIdActivityIdIn(activityIds)
                 .groupBy { it.id.activityId }
@@ -283,37 +283,16 @@ class WorkPackagePersistenceProvider(
     override fun updateWorkPackageActivities(
         workPackageId: Long,
         workPackageActivities: List<WorkPackageActivity>
-    ): List<WorkPackageActivity> {
-        val idsToBeUpdated = workPackageActivities.map { it.id }.filter { it != 0L }
-        val activitiesToBeUpdatedById = workPackageActivities.filter { it.id != 0L }.associateBy { it.id }
-
-        val persistedActivities = getWorkPackageOrThrow(workPackageId).activities
-
-        val activityIdsToBeDeleted = persistedActivities.map { it.id }.toMutableSet()
-        activityIdsToBeDeleted.removeAll(idsToBeUpdated)
-
-        // start modifying DB entries for activities
-        persistedActivities.removeIf { activityIdsToBeDeleted.contains(it.id) } // 1. remove those to be deleted
-        persistedActivities.forEachIndexed { index, activityEntity ->           // 2. update those to be updated
-            val newActivityData = activitiesToBeUpdatedById[activityEntity.id]
-            activityEntity.activityNumber = index.plus(1)
-            activityEntity.translatedValues.clear()
-            // activityEntity.translatedValues =
-            activityEntity.startPeriod = newActivityData?.startPeriod
-            activityEntity.endPeriod = newActivityData?.endPeriod
-            // activityEntity.deliverables =
+    ): List<WorkPackageActivity> =
+        getWorkPackageOrThrow(workPackageId).let {
+//            workPackageActivityPartnerRepository.deleteAllByIdActivityIdIn(it.activities.map { it.id })
+            it.updateActivities(workPackageActivities.toIndexedEntity(workPackageId = workPackageId))
+//            val partnersByActivities = workPackageActivityPartnerRepository.saveAll(workPackageActivities.toPartners())
+//                .groupBy({ it.id.activityId }, { it.id.projectPartnerId })
+//            it.activities.toModel(partnersByActivities)
+            it.activities.toModel(emptyMap())
         }
-        persistedActivities.addAll(                                             // 3. add those to be added
-            workPackageActivities
-                .filter { it.id == 0L }
-                .toIndexedEntity(workPackageId = workPackageId, shiftIndexBy = persistedActivities.size)
-        )
-//        workPackageActivityPartnerRepository.deleteAllByIdActivityIdIn(idsToBeUpdated)
-        val partnersByActivities = workPackageActivityPartnerRepository.saveAll(workPackageActivities.toPartners())
-            .groupBy({ it.id.activityId }, { it.id.projectPartnerId })
 
-        return persistedActivities.toModel(partnersByActivities)
-    }
 
     @Transactional(readOnly = true)
     override fun getWorkPackageActivitiesForProject(

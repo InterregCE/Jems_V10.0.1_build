@@ -39,7 +39,7 @@ fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageAc
 }
 
 fun List<WorkPackageActivity>.toIndexedEntity(workPackageId: Long, shiftIndexBy: Int = 0) =
-    mapIndexed { index, activity -> activity.toEntity(workPackageId, index.plus(1).plus(shiftIndexBy)) }
+    mapIndexed { index, activity -> activity.toEntity(workPackageId, index.plus(1).plus(shiftIndexBy)) }.toMutableList()
 
 fun WorkPackageActivityDeliverable.toEntity(
     index: Int

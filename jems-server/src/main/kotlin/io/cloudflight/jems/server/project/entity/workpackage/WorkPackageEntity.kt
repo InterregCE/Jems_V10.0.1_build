@@ -59,4 +59,16 @@ class WorkPackageEntity(
             activities = this.activities
         )
 
+    fun updateActivities(newActivities: MutableList<WorkPackageActivityEntity>){
+        this.activities.removeIf { activity -> !newActivities.map { it.id }.contains(activity.id) }
+        this.activities.forEach { currentActivity ->
+            val newActivity = newActivities.first { it.id==currentActivity.id }
+            currentActivity.activityNumber =  newActivity.activityNumber
+            currentActivity.startPeriod = newActivity.activityNumber
+            currentActivity.endPeriod = newActivity.endPeriod
+            currentActivity.updateDeliverables(newActivity.deliverables)
+            currentActivity.updateTranslations(newActivity.translatedValues)
+        }
+        this.activities.addAll(newActivities.filter { it.id == 0L })
+    }
 }

@@ -16,12 +16,12 @@ class WorkPackageTransl(
     override val translationId: TranslationId<WorkPackageEntity>,
 
     @Column
-    val name: String? = null,
+    var name: String? = null,
 
     @Column(name = "specific_objective")
-    val specificObjective: String? = null,
+    var specificObjective: String? = null,
 
     @Column(name = "objective_and_audience")
-    val objectiveAndAudience: String? = null
+    var objectiveAndAudience: String? = null
 
 ): TranslationEntity()
