@@ -9,7 +9,6 @@ describe('ProgrammeAreaComponent', () => {
   let httpTestingController: HttpTestingController;
   let component: ProgrammeAreaComponent;
   let fixture: ComponentFixture<ProgrammeAreaComponent>;
-  const API_NUTS_METADATA_URL = '//api/nuts/metadata';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -33,20 +32,6 @@ describe('ProgrammeAreaComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should download initial nuts metadata', () => {
-    component.metaData$.subscribe();
-
-    httpTestingController.expectOne({method: 'GET', url: API_NUTS_METADATA_URL});
-  });
-
-  it('should download nuts metadata', fakeAsync(() => {
-    component.metaData$.subscribe();
-    component.downloadLatestNuts$.next();
-
-    httpTestingController.expectOne({method: 'GET', url: API_NUTS_METADATA_URL});
-    httpTestingController.expectOne({method: 'POST', url: '//api/nuts/download'});
-  }));
-
   describe('Nuts regions', () => {
     const nuts = [{
       code: 'RO',
@@ -63,10 +48,10 @@ describe('ProgrammeAreaComponent', () => {
 
     beforeEach(() => {
       component.metaData$.subscribe();
-      httpTestingController.expectOne({method: 'GET', url: '//api/nuts/metadata'}).flush({});
+      httpTestingController.match({method: 'GET', url: '//api/nuts/metadata'}).forEach(req => req.flush({}));
       httpTestingController.expectOne({method: 'GET', url: '//api/programmedata'})
         .flush({programmeNuts: nuts});
-      httpTestingController.expectOne({method: 'GET', url: '//api/nuts'}).flush(nuts);
+      httpTestingController.match({method: 'GET', url: '//api/nuts'}).forEach(req => req.flush(nuts));
     });
 
     it('should download after metadata', fakeAsync(() => {
