@@ -18,29 +18,27 @@ interface WorkPackageActivityPartnerRepository : JpaRepository<WorkPackageActivi
     @Query(
         value = """
             SELECT
-                entity.work_package_id as workPackageId,
-                entity.activity_number as activityNumber,
+                entity.activity_id as activityId,
                 entity.project_partner_id as projectPartnerId
                 FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-                WHERE   entity.work_package_id = :workPackageId
-                    AND entity.activity_number = :activityNumber
+                WHERE   entity.activity_id = :activityId
              """,
         nativeQuery = true
     )
-    fun findAllByWorkPackageIdAndActivityNumberAsOfTimestamp(
-        workPackageId: Long,
-        activityNumber: Int,
+    fun findAllByActivityIdAsOfTimestamp(
+        activityId: Long,
         timestamp: Timestamp
     ): List<WorkPackageActivityPartnerRow>
 
     @Query(
         value = """
              SELECT
-             entity.work_package_id AS workPackageId,
-             entity.activity_number AS activityNumber,
+             activity.id AS activityId,
+             activity.work_package_id AS workPackageId,
              entity.project_partner_id as projectPartnerId
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             WHERE entity.work_package_id IN :workPackageIds
+             LEFT JOIN project_work_package_activity FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS activity ON entity.activity_id = activity.id
+             WHERE activity.work_package_id IN :workPackageIds
              """,
         nativeQuery = true
     )

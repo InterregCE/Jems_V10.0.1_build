@@ -284,22 +284,35 @@ class WorkPackagePersistenceProvider(
         workPackageId: Long,
         workPackageActivities: List<WorkPackageActivity>
     ): List<WorkPackageActivity> {
+        val idsToBeUpdated = workPackageActivities.map { it.id }.filter { it != 0L }
+        val activitiesToBeUpdatedById = workPackageActivities.filter { it.id != 0L }.associateBy { it.id }
 
-        val activityIds = getWorkPackageOrThrow(workPackageId).activities.map{ it.id }
-        val activitiesToBeSaved = workPackageActivities.toIndexedEntity(workPackageId)
+        val persistedActivities = getWorkPackageOrThrow(workPackageId).activities
 
-        workPackageActivityPartnerRepository.deleteAllByIdActivityIdIn(activityIds)
+        val activityIdsToBeDeleted = persistedActivities.map { it.id }.toMutableSet()
+        activityIdsToBeDeleted.removeAll(idsToBeUpdated)
+
+        // start modifying DB entries for activities
+        persistedActivities.removeIf { activityIdsToBeDeleted.contains(it.id) } // 1. remove those to be deleted
+        persistedActivities.forEachIndexed { index, activityEntity ->           // 2. update those to be updated
+            val newActivityData = activitiesToBeUpdatedById[activityEntity.id]
+            activityEntity.activityNumber = index.plus(1)
+            activityEntity.translatedValues.clear()
+            // activityEntity.translatedValues =
+            activityEntity.startPeriod = newActivityData?.startPeriod
+            activityEntity.endPeriod = newActivityData?.endPeriod
+            // activityEntity.deliverables =
+        }
+        persistedActivities.addAll(                                             // 3. add those to be added
+            workPackageActivities
+                .filter { it.id == 0L }
+                .toIndexedEntity(workPackageId = workPackageId, shiftIndexBy = persistedActivities.size)
+        )
+//        workPackageActivityPartnerRepository.deleteAllByIdActivityIdIn(idsToBeUpdated)
         val partnersByActivities = workPackageActivityPartnerRepository.saveAll(workPackageActivities.toPartners())
             .groupBy({ it.id.activityId }, { it.id.projectPartnerId })
 
-        val currentActivities = workPackageActivityRepository.findAllByWorkPackageId(workPackageId)
-        workPackageActivityRepository.deleteAll(
-            currentActivities.filter {
-                !activitiesToBeSaved.map { it.id }.contains(it.id)
-            }
-        )
-        return workPackageActivityRepository.saveAll(activitiesToBeSaved)
-            .toModel(partnersByActivities)
+        return persistedActivities.toModel(partnersByActivities)
     }
 
     @Transactional(readOnly = true)
@@ -320,7 +333,7 @@ class WorkPackagePersistenceProvider(
         val result = mutableSetOf<WorkPackageActivityPartnerId>()
         this.forEach { activity ->
             activity.partnerIds.forEach {
-                result.add(WorkPackageActivityPartnerId(activity.activityId, it))
+                result.add(WorkPackageActivityPartnerId(activity.id, it))
             }
         }
         return result.map { WorkPackageActivityPartnerEntity(it) }
@@ -367,14 +380,12 @@ class WorkPackagePersistenceProvider(
 
         activities.forEach {
             it.deliverables =
-                workPackageActivityRepository.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(
-                    workPackageId,
-                    it.activityNumber,
+                workPackageActivityRepository.findAllDeliverablesByActivityIdAsOfTimestamp(
+                    it.id,
                     timestamp
                 ).toDeliverableHistoricalData()
-            it.partnerIds = workPackageActivityPartnerRepository.findAllByWorkPackageIdAndActivityNumberAsOfTimestamp(
-                workPackageId,
-                it.activityNumber,
+            it.partnerIds = workPackageActivityPartnerRepository.findAllByActivityIdAsOfTimestamp(
+                it.id,
                 timestamp
             ).toActivityPartnersHistoricalData()
         }
@@ -406,15 +417,15 @@ class WorkPackagePersistenceProvider(
         val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
 
         // fetch all activities and deliverables in 1 request
-        val activitiesByWorkPackages = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds)
-            .groupBy { it.workPackageId }
+        val allActivities = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds)
+        val activitiesGrouped = allActivities.groupBy { it.workPackageId }
 
         // fetch all outputs in 1 request
         val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
             .groupBy { it.outputId.workPackageId }
 
-        // fetch projectPartnerIds in 1 request, maybe 2
-        val activityIds = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds).mapTo(HashSet()) { it.id }
+        // fetch projectPartnerIds in 1 request
+        val activityIds = allActivities.mapTo(HashSet()) { it.id }
         val projectPartnerIds =
             workPackageActivityPartnerRepository.findAllByIdActivityIdIn(activityIds)
                 .groupBy { it.id.activityId }
@@ -422,7 +433,7 @@ class WorkPackagePersistenceProvider(
 
         return workPackages.map { wp ->
             wp.toModel(
-                getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
+                getActivitiesForWorkPackageId = { id -> activitiesGrouped[id] },
                 getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
                 getActivityPartnersForWorkPackageId = { id -> projectPartnerIds[id] }
             )
@@ -445,17 +456,16 @@ class WorkPackagePersistenceProvider(
         val partnerIdsGroupedBy =
             workPackageActivityPartnerRepository.findAllByWorkPackageIdsAsOfTimestamp(workPackageIds, timestamp)
                 .groupBy { it.workPackageId }
-                .mapValues { it.value.groupBy({ it.activityNumber }, { it.projectPartnerId }) }
+                .mapValues { it.value.groupBy({ it.activityId }, { it.projectPartnerId }) }
 
         activities.forEach {
             it.deliverables =
-                workPackageActivityRepository.findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(
-                    it.workPackageId,
-                    it.activityNumber,
+                workPackageActivityRepository.findAllDeliverablesByActivityIdAsOfTimestamp(
+                    it.id,
                     timestamp
                 )
                     .toDeliverableHistoricalData()
-            it.partnerIds = partnerIdsGroupedBy[it.workPackageId]?.get(it.activityNumber)?.toSet().orEmpty()
+            it.partnerIds = partnerIdsGroupedBy[it.workPackageId]?.get(it.id)?.toSet().orEmpty()
         }
         val activitiesByWorkPackages = activities.groupBy { it.workPackageId }
 

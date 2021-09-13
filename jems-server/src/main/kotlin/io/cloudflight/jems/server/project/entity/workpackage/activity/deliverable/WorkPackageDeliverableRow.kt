@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.entity.workpackage.activity.deliverab
 import io.cloudflight.jems.server.common.entity.TranslationView
 
 interface WorkPackageDeliverableRow: TranslationView {
-    val deliverableId: Long
+    val id: Long
     val deliverableNumber: Int
     val startPeriod: Int?
     val description: String?

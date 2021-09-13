@@ -18,7 +18,7 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 
 fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageActivityEntity {
     return WorkPackageActivityEntity(
-        id = activityId,
+        id = id,
         workPackageId = workPackageId,
         activityNumber = index,
         translatedValues = mutableSetOf(),
@@ -38,8 +38,8 @@ fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageAc
     }
 }
 
-fun List<WorkPackageActivity>.toIndexedEntity(workPackageId: Long) =
-    mapIndexed { index, activity -> activity.toEntity(workPackageId, index.plus(1)) }
+fun List<WorkPackageActivity>.toIndexedEntity(workPackageId: Long, shiftIndexBy: Int = 0) =
+    mapIndexed { index, activity -> activity.toEntity(workPackageId, index.plus(1).plus(shiftIndexBy)) }
 
 fun WorkPackageActivityDeliverable.toEntity(
     index: Int
@@ -117,7 +117,7 @@ fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
 fun List<WorkPackageDeliverableRow>.toDeliverableHistoricalData() =
     this.groupBy { it.deliverableNumber }.map { groupedRows ->
         WorkPackageActivityDeliverable(
-            deliverableId = groupedRows.value.first().deliverableId,
+            deliverableId = groupedRows.value.first().id,
             deliverableNumber = groupedRows.value.first().deliverableNumber,
             period = groupedRows.value.first().startPeriod,
             description = groupedRows.value.extractField { it.description }

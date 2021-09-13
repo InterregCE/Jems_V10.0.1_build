@@ -19,38 +19,46 @@ import org.junit.jupiter.api.Test
 
 class ProjectWorkPackageActivityControllerTest : UnitTest() {
 
-    private val activity1 = WorkPackageActivity(
-        workPackageId = 1L,
-        activityNumber = 1,
-        title = setOf(
-            InputTranslation(language = SK, translation = "sk_title"),
-        ),
-        description = setOf(
-            InputTranslation(language = EN, translation = "en_desc"),
-            InputTranslation(language = SK, translation = "sk_desc"),
-        ),
-        startPeriod = 1,
-        endPeriod = 3,
-        deliverables = listOf(
-            WorkPackageActivityDeliverable(
-                deliverableNumber = 1,
-                period = 1,
-                description = setOf(
-                    InputTranslation(language = EN, translation = "en_deliv_desc")
+    companion object {
+        const val activityId = 1L
+        const val deliverableId = 2L
+
+        private val activity1 = WorkPackageActivity(
+            id = activityId,
+            workPackageId = 1L,
+            activityNumber = 1,
+            title = setOf(
+                InputTranslation(language = SK, translation = "sk_title"),
+            ),
+            description = setOf(
+                InputTranslation(language = EN, translation = "en_desc"),
+                InputTranslation(language = SK, translation = "sk_desc"),
+            ),
+            startPeriod = 1,
+            endPeriod = 3,
+            deliverables = listOf(
+                WorkPackageActivityDeliverable(
+                    deliverableId = deliverableId,
+                    deliverableNumber = 1,
+                    period = 1,
+                    description = setOf(
+                        InputTranslation(language = EN, translation = "en_deliv_desc")
+                    )
                 )
-            )
-        ),
-        partnerIds = setOf(2)
-    )
-    private val activity2 = WorkPackageActivity(
-        workPackageId = 1L,
-        activityNumber = 2,
-        title = emptySet(),
-        description = emptySet(),
-        startPeriod = 4,
-        endPeriod = 6,
-        deliverables = emptyList(),
-    )
+            ),
+            partnerIds = setOf(2)
+        )
+        private val activity2 = WorkPackageActivity(
+            id = 2L,
+            workPackageId = 1L,
+            activityNumber = 2,
+            title = emptySet(),
+            description = emptySet(),
+            startPeriod = 4,
+            endPeriod = 6,
+            deliverables = emptyList(),
+        )
+    }
 
     @MockK
     lateinit var getActivityInteractor: GetActivityInteractor
@@ -67,6 +75,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
 
         assertThat(controller.getActivities(1L, 1L)).containsExactly(
             WorkPackageActivityDTO(
+                id = activityId,
                 workPackageId = 1L,
                 activityNumber = 1,
                 title = setOf(InputTranslation(SK, "sk_title")),
@@ -77,6 +86,8 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                 ),
                 deliverables = listOf(
                     WorkPackageActivityDeliverableDTO(
+                        deliverableId = deliverableId,
+                        activityId = activityId,
                         deliverableNumber = 1,
                         period = 1,
                         description = setOf(InputTranslation(EN, "en_deliv_desc"))
@@ -85,6 +96,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                 partnerIds = setOf(2)
             ),
             WorkPackageActivityDTO(
+                id = activity2.id,
                 workPackageId = 1L,
                 activityNumber = 2,
                 title = emptySet(),
@@ -109,6 +121,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
         } returns emptyList()
 
         val activityDto1 = WorkPackageActivityDTO(
+            id = activityId,
             workPackageId = 1L,
             title = setOf(InputTranslation(SK, "sk_title")),
             startPeriod = 1,
@@ -119,15 +132,21 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
             ),
             deliverables = listOf(
                 WorkPackageActivityDeliverableDTO(
-                    period = 1, description = setOf(
-                        InputTranslation(EN, "en_deliv_desc"),
-                    )
+                    activityId = activityId,
+                    deliverableId = deliverableId,
+                    period = 1,
+                    description = setOf(InputTranslation(EN, "en_deliv_desc"))
                 ),
-                WorkPackageActivityDeliverableDTO(period = 2)
+                WorkPackageActivityDeliverableDTO(
+                    activityId = activityId,
+                    deliverableId = 3,
+                    period = 2
+                )
             ),
             partnerIds = setOf(2, 3)
         )
         val activityDto2 = WorkPackageActivityDTO(
+            id = activity2.id,
             workPackageId = 1L,
             title = emptySet(),
             startPeriod = 3,
@@ -152,12 +171,18 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                 endPeriod = 2,
                 deliverables = listOf(
                     WorkPackageActivityDeliverable(
+                        deliverableId = deliverableId,
+                        deliverableNumber = 1,
                         period = 1,
                         description = setOf(
                             InputTranslation(language = EN, translation = "en_deliv_desc"),
                         )
                     ),
-                    WorkPackageActivityDeliverable(period = 2)
+                    WorkPackageActivityDeliverable(
+                        deliverableId = 3,
+                        deliverableNumber = 2,
+                        period = 2
+                    )
                 ),
                 partnerIds = setOf(2, 3)
             ),

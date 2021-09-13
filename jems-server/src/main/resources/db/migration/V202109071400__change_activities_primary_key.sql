@@ -8,12 +8,11 @@ DROP TABLE project_work_package_activity;
 
 CREATE TABLE project_work_package_activity
 (
-    id              INT UNSIGNED     NOT NULL,
+    id              INT UNSIGNED     AUTO_INCREMENT PRIMARY KEY,
     work_package_id INT UNSIGNED     NOT NULL,
     activity_number TINYINT UNSIGNED NOT NULL,
     start_period    SMALLINT UNSIGNED DEFAULT NULL,
     end_period      SMALLINT UNSIGNED DEFAULT NULL,
-    PRIMARY KEY (id),
     CONSTRAINT fk_project_work_package_activity_to_project_work_package
         FOREIGN KEY (work_package_id)
             REFERENCES project_work_package (id)
@@ -41,11 +40,10 @@ ALTER TABLE project_work_package_activity_transl
 
 CREATE TABLE project_work_package_activity_deliverable
 (
-    id                 INT UNSIGNED     NOT NULL,
+    id                 INT UNSIGNED     AUTO_INCREMENT PRIMARY KEY,
     activity_id        INT UNSIGNED     NOT NULL,
     deliverable_number TINYINT UNSIGNED NOT NULL,
     start_period       SMALLINT UNSIGNED DEFAULT NULL,
-    PRIMARY KEY (id),
     CONSTRAINT fk_project_work_package_activity_d_to_project_work_package_activ
         FOREIGN KEY (activity_id)
             REFERENCES project_work_package_activity (id)

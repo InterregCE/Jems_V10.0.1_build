@@ -43,15 +43,12 @@ interface WorkPackageActivityRepository : PagingAndSortingRepository<WorkPackage
                 translation.*
                 FROM project_work_package_activity_deliverable FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
                 LEFT JOIN project_work_package_activity_deliverable_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation
-                    ON entity.work_package_id = translation.work_package_id
-                    AND entity.activity_number = translation.activity_number
-                    AND entity.deliverable_number = translation.deliverable_number
-                WHERE entity.work_package_id = :workPackageId
-                        AND entity.activity_number = :activityNumber
+                    ON entity.activity_id = translation.source_entity_id
+                WHERE entity.activity_id = :activityId
         """,
         nativeQuery = true
     )
-    fun findAllDeliverablesByWorkPackageIdAndActivityIdAsOfTimestamp(workPackageId: Long, activityNumber: Int, timestamp: Timestamp): List<WorkPackageDeliverableRow>
+    fun findAllDeliverablesByActivityIdAsOfTimestamp(activityId: Long, timestamp: Timestamp): List<WorkPackageDeliverableRow>
 
     @Query(
         """

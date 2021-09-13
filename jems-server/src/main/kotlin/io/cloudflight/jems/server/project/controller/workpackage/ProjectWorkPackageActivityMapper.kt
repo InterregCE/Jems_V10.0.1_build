@@ -30,14 +30,14 @@ fun List<WorkPackageActivityDeliverableDTO>.toDeliverableModel() = mapIndexed { 
 
 
 fun WorkPackageActivity.toDto() = WorkPackageActivityDTO(
-    id = activityId,
+    id = id,
     workPackageId = workPackageId,
     activityNumber = activityNumber,
     title = title,
     startPeriod = startPeriod,
     endPeriod = endPeriod,
     description = description,
-    deliverables = deliverables.toDeliverableDto(activityId),
+    deliverables = deliverables.toDeliverableDto(id),
     partnerIds = partnerIds,
 )
 
