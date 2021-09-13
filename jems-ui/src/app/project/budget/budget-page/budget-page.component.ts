@@ -94,7 +94,7 @@ export class BudgetPageComponent {
     if (callSettings.lumpSums?.length) {
       columns.push('lumpSums');
     }
-    if (callSettings.unitCosts?.length) {
+    if (callSettings.unitCosts?.find(cost => !cost.oneCostCategory)) {
       columns.push('unitCosts');
     }
     columns.push('total');
