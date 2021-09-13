@@ -13,7 +13,7 @@ interface WorkPackageActivityPartnerRepository : JpaRepository<WorkPackageActivi
 
     fun findAllByIdActivityIdIn(activityIds: Collection<Long>): MutableList<WorkPackageActivityPartnerEntity>
 
-    fun deleteAllByIdWorkPackageId(workPackageId: Long)
+    fun deleteAllByIdActivityIdIn(activityIds: Collection<Long>)
 
     @Query(
         value = """

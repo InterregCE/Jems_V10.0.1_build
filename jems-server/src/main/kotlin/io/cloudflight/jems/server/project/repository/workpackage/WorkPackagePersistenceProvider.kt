@@ -285,10 +285,10 @@ class WorkPackagePersistenceProvider(
         workPackageActivities: List<WorkPackageActivity>
     ): List<WorkPackageActivity> {
 
-        throwIfWorkPackageNotFound(workPackageId)
+        val activityIds = getWorkPackageOrThrow(workPackageId).activities.map{ it.id }
         val activitiesToBeSaved = workPackageActivities.toIndexedEntity(workPackageId)
 
-        workPackageActivityPartnerRepository.deleteAllByIdWorkPackageId(workPackageId)
+        workPackageActivityPartnerRepository.deleteAllByIdActivityIdIn(activityIds)
         val partnersByActivities = workPackageActivityPartnerRepository.saveAll(workPackageActivities.toPartners())
             .groupBy({ it.id.activityId }, { it.id.projectPartnerId })
 
