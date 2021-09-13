@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.plugin.dto.PreConditionCheckMessageDTO
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
+import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidDTO
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
@@ -28,6 +29,7 @@ import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
@@ -156,6 +158,9 @@ abstract class ProjectMapper {
     @Mapping(source = "oneCostCategory", target = "oneCostCategory")
     abstract fun mapToUnitCostDTO(programmeUnitCost: ProgrammeUnitCost): ProgrammeUnitCostDTO
     abstract fun mapToUnitCostDTO(programmeUnitCost: List<ProgrammeUnitCost>): List<ProgrammeUnitCostDTO>
+
+    @Mapping(source = "stateAids", target = "stateAids")
+    abstract fun mapToStateAidsDTO(stateAids: List<ProgrammeStateAid>): List<ProgrammeStateAidDTO>
 
     abstract fun map(fileCategoryTypDTO: ProjectFileCategoryTypeDTO): ProjectFileCategoryType
     abstract fun map(fileCategoryDTO: ProjectFileCategoryDTO): ProjectFileCategory

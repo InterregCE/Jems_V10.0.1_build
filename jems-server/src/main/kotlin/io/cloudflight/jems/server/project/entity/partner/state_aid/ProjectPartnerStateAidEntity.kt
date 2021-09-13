@@ -4,7 +4,9 @@ import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEnt
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import javax.persistence.CascadeType
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 
@@ -25,6 +27,7 @@ class ProjectPartnerStateAidEntity(
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "id")
     val activities: List<WorkPackageActivityEntity>? = emptyList(),
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "state_aid_id")
     val stateAidScheme: ProgrammeStateAidEntity? = null
 )
