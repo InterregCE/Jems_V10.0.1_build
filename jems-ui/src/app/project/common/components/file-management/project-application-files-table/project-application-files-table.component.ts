@@ -9,7 +9,6 @@ import {MatTableDataSource} from '@angular/material/table';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {APIError} from '@common/models/APIError';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
@@ -26,7 +25,7 @@ export class ProjectApplicationFilesTableComponent {
   acceptedFilesTypes = ['.csv', '.dat', '.db', '.dbf', '.log', '.mdb', '.xml', '.email', '.eml', '.emlx', '.msg', '.oft', '.ost', '.pst', '.vcf', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.psd', '.svg', '.tif', '.tiff', '.htm', '.html', '.key', '.odp', '.pps', '.ppt', '.ppt', '.pptx', '.ods', '.xls', '.xlsm', '.xlsx', '.doc', '.docx', '.odt', '.pdf', '.rtf', '.tex', '.txt', '.wpd', '.mov', '.avi', '.mp4', '.zip', '.rar', '.ace', '.7z', '.url'];
   displayedColumns: string[] = ['name', 'uploadDate', 'user', 'description', 'actions'];
   dataSource = new MatTableDataSource<ProjectFileMetadataDTO>();
-  maximumAllowedFileSize: number;
+  maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
 
   data$: Observable<{
@@ -52,7 +51,7 @@ export class ProjectApplicationFilesTableComponent {
         })),
         tap(data => this.dataSource.data = data.files?.content)
       );
-    this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSize = maxAllowedSize);
+    this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
   }
 
   uploadFile(target: any): void {
@@ -60,11 +59,10 @@ export class ProjectApplicationFilesTableComponent {
       return;
     }
 
-    const sizeConvertedToMB = Math.round(target?.files[0].size / 1024 / 1024);
     this.fileSizeOverLimitError$.next(false);
     this.fileManagementStore.error$.next(null);
 
-    if (sizeConvertedToMB > this.maximumAllowedFileSize) {
+    if (target?.files[0].size > this.maximumAllowedFileSizeInMB * 1024 * 1024) {
       setTimeout(() => this.fileSizeOverLimitError$.next(true), 10);
       return;
     }
@@ -97,9 +95,5 @@ export class ProjectApplicationFilesTableComponent {
     this.fileManagementStore.setFileDescription(file.id, file.description)
       .pipe(take(1))
       .subscribe();
-  }
-
-  errorMessage(error: APIError): string {
-    return error?.details[0].i18nMessage?.i18nKey || error?.i18nMessage?.i18nKey || 'file.delete.message.failed';
   }
 }

@@ -79,12 +79,12 @@
 <app-alert *ngIf="fileManagementStore.error$ | async as error"
            [show]="!!error"
            [type]="Alert.ERROR">
-    <p>{{errorMessage(error) | translate}}</p>
+    <app-api-error-content [error]="error"></app-api-error-content>
 </app-alert>
 <app-alert *ngIf="fileSizeOverLimitError$ | async as showError"
            [show]="showError"
            [type]="Alert.ERROR">
-    <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSize}} MB</p>
+    <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
 </app-alert>
 
 <ng-template #noFiles>
