@@ -166,6 +166,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   private addActivity(existing?: WorkPackageActivityDTO): void {
     this.activities.push(this.formBuilder.group(
       {
+        id: this.formBuilder.control(existing?.id || 0),
         title: this.formBuilder.control(existing?.title || [], this.constants.TITLE.validators),
         description: this.formBuilder.control(existing?.description || []),
         startPeriod: this.formBuilder.control(existing?.startPeriod || ''),
@@ -181,6 +182,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
 
   private addDeliverable(activityIndex: number, existing?: WorkPackageActivityDeliverableDTO): void {
     this.deliverables(activityIndex).push(this.formBuilder.group({
+      deliverableId: this.formBuilder.control(existing?.deliverableId || 0),
       description: this.formBuilder.control(existing?.description || [], this.constants.DELIVERABLE.validators),
       period: this.formBuilder.control(existing?.period || ''),
     }));

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable
 
+import io.cloudflight.jems.server.common.entity.resetTranslations
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -24,4 +25,11 @@ class WorkPackageActivityDeliverableEntity(
     val translatedValues: MutableSet<WorkPackageActivityDeliverableTranslationEntity> = mutableSetOf(),
 
     var startPeriod: Int? = null,
-)
+){
+    fun updateTranslations(newTranslations: Set<WorkPackageActivityDeliverableTranslationEntity>) {
+        this.translatedValues.resetTranslations(newTranslations
+        ) { currentTranslation, newTranslation ->
+            currentTranslation.description = newTranslation.description
+        }
+    }
+}

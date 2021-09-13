@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.entity.workpackage.activity
 
+import io.cloudflight.jems.server.common.entity.resetTranslations
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -52,7 +53,10 @@ class WorkPackageActivityEntity(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "activity_id", nullable = false, insertable = true)
-    val deliverables: MutableSet<WorkPackageActivityDeliverableEntity> = mutableSetOf()
+    val deliverables: MutableSet<WorkPackageActivityDeliverableEntity> = mutableSetOf(),
+
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "id.activity")
+    val partners: MutableSet<WorkPackageActivityPartnerEntity> = mutableSetOf()
 ) {
     fun updateDeliverables(newDeliverables: Set<WorkPackageActivityDeliverableEntity>) {
         this.deliverables.removeIf { deliverable -> !newDeliverables.map { it.id }.contains(deliverable.id) }
@@ -60,20 +64,21 @@ class WorkPackageActivityEntity(
             val newDeliverable = newDeliverables.first { it.id == currentDeliverable.id }
             currentDeliverable.deliverableNumber = newDeliverable.deliverableNumber
             currentDeliverable.startPeriod = newDeliverable.startPeriod
+            currentDeliverable.updateTranslations(newDeliverable.translatedValues)
         }
         this.deliverables.addAll(newDeliverables.filter { it.id == 0L })
     }
 
+    fun updatePartners(newPartners: Set<WorkPackageActivityPartnerEntity>) {
+        this.partners.removeIf { partner -> !newPartners.map { it.id }.contains(partner.id) }
+        this.partners.addAll(newPartners.filter { !this.partners.map { it.id }.contains(it.id)})
+    }
+
     fun updateTranslations(newTranslations: Set<WorkPackageActivityTranslationEntity>) {
-        this.translatedValues.removeIf { translation ->
-            !newTranslations.map { it.language() }.contains(translation.language())
-        }
-        this.translatedValues.forEach { currentTranslation ->
-            val newTranslation = newTranslations.first { it.language() == currentTranslation.language() }
+        this.translatedValues.resetTranslations(newTranslations
+        ) { currentTranslation, newTranslation ->
             currentTranslation.description = newTranslation.description
             currentTranslation.title = newTranslation.title
         }
-        val newLanguages = translatedValues.map { it.language() }.subtract(newTranslations.map { it.language() })
-        this.translatedValues.addAll(newTranslations.filter { newLanguages.contains(it.language()) })
     }
 }

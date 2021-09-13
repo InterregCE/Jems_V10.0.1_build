@@ -13,6 +13,19 @@ inline fun <T : TranslationView> List<T>.extractField(extractFunction: (T) -> St
     filter { it.language !=null }.toHashSet().map { InputTranslation(it.language!!, extractFunction.invoke(it)) }
         .filterTo(HashSet()) { !it.translation.isNullOrBlank() }
 
+fun <T : TranslationEntity> MutableSet<T>.resetTranslations(newTranslations: Set<T>, updater: (T, T) -> Unit) {
+    this.removeIf { translation ->
+        !newTranslations.map { it.language() }.contains(translation.language())
+    }
+    this.forEach { currentTranslation ->
+        val newTranslation = newTranslations.first { it.language() == currentTranslation.language() }
+        updater.invoke(currentTranslation, newTranslation)
+    }
+    val newLanguages = newTranslations.map { it.language() }.subtract(this.map { it.language() })
+    this.addAll(newTranslations.filter { newLanguages.contains(it.language()) })
+
+}
+
 fun <T : TranslationEntity> MutableSet<T>.addTranslationEntities(
     entitySupplier: (SystemLanguage) -> T,
     translatableFields: Array<Set<InputTranslation>>

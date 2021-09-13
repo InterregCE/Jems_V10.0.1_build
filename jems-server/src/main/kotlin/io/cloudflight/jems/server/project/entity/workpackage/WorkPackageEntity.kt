@@ -64,10 +64,11 @@ class WorkPackageEntity(
         this.activities.forEach { currentActivity ->
             val newActivity = newActivities.first { it.id==currentActivity.id }
             currentActivity.activityNumber =  newActivity.activityNumber
-            currentActivity.startPeriod = newActivity.activityNumber
+            currentActivity.startPeriod = newActivity.startPeriod
             currentActivity.endPeriod = newActivity.endPeriod
             currentActivity.updateDeliverables(newActivity.deliverables)
             currentActivity.updateTranslations(newActivity.translatedValues)
+            currentActivity.updatePartners(newActivity.partners)
         }
         this.activities.addAll(newActivities.filter { it.id == 0L })
     }

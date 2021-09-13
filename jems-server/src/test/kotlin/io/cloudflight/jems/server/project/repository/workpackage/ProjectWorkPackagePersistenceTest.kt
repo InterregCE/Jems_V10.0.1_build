@@ -120,7 +120,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         )
         val activity1Partner1 = WorkPackageActivityPartnerEntity(
             WorkPackageActivityPartnerId(
-                activityId = activityId1,
+                activity = activity1,
                 projectPartnerId = 3
             )
         )

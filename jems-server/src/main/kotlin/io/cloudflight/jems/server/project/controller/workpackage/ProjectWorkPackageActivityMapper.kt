@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 
 fun WorkPackageActivityDTO.toModel(workPackageId: Long) = WorkPackageActivity(
+    id = id,
     workPackageId = workPackageId,
     title = title,
     description = description,

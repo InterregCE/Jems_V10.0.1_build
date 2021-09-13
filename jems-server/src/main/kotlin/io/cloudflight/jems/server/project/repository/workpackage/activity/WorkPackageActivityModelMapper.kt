@@ -6,6 +6,8 @@ import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityTranslationEntity
@@ -26,7 +28,11 @@ fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageAc
         startPeriod = startPeriod,
         endPeriod = endPeriod,
         deliverables = deliverables.toIndexedEntity(),
+        partners = mutableSetOf()
     ).apply {
+        partners.addAll(partnerIds.map {
+            WorkPackageActivityPartnerEntity(WorkPackageActivityPartnerId(this, it))
+        }.toMutableSet())
         translatedValues.addTranslationEntities(
             { language ->
                 WorkPackageActivityTranslationEntity(
@@ -39,8 +45,8 @@ fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageAc
     }
 }
 
-fun List<WorkPackageActivity>.toIndexedEntity(workPackageId: Long, shiftIndexBy: Int = 0) =
-    mapIndexed { index, activity -> activity.toEntity(workPackageId, index.plus(1).plus(shiftIndexBy)) }.toMutableList()
+fun List<WorkPackageActivity>.toIndexedEntity(workPackageId: Long) =
+    mapIndexed { index, activity -> activity.toEntity(workPackageId, index.plus(1)) }.toMutableList()
 
 fun WorkPackageActivityDeliverable.toEntity(
     index: Int
@@ -65,8 +71,9 @@ fun WorkPackageActivityDeliverable.toEntity(
 fun List<WorkPackageActivityDeliverable>.toIndexedEntity() =
     mapIndexedTo(HashSet()) { index, deliverable -> deliverable.toEntity(index.plus(1)) }
 
-fun WorkPackageActivityEntity.toModel(partnersByActivities: Map<Long, List<Long>>) =
+fun WorkPackageActivityEntity.toModel() =
     WorkPackageActivity(
+        id = id,
         workPackageId = workPackageId,
         activityNumber = activityNumber,
         title = translatedValues.extractField { it.title },
@@ -74,12 +81,10 @@ fun WorkPackageActivityEntity.toModel(partnersByActivities: Map<Long, List<Long>
         startPeriod = startPeriod,
         endPeriod = endPeriod,
         deliverables = deliverables.sortedBy { it.deliverableNumber }.map { it.toModel() },
-        partnerIds = partnersByActivities[id]?.toSet() ?: emptySet()
+        partnerIds = partners.map { it.id.projectPartnerId }.toSet()
     )
 
-fun Iterable<WorkPackageActivityEntity>.toModel(
-    partnersByActivities: Map<Long, List<Long>>
-) = sortedBy { it.activityNumber }.map { it.toModel(partnersByActivities) }
+fun Iterable<WorkPackageActivityEntity>.toModel() = sortedBy { it.activityNumber }.map { it.toModel() }
 
 fun WorkPackageActivityEntity.toSummaryModel(workPackage: WorkPackageEntity) = WorkPackageActivitySummary (
     activityId = id,
