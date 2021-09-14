@@ -22,7 +22,7 @@
             </div>
             <ng-container *ngIf="isDecisionEditable(data.projectStatus, data.decision?.eligibilityDecision, data.isProjectLatestVersion)">
                 <a *hasPermission="[Permissions.ProjectStatusDecideEligible, Permissions.ProjectStatusDecideIneligible]"
-                   mat-stroked-button
+                   mat-stroked-button appFormFieldWidth="x-large"
                    [disabled]="!data.decision?.eligibilityAssessment"
                    [routerLink]="data.decision?.eligibilityAssessment ? ['./assessment/eligibilityDecision', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityDecision.assessment' | translate}}
@@ -31,7 +31,7 @@
             <ng-container *ngIf="!isDecisionEditable(data.projectStatus, data.decision?.eligibilityDecision, data.isProjectLatestVersion)">
                 <a *hasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!data.decision?.eligibilityDecision"
-                   mat-stroked-button
+                   mat-stroked-button appFormFieldWidth="x-large"
                    [routerLink]="data.decision?.eligibilityDecision ? ['./assessment/eligibilityDecision', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
                 </a>
@@ -51,14 +51,14 @@
             </div>
             <ng-container *ngIf="(data.callHasTwoSteps && data.isStep2Now && step === 1) || data.isDecisionFinal || (data.isReturnedNow && !!data.fundingDecisionResult) || (!data.isDecisionFinal && !data.userCanChangeFunding && !!data.preFundingDecision)">
                 <a *hasPermission="Permissions.ProjectAssessmentView"
-                   mat-stroked-button
+                   mat-stroked-button appFormFieldWidth="x-large"
                    [routerLink]="['./assessment/fundingDecision', step]" queryParamsHandling="merge">
                     {{'project.assessment.fundingDecision.assessment.view' | translate}}
                 </a>
             </ng-container>
             <ng-container *ngIf="data.isProjectLatestVersion && !data.isDecisionFinal && !data.isReturnedNow">
                 <a *hasPermission="[Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideApprovedWithConditions, Permissions.ProjectStatusDecideNotApproved]"
-                   mat-stroked-button
+                   mat-stroked-button appFormFieldWidth="x-large"
                    [disabled]="!data.isFundingDecisionPreconditionOk"
                    [color]="data.projectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
                    [routerLink]="data.isFundingDecisionPreconditionOk ? ['./assessment/fundingDecision', step] : []" queryParamsHandling="merge">

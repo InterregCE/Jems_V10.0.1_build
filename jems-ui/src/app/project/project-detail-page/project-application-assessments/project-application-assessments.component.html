@@ -21,7 +21,7 @@
                 <a *hasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!decisions?.eligibilityAssessment"
                    mat-stroked-button
-                   [routerLink]="['./assessment/eligibilityCheck', step]" queryParamsHandling="merge">
+                   [routerLink]="decisions?.eligibilityAssessment ? ['./assessment/eligibilityCheck', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
                 </a>
             </ng-container>
@@ -37,7 +37,7 @@
                 <a *hasPermission="Permissions.ProjectAssessmentQualityEnter"
                    mat-stroked-button
                    [disabled]="projectStatus.status === stepStatus.ineligible"
-                   [routerLink]="['./assessment/qualityCheck', step]" queryParamsHandling="merge">
+                   [routerLink]="projectStatus.status !== stepStatus.ineligible ? ['./assessment/qualityCheck', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment' | translate}}
                 </a>
             </ng-container>
@@ -45,7 +45,7 @@
                 <a *hasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!decisions?.qualityAssessment"
                    mat-stroked-button
-                   [routerLink]="['./assessment/qualityCheck', step]" queryParamsHandling="merge">
+                   [routerLink]="decisions?.qualityAssessment ? ['./assessment/qualityCheck', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment.view' | translate}}
                 </a>
             </ng-container>
