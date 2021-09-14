@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
@@ -15,9 +16,13 @@ import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationI
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
+import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
+import io.cloudflight.jems.server.call.entity.StateAidSetupId
 import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurationRepository
 import io.cloudflight.jems.server.call.repository.CallPersistenceProvider
 import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.call.repository.ProjectCallStateAidRepository
+import io.cloudflight.jems.server.call.repository.toModel
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -25,8 +30,11 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBu
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
+import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
+import io.cloudflight.jems.server.programme.repository.costoption.toModel
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -42,6 +50,7 @@ import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmen
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentQualityRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
@@ -66,7 +75,7 @@ import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 /**
  * tests implementation of ProjectPersistenceProvider including mappings and projectVersionUtils
@@ -84,6 +93,20 @@ internal class ProjectPersistenceTest : UnitTest() {
             ApplicationFormFieldConfigurationEntity(
                 ApplicationFormFieldConfigurationId("fieldId", dummyCall()),
                 FieldVisibilityStatus.STEP_ONE_AND_TWO
+            )
+        )
+
+        val stateAidEntity = ProgrammeStateAidEntity(
+            id = 2L,
+            measure = ProgrammeStateAidMeasure.OTHER_1,
+            schemeNumber = "schemeNumber",
+            maxIntensity = BigDecimal.TEN,
+            threshold = BigDecimal.TEN,
+            translatedValues = mutableSetOf()
+        )
+        val stateAidEntities = mutableSetOf(
+            ProjectCallStateAidEntity(
+                StateAidSetupId(dummyCall(), stateAidEntity)
             )
         )
 
@@ -191,6 +214,9 @@ internal class ProjectPersistenceTest : UnitTest() {
     lateinit var projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository
 
     @MockK
+    lateinit var stateAidRepository: ProjectCallStateAidRepository
+
+    @MockK
     lateinit var applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository
 
     @MockK
@@ -219,6 +245,7 @@ internal class ProjectPersistenceTest : UnitTest() {
             projectStatusHistoryRepo,
             userRepository,
             callRepository,
+            stateAidRepository,
             applicationFormFieldConfigurationRepository
         )
     }
@@ -268,10 +295,34 @@ internal class ProjectPersistenceTest : UnitTest() {
     @Test
     fun `get Project Call Settings`() {
         val project = dummyProject()
+        val call = project.call
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        every { stateAidRepository.findAllByIdCallId(project.call.id) } returns stateAidEntities
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
         assertThat(persistence.getProjectCallSettings(PROJECT_ID)).isEqualTo(
-            project.call.toSettingsModel(applicationFormFieldConfigurationEntities)
+            ProjectCallSettings(
+                callId = project.call.id,
+                callName = call.name,
+                startDate = call.startDate,
+                endDate = call.endDate,
+                endDateStep1 = call.endDateStep1,
+                lengthOfPeriod = call.lengthOfPeriod,
+                isAdditionalFundAllowed = call.isAdditionalFundAllowed,
+                flatRates = call.flatRates.toModel(),
+                lumpSums = call.lumpSums.toModel(),
+                unitCosts = call.unitCosts.toModel(),
+                stateAids = listOf(ProgrammeStateAid(
+                    id = stateAidEntity.id,
+                    name = emptySet(),
+                    abbreviatedName = emptySet(),
+                    comments = emptySet(),
+                    measure = stateAidEntity.measure,
+                    schemeNumber = stateAidEntity.schemeNumber,
+                    maxIntensity = stateAidEntity.maxIntensity,
+                    threshold = stateAidEntity.threshold
+                )),
+                applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
+            )
         )
     }
 
@@ -339,6 +390,7 @@ internal class ProjectPersistenceTest : UnitTest() {
             )
         )
 
+        every { stateAidRepository.findAllByIdCallId(project.call.id) } returns stateAidEntities
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
         assertThat(persistence.getProject(PROJECT_ID))
             .isEqualTo(
@@ -354,7 +406,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
-                    callSettings = project.call.toSettingsModel(applicationFormFieldConfigurationEntities),
+                    callSettings = project.call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy(),
                     assessmentStep1 = ProjectAssessment(
@@ -429,6 +481,7 @@ internal class ProjectPersistenceTest : UnitTest() {
             mockPeriodRow
         )
         every { projectRepository.findByIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+        every { stateAidRepository.findAllByIdCallId(project.call.id) } returns stateAidEntities
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
 
         assertThat(persistence.getProject(PROJECT_ID, version))
@@ -451,7 +504,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
-                    callSettings = project.call.toSettingsModel(applicationFormFieldConfigurationEntities),
+                    callSettings = project.call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
                 )

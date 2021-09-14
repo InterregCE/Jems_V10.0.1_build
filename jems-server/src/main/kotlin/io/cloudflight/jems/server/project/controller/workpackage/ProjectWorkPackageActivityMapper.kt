@@ -20,7 +20,7 @@ fun WorkPackageActivityDTO.toModel(workPackageId: Long) = WorkPackageActivity(
 fun List<WorkPackageActivityDTO>.toModel(workPackageId: Long) = map { it.toModel(workPackageId) }
 
 fun WorkPackageActivityDeliverableDTO.toDeliverableModel(number: Int) = WorkPackageActivityDeliverable(
-    deliverableId = deliverableId,
+    id = deliverableId,
     deliverableNumber = number,
     description = description,
     period = period
@@ -45,7 +45,7 @@ fun List<WorkPackageActivity>.toDto() = map { it.toDto() }
 
 fun WorkPackageActivityDeliverable.toDeliverableDto(activityId: Long) = WorkPackageActivityDeliverableDTO(
     activityId = activityId,
-    deliverableId = deliverableId,
+    deliverableId = id,
     deliverableNumber = deliverableNumber,
     description = description,
     period = period

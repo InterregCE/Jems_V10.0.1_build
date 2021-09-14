@@ -305,7 +305,7 @@ class WorkPackagePersistenceProvider(
         val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
 
         // fetch all activities and deliverables in 1 request
-        return workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds).toSummaryModel()
+        return workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds).toSummaryModel(workPackages)
     }
 
     private fun List<WorkPackageActivity>.toPartners(): Collection<WorkPackageActivityPartnerEntity> {

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository
 
 import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurationRepository
 import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.call.repository.ProjectCallStateAidRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -34,6 +35,7 @@ class ProjectPersistenceProvider(
     private val projectStatusHistoryRepo: ProjectStatusHistoryRepository,
     private val userRepository: UserRepository,
     private val callRepository: CallRepository,
+    private val stateAidRepository: ProjectCallStateAidRepository,
     private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository
 ) : ProjectPersistence {
 
@@ -60,6 +62,7 @@ class ProjectPersistenceProvider(
                 project.toModel(
                     assessmentStep1 = assessmentStep1,
                     assessmentStep2 = assessmentStep2,
+                    stateAidRepository.findAllByIdCallId(project.call.id),
                     applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id)
                 )
             },
@@ -90,7 +93,10 @@ class ProjectPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getProjectCallSettings(projectId: Long): ProjectCallSettings =
         getProjectOrThrow(projectId).let {
-            it.call.toSettingsModel(applicationFormFieldConfigurationRepository.findAllByCallId(it.call.id))
+            it.call.toSettingsModel(
+                stateAidRepository.findAllByIdCallId(it.call.id),
+                applicationFormFieldConfigurationRepository.findAllByCallId(it.call.id)
+            )
         }
 
     @Transactional(readOnly = true)
@@ -135,6 +141,7 @@ class ProjectPersistenceProvider(
         return createdProject.toDetailModel(
             assessmentStep1 = null,
             assessmentStep2 = null,
+            stateAidRepository.findAllByIdCallId(callId),
             applicationFormFieldConfigurationRepository.findAllByCallId(callId)
         )
     }
@@ -162,6 +169,7 @@ class ProjectPersistenceProvider(
                 periods,
                 assessmentStep1,
                 assessmentStep2,
+                stateAidRepository.findAllByIdCallId(project.call.id),
                 applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id)
             )
     }

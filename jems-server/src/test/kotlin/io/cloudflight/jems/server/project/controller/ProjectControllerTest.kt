@@ -25,6 +25,7 @@ import io.cloudflight.jems.api.project.dto.status.OutputProjectEligibilityAssess
 import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
+import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
 import io.cloudflight.jems.server.call.controller.toDTO
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -48,6 +49,8 @@ import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssess
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.workpackage.activity.get_activity.GetActivityInteractor
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries.GetProjectInvestmentSummariesInteractor
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.cloudflight.jems.server.user.controller.toDto
@@ -177,6 +180,9 @@ class ProjectControllerTest {
 
     @MockK
     lateinit var getProjectInvestmentSummariesInteractor: GetProjectInvestmentSummariesInteractor
+
+    @MockK
+    lateinit var getProjectActivitiesInteractor: GetActivityInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectController
@@ -390,5 +396,18 @@ class ProjectControllerTest {
         every { projectService.update(projectId, inputData) } returns projectForm
         assertThat(controller.updateProjectForm(projectId = projectId, inputData))
             .isEqualTo(projectDetailFormDTO)
+    }
+
+    @Test
+    fun `get Activities for Project`() {
+        val wpASummary = WorkPackageActivitySummary(activityId = 1L, workPackageNumber = 2, activityNumber = 3)
+        every { getProjectActivitiesInteractor.getActivitiesForProject(projectId, null) } returns listOf(wpASummary)
+
+        assertThat(controller.getProjectActivities(projectId = projectId)).containsExactly(
+            WorkPackageActivitySummaryDTO(
+                activityId = wpASummary.activityId,
+                workPackageNumber = wpASummary.workPackageNumber,
+                activityNumber = wpASummary.activityNumber
+            ))
     }
 }

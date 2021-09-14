@@ -33,6 +33,7 @@ import io.cloudflight.jems.server.project.repository.workpackage.investment.Work
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
@@ -65,6 +66,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
 
         const val activityId1 = 1L
         const val activityId2 = 2L
+
         private val outputId1 = WorkPackageOutputId(workPackageId = WORK_PACKAGE_ID, outputNumber = 1)
         private val outputId2 = WorkPackageOutputId(workPackageId = WORK_PACKAGE_ID, outputNumber = 2)
 
@@ -131,12 +133,12 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         )
         val activity2 = WorkPackageActivityEntity(
             id = activityId2,
-            workPackageId = WORK_PACKAGE_ID_2,
+            workPackageId = WORK_PACKAGE_ID,
             activityNumber = 2,
             startPeriod = 1,
             endPeriod = 3,
             translatedValues = mutableSetOf(),
-            deliverables = setOf(deliverable2_2, deliverable2_1)
+            deliverables = mutableSetOf(deliverable2_2, deliverable2_1)
         ).apply {
             translatedValues.addAll(
                 setOf(
@@ -171,6 +173,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
             endPeriod = 3,
             deliverables = listOf(
                 WorkPackageActivityDeliverable(
+                    id = deliverable2_1.id,
                     deliverableNumber = 1,
                     period = 1,
                     description = setOf(
@@ -181,6 +184,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
                     )
                 ),
                 WorkPackageActivityDeliverable(
+                    id = deliverable2_2.id,
                     deliverableNumber = 2,
                     period = 2
                 )
@@ -222,7 +226,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         val workPackageWithActivities = WorkPackageEntity(
             id = WORK_PACKAGE_ID,
             project = project,
-            number = 1,
+            number = 10,
             activities = mutableListOf(activity2, activity1), // for testing sorting
             translatedValues = mutableSetOf()
         ).apply {
@@ -354,7 +358,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         val result = persistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(1L, null)
         assertThat(result.size).isEqualTo(2)
         assertThat(result.map { it.id }).containsExactly(WORK_PACKAGE_ID, WORK_PACKAGE_ID_2)
-        assertThat(result.map { it.workPackageNumber }).containsExactly(1, 2)
+        assertThat(result.map { it.workPackageNumber }).containsExactly(workPackageWithActivities.number, 2)
         assertThat(result[0].name).containsExactly(InputTranslation(CS, "WP CS name"))
         assertThat(result[0].activities).containsExactly(activity1_model, activity2_model)
         assertThat(result[0].outputs).containsExactly(output1_model, output2_model)
@@ -375,6 +379,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         every { mockWPRow.specificObjective } returns "specificObjective"
         every { mockWPRow.objectiveAndAudience } returns "objectiveAndAudience"
         val mockWPARow: WorkPackageActivityRow = mockk()
+        every { mockWPARow.id } returns activityId1
         every { mockWPARow.workPackageId } returns wpId
         every { mockWPARow.activityNumber } returns activityNumber
         every { mockWPARow.language } returns EN
@@ -387,6 +392,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         every { mockWPAPRow.workPackageId } returns wpId
         every { mockWPAPRow.projectPartnerId } returns 5
         val mockWPDRow: WorkPackageDeliverableRow = mockk()
+        every { mockWPDRow.id } returns deliverable2_1.id
         every { mockWPDRow.deliverableNumber } returns 4
         every { mockWPDRow.language } returns EN
         every { mockWPDRow.startPeriod } returns 1
@@ -436,6 +442,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
                 objectiveAndAudience = setOf(InputTranslation(mockWPRow.language!!, mockWPRow.objectiveAndAudience)),
                 activities = listOf(
                     WorkPackageActivity(
+                        id = activityId1,
                         activityNumber = mockWPARow.activityNumber,
                         workPackageId = mockWPARow.workPackageId,
                         title = setOf(InputTranslation(mockWPARow.language!!, mockWPARow.title)),
@@ -444,6 +451,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
                         endPeriod = mockWPARow.endPeriod,
                         deliverables = listOf(
                             WorkPackageActivityDeliverable(
+                                id = deliverable2_1.id,
                                 deliverableNumber = mockWPDRow.deliverableNumber,
                                 description = setOf(
                                     InputTranslation(EN, mockWPDRow.description)
@@ -475,6 +483,26 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         every { repository.findById(eq(-1)) } returns Optional.empty()
         val ex = assertThrows<ResourceNotFoundException> { persistence.getWorkPackageActivitiesForWorkPackage(-1, 1L) }
         assertThat(ex.entity).isEqualTo("workPackage")
+    }
+
+    @Test
+    fun `get work package activities for project`() {
+        every { repository.findAllByProjectId(eq(1L), any()) } returns listOf(workPackageWithActivities)
+        every { repositoryActivity.findAllByWorkPackageIdIn(setOf(workPackageWithActivities.id)) } returns listOf(
+            activity1, activity2)
+
+        val wpActivityList = persistence.getWorkPackageActivitiesForProject(1L)
+        assertThat(wpActivityList).contains(
+            WorkPackageActivitySummary(
+                activityId = activityId1,
+                workPackageNumber = workPackageWithActivities.number!!,
+                activityNumber = activity1.activityNumber
+            ),
+            WorkPackageActivitySummary(
+                activityId = activityId2,
+                workPackageNumber = workPackageWithActivities.number!!,
+                activityNumber = activity2.activityNumber
+            ))
     }
 
     @Test

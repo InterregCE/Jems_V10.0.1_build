@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityPartnerRow
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
@@ -45,7 +46,7 @@ fun WorkPackageActivityDeliverable.toEntity(
     index: Int
 ): WorkPackageActivityDeliverableEntity {
     return WorkPackageActivityDeliverableEntity(
-        id = deliverableId,
+        id = id,
         deliverableNumber = index,
         translatedValues = mutableSetOf(),
         startPeriod = period,
@@ -80,15 +81,18 @@ fun Iterable<WorkPackageActivityEntity>.toModel(
     partnersByActivities: Map<Long, List<Long>>
 ) = sortedBy { it.activityNumber }.map { it.toModel(partnersByActivities) }
 
-fun WorkPackageActivityEntity.toSummaryModel() = WorkPackageActivitySummary (
-    workPackageNumber = 1,
+fun WorkPackageActivityEntity.toSummaryModel(workPackage: WorkPackageEntity) = WorkPackageActivitySummary (
+    activityId = id,
+    workPackageNumber = workPackage.number ?: 0,
     activityNumber = activityNumber
 )
 
-fun Iterable<WorkPackageActivityEntity>.toSummaryModel() = map { it.toSummaryModel() }
+fun Iterable<WorkPackageActivityEntity>.toSummaryModel(wps: Iterable<WorkPackageEntity>) = map {
+    it.toSummaryModel(wps.first { workPackage -> it.workPackageId == workPackage.id })
+}
 
 fun WorkPackageActivityDeliverableEntity.toModel() = WorkPackageActivityDeliverable(
-    deliverableId = id,
+    id = id,
     deliverableNumber = deliverableNumber,
     description = translatedValues.extractField { it.description },
     period = startPeriod,
@@ -117,7 +121,7 @@ fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
 fun List<WorkPackageDeliverableRow>.toDeliverableHistoricalData() =
     this.groupBy { it.deliverableNumber }.map { groupedRows ->
         WorkPackageActivityDeliverable(
-            deliverableId = groupedRows.value.first().id,
+            id = groupedRows.value.first().id,
             deliverableNumber = groupedRows.value.first().deliverableNumber,
             period = groupedRows.value.first().startPeriod,
             description = groupedRows.value.extractField { it.description }
@@ -127,6 +131,7 @@ fun List<WorkPackageDeliverableRow>.toDeliverableHistoricalData() =
 fun List<WorkPackageActivityRow>.toTimePlanActivityHistoricalData() =
     this.groupBy { Pair(it.activityNumber, it.workPackageId) }.map { groupedRows ->
         WorkPackageActivity(
+            id = groupedRows.value.first().id,
             workPackageId = groupedRows.value.first().workPackageId,
             activityNumber = groupedRows.value.first().activityNumber,
             startPeriod = groupedRows.value.first().startPeriod,

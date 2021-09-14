@@ -38,7 +38,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
             endPeriod = 3,
             deliverables = listOf(
                 WorkPackageActivityDeliverable(
-                    deliverableId = deliverableId,
+                    id = deliverableId,
                     deliverableNumber = 1,
                     period = 1,
                     description = setOf(
@@ -171,7 +171,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                 endPeriod = 2,
                 deliverables = listOf(
                     WorkPackageActivityDeliverable(
-                        deliverableId = deliverableId,
+                        id = deliverableId,
                         deliverableNumber = 1,
                         period = 1,
                         description = setOf(
@@ -179,7 +179,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                         )
                     ),
                     WorkPackageActivityDeliverable(
-                        deliverableId = 3,
+                        id = 3,
                         deliverableNumber = 2,
                         period = 2
                     )

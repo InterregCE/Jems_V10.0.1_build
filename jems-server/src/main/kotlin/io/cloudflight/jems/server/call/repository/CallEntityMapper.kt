@@ -163,6 +163,8 @@ fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(call: CallEntity) =
 fun MutableSet<ProgrammeStateAidEntity>.toEntities(call: CallEntity) =
     map { ProjectCallStateAidEntity(StateAidSetupId(call, it))}
 
+fun MutableSet<ProjectCallStateAidEntity>.toModel() = map { it.setupId.stateAid.toModel() }
+
 fun List<CallEntity>.toIdNamePair() =
     callEntityMapper.map(this)
 
