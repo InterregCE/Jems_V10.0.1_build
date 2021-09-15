@@ -14,6 +14,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {take} from 'rxjs/internal/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Permission} from '../../../../../../security/permissions/permission';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-associated-org-detail',
@@ -25,6 +26,7 @@ import {Permission} from '../../../../../../security/permissions/permission';
 export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnInit {
   Permission = Permission;
   LANGUAGE = InputTranslation.LanguageEnum;
+  APPLICATION_FORM = APPLICATION_FORM;
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   associatedOrganizationId = this.activatedRoute?.snapshot?.params?.associatedOrganizationId;
