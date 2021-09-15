@@ -64,8 +64,8 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         private const val INVESTMENT_ID = 54L
         private const val PROJECT_ID = 64L
 
-        const val activityId1 = 1L
-        const val activityId2 = 2L
+        private const val activityId1 = 3L
+        private const val activityId2 = 2L
 
         private val outputId1 = WorkPackageOutputId(workPackageId = WORK_PACKAGE_ID, outputNumber = 1)
         private val outputId2 = WorkPackageOutputId(workPackageId = WORK_PACKAGE_ID, outputNumber = 2)
@@ -111,20 +111,24 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
             )
         }
 
-        val activity1 = WorkPackageActivityEntity(
+        const val activityProjectPartnerId = 3L
+        val activityPartnerMock: WorkPackageActivityPartnerEntity = mockk()
+        var activity1 = WorkPackageActivityEntity(
             id = activityId1,
-            workPackageId = WORK_PACKAGE_ID,
+            workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project),
             activityNumber = 1,
             startPeriod = 4,
-            endPeriod = 6
+            endPeriod = 6,
+            partners = mutableSetOf(activityPartnerMock)
         )
         val activity1Partner1 = WorkPackageActivityPartnerEntity(
             WorkPackageActivityPartnerId(
                 activity = activity1,
-                projectPartnerId = 3
+                projectPartnerId = activityProjectPartnerId
             )
         )
         val activity1_model = WorkPackageActivity(
+            id = activityId1,
             workPackageId = 1L,
             activityNumber = 1,
             startPeriod = 4,
@@ -133,7 +137,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         )
         val activity2 = WorkPackageActivityEntity(
             id = activityId2,
-            workPackageId = WORK_PACKAGE_ID,
+            workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project),
             activityNumber = 2,
             startPeriod = 1,
             endPeriod = 3,
@@ -161,6 +165,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
             )
         }
         val activity2_model = WorkPackageActivity(
+            id = activityId2,
             workPackageId = 1L,
             activityNumber = 2,
             title = setOf(
@@ -345,6 +350,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
             )
         val wkPackages = setOf(WORK_PACKAGE_ID, WORK_PACKAGE_ID_2)
         val activityIds = setOf(activityId1, activityId2)
+        every { activityPartnerMock.id } returns WorkPackageActivityPartnerId(activity1, activityProjectPartnerId)
         every {
             repositoryActivity.findAllByWorkPackageIdIn(wkPackages)
         } returns listOf(activity2, activity1)
@@ -507,6 +513,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
 
     @Test
     fun `work package activities and deliverables are correctly mapped and sorted`() {
+        every { activityPartnerMock.id } returns WorkPackageActivityPartnerId(activity1, activityProjectPartnerId)
         every { repository.findById(eq(WORK_PACKAGE_ID)) } returns Optional.of(workPackageWithActivities)
         val partnerList = mutableListOf(activity1Partner1)
         every { repositoryActivityPartner.findAllByIdActivityIdIn(listOf(WORK_PACKAGE_ID)) } returns partnerList
@@ -526,27 +533,27 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
                 timestamp
             )
         } returns listOf(
-            WorkPackageActivityRowImpl(activityId1, null, WORK_PACKAGE_ID, 1, 1, 2, null, null)
+            WorkPackageActivityRowImpl(activityId1, null, WORK_PACKAGE_ID, 10,1, 1, 2, null, null)
         )
         every {
             repositoryActivity.findAllDeliverablesByActivityIdAsOfTimestamp(
-                1,
+                activityId1,
                 timestamp
             )
         } returns emptyList()
         every {
             repositoryActivityPartner.findAllByActivityIdAsOfTimestamp(
-                1,
+                activityId1,
                 timestamp
             )
         } returns listOf(
             WorkPackageActivityPartnerRowImpl(
-                1,
+                activityId1,
                 WORK_PACKAGE_ID,
                 207L
             ),
             WorkPackageActivityPartnerRowImpl(
-                1,
+                activityId1,
                 WORK_PACKAGE_ID,
                 208L
             ),
@@ -560,7 +567,9 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
             )
         ).containsExactly(
             WorkPackageActivity(
+                id = activityId1,
                 workPackageId = WORK_PACKAGE_ID,
+                workPackageNumber = 10,
                 activityNumber = 1,
                 startPeriod = 1,
                 endPeriod = 2,
@@ -697,6 +706,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         override val id: Long,
         override val language: SystemLanguage?,
         override val workPackageId: Long,
+        override val workPackageNumber: Int?,
         override val activityNumber: Int,
         override val startPeriod: Int?,
         override val endPeriod: Int?,

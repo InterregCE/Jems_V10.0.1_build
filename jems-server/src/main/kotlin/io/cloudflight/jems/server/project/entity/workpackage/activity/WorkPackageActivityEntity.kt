@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.workpackage.activity
 
 import io.cloudflight.jems.server.common.entity.resetTranslations
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -8,6 +9,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.NamedAttributeNode
 import javax.persistence.NamedEntityGraph
 import javax.persistence.NamedEntityGraphs
@@ -38,8 +40,10 @@ class WorkPackageActivityEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "work_package_id")
     @field:NotNull
-    val workPackageId: Long,
+    val workPackage: WorkPackageEntity,
 
     @field:NotNull
     var activityNumber: Int,

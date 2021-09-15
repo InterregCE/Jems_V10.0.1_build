@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 data class WorkPackageActivity(
     val id: Long = 0,
     val workPackageId: Long,
+    val workPackageNumber: Int = 0,
     val activityNumber: Int = 0,
     val title: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> =  emptySet(),

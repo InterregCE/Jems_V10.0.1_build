@@ -1,19 +1,22 @@
 package io.cloudflight.jems.server.project.repository.partner
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
+import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.model.ProjectContactType
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
@@ -26,15 +29,18 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.utils.partner.PARTNER_ID
 import io.cloudflight.jems.server.utils.partner.PROJECT_ID
-import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
+import io.cloudflight.jems.server.utils.partner.activityEntity
+import io.cloudflight.jems.server.utils.partner.activitySummary
 import io.cloudflight.jems.server.utils.partner.legalStatusEntity
+import io.cloudflight.jems.server.utils.partner.programmeStateAidEntity
 import io.cloudflight.jems.server.utils.partner.projectPartner
 import io.cloudflight.jems.server.utils.partner.projectPartnerDetail
 import io.cloudflight.jems.server.utils.partner.projectPartnerEntity
 import io.cloudflight.jems.server.utils.partner.projectPartnerSummary
 import io.cloudflight.jems.server.utils.partner.projectPartnerWithOrganizationEntity
 import io.cloudflight.jems.server.utils.partner.stateAid
+import io.cloudflight.jems.server.utils.partner.stateAidActivity
 import io.cloudflight.jems.server.utils.partner.stateAidEmpty
 import io.cloudflight.jems.server.utils.partner.stateAidEntity
 import io.mockk.MockKAnnotations
@@ -53,7 +59,7 @@ import org.springframework.data.domain.Pageable
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 class PartnerPersistenceProviderTest {
 
@@ -75,6 +81,12 @@ class PartnerPersistenceProviderTest {
     lateinit var projectAssociatedOrganizationService: ProjectAssociatedOrganizationService
 
     @MockK
+    lateinit var workPackageActivityRepository: WorkPackageActivityRepository
+
+    @MockK
+    lateinit var programmeStateAidRepository: ProgrammeStateAidRepository
+
+    @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
     @MockK
@@ -93,6 +105,8 @@ class PartnerPersistenceProviderTest {
             projectRepository,
             projectPartnerStateAidRepository,
             projectAssociatedOrganizationService,
+            workPackageActivityRepository,
+            programmeStateAidRepository
         )
         //for all delete tests
         every { projectAssociatedOrganizationService.refreshSortNumbers(any()) } answers {}
@@ -120,7 +134,7 @@ class PartnerPersistenceProviderTest {
     }
 
     @Test
-    fun `should throw PartnerAbbreviationNotUnique when partner abbreviation alreay exists`() {
+    fun `should throw PartnerAbbreviationNotUnique when partner abbreviation already exists`() {
         val abbreviation = "abbreviation"
         every { projectPartnerRepository.existsByProjectIdAndAbbreviation(PROJECT_ID, abbreviation) } returns true
         assertThrows<PartnerAbbreviationNotUnique> {
@@ -203,12 +217,12 @@ class PartnerPersistenceProviderTest {
             ProjectPartner(0, "partner", ProjectPartnerRole.LEAD_PARTNER, legalStatusId = 1)
         val projectPartnerWithProject = ProjectPartnerEntity(
             2,
-            ProjectPartnerTestUtil.project,
+            project,
             projectPartnerRequest.abbreviation!!,
             projectPartnerRequest.role!!,
             legalStatus = legalStatusEntity
         )
-        every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns ProjectPartnerTestUtil.project
+        every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns project
         every { legalStatusRepo.getReferenceIfExistsOrThrow(legalStatusEntity.id) } returns legalStatusEntity
 
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity
@@ -391,7 +405,7 @@ class PartnerPersistenceProviderTest {
 
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
         every { legalStatusRepo.getReferenceIfExistsOrThrow(legalStatusEntity.id) } returns legalStatusEntity
-        every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns ProjectPartnerTestUtil.project
+        every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns project
         every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
         every { projectPartnerRepository.save(any()) } returnsArgument 0
         assertThat(persistence.update(projectPartnerUpdate))
@@ -425,12 +439,12 @@ class PartnerPersistenceProviderTest {
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
         every { projectPartnerRepository.deleteById(PARTNER_ID) } returns Unit
         every {
-            projectPartnerRepository.findTop30ByProjectId(ProjectPartnerTestUtil.project.id, any())
+            projectPartnerRepository.findTop30ByProjectId(project.id, any())
         } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()
 
         assertDoesNotThrow { persistence.deletePartner(PARTNER_ID) }
-        verify { projectAssociatedOrganizationService.refreshSortNumbers(ProjectPartnerTestUtil.project.id) }
+        verify { projectAssociatedOrganizationService.refreshSortNumbers(project.id) }
     }
 
     @Test
@@ -496,13 +510,33 @@ class PartnerPersistenceProviderTest {
         every {
             projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(PARTNER_ID, timestamp)
         } returns listOf(
-            PartnerStateAidRowTest(EN, PARTNER_ID, answer1 = true, answer2 = false, justification1 = "Is true"),
-            PartnerStateAidRowTest(SK, PARTNER_ID, answer1 = true, answer2 = false, justification2 = "Is false"),
+            PartnerStateAidRowTest(EN, PARTNER_ID, answer1 = true, answer2 = false, justification1 = "justification1", stateAidId = 2L),
+            PartnerStateAidRowTest(EN, PARTNER_ID, answer1 = true, answer2 = false, justification2 = "justification2"),
         )
+        every {
+            projectPartnerStateAidRepository.findPartnerStateAidActivitiesByPartnerIdAsOfTimestamp(PARTNER_ID, timestamp)
+        } returns listOf(3)
+        every {
+            workPackageActivityRepository.findAllByActivityIdInAsOfTimestamp(listOf(3), timestamp)
+        } returns listOf(
+            WorkPackageActivityRowImpl(3L, EN, 1L, 10, 3, null, null, null, null))
+        every { programmeStateAidRepository.findById(2L) } returns Optional.of(programmeStateAidEntity)
 
         assertThat(persistence.getPartnerStateAid(PARTNER_ID, version))
-            .isEqualTo(stateAid)
+            .isEqualTo(stateAidActivity)
     }
+
+    data class WorkPackageActivityRowImpl(
+        override val id: Long,
+        override val language: SystemLanguage?,
+        override val workPackageId: Long,
+        override val workPackageNumber: Int?,
+        override val activityNumber: Int,
+        override val startPeriod: Int?,
+        override val endPeriod: Int?,
+        override val title: String?,
+        override val description: String?
+    ) : WorkPackageActivityRow
 
     @Test
     fun `get state aid - historical but not existing`() {
@@ -514,24 +548,50 @@ class PartnerPersistenceProviderTest {
         every {
             projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(PARTNER_ID, timestamp)
         } returns emptyList()
+        every {
+            projectPartnerStateAidRepository.findPartnerStateAidActivitiesByPartnerIdAsOfTimestamp(PARTNER_ID, timestamp)
+        } returns emptyList()
+        every {
+            workPackageActivityRepository.findAllByActivityIdInAsOfTimestamp(emptyList(), timestamp)
+        } returns emptyList()
 
         assertThat(persistence.getPartnerStateAid(PARTNER_ID, version))
             .isEqualTo(stateAidEmpty)
     }
 
     @Test
+    fun `update state aid`() {
+        every { workPackageActivityRepository.getReferenceIfExistsOrThrow(activitySummary.activityId) } returns activityEntity
+        every { programmeStateAidRepository.getReferenceIfExistsOrThrow(stateAidActivity.stateAidScheme?.id) } returns programmeStateAidEntity
+        val stateAidEntitySlot = slot<ProjectPartnerStateAidEntity>()
+        every { projectPartnerStateAidRepository.save(capture(stateAidEntitySlot)) } returnsArgument 0
+
+        assertThat(persistence.updatePartnerStateAid(PARTNER_ID, stateAidActivity))
+            .isEqualTo(stateAidActivity)
+
+        assertThat(stateAidEntitySlot.captured.partnerId).isEqualTo(PARTNER_ID)
+        assertThat(stateAidEntitySlot.captured.answer1).isTrue
+        assertThat(stateAidEntitySlot.captured.answer2).isFalse
+        assertThat(stateAidEntitySlot.captured.answer3).isNull()
+        assertThat(stateAidEntitySlot.captured.answer4).isNull()
+        assertThat(stateAidEntitySlot.captured.translatedValues).hasSize(1)
+        assertThat(stateAidEntitySlot.captured.activities?.map { it.id.activity }).containsExactly(activityEntity)
+    }
+
+    @Test
     fun `update state aid - historical but not existing`() {
-        val stateAidEnitySlot = slot<ProjectPartnerStateAidEntity>()
-        every { projectPartnerStateAidRepository.save(capture(stateAidEnitySlot)) } returnsArgument 0
+        every { programmeStateAidRepository.getReferenceIfExistsOrThrow(null) } returns null
+        val stateAidEntitySlot = slot<ProjectPartnerStateAidEntity>()
+        every { projectPartnerStateAidRepository.save(capture(stateAidEntitySlot)) } returnsArgument 0
 
         assertThat(persistence.updatePartnerStateAid(PARTNER_ID, stateAid)).isEqualTo(stateAid)
 
-        assertThat(stateAidEnitySlot.captured.partnerId).isEqualTo(PARTNER_ID)
-        assertThat(stateAidEnitySlot.captured.answer1).isTrue
-        assertThat(stateAidEnitySlot.captured.answer2).isFalse
-        assertThat(stateAidEnitySlot.captured.answer3).isNull()
-        assertThat(stateAidEnitySlot.captured.answer4).isNull()
-        assertThat(stateAidEnitySlot.captured.translatedValues).hasSize(2)
+        assertThat(stateAidEntitySlot.captured.partnerId).isEqualTo(PARTNER_ID)
+        assertThat(stateAidEntitySlot.captured.answer1).isTrue
+        assertThat(stateAidEntitySlot.captured.answer2).isFalse
+        assertThat(stateAidEntitySlot.captured.answer3).isNull()
+        assertThat(stateAidEntitySlot.captured.answer4).isNull()
+        assertThat(stateAidEntitySlot.captured.translatedValues).hasSize(2)
     }
 
     @Test

@@ -19,10 +19,10 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 
-fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageActivityEntity {
+fun WorkPackageActivity.toEntity(workPackage: WorkPackageEntity, index: Int): WorkPackageActivityEntity {
     return WorkPackageActivityEntity(
         id = id,
-        workPackageId = workPackageId,
+        workPackage = workPackage,
         activityNumber = index,
         translatedValues = mutableSetOf(),
         startPeriod = startPeriod,
@@ -45,8 +45,8 @@ fun WorkPackageActivity.toEntity(workPackageId: Long, index: Int): WorkPackageAc
     }
 }
 
-fun List<WorkPackageActivity>.toIndexedEntity(workPackageId: Long) =
-    mapIndexed { index, activity -> activity.toEntity(workPackageId, index.plus(1)) }.toMutableList()
+fun List<WorkPackageActivity>.toIndexedEntity(workPackage: WorkPackageEntity, shiftIndexBy: Int = 0) =
+    mapIndexed { index, activity -> activity.toEntity(workPackage, index.plus(1).plus(shiftIndexBy)) }.toMutableList()
 
 fun WorkPackageActivityDeliverable.toEntity(
     index: Int
@@ -74,7 +74,7 @@ fun List<WorkPackageActivityDeliverable>.toIndexedEntity() =
 fun WorkPackageActivityEntity.toModel() =
     WorkPackageActivity(
         id = id,
-        workPackageId = workPackageId,
+        workPackageId = workPackage.id,
         activityNumber = activityNumber,
         title = translatedValues.extractField { it.title },
         description = translatedValues.extractField { it.description },
@@ -86,14 +86,19 @@ fun WorkPackageActivityEntity.toModel() =
 
 fun Iterable<WorkPackageActivityEntity>.toModel() = sortedBy { it.activityNumber }.map { it.toModel() }
 
-fun WorkPackageActivityEntity.toSummaryModel(workPackage: WorkPackageEntity) = WorkPackageActivitySummary (
+fun WorkPackageActivityEntity.toSummaryModel() = WorkPackageActivitySummary (
     activityId = id,
-    workPackageNumber = workPackage.number ?: 0,
+    workPackageNumber = workPackage.number!!,
+    activityNumber = activityNumber
+)
+fun WorkPackageActivity.toSummaryModel() = WorkPackageActivitySummary (
+    activityId = id,
+    workPackageNumber = workPackageNumber,
     activityNumber = activityNumber
 )
 
-fun Iterable<WorkPackageActivityEntity>.toSummaryModel(wps: Iterable<WorkPackageEntity>) = map {
-    it.toSummaryModel(wps.first { workPackage -> it.workPackageId == workPackage.id })
+fun Iterable<WorkPackageActivityEntity>.toSummaryModel() = map {
+    it.toSummaryModel()
 }
 
 fun WorkPackageActivityDeliverableEntity.toModel() = WorkPackageActivityDeliverable(
@@ -114,7 +119,9 @@ fun Set<WorkPackageActivityTranslationEntity>.toModel() = mapTo(HashSet()) {
 fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
     this.groupBy { it.activityNumber }.map { groupedRows ->
         WorkPackageActivity(
+            id = groupedRows.value.first().id,
             workPackageId = groupedRows.value.first().workPackageId,
+            workPackageNumber = groupedRows.value.first().workPackageNumber ?: 0,
             activityNumber = groupedRows.value.first().activityNumber,
             startPeriod = groupedRows.value.first().startPeriod,
             endPeriod = groupedRows.value.first().endPeriod,

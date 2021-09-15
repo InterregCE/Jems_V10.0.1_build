@@ -2,10 +2,13 @@ package io.cloudflight.jems.server.utils.partner
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
@@ -16,9 +19,10 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidTranslEntity
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
@@ -31,10 +35,15 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 const val PROJECT_ID = 1L
@@ -176,6 +185,66 @@ val stateAidEmpty = ProjectPartnerStateAid(
     justification4 = emptySet(),
 )
 
+val activitySummary = WorkPackageActivitySummary(
+    activityId = 3L,
+    workPackageNumber = 10,
+    activityNumber = 3
+)
+
+val programmeStateAidEntity = ProgrammeStateAidEntity(
+    id = 2,
+    measure = ProgrammeStateAidMeasure.OTHER_1,
+    maxIntensity = BigDecimal.TEN,
+    threshold = BigDecimal.TEN,
+    schemeNumber = "NR1",
+    translatedValues = mutableSetOf()
+)
+
+val stateAidActivity = ProjectPartnerStateAid(
+    answer1 = true,
+    justification1 = setOf(InputTranslation(SystemLanguage.EN, "justification1")),
+    answer2 = false,
+    justification2 = setOf(InputTranslation(SystemLanguage.EN, "justification2")),
+    answer3 = null,
+    answer4 = null,
+    activities = listOf(activitySummary),
+    stateAidScheme = ProgrammeStateAid(
+        id = 2,
+        measure = ProgrammeStateAidMeasure.OTHER_1,
+        name = emptySet(),
+        abbreviatedName = emptySet(),
+        schemeNumber = programmeStateAidEntity.schemeNumber,
+        maxIntensity = programmeStateAidEntity.maxIntensity,
+        threshold = programmeStateAidEntity.threshold,
+        comments = emptySet()
+    )
+)
+
+val activityEntity = WorkPackageActivityEntity(
+    id = activitySummary.activityId,
+    activityNumber = activitySummary.activityNumber,
+    workPackage = WorkPackageEntity(id = 1L, number = 10, project = project),
+    translatedValues = mutableSetOf(),
+    startPeriod = 1,
+    endPeriod = 3,
+    deliverables = mutableSetOf()
+)
+
+val activity = WorkPackageActivity(
+    id = activitySummary.activityId,
+    workPackageId = 1L,
+    activityNumber = 10,
+    title = setOf(InputTranslation(language = SystemLanguage.EN, translation = "title")),
+    description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description")),
+    startPeriod = 1,
+    endPeriod = 3,
+    deliverables = listOf(
+        WorkPackageActivityDeliverable(
+            period = 1,
+            description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description"))
+        )
+    )
+)
 
 class ProjectPartnerTestUtil {
 

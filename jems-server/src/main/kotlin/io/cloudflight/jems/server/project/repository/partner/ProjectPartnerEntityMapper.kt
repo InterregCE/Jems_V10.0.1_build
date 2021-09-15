@@ -6,6 +6,8 @@ import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
+import io.cloudflight.jems.server.programme.repository.stateaid.toModel
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -24,10 +26,13 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivatio
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.PartnerStateAidRow
+import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidActivityEntity
+import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidActivityId
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidTranslEntity
-import io.cloudflight.jems.server.project.repository.partner.cofinancing.toCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionEntity
+import io.cloudflight.jems.server.project.repository.workpackage.activity.toSummaryModel
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
@@ -38,6 +43,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 
 fun ProjectPartner.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
     ProjectPartnerEntity(
@@ -335,7 +341,11 @@ fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummary
     country = country
 )
 
-fun ProjectPartnerStateAid.toEntity(partnerId: Long) = ProjectPartnerStateAidEntity(
+fun ProjectPartnerStateAid.toEntity(
+    partnerId: Long,
+    workPackageActivities: List<WorkPackageActivityEntity>,
+    programmeStateAid: ProgrammeStateAidEntity?
+) = ProjectPartnerStateAidEntity(
     partnerId = partnerId,
     answer1 = answer1,
     answer2 = answer2,
@@ -348,9 +358,15 @@ fun ProjectPartnerStateAid.toEntity(partnerId: Long) = ProjectPartnerStateAidEnt
         justification3,
         justification4
     ),
-    activities = emptyList(),
-    stateAidScheme = null
-)
+    activities = mutableListOf(),
+    stateAidScheme = programmeStateAid
+).also { entity ->
+    entity.activities?.addAll(
+        workPackageActivities.map {
+            ProjectPartnerStateAidActivityEntity(ProjectPartnerStateAidActivityId(entity, it))
+        }
+    )
+}
 
 private fun combineTranslatedValuesStateAid(
     partnerId: Long,
@@ -389,13 +405,18 @@ fun ProjectPartnerStateAidEntity.toModel() = ProjectPartnerStateAid(
     justification3 = translatedValues.extractField { it.justification3 },
     answer4 = answer4,
     justification4 = translatedValues.extractField { it.justification4 },
+    activities = activities?.map { it.id.activity.toSummaryModel() },
+    stateAidScheme = stateAidScheme?.toModel()
 )
 
 private inline fun Set<ProjectPartnerStateAidTranslEntity>.extractField(extractFunction: (ProjectPartnerStateAidTranslEntity) -> String?) =
     map { InputTranslation(it.translationId.language, extractFunction.invoke(it)) }
         .filterTo(HashSet()) { !it.translation.isNullOrBlank() }
 
-fun List<PartnerStateAidRow>.toModel() =
+fun List<PartnerStateAidRow>.toModel(
+    activities: List<WorkPackageActivity>,
+    stateAid: ProgrammeStateAidEntity?
+) =
     this.groupBy { it.partnerId }.map { groupedRows ->
         ProjectPartnerStateAid(
             answer1 = groupedRows.value.first().answer1,
@@ -406,5 +427,7 @@ fun List<PartnerStateAidRow>.toModel() =
             justification3 = groupedRows.value.extractField { it.justification3 },
             answer4 = groupedRows.value.first().answer4,
             justification4 = groupedRows.value.extractField { it.justification4 },
+            activities = activities.map { it.toSummaryModel() },
+            stateAidScheme = stateAid?.toModel()
         )
     }.firstOrNull()

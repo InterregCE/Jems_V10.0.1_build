@@ -13,4 +13,6 @@ interface PartnerStateAidRow: TranslationView {
     val justification3: String?
     val answer4: Boolean?
     val justification4: String?
+
+    val stateAidId: Long?
 }

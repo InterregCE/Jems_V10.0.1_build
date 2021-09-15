@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.entity.partner.state_aid
 
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
-import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import javax.persistence.CascadeType
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.Id
@@ -14,6 +14,7 @@ import javax.persistence.OneToMany
 class ProjectPartnerStateAidEntity(
 
     @Id
+    @Column(name = "partner_id")
     val partnerId: Long,
 
     val answer1: Boolean? = null,
@@ -24,10 +25,10 @@ class ProjectPartnerStateAidEntity(
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.partnerId")
     val translatedValues: Set<ProjectPartnerStateAidTranslEntity> = emptySet(),
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "id")
-    val activities: List<WorkPackageActivityEntity>? = emptyList(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "id.projectPartnerStateAid")
+    val activities: MutableList<ProjectPartnerStateAidActivityEntity>? = mutableListOf(),
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_aid_id")
     val stateAidScheme: ProgrammeStateAidEntity? = null
 )

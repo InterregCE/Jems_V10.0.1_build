@@ -2,11 +2,14 @@ package io.cloudflight.jems.server.project.repository.partner
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
+import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
+import io.cloudflight.jems.server.project.repository.workpackage.activity.toActivityHistoricalData
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
@@ -34,6 +37,8 @@ class PartnerPersistenceProvider(
     private val projectRepo: ProjectRepository,
     private val projectPartnerStateAidRepository: ProjectPartnerStateAidRepository,
     private val projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
+    private val workPackageActivityRepository: WorkPackageActivityRepository,
+    private val programmeStateAidRepository: ProgrammeStateAidRepository
 ) : PartnerPersistence {
 
     @Transactional(readOnly = true)
@@ -172,8 +177,9 @@ class PartnerPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getPartnerStateAid(partnerId: Long, version: String?): ProjectPartnerStateAid {
+        val projectId = getProjectIdForPartnerId(partnerId, version)
         return projectVersionUtils.fetch(version,
-            projectId = getProjectIdForPartnerId(partnerId, version),
+            projectId = projectId,
             currentVersionFetcher = {
                 projectPartnerStateAidRepository.findById(partnerId)
                     .orElse(ProjectPartnerStateAidEntity(partnerId)).toModel()
@@ -185,8 +191,17 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional
-    override fun updatePartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAid): ProjectPartnerStateAid =
-        projectPartnerStateAidRepository.save(stateAid.toEntity(partnerId)).toModel()
+    override fun updatePartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAid): ProjectPartnerStateAid {
+        val workPackageActivities =
+            stateAid.activities?.map { workPackageActivityRepository.getReferenceIfExistsOrThrow(it.activityId) }
+                .orEmpty()
+                .filterNotNull()
+        return projectPartnerStateAidRepository.save(stateAid.toEntity(
+            partnerId = partnerId,
+            workPackageActivities = workPackageActivities,
+            programmeStateAid = programmeStateAidRepository.getReferenceIfExistsOrThrow(stateAid.stateAidScheme?.id)
+        )).toModel()
+    }
 
     @Transactional
     override fun deletePartner(partnerId: Long) {
@@ -228,9 +243,20 @@ class PartnerPersistenceProvider(
     private fun getPartnerStateAidHistorical(
         partnerId: Long,
         timestamp: Timestamp,
-    ): ProjectPartnerStateAid =
-        projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(partnerId, timestamp).toModel()
+    ): ProjectPartnerStateAid {
+        val activityIds =
+            projectPartnerStateAidRepository.findPartnerStateAidActivitiesByPartnerIdAsOfTimestamp(partnerId, timestamp)
+        val workPackageActivities =
+            workPackageActivityRepository.findAllByActivityIdInAsOfTimestamp(activityIds, timestamp)
+        val partnerStateAidRows =
+            projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(partnerId, timestamp)
+        val programmeStateAidId = partnerStateAidRows.firstOrNull { it.stateAidId != null }?.stateAidId
+        val programmeStateAid =
+            if (programmeStateAidId != null) { programmeStateAidRepository.findById(programmeStateAidId) } else { null }
+
+        return partnerStateAidRows.toModel(workPackageActivities.toActivityHistoricalData(), programmeStateAid?.get())
             ?: ProjectPartnerStateAid(answer1 = null, answer2 = null, answer3 = null, answer4 = null)
+    }
 
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {
         return projectPartnerRepository.findById(partnerId)

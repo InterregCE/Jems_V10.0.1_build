@@ -159,6 +159,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
 
         assertThat(activitiesSlot.captured).containsExactly(
             WorkPackageActivity(
+                id = activityId,
                 workPackageId = 1L,
                 title = setOf(
                     InputTranslation(language = SK, translation = "sk_title"),
@@ -187,6 +188,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                 partnerIds = setOf(2, 3)
             ),
             WorkPackageActivity(
+                id = activity2.id,
                 workPackageId = 1L,
                 title = emptySet(),
                 description = emptySet(),

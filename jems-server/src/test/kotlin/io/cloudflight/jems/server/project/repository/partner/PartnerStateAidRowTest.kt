@@ -14,4 +14,5 @@ data class PartnerStateAidRowTest(
     override val justification3: String? = null,
     override val answer4: Boolean? = null,
     override val justification4: String? = null,
+    override val stateAidId: Long? = null
 ): PartnerStateAidRow

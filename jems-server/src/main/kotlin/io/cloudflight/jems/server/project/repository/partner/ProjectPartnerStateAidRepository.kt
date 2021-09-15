@@ -22,9 +22,11 @@ interface ProjectPartnerStateAidRepository : JpaRepository<ProjectPartnerStateAi
               stateAidTransl.justification3 AS justification3,
               entity.answer4 AS answer4,
               stateAidTransl.justification4 AS justification4,
-              stateAidTransl.language AS language
+              stateAidTransl.language AS language,
+              entity.state_aid_id AS stateAidId
             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS stateAidTransl ON entity.partner_id = stateAidTransl.partner_id
+              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS stateAidTransl
+                   ON entity.partner_id = stateAidTransl.partner_id
               WHERE entity.partner_id = :partnerId
               ORDER BY entity.partner_id
              """,
@@ -34,4 +36,14 @@ interface ProjectPartnerStateAidRepository : JpaRepository<ProjectPartnerStateAi
         partnerId: Long, timestamp: Timestamp
     ): List<PartnerStateAidRow>
 
+    @Query(
+        """
+            SELECT
+              entity.activity_id AS activityId
+            FROM #{#entityName}_activity FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+              WHERE entity.project_partner_id = :partnerId
+             """,
+        nativeQuery = true
+    )
+    fun findPartnerStateAidActivitiesByPartnerIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp): List<Long>
 }

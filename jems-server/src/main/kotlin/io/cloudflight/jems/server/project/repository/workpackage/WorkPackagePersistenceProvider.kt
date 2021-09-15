@@ -79,7 +79,7 @@ class WorkPackagePersistenceProvider(
 
         // fetch all activities and deliverables in 1 request
         val activitiesByWorkPackages = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds)
-            .groupBy { it.workPackageId }
+            .groupBy { it.workPackage.id }
 
         // fetch all outputs in 1 request
         val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
@@ -268,10 +268,13 @@ class WorkPackagePersistenceProvider(
     override fun updateWorkPackageActivities(
         workPackageId: Long,
         workPackageActivities: List<WorkPackageActivity>
-    ): List<WorkPackageActivity> =
-        getWorkPackageOrThrow(workPackageId).also {
-            it.updateActivities(workPackageActivities.toIndexedEntity(workPackageId = workPackageId))
+    ): List<WorkPackageActivity> {
+        val workPackage = getWorkPackageOrThrow(workPackageId)
+        return workPackage.also {
+            it.updateActivities(workPackageActivities.toIndexedEntity(workPackage = workPackage))
         }.activities.toModel()
+    }
+
 
     @Transactional(readOnly = true)
     override fun getWorkPackageActivitiesForProject(
@@ -284,7 +287,7 @@ class WorkPackagePersistenceProvider(
         val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
 
         // fetch all activities and deliverables in 1 request
-        return workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds).toSummaryModel(workPackages)
+        return workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds).toSummaryModel()
     }
 
     @Transactional(readOnly = true)
@@ -366,7 +369,7 @@ class WorkPackagePersistenceProvider(
 
         // fetch all activities and deliverables in 1 request
         val allActivities = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds)
-        val activitiesGrouped = allActivities.groupBy { it.workPackageId }
+        val activitiesGrouped = allActivities.groupBy { it.workPackage.id }
 
         // fetch all outputs in 1 request
         val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)

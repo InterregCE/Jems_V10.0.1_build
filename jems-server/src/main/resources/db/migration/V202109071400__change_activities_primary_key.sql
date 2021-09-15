@@ -92,7 +92,7 @@ CREATE TABLE project_partner_state_aid_activity
         FOREIGN KEY (activity_id) REFERENCES project_work_package_activity (id)
             ON DELETE CASCADE,
     CONSTRAINT fk_project_partner_state_aid_to_partner
-        FOREIGN KEY (project_partner_id) REFERENCES project_partner (id)
+        FOREIGN KEY (project_partner_id) REFERENCES project_partner_state_aid (partner_id)
             ON DELETE CASCADE
 );
 ALTER TABLE project_partner_state_aid_activity
