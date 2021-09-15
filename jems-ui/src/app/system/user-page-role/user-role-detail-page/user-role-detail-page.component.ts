@@ -238,6 +238,12 @@ export class UserRoleDetailPageComponent {
 
   grantProjectCreate(): void {
     this.roleHasProjectCreate = !this.roleHasProjectCreate;
+
+    if (this.roleHasProjectCreate) {
+      this.permissionsTopBar.controls
+        .filter(node => node.value.name === 'topbar.main.dashboard')
+        .forEach(node => this.subtree(node).controls.forEach((child: AbstractControl) => this.changeState(child, PermissionState.VIEW)));
+    }
     this.formChanged();
   }
 
@@ -307,12 +313,7 @@ export class UserRoleDetailPageComponent {
     Permission.TOP_NAVIGATION_PERMISSIONS.flatMap((perm: PermissionNode, index: number) =>
       this.extractChildrenPermissions(this.permissionsTopBar.at(index), perm)).forEach(permission => permissions.push(permission));
 
-    // the project create cannot be assigned without the CallPublishedRetrieve.If the checkbox is checked, both should be added but not duplicated.
-    if (this.roleHasProjectCreate && permissions.filter(permission => permission === PermissionsEnum.CallPublishedRetrieve).length <= 0) {
-      permissions.push(PermissionsEnum.CallPublishedRetrieve);
-    }
-
-    if (this.roleHasProjectCreate && permissions.filter(permission => permission === PermissionsEnum.CallPublishedRetrieve).length > 0) {
+    if (this.roleHasProjectCreate) {
       permissions.push(PermissionsEnum.ProjectCreate);
     }
 
