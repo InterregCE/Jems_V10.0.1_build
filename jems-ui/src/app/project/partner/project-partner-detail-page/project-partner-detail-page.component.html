@@ -34,10 +34,12 @@
                 {{'partner.tab.coFinancing' | translate}}
             </a>
         </ng-container>
-        <a [active]="activeTab('stateAid')" mat-tab-link
-           (click)="routeTo('stateAid')">
-            {{'partner.tab.state.aid' | translate}}
-        </a>
+        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID">
+            <a [active]="activeTab('stateAid')" mat-tab-link
+               (click)="routeTo('stateAid')">
+                {{'partner.tab.state.aid' | translate}}
+            </a>
+        </ng-container>
     </nav>
     <router-outlet></router-outlet>
 </app-project-page-template>

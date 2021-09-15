@@ -110,6 +110,11 @@ export const APPLICATION_FORM = {
         PRICE_PER_UNIT: 'application.config.project.partner.budget.unit.costs.price.per.unit'
       }
     },
+    STATE_AID: {
+      CRITERIA_SELF_CHECK: 'application.config.project.partner.state.aid.criteria.self.check',
+      RELEVANT_ACTIVITIES: 'application.config.project.partner.state.aid.relevant.activities',
+      SCHEME: 'application.config.project.partner.partner.state.aid.scheme',
+    },
     PARTNER_ASSOCIATED_ORGANIZATIONS: 'application.config.project.partner.associated.organizations',
   },
   SECTION_C: {

@@ -84,6 +84,7 @@ export class ApplicationFormConfigurationPageStore {
             this.addSectionNodes('application.config.project.section.b.budget.infrastructure.and.works', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.INFRASTRUCTURE_AND_WORKS, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.unit.costs', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS, callPublished, configs, false),
           ]),
+          this.addSectionNodes('application.config.project.partner.state.aid', 1,  APPLICATION_FORM.SECTION_B.STATE_AID, callPublished, configs),
           this.addLeafNode(APPLICATION_FORM.SECTION_B.PARTNER_ASSOCIATED_ORGANIZATIONS, 1, callPublished, configs)
         ]
       ),

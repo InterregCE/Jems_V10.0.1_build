@@ -274,12 +274,22 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.partner.budget.unit.costs.price.per.unit",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PARTNER_STATE_AID_CRITERIA_SELF_CHECK(
+        "application.config.project.partner.state.aid.criteria.self.check",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_STATE_AID_RELEVANT_ACTIVITIES(
+        "application.config.project.partner.state.aid.relevant.activities",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_STATE_AID_SCHEME(
+        "application.config.project.partner.partner.state.aid.scheme",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PARTNER_ASSOCIATED_ORGANIZATIONS(
         "application.config.project.partner.associated.organizations",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-
-
     PROJECT_OVERALL_OBJECTIVE(
         "application.config.project.overall.objective",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
