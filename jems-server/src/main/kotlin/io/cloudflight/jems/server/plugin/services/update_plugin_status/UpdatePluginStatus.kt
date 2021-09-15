@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.plugin.services.update_plugin_status
 
 import io.cloudflight.jems.server.plugin.entity.PluginStatusEntity
 import io.cloudflight.jems.server.plugin.repository.PluginStatusRepository
+import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,6 +13,7 @@ class UpdatePluginStatus(private val repository: PluginStatusRepository) :
     UpdatePluginStatusInteractor {
 
     @Transactional
+    @CanUpdateProgrammeSetup
     override fun enable(pluginKey: String) {
         repository.findById(pluginKey).ifPresentOrElse(
             { it.enabled = true },
@@ -20,6 +22,7 @@ class UpdatePluginStatus(private val repository: PluginStatusRepository) :
     }
 
     @Transactional
+    @CanUpdateProgrammeSetup
     override fun disable(pluginKey: String) {
         repository.findById(pluginKey).ifPresentOrElse(
             { it.enabled = false },
