@@ -90,6 +90,7 @@ export class ProjectApplicationFormSidenavService {
             )
           ) : of([]);
       }),
+      catchError(() => of([])),
       startWith([])
     );
 
@@ -118,6 +119,7 @@ export class ProjectApplicationFormSidenavService {
               )
             ) : of([]);
       }),
+      catchError(() => of([])),
       startWith([])
     );
 
@@ -145,7 +147,7 @@ export class ProjectApplicationFormSidenavService {
       this.canSeeProjectForm$,
     ])
       .pipe(
-        filter(([project, , , , , , , , ]: any) => !!project),
+        filter(([project, , , , , , , , ]) => !!project),
         tap(([project, canSeeAssessments, canSubmitApplication, canCheckApplication, canReadApplicationFiles, partners, packages, versionTemplate, canSeeProjectForm]: any) => {
           this.setHeadlines(canSeeAssessments, canSubmitApplication, canCheckApplication, canSeeProjectForm, canReadApplicationFiles, project, partners, packages, versionTemplate);
         }),
