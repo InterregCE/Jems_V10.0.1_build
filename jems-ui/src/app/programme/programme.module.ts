@@ -1,9 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {routes} from './programme-routing.module';
-import {SharedModule} from '../common/shared-module';
-import {ProgrammePageComponent} from './programme-page/containers/programme-page/programme-page.component';
-import {ProgrammeDataComponent} from './programme-page/components/programme-data/programme-data.component';
+import {SharedModule} from '@common/shared-module';
 import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
 import {ProgrammeNutsInfoComponent} from './programme-page/components/programme-nuts-info/programme-nuts-info.component';
 import {ProgrammeRegionsTreeComponent} from './programme-page/components/programme-regions-tree/programme-regions-tree.component';
@@ -17,7 +15,7 @@ import {ProgrammeOutputIndicatorDetailComponent} from './programme-page/componen
 import {ProgrammeOutputIndicatorSubmissionPageComponent} from './programme-page/containers/programme-output-indicator-submission-page/programme-output-indicator-submission-page.component';
 import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
 import {ProgrammeResultIndicatorDetailComponent} from './programme-page/components/programme-result-indicator-detail/programme-result-indicator-detail.component';
-import {ProgrammeBasicFundsComponent} from './programme-page/components/programme-basic-funds/programme-basic-funds.component';
+import {ProgrammeFundsComponent} from './programme-funds/programme-funds.component';
 import {ProgrammeStrategiesPageComponent} from './programme-page/containers/programme-strategies-page/programme-strategies-page.component';
 import {ProgrammeStrategiesComponent} from './programme-page/components/programme-strategies/programme-strategies.component';
 import {ProgrammePageSidenavService} from './programme-page/services/programme-page-sidenav.service';
@@ -40,11 +38,10 @@ import {ProgrammeEditableStateStore} from './programme-page/services/programme-e
 import { TranslationManagementPageComponent } from './translation-management-page/translation-management-page.component';
 import {ProgrammeStateAidComponent} from './programme-page/containers/programme-state-aid/programme-state-aid.component';
 import {ProgrammeStateAidListComponent} from './programme-page/components/programme-state-aid-list/programme-state-aid-list.component';
+import { ProgrammeBasicDataComponent } from './programme-basic-data/programme-basic-data.component';
 
 @NgModule({
   declarations: [
-    ProgrammePageComponent,
-    ProgrammeDataComponent,
     ProgrammeAreaComponent,
     ProgrammeNutsInfoComponent,
     ProgrammeRegionsComponent,
@@ -58,7 +55,6 @@ import {ProgrammeStateAidListComponent} from './programme-page/components/progra
     ProgrammeOutputIndicatorSubmissionPageComponent,
     ProgrammeResultIndicatorSubmissionPageComponent,
     ProgrammeResultIndicatorDetailComponent,
-    ProgrammeBasicFundsComponent,
     ProgrammeLanguagesPageComponent,
     ProgrammeLanguagesComponent,
     ProgrammeStrategiesPageComponent,
@@ -77,6 +73,8 @@ import {ProgrammeStateAidListComponent} from './programme-page/components/progra
     TranslationManagementPageComponent,
     ProgrammeStateAidComponent,
     ProgrammeStateAidListComponent,
+    ProgrammeBasicDataComponent,
+    ProgrammeFundsComponent
   ],
   providers: [
     IndicatorsStore,

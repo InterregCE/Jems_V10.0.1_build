@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {filter, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {RoutingService} from '../../../common/services/routing.service';
+import {RoutingService} from '@common/services/routing.service';
 
 @UntilDestroy()
 @Injectable()
@@ -17,16 +17,6 @@ export class ProgrammePageSidenavService {
   private prioritiesPage = {
     headline: {i18nKey: 'programme.tab.priority'},
     route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/priorities`,
-  };
-
-  private languagesPage = {
-    headline: {i18nKey: 'programme.tab.languages'},
-    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/languages`,
-  };
-
-  private translationManagementPage = {
-    headline: {i18nKey: 'programme.tab.translation.management'},
-    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/translationManagement`,
   };
 
   private costsPage = {
@@ -49,21 +39,25 @@ export class ProgrammePageSidenavService {
       {
         headline: {i18nKey: 'programme.data.page.title'},
         bullets: [
-          this.languagesPage,
-          this.translationManagementPage,
+          {
+            headline: {i18nKey: 'programme.tab.data'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/`,
+          },
+          {
+            headline: {i18nKey: 'programme.tab.languages'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/languages`,
+          },
+          {
+            headline: {i18nKey: 'programme.tab.translation.management'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/translationManagement`,
+          },
           {
             headline: {i18nKey: 'programme.tab.area'},
             route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/areas`,
           },
           {
-            headline: {i18nKey: 'programme.tab.data'},
-            route: ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH,
-            scrollToTop: true
-          },
-          {
-            headline: {i18nKey: 'programme.fund.list.title'},
-            scrollRoute: 'funds',
-            route: ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH,
+            headline: {i18nKey: 'programme.tab.funds'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/funds`,
           },
           this.prioritiesPage,
           this.indicatorsPage,
@@ -91,10 +85,6 @@ export class ProgrammePageSidenavService {
 
   public goToPriorities(): void {
     this.sideNavService.navigate(this.prioritiesPage);
-  }
-
-  public goToLanguages(): void {
-    this.sideNavService.navigate(this.languagesPage);
   }
 
   public goToCosts(): void {

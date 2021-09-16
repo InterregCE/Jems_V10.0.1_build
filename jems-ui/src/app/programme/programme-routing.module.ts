@@ -1,5 +1,4 @@
 import {Routes} from '@angular/router';
-import {ProgrammePageComponent} from './programme-page/containers/programme-page/programme-page.component';
 import {ProgrammeOutputIndicatorSubmissionPageComponent} from './programme-page/containers/programme-output-indicator-submission-page/programme-output-indicator-submission-page.component';
 import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
 import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
@@ -14,6 +13,8 @@ import {ProgrammePriorityDetailPageComponent} from './priorities/programme-prior
 import {ProgrammePriorityListPageComponent} from './priorities/programme-priority-list-page/programme-priority-list-page.component';
 import {TranslationManagementPageComponent} from './translation-management-page/translation-management-page.component';
 import {ProgrammeStateAidComponent} from './programme-page/containers/programme-state-aid/programme-state-aid.component';
+import {ProgrammeBasicDataComponent} from './programme-basic-data/programme-basic-data.component';
+import {ProgrammeFundsComponent} from './programme-funds/programme-funds.component';
 
 export const routes: Routes = [
   {
@@ -24,7 +25,11 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component: ProgrammePageComponent,
+        component: ProgrammeBasicDataComponent,
+      },
+      {
+        path: 'funds',
+        component: ProgrammeFundsComponent,
       },
       {
         path: 'priorities',
