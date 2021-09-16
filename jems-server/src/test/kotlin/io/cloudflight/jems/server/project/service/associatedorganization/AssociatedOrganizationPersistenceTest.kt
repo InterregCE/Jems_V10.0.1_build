@@ -112,7 +112,8 @@ class AssociatedOrganizationPersistenceTest {
                 abbreviation = projectPartner.abbreviation,
                 role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name),
                 sortNumber = projectPartner.sortNumber,
-                country = "country"
+                country = "country",
+                region = "nutsRegion3"
             ),
             nameInOriginalLanguage = "nameInOriginalLanguage",
             nameInEnglish = "nameInEnglish",
@@ -185,6 +186,7 @@ class AssociatedOrganizationPersistenceTest {
         every { mockPPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPPRow.sortNumber } returns 1
         every { mockPPRow.country } returns "country"
+        every { mockPPRow.region } returns "nutsRegion3"
         val mockAOARow: AssociatedOrganizationAddressRow = mockk()
         every { mockAOARow.id } returns projectAssociatedOrganization.id
         every { mockAOARow.country } returns "country"

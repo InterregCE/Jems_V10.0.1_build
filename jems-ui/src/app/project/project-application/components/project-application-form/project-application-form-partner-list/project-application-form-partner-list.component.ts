@@ -15,7 +15,7 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '@common/utils/forms';
 import {filter, map, take} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
-import {RoutingService} from '@common/services/routing.service';
+import '@angular/common/locales/global/de';
 
 @Component({
   selector: 'app-project-application-form-partner-list',
@@ -79,7 +79,12 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
           sortProperty: 'role',
         },
         {
-          displayedColumn: 'project.application.form.partner.list.budget',
+          displayedColumn: 'project.application.form.partner.list.nuts.title',
+          elementProperty: 'region',
+          sortProperty: 'nuts',
+        },
+        {
+          displayedColumn: 'project.partner.coFinancing.total',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.budgetCell
         },

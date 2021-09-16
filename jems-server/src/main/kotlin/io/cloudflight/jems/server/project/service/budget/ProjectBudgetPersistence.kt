@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.budget
 
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 
 interface ProjectBudgetPersistence {

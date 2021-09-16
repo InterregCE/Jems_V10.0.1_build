@@ -8,7 +8,7 @@ export class NumberService {
   /**
    * Converts the given number to specific locale (eg. de-DE).
    */
-  static toLocale(value: number, locale = 'de-DE'): string | number {
+  static toLocale(value: number, locale = 'de-DE', numberFormatOptions?: any): string | number {
     if (value === undefined) {
       return '';
     }
@@ -17,7 +17,7 @@ export class NumberService {
     }
     return new Intl.NumberFormat(
       locale,
-      {minimumFractionDigits: 2, maximumFractionDigits: 2}
+      numberFormatOptions || {minimumFractionDigits: 2, maximumFractionDigits: 2}
     ).format(value);
   }
 
