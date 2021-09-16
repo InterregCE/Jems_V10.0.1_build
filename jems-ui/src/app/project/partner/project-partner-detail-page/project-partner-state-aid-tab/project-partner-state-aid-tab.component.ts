@@ -5,21 +5,21 @@ import {ProjectPartnerDetailPageStore} from '@project/partner/project-partner-de
 import {ActivatedRoute} from '@angular/router';
 import {catchError, map, switchMap, take, tap} from 'rxjs/operators';
 import {
-  OutputWorkPackageSimple,
+  OutputWorkPackageSimple, ProgrammeStateAidDTO,
   ProjectDetailDTO,
   ProjectPartnerStateAidDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
-import {WorkPackagePageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-page-store.service';
+import {WorkPackagePageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectWorkPackagePageStore} from '@project/work-package/project-work-package-page/project-work-package-page-store.service';
 
 interface ActivityIdentificationInformation {
-  workpackageNumber: number,
-  activities: WorkPackageActivitySummaryDTO[]
+  workpackageNumber: number;
+  activities: WorkPackageActivitySummaryDTO[];
 }
 
 @Component({
@@ -37,7 +37,8 @@ export class ProjectPartnerStateAidTabComponent {
     stateAid: ProjectPartnerStateAidDTO,
     displayActivities: ActivityIdentificationInformation[],
     activities: WorkPackageActivitySummaryDTO[],
-    project: ProjectDetailDTO
+    project: ProjectDetailDTO,
+    isEditable: boolean,
   }>;
 
   form = this.formBuilder.group({
@@ -63,25 +64,33 @@ export class ProjectPartnerStateAidTabComponent {
     this.formService.init(this.form, this.pageStore.isProjectEditable$);
     this.data$ = combineLatest([
       this.pageStore.stateAid$,
-      this.projectStore.activities$,
+      this.projectStore.projectEditable$.pipe(
+        switchMap(isEditable => isEditable ?  this.projectStore.activities$ : of([]))
+      ),
       this.workPackageProjectStore.workPackages$,
-      this.projectStore.project$
+      this.projectStore.project$,
+      this.projectStore.projectEditable$
     ]).pipe(
-      map(([stateAid, activities, workpackages, project]) => ({
+      map(([stateAid, activities, workpackages, project, isEditable]) => ({
         stateAid,
-        displayActivities: this.mapWorkpackagesAndActivities(activities, workpackages),
-        activities,
-        project
+        displayActivities: this.mapWorkpackagesAndActivities(isEditable ? activities : stateAid.activities, workpackages),
+        activities: isEditable ? activities : stateAid.activities,
+        project,
+        isEditable
       })),
-      tap(stateAid => this.resetForm(stateAid.stateAid, stateAid.activities))
+      tap(stateAid => this.resetForm(stateAid.stateAid)),
     );
   }
 
-  updateStateAid(): void {
+  updateStateAid(stateAids: ProgrammeStateAidDTO[]): void {
+    const stateAidToSave = {
+      ...this.form.value,
+      stateAidScheme: stateAids.find(stateAid => this.form.controls?.stateAidScheme.value === stateAid.id)
+    };
     this.pageStore.partner$
       .pipe(
         take(1),
-        switchMap(partner => this.pageStore.updateStateAid(partner.id, this.form.value)),
+        switchMap(partner => this.pageStore.updateStateAid(partner.id, stateAidToSave)),
         tap(() => this.formService.setSuccess('project.partner.state.aid.saved')),
         catchError(err => this.formService.setError(err))
       ).subscribe();
@@ -91,18 +100,18 @@ export class ProjectPartnerStateAidTabComponent {
     return this.form.get('activities') as FormArray;
   }
 
-  resetForm(stateAid: ProjectPartnerStateAidDTO, activities: WorkPackageActivitySummaryDTO[]): void {
+  resetForm(stateAid: ProjectPartnerStateAidDTO): void {
     this.form.reset(stateAid);
     this.activities().clear();
     stateAid?.activities?.forEach((activity: WorkPackageActivitySummaryDTO) => {
-      this.addActivity(activity, activities)
+      this.addActivity(activity);
     });
+    this.form.controls.stateAidScheme.setValue(stateAid.stateAidScheme?.id);
     this.formService.setDirty(false);
   }
 
-  addActivity(activity: WorkPackageActivitySummaryDTO, activitiesSorted: WorkPackageActivitySummaryDTO[]): void {
-    const selectedActivities = this.getCurrentlySelectedActivities().concat(activity);
-
+  addActivity(activityToAdd: WorkPackageActivitySummaryDTO): void {
+    const selectedActivities = this.getCurrentlySelectedActivities().concat(activityToAdd);
     this.activities().clear();
     selectedActivities.forEach(activity => this.activities().push(this.formBuilder.group(activity)));
     this.formService.setDirty(true);
@@ -112,8 +121,12 @@ export class ProjectPartnerStateAidTabComponent {
     return (this.activities().value as WorkPackageActivitySummaryDTO[]);
   }
 
+  getWorkpackagesWithActivities(workpackages: ActivityIdentificationInformation[]): ActivityIdentificationInformation[] {
+    return workpackages.filter(workpackage => (this.getActivitiesWithoutSelected(workpackage.activities).length) !== 0);
+  }
+
   getActivitiesWithoutSelected(activities: WorkPackageActivitySummaryDTO[]): WorkPackageActivitySummaryDTO[] {
-    return activities.filter(activity => (this.getCurrentlySelectedActivities().filter(selectedActivity => selectedActivity.activityId === activity.activityId).length) == 0);
+    return activities.filter(activity => (this.getCurrentlySelectedActivities().filter(selectedActivity => selectedActivity.activityId === activity.activityId).length) === 0);
   }
 
   removeActivity(index: number): void {
@@ -122,12 +135,12 @@ export class ProjectPartnerStateAidTabComponent {
   }
 
   getDisplayValueForActivityNumber(activities: WorkPackageActivitySummaryDTO[], activity: WorkPackageActivitySummaryDTO): string {
-    const a = activities.find(a => a.activityId === activity.activityId) as WorkPackageActivitySummaryDTO;
-    return `${'ACTIVITY ' + (a?.workPackageNumber.toString() || '') + '.' + (a?.activityNumber.toString() || '')}`;
+    const foundActivity = activities.find(a => a.activityId === activity.activityId) as WorkPackageActivitySummaryDTO;
+    return `ACTIVITY ${foundActivity?.workPackageNumber.toString() || ''}.${foundActivity?.activityNumber.toString() || ''}`;
   }
 
   getDisplayValueForWorkPackageNumber(workpackageNumber: number): string {
-    return `${'WORKPACKAGE ' + (workpackageNumber.toString() || '')}`;
+    return `WORKPACKAGE ${(workpackageNumber.toString() || '')}`;
   }
 
   getStateAidCheck(): string {
@@ -155,16 +168,10 @@ export class ProjectPartnerStateAidTabComponent {
     }
 
     // if one of them is missing values, return empty string and use the default from html
-    if (
-        this.form.controls.answer1.value === null
-      || this.form.controls.answer1.value === undefined
-      || this.form.controls.answer2.value === null
-      || this.form.controls.answer2.value === undefined
-      || this.form.controls.answer3.value === null
-      || this.form.controls.answer3.value === undefined
-      || this.form.controls.answer4.value === null
-      || this.form.controls.answer4.value === undefined
-    ) {
+    if (this.isUnset(this.form.controls.answer1.value)
+        || this.isUnset(this.form.controls.answer2.value)
+        || this.isUnset(this.form.controls.answer3.value)
+        || this.isUnset(this.form.controls.answer4.value)) {
       return '';
     }
 
@@ -172,7 +179,7 @@ export class ProjectPartnerStateAidTabComponent {
     return 'project.partner.state.aid.no.risk.of.state.aid';
   }
 
-    updateSelectedScheme(value: any): void {
+  updateSelectedScheme(value: number): void {
     this.form.controls.stateAidScheme.setValue(value);
   }
 
@@ -183,8 +190,12 @@ export class ProjectPartnerStateAidTabComponent {
       workpackagesAndActivities.push({
         workpackageNumber: workpackage.number,
         activities: activities.filter(activity => activity.workPackageNumber === workpackage.number)
-      })
-    })
+      });
+    });
     return workpackagesAndActivities;
+  }
+
+  private isUnset(value: any): boolean {
+    return value === null || value === undefined;
   }
 }

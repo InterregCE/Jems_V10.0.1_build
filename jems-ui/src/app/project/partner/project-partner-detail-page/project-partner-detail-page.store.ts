@@ -31,7 +31,7 @@ import {StaffCostsBudgetTableEntry} from '../../model/budget/staff-costs-budget-
 import {GeneralBudgetTableEntry} from '../../model/budget/general-budget-table-entry';
 import {TravelAndAccommodationCostsBudgetTable} from '../../model/budget/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../model/budget/travel-and-accommodation-costs-budget-table-entry';
-import {WorkPackagePageStore} from '../../work-package/project-work-package-page/work-package-detail-page/project-work-package-page-store.service';
+import {WorkPackagePageStore} from '../../work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
 import {UnitCostsBudgetTable} from '../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-table-entry';
 import {InvestmentSummary} from '../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
@@ -332,10 +332,10 @@ export class ProjectPartnerDetailPageStore {
       .pipe(
         filter(([partner]) => !!partner.id),
         switchMap(([partner, version]) => this.projectPartnerService.getProjectPartnerStateAid(partner.id, version)),
-        tap(stateAid => Log.info('Fetched the partner state aid', this, stateAid))
+        tap(stateAid => Log.info('Fetched the partner state aid', this, stateAid)),
       );
 
-    return merge(initialStateAid$, this.updatedStateAid$);
+    return merge(initialStateAid$, this.updatedStateAid$).pipe(shareReplay(1));
   }
 
 }

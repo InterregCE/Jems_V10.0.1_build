@@ -4,6 +4,10 @@ import {WorkPackageActivitySummaryDTO} from '@cat/api';
 @Pipe({name: 'filterActivities', pure: true})
 export class ProjectWorkPackageActivitiesFilterPipe implements PipeTransform {
 
+  private static getSearchValueForActivity(activity: WorkPackageActivitySummaryDTO): string {
+    return `ACTIVITY ${activity?.workPackageNumber || ''}.${activity?.activityNumber || ''}`;
+  }
+
   transform(activities: WorkPackageActivitySummaryDTO[], filterText: string): WorkPackageActivitySummaryDTO[] {
     if (!filterText) {
       return activities;
@@ -13,9 +17,4 @@ export class ProjectWorkPackageActivitiesFilterPipe implements PipeTransform {
       ProjectWorkPackageActivitiesFilterPipe.getSearchValueForActivity(activity).toUpperCase().includes(filterText.toUpperCase())
     );
   }
-
-  private static getSearchValueForActivity(activity: WorkPackageActivitySummaryDTO): string {
-    return `${'ACTIVITY'} ${activity?.workPackageNumber || ''}${'.'}${activity?.activityNumber || ''}`;
-  }
-
 }

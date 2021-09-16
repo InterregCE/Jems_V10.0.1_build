@@ -4,7 +4,7 @@ import {OutputWorkPackage} from '@cat/api';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {catchError, take, tap} from 'rxjs/operators';
-import {WorkPackagePageStore} from '../project-work-package-page-store.service';
+import {WorkPackagePageStore} from '../work-package-page-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';

@@ -363,16 +363,12 @@ export class ProjectStore {
   }
 
   private projectActivities(): Observable<WorkPackageActivitySummaryDTO[]> {
-    return combineLatest([
-      this.project$,
-      this.projectVersionStore.currentRouteVersion$
-    ])
+    return this.project$
       .pipe(
-        switchMap(([project, version]) =>
-          this.projectService.getProjectActivities(project.id, version)
+        switchMap((project) =>
+          this.projectService.getProjectActivities(project.id, '')
         ),
-        tap(activities => Log.info('Fetched project activities', activities)),
-        shareReplay(1)
+        tap(activities => Log.info('Fetched project activities', activities))
       );
   }
 }

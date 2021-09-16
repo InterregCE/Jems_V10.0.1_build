@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {WorkPackageService} from '@cat/api';
-import {WorkPackagePageStore} from './project-work-package-page-store.service';
+import {WorkPackagePageStore} from './work-package-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 

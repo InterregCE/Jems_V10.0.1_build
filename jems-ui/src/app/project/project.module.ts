@@ -63,7 +63,7 @@ import {ProjectWorkPackageInvestmentDetailPageComponent} from './work-package/pr
 import {StaffCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/staff-costs-budget-table/staff-costs-budget-table.component';
 import {BudgetFlatRateTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/budget-flat-rate-table/budget-flat-rate-table.component';
 import {GeneralBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-table/general-budget-table.component';
-import {WorkPackagePageStore} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-page-store.service';
+import {WorkPackagePageStore} from './work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
 import {ProjectPartnerDetailPageStore} from './partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
 import {UnitCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/unit-costs-budget-table/unit-costs-budget-table.component';

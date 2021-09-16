@@ -1,6 +1,6 @@
 <app-form *ngIf="data$ | async as data"
-          (save)="updateStateAid()"
-          (discard)="resetForm(data.stateAid, data.activities)">
+          (save)="updateStateAid(data.project.callSettings.stateAids)"
+          (discard)="resetForm(data.stateAid)">
     <form appFormLayout [formGroup]="form">
         <h3>{{ 'project.partner.state.aid.title' | translate }}</h3>
         <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID.CRITERIA_SELF_CHECK">
@@ -107,7 +107,7 @@
 
         <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID.RELEVANT_ACTIVITIES" class="example-chip-list" appearance="fill">
             <mat-label>{{ 'project.partner.state.aid.relevant.activities' | translate }}</mat-label>
-            <mat-chip-list #chipList>
+            <mat-chip-list #chipList [disabled]="!data.isEditable">
                 <mat-chip
                         *ngFor="let activity of activities().value;let activityIndex = index"
                         [selectable]="false"
@@ -123,8 +123,8 @@
                         [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
             </mat-chip-list>
             <mat-autocomplete #auto="matAutocomplete"
-                              (optionSelected)="addActivity($event.option.value, data.activities); filterActivities.value = ''; filterActivities.blur()">
-                <mat-optgroup *ngFor="let group of data.displayActivities" [label]="getDisplayValueForWorkPackageNumber(group.workpackageNumber)">
+                              (optionSelected)="addActivity($event.option.value); filterActivities.value = ''; filterActivities.blur()">
+                <mat-optgroup *ngFor="let group of getWorkpackagesWithActivities(data.displayActivities)" [label]="getDisplayValueForWorkPackageNumber(group.workpackageNumber)">
                     <mat-option *ngFor="let activity of getActivitiesWithoutSelected(group.activities) | filterActivities: filterActivities.value" [value]="activity">
                         {{ getDisplayValueForActivityNumber(data.activities, activity)}}
                     </mat-option>
@@ -136,8 +136,8 @@
             <mat-label>{{'project.partner.state.aid.scheme' | translate}}</mat-label>
             <mat-select formControlName="stateAidScheme"
                         (selectionChange)="updateSelectedScheme($event.value)">
-                <mat-option *ngFor="let schemes of data.project.callSettings.stateAids" [value]="schemes">
-                    {{schemes.abbreviatedName | translateBySystemLanguage | async}}
+                <mat-option *ngFor="let scheme of data.project.callSettings.stateAids" [value]="scheme.id">
+                    {{scheme.abbreviatedName | translateBySystemLanguage | async}}
                 </mat-option>
             </mat-select>
             <mat-error>

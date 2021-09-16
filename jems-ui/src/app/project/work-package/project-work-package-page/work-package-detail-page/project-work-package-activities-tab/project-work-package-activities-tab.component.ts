@@ -6,7 +6,7 @@ import {FormArray, FormBuilder} from '@angular/forms';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, take, tap} from 'rxjs/operators';
-import {WorkPackagePageStore} from '../project-work-package-page-store.service';
+import {WorkPackagePageStore} from '../work-package-page-store.service';
 import {ProjectWorkPackageActivitiesTabConstants} from './project-work-package-activities-tab.constants';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';

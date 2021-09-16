@@ -4,7 +4,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {ProjectWorkPackageOutputsTabConstants} from './project-work-package-outputs-tab.constants';
 import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
-import {WorkPackagePageStore} from '../project-work-package-page-store.service';
+import {WorkPackagePageStore} from '../work-package-page-store.service';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {InputTranslation, OutputIndicatorSummaryDTO, ProjectPeriodDTO, WorkPackageOutputDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
