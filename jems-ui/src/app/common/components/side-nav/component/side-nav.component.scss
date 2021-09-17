@@ -18,6 +18,35 @@
     left: 1.8rem;
     position: relative;
     width: calc(100% - 2.9rem);
+
+    li::before {
+      pointer-events: none;
+      content: "";
+      display: block;
+      position: absolute;
+      margin-left: -1.2em;
+      width: 0;
+      margin-top: -0.25em;
+      background: none;
+      transition: border 0.15s ease-out, width 0.15s ease-in-out, background-color 0.15s ease-out;
+    }
+    li:hover::before {
+      width: 110%;
+      height: 1.75em;
+      background: rgba(0,0,0,0.2);
+    }
+    li:hover:first-child {
+      z-index: -1;
+    }
+    li.route-active:first-child {
+      z-index: -1;
+    }
+    li.route-active::before {
+      height: 1.75em;
+      width: 110%;
+      background: rgba(255,255,255,0.25);
+      border-left: 0.4em solid var(--sidebar-color);
+    }
   }
 
   .level-4 {
@@ -29,11 +58,8 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-
-    &:hover {
-      text-decoration: underline var(--font-color-contrast);
-      text-decoration-width: 0.07rem;
-    }
+    line-height: 1.25em;
+    padding-bottom: 0.25em;
   }
 
   .versioned-section{
