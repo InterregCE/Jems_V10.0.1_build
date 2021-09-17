@@ -513,6 +513,102 @@ VALUES ('EUStrategyAdriaticIonianRegion'),
        ('EuropeanGreenDeal'),
        ('TerritorialAgenda2030');
 
+CREATE TABLE programme_state_aid
+(
+    id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    measure       ENUM ( 'General de minimis',
+        'Road freight de minimis',
+        'Agricultural de minimis',
+        'Fishery and aquaculture sector de minimis',
+        'SGEI de minimis',
+        'GBER Article 14',
+        'GBER Article 15',
+        'GBER Article 16',
+        'GBER Article 17',
+        'GBER Article 18',
+        'GBER Article 19',
+        'GBER Article 19a',
+        'GBER Article 19b',
+        'GBER Article 20',
+        'GBER Article 20a',
+        'GBER Article 21',
+        'GBER Article 22',
+        'GBER Article 23',
+        'GBER Article 24',
+        'GBER Article 25 par. (a)',
+        'GBER Article 25 par. (b)',
+        'GBER Article 25 par. (c)',
+        'GBER Article 25 par. (d)',
+        'GBER Article 25a',
+        'GBER Article 25b',
+        'GBER Article 25c',
+        'GBER Article 25d',
+        'GBER Article 26',
+        'GBER Article 27',
+        'GBER Article 28',
+        'GBER Article 29',
+        'GBER Article 30',
+        'GBER Article 31',
+        'GBER Article 32',
+        'GBER Article 33',
+        'GBER Article 34',
+        'GBER Article 35',
+        'GBER Article 36',
+        'GBER Article 36a',
+        'GBER Article 37',
+        'GBER Article 38',
+        'GBER Article 39',
+        'GBER Article 40',
+        'GBER Article 41',
+        'GBER Article 42',
+        'GBER Article 43',
+        'GBER Article 44',
+        'GBER Article 45',
+        'GBER Article 46',
+        'GBER Article 47',
+        'GBER Article 48',
+        'GBER Article 49',
+        'GBER Article 50',
+        'GBER Article 51',
+        'GBER Article 52',
+        'GBER Article 52a',
+        'GBER Article 52b',
+        'GBER Article 52c',
+        'GBER Article 53',
+        'GBER Article 54',
+        'GBER Article 55',
+        'GBER Article 56',
+        'GBER Article 56a',
+        'GBER Article 56b',
+        'GBER Article 56c',
+        'GBER Article 56e',
+        'GBER Article 56f',
+        'Indirect aid',
+        'RDI Framework',
+        'SGEI Framework',
+        'Other 1',
+        'Other 2',
+        'Other 3' ) NOT NULL DEFAULT 'Other 1',
+    scheme_number VARCHAR(25) DEFAULT NULL,
+    max_intensity DECIMAL(5, 2) UNSIGNED DEFAULT NULL,
+    threshold DECIMAL(17, 2) UNSIGNED DEFAULT NULL
+);
+
+CREATE TABLE programme_state_aid_transl
+(
+    source_entity_id INT UNSIGNED NOT NULL,
+    language         VARCHAR(3) NOT NULL,
+    name             VARCHAR(250) DEFAULT NULL,
+    abbreviated_name VARCHAR(50)  DEFAULT NULL,
+    comments         VARCHAR(500) DEFAULT NULL,
+    PRIMARY KEY (source_entity_id, language),
+    CONSTRAINT fk_programme_state_aid_transl_to_programme_state_aid
+        FOREIGN KEY (source_entity_id)
+            REFERENCES programme_state_aid (id)
+            ON DELETE CASCADE
+            ON UPDATE RESTRICT
+);
+
 CREATE TABLE project_call
 (
     id                                               INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -544,6 +640,23 @@ CREATE TABLE project_call_transl
             REFERENCES project_call (id)
             ON DELETE CASCADE
             ON UPDATE RESTRICT
+);
+
+CREATE TABLE project_call_state_aid
+(
+    programme_state_aid INT UNSIGNED NOT NULL,
+    project_call_id        INT UNSIGNED NOT NULL,
+    CONSTRAINT fk_project_call_state_aid_to_programme_state_aid
+        FOREIGN KEY (programme_state_aid)
+            REFERENCES programme_state_aid (id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT,
+    CONSTRAINT fk_project_call_state_aid_to_call
+        FOREIGN KEY (project_call_id)
+            REFERENCES project_call (id)
+            ON DELETE CASCADE
+            ON UPDATE RESTRICT,
+    CONSTRAINT pk_project_call_state_aid PRIMARY KEY (programme_state_aid, project_call_id)
 );
 
 CREATE TABLE project
@@ -900,11 +1013,11 @@ ALTER TABLE project_work_package_output_transl
 
 CREATE TABLE project_work_package_activity
 (
+    id              INT UNSIGNED     AUTO_INCREMENT PRIMARY KEY,
     work_package_id INT UNSIGNED     NOT NULL,
     activity_number TINYINT UNSIGNED NOT NULL,
     start_period    SMALLINT UNSIGNED DEFAULT NULL,
     end_period      SMALLINT UNSIGNED DEFAULT NULL,
-    PRIMARY KEY (work_package_id, activity_number),
     CONSTRAINT fk_project_work_package_activity_to_project_work_package
         FOREIGN KEY (work_package_id)
             REFERENCES project_work_package (id)
@@ -917,15 +1030,14 @@ ALTER TABLE project_work_package_activity
 
 CREATE TABLE project_work_package_activity_transl
 (
-    work_package_id INT UNSIGNED     NOT NULL,
-    activity_number TINYINT UNSIGNED NOT NULL,
-    language VARCHAR(3) NOT NULL,
-    title           VARCHAR(200)      DEFAULT NULL,
-    description     TEXT(500)         DEFAULT NULL,
-    PRIMARY KEY (work_package_id, activity_number, language),
+    source_entity_id INT UNSIGNED NOT NULL,
+    language         VARCHAR(3)   NOT NULL,
+    title            VARCHAR(200) DEFAULT NULL,
+    description      TEXT(500)    DEFAULT NULL,
+    PRIMARY KEY (source_entity_id, language),
     CONSTRAINT fk_project_work_package_activity_transl_to_project_work_pkg_acti
-        FOREIGN KEY (work_package_id, activity_number)
-            REFERENCES project_work_package_activity (work_package_id, activity_number)
+        FOREIGN KEY (source_entity_id)
+            REFERENCES project_work_package_activity (id)
             ON DELETE CASCADE
             ON UPDATE RESTRICT
 );
@@ -935,14 +1047,13 @@ ALTER TABLE project_work_package_activity_transl
 
 CREATE TABLE project_work_package_activity_deliverable
 (
-    work_package_id    INT UNSIGNED     NOT NULL,
-    activity_number    TINYINT UNSIGNED NOT NULL,
+    id                 INT UNSIGNED     AUTO_INCREMENT PRIMARY KEY,
+    activity_id        INT UNSIGNED     NOT NULL,
     deliverable_number TINYINT UNSIGNED NOT NULL,
     start_period       SMALLINT UNSIGNED DEFAULT NULL,
-    PRIMARY KEY (work_package_id, activity_number, deliverable_number),
     CONSTRAINT fk_project_work_package_activity_d_to_project_work_package_activ
-        FOREIGN KEY (work_package_id, activity_number)
-            REFERENCES project_work_package_activity (work_package_id, activity_number)
+        FOREIGN KEY (activity_id)
+            REFERENCES project_work_package_activity (id)
             ON DELETE CASCADE
             ON UPDATE RESTRICT
 );
@@ -952,15 +1063,13 @@ ALTER TABLE project_work_package_activity_deliverable
 
 CREATE TABLE project_work_package_activity_deliverable_transl
 (
-    work_package_id    INT UNSIGNED     NOT NULL,
-    activity_number    TINYINT UNSIGNED NOT NULL,
-    deliverable_number TINYINT UNSIGNED NOT NULL,
-    language VARCHAR(3) NOT NULL,
-    description        TEXT(200)         DEFAULT NULL,
-    PRIMARY KEY (work_package_id, activity_number, deliverable_number, language),
+    source_entity_id    INT UNSIGNED     NOT NULL,
+    language           VARCHAR(3)       NOT NULL,
+    description        TEXT(200) DEFAULT NULL,
+    PRIMARY KEY (source_entity_id, language),
     CONSTRAINT fk_project_work_package_activity_del_transl_to_prjct_wrk_pckg_ad
-        FOREIGN KEY (work_package_id, activity_number, deliverable_number)
-            REFERENCES project_work_package_activity_deliverable (work_package_id, activity_number, deliverable_number)
+        FOREIGN KEY (source_entity_id)
+            REFERENCES project_work_package_activity_deliverable (id)
             ON DELETE CASCADE
             ON UPDATE RESTRICT
 );
@@ -970,12 +1079,11 @@ ALTER TABLE project_work_package_activity_deliverable_transl
 
 CREATE TABLE project_work_package_activity_partner
 (
-    work_package_id    INT UNSIGNED NOT NULL,
-    activity_number    TINYINT UNSIGNED NOT NULL,
+    activity_id        INT UNSIGNED NOT NULL,
     project_partner_id INT UNSIGNED NOT NULL,
-    PRIMARY KEY (work_package_id, activity_number, project_partner_id),
+    PRIMARY KEY (activity_id, project_partner_id),
     CONSTRAINT fk_project_wp_activity_partner_to_project_wp
-        FOREIGN KEY (work_package_id, activity_number) REFERENCES project_work_package_activity (work_package_id, activity_number)
+        FOREIGN KEY (activity_id) REFERENCES project_work_package_activity (id)
             ON DELETE CASCADE,
     CONSTRAINT fk_project_partner_to_project_partner
         FOREIGN KEY (project_partner_id) REFERENCES project_partner (id)
@@ -1335,13 +1443,17 @@ ALTER TABLE project_partner_motivation_transl
 CREATE TABLE project_partner_state_aid
 (
     partner_id INT UNSIGNED PRIMARY KEY,
+    state_aid_id INT UNSIGNED NULL,
     answer1    BOOLEAN DEFAULT NULL,
     answer2    BOOLEAN DEFAULT NULL,
     answer3    BOOLEAN DEFAULT NULL,
     answer4    BOOLEAN DEFAULT NULL,
     CONSTRAINT fk_project_partner_state_aid_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
         ON DELETE CASCADE
-        ON UPDATE RESTRICT
+        ON UPDATE RESTRICT,
+    CONSTRAINT fk_project_partner_state_aid_to_call_state_aid
+        FOREIGN KEY (state_aid_id) REFERENCES project_call_state_aid (programme_state_aid)
+            ON DELETE CASCADE
 );
 
 ALTER TABLE project_partner_state_aid
@@ -1362,6 +1474,22 @@ CREATE TABLE project_partner_state_aid_transl
 );
 
 ALTER TABLE project_partner_state_aid_transl
+    ADD SYSTEM VERSIONING;
+
+CREATE TABLE project_partner_state_aid_activity
+(
+    activity_id        INT UNSIGNED NOT NULL,
+    project_partner_id INT UNSIGNED NOT NULL,
+    PRIMARY KEY (activity_id, project_partner_id),
+    CONSTRAINT fk_project_partner_state_aid_to_activity
+        FOREIGN KEY (activity_id) REFERENCES project_work_package_activity (id)
+            ON DELETE CASCADE,
+    CONSTRAINT fk_project_partner_state_aid_to_partner
+        FOREIGN KEY (project_partner_id) REFERENCES project_partner_state_aid (partner_id)
+            ON DELETE CASCADE
+);
+
+ALTER TABLE project_partner_state_aid_activity
     ADD SYSTEM VERSIONING;
 
 CREATE TABLE project_partner_contribution
@@ -2096,117 +2224,4 @@ CREATE TABLE translation_file
     language      VARCHAR(3)  NOT NULL,
     last_modified DATETIME(3) NOT NULL DEFAULT current_timestamp(3),
     PRIMARY KEY (file_type, language)
-);
-
-CREATE TABLE programme_state_aid
-(
-    id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    measure       ENUM ( 'General de minimis',
-        'Road freight de minimis',
-        'Agricultural de minimis',
-        'Fishery and aquaculture sector de minimis',
-        'SGEI de minimis',
-        'GBER Article 14',
-        'GBER Article 15',
-        'GBER Article 16',
-        'GBER Article 17',
-        'GBER Article 18',
-        'GBER Article 19',
-        'GBER Article 19a',
-        'GBER Article 19b',
-        'GBER Article 20',
-        'GBER Article 20a',
-        'GBER Article 21',
-        'GBER Article 22',
-        'GBER Article 23',
-        'GBER Article 24',
-        'GBER Article 25 par. (a)',
-        'GBER Article 25 par. (b)',
-        'GBER Article 25 par. (c)',
-        'GBER Article 25 par. (d)',
-        'GBER Article 25a',
-        'GBER Article 25b',
-        'GBER Article 25c',
-        'GBER Article 25d',
-        'GBER Article 26',
-        'GBER Article 27',
-        'GBER Article 28',
-        'GBER Article 29',
-        'GBER Article 30',
-        'GBER Article 31',
-        'GBER Article 32',
-        'GBER Article 33',
-        'GBER Article 34',
-        'GBER Article 35',
-        'GBER Article 36',
-        'GBER Article 36a',
-        'GBER Article 37',
-        'GBER Article 38',
-        'GBER Article 39',
-        'GBER Article 40',
-        'GBER Article 41',
-        'GBER Article 42',
-        'GBER Article 43',
-        'GBER Article 44',
-        'GBER Article 45',
-        'GBER Article 46',
-        'GBER Article 47',
-        'GBER Article 48',
-        'GBER Article 49',
-        'GBER Article 50',
-        'GBER Article 51',
-        'GBER Article 52',
-        'GBER Article 52a',
-        'GBER Article 52b',
-        'GBER Article 52c',
-        'GBER Article 53',
-        'GBER Article 54',
-        'GBER Article 55',
-        'GBER Article 56',
-        'GBER Article 56a',
-        'GBER Article 56b',
-        'GBER Article 56c',
-        'GBER Article 56e',
-        'GBER Article 56f',
-        'Indirect aid',
-        'RDI Framework',
-        'SGEI Framework',
-        'Other 1',
-        'Other 2',
-        'Other 3' ) NOT NULL DEFAULT 'Other 1',
-    scheme_number VARCHAR(25) DEFAULT NULL,
-    max_intensity DECIMAL(5, 2) UNSIGNED DEFAULT NULL,
-    threshold DECIMAL(17, 2) UNSIGNED DEFAULT NULL
-);
-
-CREATE TABLE programme_state_aid_transl
-(
-    source_entity_id INT UNSIGNED NOT NULL,
-    language         VARCHAR(3) NOT NULL,
-    name             VARCHAR(250) DEFAULT NULL,
-    abbreviated_name VARCHAR(50)  DEFAULT NULL,
-    comments         VARCHAR(500) DEFAULT NULL,
-    PRIMARY KEY (source_entity_id, language),
-    CONSTRAINT fk_programme_state_aid_transl_to_programme_state_aid
-        FOREIGN KEY (source_entity_id)
-            REFERENCES programme_state_aid (id)
-            ON DELETE CASCADE
-            ON UPDATE RESTRICT
-);
-
-CREATE TABLE project_call_state_aid
-(
-    programme_state_aid INT UNSIGNED NOT NULL,
-    project_call_id        INT UNSIGNED NOT NULL,
-    CONSTRAINT fk_project_call_state_aid_to_programme_state_aid
-        FOREIGN KEY (programme_state_aid)
-            REFERENCES programme_state_aid (id)
-            ON DELETE RESTRICT
-            ON UPDATE RESTRICT,
-    CONSTRAINT fk_project_call_state_aid_to_call
-        FOREIGN KEY (project_call_id)
-            REFERENCES project_call (id)
-            ON DELETE CASCADE
-            ON UPDATE RESTRICT,
-    CONSTRAINT pk_project_call_state_aid PRIMARY KEY (programme_state_aid, project_call_id)
 );
