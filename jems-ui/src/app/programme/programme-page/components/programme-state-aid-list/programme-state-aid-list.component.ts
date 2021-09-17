@@ -112,7 +112,7 @@ export class ProgrammeStateAidListComponent extends ViewEditForm implements OnIn
 
   onSubmit(): void {
     this.saveStateAids.emit({
-      toPersist: this.stateAidForm.controls.stateAids.value
+      toPersist: this.stateAidForm.getRawValue().stateAids
         .map((sa: any) => ({
           id: sa.id,
           measure: sa.measure.measure,
