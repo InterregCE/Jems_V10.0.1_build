@@ -33,6 +33,7 @@ class ProjectPartnerControllerTest {
             justification3 = setOf(InputTranslation(EN, "null")),
             answer4 = null,
             justification4 = emptySet(),
+            stateAidScheme = null
         )
 
         private val stateAidDto = ProjectPartnerStateAidDTO(

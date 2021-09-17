@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySimple
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
@@ -23,6 +24,8 @@ import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLum
 import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammeObjectivePolicyData
 import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammePriorityDataSimple
 import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammeSpecificObjectiveData
+import io.cloudflight.jems.plugin.contract.models.programme.stateaid.ProgrammeStateAidData
+import io.cloudflight.jems.plugin.contract.models.programme.stateaid.ProgrammeStateAidMeasureData
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
@@ -71,6 +74,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.results.Proje
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.ProjectWorkPackageData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivityData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivityDeliverableData
+import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageActivitySummaryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentAddressData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputData
@@ -78,6 +82,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -119,6 +124,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVa
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
@@ -245,6 +251,9 @@ abstract class PluginDataMapper {
     abstract fun map(outputProgrammePriorityPolicySimpleDTO: OutputProgrammePriorityPolicySimpleDTO): ProgrammeSpecificObjectiveData
     abstract fun map(projectFull: ProjectFull): ProjectDataSectionA
     abstract fun map(projectHorizontalPrinciples: ProjectHorizontalPrinciples): ProjectHorizontalPrinciplesData
+    abstract fun map(programmeStateAidMeasure: ProgrammeStateAidMeasure): ProgrammeStateAidMeasureData
+    abstract fun map(workPackageActivitySummary: WorkPackageActivitySummary): WorkPackageActivitySummaryData
+    abstract fun map(programmeStateAid: ProgrammeStateAid): ProgrammeStateAidData
     abstract fun map(projectPartnerStateAid: ProjectPartnerStateAid): ProjectPartnerStateAidData
     abstract fun map(projectResult: ProjectResult): ProjectResultData
 

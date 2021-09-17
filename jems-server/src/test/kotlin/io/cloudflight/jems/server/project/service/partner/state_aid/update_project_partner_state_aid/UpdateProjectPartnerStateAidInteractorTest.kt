@@ -27,6 +27,7 @@ internal class UpdateProjectPartnerStateAidInteractorTest: UnitTest() {
             justification3 = setOf(InputTranslation(SystemLanguage.EN, "null")),
             answer4 = null,
             justification4 = emptySet(),
+            stateAidScheme = null
         )
     }
 

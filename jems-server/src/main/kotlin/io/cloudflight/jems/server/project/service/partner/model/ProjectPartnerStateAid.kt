@@ -14,5 +14,5 @@ data class ProjectPartnerStateAid(
     val answer4: Boolean?,
     val justification4: Set<InputTranslation> = emptySet(),
     val activities: List<WorkPackageActivitySummary>? = emptyList(),
-    val stateAidScheme: ProgrammeStateAid? = null
+    val stateAidScheme: ProgrammeStateAid?
 )

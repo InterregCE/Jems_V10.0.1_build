@@ -541,7 +541,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 justification1 = setOf(InputTranslation(SystemLanguage.EN, "true")),
                 answer2 = false,
                 answer3 = null,
-                answer4 = null
+                answer4 = null,
+                stateAidScheme = null
             )
 
         // test getByProjectId and its mappings..
@@ -654,6 +655,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                             justification3 = emptySet(),
                             answer4 = null,
                             justification4 = emptySet(),
+                            stateAidScheme = null
                         )
                     )
                 ),

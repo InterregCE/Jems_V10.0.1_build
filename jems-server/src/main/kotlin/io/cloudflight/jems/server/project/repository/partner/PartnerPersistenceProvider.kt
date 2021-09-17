@@ -255,7 +255,7 @@ class PartnerPersistenceProvider(
             if (programmeStateAidId != null) { programmeStateAidRepository.findById(programmeStateAidId) } else { null }
 
         return partnerStateAidRows.toModel(workPackageActivities.toActivityHistoricalData(), programmeStateAid?.get())
-            ?: ProjectPartnerStateAid(answer1 = null, answer2 = null, answer3 = null, answer4 = null)
+            ?: ProjectPartnerStateAid(answer1 = null, answer2 = null, answer3 = null, answer4 = null, stateAidScheme = null)
     }
 
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {

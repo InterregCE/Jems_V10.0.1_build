@@ -171,7 +171,8 @@ val stateAid = ProjectPartnerStateAid(
     answer2 = false,
     justification2 = setOf(InputTranslation(SystemLanguage.SK, "Is false")),
     answer3 = null,
-    answer4 = null
+    answer4 = null,
+    stateAidScheme = null
 )
 
 val stateAidEmpty = ProjectPartnerStateAid(
@@ -183,6 +184,7 @@ val stateAidEmpty = ProjectPartnerStateAid(
     justification3 = emptySet(),
     answer4 = null,
     justification4 = emptySet(),
+    stateAidScheme = null
 )
 
 val activitySummary = WorkPackageActivitySummary(
