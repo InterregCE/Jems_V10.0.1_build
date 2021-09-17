@@ -117,7 +117,7 @@ fun Set<WorkPackageActivityTranslationEntity>.toModel() = mapTo(HashSet()) {
 }
 
 fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
-    this.groupBy { it.activityNumber }.map { groupedRows ->
+    this.groupBy { it.id }.map { groupedRows ->
         WorkPackageActivity(
             id = groupedRows.value.first().id,
             workPackageId = groupedRows.value.first().workPackageId,

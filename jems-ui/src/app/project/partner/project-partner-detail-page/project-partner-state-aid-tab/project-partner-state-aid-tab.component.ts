@@ -5,7 +5,8 @@ import {ProjectPartnerDetailPageStore} from '@project/partner/project-partner-de
 import {ActivatedRoute} from '@angular/router';
 import {catchError, map, switchMap, take, tap} from 'rxjs/operators';
 import {
-  OutputWorkPackageSimple, ProgrammeStateAidDTO,
+  OutputWorkPackageSimple,
+  ProgrammeStateAidDTO,
   ProjectDetailDTO,
   ProjectPartnerStateAidDTO,
   WorkPackageActivitySummaryDTO
@@ -65,7 +66,7 @@ export class ProjectPartnerStateAidTabComponent {
     this.data$ = combineLatest([
       this.pageStore.stateAid$,
       this.projectStore.projectEditable$.pipe(
-        switchMap(isEditable => isEditable ?  this.projectStore.activities$ : of([]))
+        switchMap(isEditable => isEditable ? this.projectStore.activities$ : of([]))
       ),
       this.workPackageProjectStore.workPackages$,
       this.projectStore.project$,
@@ -112,6 +113,9 @@ export class ProjectPartnerStateAidTabComponent {
 
   addActivity(activityToAdd: WorkPackageActivitySummaryDTO): void {
     const selectedActivities = this.getCurrentlySelectedActivities().concat(activityToAdd);
+    selectedActivities.sort((firstActivity, secondActivity) =>
+      firstActivity.workPackageNumber === secondActivity.workPackageNumber ? firstActivity.activityNumber - secondActivity.activityNumber : firstActivity.workPackageNumber - secondActivity.workPackageNumber
+    );
     this.activities().clear();
     selectedActivities.forEach(activity => this.activities().push(this.formBuilder.group(activity)));
     this.formService.setDirty(true);
@@ -150,8 +154,7 @@ export class ProjectPartnerStateAidTabComponent {
       && this.form.controls.answer2.value === true
       && this.form.controls.answer3.value === true
       && this.form.controls.answer4.value === true
-    )
-    {
+    ) {
       return 'project.partner.state.aid.risk.of.state.aid';
     }
 
@@ -169,9 +172,9 @@ export class ProjectPartnerStateAidTabComponent {
 
     // if one of them is missing values, return empty string and use the default from html
     if (this.isUnset(this.form.controls.answer1.value)
-        || this.isUnset(this.form.controls.answer2.value)
-        || this.isUnset(this.form.controls.answer3.value)
-        || this.isUnset(this.form.controls.answer4.value)) {
+      || this.isUnset(this.form.controls.answer2.value)
+      || this.isUnset(this.form.controls.answer3.value)
+      || this.isUnset(this.form.controls.answer4.value)) {
       return '';
     }
 
@@ -183,8 +186,7 @@ export class ProjectPartnerStateAidTabComponent {
     this.form.controls.stateAidScheme.setValue(value);
   }
 
-  private mapWorkpackagesAndActivities(activities: WorkPackageActivitySummaryDTO[], workpackages: OutputWorkPackageSimple[]): ActivityIdentificationInformation[]
-  {
+  private mapWorkpackagesAndActivities(activities: WorkPackageActivitySummaryDTO[], workpackages: OutputWorkPackageSimple[]): ActivityIdentificationInformation[] {
     const workpackagesAndActivities: ActivityIdentificationInformation[] = [];
     workpackages.forEach(workpackage => {
       workpackagesAndActivities.push({
