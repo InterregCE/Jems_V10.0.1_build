@@ -123,7 +123,7 @@
             </mat-chip-list>
             <mat-autocomplete #auto="matAutocomplete"
                               (optionSelected)="addActivity($event.option.value); filterActivities.value = ''; filterActivities.blur()">
-                <mat-optgroup *ngFor="let group of getWorkpackagesWithActivities(data.displayActivities)" [label]="getDisplayValueForWorkPackageNumber(group.workpackageNumber)">
+                <mat-optgroup *ngFor="let group of getWorkpackagesWithActivities(data.displayActivities)" [label]="getDisplayValueForWorkPackageNumber(group.workpackage) + (group.workpackage.name | translateByInputLanguage | async)">
                     <mat-option *ngFor="let activity of getActivitiesWithoutSelected(group.activities) | filterActivities: filterActivities.value" [value]="activity">
                         {{ getDisplayValueForActivityNumber(data.activities, activity)}}
                     </mat-option>

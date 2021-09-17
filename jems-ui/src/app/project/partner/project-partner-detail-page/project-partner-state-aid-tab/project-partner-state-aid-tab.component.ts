@@ -19,7 +19,7 @@ import {ProjectStore} from '@project/project-application/containers/project-appl
 import {ProjectWorkPackagePageStore} from '@project/work-package/project-work-package-page/project-work-package-page-store.service';
 
 interface ActivityIdentificationInformation {
-  workpackageNumber: number;
+  workpackage: OutputWorkPackageSimple;
   activities: WorkPackageActivitySummaryDTO[];
 }
 
@@ -143,8 +143,8 @@ export class ProjectPartnerStateAidTabComponent {
     return `ACTIVITY ${foundActivity?.workPackageNumber.toString() || ''}.${foundActivity?.activityNumber.toString() || ''}`;
   }
 
-  getDisplayValueForWorkPackageNumber(workpackageNumber: number): string {
-    return `WORKPACKAGE ${(workpackageNumber.toString() || '')}`;
+  getDisplayValueForWorkPackageNumber(workpackage: OutputWorkPackageSimple): string {
+    return `WORKPACKAGE ${(workpackage.number.toString() || '')} `;
   }
 
   getStateAidCheck(): string {
@@ -190,7 +190,7 @@ export class ProjectPartnerStateAidTabComponent {
     const workpackagesAndActivities: ActivityIdentificationInformation[] = [];
     workpackages.forEach(workpackage => {
       workpackagesAndActivities.push({
-        workpackageNumber: workpackage.number,
+        workpackage,
         activities: activities.filter(activity => activity.workPackageNumber === workpackage.number)
       });
     });
