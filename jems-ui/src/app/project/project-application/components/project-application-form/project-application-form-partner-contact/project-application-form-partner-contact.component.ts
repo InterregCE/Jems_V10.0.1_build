@@ -101,6 +101,7 @@ export class ProjectApplicationFormPartnerContactComponent {
   resetForm(partner: ProjectPartnerDetailDTO): void {
     this.initLegalRepresentative(partner);
     this.initContactPerson(partner);
+    this.formService.resetEditable();
   }
 
   private initLegalRepresentative(partner: ProjectPartnerDetailDTO): void {
