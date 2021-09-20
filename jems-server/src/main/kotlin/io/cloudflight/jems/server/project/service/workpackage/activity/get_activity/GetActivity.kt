@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.workpackage.activity.get_activity
 
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
@@ -17,7 +18,7 @@ class GetActivity(
     override fun getActivitiesForWorkPackage(projectId: Long, workPackageId: Long, version: String?): List<WorkPackageActivity> =
         persistence.getWorkPackageActivitiesForWorkPackage(workPackageId, projectId, version)
 
-    @CanRetrieveProjectWorkPackage
+    @CanRetrieveProjectForm
     @Transactional(readOnly = true)
     override fun getActivitiesForProject(projectId: Long, version: String?): List<WorkPackageActivitySummary> =
         persistence.getWorkPackageActivitiesForProject(projectId, version)
