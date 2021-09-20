@@ -43,6 +43,8 @@ import {ProjectWorkPackageOutputsTabComponent} from '@project/work-package/proje
 import {ApplicationAnnexesComponent} from '@project/project-application/application-annexes/application-annexes.component';
 import {CheckAndSubmitComponent} from '@project/project-application/check-and-submit/check-and-submit.component';
 import {AssessmentAndDecisionComponent} from '@project/project-application/assessment-and-decision/assessment-and-decision.component';
+import {PartnerBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/partner-breadcrumb-resolver.service';
+import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-id-resolver.service';
 
 export const routes: Routes = [
   {
@@ -144,7 +146,8 @@ export const routes: Routes = [
               {
                 path: ':partnerId',
                 component: ProjectPartnerDetailPageComponent,
-                data: {breadcrumb: 'project.breadcrumb.partnerName'},
+                data: {dynamicBreadcrumb: true},
+                resolve: {breadcrumb$: PartnerBreadcrumbResolver},
                 children: [
                   {
                     path: 'identity',
@@ -227,7 +230,8 @@ export const routes: Routes = [
               },
               {
                 path: ':workPackageId',
-                data: {breadcrumb: 'project.breadcrumb.workPackageName'},
+                data: {dynamicBreadcrumb: true},
+                resolve: {breadcrumb$: WorkPackageBreadcrumbResolver},
                 children: [
                   {
                     path: '',
@@ -252,15 +256,21 @@ export const routes: Routes = [
                     ]
                   },
                   {
-                    path: 'investments/create',
-                    component: ProjectWorkPackageInvestmentDetailPageComponent,
-                    data: {breadcrumb: 'project.breadcrumb.workPackageInvestment.create'},
-                  },
-                  {
-                    path: 'investments/:workPackageInvestmentId',
-                    component: ProjectWorkPackageInvestmentDetailPageComponent,
-                    data: {breadcrumb: 'project.breadcrumb.workPackageInvestment.name'},
-                  },
+                    path: 'investments',
+                    data: { breadcrumb: 'project.breadcrumb.workPackageInvestment.overview'},
+                    children: [
+                      {
+                        path: 'create',
+                        component: ProjectWorkPackageInvestmentDetailPageComponent,
+                        data: {breadcrumb: 'project.breadcrumb.workPackageInvestment.create'},
+                      },
+                      {
+                        path: ':workPackageInvestmentId',
+                        component: ProjectWorkPackageInvestmentDetailPageComponent,
+                        data: {breadcrumb: 'project.breadcrumb.workPackageInvestment.name'},
+                      },
+                      ]
+                  }
                 ]
               },
 

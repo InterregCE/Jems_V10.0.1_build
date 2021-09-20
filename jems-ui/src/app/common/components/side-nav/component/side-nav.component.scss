@@ -5,10 +5,20 @@
 
   .level-1 {
     font-size: 1rem;
+    .link {
+      &.route-active {
+        padding-left: 0;
+      }
+    }
   }
 
   .level-2 {
     padding-bottom: .25rem;
+    .link {
+      &.route-active {
+        padding-left: 0;
+      }
+    }
   }
 
   .level-3 {
@@ -19,60 +29,68 @@
     position: relative;
     width: calc(100% - 2.9rem);
 
-    li::before {
-      pointer-events: none;
-      content: "";
-      display: block;
-      position: absolute;
-      margin-left: -1.2em;
-      width: 0;
-      margin-top: -0.25em;
-      background: none;
-      transition: border 0.15s ease-out, width 0.15s ease-in-out, background-color 0.15s ease-out;
-    }
-    li:hover::before {
-      width: 110%;
-      height: 1.75em;
-      background: rgba(0,0,0,0.2);
-    }
-    li:hover:first-child {
-      z-index: -1;
-    }
-    li.route-active:first-child {
-      z-index: -1;
-    }
-    li.route-active::before {
-      height: 1.75em;
-      width: 110%;
-      background: rgba(255,255,255,0.25);
-      border-left: 0.4em solid var(--sidebar-color);
+    .link {
+      &:hover {
+        padding-left: 1rem;
+        margin-left: -1rem;
+      }
+      &.route-active {
+        padding-left: 1rem;
+        margin-left: -1rem;
+      }
     }
   }
 
   .level-4 {
     padding-left: 1rem;
+    .link {
+      &:hover {
+        padding-left: 2rem;
+        margin-left: -2rem;
+      }
+      &.route-active {
+        padding-left: 2rem;
+        margin-left: -2rem;
+      }
+    }
   }
 
   .link {
-    color: var(--font-color-contrast);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+    border-left: 0.4rem solid;
+    border-color: transparent;
     line-height: 1.25em;
     padding-bottom: 0.25em;
+    padding-top: 0.25em;
+    .title , &.link {
+      color: var(--font-color-contrast);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.2) !important;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    &.route-active {
+      background: rgba(255, 255, 255, 0.25) !important;
+      border-left: 0.4rem solid var(--sidebar-color);
+      border-radius: 0;
+    }
   }
 
-  .versioned-section{
+  .versioned-section {
     background-color: var(--sidebar-dark-background-color);
-    border-left:0.5rem solid var(--sidebar-background-color);
-    border-right:0.5rem solid var(--sidebar-background-color);
+    border-left: 0.5rem solid var(--sidebar-background-color);
+    border-right: 0.5rem solid var(--sidebar-background-color);
 
-    mat-expansion-panel{
+    mat-expansion-panel {
       background: transparent !important;
     }
   }
 
-  mat-icon{
+  mat-icon {
     margin-right: 0.25rem;
   }
 

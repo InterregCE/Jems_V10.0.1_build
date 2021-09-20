@@ -10,7 +10,7 @@ import {RoleStore} from '../../services/role-store.service';
 
 @Injectable()
 export class UserRoleDetailPageStore {
-  public static USER_ROLE_DETAIL_PATH = '/app/system/userRole/detail/';
+  public static USER_ROLE_DETAIL_PATH = '/app/system/userRole/detail';
 
   userRole$: Observable<UserRoleDTO>;
   currentUser$: Observable<OutputCurrentUser | null>;

@@ -91,6 +91,8 @@ import {CheckAndSubmitComponent} from './project-application/check-and-submit/ch
 import {AssessmentAndDecisionComponent} from './project-application/assessment-and-decision/assessment-and-decision.component';
 import {ProjectWorkPackageActivitiesFilterPipe} from '@project/partner/project-partner-detail-page/project-partner-state-aid-tab/work-package-activities-filter.pipe';
 import {ProjectWorkPackagePageStore} from '@project/work-package/project-work-package-page/project-work-package-page-store.service';
+import {PartnerBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/partner-breadcrumb-resolver.service';
+import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-id-resolver.service';
 
 @NgModule({
   declarations: [
@@ -191,6 +193,8 @@ import {ProjectWorkPackagePageStore} from '@project/work-package/project-work-pa
     ProjectApplicationFormSidenavService,
     ProjectApplicationFormStore,
     ProjectAcronymResolver,
+    PartnerBreadcrumbResolver,
+    WorkPackageBreadcrumbResolver,
     WorkPackagePageStore,
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,

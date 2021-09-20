@@ -1,14 +1,18 @@
 <div class="menu">
-    <div *ngFor="let data of headlines">
+    <div *ngFor="let data of headlines" class="level-1">
         <mat-expansion-panel class="mat-elevation-z0"
                              [expanded]="data.bullets?.length"
-                             [disabled]="!data.bullets?.length">
+                             [disabled]="!data.bullets?.length"
+                             [class.link]="data.route"
+                             (click)="sideNavService.navigate(data)"
+                             [routerLinkActiveOptions]="{exact: true}"
+                             [routerLink]="data.route || null"
+                             [routerLinkActive]="['route-active']">
             <mat-expansion-panel-header>
-                <mat-panel-title class="level-1">
-                    <div [class.link]="data.route"
-                         (click)="sideNavService.navigate(data)">
-                         <mat-icon *ngIf="data.icon">{{data.icon}}</mat-icon>
-                         {{data.headline.i18nKey | translate}}
+                <mat-panel-title>
+                    <div class="title">
+                        <mat-icon *ngIf="data.icon">{{data.icon}}</mat-icon>
+                        {{data.headline.i18nKey | translate}}
                     </div>
                 </mat-panel-title>
             </mat-expansion-panel-header>
@@ -19,30 +23,33 @@
                 <mat-expansion-panel *ngIf="!subtitle.headlineTemplate"
                                      class="mat-elevation-z0"
                                      [expanded]="subtitle.bullets?.length"
-                                     [disabled]="!subtitle.bullets?.length">
+                                     [disabled]="!subtitle.bullets?.length"
+                                     [class.link]="subtitle.route"
+                                     [routerLinkActiveOptions]="{exact: true}"
+                                     [routerLink]="subtitle.route || null"
+                                     [routerLinkActive]="['route-active']"
+                                     (click)="sideNavService.navigate(subtitle)"
+                >
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            <span [class.link]="subtitle.route"
-                                  (click)="sideNavService.navigate(subtitle)">
+                            <span class="title">
                                 <mat-icon *ngIf="subtitle.icon">{{subtitle.icon}}</mat-icon>
                                 {{subtitle.headline.i18nKey | translate}}
                             </span>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <ul class="level-3" *ngIf="subtitle.bullets?.length">
-                        <li *ngFor="let section of subtitle.bullets"
-                            [routerLinkActiveOptions]="{exact: true}"
-                            [routerLink]="[section.route]"
-                            [routerLinkActive]="['route-active']"
-                            (click)="sideNavService.navigate(section)">
-
-                                <span class="link">
+                        <li *ngFor="let section of subtitle.bullets">
+                                <span [class.link]="section.route"
+                                      [routerLinkActiveOptions]="{exact: true}"
+                                      [routerLink]="section.route || null"
+                                      [routerLinkActive]="['route-active']"
+                                      (click)="sideNavService.navigate(section)">
                                     {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}</span>
                             <ul class="level-4" *ngIf="section.bullets?.length">
-                                <li class="link" *ngFor="let subsection of section.bullets"
-                                    [routerLinkActiveOptions]="{exact: true}"
-                                    [routerLink]="[subsection.route]"
-                                    [routerLinkActive]="['route-active']"
+                                <li *ngFor="let subsection of section.bullets"
+                                    [class.link]="section.route"
+                                    [class.route-active]="currentRouteStartsWith(subsection.route)"
                                     (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
 
                                     <span>{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</span>

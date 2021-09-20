@@ -5,8 +5,10 @@ import {combineLatest, Observable} from 'rxjs';
 import {ProjectVersionDTO, UserRoleDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {ProjectPageTemplateStore} from './project-page-template-store.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
+@UntilDestroy()
 @Component({
   selector: 'app-project-page-template',
   templateUrl: './project-page-template.component.html',
@@ -61,6 +63,8 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.projectSidenavService.versionSelectTemplate$.next(this.sidenavVersionSelect);
+    this.pageStore.versionsUpdatedEvent$.pipe(untilDestroyed(this)).subscribe(() =>
+      this.projectSidenavService.versionSelectTemplate$.next(this.sidenavVersionSelect)
+    );
   }
 }

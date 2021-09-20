@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {ProjectVersionStore} from '../common/services/project-version-store.service';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {ProjectVersionDTO} from '@cat/api';
-import {distinctUntilChanged, map, shareReplay} from 'rxjs/operators';
+import {distinctUntilChanged, map, shareReplay, tap} from 'rxjs/operators';
 import {ProjectUtil} from '../common/project-util';
 
 @Injectable({
@@ -11,6 +11,8 @@ import {ProjectUtil} from '../common/project-util';
 })
 export class ProjectPageTemplateStore {
 
+  private versionsUpdatedEventSubject = new Subject();
+  versionsUpdatedEvent$ = this.versionsUpdatedEventSubject.asObservable();
   versions$: Observable<ProjectVersionDTO[]>;
   currentVersion$: Observable<ProjectVersionDTO>;
   latestVersion$: Observable<ProjectVersionDTO | undefined>;
@@ -53,6 +55,7 @@ export class ProjectPageTemplateStore {
         map(([versions, project]) =>
           ProjectUtil.isOpenForModifications(project) ? [ProjectPageTemplateStore.nextVersion(versions), ...versions] : versions
         ),
+        tap(() => this.versionsUpdatedEventSubject.next(true)),
         shareReplay(1)
       );
   }
