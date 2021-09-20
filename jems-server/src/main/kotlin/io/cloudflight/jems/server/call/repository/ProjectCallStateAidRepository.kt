@@ -10,5 +10,5 @@ interface ProjectCallStateAidRepository: JpaRepository<ProjectCallStateAidEntity
     @Query("SELECT e FROM #{#entityName} e  where e.setupId.call.id=:callId")
     fun findAllByIdCallId(callId: Long): MutableSet<ProjectCallStateAidEntity>
 
-    fun deleteAllBySetupIdCallId(callId: Long)
+    fun deleteAllBySetupIdStateAidId(stateAidId: Long)
 }

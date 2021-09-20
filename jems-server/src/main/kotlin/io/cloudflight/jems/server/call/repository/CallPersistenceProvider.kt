@@ -89,8 +89,10 @@ class CallPersistenceProvider(
 
         // check if the stateAids need to be update when call is updated and do so
         val existingStateAidsForCall = projectCallStateAidRepo.findAllByIdCallId(call.id).map {it.setupId.stateAid.id}
+
         if (call.stateAidIds != existingStateAidsForCall) {
-            projectCallStateAidRepo.deleteAllBySetupIdCallId(call.id)
+            val stateAidsToDelete = existingStateAidsForCall.filter { !call.stateAidIds.contains(it) }
+            stateAidsToDelete.forEach { projectCallStateAidRepo.deleteAllBySetupIdStateAidId(it) }
             projectCallStateAidRepo.saveAll(
                 programmeStateAidRepository.findAllById(call.stateAidIds).toMutableSet().toEntities(existingCall)
             )
