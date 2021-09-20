@@ -1,0 +1,12 @@
+<app-form>
+    <div appFormLayout>
+        <h3>{{'project.partner.budget.overview.header' | translate}}</h3>
+
+        <mat-card-content appFormLayout appNoWidthLimit>
+            <app-budget-table appNoWidthLimit hideFooter="true" hideCountry="true"
+                              [projectId]="projectStore.projectId$ | async"
+                              [dataSource]="dataSource$ | async">
+            </app-budget-table>
+        </mat-card-content>
+    </div>
+</app-form>

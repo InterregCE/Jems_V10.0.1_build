@@ -1,4 +1,5 @@
 <ng-container>
+    <app-project-partner-budget-overview class="mb-3"></app-project-partner-budget-overview>
     <app-project-partner-budget-options class="mb-3"></app-project-partner-budget-options>
     <app-project-partner-budget *ngIf="projectStore.allowedBudgetCategories$ | async as allowedBudgetCategories"
                                 [allowedBudgetCategories]="allowedBudgetCategories">

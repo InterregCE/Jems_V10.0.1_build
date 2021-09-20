@@ -2,7 +2,16 @@ import {Injectable} from '@angular/core';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
 import {BudgetOptions} from '../../model/budget/budget-options';
 import {CallFlatRateSetting} from '../../model/call-flat-rate-setting';
-import {filter, map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  filter,
+  map,
+  share,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {
   BaseBudgetEntryDTO,
@@ -12,7 +21,7 @@ import {
   BudgetUnitCostEntryDTO,
   CallDetailDTO,
   CallService,
-  ProgrammeFundDTO,
+  ProgrammeFundDTO, ProjectLumpSumService,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
@@ -44,6 +53,7 @@ import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 export class ProjectPartnerDetailPageStore {
   callFlatRatesSettings$: Observable<CallFlatRateSetting>;
   budgetOptions$: Observable<BudgetOptions>;
+  partnerTotalLumpSum$: Observable<number>;
   budgets$: Observable<PartnerBudgetTables>;
   totalBudget$: Observable<number>;
   isProjectEditable$: Observable<boolean>;
@@ -62,12 +72,38 @@ export class ProjectPartnerDetailPageStore {
   private updateFinancingAndContributionEvent = new Subject();
   private updatedStateAid$ = new Subject<ProjectPartnerStateAidDTO>();
 
+  public static calculateOfficeAndAdministrationFlatRateTotal(
+    officeFlatRateBasedOnStaffCost: number | null,
+    officeFlatRateBasedOnDirectCosts: number | null,
+    staffTotal: number,
+    travelCostTotal: number,
+    externalTotal: number,
+    equipmentTotal: number,
+    infrastructureTotal: number,
+  ): number {
+    return NumberService.truncateNumber(NumberService.product([
+      NumberService.divide(officeFlatRateBasedOnStaffCost || officeFlatRateBasedOnDirectCosts, 100),
+      officeFlatRateBasedOnStaffCost !== null ? staffTotal :
+        NumberService.sum([externalTotal, equipmentTotal, infrastructureTotal, staffTotal, travelCostTotal])]));
+  }
+
+  public static calculateOtherCostsFlatRateTotal(staffCostsFlatRateBasedOnDirectCost: number | null, otherCostsFlatRateBasedOnStaffCost: number, staffTotal: number): number {
+    if (staffCostsFlatRateBasedOnDirectCost != null) {
+      return 0;
+    }
+    return NumberService.truncateNumber(NumberService.product([
+      NumberService.divide(otherCostsFlatRateBasedOnStaffCost, 100),
+      staffTotal
+    ]));
+  }
+
   constructor(private projectStore: ProjectStore,
               private partnerStore: ProjectPartnerStore,
               private callService: CallService,
               private projectWorkPackagePageStore: WorkPackagePageStore,
               private projectPartnerBudgetService: ProjectPartnerBudgetService,
               private projectPartnerService: ProjectPartnerService,
+              private projectLumpSumService: ProjectLumpSumService,
               private projectVersionStore: ProjectVersionStore) {
     this.investmentSummaries$ = this.projectStore.investmentSummaries$;
     this.unitCosts$ = this.projectStore.projectCall$.pipe(
@@ -76,6 +112,7 @@ export class ProjectPartnerDetailPageStore {
     );
     this.budgets$ = this.budgets();
     this.budgetOptions$ = this.budgetOptions();
+    this.partnerTotalLumpSum$ = this.partnerTotalLumpSum();
     this.callFlatRatesSettings$ = this.callFlatRateSettings();
     this.totalBudget$ = this.totalBudget();
     this.financingAndContribution$ = this.financingAndContribution();
@@ -195,6 +232,20 @@ export class ProjectPartnerDetailPageStore {
           it.travelAndAccommodationOnStaffCostsFlatRate,
           it.otherCostsOnStaffCostsFlatRate
         )),
+        shareReplay(1)
+      );
+  }
+
+  private partnerTotalLumpSum(): Observable<number> {
+    return combineLatest([
+      this.partnerStore.partner$,
+      this.projectVersionStore.currentRouteVersion$,
+      this.projectStore.projectId$,
+      this.updateBudgetOptionsEvent$.pipe(startWith(null))
+    ])
+      .pipe(
+        filter(([partner]) => !!partner.id),
+        switchMap(([partner, version, projectId]) => this.projectLumpSumService.getProjectLumpSumsTotalForPartner(partner.id, projectId,  version)),
         shareReplay(1)
       );
   }

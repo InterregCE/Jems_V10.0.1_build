@@ -95,6 +95,8 @@ import {PartnerBreadcrumbResolver} from '@project/project-application/containers
 import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-breadcrumb-resolver.service';
 import {ProjectWorkPackageInvestmentDetailPageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-Investment-detail-page-store.service';
 import {InvestmentBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
+import {ProjectPartnerBudgetOverviewComponent} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-overview/project-partner-budget-overview.component';
+import {BudgetTableComponent} from '@project/budget/budget-page/budget-table/budget-table.component';
 
 @NgModule({
   declarations: [
@@ -148,11 +150,13 @@ import {InvestmentBreadcrumbResolver} from '@project/project-application/contain
     ProjectPartnerBudgetComponent,
     ProjectPartnerCoFinancingTabComponent,
     ProjectPartnerBudgetOptionsComponent,
+    ProjectPartnerBudgetOverviewComponent,
     ProjectApplicationPartnerIdentityComponent,
     ProjectApplicationFormIdentificationPageComponent,
     ProjectApplicationFormAssociatedOrgPageComponent,
     ProjectApplicationFormAddressComponent,
     BudgetPageComponent,
+    BudgetTableComponent,
     BudgetFlatRateTableComponent,
     GeneralBudgetTableComponent,
     StaffCostsBudgetTableComponent,

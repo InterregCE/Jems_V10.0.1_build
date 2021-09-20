@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import java.math.BigDecimal
 
 @Api("Project Lump Sum")
 @RequestMapping("/api/project/{projectId}/lumpSum")
@@ -28,5 +29,13 @@ interface ProjectLumpSumApi {
         @PathVariable projectId: Long,
         @RequestBody lumpSums: List<ProjectLumpSumDTO>
     ): List<ProjectLumpSumDTO>
+
+    @ApiOperation("Returns project lump sums total for partner")
+    @GetMapping("/{partnerId}")
+    fun getProjectLumpSumsTotalForPartner(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): BigDecimal
 
 }
