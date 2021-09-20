@@ -11,17 +11,20 @@ export class ProgrammePageSidenavService {
 
   private indicatorsPage = {
     headline: {i18nKey: 'programme.tab.indicators'},
-    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/indicators`
+    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/indicators`,
+    baseRoute: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/indicators`
   };
 
   private prioritiesPage = {
     headline: {i18nKey: 'programme.tab.priority'},
     route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/priorities`,
+    baseRoute: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/priorities`,
   };
 
   private costsPage = {
     headline: {i18nKey: 'programme.tab.costs.option'},
-    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/costs`
+    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/costs`,
+    baseRoute: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/costs`
   };
 
   constructor(private sideNavService: SideNavService,
@@ -41,7 +44,7 @@ export class ProgrammePageSidenavService {
         bullets: [
           {
             headline: {i18nKey: 'programme.tab.data'},
-            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/`,
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}`,
           },
           {
             headline: {i18nKey: 'programme.tab.languages'},

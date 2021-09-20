@@ -13,7 +13,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
   selector: 'app-project-work-package-investment-detail-page',
   templateUrl: './project-work-package-investment-detail-page.component.html',
   styleUrls: ['./project-work-package-investment-detail-page.component.scss'],
-  providers: [FormService, ProjectWorkPackageInvestmentDetailPageStore],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {

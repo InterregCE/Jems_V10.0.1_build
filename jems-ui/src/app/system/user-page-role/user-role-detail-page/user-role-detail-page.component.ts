@@ -138,7 +138,7 @@ export class UserRoleDetailPageComponent {
     this.pageStore.createUserRole(user)
       .pipe(
         take(1),
-        tap(() => this.router.navigate(['/app/system/userRole/'], redirectSuccessPayload)),
+        tap(() => this.router.navigate(['/app/system/role/'], redirectSuccessPayload)),
         catchError(err => this.formService.setError(err))
       ).subscribe();
   }
@@ -147,7 +147,7 @@ export class UserRoleDetailPageComponent {
     if (role.id) {
       this.resetUserRole(role, shouldUpdateBePossible);
     } else {
-      this.router.navigate(['/app/system/userRole']);
+      this.router.navigate(['/app/system/role']);
     }
   }
 

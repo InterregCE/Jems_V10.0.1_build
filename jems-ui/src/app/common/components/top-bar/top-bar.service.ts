@@ -91,7 +91,7 @@ export class TopBarService {
             } else if (permissions.includes(PermissionsEnum.UserRetrieve)) {
               this.systemItem.route = '/app/system/user';
             } else if (permissions.includes(PermissionsEnum.RoleRetrieve)) {
-              this.systemItem.route = '/app/system/userRole';
+              this.systemItem.route = '/app/system/role';
             }
             menuItems.push(this.systemItem);
           }

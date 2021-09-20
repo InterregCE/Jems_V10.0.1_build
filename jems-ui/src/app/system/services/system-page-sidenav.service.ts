@@ -53,13 +53,14 @@ export class SystemPageSidenavService {
         bullets: [{
           headline: {i18nKey: 'topbar.main.user.user.management'},
           route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/user`,
+          baseRoute: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/user`,
           scrollToTop: true,
-        }]
+        } as HeadlineRoute ]
       };
       if (permissions.includes(PermissionsEnum.RoleRetrieve)) {
         const rolesHeadline = {
           headline: {i18nKey: 'topbar.main.user.role.management'},
-          route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/userRole`,
+          route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/role`,
           scrollToTop: true,
           bullets: roles.map(role => ({
             headline: {i18nKey: role.name},
@@ -67,7 +68,7 @@ export class SystemPageSidenavService {
             scrollToTop: true,
             badgeText: role.defaultForRegisteredUser && 'userRole.default.flag',
             badgeTooltip: 'userRole.default.flag.info',
-          }))
+          } as HeadlineRoute))
         };
         userManagementHeadline.bullets.push(rolesHeadline);
       }

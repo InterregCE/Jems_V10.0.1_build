@@ -21,7 +21,7 @@ export class UserPageRoleComponent implements OnInit {
   success = this.router.getCurrentNavigation()?.extras?.state?.success;
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
-    routerLink: '/app/system/userRole/detail',
+    routerLink: '/app/system/role/detail',
     isTableClickable: true,
     columns: [
       {

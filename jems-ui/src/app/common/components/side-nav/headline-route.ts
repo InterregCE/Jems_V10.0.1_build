@@ -4,6 +4,7 @@ import {TemplateRef} from '@angular/core';
 export class HeadlineRoute {
   headline?: I18nLabel;
   route?: string;
+  baseRoute?: string;
   scrollRoute?: string;
   scrollToTop ? = false;
   bullets?: HeadlineRoute[] = [];

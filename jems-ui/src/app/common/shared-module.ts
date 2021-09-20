@@ -47,6 +47,7 @@ import {PendingButtonComponent} from '@common/components/section/form/pending-bu
 import {HasPermissionDirective} from './directives/has-permission.directive';
 import {HintDirective} from './directives/hint.directive';
 import {TextHintComponent} from '@common/components/forms/text-hint/text-hint.component';
+import {IsMenuActivePipe} from '@common/components/side-nav/is-menu-active.pipe';
 
 const modules = [
   CommonModule,
@@ -100,7 +101,8 @@ const declarations = [
   InlineEditableFieldComponent,
   CustomTranslatePipe,
   HintDirective,
-  TextHintComponent
+  TextHintComponent,
+  IsMenuActivePipe
 ];
 
 const providers = [

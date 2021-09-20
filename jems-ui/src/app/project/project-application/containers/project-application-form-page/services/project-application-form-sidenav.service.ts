@@ -8,7 +8,6 @@ import {
   mergeMap,
   startWith,
   switchMap,
-  takeWhile,
   tap,
   withLatestFrom
 } from 'rxjs/operators';
@@ -95,6 +94,7 @@ export class ProjectApplicationFormSidenavService {
                     i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
                   },
                   route: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}/identity`,
+                  baseRoute: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}`,
                 }
               ))
             )
@@ -124,6 +124,7 @@ export class ProjectApplicationFormSidenavService {
                       disabled: true
                     },
                     route: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}/objectives`,
+                    baseRoute: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}`,
                   }
                 ))
               )

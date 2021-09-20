@@ -44,7 +44,8 @@ import {ApplicationAnnexesComponent} from '@project/project-application/applicat
 import {CheckAndSubmitComponent} from '@project/project-application/check-and-submit/check-and-submit.component';
 import {AssessmentAndDecisionComponent} from '@project/project-application/assessment-and-decision/assessment-and-decision.component';
 import {PartnerBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/partner-breadcrumb-resolver.service';
-import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-id-resolver.service';
+import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-breadcrumb-resolver.service';
+import {InvestmentBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
 
 export const routes: Routes = [
   {
@@ -267,7 +268,8 @@ export const routes: Routes = [
                       {
                         path: ':workPackageInvestmentId',
                         component: ProjectWorkPackageInvestmentDetailPageComponent,
-                        data: {breadcrumb: 'project.breadcrumb.workPackageInvestment.name'},
+                        data: {dynamicBreadcrumb: true},
+                        resolve: {breadcrumb$: InvestmentBreadcrumbResolver},
                       },
                       ]
                   }

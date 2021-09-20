@@ -92,7 +92,9 @@ import {AssessmentAndDecisionComponent} from './project-application/assessment-a
 import {ProjectWorkPackageActivitiesFilterPipe} from '@project/partner/project-partner-detail-page/project-partner-state-aid-tab/work-package-activities-filter.pipe';
 import {ProjectWorkPackagePageStore} from '@project/work-package/project-work-package-page/project-work-package-page-store.service';
 import {PartnerBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/partner-breadcrumb-resolver.service';
-import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-id-resolver.service';
+import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-breadcrumb-resolver.service';
+import {ProjectWorkPackageInvestmentDetailPageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-Investment-detail-page-store.service';
+import {InvestmentBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
 
 @NgModule({
   declarations: [
@@ -194,8 +196,10 @@ import {WorkPackageBreadcrumbResolver} from '@project/project-application/contai
     ProjectApplicationFormStore,
     ProjectAcronymResolver,
     PartnerBreadcrumbResolver,
+    InvestmentBreadcrumbResolver,
     WorkPackageBreadcrumbResolver,
     WorkPackagePageStore,
+    ProjectWorkPackageInvestmentDetailPageStore,
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,
     ProjectLumpSumsPageStore

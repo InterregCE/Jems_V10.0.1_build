@@ -57,7 +57,7 @@ export const routes: Routes = [
         ]
       },
       {
-        path: 'userRole',
+        path: 'role',
         canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'userRole.breadcrumb.list',
