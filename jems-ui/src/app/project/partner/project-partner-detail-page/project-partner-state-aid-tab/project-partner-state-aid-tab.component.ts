@@ -40,6 +40,7 @@ export class ProjectPartnerStateAidTabComponent {
     activities: WorkPackageActivitySummaryDTO[],
     project: ProjectDetailDTO,
     isEditable: boolean,
+    stateAidsForDropdown: ProgrammeStateAidDTO[],
   }>;
 
   form = this.formBuilder.group({
@@ -77,7 +78,8 @@ export class ProjectPartnerStateAidTabComponent {
         displayActivities: this.mapWorkpackagesAndActivities(isEditable ? activities : stateAid.activities, workpackages),
         activities: isEditable ? activities : stateAid.activities,
         project,
-        isEditable
+        isEditable,
+        stateAidsForDropdown: [{id: null} as any, ...project.callSettings.stateAids]
       })),
       tap(stateAid => this.resetForm(stateAid.stateAid)),
     );

@@ -135,8 +135,8 @@
             <mat-label>{{'project.partner.state.aid.scheme' | translate}}</mat-label>
             <mat-select formControlName="stateAidScheme"
                         (selectionChange)="updateSelectedScheme($event.value)">
-                <mat-option *ngFor="let scheme of data.project.callSettings.stateAids" [value]="scheme.id">
-                    {{scheme.abbreviatedName | translateBySystemLanguage | async}}
+                <mat-option *ngFor="let scheme of data.stateAidsForDropdown" [value]="scheme.id">
+                    {{scheme.id ? (scheme.abbreviatedName | translateBySystemLanguage | async) : ''}}
                 </mat-option>
             </mat-select>
             <mat-error>
