@@ -1,7 +1,17 @@
 import {Injectable, TemplateRef} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, map, mergeMap, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  catchError,
+  debounceTime,
+  map,
+  mergeMap,
+  startWith,
+  switchMap,
+  takeWhile,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import {ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '@common/utils/log';
@@ -147,7 +157,8 @@ export class ProjectApplicationFormSidenavService {
       this.canSeeProjectForm$,
     ])
       .pipe(
-        filter(([project, , , , , , , , ]) => !!project),
+        debounceTime(50), // there's race condition with SidenavService.resetOnLeave
+        filter(([project]) => !!project),
         tap(([project, canSeeAssessments, canSubmitApplication, canCheckApplication, canReadApplicationFiles, partners, packages, versionTemplate, canSeeProjectForm]: any) => {
           this.setHeadlines(canSeeAssessments, canSubmitApplication, canCheckApplication, canSeeProjectForm, canReadApplicationFiles, project, partners, packages, versionTemplate);
         }),
@@ -156,8 +167,7 @@ export class ProjectApplicationFormSidenavService {
 
     this.routingService.routeChanges(ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL)
       .pipe(
-        filter(isProjectDetailPath => isProjectDetailPath),
-        switchMap(() => headlines$),
+        switchMap(isProjectDetailPath => isProjectDetailPath ? headlines$ : of(null)),
         untilDestroyed(this)
       ).subscribe();
   }
