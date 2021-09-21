@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEnti
 import io.cloudflight.jems.server.programme.repository.indicator.ResultIndicatorRepository
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import org.springframework.stereotype.Repository
@@ -14,11 +15,21 @@ import org.springframework.transaction.annotation.Transactional
 class ProjectResultPersistenceProvider(
     private val projectRepository: ProjectRepository,
     private val indicatorRepository: ResultIndicatorRepository,
+    private val projectVersionUtils: ProjectVersionUtils,
+    private val projectResultRepository: ProjectResultRepository
 ) : ProjectResultPersistence {
 
     @Transactional(readOnly = true)
-    override fun getResultsForProject(projectId: Long): List<ProjectResult> =
-        getProjectOrThrow(projectId).results.toModel()
+    override fun getResultsForProject(projectId: Long, version: String?): List<ProjectResult> {
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                getProjectOrThrow(projectId).results.toModel()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectResultRepository.getProjectResultsByProjectId(projectId, timestamp).toProjectResultHistoricalData()
+            }
+        ) ?: emptyList()
+    }
 
     @Transactional
     override fun updateResultsForProject(

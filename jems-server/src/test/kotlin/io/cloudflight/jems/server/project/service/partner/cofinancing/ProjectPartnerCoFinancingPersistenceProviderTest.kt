@@ -1,13 +1,11 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroup
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecovery
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -18,13 +16,20 @@ import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPart
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toCoFinancingModel
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
+import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -34,7 +39,7 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 open class ProjectPartnerCoFinancingPersistenceProviderTest {
     protected val partnerId = 1L
@@ -52,6 +57,11 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         override val nameInOriginalLanguage: String?,
         override val nameInEnglish: String?,
         override val partnerType: ProjectTargetGroup?,
+        override val partnerSubType: PartnerSubType?,
+        override val nace: NaceGroupLevel?,
+        override val otherIdentifierNumber: String?,
+        override val otherIdentifierDescription: String?,
+        override val pic: String?,
         override val vat: String?,
         override val vatRecovery: ProjectPartnerVatRecovery?,
         override val legalStatusId: Long,
@@ -59,7 +69,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     ) : PartnerIdentityRow
 
     protected class PreviousVersionOfCoFinancing(
-        override val type: ProjectPartnerCoFinancingFundType,
+        override val orderNr: Int,
         override val percentage: BigDecimal,
         override val language: SystemLanguage?,
         override val fundId: Long?,
@@ -72,86 +82,90 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     protected class PreviousVersionOfContribution(
         override val id: Long,
         override val name: String?,
-        override val status: ProjectPartnerContributionStatus?,
+        override val status: ProjectPartnerContributionStatusDTO?,
         override val amount: BigDecimal
     ) : PartnerContributionRow
 
     private val fund = ProgrammeFundEntity(id = 1, selected = true)
 
-    val previousFinances = setOf(
+    private val previousFinances = setOf(
         ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundType.MainFund),
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 1),
             percentage = BigDecimal.valueOf(15.5),
             programmeFund = null
         ),
         ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(
-                1,
-                ProjectPartnerCoFinancingFundType.PartnerContribution
-            ),
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 2),
             percentage = BigDecimal.valueOf(25.5),
             programmeFund = null
         )
     )
 
-    val currentFinances = setOf(
+    private val currentFinances = mutableListOf(
         ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, ProjectPartnerCoFinancingFundType.MainFund),
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 1),
             percentage = BigDecimal.valueOf(19.5),
             programmeFund = fund
         ),
         ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(
-                1,
-                ProjectPartnerCoFinancingFundType.PartnerContribution
-            ),
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 2),
             percentage = BigDecimal.valueOf(79.5),
             programmeFund = null
         )
     )
 
-    val previousContributions = listOf(
+    private val previousContributions = listOf(
         ProjectPartnerContributionEntity(
             id = 1,
             partnerId = 1,
             name = null,
-            status = ProjectPartnerContributionStatus.Public,
+            status = ProjectPartnerContributionStatusDTO.Public,
             amount = BigDecimal.ONE
         ),
         ProjectPartnerContributionEntity(
             id = 2,
             partnerId = 1,
             name = "BMW",
-            status = ProjectPartnerContributionStatus.AutomaticPublic,
+            status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
             amount = BigDecimal.ZERO
         )
     )
 
-    val currentContributions = listOf(
+    private val currentContributions = listOf(
         ProjectPartnerContributionEntity(
             id = 1,
             partnerId = 1,
             name = null,
-            status = ProjectPartnerContributionStatus.Public,
+            status = ProjectPartnerContributionStatusDTO.Public,
             amount = BigDecimal.TEN
         ),
         ProjectPartnerContributionEntity(
             id = 2,
             partnerId = 1,
             name = "BMW",
-            status = ProjectPartnerContributionStatus.AutomaticPublic,
+            status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
             amount = BigDecimal.ONE
         )
     )
 
-    val currentValue = ProjectPartnerCoFinancingAndContribution(
+    private val currentValue = ProjectPartnerCoFinancingAndContribution(
         finances = currentFinances.toCoFinancingModel(),
         partnerContributions = currentContributions.toContributionModel(),
         partnerAbbreviation = "partner"
     )
 
-    val previousValue = ProjectPartnerCoFinancingAndContribution(
-        finances = previousFinances.toCoFinancingModel(),
+    private val previousValue = ProjectPartnerCoFinancingAndContribution(
+        finances = listOf(
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                fund = ProgrammeFund(1, true, ProgrammeFundType.ERDF, emptySet(), emptySet()),
+                percentage =  BigDecimal.valueOf(15.5),
+            ),
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+                percentage = BigDecimal.valueOf(25.5),
+            ),
+        ),
         partnerContributions = previousContributions.toContributionModel(),
         partnerAbbreviation = "previous partner"
     )
@@ -165,28 +179,27 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecovery.Yes,
-        financing = currentFinances,
         partnerContributions = currentContributions
     )
 
     private val previousFinancingValues = listOf(
         PreviousVersionOfCoFinancing(
-            type = ProjectPartnerCoFinancingFundType.MainFund,
+            orderNr = 1,
             percentage = BigDecimal.valueOf(15.5),
             language = null,
             abbreviation = null,
             description = null,
             fundId = 1,
-            fundType = null,
+            fundType = ProgrammeFundType.ERDF.name,
             selected = true
         ),
         PreviousVersionOfCoFinancing(
-            type = ProjectPartnerCoFinancingFundType.PartnerContribution,
+            orderNr = 2,
             percentage = BigDecimal.valueOf(25.5),
             language = null,
             abbreviation = null,
             description = null,
-            fundId = 1,
+            fundId = null,
             fundType = null,
             selected = true
         )
@@ -196,13 +209,13 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         PreviousVersionOfContribution(
             id = 1,
             name = null,
-            status = ProjectPartnerContributionStatus.Public,
+            status = ProjectPartnerContributionStatusDTO.Public,
             amount = BigDecimal.ONE
         ),
         PreviousVersionOfContribution(
             id = 2,
             name = "BMW",
-            status = ProjectPartnerContributionStatus.AutomaticPublic,
+            status = ProjectPartnerContributionStatusDTO.AutomaticPublic,
             amount = BigDecimal.ZERO
         )
     )
@@ -217,6 +230,11 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         nameInOriginalLanguage = "",
         nameInEnglish = "",
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerSubType = PartnerSubType.LARGE_ENTERPRISE,
+        nace= NaceGroupLevel.A,
+        otherIdentifierNumber= "32",
+        otherIdentifierDescription = "desc",
+        pic= "123",
         vat = "test vat",
         vatRecovery = ProjectPartnerVatRecovery.Yes,
         legalStatusId = 1,
@@ -232,6 +250,9 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     @MockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
 
+    @MockK
+    lateinit var projectPartnerCoFinancingRepository: ProjectPartnerCoFinancingRepository
+
     lateinit var projectVersionUtils: ProjectVersionUtils
     protected lateinit var persistence: ProjectPartnerCoFinancingPersistence
 
@@ -241,27 +262,28 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
             projectPartnerRepository,
-            projectVersionUtils,
-            projectPersistence
+            projectPartnerCoFinancingRepository,
+            projectVersionUtils
         )
-        every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
+        every { projectPartnerRepository.getProjectIdForPartner(partnerId) } returns projectId
         every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp
     }
 
     @Test
     fun `should return current version of coFinancing`() {
         every { projectPartnerRepository.findById(partnerId) } returns Optional.of(projectPartner)
+        every { projectPartnerCoFinancingRepository.findAllByCoFinancingFundIdPartnerId(partnerId) } returns currentFinances
         assertThat(persistence.getCoFinancingAndContributions(1, null)).isEqualTo(currentValue)
     }
 
     @Test
     fun `should return previous version of coFinancing`() {
-        every { projectPartnerRepository.findById(partnerId) } returns Optional.of(projectPartner)
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) } returns projectId
         every { projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp) } returns listOf(
             previousProjectPartner
         )
         every {
-            projectPartnerRepository.findPartnerFinancingByIdAsOfTimestamp(
+            projectPartnerCoFinancingRepository.findPartnerFinancingByIdAsOfTimestamp(
                 partnerId,
                 timestamp
             )

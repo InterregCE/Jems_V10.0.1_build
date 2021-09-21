@@ -4,13 +4,13 @@ import {ProjectResultsPageStore} from './project-results-page-store.service';
 import {ProjectResultsPageConstants} from './project-results-page.constants';
 import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {catchError, map, startWith, tap} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {InputTranslation, ProjectPeriodDTO, ProjectResultDTO, ResultIndicatorSummaryDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 import {ActivatedRoute} from '@angular/router';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {MatSelectChange} from '@angular/material/select/select';
 
-@UntilDestroy()
 @Component({
   selector: 'app-project-results-page',
   templateUrl: './project-results-page.component.html',
@@ -20,6 +20,7 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class ProjectResultsPageComponent implements OnInit {
   constants = ProjectResultsPageConstants;
+  APPLICATION_FORM = APPLICATION_FORM;
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   form = this.formBuilder.group({
@@ -43,14 +44,6 @@ export class ProjectResultsPageComponent implements OnInit {
 
   ngOnInit(): void {
 
-    combineLatest([
-      this.projectResultsPageStore.results$, this.formService.reset$.pipe(startWith(null))
-    ])
-      .pipe(
-        map(([results]) => this.resetForm(results)),
-        untilDestroyed(this)
-      ).subscribe();
-
     this.data$ = combineLatest([
       this.projectResultsPageStore.results$,
       this.projectResultsPageStore.resultIndicators$,
@@ -61,7 +54,8 @@ export class ProjectResultsPageComponent implements OnInit {
       .pipe(
         map(([results, resultIndicators, periods, projectId, projectTitle]) => (
           {results, resultIndicators, periods, projectId, projectTitle})
-        )
+        ),
+        tap(data => this.resetForm(data.results, data.resultIndicators))
       );
   }
 
@@ -99,18 +93,30 @@ export class ProjectResultsPageComponent implements OnInit {
     return indicators.find(indicator => indicator.id === indicatorId)?.measurementUnit || [];
   }
 
-  private resetForm(results: ProjectResultDTO[]): void {
+  resetForm(results: ProjectResultDTO[], resultIndicators: ResultIndicatorSummaryDTO[]): void {
     this.results.clear();
-    results.forEach((result) => this.addResult(result));
+    results.forEach((result) => this.addResult(result, resultIndicators));
     this.formService.resetEditable();
   }
 
-  private addResult(existing?: ProjectResultDTO): void {
+  updateBaseLineData(event: MatSelectChange, resultIndicators: ResultIndicatorSummaryDTO[], index: number): void {
+    const baselineValue = resultIndicators.find(indicator => indicator.id === event.value)?.baseline || 0;
+    this.results.controls[index]?.get(this.constants.BASELINE_MAX_VALUE.name)?.patchValue(baselineValue);
+    setTimeout(() => {
+      this.results.controls[index]?.get(this.constants.BASELINE.name)?.patchValue(baselineValue);
+    });
+  }
+
+  private addResult(existing?: ProjectResultDTO, resultIndicators?: ResultIndicatorSummaryDTO[]): void {
+    const baselineFromIndicator = resultIndicators?.find(it => it.id === existing?.programmeResultIndicatorId)?.baseline;
+    const baselineMaxValue = (baselineFromIndicator || baselineFromIndicator === 0) ? baselineFromIndicator : 999_999_999.99;
     this.results.push(this.formBuilder.group(
       {
         programmeResultIndicatorId: this.formBuilder.control(existing?.programmeResultIndicatorId),
         resultNumber: this.formBuilder.control(existing?.resultNumber || this.results.length),
         targetValue: this.formBuilder.control(existing?.targetValue || 1),
+        baseline: this.formBuilder.control(existing?.baseline || 0),
+        baselineMaxValue: this.formBuilder.control(baselineMaxValue),
         periodNumber: this.formBuilder.control(existing?.periodNumber || ''),
         description: this.formBuilder.control(existing?.description || []),
       })

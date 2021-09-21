@@ -17,15 +17,15 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostB
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
-import io.cloudflight.jems.server.project.entity.ProjectDecisionEntity
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.states.ProjectStatusTestUtil.Companion.userSummary
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -112,7 +112,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
             return call
         }
 
-        private fun dummyProject(): ProjectEntity {
+        private fun dummyProject(status: ApplicationStatus = ApplicationStatus.SUBMITTED): ProjectEntity {
             val call = dummyCall()
             val project = ProjectEntity(
                 id = PROJECT_ID,
@@ -121,12 +121,25 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 applicant = call.creator,
                 currentStatus = ProjectStatusHistoryEntity(
                     id = 1,
-                    status = ApplicationStatus.SUBMITTED,
+                    status = status,
                     user = call.creator
                 ),
-                step2Active = false
             );
-            val firstStepDecision = ProjectDecisionEntity(
+            val firstStepDecision = ProjectAssessmentEntity(
+                eligibilityDecision = ProjectStatusHistoryEntity(
+                    id = 2,
+                    status = ApplicationStatus.STEP1_ELIGIBLE,
+                    user = call.creator,
+                    decisionDate = endDate.toLocalDate()
+                ),
+                fundingDecision = ProjectStatusHistoryEntity(
+                    id = 3,
+                    status = ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS,
+                    user = call.creator,
+                    decisionDate = endDate.toLocalDate()
+                ),
+            );
+            val secondStepDecision = ProjectAssessmentEntity(
                 eligibilityDecision = ProjectStatusHistoryEntity(
                     id = 2,
                     status = ApplicationStatus.ELIGIBLE,
@@ -139,10 +152,12 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                     user = call.creator,
                     decisionDate = endDate.toLocalDate()
                 ),
-                project = project
-            );
-            project.firstStepDecision = firstStepDecision;
-            return project;
+            )
+            project.decisionEligibilityStep1 = firstStepDecision.eligibilityDecision
+            project.decisionFundingStep1 = firstStepDecision.fundingDecision
+            project.decisionEligibilityStep2 = secondStepDecision.eligibilityDecision
+            project.decisionFundingStep2 = secondStepDecision.fundingDecision
+            return project
         }
     }
 
@@ -166,12 +181,40 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
     }
 
     @Test
-    fun `get Project EligibilityDecisionDate - everything OK`() {
-        val project = dummyProject()
+    fun `get Project EligibilityDecisionDate - everything OK - step 2`() {
+        val project = dummyProject(status = ApplicationStatus.SUBMITTED)
         every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
         assertThat(persistence.getProjectEligibilityDecisionDate(PROJECT_ID)).isEqualTo(
-            project.firstStepDecision?.eligibilityDecision?.decisionDate
+            project.decisionEligibilityStep2?.decisionDate
         )
+    }
+
+    @Test
+    fun `get Project EligibilityDecisionDate - everything OK - step 2 NULL`() {
+        val project = dummyProject(status = ApplicationStatus.SUBMITTED).copy(decisionEligibilityStep2 = null)
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        assertThat(persistence.getProjectEligibilityDecisionDate(PROJECT_ID)).isNull()
+    }
+
+    @Test
+    fun `get Project EligibilityDecisionDate - everything OK - step 1`() {
+        val project = dummyProject(status = ApplicationStatus.STEP1_SUBMITTED).copy(
+            decisionEligibilityStep2 = null,
+        )
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        assertThat(persistence.getProjectEligibilityDecisionDate(PROJECT_ID)).isEqualTo(
+            project.decisionEligibilityStep1?.decisionDate
+        )
+    }
+
+    @Test
+    fun `get Project EligibilityDecisionDate - everything OK - step 1 NULL`() {
+        val project = dummyProject(status = ApplicationStatus.STEP1_SUBMITTED).copy(
+            decisionEligibilityStep1 = null,
+            decisionEligibilityStep2 = null,
+        )
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        assertThat(persistence.getProjectEligibilityDecisionDate(PROJECT_ID)).isNull()
     }
 
     @Test

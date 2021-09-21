@@ -1,4 +1,13 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {InputProjectOverallObjective, OutputProgrammePriorityPolicySimpleDTO} from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -8,6 +17,7 @@ import {Observable} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
 import {takeUntil, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-overall-objective-detail',
@@ -16,8 +26,9 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseComponent implements OnInit {
+export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseComponent implements OnInit, OnChanges {
 
+  APPLICATION_FORM = APPLICATION_FORM;
   // TODO: remove these and adapt the component to save independently
   @Input()
   error$: Observable<HttpErrorResponse | null>;
@@ -46,7 +57,6 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
   }
 
   ngOnInit(): void {
-    this.resetForm();
     this.formService.init(this.overallObjectiveForm, this.projectStore.projectEditable$);
     this.error$
       .pipe(
@@ -60,6 +70,12 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
         tap(() => this.formService.setSuccess('project.application.form.overall.objective.save.success'))
       )
       .subscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.project) {
+      this.resetForm();
+    }
   }
 
   onSubmit(): void {

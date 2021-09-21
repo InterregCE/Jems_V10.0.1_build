@@ -1,4 +1,4 @@
-<app-project-page-template
+ <app-project-page-template
         *ngIf="data$ | async as data"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
         subTitleKey="project.application.form.section.part.b">
@@ -13,7 +13,13 @@
             <h4>{{'project.breadcrumb.associatedOrganizationName' | translate}}</h4>
             <mat-form-field>
                 <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
-                <input name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage" matInput required>
+                <input #nameInOriginalLanguageInput name="nameInOriginalLanguage"
+                       formControlName="nameInOriginalLanguage" matInput required>
+                <mat-hint [appHintFor]="nameInOriginalLanguageInput"
+                          [hide]="associatedOrganizationForm.controls?.nameInOriginalLanguage?.errors !== null">
+                    <app-text-hint [currentLength]="nameInOriginalLanguageInput?.value?.length"
+                                   [maxLength]="100"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="associatedOrganizationForm.controls?.nameInOriginalLanguage?.errors">
@@ -44,13 +50,20 @@
 
             <app-project-application-form-address
                     [addressForm]="associatedOrganizationForm"
+                    [fieldIds]="APPLICATION_FORM.SECTION_B.ADDRESS.MAIN"
                     [nuts]="data.nuts">
             </app-project-application-form-address>
 
             <h4>{{'project.partner.representative.header.detail' | translate}}</h4>
             <mat-form-field>
                 <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
-                <input name="representativeTitle" formControlName="representativeTitle" matInput>
+                <input #representativeTitleInput name="representativeTitle" formControlName="representativeTitle"
+                       matInput>
+                <mat-hint [appHintFor]="representativeTitleInput"
+                          [hide]="associatedOrganizationForm?.controls?.representativeTitle?.errors !== null">
+                    <app-text-hint [currentLength]="representativeTitleInput?.value?.length"
+                                   [maxLength]="25"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.representativeTitle?.errors">
                     </app-form-field-errors>
@@ -59,7 +72,13 @@
 
             <mat-form-field>
                 <mat-label>{{'project.partner.representative.first.name' | translate}}</mat-label>
-                <input name="representativeFirstName" formControlName="representativeFirstName" matInput>
+                <input #representativeFirstNameInput name="representativeFirstName"
+                       formControlName="representativeFirstName" matInput>
+                <mat-hint [appHintFor]="representativeFirstNameInput"
+                          [hide]="associatedOrganizationForm?.controls?.representativeFirstName?.errors !== null">
+                    <app-text-hint [currentLength]="representativeFirstNameInput?.value?.length"
+                                   [maxLength]="50"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="associatedOrganizationForm?.controls?.representativeFirstName?.errors">
@@ -69,7 +88,13 @@
 
             <mat-form-field>
                 <mat-label>{{'project.partner.representative.last.name' | translate}}</mat-label>
-                <input name="representativeLastName" formControlName="representativeLastName" matInput>
+                <input #representativeLastNameInput name="representativeLastName"
+                       formControlName="representativeLastName" matInput>
+                <mat-hint [appHintFor]="representativeLastNameInput"
+                          [hide]="associatedOrganizationForm?.controls?.representativeLastName?.errors !== null">
+                    <app-text-hint [currentLength]="representativeLastNameInput?.value?.length"
+                                   [maxLength]="50"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="associatedOrganizationForm?.controls?.representativeLastName?.errors">
@@ -81,7 +106,12 @@
             <h4>{{'project.partner.contact.header.detail' | translate}}</h4>
             <mat-form-field>
                 <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
-                <input name="contactTitle" formControlName="contactTitle" matInput>
+                <input #contactTitleInput name="contactTitle" formControlName="contactTitle" matInput>
+                <mat-hint [appHintFor]="contactTitleInput"
+                          [hide]="associatedOrganizationForm?.controls?.contactTitle?.errors !== null">
+                    <app-text-hint [currentLength]="contactTitleInput?.value?.length"
+                                   [maxLength]="25"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactTitle?.errors">
                     </app-form-field-errors>
@@ -90,7 +120,12 @@
 
             <mat-form-field>
                 <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
-                <input name="contactFirstName" formControlName="contactFirstName" matInput>
+                <input #contactFirstNameInput name="contactFirstName" formControlName="contactFirstName" matInput>
+                <mat-hint [appHintFor]="contactFirstNameInput"
+                          [hide]="associatedOrganizationForm?.controls?.contactFirstName?.errors !== null">
+                    <app-text-hint [currentLength]="contactFirstNameInput?.value?.length"
+                                   [maxLength]="50"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactFirstName?.errors">
                     </app-form-field-errors>
@@ -99,7 +134,12 @@
 
             <mat-form-field>
                 <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
-                <input name="contactLastName" formControlName="contactLastName" matInput>
+                <input #contactLastNameInput name="contactLastName" formControlName="contactLastName" matInput>
+                <mat-hint [appHintFor]="contactLastNameInput"
+                          [hide]="associatedOrganizationForm?.controls?.contactLastName?.errors !== null">
+                    <app-text-hint [currentLength]="contactLastNameInput?.value?.length"
+                                   [maxLength]="50"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactLastName?.errors">
                     </app-form-field-errors>
@@ -108,7 +148,12 @@
 
             <mat-form-field>
                 <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
-                <input name="contactEmail" formControlName="contactEmail" matInput>
+                <input #contactEmailInput name="contactEmail" formControlName="contactEmail" matInput>
+                <mat-hint [appHintFor]="contactEmailInput"
+                          [hide]="associatedOrganizationForm?.controls?.contactEmail?.errors !== null">
+                    <app-text-hint [currentLength]="contactEmailInput?.value?.length"
+                                   [maxLength]="255"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="associatedOrganizationForm?.controls?.contactEmail?.errors"
@@ -119,7 +164,12 @@
 
             <mat-form-field>
                 <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
-                <input name="contactTelephone" formControlName="contactTelephone" matInput>
+                <input #contactTelephoneInput name="contactTelephone" formControlName="contactTelephone" matInput>
+                <mat-hint [appHintFor]="contactTelephoneInput"
+                          [hide]="associatedOrganizationForm?.controls?.contactTelephone?.errors !== null">
+                    <app-text-hint [currentLength]="contactTelephoneInput?.value?.length"
+                                   [maxLength]="25"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="associatedOrganizationForm?.controls?.contactTelephone?.errors"

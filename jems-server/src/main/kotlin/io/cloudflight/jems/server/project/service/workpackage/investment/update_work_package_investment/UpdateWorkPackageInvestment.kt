@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.workpackage.investment.update_work_package_investment
 
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectWorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import org.springframework.security.access.prepost.PreAuthorize
@@ -11,8 +12,8 @@ class UpdateWorkPackageInvestment(
     private val workPackagePersistence: WorkPackagePersistence
 ) : UpdateWorkPackageInvestmentInteractor {
 
-    @PreAuthorize("hasAuthority('ProjectUpdate') || @projectWorkPackageAuthorization.canOwnerUpdateProjectInvestment(#workPackageInvestment.id)")
+    @CanUpdateProjectWorkPackageInvestment
     @Transactional
-    override fun updateWorkPackageInvestment(workPackageId: Long, workPackageInvestment: WorkPackageInvestment) =
+    override fun updateWorkPackageInvestment(projectId: Long, workPackageId: Long, workPackageInvestment: WorkPackageInvestment) =
         workPackagePersistence.updateWorkPackageInvestment(workPackageId, workPackageInvestment)
 }

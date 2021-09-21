@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
 
 internal class GetResultIndicatorsTest : IndicatorsBaseTest() {
 
@@ -21,6 +22,7 @@ internal class GetResultIndicatorsTest : IndicatorsBaseTest() {
         indicatorNameSet,
         indicatorProgrammeSpecificObjectiveCode,
         indicatorMeasurementUnitSet,
+        BigDecimal.ZERO
     )
 
     @MockK

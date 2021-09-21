@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
@@ -118,11 +118,11 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
         assertThat(slotToDeleteIds.captured).containsExactly(22, 25)
         assertThat(slotLegalStatuses.captured).containsExactly(legalStatus)
 
-        val event = slot<AuditCandidate>()
+        val event = slot<AuditCandidateEvent>()
         verify { auditPublisher.publishEvent(capture(event)) }
         with(event.captured) {
-            assertThat(action).isEqualTo(AuditAction.LEGAL_STATUS_EDITED)
-            assertThat(description).isEqualTo(
+            assertThat(this.auditCandidate.action).isEqualTo(AuditAction.LEGAL_STATUS_EDITED)
+            assertThat(this.auditCandidate.description).isEqualTo(
                 "Values for partner legal status set to:\n" +
                     "[EN=already existing EN desc, SK=already existing SK desc],\n" +
                     "[EN=LS EN desc]"
@@ -176,7 +176,7 @@ internal class UpdateLegalStatusInteractorTest : UnitTest() {
         }
         assertThat(ex.message).isEqualTo("max allowed: 20")
 
-        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidate>()) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
     }
 
     @Test

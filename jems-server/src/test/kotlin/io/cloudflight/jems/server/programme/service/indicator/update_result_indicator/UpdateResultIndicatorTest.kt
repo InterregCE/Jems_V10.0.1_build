@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.service.indicator.update_result_ind
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorsBaseTest
@@ -16,6 +17,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.assertj.core.api.Assertions.catchThrowableOfType
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 
 internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
 
@@ -47,9 +50,9 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
         assertThat(updateResultIndicator.updateResultIndicator(newResultIndicator))
             .isEqualTo(savedResultIndicatorDetail)
 
-        val auditLog = slot<AuditCandidate>()
-        verify { auditService.logEvent(capture(auditLog)) }
-        with(auditLog.captured) {
+        val auditLog = slot<AuditCandidateEvent>()
+        verify { auditPublisher.publishEvent(capture(auditLog)) }
+        with(auditLog.captured.auditCandidate) {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_EDITED)
             assertThat(description)
                 .isEqualTo("Programme indicator ID01 edited:\ncode changed from ioCODE to new code")
@@ -75,9 +78,9 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
         assertThat(updateResultIndicator.updateResultIndicator(newResultIndicator))
             .isEqualTo(savedResultIndicatorDetail)
 
-        val auditLog = slot<AuditCandidate>()
-        verify { auditService.logEvent(capture(auditLog)) }
-        with(auditLog.captured) {
+        val auditLog = slot<AuditCandidateEvent>()
+        verify { auditPublisher.publishEvent(capture(auditLog)) }
+        with(auditLog.captured.auditCandidate) {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_EDITED)
             assertThat(description)
                 .isEqualTo("Programme indicator newID edited:\nidentifier changed from ID01 to newID")
@@ -104,7 +107,7 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
 
 
     @Test
-    fun `should throw SpecificObjectiveCannotBeChangedException when specific objective in the new result indicator is changed and there is a published call`() {
+    fun `should throw Exception when specific objective in the new result indicator is changed and there is a published call`() {
         val newResultIndicator = buildResultIndicatorInstance(programmeObjectivePolicy = ProgrammeObjectivePolicy.Digitisation)
         val oldResultIndicatorDetail = buildResultIndicatorDetailInstance()
         every { persistence.getResultIndicator(newResultIndicator.id!!) } returns oldResultIndicatorDetail
@@ -115,8 +118,27 @@ internal class UpdateResultIndicatorTest : IndicatorsBaseTest() {
                 newResultIndicator.identifier
             )
         } returns false
-        assertThatExceptionOfType(SpecificObjectiveCannotBeChangedException::class.java).isThrownBy {
+        val ex = assertThrows<ResultIndicatorCannotBeChangedAfterCallIsPublished> {
             updateResultIndicator.updateResultIndicator(newResultIndicator)
         }
+        assertThat(ex.formErrors.keys).containsExactly("specificObjective")
+    }
+
+    @Test
+    fun `should throw Exception when baseline in the new result indicator is decreased and there is a published call`() {
+        val newResultIndicator = buildResultIndicatorInstance(baseline = BigDecimal.ONE)
+        val oldResultIndicatorDetail = buildResultIndicatorDetailInstance()
+        every { persistence.getResultIndicator(newResultIndicator.id!!) } returns oldResultIndicatorDetail
+        every { callPersistence.hasAnyCallPublished() } returns true
+        every {
+            persistence.isIdentifierUsedByAnotherResultIndicator(
+                newResultIndicator.id,
+                newResultIndicator.identifier
+            )
+        } returns false
+        val ex = assertThrows<ResultIndicatorCannotBeChangedAfterCallIsPublished> {
+            updateResultIndicator.updateResultIndicator(newResultIndicator)
+        }
+        assertThat(ex.formErrors.keys).containsExactly("baseline")
     }
 }

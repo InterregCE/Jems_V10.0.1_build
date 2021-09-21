@@ -1,11 +1,13 @@
-<ng-container *ngFor="let element of strategies">
-    <div *ngIf="!isApplicant || element.active" class="mt-2">
-        <mat-checkbox
-                (click)="$event.stopPropagation()"
-                (change)="element.active = !element.active; selectionChanged.emit()"
-                [disabled]="disabled && isStrategyAlreadySelected(element)"
-                [checked]="element.active">
-            {{'programme.strategy.' + element.strategy | translate}}
-        </mat-checkbox>
-    </div>
+<ng-container *ngIf="data$ | async as data">
+    <ng-container *ngFor="let element of strategies">
+        <div *ngIf="data.callIsReadable || (data.userCanApply && element.active)" class="mt-2">
+            <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    (change)="element.active = !element.active; selectionChanged.emit()"
+                    [disabled]="strategyDisabled(data.callIsEditable, data.callIsPublished, element)"
+                    [checked]="element.active">
+                {{'programme.strategy.' + element.strategy | translate}}
+            </mat-checkbox>
+        </div>
+    </ng-container>
 </ng-container>

@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormGroup} from '@angular/forms';
-import {OutputNutsMetadata} from '@cat/api';
+import {OutputNutsMetadata, UserRoleDTO} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-programme-nuts-info',
@@ -11,13 +12,18 @@ import {TranslateService} from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeNutsInfoComponent extends AbstractForm {
+  PermissionsEnum = PermissionsEnum;
+
   @Input()
   metadata: OutputNutsMetadata;
 
   @Output()
   downloadNuts = new EventEmitter<void>();
 
-  constructor(protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+  constructor(
+    protected changeDetectorRef: ChangeDetectorRef,
+    protected translationService: TranslateService,
+  ) {
     super(changeDetectorRef, translationService);
   }
 

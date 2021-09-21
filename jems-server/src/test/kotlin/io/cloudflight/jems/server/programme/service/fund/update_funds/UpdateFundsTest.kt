@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
@@ -103,11 +103,11 @@ internal class UpdateFundsTest : UnitTest() {
             fundToCreate,
         )
 
-        val event = slot<AuditCandidate>()
+        val event = slot<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(event)) }
         with(event.captured) {
-            assertThat(action).isEqualTo(AuditAction.PROGRAMME_FUNDS_CHANGED)
-            assertThat(description).isEqualTo(
+            assertThat(this.auditCandidate.action).isEqualTo(AuditAction.PROGRAMME_FUNDS_CHANGED)
+            assertThat(this.auditCandidate.description).isEqualTo(
                 "Programme funds has been set to:\n" +
                     "[selected=false, EN=EN to update abbr],\n" +
                     "[selected=true, EN=EN to create abbr, SK=SK to create abbr]"

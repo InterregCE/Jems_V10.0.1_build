@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, forkJoin, Observable, of, Subject} from 'rxjs';
+import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
 import {BudgetOptions} from '../../model/budget/budget-options';
 import {CallFlatRateSetting} from '../../model/call-flat-rate-setting';
 import {filter, map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
@@ -12,16 +12,18 @@ import {
   BudgetUnitCostEntryDTO,
   CallDetailDTO,
   CallService,
-  OutputProjectPartnerDetail,
   ProgrammeFundDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
   ProjectPartnerCoFinancingAndContributionOutputDTO,
+  ProjectPartnerDetailDTO,
+  ProjectPartnerService,
+  ProjectPartnerStateAidDTO,
   ProjectPeriodDTO
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {NumberService} from '../../../common/services/number.service';
+import {NumberService} from '@common/services/number.service';
 import {PartnerBudgetTables} from '../../model/budget/partner-budget-tables';
 import {StaffCostsBudgetTable} from '../../model/budget/staff-costs-budget-table';
 import {GeneralBudgetTable} from '../../model/budget/general-budget-table';
@@ -29,17 +31,17 @@ import {StaffCostsBudgetTableEntry} from '../../model/budget/staff-costs-budget-
 import {GeneralBudgetTableEntry} from '../../model/budget/general-budget-table-entry';
 import {TravelAndAccommodationCostsBudgetTable} from '../../model/budget/travel-and-accommodation-costs-budget-table';
 import {TravelAndAccommodationCostsBudgetTableEntry} from '../../model/budget/travel-and-accommodation-costs-budget-table-entry';
-import {ProjectWorkPackagePageStore} from '../../work-package/work-package-detail-page/project-work-package-page-store.service';
+import {WorkPackagePageStore} from '../../work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
 import {UnitCostsBudgetTable} from '../../model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '../../model/budget/unit-costs-budget-table-entry';
-import {InvestmentSummary} from '../../work-package/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
-import {ProjectVersionStore} from '../../services/project-version-store.service';
-import {Log} from '../../../common/utils/log';
+import {ProjectVersionStore} from '../../common/services/project-version-store.service';
+import {Log} from '@common/utils/log';
+import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
-
   callFlatRatesSettings$: Observable<CallFlatRateSetting>;
   budgetOptions$: Observable<BudgetOptions>;
   budgets$: Observable<PartnerBudgetTables>;
@@ -51,19 +53,23 @@ export class ProjectPartnerDetailPageStore {
   callFunds$: Observable<ProgrammeFundDTO[]>;
   periods$: Observable<ProjectPeriodDTO[]>;
   multipleFundsAllowed$: Observable<boolean>;
+  stateAid$: Observable<ProjectPartnerStateAidDTO>;
+  partner$: Observable<ProjectPartnerDetailDTO>;
+  allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
 
   private updateBudgetOptionsEvent$ = new Subject();
   private updateBudgetEvent$ = new Subject();
   private updateFinancingAndContributionEvent = new Subject();
+  private updatedStateAid$ = new Subject<ProjectPartnerStateAidDTO>();
 
   constructor(private projectStore: ProjectStore,
               private partnerStore: ProjectPartnerStore,
               private callService: CallService,
-              private projectWorkPackagePageStore: ProjectWorkPackagePageStore,
+              private projectWorkPackagePageStore: WorkPackagePageStore,
               private projectPartnerBudgetService: ProjectPartnerBudgetService,
-              private projectVersionStore: ProjectVersionStore
-  ) {
-    this.investmentSummaries$ = this.projectWorkPackagePageStore.projectInvestmentSummaries$.pipe(shareReplay(1));
+              private projectPartnerService: ProjectPartnerService,
+              private projectVersionStore: ProjectVersionStore) {
+    this.investmentSummaries$ = this.projectStore.investmentSummaries$;
     this.unitCosts$ = this.projectStore.projectCall$.pipe(
       map(projectCall => projectCall.unitCosts),
       shareReplay(1)
@@ -75,11 +81,14 @@ export class ProjectPartnerDetailPageStore {
     this.financingAndContribution$ = this.financingAndContribution();
     this.callFunds$ = this.callFunds();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
-    this.periods$ = this.projectStore.getProject()
+    this.periods$ = this.projectStore.projectForm$
       .pipe(
-        map(project => project.periods)
+        map(projectForm => projectForm.periods)
       );
     this.multipleFundsAllowed$ = this.projectStore.projectCall$.pipe(map(it => it.multipleFundsAllowed));
+    this.partner$ = this.partnerStore.partner$;
+    this.stateAid$ = this.stateAid();
+    this.allowedBudgetCategories$ = this.projectStore.allowedBudgetCategories$;
   }
 
   updateBudgetOptions(budgetOptions: BudgetOptions): Observable<any> {
@@ -97,7 +106,6 @@ export class ProjectPartnerDetailPageStore {
   }
 
   updateBudgets(budgets: PartnerBudgetTables): Observable<any> {
-    console.log(budgets);
     return of(budgets).pipe(withLatestFrom(this.partnerStore.partner$, this.budgetOptions$)).pipe(
       switchMap(([newBudgets, partner, options]: any) =>
         forkJoin(this.getBudgetsToSave(partner, newBudgets, options))),
@@ -106,7 +114,26 @@ export class ProjectPartnerDetailPageStore {
     );
   }
 
-  private getBudgetsToSave(partner: OutputProjectPartnerDetail, newBudgets: PartnerBudgetTables, options: BudgetOptions): { [key: string]: Observable<any> } {
+  updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
+    return of(model).pipe(
+      withLatestFrom(this.partnerStore.partner$),
+      switchMap(([finances, partner]) =>
+        this.projectPartnerBudgetService.updateProjectPartnerCoFinancing(partner.id, finances)
+      ),
+      tap(() => this.updateFinancingAndContributionEvent.next(true)),
+      share()
+    );
+  }
+
+  updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO): Observable<ProjectPartnerStateAidDTO> {
+    return this.projectPartnerService.updateProjectPartnerStateAid(partnerId, stateAid)
+      .pipe(
+        tap(saved => this.updatedStateAid$.next(saved)),
+        tap(saved => Log.info('Updated the partner state aid', this, saved))
+      );
+  }
+
+  private getBudgetsToSave(partner: ProjectPartnerDetailDTO, newBudgets: PartnerBudgetTables, options: BudgetOptions): { [key: string]: Observable<any> } {
     if (options.otherCostsOnStaffCostsFlatRate) {
       return {staff: this.projectPartnerBudgetService.updateBudgetStaffCosts(partner.id, this.toBudgetStaffCostEntryDTOArray(newBudgets.staffCosts))};
     } else {
@@ -126,19 +153,8 @@ export class ProjectPartnerDetailPageStore {
     }
   }
 
-  updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
-    return of(model).pipe(
-      withLatestFrom(this.partnerStore.partner$),
-      switchMap(([finances, partner]) =>
-        this.projectPartnerBudgetService.updateProjectPartnerCoFinancing(partner.id, finances)
-      ),
-      tap(() => this.updateFinancingAndContributionEvent.next(true)),
-      share()
-    );
-  }
-
   private callFunds(): Observable<ProgrammeFundDTO[]> {
-    return this.projectStore.getProject()
+    return this.projectStore.project$
       .pipe(
         map(project => project.callSettings.callId),
         switchMap(callId => this.callService.getCallById(callId)),
@@ -307,4 +323,19 @@ export class ProjectPartnerDetailPageStore {
   private calculateUnitCostTableTotal(rawEntries: BudgetUnitCostEntryDTO[]): number {
     return NumberService.truncateNumber(NumberService.sum(rawEntries.map(entry => entry.rowSum || 0)));
   }
+
+  private stateAid(): Observable<ProjectPartnerStateAidDTO> {
+    const initialStateAid$ = combineLatest([
+      this.partnerStore.partner$,
+      this.projectVersionStore.currentRouteVersion$
+    ])
+      .pipe(
+        filter(([partner]) => !!partner.id),
+        switchMap(([partner, version]) => this.projectPartnerService.getProjectPartnerStateAid(partner.id, version)),
+        tap(stateAid => Log.info('Fetched the partner state aid', this, stateAid)),
+      );
+
+    return merge(initialStateAid$, this.updatedStateAid$).pipe(shareReplay(1));
+  }
+
 }

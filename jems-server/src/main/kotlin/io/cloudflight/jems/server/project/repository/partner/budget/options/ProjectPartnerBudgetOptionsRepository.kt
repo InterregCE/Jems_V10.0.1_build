@@ -20,4 +20,16 @@ interface ProjectPartnerBudgetOptionsRepository : CrudRepository<ProjectPartnerB
         nativeQuery = true
     )
     fun findByPartnerIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp): Optional<ProjectPartnerBudgetOptionsEntity>
+
+    @Query(
+        """
+            SELECT entity.*
+             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP  :timestamp AS entity
+             WHERE entity.partner_id IN :partnerIds
+             ORDER BY entity.partner_id
+             """,
+        nativeQuery = true
+    )
+    fun findAllByPartnerIdsAsOfTimestamp(partnerIds: Set<Long>, timestamp: Timestamp): List<ProjectPartnerBudgetOptionsEntity>
+
 }

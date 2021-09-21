@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.programme.service.indicator.list_result_indic
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -14,19 +14,19 @@ class ListResultIndicators(
 ) : ListResultIndicatorsInteractor {
 
     @Transactional(readOnly = true)
-    @CanReadProgrammeSetup
+    @CanRetrieveProgrammeSetup
     @ExceptionWrapper(GetResultIndicatorDetailsException::class)
     override fun getResultIndicatorDetails(pageable: Pageable) =
         persistence.getResultIndicators(pageable)
 
     @Transactional(readOnly = true)
-    @CanReadProgrammeSetup
+    @CanRetrieveProgrammeSetup
     @ExceptionWrapper(GetResultIndicatorSummariesException::class)
     override fun getResultIndicatorSummaries() =
         persistence.getTop50ResultIndicators()
 
     @Transactional(readOnly = true)
-    @CanReadProgrammeSetup
+    @CanRetrieveProgrammeSetup
     @ExceptionWrapper(GetResultIndicatorSummariesForSpecificObjectiveException::class)
     override fun getResultIndicatorSummariesForSpecificObjective(programmeObjectivePolicy: ProgrammeObjectivePolicy) =
         persistence.getResultIndicatorsForSpecificObjective(programmeObjectivePolicy)

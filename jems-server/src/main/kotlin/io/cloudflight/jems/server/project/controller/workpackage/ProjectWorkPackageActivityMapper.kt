@@ -1,92 +1,63 @@
 package io.cloudflight.jems.server.project.controller.workpackage
 
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivityDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivityDeliverableDTO
-import io.cloudflight.jems.server.project.dto.TranslatedValue
+import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverableTranslatedValue
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 
-fun WorkPackageActivityDTO.toModel() = WorkPackageActivity(
-    translatedValues = combineTranslations(title, description),
+fun WorkPackageActivityDTO.toModel(workPackageId: Long) = WorkPackageActivity(
+    id = id,
+    workPackageId = workPackageId,
+    title = title,
+    description = description,
     startPeriod = startPeriod,
     endPeriod = endPeriod,
     deliverables = deliverables.toDeliverableModel(),
+    partnerIds = partnerIds
 )
 
-fun List<WorkPackageActivityDTO>.toModel() = map { it.toModel() }
+fun List<WorkPackageActivityDTO>.toModel(workPackageId: Long) = map { it.toModel(workPackageId) }
 
-fun WorkPackageActivityDeliverableDTO.toDeliverableModel() = WorkPackageActivityDeliverable(
-    translatedValues = combineDeliverableTranslations(description),
-    period = period,
+fun WorkPackageActivityDeliverableDTO.toDeliverableModel(number: Int) = WorkPackageActivityDeliverable(
+    id = deliverableId,
+    deliverableNumber = number,
+    description = description,
+    period = period
 )
 
-fun List<WorkPackageActivityDeliverableDTO>.toDeliverableModel() = map { it.toDeliverableModel() }
+fun List<WorkPackageActivityDeliverableDTO>.toDeliverableModel() = mapIndexed { index, it -> it.toDeliverableModel(index.plus(1)) }
 
 
 fun WorkPackageActivity.toDto() = WorkPackageActivityDTO(
+    id = id,
+    workPackageId = workPackageId,
     activityNumber = activityNumber,
-    title = translatedValues.extractField { it.title },
+    title = title,
     startPeriod = startPeriod,
     endPeriod = endPeriod,
-    description = translatedValues.extractField { it.description },
-    deliverables = deliverables.toDeliverableDto(),
+    description = description,
+    deliverables = deliverables.toDeliverableDto(id),
+    partnerIds = partnerIds,
 )
 
 fun List<WorkPackageActivity>.toDto() = map { it.toDto() }
 
-fun WorkPackageActivityDeliverable.toDeliverableDto() = WorkPackageActivityDeliverableDTO(
+fun WorkPackageActivityDeliverable.toDeliverableDto(activityId: Long) = WorkPackageActivityDeliverableDTO(
+    activityId = activityId,
+    deliverableId = id,
     deliverableNumber = deliverableNumber,
-    description = translatedValues.extractField { it.description },
-    period = period,
+    description = description,
+    period = period
 )
 
-fun List<WorkPackageActivityDeliverable>.toDeliverableDto() = map { it.toDeliverableDto() }
+fun List<WorkPackageActivityDeliverable>.toDeliverableDto(activityId: Long) = map { it.toDeliverableDto(activityId) }
 
+fun WorkPackageActivitySummary.toDto() = WorkPackageActivitySummaryDTO(
+    activityId = activityId,
+    workPackageNumber = workPackageNumber,
+    activityNumber = activityNumber
+)
 
-fun combineTranslations(
-    title: Set<InputTranslation>,
-    description: Set<InputTranslation>
-): Set<WorkPackageActivityTranslatedValue> {
-    val titleMap = title.groupByLanguage()
-    val descriptionMap = description.groupByLanguage()
-
-    return extractLanguages(titleMap, descriptionMap)
-        .map {
-            WorkPackageActivityTranslatedValue(
-                language = it,
-                title = titleMap[it],
-                description = descriptionMap[it],
-            )
-        }
-        .filter { !it.isEmpty() }
-        .toSet()
-}
-
-fun combineDeliverableTranslations(
-    description: Set<InputTranslation>
-): Set<WorkPackageActivityDeliverableTranslatedValue> {
-    val descriptionMap = description.groupByLanguage()
-
-    return extractLanguages(descriptionMap)
-        .map {
-            WorkPackageActivityDeliverableTranslatedValue(
-                language = it,
-                description = descriptionMap[it],
-            )
-        }
-        .filter { !it.isEmpty() }
-        .toSet()
-}
-
-fun extractLanguages(vararg data: Map<SystemLanguage, String?>): Set<SystemLanguage> =
-    data.asIterable().map { it.keys }.reduce { first, second -> first union second }
-
-fun Set<InputTranslation>.groupByLanguage() = associateBy({ it.language }, { it.translation })
-
-inline fun <T : TranslatedValue> Set<T>.extractField(extractFunction: (T) -> String?) =
-    map { InputTranslation(it.language, extractFunction.invoke(it)) }
-        .filterTo(HashSet()) { !it.translation.isNullOrBlank() }
+fun List<WorkPackageActivitySummary>.toSummariesDto() = this.map { it.toDto() }

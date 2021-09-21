@@ -1,112 +1,106 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, Observable, ReplaySubject} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Permission} from '../../../security/permissions/permission';
-import {map, take} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {SecurityService} from '../../../security/security.service';
-import {OutputCurrentUser, UserRoleDTO} from '@cat/api';
+import {UserRoleDTO} from '@cat/api';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable()
 export class TopBarService {
 
-  private menuItems$ = new ReplaySubject<MenuItemConfiguration[]>(1);
+  menuItems$: Observable<MenuItemConfiguration[]>;
 
   private dashboardItem: MenuItemConfiguration = {
     name: 'topbar.main.dashboard',
     isInternal: true,
     route: '/app/dashboard',
+    icon: 'dashboard'
   };
   private applicationsItem: MenuItemConfiguration = {
     name: 'topbar.main.project',
     isInternal: true,
     route: '/app/project',
+    icon: 'description'
   };
-  private programmItem: MenuItemConfiguration = {
+  private programmeItem: MenuItemConfiguration = {
     name: 'topbar.main.programme',
     isInternal: true,
     route: '/app/programme',
+    icon: 'business'
   };
   private callsItem: MenuItemConfiguration = {
     name: 'topbar.main.call',
     isInternal: true,
     route: '/app/call',
+    icon: 'campaign'
   };
   private systemItem: MenuItemConfiguration = {
     name: 'topbar.main.system',
     isInternal: true,
     route: '/app/system',
+    icon: 'settings'
   };
-  private editUserItem: MenuItemConfiguration;
 
   constructor(private permissionService: PermissionService,
               private securityService: SecurityService) {
-    this.securityService.currentUser.subscribe((currentUser) => {
-      this.adaptMenuItems(currentUser);
-      this.assingMenuItemsToUser();
-    });
-  }
-
-  menuItems(): Observable<MenuItemConfiguration[]> {
-    return this.menuItems$.asObservable();
+    this.menuItems$ = this.menuItems();
   }
 
   logout(): Observable<any> {
     return this.securityService.logout();
   }
 
-  private adaptMenuItems(currentUser: OutputCurrentUser | null): void {
-    if (!currentUser) {
-      return;
-    }
-    this.editUserItem = {
-      name: `${currentUser?.name} (${currentUser?.role.name})`,
-      isInternal: true,
-      route: `/app/profile`,
-    };
+  private editUserItem(): Observable<MenuItemConfiguration | null> {
+    return this.securityService.currentUser
+      .pipe(
+        map(currentUser => currentUser
+          ? {
+            name: `${currentUser?.name} (${currentUser?.role.name})`,
+            isInternal: true,
+            route: `/app/profile`,
+          }
+          : null
+        )
+      );
   }
 
-  assingMenuItemsToUser(): void {
-    combineLatest([
-      this.permissionService.hasPermission(Permission.SYSTEM_MODULE_PERMISSIONS),
-      this.permissionService.hasPermission(PermissionsEnum.ProjectRetrieve),
-      this.securityService.currentUser.pipe(map(currentUser => currentUser?.role)),
-      // TODO remove when all permissions implemented
-      this.permissionService.hasPermission(Permission.APPLICANT_USER),
-      this.permissionService.hasPermission(Permission.PROGRAMME_USER),
-      this.permissionService.hasPermission(Permission.ADMINISTRATOR),
-    ]).pipe(
-      take(1),
-    ).subscribe(([systemEnabled, applicationsEnabled, role, isApplicant, isProgrammeUser, isAdmin]) => {
-      const menuItems: MenuItemConfiguration[] = [];
+  private menuItems(): Observable<MenuItemConfiguration[]> {
+    return combineLatest([
+      this.permissionService.permissionsChanged(),
+      this.editUserItem()
+    ])
+      .pipe(
+        map(([permissions, editUserItem]) => {
+          const menuItems: MenuItemConfiguration[] = [this.dashboardItem];
 
-      if (isApplicant) {
-        menuItems.push(this.dashboardItem);
-      }
-      if (applicationsEnabled) {
-        menuItems.push(this.applicationsItem);
-      }
-      if (isProgrammeUser || isAdmin) {
-        menuItems.push(this.callsItem);
-      }
-      if (isProgrammeUser || isAdmin) {
-        menuItems.push(this.programmItem);
-      }
-      if (systemEnabled) {
-        if (role?.permissions.includes(PermissionsEnum.AuditRetrieve)) {
-          this.systemItem.route = '/app/system/audit';
-        } else if (role?.permissions.includes(PermissionsEnum.UserRetrieve)) {
-          this.systemItem.route = '/app/system/user';
-        } else if (role?.permissions.includes(PermissionsEnum.RoleRetrieve)) {
-          this.systemItem.route = '/app/system/userRole';
-        }
-        menuItems.push(this.systemItem);
-      }
+          if (permissions.includes(PermissionsEnum.ProjectRetrieve)) {
+            menuItems.push(this.applicationsItem);
+          }
+          if (permissions.includes(PermissionsEnum.CallRetrieve)) {
+            menuItems.push(this.callsItem);
+          }
+          if (Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {
+            menuItems.push(this.programmeItem);
+          }
+          if (Permission.SYSTEM_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {
+            if (permissions.includes(PermissionsEnum.AuditRetrieve)) {
+              this.systemItem.route = '/app/system/audit';
+            } else if (permissions.includes(PermissionsEnum.UserRetrieve)) {
+              this.systemItem.route = '/app/system/user';
+            } else if (permissions.includes(PermissionsEnum.RoleRetrieve)) {
+              this.systemItem.route = '/app/system/role';
+            }
+            menuItems.push(this.systemItem);
+          }
+          if (editUserItem) {
+            menuItems.push(editUserItem);
+          }
 
-      menuItems.push(this.editUserItem);
-
-      this.menuItems$.next(menuItems);
-    });
+          return menuItems;
+        })
+      );
   }
 }

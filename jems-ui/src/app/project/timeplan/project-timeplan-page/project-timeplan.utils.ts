@@ -381,7 +381,7 @@ export function getOptions(translateService: TranslateService, custom?: Partial<
       },
       min: getStartDateFromPeriod(1),
       // if 1 Period = 1 Month, we can zoom only to max 1 Period ~= 30days
-      zoomMin: 33 * 24 * 60 * 60 * 1000,
+      zoomMin: 33 * 24 * 60 * 60 * 100,
       groupTemplate(item: any, element: any, d: any): string { return groupTemplateFunction(item, translateService); }
     },
     custom

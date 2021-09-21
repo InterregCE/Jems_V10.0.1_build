@@ -1,8 +1,11 @@
 import {ChangeDetectorRef, Component, EventEmitter, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AbstractForm} from '@common/components/forms/abstract-form';
-import {LoginRequest} from '@cat/api';
+import {InfoService, LoginRequest} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
+import {ResourceStoreService} from '@common/services/resource-store.service';
+import {map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -22,9 +25,24 @@ export class LoginComponent extends AbstractForm {
 
   registerLink = '/no-auth/register';
 
+  largeLogo$ = this.resourceStore.largeLogo$;
+
+  accessibilityStatementUrl$: Observable<string>;
+  termsAndPrivacyPolicyUrl$: Observable<string>;
+
   constructor(private readonly formBuilder: FormBuilder,
-              protected changeDetectorRef: ChangeDetectorRef, protected translationService: TranslateService) {
+              protected changeDetectorRef: ChangeDetectorRef,
+              protected translationService: TranslateService,
+              public resourceStore: ResourceStoreService,
+              private infoService: InfoService) {
     super(changeDetectorRef, translationService);
+    this.accessibilityStatementUrl$ = this.infoService.getVersionInfo().pipe(
+      map(info => info.accessibilityStatementUrl)
+    );
+
+    this.termsAndPrivacyPolicyUrl$ = this.infoService.getVersionInfo().pipe(
+      map(info => info.termsAndPrivacyPolicyUrl)
+    );
   }
 
   onSubmit(): void {

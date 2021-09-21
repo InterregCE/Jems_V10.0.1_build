@@ -1,12 +1,10 @@
 <app-project-page-template [needsCard]="true" *ngIf="data$ | async as data"
                            titleKey="project.application.form.lifecycle.title">
-    <ng-container page-sub-title *ngxPermissionsExcept="[Permission.APPLICANT_USER]">
-        <div appFormLayout appNoWidthLimit>
-            <h2>{{data.project.id}} – {{data.project.acronym}}</h2>
-            <app-project-application-information appNoWidthLimit [project]="data.project">
-            </app-project-application-information>
-        </div>
-    </ng-container>
+    <div page-sub-title appFormLayout appNoWidthLimit>
+        <h2>{{data.project.customIdentifier}} – {{data.project.acronym}}</h2>
+        <app-project-application-information appNoWidthLimit [project]="data.project">
+        </app-project-application-information>
+    </div>
 
     <form appFormLayout [formGroup]="notesForm">
         <h3>{{'project.assessment.eligibilityDecision.dialog.title' | translate}}</h3>
@@ -14,7 +12,7 @@
                 required
                 name="assessment"
                 formControlName="assessment"
-                [disabled]="!!data.eligibilityDecision">
+                [disabled]="!!data.eligibilityDecision || !data.canSetEligibleDecision">
             <mat-radio-button *ngFor="let option of options" [value]="option">
                 <div>{{'project.assessment.eligibilityDecision.dialog.select.' + option | translate}}</div>
             </mat-radio-button>
@@ -25,7 +23,7 @@
                 [messages]="notesErrors"
                 [characterLimit]="1000"
                 [label]="'project.assessment.eligibilityDecision.dialog.field.note'"
-                [disabled]="!!data.eligibilityDecision"
+                [disabled]="!!data.eligibilityDecision || !data.canSetEligibleDecision"
                 [customStyle]="'outline'">
         </app-expandable-textarea>
         <mat-form-field appFormFieldWidth="x-large">
@@ -34,9 +32,9 @@
             </mat-label>
             <input name="decisionDate" formControlName="decisionDate" matInput required
                    [matDatepicker]="picker"
-                   [readonly]="!!data.eligibilityDecision"
+                   [readonly]="!!data.eligibilityDecision || !data.canSetEligibleDecision"
                    [max]="today">
-            <mat-datepicker-toggle [disabled]="!!data.eligibilityDecision" matSuffix
+            <mat-datepicker-toggle [disabled]="!!data.eligibilityDecision || !data.canSetEligibleDecision" matSuffix
                                    [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
             <mat-error>
@@ -46,19 +44,21 @@
                 </app-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <div appMultiColumnRow *ngIf="!data.eligibilityDecision">
-            <button mat-stroked-button
-                    (click)="redirectToProjectDetail()">
-                {{'project.assessment.eligibilityDecision.dialog.button.cancel' | translate}}
-            </button>
+        <ng-container *ngIf="!data.eligibilityDecision">
+            <div appMultiColumnRow *hasPermission="[PermissionsEnum.ProjectStatusDecideEligible, PermissionsEnum.ProjectStatusDecideIneligible]">
+                <button mat-stroked-button
+                        (click)="redirectToAssessmentAndDecisions()">
+                    {{'project.assessment.eligibilityDecision.dialog.button.cancel' | translate}}
+                </button>
 
-            <app-pending-button
-                    [confirm]="getEligibilityDecisionConfirmation()"
-                    [pending]="actionPending"
-                    [disabled]="notesForm.invalid"
-                    (clicked)="submitEligibilityDecision()">
-                {{'project.assessment.eligibilityDecision.dialog.button.submit' | translate}}
-            </app-pending-button>
-        </div>
+                <app-pending-button
+                        [confirm]="getEligibilityDecisionConfirmation()"
+                        [pending]="actionPending"
+                        [disabled]="notesForm.invalid"
+                        (clicked)="submitEligibilityDecision()">
+                    {{'project.assessment.eligibilityDecision.dialog.button.submit' | translate}}
+                </app-pending-button>
+            </div>
+        </ng-container>
     </form>
 </app-project-page-template>

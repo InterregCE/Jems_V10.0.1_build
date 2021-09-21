@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.project.service.application.workflow.states
 
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
-import io.cloudflight.jems.server.project.service.partner.ProjectPartnerTestUtil
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import java.time.LocalDate
 import java.time.ZonedDateTime
 

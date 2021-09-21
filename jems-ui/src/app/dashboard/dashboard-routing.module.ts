@@ -1,11 +1,9 @@
 import {Routes} from '@angular/router';
-import {DefaultPageGuard} from '../common/guards/default-page.guard';
-import {ApplicantDashboardPageComponent} from './applicant-dashboard-page/applicant-dashboard-page.component';
+import {DashboardPageComponent} from './dashboard-page/dashboard-page.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: ApplicantDashboardPageComponent,
-    canActivate: [DefaultPageGuard],
+    component: DashboardPageComponent
   }
 ];

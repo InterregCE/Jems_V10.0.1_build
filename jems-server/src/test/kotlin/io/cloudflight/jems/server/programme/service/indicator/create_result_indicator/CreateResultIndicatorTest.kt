@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.service.indicator.create_result_ind
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorsBaseTest
 import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
@@ -40,9 +41,9 @@ internal class CreateResultIndicatorTest : IndicatorsBaseTest() {
         assertThat(createResultIndicator.createResultIndicator(resultIndicator))
             .isEqualTo(resultIndicatorDetail)
 
-        val auditLog = slot<AuditCandidate>()
-        verify { auditService.logEvent(capture(auditLog)) }
-        with(auditLog.captured) {
+        val auditLog = slot<AuditCandidateEvent>()
+        verify { auditPublisher.publishEvent(capture(auditLog)) }
+        with(auditLog.captured.auditCandidate) {
             assertThat(action).isEqualTo(AuditAction.PROGRAMME_INDICATOR_ADDED)
             assertThat(description).isEqualTo("Programme indicator ID01 has been added")
         }

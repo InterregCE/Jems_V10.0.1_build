@@ -37,7 +37,7 @@ class SubmitApplication(
         projectPersistence.getProjectCallSettings(projectId).let { callSettings ->
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 when {
-                    callSettings.endDateStep1 == null || projectSummary.status.isInStepTwo() ->
+                    callSettings.endDateStep1 == null || projectSummary.status.isInStep2() ->
                         // todo plugin key should be used from call settings for the project when it is added
                         preCheckAndSubmit(projectSummary, "standard-pre-condition-check-plugin")
                     else -> submitApplication(projectSummary)

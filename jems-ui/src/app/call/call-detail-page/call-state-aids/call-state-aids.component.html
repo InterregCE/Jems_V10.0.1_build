@@ -1,0 +1,13 @@
+<ng-container *ngIf="data$ | async as data">
+    <ng-container *ngFor="let stateAid of stateAids">
+        <div *ngIf="data.callIsReadable || (data.userCanApply && stateAid.selected)" class="mt-2">
+            <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    (change)="stateAid.selected = !stateAid.selected; selectionChanged.emit()"
+                    [disabled]="stateAidDisabled(data.callIsEditable, data.callIsPublished, stateAid)"
+                    [checked]="stateAid.selected">
+                {{ stateAid.abbreviatedName | translateBySystemLanguage | async}}
+            </mat-checkbox>
+        </div>
+    </ng-container>
+</ng-container>

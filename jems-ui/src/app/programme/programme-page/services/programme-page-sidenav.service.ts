@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {filter, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {RoutingService} from '../../../common/services/routing.service';
+import {RoutingService} from '@common/services/routing.service';
 
 @UntilDestroy()
 @Injectable()
@@ -11,22 +11,20 @@ export class ProgrammePageSidenavService {
 
   private indicatorsPage = {
     headline: {i18nKey: 'programme.tab.indicators'},
-    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/indicators`
+    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/indicators`,
+    baseRoute: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/indicators`
   };
 
   private prioritiesPage = {
     headline: {i18nKey: 'programme.tab.priority'},
     route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/priorities`,
-  };
-
-  private languagesPage = {
-    headline: {i18nKey: 'programme.tab.languages'},
-    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/languages`,
+    baseRoute: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/priorities`,
   };
 
   private costsPage = {
     headline: {i18nKey: 'programme.tab.costs.option'},
-    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/costs`
+    route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/costs`,
+    baseRoute: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/costs`
   };
 
   constructor(private sideNavService: SideNavService,
@@ -44,20 +42,25 @@ export class ProgrammePageSidenavService {
       {
         headline: {i18nKey: 'programme.data.page.title'},
         bullets: [
-          this.languagesPage,
+          {
+            headline: {i18nKey: 'programme.tab.data'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}`,
+          },
+          {
+            headline: {i18nKey: 'programme.tab.languages'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/languages`,
+          },
+          {
+            headline: {i18nKey: 'programme.tab.translation.management'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/translationManagement`,
+          },
           {
             headline: {i18nKey: 'programme.tab.area'},
             route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/areas`,
           },
           {
-            headline: {i18nKey: 'programme.tab.data'},
-            route: ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH,
-            scrollToTop: true
-          },
-          {
-            headline: {i18nKey: 'programme.fund.list.title'},
-            scrollRoute: 'funds',
-            route: ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH,
+            headline: {i18nKey: 'programme.tab.funds'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/funds`,
           },
           this.prioritiesPage,
           this.indicatorsPage,
@@ -69,7 +72,11 @@ export class ProgrammePageSidenavService {
             headline: {i18nKey: 'programme.tab.legal.status'},
             route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/legalStatus`,
           },
-          this.costsPage
+          this.costsPage,
+          {
+            headline: {i18nKey: 'programme.tab.state.aid'},
+            route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/stateAid`,
+          },
         ]
       },
     ]);
@@ -81,10 +88,6 @@ export class ProgrammePageSidenavService {
 
   public goToPriorities(): void {
     this.sideNavService.navigate(this.prioritiesPage);
-  }
-
-  public goToLanguages(): void {
-    this.sideNavService.navigate(this.languagesPage);
   }
 
   public goToCosts(): void {

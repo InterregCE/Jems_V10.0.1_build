@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.plugin.entity.PluginStatusEntity
 import io.cloudflight.jems.server.plugin.repository.PluginStatusRepository
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
@@ -52,11 +53,12 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     lateinit var executePreConditionCheck: ExecutePreConditionCheck
 
     @BeforeAll
-    fun setup(){
+    fun setup() {
         every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(
             PluginStatusEntity(pluginKey, true)
         )
     }
+
     @Test
     fun `should execute pre condition check plugin for the project application when application belongs to twp-step call and application is in step two`() {
         every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
@@ -81,7 +83,7 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
             jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey)
         } returns preConditionCheckPlugin
         every { preConditionCheckPlugin.check(projectId) } returns pluginExpectedResult
-        val preConditionActualResult= executePreConditionCheck.execute(projectId)
+        val preConditionActualResult = executePreConditionCheck.execute(projectId)
         assertThat(preConditionActualResult).isEqualTo(pluginExpectedResult)
 
     }
@@ -109,16 +111,18 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
         isAdditionalFundAllowed: Boolean = true,
         flatRates: Set<ProjectCallFlatRate> = emptySet(),
         lumpSums: List<ProgrammeLumpSum> = emptyList(),
-        unitCosts: List<ProgrammeUnitCost> = emptyList()
+        unitCosts: List<ProgrammeUnitCost> = emptyList(),
+        stateAids : List<ProgrammeStateAid> = emptyList(),
     ) =
         ProjectCallSettings(
             callId, callName, startDate, endDate, endDateStep1,
-            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts
+            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
     private fun buildProjectSummary(
         id: Long = 1L, callName: String = "call name",
         acronym: String = "project acronym", status: ApplicationStatus
     ) =
-        ProjectSummary(id, callName, acronym, status)
+        ProjectSummary(id, id.toString(), callName, acronym, status)
 }

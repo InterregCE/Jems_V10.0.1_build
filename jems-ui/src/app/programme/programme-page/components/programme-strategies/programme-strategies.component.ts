@@ -38,8 +38,6 @@ export class ProgrammeStrategiesComponent extends ViewEditForm {
               protected translationService: TranslateService,
               protected changeDetectorRef: ChangeDetectorRef) {
     super(changeDetectorRef, translationService);
-
-    this.programmeEditableStateStore.init();
   }
 
   getForm(): FormGroup | null {

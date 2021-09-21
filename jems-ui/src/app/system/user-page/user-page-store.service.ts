@@ -1,21 +1,25 @@
 import {Injectable} from '@angular/core';
-import {PageUserSummaryDTO, UserService} from '@cat/api';
+import {PageUserSummaryDTO, UserRoleSummaryDTO, UserSearchRequestDTO, UserService} from '@cat/api';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {map, startWith, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../common/utils/log';
-import {Tables} from '../../common/utils/tables';
+import {Log} from '@common/utils/log';
+import {Tables} from '@common/utils/tables';
+import {RoleStore} from '../services/role-store.service';
 
 @Injectable()
 export class UserPageStore {
+  private filters: UserSearchRequestDTO = {} as UserSearchRequestDTO;
 
+  roles$: Observable<UserRoleSummaryDTO[]>;
   page$: Observable<PageUserSummaryDTO>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
 
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService, private roleStore: RoleStore) {
+    this.roles$ = this.roleStore.roles$;
     this.page$ = this.page();
   }
 
@@ -31,9 +35,14 @@ export class UserPageStore {
     ])
       .pipe(
         switchMap(([pageIndex, pageSize, sort]) =>
-          this.userService.list(pageIndex, pageSize, sort)),
+          this.userService.list(this.filters, pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the users:', this, page.content)),
       );
+  }
+
+  updateUserList(filters: UserSearchRequestDTO): void {
+    this.filters = filters;
+    this.newPageIndex$.next(0);
   }
 }
 

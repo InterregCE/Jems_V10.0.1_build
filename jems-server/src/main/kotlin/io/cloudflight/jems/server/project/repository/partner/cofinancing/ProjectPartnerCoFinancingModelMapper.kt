@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.repository.partner.cofinancing
 
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
@@ -18,33 +20,39 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Upda
 
 // region Finances
 
-fun Collection<UpdateProjectPartnerCoFinancing>.toCoFinancingEntity(partnerId: Long, availableFunds: Map<Long, ProgrammeFundEntity>) = mapTo(HashSet()) {
-    ProjectPartnerCoFinancingEntity(
-        coFinancingFundId = ProjectPartnerCoFinancingFundId(partnerId, it.fundType),
-        percentage = it.percentage!!,
-        programmeFund = if (it.fundId != null) availableFunds[it.fundId] else null
-    )
-}
+fun List<UpdateProjectPartnerCoFinancing>.toCoFinancingEntity(partnerId: Long, availableFunds: Map<Long, ProgrammeFundEntity>) =
+    mapIndexedTo(HashSet()) { index, coFinancing ->
+        ProjectPartnerCoFinancingEntity(
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(partnerId, orderNr = index + 1),
+            percentage = coFinancing.percentage!!,
+            programmeFund = if (coFinancing.fundId != null) availableFunds[coFinancing.fundId] else null
+        )
+    }
 
 fun ProjectPartnerCoFinancingEntity.toModel() = ProjectPartnerCoFinancing(
-    fundType = coFinancingFundId.type,
+    fundType = getFundType(),
     fund = programmeFund?.toModel(),
     percentage = percentage
 )
 
-fun Collection<PartnerFinancingRow>.toProjectPartnerFinancingHistoricalData() = this.groupBy { it.type }.map { groupedRows -> ProjectPartnerCoFinancing(
-    fundType = groupedRows.value.first().type,
-    fund = if (groupedRows.value.firstOrNull()?.fundType != null) ProgrammeFund(
-        id = groupedRows.value.firstOrNull()?.fundId ?: 0,
-        selected = groupedRows.value.first().selected ?: false,
-        type = ProgrammeFundType.from(groupedRows.value.first().fundType!!)!!,
-        abbreviation = groupedRows.value.extractField { it.abbreviation },
-        description = groupedRows.value.extractField { it.description }
-    ) else null,
-    percentage = groupedRows.value.first().percentage
-)}
+fun Collection<PartnerFinancingRow>.toProjectPartnerFinancingHistoricalData() = this.groupBy { it.orderNr }
+    .toSortedMap()
+    .map { groupedRows ->
+        ProjectPartnerCoFinancing(
+            fundType = if (groupedRows.value.firstOrNull()?.fundId == null) PartnerContribution else MainFund,
+            fund = if (groupedRows.value.firstOrNull()?.fundType != null) ProgrammeFund(
+                id = groupedRows.value.firstOrNull()?.fundId ?: 0,
+                selected = groupedRows.value.first().selected ?: false,
+                type = ProgrammeFundType.from(groupedRows.value.first().fundType!!)!!,
+                abbreviation = groupedRows.value.extractField { it.abbreviation },
+                description = groupedRows.value.extractField { it.description }
+            ) else null,
+            percentage = groupedRows.value.first().percentage
+        )
+    }
 
-fun Collection<ProjectPartnerCoFinancingEntity>.toCoFinancingModel() = map { it.toModel() }
+fun Collection<ProjectPartnerCoFinancingEntity>.toCoFinancingModel() =
+    sortedBy { it.coFinancingFundId.orderNr }.map { it.toModel() }
 // endregion Finances
 
 
@@ -80,9 +88,11 @@ fun Collection<ProjectPartnerContributionEntity>.toContributionModel() = map { i
 fun Collection<PartnerContributionRow>.toProjectPartnerContributionHistoricalData() = map { it.toModel() }
 // endregion Contributions
 
-fun ProjectPartnerEntity.extractCoFinancingAndContribution() =
+fun ProjectPartnerEntity.extractCoFinancingAndContribution(
+    finances: Collection<ProjectPartnerCoFinancingEntity>
+) =
     ProjectPartnerCoFinancingAndContribution(
-        finances = financing.toCoFinancingModel(),
+        finances = finances.toCoFinancingModel(),
         partnerContributions = partnerContributions.toContributionModel(),
         partnerAbbreviation = abbreviation
     )

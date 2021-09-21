@@ -1,7 +1,10 @@
 <mat-card>
     <mat-card-content>
         <div class="authentication-logo px-3">
-            <p>{{'authentication.logo.disclaimer' | translate}}</p>
+            <img *ngIf="largeLogo$ | async as logo; else defaultLogo" class="logo" src="data:image/png;base64,{{logo.value}}" alt="" width="">
+            <ng-template #defaultLogo>
+                <img class="logo" src="assets/logos/InteractProgrammeLogo_200.png" alt="">
+            </ng-template>
         </div>
         <div class="px-3">
             <h1>{{'authentication.login.title.label' | translate}}</h1>
@@ -31,7 +34,11 @@
                     </mat-error>
                 </mat-form-field>
 
-                <button appFormFieldWidth="small" mat-raised-button
+                <div>
+                    {{'user.terms.login.firstText' | translate}} <span class="terms-link"><a [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} </a></span>
+                </div>
+
+                <button mat-raised-button
                         color="primary"
                         type="submit"
                         [disabled]="!loginForm.valid || submitted">
@@ -51,8 +58,10 @@
                     <app-api-error-content [error]="error"></app-api-error-content>
                 </app-alert>
             </form>
-            <div class="accessibility-disclaimer pt-3">
-                {{'user.login.accessibility.disclaimer.part.1' | translate}} <a href="/accessibility">{{'user.login.accessibility.disclaimer.part.2' | translate}}</a> {{'user.login.accessibility.disclaimer.part.3' | translate}}
+            <div class="accessibility-statement pt-3">
+                {{'user.login.accessibility.statement.part.1' | translate}}
+                <a [href]="accessibilityStatementUrl$ | async">{{'user.login.accessibility.statement.part.2' | translate}}
+                </a> {{'user.login.accessibility.statement.part.3' | translate}}
             </div>
         </div>
     </mat-card-content>

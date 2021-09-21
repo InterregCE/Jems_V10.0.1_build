@@ -11,9 +11,15 @@ mat-card-subtitle, {
   }
 }
 
+.logo {
+  width: 100%;
+  height: auto;
+}
+
 .authentication-logo {
-  background: rgb(33, 147, 176);
+  background: white;
   color: black;
+  border-right: 1px solid gray;
   font-style: italic;
   font-weight: 400;
   display: flex;
@@ -21,6 +27,11 @@ mat-card-subtitle, {
   justify-content: center;
 }
 
-.accessibility-disclaimer {
+.accessibility-statement {
   font-style: italic
+}
+
+.terms-link {
+  color: var(--primary-color);
+  text-decoration: underline;
 }

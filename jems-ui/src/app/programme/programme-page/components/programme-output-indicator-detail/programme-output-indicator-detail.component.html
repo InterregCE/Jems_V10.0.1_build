@@ -1,7 +1,8 @@
 <form appFormLayout [formGroup]="outputIndicatorForm">
     <div appMultiColumnRow>
         <h3 class="mb-0">{{'output.indicator.title' | translate}}</h3>
-        <button *ngIf="formState === FormState.VIEW" mat-raised-button color="primary"
+        <button mat-raised-button color="primary"
+                *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'output.indicator.button.edit' | translate}}
         </button>
@@ -18,7 +19,7 @@
     </mat-form-field>
     <mat-form-field>
         <mat-label>{{'output.indicator.form.field.specific.code' | translate}}</mat-label>
-        <mat-select name="indicatorCode" formControlName="indicatorCode">
+        <mat-select name="indicatorCode" formControlName="indicatorCode" (selectionChange)="updateIndicatorCode($event.value)">
             <mat-option>
                 {{'output.indicator.code.not.applicable' | translate}}
             </mat-option>
@@ -97,8 +98,7 @@
         </mat-error>
     </mat-form-field>
     <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
-        <button *ngxPermissionsExcept="Permission.APPLICANT_USER"
-                mat-stroked-button
+        <button mat-stroked-button
                 type="button"
                 (click)="onCancel()">
             {{'output.indicator.new.button.cancel' | translate}}

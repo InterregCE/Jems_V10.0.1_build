@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {NutsStore} from '../../../../../../common/services/nuts.store';
+import {NutsStore} from '@common/services/nuts.store';
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ProjectPartnerStore} from '../../services/project-partner-store.service';

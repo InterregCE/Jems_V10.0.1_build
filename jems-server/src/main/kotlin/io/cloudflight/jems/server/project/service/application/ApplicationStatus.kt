@@ -17,14 +17,16 @@ enum class ApplicationStatus {
     APPROVED_WITH_CONDITIONS,
     NOT_APPROVED;
 
-    fun isNotSubmittedNow() =
-        this == DRAFT || this == STEP1_DRAFT || this == RETURNED_TO_APPLICANT
+    fun hasNotBeenSubmittedYet() = this == DRAFT || this == STEP1_DRAFT || this == RETURNED_TO_APPLICANT
 
-    fun isInStepTwo() =
-        setOf(
-            DRAFT, SUBMITTED, RETURNED_TO_APPLICANT,
-            ELIGIBLE, INELIGIBLE,
-            APPROVED, APPROVED_WITH_CONDITIONS, NOT_APPROVED
-        ).contains(this)
+    fun isSubmitted() = this == SUBMITTED || this == STEP1_SUBMITTED
+
+    fun isDraftOrReturned() = hasNotBeenSubmittedYet()
+
+    fun isInStep2() =
+        this == DRAFT || this == SUBMITTED || this == RETURNED_TO_APPLICANT || this == ELIGIBLE || this == INELIGIBLE
+            || this == APPROVED || this == APPROVED_WITH_CONDITIONS || this == NOT_APPROVED
+
+    fun isEligible() = this == STEP1_ELIGIBLE || this == ELIGIBLE
 
 }

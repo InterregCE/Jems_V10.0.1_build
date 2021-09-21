@@ -22,7 +22,7 @@ internal class AddWorkPackageInvestmentTestWorkPackageInvestmentBase : UnitTestW
         val workPackageInvestment = createWorkPackageInvestment(workPackageInvestmentId)
         every { persistence.addWorkPackageInvestment(workPackageId, any()) } returns workPackageInvestmentId
 
-        val createdWorkPackageInvestmentId = addWorkPackageInvestment.addWorkPackageInvestment(workPackageId, workPackageInvestment)
+        val createdWorkPackageInvestmentId = addWorkPackageInvestment.addWorkPackageInvestment(1L, workPackageId, workPackageInvestment)
 
         verify(exactly = 1) { persistence.countWorkPackageInvestments(workPackageId) }
         verify(exactly = 1) { persistence.addWorkPackageInvestment(workPackageId, any()) }
@@ -35,7 +35,7 @@ internal class AddWorkPackageInvestmentTestWorkPackageInvestmentBase : UnitTestW
     fun `addWorkPackageInvestment should fail if there are already a lot of investments`() {
         every { persistence.countWorkPackageInvestments(workPackageId) } returns 20
         val workPackageInvestment = createWorkPackageInvestment(workPackageInvestmentId)
-        val ex = assertThrows<I18nValidationException> { addWorkPackageInvestment.addWorkPackageInvestment(workPackageId, workPackageInvestment) }
+        val ex = assertThrows<I18nValidationException> { addWorkPackageInvestment.addWorkPackageInvestment(1L, workPackageId, workPackageInvestment) }
         assertThat(ex.i18nKey).isEqualTo("project.workPackage.investment.max.allowed.reached")
     }
 

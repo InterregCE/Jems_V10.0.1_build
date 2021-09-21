@@ -1,21 +1,20 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {ProjectPartnerBudgetOptionsComponent} from './project-partner-budget-options.component';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {ProjectPartnerStore} from '../../../../project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {TestModule} from '../../../../../common/test-module';
-import {ProjectModule} from '../../../../project.module';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {TestModule} from '@common/test-module';
+import {ProjectModule} from '@project/project.module';
 import {ActivatedRoute} from '@angular/router';
-import {BudgetOptions} from '../../../../model/budget/budget-options';
+import {BudgetOptions} from '@project/model/budget/budget-options';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {of} from 'rxjs';
 
 describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
   let component: ProjectPartnerBudgetOptionsComponent;
   let fixture: ComponentFixture<ProjectPartnerBudgetOptionsComponent>;
   let httpTestingController: HttpTestingController;
-  let partnerStore: ProjectPartnerStore;
   let projectPartnerBudgetTabService: ProjectPartnerBudgetTabService;
 
   beforeEach(async(() => {
@@ -30,6 +29,12 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {params: {projectId: 1}}
+          }
+        },
+        {
+          provide: ProjectPartnerStore,
+          useValue: {
+            partner$: of({id: 2})
           }
         },
         {
@@ -50,12 +55,10 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
     })
       .compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
-    partnerStore = TestBed.inject(ProjectPartnerStore);
     projectPartnerBudgetTabService = TestBed.inject(ProjectPartnerBudgetTabService);
   }));
 
   beforeEach(() => {
-    partnerStore.partner$.next({id: 2});
     fixture = TestBed.createComponent(ProjectPartnerBudgetOptionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

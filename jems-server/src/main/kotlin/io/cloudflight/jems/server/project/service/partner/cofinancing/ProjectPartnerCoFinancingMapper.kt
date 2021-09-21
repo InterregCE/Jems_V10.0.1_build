@@ -6,16 +6,15 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionDTO
 import io.cloudflight.jems.server.programme.controller.fund.toDto
-import io.cloudflight.jems.server.project.controller.toOutputProjectPartner
+import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 
-fun Collection<ProjectPartnerCoFinancingInputDTO>.toFinancingModel() = mapTo(HashSet()) {
+fun List<ProjectPartnerCoFinancingInputDTO>.toFinancingModel() = map {
     UpdateProjectPartnerCoFinancing(
-        fundType = it.fundType,
         fundId = it.fundId,
         percentage = it.percentage
     )
@@ -24,10 +23,10 @@ fun Collection<ProjectPartnerCoFinancingInputDTO>.toFinancingModel() = mapTo(Has
 fun Collection<ProjectPartnerContributionDTO>.toContributionModel() = map {
     ProjectPartnerContribution(
         id = it.id ?: 0,
-        name = if (it.isPartner) null else it.name,
+        name = if (it.partner) null else it.name,
         status = it.status,
         amount = it.amount,
-        isPartner = it.isPartner
+        isPartner = it.partner
     )
 }
 
@@ -43,7 +42,7 @@ fun ProjectPartnerCoFinancing.toDto() = ProjectPartnerCoFinancingOutputDTO(
 )
 
 fun PartnerBudgetCoFinancing.toProjectPartnerBudgetCoFinancingDTO() = ProjectPartnerBudgetCoFinancingDTO(
-    partner = partner.toOutputProjectPartner(),
+    partner = partner.toDto(),
     projectPartnerCoFinancingAndContributionOutputDTO = projectPartnerCoFinancingAndContribution?.toDto(),
     total = total
 )
@@ -58,12 +57,12 @@ fun ProjectPartnerContribution.toDto(partnerAbbreviation: String) = ProjectPartn
     id = id,
     name = if (isPartner) partnerAbbreviation else name,
     status = status,
-    isPartner = isPartner,
+    partner = isPartner,
     amount = amount
 )
 
 fun Collection<ProjectPartnerContribution>.toContributionDto(partnerAbbreviation: String): List<ProjectPartnerContributionDTO> =
     if (isEmpty())
-        listOf(ProjectPartnerContributionDTO(isPartner = true, name = partnerAbbreviation))
+        listOf(ProjectPartnerContributionDTO(partner = true, name = partnerAbbreviation))
     else
-        map { it.toDto(partnerAbbreviation) }.sortedWith(compareBy({ !it.isPartner }, { it.id }))
+        map { it.toDto(partnerAbbreviation) }.sortedWith(compareBy({ !it.partner }, { it.id }))

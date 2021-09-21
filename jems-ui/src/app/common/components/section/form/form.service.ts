@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {FormGroup} from '@angular/forms';
-import {I18nLabel} from '../../../i18n/i18n-label';
-import {Log} from '../../../utils/log';
+import {I18nLabel} from '@common/i18n/i18n-label';
+import {Log} from '@common/utils/log';
 import {filter, tap} from 'rxjs/operators';
-import {RoutingService} from '../../../services/routing.service';
+import {RoutingService} from '@common/services/routing.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TranslateService} from '@ngx-translate/core';
-import {APIError} from '../../../models/APIError';
+import {APIError} from '@common/models/APIError';
 
 @UntilDestroy()
 @Injectable()
@@ -85,7 +85,8 @@ export class FormService {
         this.form.markAsUntouched();
       }
       this.routingService.confirmLeave = false;
-    } else {
+    } else if (this.saveLabel !== 'common.create.label') {
+      // confirm page leave unless the form is in create mode
       this.routingService.confirmLeave = true;
     }
     this.setSuccess(null);

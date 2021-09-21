@@ -38,6 +38,7 @@
     </div>
     <ng-container *ngIf="!metadata">
         <button mat-stroked-button type="submit"
+                *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                 [disabled]="submitted"
                 (click)="onSubmit()">
             {{'programme.area.nuts.download.button' | translate}}

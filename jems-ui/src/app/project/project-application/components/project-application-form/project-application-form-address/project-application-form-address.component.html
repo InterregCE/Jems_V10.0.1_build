@@ -1,43 +1,49 @@
 <div appFormLayout [formGroup]="addressForm">
-    <mat-form-field *ngIf="nuts">
-        <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
-        <input name="country" formControlName="country" matInput
-               [matAutocomplete]="country"
-               (focusout)="countryUnfocused($event)">
-        <mat-autocomplete #country="matAutocomplete"
-                          (optionSelected)="countryChanged($event.option?.value)">
-            <mat-option *ngFor="let region of filteredCountry | async" [value]="region">
-                {{region}}
-            </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
+    <ng-container *ngIf="nuts">
+        <mat-form-field *appFormFieldVisibilityStatus="fieldIds?.COUNTRY_AND_NUTS">
+            <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
+            <input name="country" formControlName="country" matInput
+                   [matAutocomplete]="country"
+                   (focusout)="countryUnfocused($event)">
+            <mat-autocomplete #country="matAutocomplete"
+                              (optionSelected)="countryChanged($event.option?.value)">
+                <mat-option *ngFor="let region of filteredCountry | async" [value]="region">
+                    {{region}}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+    </ng-container>
 
-    <mat-form-field *ngIf="addressForm.controls.country?.value">
-        <mat-label>{{'project.partner.main-address.region2' | translate}}</mat-label>
-        <input name="region2" formControlName="region2" matInput
-               [matAutocomplete]="region2"
-               (focusout)="region2Unfocused($event)">
-        <mat-autocomplete #region2="matAutocomplete"
-                          (optionSelected)="region2Changed($event.option?.value)">
-            <mat-option *ngFor="let region of filteredRegion2 | async" [value]="region">
-                {{region}}
-            </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
+    <ng-container *ngIf="addressForm.controls.country?.value">
+        <mat-form-field *appFormFieldVisibilityStatus="fieldIds?.COUNTRY_AND_NUTS">
+            <mat-label>{{'project.partner.main-address.region2' | translate}}</mat-label>
+            <input name="region2" formControlName="region2" matInput
+                   [matAutocomplete]="region2"
+                   (focusout)="region2Unfocused($event)">
+            <mat-autocomplete #region2="matAutocomplete"
+                              (optionSelected)="region2Changed($event.option?.value)">
+                <mat-option *ngFor="let region of filteredRegion2 | async" [value]="region">
+                    {{region}}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+    </ng-container>
 
-    <mat-form-field *ngIf="addressForm.controls.region2?.value">
-        <mat-label>{{'project.partner.main-address.region3' | translate}}</mat-label>
-        <input name="region3" formControlName="region3" matInput
-               [matAutocomplete]="region3"
-               (focusout)="region3Unfocused($event)">
-        <mat-autocomplete #region3="matAutocomplete">
-            <mat-option *ngFor="let region of filteredRegion3 | async" [value]="region">
-                {{region}}
-            </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
+    <ng-container *ngIf="addressForm.controls.region2?.value">
+        <mat-form-field *appFormFieldVisibilityStatus="fieldIds?.COUNTRY_AND_NUTS">
+            <mat-label>{{'project.partner.main-address.region3' | translate}}</mat-label>
+            <input name="region3" formControlName="region3" matInput
+                   [matAutocomplete]="region3"
+                   (focusout)="region3Unfocused($event)">
+            <mat-autocomplete #region3="matAutocomplete">
+                <mat-option *ngFor="let region of filteredRegion3 | async" [value]="region">
+                    {{region}}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+    </ng-container>
 
-    <mat-form-field class="w-100">
+    <mat-form-field class="w-100" *appFormFieldVisibilityStatus="fieldIds?.STREET ">
         <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
         <input #streetInput name="street" formControlName="street" matInput>
         <mat-hint [appHintFor]="streetInput" [hide]="addressForm.controls?.street?.errors !== null">
@@ -50,7 +56,7 @@
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="w-100">
+    <mat-form-field class="w-100" *appFormFieldVisibilityStatus="fieldIds?.HOUSE_NUMBER">
         <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
         <input #houseNumberInput name="houseNumber" formControlName="houseNumber" matInput>
         <mat-hint [appHintFor]="houseNumberInput" [hide]="addressForm.controls?.houseNumber?.errors !== null">
@@ -63,7 +69,7 @@
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="w-100">
+    <mat-form-field class="w-100" *appFormFieldVisibilityStatus="fieldIds?.POSTAL_CODE">
         <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
         <input #postCodeInput name="postalCode" formControlName="postalCode" matInput>
         <mat-hint [appHintFor]="postCodeInput" [hide]="addressForm.controls?.postalCode?.errors !== null">
@@ -76,7 +82,7 @@
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="w-100">
+    <mat-form-field class="w-100" *appFormFieldVisibilityStatus="fieldIds?.CITY">
         <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
         <input #cityInput name="city" formControlName="city" matInput>
         <mat-hint [appHintFor]="cityInput" [hide]="addressForm.controls?.city?.errors !== null">
@@ -89,16 +95,18 @@
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field *ngIf="addressForm.controls?.homepage" class="w-100">
-        <mat-label>{{'project.partner.main-address.homepage' | translate}}</mat-label>
-        <input #homepageInput name="homepage" formControlName="homepage" matInput>
-        <mat-hint [appHintFor]="homepageInput" [hide]="addressForm.controls?.homepage?.errors !== null">
-            <app-text-hint [currentLength]="homepageInput?.value?.length" [maxLength]="250"></app-text-hint>
-        </mat-hint>
-        <mat-error>
-            <app-form-field-errors
-                    [errors]="addressForm?.controls?.homepage?.errors">
-            </app-form-field-errors>
-        </mat-error>
-    </mat-form-field>
+    <ng-container *ngIf="addressForm.controls?.homepage">
+        <mat-form-field class="w-100" *appFormFieldVisibilityStatus="fieldIds?.HOMEPAGE">
+            <mat-label>{{'project.partner.main-address.homepage' | translate}}</mat-label>
+            <input #homepageInput name="homepage" formControlName="homepage" matInput>
+            <mat-hint [appHintFor]="homepageInput" [hide]="addressForm.controls?.homepage?.errors !== null">
+                <app-text-hint [currentLength]="homepageInput?.value?.length" [maxLength]="250"></app-text-hint>
+            </mat-hint>
+            <mat-error>
+                <app-form-field-errors
+                        [errors]="addressForm?.controls?.homepage?.errors">
+                </app-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </ng-container>
 </div>

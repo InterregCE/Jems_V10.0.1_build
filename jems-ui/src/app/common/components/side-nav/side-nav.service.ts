@@ -26,7 +26,7 @@ export class SideNavService {
       .pipe(
         filter(([val, to]) => to.route === (val as ResolveEnd).url),
         delay(500), // wait for dom to render
-        tap(([val, to]) => this.scrollToRoute(to.scrollRoute as any))
+        tap(([, to]) => this.scrollToRoute(to.scrollRoute as any))
       ).subscribe();
 
     this.routeChanged$
@@ -51,10 +51,6 @@ export class SideNavService {
     return this.headlines$.asObservable();
   }
 
-  setAlertStatus(newAlertStatus: boolean): void {
-    // TODO: remove all usages
-  }
-
   navigate(headline: HeadlineRoute): void {
     if (this.router.url !== headline.route) {
       if (headline.route) {
@@ -77,13 +73,6 @@ export class SideNavService {
   private scrollToRoute(scrollRoute: string): void {
     Log.debug('Scrolling to anchor', this, scrollRoute);
     document.getElementById(scrollRoute)?.scrollIntoView({behavior: 'smooth'});
-  }
-
-  private getAllRoutes(headline: HeadlineRoute, allRoutes: string[]): void {
-    if (headline.route) {
-      allRoutes.push(headline.route);
-    }
-    headline?.bullets?.forEach(child => this.getAllRoutes(child, allRoutes));
   }
 
   private resetOnLeave(val: ResolveEnd, headlinesRoot: string): void {

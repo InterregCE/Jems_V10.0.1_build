@@ -25,6 +25,18 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
 
     fun findFirstByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectAssociatedOrganization>
 
+    @Query(
+        """
+            SELECT
+             entity.partner_id AS partnerId
+             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+             WHERE entity.id = :id AND entity.project_id = :projectId
+             """,
+        nativeQuery = true)
+    fun getPartnerIdByProjectIdAndIdAsOfTimestamp(
+        projectId: Long, id: Long, timestamp: Timestamp
+    ): Long?
+
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectAssociatedOrganization>
 
     fun findAllByProjectId(projectId: Long, sort: Sort): Iterable<ProjectAssociatedOrganization>
@@ -34,11 +46,11 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
     @Query(
         """
             SELECT
-             entity.id as id, 
+             entity.id as id,
              addresses.*,
              addresses.nuts_region2 AS nutsRegion2,
-             addresses.nuts_region3 AS nutsRegion3, 
-             addresses.house_number AS houseNumber, 
+             addresses.nuts_region3 AS nutsRegion3,
+             addresses.house_number AS houseNumber,
              addresses.postal_code AS postalCode
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses ON entity.id = addresses.organization_id

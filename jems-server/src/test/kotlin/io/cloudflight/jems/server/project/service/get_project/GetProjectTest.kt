@@ -28,6 +28,8 @@ internal class GetProjectTest : UnitTest() {
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
+            stateAids = emptyList(),
+            applicationFormFieldConfigurations = mutableSetOf()
         )
     }
 

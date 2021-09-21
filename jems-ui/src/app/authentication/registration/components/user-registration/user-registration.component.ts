@@ -1,9 +1,12 @@
 import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {AbstractForm} from '@common/components/forms/abstract-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {UserRegistrationDTO} from '@cat/api';
+import {InfoService, UserRegistrationDTO} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
 import {UserPasswordComponent} from '../../../../system/user-page/user-detail-page/user-password/user-password.component';
+import {Router} from '@angular/router';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 
 @Component({
@@ -20,6 +23,8 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit {
   hide = true;
   clearOnSuccess = true;
   permanentSuccessAlert = true;
+  areTermsAccepted = false;
+  termsAndPrivacyPolicyUrl$: Observable<string>;
 
   userForm = this.formBuilder.group({
     name: ['', Validators.compose([
@@ -41,6 +46,9 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit {
       Validators.required,
       Validators.pattern(UserPasswordComponent.PASSWORD_REGEX)
     ])],
+    acceptTerms: ['', Validators.compose([
+      Validators.requiredTrue,
+    ])]
   });
 
   emailErrors = {
@@ -53,9 +61,14 @@ export class UserRegistrationComponent extends AbstractForm implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef,
-              protected translationService: TranslateService
+              protected translationService: TranslateService,
+              private router: Router,
+              private infoService: InfoService
   ) {
     super(changeDetectorRef, translationService);
+    this.termsAndPrivacyPolicyUrl$ = this.infoService.getVersionInfo().pipe(
+      map(info => info.termsAndPrivacyPolicyUrl)
+    );
   }
 
   ngOnInit(): void {

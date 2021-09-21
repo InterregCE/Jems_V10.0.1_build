@@ -1,7 +1,6 @@
 <app-main-page-template [needsCard]="true"
                         titleKey="programme.data.page.title"
-                        subTitleKey="programme.tab.indicators"
-                        *ngxPermissionsExcept="Permission.APPLICANT_USER">
+                        subTitleKey="programme.tab.indicators">
 
     <div page-description>
         {{ "programme.tab.indicators.description" | translate}}
@@ -16,8 +15,9 @@
         <ng-container *ngIf="currentOutputIndicatorPage$ | async as outputIndicatorPage">
             <h3>{{'output.indicator.table.title' | translate}}</h3>
             <button mat-stroked-button
+                    *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                     [routerLink]="'/app/programme/indicators/outputIndicator/create'">
-                + Add new Output Indicator
+                <mat-icon>add</mat-icon>&nbsp;{{ 'programme.breadcrumb.outputIndicator.create' | translate }}
             </button>
             <app-programme-output-indicators-list
                     appNoWidthLimit
@@ -33,8 +33,9 @@
         <ng-container *ngIf="currentResultIndicatorPage$ | async as resultIndicatorPage">
             <h3>{{'result.indicator.table.title' | translate}}</h3>
             <button mat-stroked-button
+                    *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                     [routerLink]="'/app/programme/indicators/resultIndicator/create'">
-                + Add new Result Indicator
+                <mat-icon>add</mat-icon>&nbsp;{{ 'programme.breadcrumb.resultIndicator.create' | translate }}
             </button>
             <app-programme-result-indicators-list
                     appNoWidthLimit

@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.application.workflow.states.first_step
 
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
@@ -30,6 +29,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.springframework.context.ApplicationEventPublisher
 
 @ExtendWith(MockKExtension::class)
 class FirstStepApprovedApplicationStateTest {
@@ -51,7 +51,7 @@ class FirstStepApprovedApplicationStateTest {
     lateinit var projectWorkflowPersistence: ProjectWorkflowPersistence
 
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
     lateinit var securityService: SecurityService

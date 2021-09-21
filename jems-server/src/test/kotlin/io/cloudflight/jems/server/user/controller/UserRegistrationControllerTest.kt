@@ -39,6 +39,7 @@ class UserRegistrationControllerTest : UnitTest() {
         private val expectedUserRole = UserRoleDTO(
             id = ROLE_ID,
             name = "maintainer",
+            defaultForRegisteredUser = false,
             permissions = listOf(UserRolePermissionDTO.ProjectSubmission)
         )
         private val expectedUser = UserDTO(

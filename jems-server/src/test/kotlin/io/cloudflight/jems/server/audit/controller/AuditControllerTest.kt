@@ -32,7 +32,7 @@ class AuditControllerTest: UnitTest() {
             id = "ID_of_audit",
             timestamp = time,
             action = AuditAction.QUALITY_ASSESSMENT_CONCLUDED,
-            project = AuditProject(id = "PORJECT_ID_5", name = "Project name"),
+            project = AuditProject(id = "PORJECT_ID_5", customIdentifier = "CUST-ID5", name = "Project name"),
             user = AuditUser(id = 8L, email = "user8@mail.eu"),
             description = "Quality assessment concluded by user user8@mail.eu",
         )
@@ -40,7 +40,7 @@ class AuditControllerTest: UnitTest() {
         private val auditDto = AuditDTO(
             timestamp = time,
             action = AuditAction.QUALITY_ASSESSMENT_CONCLUDED,
-            project = AuditProjectDTO(id = "PORJECT_ID_5", name = "Project name"),
+            project = AuditProjectDTO(id = "PORJECT_ID_5", customIdentifier = "CUST-ID5", name = "Project name"),
             user = AuditUserDTO(id = 8L, email = "user8@mail.eu"),
             description = "Quality assessment concluded by user user8@mail.eu",
         )

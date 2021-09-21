@@ -27,6 +27,7 @@ import {TranslatableMatDatepickerIntl} from './translatable-mat-datepicker-intl.
 import {MatChipsModule} from '@angular/material/chips';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {ErrorStateMatcher, ShowOnDirtyErrorStateMatcher} from '@angular/material/core';
 
 const modules = [
   MatTabsModule,
@@ -64,6 +65,7 @@ const modules = [
   providers: [
     {provide: MatPaginatorIntl, useExisting: TranslatableMatPaginatorIntl},
     {provide: MatDatepickerIntl, useExisting: TranslatableMatDatepickerIntl},
+    {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
   ],
   exports: [
     modules

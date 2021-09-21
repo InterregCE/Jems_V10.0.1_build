@@ -3,6 +3,7 @@ package io.cloudflight.jems.api.user
 import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
 import io.cloudflight.jems.api.user.dto.UserDTO
+import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
 import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -28,8 +29,8 @@ interface UserApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping
-    fun list(pageable: Pageable): Page<UserSummaryDTO>
+    @PostMapping("list",consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun list(pageable: Pageable, @RequestBody(required = false) searchRequest: UserSearchRequestDTO?): Page<UserSummaryDTO>
 
     @ApiOperation("Creates new User")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

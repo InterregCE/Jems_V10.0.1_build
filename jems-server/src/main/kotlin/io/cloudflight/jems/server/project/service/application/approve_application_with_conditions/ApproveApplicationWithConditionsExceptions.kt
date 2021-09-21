@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.service.application.approve_applicati
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
 
-const val APPROVE_APPLICATION_WITH_CONDITIONS_ERROR_CODE_PREFIX = "S-PA-AAWC"
-const val APPROVE_APPLICATION_WITH_CONDITIONS_ERROR_KEY_PREFIX = "use.case.approve.application.with.condition"
+private const val APPROVE_APPLICATION_WITH_CONDITIONS_ERROR_CODE_PREFIX = "S-PA-AAWC"
+private const val APPROVE_APPLICATION_WITH_CONDITIONS_ERROR_KEY_PREFIX = "use.case.approve.application.with.condition"
 
 class ApproveApplicationWithConditionsException(cause: Throwable) : ApplicationException(
     code = APPROVE_APPLICATION_WITH_CONDITIONS_ERROR_CODE_PREFIX,

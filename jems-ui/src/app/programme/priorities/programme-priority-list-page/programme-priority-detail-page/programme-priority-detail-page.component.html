@@ -4,7 +4,8 @@
     <form appFormLayout [formGroup]="form">
         <div page-sub-title appMultiColumnRow>
             <h2 class="mb-0">{{'programme.priority.add.title' | translate}}</h2>
-            <button color="primary" *ngIf="form.disabled" mat-raised-button
+            <button color="primary" mat-raised-button
+                    *ngIf="form.disabled && (programmeEditableStateStore.hasEditPermission$ | async)"
                     (click)="form.enable(); resetForm(data.priority, data.freePrioritiesWithPolicies)">
                 {{'common.edit.label' | translate}}
             </button>
@@ -12,7 +13,10 @@
         <div appMultiColumnRow stretch>
             <mat-form-field appFormFieldWidth="large">
                 <mat-label>{{'programme.priority.field.code' | translate}}</mat-label>
-                <input [formControlName]="constants.CODE.name" matInput required>
+                <input #codeInput [formControlName]="constants.CODE.name" matInput required>
+                <mat-hint [appHintFor]="codeInput" [hide]="form.get(constants.CODE.name)?.errors !== null">
+                    <app-text-hint [currentLength]="codeInput?.value?.length" [maxLength]="50"></app-text-hint>
+                </mat-hint>
                 <mat-error>
                     <app-form-field-errors
                             [errors]="form.get(constants.CODE.name)?.errors"
@@ -69,7 +73,10 @@
                         <div>
                             <mat-form-field appFormFieldWidth="full" extendError>
                                 <mat-label>{{'programme.priority.objective.table.field.code' | translate}}</mat-label>
-                                <input [formControlName]="constants.POLICY_CODE.name" [required]="control.get(constants.POLICY_SELECTED.name).value" matInput>
+                                <input #policyCode [formControlName]="constants.POLICY_CODE.name" [required]="control.get(constants.POLICY_SELECTED.name).value" matInput>
+                                <mat-hint [appHintFor]="policyCode" [hide]="control.get(constants.POLICY_CODE.name)?.errors !== null">
+                                    <app-text-hint [currentLength]="policyCode?.value?.length" [maxLength]="50"></app-text-hint>
+                                </mat-hint>
                                 <mat-error>
                                     <app-form-field-errors
                                             [errors]="control.get(constants.POLICY_CODE.name)?.errors"

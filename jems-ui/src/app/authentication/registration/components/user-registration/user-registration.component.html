@@ -51,6 +51,15 @@
                 <mat-hint>{{'user.registration.field.password.hint' | translate}}</mat-hint>
             </mat-form-field>
 
+            <div>
+                <mat-checkbox
+                        formControlName="acceptTerms"
+                        (change)="areTermsAccepted = $event.checked">
+                    {{'user.terms.register.firstText' | translate}}
+                    <span class="terms-link"><a [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} *</a></span>
+                </mat-checkbox>
+            </div>
+
             <div appMultiColumnRow>
                 <button mat-stroked-button
                         type="button"

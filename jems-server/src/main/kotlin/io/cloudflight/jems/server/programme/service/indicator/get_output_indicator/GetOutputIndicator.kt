@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.programme.service.indicator.get_output_indicator
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +12,7 @@ class GetOutputIndicator(
 ) : GetOutputIndicatorInteractor {
 
     @Transactional(readOnly = true)
-    @CanReadProgrammeSetup
+    @CanRetrieveProgrammeSetup
     @ExceptionWrapper(GetOutputIndicatorException::class)
     override fun getOutputIndicator(id: Long) =
         persistence.getOutputIndicator(id)

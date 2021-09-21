@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.budget.model
 
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import java.math.BigDecimal
 
 data class PartnerBudget(
 
-    val partner: ProjectPartner,
+    val partner: ProjectPartnerSummary,
     val staffCosts: BigDecimal = BigDecimal.ZERO,
     val travelCosts: BigDecimal = BigDecimal.ZERO,
     val externalCosts: BigDecimal = BigDecimal.ZERO,

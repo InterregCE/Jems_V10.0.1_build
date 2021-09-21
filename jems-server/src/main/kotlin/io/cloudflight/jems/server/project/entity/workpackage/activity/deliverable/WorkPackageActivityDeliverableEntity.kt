@@ -1,25 +1,35 @@
 package io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable
 
+import io.cloudflight.jems.server.common.entity.resetTranslations
 import javax.persistence.CascadeType
-import javax.persistence.EmbeddedId
+import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
 import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_work_package_activity_deliverable")
-data class WorkPackageActivityDeliverableEntity(
+class WorkPackageActivityDeliverableEntity(
 
-    @EmbeddedId
-    val deliverableId: WorkPackageActivityDeliverableId,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.deliverableId")
-    val translatedValues: Set<WorkPackageActivityDeliverableTranslationEntity> = emptySet(),
+    @Column(name = "deliverable_number")
+    @field:NotNull
+    var deliverableNumber: Int,
 
-    val startPeriod: Int? = null,
-) {
-    override fun equals(other: Any?) = (other is WorkPackageActivityDeliverableEntity)
-        && deliverableId == other.deliverableId
-        && translatedValues == other.translatedValues
-        && startPeriod == other.startPeriod
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
+    val translatedValues: MutableSet<WorkPackageActivityDeliverableTranslationEntity> = mutableSetOf(),
 
-    override fun hashCode() = deliverableId.hashCode()
+    var startPeriod: Int? = null,
+){
+    fun updateTranslations(newTranslations: Set<WorkPackageActivityDeliverableTranslationEntity>) {
+        this.translatedValues.resetTranslations(newTranslations
+        ) { currentTranslation, newTranslation ->
+            currentTranslation.description = newTranslation.description
+        }
+    }
 }

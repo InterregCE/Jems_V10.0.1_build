@@ -28,6 +28,9 @@
           "id": {
             "type": "keyword"
           },
+          "customIdentifier": {
+            "type": "keyword"
+          },
           "name": {
             "type": "keyword"
           }

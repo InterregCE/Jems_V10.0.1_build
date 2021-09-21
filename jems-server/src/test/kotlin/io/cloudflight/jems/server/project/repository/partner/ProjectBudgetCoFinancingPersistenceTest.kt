@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Private
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPart
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -25,6 +26,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -65,7 +67,6 @@ class ProjectBudgetCoFinancingPersistenceTest {
                     status = ApplicationStatus.DRAFT,
                     user = call.creator
                 ),
-                step2Active = false
             )
         }
 
@@ -80,6 +81,9 @@ class ProjectBudgetCoFinancingPersistenceTest {
 
     @RelaxedMockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
+
+    @MockK
+    lateinit var projectPartnerCoFinancingRepository: ProjectPartnerCoFinancingRepository
 
     @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
@@ -97,8 +101,8 @@ class ProjectBudgetCoFinancingPersistenceTest {
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
             projectPartnerRepository,
-            projectVersionUtils,
-            projectPersistence
+            projectPartnerCoFinancingRepository,
+            projectVersionUtils
         )
     }
 
@@ -117,54 +121,54 @@ class ProjectBudgetCoFinancingPersistenceTest {
 
     @Test
     fun `get co financing and contributions`() {
-        val dummyFinancing = setOf(
+        val dummyFinancing = mutableListOf(
             ProjectPartnerCoFinancingEntity(
                 coFinancingFundId = ProjectPartnerCoFinancingFundId(
                     partnerId = PARTNER_ID,
-                    type = ProjectPartnerCoFinancingFundType.MainFund
+                    orderNr = 1,
                 ), percentage = BigDecimal.valueOf(24.5), programmeFund = fund1
             ),
             ProjectPartnerCoFinancingEntity(
                 coFinancingFundId = ProjectPartnerCoFinancingFundId(
                     partnerId = PARTNER_ID,
-                    type = ProjectPartnerCoFinancingFundType.PartnerContribution
+                    orderNr = 2,
                 ), percentage = BigDecimal.valueOf(74.5), programmeFund = null
             )
         )
         val dummyPartnerContributions = listOf(
-            ProjectPartnerContributionEntity(
+            ProjectPartnerContribution(
                 id = 1,
-                partnerId = PARTNER_ID,
                 name = null,
                 status = Public,
-                amount = BigDecimal.TEN
+                amount = BigDecimal.TEN,
+                isPartner = true
             ),
-            ProjectPartnerContributionEntity(
+            ProjectPartnerContribution(
                 id = 2,
-                partnerId = PARTNER_ID,
                 name = "source01",
                 status = Private,
-                amount = BigDecimal.ONE
-            )
+                amount = BigDecimal.ONE,
+                isPartner = false,
+                )
         )
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(
             dummyPartner.copy(
-                financing = dummyFinancing,
-                partnerContributions = dummyPartnerContributions
+                newPartnerContributions = dummyPartnerContributions
             )
         )
+        every { projectPartnerCoFinancingRepository.findAllByCoFinancingFundIdPartnerId(PARTNER_ID) } returns dummyFinancing
 
         val result = persistence.getCoFinancingAndContributions(PARTNER_ID, null)
 
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fund = fund1Model,
                 percentage = BigDecimal.valueOf(24.5)
             ),
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fund = null,
                 percentage = BigDecimal.valueOf(74.5)
             )
@@ -185,15 +189,18 @@ class ProjectBudgetCoFinancingPersistenceTest {
     fun `update CoFinancing and contribution`() {
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(dummyPartner)
         every { projectPartnerRepository.save(any()) } returnsArgument 0
+        every { projectPartnerCoFinancingRepository.deleteByCoFinancingFundIdPartnerId(PARTNER_ID) } answers { }
+        every { projectPartnerCoFinancingRepository.saveAll(any<HashSet<ProjectPartnerCoFinancingEntity>>()) } answers {
+            val destination = firstArg<HashSet<ProjectPartnerCoFinancingEntity>>()
+            destination.map { it }
+        }
 
-        val toBeSavedFinancing = setOf(
+        val toBeSavedFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
                 fundId = fund1.id,
                 percentage = BigDecimal.valueOf(29.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(69.5)
             )
@@ -212,12 +219,12 @@ class ProjectBudgetCoFinancingPersistenceTest {
         assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
         assertThat(result.finances).containsExactlyInAnyOrder(
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fund = fund1Model,
                 percentage = BigDecimal.valueOf(29.5)
             ),
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fund = null,
                 percentage = BigDecimal.valueOf(69.5)
             )

@@ -25,7 +25,7 @@ data class ProjectStatusHistoryEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
-    val project: ProjectEntity? = null,
+    var project: ProjectEntity? = null,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull

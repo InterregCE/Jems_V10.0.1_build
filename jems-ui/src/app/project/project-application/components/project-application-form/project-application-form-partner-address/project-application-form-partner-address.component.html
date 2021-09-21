@@ -3,19 +3,25 @@
     <form appFormLayout [formGroup]="partnerAddressForm">
         <h3>{{'project.partner.address.header' | translate}}</h3>
         <h4>{{'project.partner.main-address.header' | translate}}</h4>
-        <app-project-application-form-address
-                *ngIf="partnerAddressForm?.controls"
-                [partnerId]="partnerId"
-                [addressForm]="partnerAddressForm.controls.organization"
-                [nuts]="nuts">
-        </app-project-application-form-address>
+        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS.MAIN">
+            <app-project-application-form-address
+                    *ngIf="partnerAddressForm?.controls"
+                    [partnerId]="partnerId"
+                    [addressForm]="partnerAddressForm.controls.organization"
+                    [nuts]="nuts"
+                    [fieldIds]="APPLICATION_FORM.SECTION_B.ADDRESS.MAIN">
+            </app-project-application-form-address>
+        </ng-container>
 
-        <h4>{{'project.partner.department-address.header' | translate}}</h4>
-        <app-project-application-form-address
-                *ngIf="partnerAddressForm?.controls"
-                [partnerId]="partnerId"
-                [addressForm]="partnerAddressForm.controls.department"
-                [nuts]="nuts">
-        </app-project-application-form-address>
+        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS.SECONDARY">
+            <h4>{{'project.partner.department-address.header' | translate}}</h4>
+            <app-project-application-form-address
+                    *ngIf="partnerAddressForm?.controls"
+                    [partnerId]="partnerId"
+                    [addressForm]="partnerAddressForm.controls.department"
+                    [nuts]="nuts"
+                    [fieldIds]="APPLICATION_FORM.SECTION_B.ADDRESS.SECONDARY">
+            </app-project-application-form-address>
+        </ng-container>
     </form>
 </app-form>

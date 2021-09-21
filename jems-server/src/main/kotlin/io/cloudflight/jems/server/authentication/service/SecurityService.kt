@@ -6,5 +6,4 @@ interface SecurityService {
     val currentUser: CurrentUser?
 
     fun getUserIdOrThrow(): Long
-    fun assertAdminAccess()
 }

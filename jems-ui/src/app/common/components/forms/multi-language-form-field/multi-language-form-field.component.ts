@@ -1,4 +1,4 @@
-import {Component, ElementRef, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, forwardRef, Input, OnInit} from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -15,11 +15,11 @@ import {
 import {InputTranslation} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {MultiLanguageFormFieldConstants} from '@common/components/forms/multi-language-form-field/multi-language-form-field.constants';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {Observable, ReplaySubject} from 'rxjs';
 import {MultiLanguageContainerService} from '@common/components/forms/multi-language-container/multi-language-container.service';
 import {INPUT_STATE} from '@common/components/forms/multi-language-container/multi-language-input-state';
-import {LanguageStore} from '../../../services/language-store.service';
+import {LanguageStore} from '@common/services/language-store.service';
 
 @UntilDestroy()
 @Component({
@@ -44,9 +44,6 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   disabled = false;
   constants = MultiLanguageFormFieldConstants;
 
-  @ViewChild('inputElement')
-  inputElement: ElementRef;
-
   @Input()
   type: 'input' | 'textarea' = 'input';
   @Input()
@@ -65,7 +62,6 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   isFallBackLanguageReadonly = false;
 
   multiLanguageFormGroup: FormGroup;
-  languages$: Observable<string[]>;
   currentLanguage$: Observable<string>;
   state$ = new ReplaySubject<{ [key: string]: INPUT_STATE }>(1);
 
@@ -75,13 +71,14 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   }
 
   ngOnInit(): void {
-    this.languages$ = this.multiLanguageContainerService.languages$;
-    this.currentLanguage$ = this.multiLanguageContainerService.activeLanguage$;
-
-    this.languages$.pipe(
+    this.multiLanguageContainerService.languages$.pipe(
+      map((languages => this.useFallBackLanguage && languages.indexOf(this.languageStore.getFallbackLanguageValue()) < 0 ?
+        [...languages, this.languageStore.getFallbackLanguageValue()] : [...languages])),
       tap(languages => this.resetForm(languages)),
       untilDestroyed(this)
     ).subscribe();
+
+    this.currentLanguage$ = this.multiLanguageContainerService.activeLanguage$;
   }
 
   registerOnChange(fn: any): void {
@@ -103,7 +100,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     if (this.multiLanguageFormGroup) {
       if (newValue && Array.isArray(newValue)) {
         if (this.multiLanguageContainerService.didLanguagesChange(newValue)) {
-          const inputTranslations = this.multiLanguageContainerService.multiLanguageFormFieldDefaultValue();
+          const inputTranslations = this.multiLanguageContainerService.multiLanguageFormFieldDefaultValue(this.useFallBackLanguage);
           inputTranslations.forEach(defaultItem => {
             defaultItem.translation = newValue.find(it => it.language === defaultItem.language)?.translation || '';
           });
@@ -112,7 +109,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
           this.inputs.setValue(newValue, {emitEvent: false});
         }
       } else {
-        this.inputs.setValue(this.multiLanguageContainerService.multiLanguageFormFieldDefaultValue(), {emitEvent: false});
+        this.inputs.setValue(this.multiLanguageContainerService.multiLanguageFormFieldDefaultValue(this.useFallBackLanguage), {emitEvent: false});
       }
       this.valueChanged();
     }
@@ -144,6 +141,9 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     return formGroup.get(this.constants.FORM_CONTROL_NAMES.translation) as FormControl;
   }
 
+  getTranslationLength(formGroup: AbstractControl): number {
+    return this.getTranslation(formGroup)?.value?.length ? this.getTranslation(formGroup)?.value?.length : 0;
+  }
 
   private initForm(languages: string[]): void {
     this.multiLanguageFormGroup = this.formBuilder.group({

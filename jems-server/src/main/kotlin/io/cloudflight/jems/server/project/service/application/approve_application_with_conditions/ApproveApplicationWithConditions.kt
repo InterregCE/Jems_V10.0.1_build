@@ -25,7 +25,7 @@ class ApproveApplicationWithConditions(
     @Transactional
     @ExceptionWrapper(ApproveApplicationWithConditionsException::class)
     override fun approveWithConditions(projectId: Long, actionInfo: ApplicationActionInfo): ApplicationStatus =
-        actionInfo.ifIsValid(generalValidatorService).run {
+        actionInfo.ifIsValid(generalValidatorService).let {
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).approveWithConditions(actionInfo).also {
                     auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))

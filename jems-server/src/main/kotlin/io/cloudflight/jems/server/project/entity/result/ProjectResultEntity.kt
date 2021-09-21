@@ -9,6 +9,7 @@ import javax.persistence.Entity
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_result")
 data class ProjectResultEntity (
@@ -24,6 +25,10 @@ data class ProjectResultEntity (
     @ManyToOne
     @JoinColumn(name = "indicator_result_id")
     val programmeResultIndicatorEntity: ResultIndicatorEntity? = null,
+
+    @Column
+    @field:NotNull
+    val baseline: BigDecimal = BigDecimal.ZERO,
 
     @Column
     val targetValue: BigDecimal? = null,

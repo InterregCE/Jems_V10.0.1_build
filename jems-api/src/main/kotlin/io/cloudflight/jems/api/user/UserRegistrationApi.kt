@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 @RequestMapping("/api/registration")
 interface UserRegistrationApi {
 
-    @ApiOperation("Creates new User - applicant")
+    @ApiOperation("Creates new User with default user role")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun registerApplicant(@RequestBody user: UserRegistrationDTO): UserDTO
 

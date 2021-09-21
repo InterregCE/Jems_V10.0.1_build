@@ -1,16 +1,18 @@
 package io.cloudflight.jems.server.project.entity.workpackage.activity
 
-import java.io.Serializable
+import io.cloudflight.jems.server.common.entity.TranslationEntity
+import io.cloudflight.jems.server.common.entity.TranslationId
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
 @Entity(name = "project_work_package_activity_transl")
-data class WorkPackageActivityTranslationEntity(
+class WorkPackageActivityTranslationEntity(
 
     @EmbeddedId
-    val translationId: WorkPackageActivityTranslationId,
+    override val translationId: TranslationId<WorkPackageActivityEntity>,
 
-    val title: String? = null,
+    var title: String? = null,
 
-    val description: String? = null,
-): Serializable
+    var description: String? = null,
+
+) : TranslationEntity()

@@ -9,7 +9,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {AuditLogStore} from './audit-log-store.service';
 import {SystemPageSidenavService} from '../services/system-page-sidenav.service';
-import {LocaleDatePipe} from '../../common/pipe/locale-date.pipe';
+import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 
 @UntilDestroy()
 @Component({
@@ -36,6 +36,9 @@ export class AuditLogComponent implements OnInit {
 
   @ViewChild('actionField', {static: true})
   actionField: TemplateRef<any>;
+
+  @ViewChild('descriptionCell', {static: true})
+  descriptionCell: TemplateRef<any>;
 
   auditTableConfiguration: TableConfiguration;
   filteredActions: Observable<string[]>;
@@ -125,7 +128,7 @@ export class AuditLogComponent implements OnInit {
         },
         {
           displayedColumn: 'audit.table.description',
-          elementProperty: 'description'
+          customCellTemplate: this.descriptionCell,
         }
       ]
     });
@@ -134,11 +137,12 @@ export class AuditLogComponent implements OnInit {
       map((filters: any[]) => ({
         userIds: filters[this.MAT_CHIP_USER_IDS_INDEX].values,
         userEmails: filters[this.MAT_CHIP_USER_EMAILS_INDEX].values,
-        actions: filters[this.MAT_CHIP_ACTIONS_INDEX].values,
+        actions: filters[this.MAT_CHIP_ACTIONS_INDEX].values?.filter((action: any) => !!action),
         projectIds: filters[this.MAT_CHIP_PROJECT_IDS_INDEX].values,
         timeFrom: filters[this.MAT_CHIP_START_DATE_INDEX].values[0],
         timeTo: filters[this.MAT_CHIP_END_DATE_INDEX].values[0],
       } as AuditSearchRequestDTO)),
+      tap(() => this.auditLogStore.auditPageIndex$.next(0)),
       tap((filters) => this.auditLogStore.auditPageFilter$.next(filters)),
       untilDestroyed(this)
     ).subscribe();
@@ -150,8 +154,17 @@ export class AuditLogComponent implements OnInit {
       );
   }
 
+
   addFilter(filterIndex: number, event: Event, isDate: boolean): void {
     if (!this.referenceForm.valid) {
+      return;
+    }
+    if (filterIndex === this.MAT_CHIP_ACTIONS_INDEX) {
+      const action = (event.target as any)?.value;
+      if (!action || Object.values(AuditSearchRequestDTO.ActionsEnum).includes(action)) {
+        this.addFilterToIndex(filterIndex, action);
+        (event.target as any).value = '';
+      }
       return;
     }
     if (isDate) {
@@ -189,16 +202,22 @@ export class AuditLogComponent implements OnInit {
     return this.filtersForm.at(index).get('values') as FormArray;
   }
 
-  private filter(value: string, actions: string[]): string[] {
-    const filterValue = (value || '').toLowerCase();
-    return actions
-      .filter(action => action.toLowerCase().includes(filterValue));
-  }
-
   formatDateValueInChip(filterItem: any): string {
     if (filterItem instanceof Date) {
       return this.localeDatePipe.transform(filterItem, 'L', 'LT');
     }
     return filterItem;
+  }
+
+  getDescription(description: string): string {
+    return description
+      .split('\n').join('<br/>')
+      .split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp');
+  }
+
+  private filter(value: string, actions: string[]): string[] {
+    const filterValue = (value || '').toLowerCase();
+    return actions
+      .filter(action => action.toLowerCase().includes(filterValue));
   }
 }

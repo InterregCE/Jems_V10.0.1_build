@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "90c0abd9-b128-4ee0-9d3d-9b622e700817",
+		"_postman_id": "5b9c2017-5661-4f09-b498-91dbc9315df6",
 		"name": "ems-rest-test",
-		"description": "Check EMS application for common use-cases",
+		"description": "Check JEMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -690,7 +690,7 @@
 									"});\r",
 									"\r",
 									"pm.test('we have programme 1-category unit cost or we need to create one', function() {\r",
-									"    const response = pm.response.json().filter(unitCost => !unitCost.isOneCostCategory);\r",
+									"    const response = pm.response.json().filter(unitCost => !unitCost.oneCostCategory);\r",
 									"    if (response.length > 0) {\r",
 									"        console.log('There is already some 1-category unitCost ' + response[0].name + ' with id=' + response[0].id + ', which we will use for calls during this test');\r",
 									"        pm.environment.set('programmeUnitCostId', response[0].id);\r",
@@ -749,7 +749,7 @@
 									"        pm.response.to.have.status(200);\r",
 									"        console.log('We created new programme unit cost with id=' + response.id);\r",
 									"        pm.environment.set('programmeUnitCostId', response.id);\r",
-									"        pm.expect(response.isOneCostCategory).to.be.true;\r",
+									"        pm.expect(response.oneCostCategory).to.be.true;\r",
 									"    } else {\r",
 									"        pm.expect(pm.response.code).to.be.oneOf([400, 422]);\r",
 									"        console.log('We did an invalid POST to NOT create new unit cost.');\r",
@@ -766,7 +766,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"[API test] 1-category\"\r\n        }\r\n    ],\r\n    \"description\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{inputLanguage}} 1-category description \"\r\n        }\r\n    ],\r\n    \"type\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"type translated to {{inputLanguage}}\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 498.26,\r\n    \"isOneCostCategory\": true,\r\n    \"categories\": [\"EquipmentCosts\"]\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"[API test] 1-category\"\r\n        }\r\n    ],\r\n    \"description\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{inputLanguage}} 1-category description \"\r\n        }\r\n    ],\r\n    \"type\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"type translated to {{inputLanguage}}\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 498.26,\r\n    \"oneCostCategory\": true,\r\n    \"categories\": [\"EquipmentCosts\"]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -923,7 +923,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"staffCostFlatRateSetup\": {\r\n        \"rate\": 20,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"officeAndAdministrationOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 15,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"officeAndAdministrationOnDirectCostsFlatRateSetup\": {\r\n        \"rate\": 25,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"travelAndAccommodationOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 15,\r\n        \"isAdjustable\": true\r\n    },\r\n    \"otherCostsOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 40,\r\n        \"isAdjustable\": true\r\n    }\r\n}\r\n",
+							"raw": "{\r\n    \"staffCostFlatRateSetup\": {\r\n        \"rate\": 20,\r\n        \"adjustable\": true\r\n    },\r\n    \"officeAndAdministrationOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 15,\r\n        \"adjustable\": true\r\n    },\r\n    \"officeAndAdministrationOnDirectCostsFlatRateSetup\": {\r\n        \"rate\": 25,\r\n        \"adjustable\": true\r\n    },\r\n    \"travelAndAccommodationOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 15,\r\n        \"adjustable\": true\r\n    },\r\n    \"otherCostsOnStaffCostsFlatRateSetup\": {\r\n        \"rate\": 40,\r\n        \"isAdjustable\": true\r\n    }\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1421,7 +1421,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"this should never be seen (ERR in API tests)\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 97851.32,\r\n    \"isOneCostCategory\": false,\r\n    \"categories\": [\r\n        \"OfficeAndAdministrationCosts\",\r\n        \"InfrastructureCosts\"\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"this should never be seen (ERR in API tests)\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 97851.32,\r\n    \"oneCostCategory\": false,\r\n    \"categories\": [\r\n        \"OfficeAndAdministrationCosts\",\r\n        \"InfrastructureCosts\"\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2012,12 +2012,12 @@
 							"script": {
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.have.status(422);\r",
 									"});\r",
 									"\r",
 									"pm.test('should return validation errors', function () {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response.formErrors.acronym.i18nKey).to.contain('project.acronym.size.too.long');\r",
+									"    pm.expect(response.formErrors.acronym.i18nKey).to.contain('common.error.field.max.length');\r",
 									"});\r",
 									""
 								],
@@ -2036,7 +2036,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"test-proj-this-is-a-very-long-name\"\n}\n"
+							"raw": "{\n    \"projectCallId\": {{callId}},\n\t\"acronym\": \"test-proj-this-is-a-very-long-name\"\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/project",
@@ -2068,12 +2068,12 @@
 							"script": {
 								"exec": [
 									"pm.test('should fail with 400', function () {\r",
-									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.have.status(422);\r",
 									"});\r",
 									"\r",
 									"pm.test('should return validation errors', function () {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response.formErrors.acronym.i18nKey).to.contain('project.acronym.should.not.be.empty');\r",
+									"    pm.expect(response.formErrors.acronym.i18nKey).to.contain('common.error.field.blank');\r",
 									"});\r",
 									""
 								],
@@ -2092,7 +2092,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"acronym\": \"\",\n\t\"projectCallId\": null\n}\n"
+							"raw": "{\n\t\"acronym\": \"\",\n\t\"projectCallId\": {{callId}}\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/project",
@@ -2301,7 +2301,7 @@
 					"response": []
 				},
 				{
-					"name": "test project application retrieval by id 1",
+					"name": "test project application retrieval by Id 1",
 					"event": [
 						{
 							"listen": "test",
@@ -2321,18 +2321,15 @@
 									"\r",
 									"pm.test('title should fit', function() {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"projectData\");\r",
-									"    pm.expect(response.projectData).to.have.property(\"title\");\r",
-									"    const title = pm.response.json().projectData.title.find(title => title.language === pm.variables.get('inputLanguage')).translation;\r",
+									"    const title = pm.response.json().title.find(title => title.language === pm.variables.get('inputLanguage')).translation;\r",
 									"    pm.expect(title).to.eql(pm.variables.get(\"project_title\"));\r",
 									"});\r",
 									"\r",
 									"pm.test('specificObjective should fit', function() {\r",
 									"    const response = pm.response.json();\r",
-									"    pm.expect(response).to.have.property(\"projectData\");\r",
-									"    pm.expect(response.projectData).to.have.property(\"specificObjective\");\r",
-									"    pm.expect(response.projectData.specificObjective).to.have.property(\"programmeObjectivePolicy\");\r",
-									"    pm.expect(response.projectData.specificObjective.programmeObjectivePolicy)\r",
+									"    pm.expect(response).to.have.property(\"specificObjective\");\r",
+									"    pm.expect(response.specificObjective).to.have.property(\"programmeObjectivePolicy\");\r",
+									"    pm.expect(response.specificObjective.programmeObjectivePolicy)\r",
 									"        .to.eql(pm.variables.get(\"programmePriorityPolicy\"));\r",
 									"});\r",
 									""
@@ -2345,13 +2342,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{projectId}}",
+							"raw": "{{url}}/api/project/byId/{{projectId}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"{{projectId}}"
 							]
 						}
@@ -2359,7 +2357,7 @@
 					"response": []
 				},
 				{
-					"name": "test project application retrieval by Id - invalid id",
+					"name": "test project application retrieval by Id - invalid Id",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -2386,13 +2384,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/-1",
+							"raw": "{{url}}/api/project/byId/-1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"-1"
 							]
 						}
@@ -2555,7 +2554,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
+							"raw": "{{url}}/api/project/{{application_id}}/file/upload",
 							"host": [
 								"{{url}}"
 							],
@@ -2563,14 +2562,15 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"file"
+								"file",
+								"upload"
 							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
-							]
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              }
+                          ]
 						}
 					},
 					"response": []
@@ -2623,7 +2623,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
+							"raw": "{{url}}/api/project/{{application_id}}/file/list",
 							"host": [
 								"{{url}}"
 							],
@@ -2631,14 +2631,19 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"file"
+								"file",
+								"list"
 							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
-							]
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              },
+                              {
+                                "key": "id",
+                                "value": null
+                              }
+                            ]
 						}
 					},
 					"response": []
@@ -2693,12 +2698,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"description\": \"API test description\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "API test description"
 						},
 						"url": {
 							"raw": "{{url}}/api/project/{{application_id}}/file/{{file_id}}/description",
@@ -2765,7 +2765,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/{{file_id}}",
+							"raw": "{{url}}/api/project/{{application_id}}/file/download/{{file_id}}",
 							"host": [
 								"{{url}}"
 							],
@@ -2774,72 +2774,8 @@
 								"project",
 								"{{application_id}}",
 								"file",
+								"download",
 								"{{file_id}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "programme user cannot create application",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('programme user should not be able to create project application', function() {\r",
-									"    pm.response.to.have.status(403);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{programme_user_password}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{programme_user_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"acronym\": \"should-not-create\",\r\n    \"projectCallId\": {{callId}}\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project"
 							]
 						}
 					},
@@ -2889,160 +2825,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"{{application_id}}",
-								"file"
-							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "programme user cannot upload file",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('programme user should not be able to upload APPLICANT file', function() {\r",
-									"    pm.response.to.have.status(403);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{programme_user_password}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{programme_user_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "multipart/form-data"
-							}
-						],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "collections/file_empty.txt"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"{{application_id}}",
-								"file"
-							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "programme user cannot set description",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('programme user should not be able to set description, although he can see DRAFT project', function() {\r",
-									"    pm.response.to.have.status(403);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{programme_user_password}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{programme_user_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"description\": \"API test description\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/{{file_id}}/description",
+							"raw": "{{url}}/api/project/{{application_id}}/file/list",
 							"host": [
 								"{{url}}"
 							],
@@ -3051,9 +2834,18 @@
 								"project",
 								"{{application_id}}",
 								"file",
-								"{{file_id}}",
-								"description"
-							]
+								"list"
+							],
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              },
+                              {
+                                "key": "id",
+                                "value": null
+                              }
+                            ]
 						}
 					},
 					"response": []
@@ -3102,7 +2894,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file/{{file_id}}",
+							"raw": "{{url}}/api/project/{{application_id}}/file/download/{{file_id}}",
 							"host": [
 								"{{url}}"
 							],
@@ -3111,6 +2903,7 @@
 								"project",
 								"{{application_id}}",
 								"file",
+								"download",
 								"{{file_id}}"
 							]
 						}
@@ -3403,7 +3196,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
+							"raw": "{{url}}/api/project/{{application_id}}/file/upload",
 							"host": [
 								"{{url}}"
 							],
@@ -3411,14 +3204,15 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"file"
+								"file",
+								"upload"
 							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
-							]
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              }
+                            ]
 						}
 					},
 					"response": []
@@ -3501,23 +3295,25 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const application = pm.response.json();\r",
-									"\r",
 									"pm.test('status should be SUBMITTED', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.expect(application.projectStatus.status).to.eql('SUBMITTED');\r",
 									"});\r",
 									"\r",
 									"pm.test('submission date should be filled in', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.expect(application.firstSubmission.updated).not.eql(null);\r",
 									"    pm.variables.set('application_submission_time', application.firstSubmission.updated);\r",
 									"});\r",
 									"\r",
 									"pm.test('resubmission date should be empty after first submission', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.expect(application.lastResubmission).to.eql(null);\r",
 									"});\r",
 									"\r",
 									"pm.test('submission and status should be equal', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.expect(application.firstSubmission)\r",
 									"        .deep.equal(application.projectStatus);\r",
 									"});\r",
@@ -3546,13 +3342,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
+							"raw": "{{url}}/api/project/byId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"{{application_id}}"
 							]
 						}
@@ -3619,7 +3416,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
+							"raw": "{{url}}/api/project/{{application_id}}/file/upload",
 							"host": [
 								"{{url}}"
 							],
@@ -3627,14 +3424,15 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"file"
+								"file",
+								"upload"
 							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
-							]
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              }
+                            ]
 						}
 					},
 					"response": []
@@ -3687,7 +3485,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/file?fileType=APPLICANT_FILE",
+							"raw": "{{url}}/api/project/{{application_id}}/file/list",
 							"host": [
 								"{{url}}"
 							],
@@ -3695,14 +3493,15 @@
 								"api",
 								"project",
 								"{{application_id}}",
-								"file"
+								"file",
+								"list"
 							],
-							"query": [
-								{
-									"key": "fileType",
-									"value": "APPLICANT_FILE"
-								}
-							]
+                            "query": [
+                              {
+                                "key": "type",
+                                "value": "APPLICATION"
+                              }
+                            ]
 						}
 					},
 					"response": []
@@ -3785,20 +3584,21 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const application = pm.response.json();\r",
-									"\r",
 									"pm.test('status should be RETURNED_TO_APPLICANT', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.expect(application.projectStatus.status).to.eql('RETURNED_TO_APPLICANT');\r",
 									"});\r",
 									"\r",
 									"pm.test('submission date should stay like it was', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.expect(application.firstSubmission.updated).to.eql(\r",
 									"        pm.variables.get('application_submission_time')\r",
 									"    );\r",
 									"});\r",
 									"\r",
 									"pm.test('resubmission date should still be empty', function() {\r",
+									"    const application = pm.response.json();\r",
 									"    pm.expect(application.lastResubmission).to.eql(null);\r",
 									"});\r",
 									"\r",
@@ -3832,13 +3632,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
+							"raw": "{{url}}/api/project/byId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"{{application_id}}"
 							]
 						}
@@ -4026,13 +3827,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
+							"raw": "{{url}}/api/project/byId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"{{application_id}}"
 							]
 						}
@@ -4345,9 +4147,9 @@
 									"});\r",
 									"\r",
 									"pm.test('EA is part of the application detail', function() {\r",
-									"    const application = pm.response.json().decision;\r",
-									"    pm.expect(application).to.have.property(\"eligibilityAssessment\");\r",
-									"    pm.expect(application.eligibilityAssessment).not.eql(null);\r",
+									"    const decision = pm.response.json().secondStepDecision;\r",
+									"    pm.expect(decision).to.have.property(\"eligibilityAssessment\");\r",
+									"    pm.expect(decision.eligibilityAssessment).not.eql(null);\r",
 									"});\r",
 									"\r",
 									"pm.test('status of the application is not changed', function() {\r",
@@ -4357,13 +4159,13 @@
 									"\r",
 									"pm.test('EA result is properly saved', function() {\r",
 									"    const application = pm.response.json();\r",
-									"    pm.expect(application.decision.eligibilityAssessment.result)\r",
+									"    pm.expect(application.secondStepDecision.eligibilityAssessment.result)\r",
 									"        .to.eql(\"PASSED\");\r",
 									"});\r",
 									"\r",
 									"pm.test('EA note is properly saved', function() {\r",
 									"    const application = pm.response.json();\r",
-									"    pm.expect(application.decision.eligibilityAssessment.note)\r",
+									"    pm.expect(application.secondStepDecision.eligibilityAssessment.note)\r",
 									"        .to.eql(\"status set to passed\");\r",
 									"});\r",
 									""
@@ -4432,7 +4234,12 @@
 							"script": {
 								"exec": [
 									"pm.test('program user should not be able to enter EA second time', function() {\r",
-									"    pm.response.to.have.status(403);\r",
+									"    pm.response.to.have.status(422);\r",
+									"});\r",
+									"\r",
+									"pm.test('should return error', function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.details[0].i18nMessage.i18nKey).to.contain('use.case.set.assessment.eligibility.step2.already.concluded');\r",
 									"});\r",
 									""
 								],
@@ -4588,7 +4395,7 @@
 									"});\r",
 									"\r",
 									"pm.test('correct error detail translation key returned', function() {\r",
-									"    pm.expect(pm.response.json().formErrors.decisionDate.i18nKey).to.eql('common.error.date.is.in.future');\r",
+									"    pm.expect(pm.response.json().formErrors.decisionDate.i18nKey).to.eql('common.error.field.date.is.in.future');\r",
 									"});\r",
 									""
 								],
@@ -4774,13 +4581,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}",
+							"raw": "{{url}}/api/project/byId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"byId",
 								"{{application_id}}"
 							]
 						}
@@ -5221,8 +5029,8 @@
 											"\r",
 											"pm.test('QA is part of the application detail', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application.decision).to.have.property(\"qualityAssessment\");\r",
-											"    pm.expect(application.decision.qualityAssessment).not.eql(null);\r",
+											"    pm.expect(application.secondStepDecision).to.have.property(\"qualityAssessment\");\r",
+											"    pm.expect(application.secondStepDecision.qualityAssessment).not.eql(null);\r",
 											"});\r",
 											"\r",
 											"pm.test('status of the application is not changed', function() {\r",
@@ -5232,13 +5040,13 @@
 											"\r",
 											"pm.test('QA result is properly saved', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application.decision.qualityAssessment.result)\r",
+											"    pm.expect(application.secondStepDecision.qualityAssessment.result)\r",
 											"        .to.eql(\"RECOMMENDED_FOR_FUNDING\");\r",
 											"});\r",
 											"\r",
 											"pm.test('QA note is properly saved', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    pm.expect(application.decision.qualityAssessment.note)\r",
+											"    pm.expect(application.secondStepDecision.qualityAssessment.note)\r",
 											"        .to.eql(\"status set to recommended for funding\");\r",
 											"});\r",
 											""
@@ -5307,7 +5115,12 @@
 									"script": {
 										"exec": [
 											"pm.test('program user should not be able to enter QA second time', function() {\r",
-											"    pm.response.to.have.status(403);\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test('should return error', function () {\r",
+											"    const response = pm.response.json();\r",
+											"    pm.expect(response.details[0].i18nMessage.i18nKey).to.contain('use.case.set.assessment.quality.step2.already.concluded');\r",
 											"});\r",
 											""
 										],
@@ -5718,7 +5531,7 @@
 							"response": []
 						},
 						{
-							"name": "applicant cannot enter QA when INELIGIBLE already",
+							"name": "applicant cannot enter QA (when INELIGIBLE already)",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -6327,9 +6140,9 @@
 											"\r",
 											"pm.test('funding decision is part of the project object', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    const decision = application.decision;\r",
-											"    pm.expect(decision).to.have.property('fundingDecision');\r",
-											"    pm.expect(decision.fundingDecision)\r",
+											"    const decision = application.secondStepDecision;\r",
+											"    pm.expect(decision).to.have.property('finalFundingDecision');\r",
+											"    pm.expect(decision.finalFundingDecision)\r",
 											"        .deep.equal(application.projectStatus);\r",
 											"});\r",
 											""
@@ -6357,13 +6170,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
+										"byId",
 										"{{application_id}}"
 									]
 								}
@@ -6684,7 +6498,12 @@
 									"script": {
 										"exec": [
 											"pm.test('program user should not be able to enter funding without ED', function() {\r",
-											"    pm.response.to.have.status(403);\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test('should return error', function () {\r",
+											"    const response = pm.response.json();\r",
+											"    pm.expect(response.details[0].i18nMessage.i18nKey).to.contain('application.action.approve.is.not.allowed');\r",
 											"});\r",
 											""
 										],
@@ -7115,7 +6934,12 @@
 									"script": {
 										"exec": [
 											"pm.test('program user should not be able to enter funding without QA', function() {\r",
-											"    pm.response.to.have.status(403);\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test('should return error', function () {\r",
+											"    const response = pm.response.json();\r",
+											"    pm.expect(response.details[0].i18nMessage.i18nKey).to.contain('use.case.approve.application.missing.quality.assessment');\r",
 											"});\r",
 											""
 										],
@@ -7713,9 +7537,9 @@
 											"\r",
 											"pm.test('funding decision is part of the project object', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    const decision = application.decision;\r",
-											"    pm.expect(decision).to.have.property('fundingDecision');\r",
-											"    pm.expect(decision.fundingDecision)\r",
+											"    const decision = application.secondStepDecision;\r",
+											"    pm.expect(decision).to.have.property('preFundingDecision');\r",
+											"    pm.expect(decision.preFundingDecision)\r",
 											"        .deep.equal(application.projectStatus);\r",
 											"});\r",
 											""
@@ -7743,13 +7567,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
+										"byId",
 										"{{application_id}}"
 									]
 								}
@@ -7938,13 +7763,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
+										"byId",
 										"{{application_id}}"
 									]
 								}
@@ -8053,11 +7879,11 @@
 											"\r",
 											"pm.test('project status should refer to this change', function() {\r",
 											"    const application = pm.response.json();\r",
-											"    const decision = application.decision;\r",
-											"    pm.expect(decision.fundingDecision).to.have.property('id');\r",
+											"    const decision = application.secondStepDecision;\r",
+											"    pm.expect(decision.finalFundingDecision).to.have.property('id');\r",
 											"    pm.expect(application.projectStatus).to.have.property('id');\r",
-											"    // fundingDecision is still referring to the first funding attempt\r",
-											"    pm.expect(decision.fundingDecision.id)\r",
+											"    // preFundingDecision is still referring to the first funding attempt\r",
+											"    pm.expect(decision.preFundingDecision.id)\r",
 											"        .not.eql(application.projectStatus.id);\r",
 											"});\r",
 											""
@@ -8085,13 +7911,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}",
+									"raw": "{{url}}/api/project/byId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
+										"byId",
 										"{{application_id}}"
 									]
 								}
@@ -8192,14 +8019,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const partner = pm.response.json();\r",
-									"\r",
 									"pm.test('applicant can create project Partner A', function() {\r",
+									"    const partner = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.variables.set('partnerIdA', partner.id);\r",
 									"});\r",
 									"\r",
 									"pm.test('partner has correct abbreviation', function() {\r",
+									"    const partner = pm.response.json();\r",
 									"    pm.expect(partner.abbreviation).to.eql(\"Partner A\");\r",
 									"});\r",
 									""
@@ -8236,15 +8063,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
-								"partner"
+								"partner",
+								"toProjectId",
+								"{{application_id}}"
 							]
 						}
 					},
@@ -8310,15 +8138,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
-								"partner"
+								"partner",
+								"toProjectId",
+								"{{application_id}}"
 							]
 						}
 					},
@@ -8385,14 +8214,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
 								"partner"
 							]
 						}
@@ -8400,81 +8228,7 @@
 					"response": []
 				},
 				{
-					"name": "make partner B LeadPartner - fail",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('applicant cannot update Partner B to be LEAD when A already is', function() {\r",
-									"    const error = pm.response.json();\r",
-									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.update.project.partner.role.lead.already.existing\");\r",
-									"});\r",
-									"\r",
-									"pm.test('correct id is sent to FE in error response', function() {\r",
-									"    const error = pm.response.json();\r",
-									"    pm.expect(error.details[0].i18nMessage.i18nArguments.currentLeadId).to.eql(pm.variables.get('partnerIdA') + \"\",);\r",
-									"    pm.expect(error.details[0].i18nMessage.i18nArguments.currentLeadAbbreviation).to.eql(pm.variables.get('partnerAbbreviationALead') + \"\");\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 2\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"{{application_id}}",
-								"partner"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "make partner B LeadPartner - force",
+					"name": "make partner B LeadPartner",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -8521,7 +8275,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\",\r\n    \"legalStatusId\": 2\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{partnerIdB}}\",\r\n    \"abbreviation\": \"Partner B LEAD\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n  \"legalStatusId\": 2\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -8529,154 +8283,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
-								"partner"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create another project LeadPartner C - fail",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const error = pm.response.json();\r",
-									"\r",
-									"pm.test('applicant cannot create LeadPartner C cause B is now LeadPartner', function() {\r",
-									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.create.project.partner.role.lead.already.existing\");\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"{{application_id}}",
-								"partner"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create another project LeadPartner C - force fail",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const error = pm.response.json();\r",
-									"\r",
-									"pm.test('applicant cannot override LeadPartner A cause B is now LeadPartner', function() {\r",
-									"    pm.response.to.have.status(422);\r",
-									"    pm.expect(error.details[0].i18nMessage.i18nKey).to.eql(\"use.case.create.project.partner.oldLeadPartnerId.is.not.lead\");\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{applicant_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"abbreviation\": \"Partner C\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"oldLeadPartnerId\": \"{{partnerIdA}}\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"project",
-								"{{application_id}}",
 								"partner"
 							]
 						}
@@ -8838,15 +8451,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner",
+							"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
-								"partner"
+								"partner",
+								"toProjectId",
+								"{{application_id}}"
 							]
 						}
 					},
@@ -8970,14 +8584,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/project/{{application_id}}/partner/{{partnerIdD}}",
+							"raw": "{{url}}/api/project/partner/{{partnerIdD}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"{{application_id}}",
 								"partner",
 								"{{partnerIdD}}"
 							]
@@ -9177,7 +8790,7 @@
 										"exec": [
 											"pm.test('project duration is saved', function() {\r",
 											"    pm.response.to.have.status(200);\r",
-											"    pm.expect(pm.response.json().projectData.duration).to.eql(50);\r",
+											"    pm.expect(pm.response.json().duration).to.eql(50);\r",
 											"});\r",
 											""
 										],
@@ -9288,15 +8901,16 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner",
+									"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
-										"partner"
+										"partner",
+										"toProjectId",
+										"{{application_id}}"
 									]
 								}
 							},
@@ -9361,14 +8975,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/address",
+									"raw": "{{url}}/api/project/partner/{{partner_id_1}}/address",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
 										"partner",
 										"{{partner_id_1}}",
 										"address"
@@ -9447,14 +9060,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/address",
+									"raw": "{{url}}/api/project/partner/{{partner_id_1}}/address",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
 										"partner",
 										"{{partner_id_1}}",
 										"address"
@@ -9521,14 +9133,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/contact",
+									"raw": "{{url}}/api/project/partner/{{partner_id_1}}/contact",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
 										"partner",
 										"{{partner_id_1}}",
 										"contact"
@@ -9605,14 +9216,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/contact",
+									"raw": "{{url}}/api/project/partner/{{partner_id_1}}/contact",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
 										"partner",
 										"{{partner_id_1}}",
 										"contact"
@@ -9681,14 +9291,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner/{{partner_id_1}}/motivation",
+									"raw": "{{url}}/api/project/partner/{{partner_id_1}}/motivation",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
 										"partner",
 										"{{partner_id_1}}",
 										"motivation"
@@ -9778,15 +9387,16 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner",
+									"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
-										"partner"
+										"partner",
+										"toProjectId",
+										"{{application_id}}"
 									]
 								}
 							},
@@ -10597,15 +10207,16 @@
 									}
 								},
 								"url": {
-									"raw": "{{url}}/api/project/{{application_id}}/partner",
+									"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"api",
 										"project",
-										"{{application_id}}",
-										"partner"
+										"partner",
+										"toProjectId",
+										"{{application_id}}"
 									]
 								}
 							},
@@ -11044,7 +10655,7 @@
 									"    const contributions = pm.response.json().partnerContributions;\r",
 									"    pm.expect(contributions[0].name).to.eql(pm.variables.get('partner_abbreviation'));\r",
 									"    pm.expect(contributions[0].status).to.eql('Private');\r",
-									"    pm.expect(contributions[0].isPartner).to.be.true;\r",
+									"    pm.expect(contributions[0].partner).to.be.true;\r",
 									"    pm.expect(contributions[0].amount).to.eql(5100);\r",
 									"});\r",
 									"\r",
@@ -11052,7 +10663,7 @@
 									"    const contributions = pm.response.json().partnerContributions;\r",
 									"    pm.expect(contributions[1].name).to.eql('Source of money 01');\r",
 									"    pm.expect(contributions[1].status).to.eql('Public');\r",
-									"    pm.expect(contributions[1].isPartner).to.be.false;\r",
+									"    pm.expect(contributions[1].partner).to.be.false;\r",
 									"    pm.expect(contributions[1].amount).to.eql(8000);\r",
 									"});\r",
 									"\r",
@@ -11060,7 +10671,7 @@
 									"    const contributions = pm.response.json().partnerContributions;\r",
 									"    pm.expect(contributions[2].name).to.eql('Source of money 02');\r",
 									"    pm.expect(contributions[2].status).to.eql('AutomaticPublic');\r",
-									"    pm.expect(contributions[2].isPartner).to.be.false;\r",
+									"    pm.expect(contributions[2].partner).to.be.false;\r",
 									"    pm.expect(contributions[2].amount).to.eql(3000);\r",
 									"});\r",
 									"\r",
@@ -11068,7 +10679,7 @@
 									"    const contributions = pm.response.json().partnerContributions;\r",
 									"    pm.expect(contributions[3].name).to.eql('Source of money 03');\r",
 									"    pm.expect(contributions[3].status).to.eql('Private');\r",
-									"    pm.expect(contributions[3].isPartner).to.be.false;\r",
+									"    pm.expect(contributions[3].partner).to.be.false;\r",
 									"    pm.expect(contributions[3].amount).to.eql(2050);\r",
 									"});\r",
 									""
@@ -11097,7 +10708,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 25,\r\n            \"fundType\": \"MainFund\",\r\n            \"fundId\": {{programmeFundId}}\r\n        },\r\n        {\r\n            \"percentage\": 75,\r\n            \"fundType\": \"PartnerContribution\"\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 8000\r\n        },\r\n        {\r\n            \"isPartner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 5100\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 3000\r\n        },\r\n        {\r\n            \"isPartner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 2050\r\n        }\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 25,\r\n            \"fundType\": \"MainFund\",\r\n            \"fundId\": {{programmeFundId}}\r\n        },\r\n        {\r\n            \"percentage\": 75,\r\n            \"fundType\": \"PartnerContribution\"\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"partner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 8000\r\n        },\r\n        {\r\n            \"partner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 5100\r\n        },\r\n        {\r\n            \"partner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 3000\r\n        },\r\n        {\r\n            \"partner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 2050\r\n        }\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -11243,7 +10854,7 @@
 										"exec": [
 											"pm.test('project duration is saved', function() {\r",
 											"    pm.response.to.have.status(200);\r",
-											"    pm.expect(pm.response.json().projectData.duration).to.eql(80);\r",
+											"    pm.expect(pm.response.json().duration).to.eql(80);\r",
 											"});\r",
 											""
 										],
@@ -11360,16 +10971,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/forProject/{{application_id}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"workPackage",
-								"forProject",
-								"{{application_id}}"
+								"{{application_id}}",
+								"workPackage"
 							]
 						}
 					},
@@ -11510,17 +11120,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/activity/forWorkPackage/{{workPackage_id_1}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage/{{workPackage_id_1}}/activity",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"{{application_id}}",
 								"workPackage",
-								"activity",
-								"forWorkPackage",
-								"{{workPackage_id_1}}"
+								"{{workPackage_id_1}}",
+								"activity"
 							]
 						}
 					},
@@ -11615,17 +11225,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/output/forWorkPackage/{{workPackage_id_1}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage/{{workPackage_id_1}}/output",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"{{application_id}}",
 								"workPackage",
-								"output",
-								"forWorkPackage",
-								"{{workPackage_id_1}}"
+								"{{workPackage_id_1}}",
+								"output"
 							]
 						}
 					},
@@ -11696,16 +11306,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/forProject/{{application_id}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
-								"workPackage",
-								"forProject",
-								"{{application_id}}"
+								"{{application_id}}",
+								"workPackage"
 							]
 						}
 					},
@@ -11861,17 +11470,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/activity/forWorkPackage/{{workPackage_id_2}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage/{{workPackage_id_2}}/activity",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"{{application_id}}",
 								"workPackage",
-								"activity",
-								"forWorkPackage",
-								"{{workPackage_id_2}}"
+								"{{workPackage_id_2}}",
+								"activity"
 							]
 						}
 					},
@@ -11969,17 +11578,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/workPackage/output/forWorkPackage/{{workPackage_id_2}}",
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage/{{workPackage_id_2}}/output",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
 								"project",
+								"{{application_id}}",
 								"workPackage",
-								"output",
-								"forWorkPackage",
-								"{{workPackage_id_2}}"
+								"{{workPackage_id_2}}",
+								"output"
 							]
 						}
 					},

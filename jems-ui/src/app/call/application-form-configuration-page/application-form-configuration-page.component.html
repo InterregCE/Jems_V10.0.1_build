@@ -1,0 +1,72 @@
+<app-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
+                        titleKey="call.detail.application.form.config.title">
+    <app-form (save)="save()"
+              (discard)="resetForm(data.fieldConfigurations)">
+        <app-alert [show]="data.callIsEditable"
+                   [type]="Alert.WARNING">
+            <span>{{'call.detail.application.form.config.warning' | translate}}</span>
+        </app-alert>
+        <form appFormLayout [formGroup]="form">
+            <table mat-table [dataSource]="dataSource"
+                   aria-describedby="application form configuration">
+
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef id="appFormConfigHeaderSection">
+                        {{'call.detail.application.form.config.section' | translate}}
+                    </th>
+                    <td mat-cell *matCellDef="let node"
+                        [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
+                        <button mat-icon-button
+                                [style.visibility]="!node.expandable ? 'hidden' : ''"
+                                [style.marginLeft.rem]="node.level"
+                                (click)="treeControl.toggle(node)">
+                            <mat-icon class="mat-icon-rtl-mirror">
+                                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                            </mat-icon>
+                        </button>
+                        {{node.data.get('id').value | translate}}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="show">
+                    <th mat-header-cell *matHeaderCellDef id="appFormConfigHeaderShow">
+                        {{'call.detail.application.form.config.show' | translate}}
+                    </th>
+                    <td mat-cell *matCellDef="let node"
+                        [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
+                        <mat-slide-toggle *ngIf="showVisibilitySwitch(node.data)?.value" color="primary"
+                                          [disabled]="!data.callIsEditable"
+                                          [formControl]="visible(node.data)"
+                                          (change)="visibilityChanged(node.data)">
+                        </mat-slide-toggle>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="step">
+                    <th mat-header-cell *matHeaderCellDef id="appFormConfigHeaderStep">
+                        {{'call.detail.application.form.config.step' | translate}}
+                    </th>
+                    <td mat-cell *matCellDef="let node" class="step-toggle"
+                        [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
+                        <mat-button-toggle-group
+                                [disabled]="!data.callIsEditable"
+                                *ngIf="showStepToggle(node.data)?.value"
+                                [formControl]="availableInStep(node.data)">
+                            <mat-button-toggle [value]="AvailableInStepEnum.STEPONEANDTWO">
+                                <mat-icon>edit</mat-icon>
+                                {{'call.detail.application.form.config.step.one.and.two' | translate}}
+                            </mat-button-toggle>
+                            <mat-button-toggle [value]="AvailableInStepEnum.STEPTWOONLY">
+                                <mat-icon>edit</mat-icon>
+                                {{'call.detail.application.form.config.step.two.only' | translate}}
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+        </form>
+    </app-form>
+</app-main-page-template>

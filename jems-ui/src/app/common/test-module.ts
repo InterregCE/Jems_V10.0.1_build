@@ -14,7 +14,6 @@ import {LoginPageService} from '../authentication/login/services/login-page-serv
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
 import {ApiModule} from '@cat/api';
-import {TabService} from './services/tab.service';
 import {LanguageStore} from './services/language-store.service';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {HttpLoaderFactory} from '../app-i18n.module';
@@ -45,7 +44,6 @@ import {HttpClient} from '@angular/common/http';
     NgxRolesStore,
     NgxPermissionsService,
     LoginPageService,
-    TabService,
     LoginPageService,
     SideNavService,
     LanguageStore,

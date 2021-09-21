@@ -1,9 +1,9 @@
 export class FlatRateSetting {
   rate: number;
-  isAdjustable: boolean;
+  adjustable: boolean;
 
-  constructor(rate: number, isAdjustable: boolean) {
+  constructor(rate: number, adjustable: boolean) {
     this.rate = rate;
-    this.isAdjustable = isAdjustable;
+    this.adjustable = adjustable;
   }
 }

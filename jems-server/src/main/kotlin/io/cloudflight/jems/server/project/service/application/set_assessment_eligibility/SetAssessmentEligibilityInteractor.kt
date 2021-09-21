@@ -1,0 +1,8 @@
+package io.cloudflight.jems.server.project.service.application.set_assessment_eligibility
+
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
+
+interface SetAssessmentEligibilityInteractor {
+    fun setEligibilityAssessment(projectId: Long, result: ProjectAssessmentEligibilityResult, note: String? = null): ProjectDetail
+}

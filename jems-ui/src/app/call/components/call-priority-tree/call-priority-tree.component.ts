@@ -1,6 +1,8 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {BaseComponent} from '@common/components/base-component';
 import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbox';
+import {CallDetailPageStore} from '../../call-detail-page/call-detail-page-store.service';
+import {combineLatest, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-call-priority-tree',
@@ -8,37 +10,55 @@ import {CallPriorityCheckbox} from '../../containers/model/call-priority-checkbo
   styleUrls: ['./call-priority-tree.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CallPriorityTreeComponent extends BaseComponent {
+export class CallPriorityTreeComponent {
   @Input()
   priorityCheckboxes: CallPriorityCheckbox[];
-  @Input()
-  disabled: boolean;
-  @Input()
-  isApplicant: boolean;
   @Input()
   initialPriorityCheckboxes: CallPriorityCheckbox[];
 
   @Output()
   selectionChanged = new EventEmitter<void>();
 
-  constructor() {
-    super();
+  data$: Observable<{
+    userCanApply: boolean,
+    callIsReadable: boolean,
+    callIsEditable: boolean,
+    callIsPublished: boolean
+  }>;
+
+  constructor(private callDetailPageStore: CallDetailPageStore) {
+    this.data$ = combineLatest([
+      this.callDetailPageStore.userCanApply$,
+      this.callDetailPageStore.callIsReadable$,
+      this.callDetailPageStore.callIsEditable$,
+      this.callDetailPageStore.callIsPublished$
+    ])
+      .pipe(
+        map(([userCanApply, callIsReadable, callIsEditable, callIsPublished]) => ({userCanApply, callIsReadable, callIsEditable, callIsPublished}))
+      );
   }
 
-  priorityVisible(priority: CallPriorityCheckbox): boolean {
-    return !this.isApplicant || priority.checked || priority.someChecked();
+  priorityDisabled(callIsEditable: boolean, callIsPublished: boolean, priority: CallPriorityCheckbox): boolean {
+    if (!callIsEditable) {
+      return true;
+    }
+    if (callIsPublished) {
+      const foundPriority = this.initialPriorityCheckboxes.find(initialPriority => initialPriority.name === priority.name);
+      return !!(foundPriority && (foundPriority.checked || foundPriority.someChecked()));
+    }
+    return false;
   }
 
-  isPriorityAlreadySelected(priority: CallPriorityCheckbox): boolean {
-    const foundPriority = this.initialPriorityCheckboxes.find(initialPriority => initialPriority.name === priority.name);
-    return !!(foundPriority && (foundPriority.checked || foundPriority.someChecked()));
-  }
-
-  isPolicyAlreadySelected(priority: CallPriorityCheckbox, policy: CallPriorityCheckbox): boolean {
-    const foundPriority = this.initialPriorityCheckboxes.find(initialPriority => initialPriority.name === priority.name);
-    if (foundPriority) {
-      const foundPolicy = foundPriority.children.find(initialPolicy => initialPolicy.name === policy.name);
-      return !!(foundPolicy && foundPolicy.checked);
+  policyDisabled(callIsEditable: boolean, callIsPublished: boolean, priority: CallPriorityCheckbox, policy: CallPriorityCheckbox): boolean {
+    if (!callIsEditable) {
+      return true;
+    }
+    if (callIsPublished) {
+      const foundPriority = this.initialPriorityCheckboxes.find(initialPriority => initialPriority.name === priority.name);
+      if (foundPriority) {
+        const foundPolicy = foundPriority.children.find(initialPolicy => initialPolicy.name === policy.name);
+        return !!(foundPolicy && foundPolicy.checked);
+      }
     }
     return false;
   }

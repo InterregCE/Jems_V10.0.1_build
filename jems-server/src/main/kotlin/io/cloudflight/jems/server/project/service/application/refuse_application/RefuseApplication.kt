@@ -25,7 +25,13 @@ class RefuseApplication(
     @Transactional
     @ExceptionWrapper(RefuseApplicationException::class)
     override fun refuse(projectId: Long, actionInfo: ApplicationActionInfo): ApplicationStatus =
-        actionInfo.ifIsValid(generalValidatorService).run {
+        actionInfo.ifIsValid(generalValidatorService).let {
+            val project = projectPersistence.getProject(projectId)
+            val assessment = if (project.isInStep2()) project.assessmentStep2 else project.assessmentStep1
+
+            if (assessment?.assessmentQuality == null)
+                throw QualityAssessmentMissing()
+
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).refuse(actionInfo).also {
                     auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))

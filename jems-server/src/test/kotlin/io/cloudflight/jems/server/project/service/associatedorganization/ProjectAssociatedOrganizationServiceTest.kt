@@ -1,19 +1,22 @@
 package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.project.dto.InputProjectContact
-import io.cloudflight.jems.api.project.dto.ProjectContactType
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
+import io.cloudflight.jems.api.project.dto.ProjectContactTypeDTO
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.validator.AppInputValidationException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -25,8 +28,9 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
+import io.cloudflight.jems.server.project.repository.partner.toModel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.mockk.MockKAnnotations
@@ -50,6 +54,8 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
     @MockK
     lateinit var projectAssociatedOrganizationRepository: ProjectAssociatedOrganizationRepository
+
+    lateinit var generalValidator: GeneralValidatorService
 
     lateinit var projectAssociatedOrganizationService: ProjectAssociatedOrganizationService
 
@@ -88,7 +94,6 @@ internal class ProjectAssociatedOrganizationServiceTest {
         call = call,
         applicant = user,
         currentStatus = projectStatus,
-        step2Active = false
     )
 
     private val projectPartner = ProjectPartnerEntity(
@@ -100,10 +105,10 @@ internal class ProjectAssociatedOrganizationServiceTest {
         sortNumber = 1,
     )
 
-    private val outputProjectPartner = OutputProjectPartner(
+    private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
         abbreviation = projectPartner.abbreviation,
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
     )
 
@@ -117,7 +122,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
             sortNumber = sortNr
         )
 
-    private fun outputOrganizationDetail(id: Long, partner: OutputProjectPartner, name: String, sortNr: Int? = null) =
+    private fun outputOrganizationDetail(id: Long, partner: ProjectPartnerSummaryDTO, name: String, sortNr: Int? = null) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
             partner = partner,
@@ -129,10 +134,12 @@ internal class ProjectAssociatedOrganizationServiceTest {
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
+        generalValidator = GeneralValidatorDefaultImpl()
         projectAssociatedOrganizationService =
             ProjectAssociatedOrganizationServiceImpl(
                 projectPartnerRepository,
-                projectAssociatedOrganizationRepository
+                projectAssociatedOrganizationRepository,
+                generalValidator
             )
     }
 
@@ -142,7 +149,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
                 PageImpl(listOf(organization(1, projectPartner, "test", 1)))
 
         assertThat(projectAssociatedOrganizationService.findAllByProjectId(1))
-            .containsExactly(outputOrganizationDetail(1, projectPartner.toOutputProjectPartner(), "test", 1))
+            .containsExactly(outputOrganizationDetail(1, projectPartner.toModel().toDto(), "test", 1))
     }
 
     @Test
@@ -151,7 +158,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
         // mock 2 repo.save() method calls
         val toBePersistedContact = ProjectAssociatedOrganizationContact(
-            contactId = ProjectAssociatedOrganizationContactId(10, ProjectContactType.ContactPerson),
+            contactId = ProjectAssociatedOrganizationContactId(10, ProjectContactTypeDTO.ContactPerson),
             contact = Contact(firstName = "test contact")
         )
         val toBePersistedAddress = ProjectAssociatedOrganizationAddress(
@@ -187,24 +194,25 @@ internal class ProjectAssociatedOrganizationServiceTest {
         every { projectAssociatedOrganizationRepository.saveAll(any<Iterable<ProjectAssociatedOrganization>>()) } returnsArgument 0
 
         // test create
-        val toCreate = InputProjectAssociatedOrganizationCreate(
+        val toCreate = InputProjectAssociatedOrganization(
+            id = null,
             partnerId = projectPartner.id,
             nameInOriginalLanguage = "to create",
             nameInEnglish = "to create",
             address = InputProjectAssociatedOrganizationAddress(country = "AT"),
-            contacts = setOf(InputProjectContact(type = ProjectContactType.ContactPerson, firstName = "test contact"))
+            contacts = setOf(ProjectContactDTO(type = ProjectContactTypeDTO.ContactPerson, firstName = "test contact"))
         )
         val result = projectAssociatedOrganizationService.create(projectPartner.id, toCreate)
         assertThat(result).isEqualTo(
             outputOrganizationDetail(
                 id = 10,
-                partner = outputProjectPartner,
+                partner = projectPartnerDTO,
                 name = "to create",
                 sortNr = null // this will be updated to 2 during updateSort, but for unit test we mock hibernate so object is not tightly connected to entity
             ).copy(
                 address = OutputProjectAssociatedOrganizationAddress(country = "AT"),
                 contacts = listOf(
-                    OutputProjectPartnerContact(
+                    ProjectPartnerContactDTO(
                         type = toBePersistedContact.contactId.type,
                         firstName = toBePersistedContact.contact!!.firstName
                     )
@@ -245,9 +253,9 @@ internal class ProjectAssociatedOrganizationServiceTest {
     fun `create associated organization not-existing partner`() {
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.empty()
 
-        val toCreate = InputProjectAssociatedOrganizationCreate(partnerId = projectPartner.id)
-        val ex = assertThrows<ResourceNotFoundException> { projectAssociatedOrganizationService.create(1, toCreate) }
-        assertThat(ex.entity).isEqualTo("projectPartner")
+        val toCreate = InputProjectAssociatedOrganization(id = null, partnerId = projectPartner.id)
+        val ex = assertThrows<AppInputValidationException> { projectAssociatedOrganizationService.create(1, toCreate) }
+        assertThat(ex.i18nMessage.i18nKey).isEqualTo("common.error.input.invalid")
     }
 
     @Test
@@ -264,7 +272,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(oldOrganization.partner)
         every { projectAssociatedOrganizationRepository.save(any<ProjectAssociatedOrganization>()) } returnsArgument 0
 
-        val newValues = InputProjectAssociatedOrganizationUpdate(
+        val newValues = InputProjectAssociatedOrganization(
             id = oldOrganization.id,
             partnerId = oldOrganization.partner.id,
             nameInOriginalLanguage = "new name",
@@ -278,7 +286,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         assertThat(result).isEqualTo(
             outputOrganizationDetail(
                 id = 1,
-                partner = outputProjectPartner,
+                partner = projectPartnerDTO,
                 name = "new name",
                 sortNr = 13 // this will be updated to 1, but for unit test we mock hibernate so object is not tightly connected to entity
             )

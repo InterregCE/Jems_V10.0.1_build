@@ -5,7 +5,7 @@ import {
   AuditService,
   PageAuditDTO,
 } from '@cat/api';
-import {map, startWith, switchMap, tap} from 'rxjs/operators';
+import {debounceTime, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../common/utils/log';
 import {Tables} from '../../common/utils/tables';
 import {MatSort} from '@angular/material/sort';
@@ -30,6 +30,7 @@ export class AuditLogStore {
       this.auditPageFilter$.pipe(startWith({} as AuditSearchRequestDTO)),
     ])
       .pipe(
+        debounceTime(50),
         switchMap(([pageIndex, pageSize, sort, pageFilter]) =>
           this.auditService.getAudits(pageFilter, pageIndex, pageSize, sort)),
         tap((page: PageAuditDTO) => Log.info('Fetched the Audits:', this, page.content)),

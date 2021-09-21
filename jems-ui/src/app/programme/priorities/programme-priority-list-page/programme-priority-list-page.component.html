@@ -12,8 +12,9 @@
             </app-table>
         </ng-container>
         <button mat-stroked-button
+                *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                 routerLink="/app/programme/priorities/create">
-            + {{'programme.priority.add.new' | translate}}
+            <mat-icon>add</mat-icon>&nbsp;{{'programme.priority.button.add' | translate}}
         </button>
     </div>
     <ng-template #specificObjective let-priority>

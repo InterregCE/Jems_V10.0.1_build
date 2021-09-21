@@ -1,10 +1,10 @@
 package io.cloudflight.jems.api.project.dto.budget
 
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import java.math.BigDecimal
 
 data class ProjectPartnerBudgetDTO(
-    val partner: OutputProjectPartner,
+    val partner: ProjectPartnerSummaryDTO,
 
     val staffCosts: BigDecimal = BigDecimal.ZERO,
     val travelCosts: BigDecimal = BigDecimal.ZERO,

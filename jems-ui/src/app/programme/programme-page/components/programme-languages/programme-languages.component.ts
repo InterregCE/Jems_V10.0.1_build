@@ -41,8 +41,6 @@ export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit 
               protected translationService: TranslateService,
               public programmeEditableStateStore: ProgrammeEditableStateStore) {
     super(changeDetectorRef, translationService);
-
-    this.programmeEditableStateStore.init();
   }
 
   ngOnInit(): void {

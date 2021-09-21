@@ -8,17 +8,26 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Digitisation
+import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.AtlanticStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.call.callWithId
+import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
+import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
-import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
+import io.cloudflight.jems.server.call.entity.StateAidSetupId
+import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallSummary
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
+import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
@@ -29,6 +38,7 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEn
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
@@ -36,11 +46,14 @@ import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSum
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
+import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -49,6 +62,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -64,13 +78,28 @@ internal class CallPersistenceProviderTest {
 
     companion object {
         private const val CALL_ID = 15L
+        private const val PROJECT_ID = 1L
         private const val FUND_ID = 24L
+        private const val STATE_AID_ID = 23L
         private const val LUMP_SUM_ID = 4L
         private const val UNIT_COST_ID = 3L
         private const val USER_ID = 302L
 
         private val START = ZonedDateTime.now().withSecond(0).withNano(0)
         private val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
+
+        private fun applicationFormFieldConfigurationEntities(callEntity: CallEntity)= mutableSetOf(
+            ApplicationFormFieldConfigurationEntity(
+                ApplicationFormFieldConfigurationId("fieldId" , callEntity),
+                FieldVisibilityStatus.STEP_ONE_AND_TWO
+            )
+        )
+
+        private fun stateAidEntities(callEntity: CallEntity)= mutableSetOf(
+            ProjectCallStateAidEntity(
+                StateAidSetupId(callEntity, stateAid)
+            )
+        )
 
         private val user = UserEntity(
             id = USER_ID,
@@ -95,6 +124,8 @@ internal class CallPersistenceProviderTest {
         val strategies = setOf(ProgrammeStrategyEntity(EUStrategyBalticSeaRegion, true), ProgrammeStrategyEntity(AtlanticStrategy, true))
 
         val fund=ProgrammeFundEntity(id = FUND_ID, selected = true)
+
+        val stateAid=ProgrammeStateAidEntity(id = STATE_AID_ID, measure = ProgrammeStateAidMeasure.OTHER_1, maxIntensity = BigDecimal.ZERO, threshold = BigDecimal.ZERO, schemeNumber = "")
         private fun callEntity(id: Long? = null): CallEntity {
             val call = callWithId(id ?: CALL_ID)
             call.startDate = START
@@ -156,7 +187,16 @@ internal class CallPersistenceProviderTest {
             )),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             funds = listOf(ProgrammeFund(id = FUND_ID, selected = true)),
-            flatRates = sortedSetOf(ProjectCallFlatRate(type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 15, isAdjustable = true)),
+            stateAids = listOf(ProgrammeStateAid(
+                id = STATE_AID_ID,
+                measure = ProgrammeStateAidMeasure.OTHER_1,
+                threshold = BigDecimal.ZERO,
+                maxIntensity = BigDecimal.ZERO,
+                name = emptySet(),
+                abbreviatedName = emptySet(),
+                schemeNumber = ""
+            )),
+            flatRates = sortedSetOf(ProjectCallFlatRate(type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 15, adjustable = true)),
             lumpSums = listOf(ProgrammeLumpSum(
                 id = LUMP_SUM_ID,
                 cost = BigDecimal.ONE,
@@ -169,7 +209,8 @@ internal class CallPersistenceProviderTest {
                 costPerUnit = BigDecimal.TEN,
                 isOneCostCategory = true,
                 categories = setOf(BudgetCategory.InfrastructureCosts),
-            ))
+            )),
+            applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities(callEntity()).toModel()
         )
 
         private val expectedCall = CallSummary(
@@ -192,6 +233,7 @@ internal class CallPersistenceProviderTest {
             priorityPolicies = setOf(Digitisation, AdvancedTechnologies),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             fundIds = setOf(FUND_ID),
+            stateAidIds = setOf(STATE_AID_ID)
         )
 
         private val lumpSum2 = ProgrammeLumpSumEntity(
@@ -262,7 +304,19 @@ internal class CallPersistenceProviderTest {
     private lateinit var programmeStrategyRepo: StrategyRepository
 
     @MockK
+    private lateinit var applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository
+
+    @MockK
     private lateinit var programmeFundRepo: ProgrammeFundRepository
+
+    @MockK
+    private lateinit var projectCallStateAidRepository: ProjectCallStateAidRepository
+
+    @MockK
+    private lateinit var programmeStateAidRepo: ProgrammeStateAidRepository
+
+    @MockK
+    private lateinit var projectPersistence: ProjectPersistence
 
     @InjectMockKs
     private lateinit var persistence: CallPersistenceProvider
@@ -271,6 +325,36 @@ internal class CallPersistenceProviderTest {
     fun getCalls() {
         every { callRepo.findAll(any<Pageable>()) } returns PageImpl(listOf(callEntity()))
         assertThat(persistence.getCalls(Pageable.unpaged()).content).containsExactly(expectedCall)
+    }
+
+    @Test
+    fun `should return list of calls id,name pair`() {
+        val callEntity = callEntity()
+        every { callRepo.findAll() } returns listOf(callEntity)
+        assertThat(persistence.listCalls()).containsExactly(IdNamePair(callEntity.id, callEntity.name))
+    }
+
+    @Test
+    fun `should save set of application form field configurations for the call`() {
+        val callEntity = callEntity()
+        val newConfigs = mutableSetOf(
+            ApplicationFormFieldConfiguration("fieldId-1", FieldVisibilityStatus.STEP_ONE_AND_TWO),
+            ApplicationFormFieldConfiguration("fieldId-2", FieldVisibilityStatus.STEP_ONE_AND_TWO)
+        )
+        every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
+        every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
+        every { applicationFormFieldConfigurationRepository.saveAll(any<MutableSet<ApplicationFormFieldConfigurationEntity>>()) } returns newConfigs.toEntities(callEntity).toList()
+        assertThat(persistence.saveApplicationFormFieldConfigurations(CALL_ID, newConfigs).applicationFormFieldConfigurations).containsAll(newConfigs)
+    }
+
+    @Test
+    fun `should return set of application form field configurations for the call`() {
+        val fieldId="id"
+        val configEntity = ApplicationFormFieldConfigurationEntity(ApplicationFormFieldConfigurationId(fieldId, callEntity(
+            CALL_ID)), FieldVisibilityStatus.STEP_ONE_AND_TWO)
+        val config = ApplicationFormFieldConfiguration(fieldId, FieldVisibilityStatus.STEP_ONE_AND_TWO)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(configEntity)
+        assertThat(persistence.getApplicationFormFieldConfigurations(CALL_ID)).containsExactly(config)
     }
 
     @Test
@@ -283,7 +367,10 @@ internal class CallPersistenceProviderTest {
 
     @Test
     fun getCallById() {
-        every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity())
+        val callEntity= callEntity()
+        every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(callEntity)
+        every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         assertThat(persistence.getCallById(CALL_ID)).isEqualTo(expectedCallDetail)
     }
 
@@ -291,6 +378,25 @@ internal class CallPersistenceProviderTest {
     fun `getCallById - not existing`() {
         every { callRepo.findById(-1) } returns Optional.empty()
         assertThrows<CallNotFound> { persistence.getCallById(-1) }
+    }
+
+    @Test
+    fun `should return call detail by project id`() {
+        val callEntity= callEntity()
+        every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
+        every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(callEntity)
+        every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
+        assertThat(persistence.getCallByProjectId(PROJECT_ID)).isEqualTo(expectedCallDetail)
+    }
+
+    @Test
+    fun `should throw CallNotFound when call does not exist`() {
+        every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
+        every { callRepo.findById(CALL_ID) } returns Optional.empty()
+        assertThrows<CallNotFound> {
+            persistence.getCallByProjectId(PROJECT_ID)
+        }
     }
 
     @Test
@@ -324,7 +430,8 @@ internal class CallPersistenceProviderTest {
         every { programmeSpecificObjectiveRepo.getOne(AdvancedTechnologies) } returns specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
         every { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(setOf(EUStrategyBalticSeaRegion, AtlanticStrategy)) } returns strategies
         every { programmeFundRepo.getTop20ByIdInAndSelectedTrue(setOf(FUND_ID)) } returns setOf(fund)
-
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(expectedResultEntity.id) } returns applicationFormFieldConfigurationEntities(expectedResultEntity)
+        every { projectCallStateAidRepository.findAllByIdCallId(expectedResultEntity.id) } returns stateAidEntities(expectedResultEntity)
         val slotCall = slot<CallEntity>()
         every { callRepo.save(capture(slotCall)) } returnsArgument 0
 
@@ -352,8 +459,11 @@ internal class CallPersistenceProviderTest {
         val call = callWithId(1)
         every { callRepo.findById(1L) } returns Optional.of(call)
 
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(call)
+        every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
+
         persistence.updateProjectCallFlatRate(1, setOf(
-            ProjectCallFlatRate(type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 18, isAdjustable = false),
+            ProjectCallFlatRate(type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 18, adjustable = false),
         ))
 
         assertThat(call.flatRates).containsExactlyInAnyOrder(ProjectCallFlatRateEntity(
@@ -383,6 +493,8 @@ internal class CallPersistenceProviderTest {
         val call = callWithId(1)
         every { callRepo.findById(1L) } returns Optional.of(call)
         every { programmeLumpSumRepo.findAllById(setOf(2, 3)) } returns listOf(lumpSum2, lumpSum3)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(call)
+        every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
         persistence.updateProjectCallLumpSum(1, setOf(2, 3))
         assertThat(call.lumpSums).containsExactlyInAnyOrder(lumpSum2, lumpSum3)
     }
@@ -407,6 +519,8 @@ internal class CallPersistenceProviderTest {
         val call = callWithId(1)
         every { callRepo.findById(1L) } returns Optional.of(call)
         every { programmeUnitCostRepo.findAllById(setOf(2, 3)) } returns listOf(unitCost2, unitCost3)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(1) } returns applicationFormFieldConfigurationEntities(call)
+        every { projectCallStateAidRepository.findAllByIdCallId(1) } returns stateAidEntities(call)
         persistence.updateProjectCallUnitCost(1, setOf(2, 3))
         assertThat(call.unitCosts).containsExactlyInAnyOrder(unitCost2, unitCost3)
     }
@@ -437,6 +551,28 @@ internal class CallPersistenceProviderTest {
         every { callRepo.existsByStatus(CallStatus.PUBLISHED) } returns true
         assertThat(persistence.hasAnyCallPublished())
             .isEqualTo(true)
+    }
+
+    @Test
+    fun `update allow real costs`() {
+        val call = callWithId(1)
+        every { callRepo.findById(1L) } returns Optional.of(call)
+
+        persistence.updateAllowedRealCosts(1, AllowedRealCosts(true, true, true, true, true))
+
+        verify(exactly = 1) {
+            callRepo.findById(1L)
+        }
+    }
+
+    @Test
+    fun `get allow real costs`() {
+        every { callRepo.findById(1L) } returns Optional.of(callWithId(1))
+        persistence.getAllowedRealCosts(1)
+
+        verify(exactly = 1) {
+            callRepo.findById(1)
+        }
     }
 
 }

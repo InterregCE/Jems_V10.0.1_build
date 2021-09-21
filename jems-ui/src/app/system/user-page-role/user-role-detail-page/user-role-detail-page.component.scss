@@ -52,6 +52,10 @@ $row-height: 2.5rem;
       height: 1.25rem;
     }
   }
+
+  .view-edit-toggle {
+    float: right;
+  }
 }
 
 .mat-tree-node {
@@ -74,3 +78,37 @@ $row-height: 2.5rem;
   }
 
 }
+
+.user-role-flag {
+  display: inline-flex;
+  padding-bottom: 1rem;
+
+  .user-role-checkbox {
+    padding-right: 0.5rem;
+  }
+
+  .user-role-chip {
+    margin-right: 1rem;
+    height: 1.35rem !important;
+    min-height: 1.35rem !important;
+  }
+}
+
+.mat-accordion {
+  ::ng-deep {
+    .mat-expansion-panel-header {
+      background-color: #e0e0e0;
+    }
+
+    .mat-expansion-panel-spacing {
+      margin: 0;
+    }
+
+    .mat-expansion-panel-body {
+      padding: 0;
+    }
+  }
+}
+
+
+

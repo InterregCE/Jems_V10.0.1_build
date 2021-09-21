@@ -32,7 +32,8 @@ class AuthenticationServiceImpl(
     override fun getCurrentUser(): OutputCurrentUser {
         val id = securityService.currentUser?.user?.id ?: -1
         val user = securityService.currentUser?.user?.email ?: ""
-        val role = securityService.currentUser?.user?.userRole?.toDto() ?: UserRoleDTO(name = "", permissions = emptyList())
+        val role = securityService.currentUser?.user?.userRole?.toDto()
+            ?: UserRoleDTO(name = "", permissions = emptyList(), defaultForRegisteredUser = false)
         return OutputCurrentUser(id, user, role)
     }
 

@@ -5,14 +5,15 @@ import {
   ProjectResultDTO,
   ProjectResultService, ResultIndicatorSummaryDTO
 } from '@cat/api';
-import {merge, Observable, of, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
+import {take} from 'rxjs/internal/operators';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Injectable()
 export class ProjectResultsPageStore {
-  private projectId: number;
 
   isProjectEditable$: Observable<boolean>;
   results$: Observable<ProjectResultDTO[]>;
@@ -25,7 +26,8 @@ export class ProjectResultsPageStore {
 
   constructor(private projectResultService: ProjectResultService,
               private projectStore: ProjectStore,
-              private programmeIndicatorService: ProgrammeIndicatorService) {
+              private programmeIndicatorService: ProgrammeIndicatorService,
+              private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.results$ = this.results();
     this.resultIndicators$ = this.resultIndicators();
@@ -35,20 +37,23 @@ export class ProjectResultsPageStore {
   }
 
   saveResults(results: ProjectResultDTO[]): Observable<ProjectResultDTO[]> {
-    return this.projectResultService.updateProjectResults(this.projectId, results)
+    return this.projectStore.projectId$
       .pipe(
+        take(1),
+        switchMap(projectId => this.projectResultService.updateProjectResults(projectId, results)),
         tap(saved => this.savedResults$.next(saved)),
         tap(saved => Log.info('Saved project results', saved)),
       );
   }
 
   private results(): Observable<ProjectResultDTO[]> {
-    const initialResults$ = this.projectStore.getProject()
-      .pipe(
-        tap(project => this.projectId = project.id),
-        switchMap(() => this.projectResultService.getProjectResults(this.projectId)),
-        tap(results => Log.info('Fetched project results', results)),
-      );
+    const initialResults$ = combineLatest([
+      this.projectStore.projectId$,
+      this.projectVersionStore.currentRouteVersion$
+    ]).pipe(
+      switchMap(([projectId, version]) => this.projectResultService.getProjectResults(projectId, version)),
+      tap(results => Log.info('Fetched project results', results)),
+    );
 
     return merge(this.savedResults$, initialResults$)
       .pipe(
@@ -57,18 +62,18 @@ export class ProjectResultsPageStore {
   }
 
   private resultIndicators(): Observable<ResultIndicatorSummaryDTO[]> {
-    return this.projectStore.getProject()
+    return this.projectStore.projectForm$
       .pipe(
-        map(project => project?.projectData?.specificObjective?.programmeObjectivePolicy),
+        map(projectForm => projectForm?.specificObjective?.programmeObjectivePolicy),
         switchMap(programmeObjectivePolicy => programmeObjectivePolicy ? this.programmeIndicatorService.getResultIndicatorSummariesForSpecificObjective(programmeObjectivePolicy) : of([])),
         tap(results => Log.info('Fetched programme result indicators', results)),
       );
   }
 
   private periods(): Observable<ProjectPeriodDTO[]> {
-    return this.projectStore.getProject()
+    return this.projectStore.projectForm$
       .pipe(
-        map(project => project.periods),
+        map(projectForm => projectForm.periods),
       );
   }
 }

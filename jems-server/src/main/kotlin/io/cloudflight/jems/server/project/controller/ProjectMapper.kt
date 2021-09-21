@@ -7,33 +7,41 @@ import io.cloudflight.jems.api.plugin.dto.PreConditionCheckMessageDTO
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
+import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidDTO
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
-import io.cloudflight.jems.api.project.dto.ProjectDataDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
+import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryDTO
+import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryTypeDTO
+import io.cloudflight.jems.api.project.dto.file.ProjectFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.plugin.contract.models.common.I18nMessageData
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.MessageType
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckMessage
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
+import io.cloudflight.jems.server.call.controller.CallDTOMapper
 import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
-import io.cloudflight.jems.server.project.service.model.Project
+import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
+import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
+import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
+import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.user.controller.toDto
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -66,28 +74,35 @@ fun Collection<PartnerBudget>.toDTO() = map { it.toDTO() }
     .sortedBy { it.partner.sortNumber }
 
 fun ProjectCallSettings.toDto() = projectMapper.map(this)
-fun ProjectPartner.toOutputProjectPartner() = projectMapper.map(this)
 
-fun Project.toDto() = ProjectDetailDTO(
+fun ProjectDetail.toDto() = ProjectDetailDTO(
     id = id,
+    customIdentifier = customIdentifier,
     callSettings = callSettings.toDto(),
     acronym = acronym,
     applicant = applicant.toDto(),
+    title = title,
+    specificObjective = specificObjective,
+    programmePriority = programmePriority,
     projectStatus = projectStatus.toDto(),
     firstSubmission = firstSubmission?.toDto(),
     lastResubmission = lastResubmission?.toDto(),
-    step2Active = step2Active,
-    firstStepDecision = firstStepDecision?.toDto(),
-    secondStepDecision = secondStepDecision?.toDto(),
-    // projectData
-    projectData = ProjectDataDTO(
-        title = title ?: emptySet(),
-        intro = intro ?: emptySet(),
-        duration = duration,
-        specificObjective = specificObjective,
-        programmePriority = programmePriority
-    ),
-    periods = periods.toDtos(id)
+    step2Active = projectStatus.status.isInStep2(),
+    firstStepDecision = assessmentStep1?.toDto(),
+    secondStepDecision = assessmentStep2?.toDto(),
+)
+
+fun ProjectForm.toDto() = ProjectDetailFormDTO(
+    id = id,
+    customIdentifier = customIdentifier,
+    callSettings = callSettings.toDto(),
+    acronym = acronym,
+    title = title ?: emptySet(),
+    intro = intro ?: emptySet(),
+    duration = duration,
+    specificObjective = specificObjective,
+    programmePriority = programmePriority,
+    periods = periods.toDtos(id),
 )
 
 fun Collection<ProjectPeriod>.toDtos(projectId: Long?) = map { it.toDto(projectId) }
@@ -102,6 +117,7 @@ fun ProjectPeriod.toDto(projectId: Long?) = ProjectPeriodDTO(
 fun Page<ProjectSummary>.toDto() = map {
     OutputProjectSimple(
         id = it.id,
+        customIdentifier = it.customIdentifier,
         callName = it.callName,
         acronym = it.acronym,
         projectStatus = ApplicationStatusDTO.valueOf(it.status.name),
@@ -112,9 +128,15 @@ fun Page<ProjectSummary>.toDto() = map {
     )
 }
 
+fun ProjectFileCategoryTypeDTO.toModel() = projectMapper.map(this)
+fun ProjectFileCategoryDTO.toModel() = projectMapper.map(this)
+fun ProjectFileMetadata.toDTO() = projectMapper.map(this)
+fun Page<ProjectFileMetadata>.toDTO() = map { projectMapper.map(it) }
+
+
 private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 
-@Mapper
+@Mapper(uses = [CallDTOMapper::class])
 abstract class ProjectMapper {
 
     abstract fun map(applicationStatus: ApplicationStatus): ApplicationStatusDTO
@@ -126,18 +148,35 @@ abstract class ProjectMapper {
     abstract fun map(preConditionCheckMessageList: List<PreConditionCheckMessage>): List<PreConditionCheckMessageDTO>
     abstract fun map(messageType: MessageType): MessageTypeDTO
 
-    abstract fun map(projectPartner: ProjectPartner): OutputProjectPartner
-
     @Mapping(source = "totalCosts", target = "totalSum")
     abstract fun map(partnerBudget: PartnerBudget): ProjectPartnerBudgetDTO
 
-    @Mapping(source = "additionalFundAllowed", target = "isAdditionalFundAllowed")
+    @Mapping(source = "additionalFundAllowed", target = "additionalFundAllowed")
     abstract fun map(projectCallSettings: ProjectCallSettings): ProjectCallSettingsDTO
     abstract fun mapToLumpSumDTO(programmeLumpSum: List<ProgrammeLumpSum>): List<ProgrammeLumpSumDTO>
 
-    @Mapping(source = "oneCostCategory", target = "isOneCostCategory")
+    @Mapping(source = "oneCostCategory", target = "oneCostCategory")
     abstract fun mapToUnitCostDTO(programmeUnitCost: ProgrammeUnitCost): ProgrammeUnitCostDTO
     abstract fun mapToUnitCostDTO(programmeUnitCost: List<ProgrammeUnitCost>): List<ProgrammeUnitCostDTO>
+
+    @Mapping(source = "stateAids", target = "stateAids")
+    abstract fun mapToStateAidsDTO(stateAids: List<ProgrammeStateAid>): List<ProgrammeStateAidDTO>
+
+    abstract fun map(fileCategoryTypDTO: ProjectFileCategoryTypeDTO): ProjectFileCategoryType
+    abstract fun map(fileCategoryDTO: ProjectFileCategoryDTO): ProjectFileCategory
+
+
+    fun map(fileMetadata: ProjectFileMetadata): ProjectFileMetadataDTO =
+        ProjectFileMetadataDTO(
+            fileMetadata.id,
+            fileMetadata.projectId,
+            fileMetadata.name,
+            fileMetadata.size,
+            fileMetadata.uploadedAt,
+            fileMetadata.uploadedBy.toDto(),
+            fileMetadata.description
+        )
+
 
     fun map(projectCallFlatRateSet: Set<ProjectCallFlatRate>): FlatRateSetupDTO =
         projectCallFlatRateSet.toDto()

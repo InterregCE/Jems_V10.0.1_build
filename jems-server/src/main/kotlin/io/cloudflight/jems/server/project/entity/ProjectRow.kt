@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.entity.TranslationView
 
 interface ProjectRow: TranslationView {
     val id: Long
+    val customIdentifier: String
 
     // NON-historic data
     // call - project_call
@@ -14,7 +15,6 @@ interface ProjectRow: TranslationView {
     // applicant - account
     // firstStepDecision - project_decision
     // secondStepDecision - project_decision
-    val step2Active: Boolean
 
     val acronym: String
     val duration: Int?

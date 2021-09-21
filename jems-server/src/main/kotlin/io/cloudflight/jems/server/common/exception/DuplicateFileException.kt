@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.common.exception
 
-import io.minio.ObjectStat
+import io.minio.StatObjectResponse
+import io.minio.messages.Item
 import java.time.ZonedDateTime
 
 class DuplicateFileException : Exception {
@@ -18,12 +19,10 @@ class DuplicateFileException : Exception {
         val origin: Origin
     )
 
-    constructor(
-        objectStat: ObjectStat
-    ) : super("File already exists. Info about file: $objectStat") {
+    constructor(item: Item) : super("File already exists. Info about file: $item") {
         error = DuplicateFileError(
-            name = objectStat.name(),
-            updated = objectStat.createdTime(),
+            name = item.objectName(),
+            updated = item.lastModified(),
             origin = Origin.FILE_STORAGE
         )
     }

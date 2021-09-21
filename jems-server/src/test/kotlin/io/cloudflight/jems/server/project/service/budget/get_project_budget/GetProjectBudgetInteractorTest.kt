@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.budget.get_project_budget
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
@@ -10,8 +9,9 @@ import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCos
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -25,14 +25,14 @@ class GetProjectBudgetInteractorTest : UnitTest() {
 
     private val partner1Id = 1L
     private val partner2Id = 2L
-    private val partner1 = ProjectPartner(
+    private val partner1 = ProjectPartnerSummary(
         id = partner1Id,
         abbreviation = "PP 2",
         role = ProjectPartnerRole.PARTNER,
         sortNumber = 2,
         country = "SK"
     )
-    private val partner2 = ProjectPartner(
+    private val partner2 = ProjectPartnerSummary(
         id = partner2Id,
         abbreviation = "LP 1",
         role = ProjectPartnerRole.LEAD_PARTNER,
@@ -74,27 +74,27 @@ class GetProjectBudgetInteractorTest : UnitTest() {
     @Test
     fun getBudget() {
         every { persistence.getPartnersForProjectId(1) } returns listOf(partner1, partner2)
-        every { optionOptionsPersistence.getBudgetOptions(setOf(partner1Id, partner2Id)) } returns listOf(
+        every { optionOptionsPersistence.getBudgetOptions(setOf(partner1Id, partner2Id), 1L) } returns listOf(
             partner1Options
         )
-        every { persistence.getStaffCosts(setOf(partner2Id)) } returns listOf(budget(partner1Id, 50.0))
-        every { persistence.getTravelCosts(setOf(partner2Id)) } returns listOf(
+        every { persistence.getStaffCosts(setOf(partner2Id), 1L) } returns listOf(budget(partner1Id, 50.0))
+        every { persistence.getTravelCosts(setOf(partner2Id), 1L) } returns listOf(
             budget(partner1Id, 800.0),
             budget(partner2Id, 100.0)
         )
-        every { persistence.getExternalCosts(setOf(partner1Id, partner2Id)) } returns listOf(budget(partner2Id, 1000.0))
-        every { persistence.getEquipmentCosts(setOf(partner1Id, partner2Id)) } returns emptyList()
-        every { persistence.getInfrastructureCosts(setOf(partner1Id, partner2Id)) } returns listOf(
+        every { persistence.getExternalCosts(setOf(partner1Id, partner2Id), 1L) } returns listOf(budget(partner2Id, 1000.0))
+        every { persistence.getEquipmentCosts(setOf(partner1Id, partner2Id), 1L) } returns emptyList()
+        every { persistence.getInfrastructureCosts(setOf(partner1Id, partner2Id), 1L) } returns listOf(
             budget(
                 partner1Id,
                 300.0
             ), budget(partner2Id, 300.0)
         )
 
-        every {persistence.getUnitCostsPerPartner(setOf(partner1Id, partner2Id)) } returns mapOf(
+        every {persistence.getUnitCostsPerPartner(setOf(partner1Id, partner2Id), 1L) } returns mapOf(
             partner1Id to 25.0.toScaledBigDecimal()
         )
-        every { persistence.getLumpSumContributionPerPartner(setOf(partner1Id, partner2Id)) } returns mapOf(
+        every { persistence.getLumpSumContributionPerPartner(setOf(partner1Id, partner2Id), 1L) } returns mapOf(
             partner1Id to BigDecimal.ONE,
             partner2Id to BigDecimal.TEN,
         )

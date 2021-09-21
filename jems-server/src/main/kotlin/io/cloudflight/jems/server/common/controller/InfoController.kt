@@ -16,6 +16,8 @@ class InfoController(
         version = serverModuleIdentification.getVersion(),
         commitId = serverModuleIdentification.getId(),
         helpdeskUrl = infoEndpoint.info()["helpdesk-url"]?.toString() ?: "",
+        accessibilityStatementUrl = infoEndpoint.info()["accessibility-statement-url"]?.toString() ?: "",
+        termsAndPrivacyPolicyUrl = infoEndpoint.info()["terms-privacy-policy-url"]?.toString() ?: "",
     )
 
 }

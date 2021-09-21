@@ -24,7 +24,7 @@ describe('CallListStoreService', () => {
 
   it('should list calls', fakeAsync(() => {
     let results: CallDTO[] = [];
-    service.page$.subscribe(result => results = result.content);
+    service.callPage$.subscribe(result => results = result.content);
 
     const calls = [
       {name: 'test1'} as CallDTO,

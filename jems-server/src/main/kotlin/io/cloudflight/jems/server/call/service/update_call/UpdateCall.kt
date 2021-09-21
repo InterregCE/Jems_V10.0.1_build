@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.call.service.update_call
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
+import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callUpdated
-import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -21,7 +23,7 @@ class UpdateCall(
     private val auditPublisher: ApplicationEventPublisher,
 ) : UpdateCallInteractor {
 
-    @CanUpdateCalls
+    @CanUpdateCall
     @Transactional
     @ExceptionWrapper(UpdateCallException::class)
     override fun updateCall(call: Call): CallDetail {
@@ -57,12 +59,15 @@ class UpdateCall(
 
         val newSpecificObjectives: Set<ProgrammeObjectivePolicy> = call.priorityPolicies
         val newFundIds = call.fundIds
+        val newStateAidIds = call.stateAidIds
         val oldSpecificObjectives = oldCall.objectives.mergeAllSpecificObjectives()
         val oldFundIds = oldCall.funds.mapTo(HashSet()) { it.id }
+        val oldStateAidIds = oldCall.stateAids.mapTo(HashSet()) { it.id }
 
         val specificObjectivesRemoved = !newSpecificObjectives.containsAll(oldSpecificObjectives)
         val strategiesRemoved = !call.strategies.containsAll(oldCall.strategies)
         val fundsRemoved = !newFundIds.containsAll(oldFundIds)
+        val stateAidsRemoved = !newStateAidIds.containsAll(oldStateAidIds)
 
         if (startDateChanged
             || lengthOfPeriodChanged
@@ -70,6 +75,7 @@ class UpdateCall(
             || specificObjectivesRemoved
             || strategiesRemoved
             || fundsRemoved
+            || stateAidsRemoved
         )
             throw UpdateRestrictedFieldsWhenCallPublished()
 
@@ -80,5 +86,4 @@ class UpdateCall(
     private fun List<ProgrammePriority>.mergeAllSpecificObjectives(): Set<ProgrammeObjectivePolicy> =
         map { it.specificObjectives.map { it.programmeObjectivePolicy }.toSet() }
             .fold(emptySet()) { first, second -> first union second }
-
 }

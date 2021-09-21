@@ -17,12 +17,12 @@ internal class GetWorkPackageInvestmentsTestWorkPackageInvestmentBase : UnitTest
     @Test
     fun `should return a page of workPackageInvestments for the specified workPackage when workPackage already exists`() {
 
-        val expectedResult = PageImpl(listOf(createWorkPackageInvestment(), createWorkPackageInvestment()), pageRequest, 2)
-        every { persistence.getWorkPackageInvestments(workPackageId, pageRequest) } returns expectedResult
+        val expectedResult = listOf(createWorkPackageInvestment(), createWorkPackageInvestment())
+        every { persistence.getWorkPackageInvestments(workPackageId, 1L) } returns expectedResult
 
-        val workPackageInvestments = getWorkPackageInvestments.getWorkPackageInvestments(workPackageId, pageRequest)
+        val workPackageInvestments = getWorkPackageInvestments.getWorkPackageInvestments(1L, workPackageId)
 
-        verify(exactly = 1) { persistence.getWorkPackageInvestments(workPackageId, pageRequest) }
+        verify(exactly = 1) { persistence.getWorkPackageInvestments(workPackageId, 1L) }
         confirmVerified(persistence)
 
         Assertions.assertEquals(expectedResult, workPackageInvestments)

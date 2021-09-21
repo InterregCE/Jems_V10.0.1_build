@@ -1,5 +1,8 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
@@ -15,10 +18,11 @@ const val BUDGET_COST_PERIOD_NOT_EXISTS_ERROR_KEY = "project.partner.budget.peri
 const val BUDGET_COST_INVALID_PERIOD_AMOUNT_SCALE_ERROR_KEY = "project.partner.budget.period.amount.invalid.scale"
 const val BUDGET_COST_INVALID_NUMBER_OF_UNITS_SCALE_ERROR_KEY = "project.partner.budget.number.of.units.invalid.scale"
 const val BUDGET_COST_INVALID_PRICE_PER_UNIT_SCALE_ERROR_KEY = "project.partner.budget.price.per.unit.invalid.scale"
+const val BUDGET_COST_REAL_COST_NOT_ALLOWED = "project.partner.budget.real.cost.not.allowed"
 val MAX_ALLOWED_BUDGET_VALUE: BigDecimal = BigDecimal.valueOf(999_999_999_99L, 2)
 
 @Service
-class BudgetCostValidator {
+class BudgetCostValidator(private val callPersistence: CallPersistence) {
 
     final fun validateBaseEntries(budgetEntries: List<BaseBudgetEntry>) {
 
@@ -91,4 +95,28 @@ class BudgetCostValidator {
                 )
         }
 
+    fun validateAllowedRealCosts(callId: Long, budgetEntries: List<BaseBudgetEntry>, budgetCategory: BudgetCategory) {
+        val allowedRealCosts = this.callPersistence.getAllowedRealCosts(callId)
+
+        if (realCostNotAllowed(allowedRealCosts, budgetCategory)) {
+            validateAllEntriesAreUnitCosts(budgetEntries)
+        }
+    }
+
+    private fun realCostNotAllowed(allowedRealCosts: AllowedRealCosts, budgetCategory: BudgetCategory): Boolean {
+        return (budgetCategory == BudgetCategory.StaffCosts && !allowedRealCosts.allowRealStaffCosts)
+            || (budgetCategory == BudgetCategory.TravelAndAccommodationCosts && !allowedRealCosts.allowRealTravelAndAccommodationCosts)
+            || (budgetCategory == BudgetCategory.ExternalCosts && !allowedRealCosts.allowRealExternalExpertiseAndServicesCosts)
+            || (budgetCategory == BudgetCategory.EquipmentCosts && !allowedRealCosts.allowRealEquipmentCosts)
+            || (budgetCategory == BudgetCategory.InfrastructureCosts && !allowedRealCosts.allowRealInfrastructureCosts)
+    }
+
+    private fun validateAllEntriesAreUnitCosts(budgetEntries: List<BaseBudgetEntry>) {
+        if (budgetEntries.any { it.unitCostId == null }) {
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = BUDGET_COST_REAL_COST_NOT_ALLOWED
+            )
+        }
+    }
 }

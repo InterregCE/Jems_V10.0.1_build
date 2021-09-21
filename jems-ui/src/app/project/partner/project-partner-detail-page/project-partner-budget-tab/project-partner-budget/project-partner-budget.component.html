@@ -1,29 +1,30 @@
-<ng-container *ngIf="(data$ | async) as data">
+<ng-container *ngIf="data">
     <app-form (save)="updateBudgets()">
-        <form appFormLayout [formGroup]="budgetsForm">
+        <form [formGroup]="budgetsForm" appFormLayout>
             <h3>{{'project.partner.budget.header' | translate}}
                 <app-context-info infoPosition="right"
                                   infoText="{{'project.partner.budget.info' | translate}}">
                 </app-context-info>
             </h3>
 
-            <ng-container *ngIf="!data.isStaffCostFlatRateActive">
+            <ng-container *ngIf="!data.isStaffCostFlatRateActive && allowedBudgetCategories.staff.realOrUnitCosts()">
                 <h4>{{'project.partner.budget.staff' | translate}}</h4>
                 <app-staff-costs-budget-table
-                        appNoWidthLimit
                         *ngIf="staff"
+                        [allowedBudgetCategory]="allowedBudgetCategories.staff"
                         [availableUnitCosts]="data.unitCosts | filterUnitCosts:  true : BudgetCostCategoryEnum.STAFF_COSTS"
-                        [staffCostTable]="data.budgetTables.staffCosts"
                         [editable]="budgetsForm.enabled"
-                        [projectPeriods]="data.periods"></app-staff-costs-budget-table>
+                        [projectPeriods]="data.periods"
+                        [staffCostTable]="data.budgetTables.staffCosts"
+                        appNoWidthLimit></app-staff-costs-budget-table>
             </ng-container>
             <ng-container *ngIf="data.isStaffCostFlatRateActive && !data.isOtherFlatRateBasedOnStaffCostActive">
                 <h4>{{'project.partner.budget.staff.costs.flat.rate.header' | translate}}</h4>
                 <p>{{'project.partner.budget.other.staff.costs.flat.rate.description' | translate}}</p>
                 <app-budget-flat-rate-table
-                        appNoWidthLimit
+                        [description]="'project.partner.budget.staff.costs.flat.rate' | translate"
                         [total]="data.staffCostsTotal"
-                        [description]="'project.partner.budget.staff.costs.flat.rate' | translate"></app-budget-flat-rate-table>
+                        appNoWidthLimit></app-budget-flat-rate-table>
             </ng-container>
 
             <ng-container *ngIf="!data.isOtherFlatRateBasedOnStaffCostActive">
@@ -31,76 +32,90 @@
                     <h4>{{'project.partner.budget.office.and.admin.header' | translate}}</h4>
                     <p>
                         {{data.isOfficeOnStaffFlatRateActive ?
-                            ('project.partner.budget.office.and.admin.on.staff.description' | translate) :
-                            ('project.partner.budget.office.and.admin.on.direct.description' | translate)}}
+                        ('project.partner.budget.office.and.admin.on.staff.description' | translate) :
+                        ('project.partner.budget.office.and.admin.on.direct.description' | translate)}}
                     </p>
                     <app-budget-flat-rate-table
-                            appNoWidthLimit
+                            [description]="'project.partner.budget.office.and.admin.flat.rate' | translate"
                             [total]="data.officeAndAdministrationFlatRateTotal"
-                            [description]="'project.partner.budget.office.and.admin.flat.rate' | translate"></app-budget-flat-rate-table>
+                            appNoWidthLimit></app-budget-flat-rate-table>
                 </ng-container>
-                <ng-container *ngIf="!data.isTravelAndAccommodationFlatRateActive">
+                <ng-container
+                        *ngIf="!data.isTravelAndAccommodationFlatRateActive && allowedBudgetCategories.travel.realOrUnitCosts()">
                     <h4>{{'project.partner.budget.travel' | translate}}</h4>
                     <app-travel-and-accommodation-costs-budget-table
-                            appNoWidthLimit
                             *ngIf="travel"
+                            [allowedBudgetCategory]="allowedBudgetCategories.travel"
                             [availableUnitCosts]="data.unitCosts | filterUnitCosts: true : BudgetCostCategoryEnum.TRAVEL_AND_ACCOMMODATION_COSTS "
-                            [travelAndAccommodationTable]="data.budgetTables.travelCosts"
                             [editable]="budgetsForm.enabled"
-                            [projectPeriods]="data.periods">
+                            [projectPeriods]="data.periods"
+                            [travelAndAccommodationTable]="data.budgetTables.travelCosts"
+                            appNoWidthLimit>
                     </app-travel-and-accommodation-costs-budget-table>
                 </ng-container>
                 <ng-container *ngIf="data.isTravelAndAccommodationFlatRateActive">
                     <h4>{{'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate}}</h4>
                     <p>{{'project.partner.budget.travel.and.accommodation.flat.rate.description' | translate}}</p>
                     <app-budget-flat-rate-table
-                            appNoWidthLimit
+                            [description]="'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate"
                             [total]="data.travelAndAccommodationTotal"
-                            [description]="'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate"></app-budget-flat-rate-table>
+                            appNoWidthLimit></app-budget-flat-rate-table>
                 </ng-container>
-                <h4>{{'project.partner.budget.external' | translate}}</h4>
-                <app-general-budget-table
-                        appNoWidthLimit
-                        *ngIf="external"
-                        [availableUnitCosts]="data.unitCosts  | filterUnitCosts:  true : BudgetCostCategoryEnum.EXTERNAL_COSTS"
-                        [investmentSummaries]="data.investments"
-                        [budgetTable]="data.budgetTables.externalCosts"
-                        [editable]="budgetsForm.enabled"
-                        [tableName]="constants.FORM_CONTROL_NAMES.external"
-                        [projectPeriods]="data.periods">
-                </app-general-budget-table>
-                <h4>{{'project.partner.budget.equipment' | translate}}</h4>
-                <app-general-budget-table
-                        appNoWidthLimit
-                        *ngIf="equipment"
-                        [availableUnitCosts]="data.unitCosts  | filterUnitCosts:  true : BudgetCostCategoryEnum.EQUIPMENT_COSTS"
-                        [investmentSummaries]="data.investments"
-                        [budgetTable]="data.budgetTables.equipmentCosts"
-                        [editable]="budgetsForm.enabled"
-                        [tableName]="constants.FORM_CONTROL_NAMES.equipment"
-                        [projectPeriods]="data.periods">
-                </app-general-budget-table>
 
-                <h4>{{'project.partner.budget.infrastructure' | translate}}</h4>
-                <app-general-budget-table
-                        appNoWidthLimit
-                        *ngIf="infrastructure"
-                        [investmentSummaries]="data.investments"
-                        [availableUnitCosts]="data.unitCosts  | filterUnitCosts:  true : BudgetCostCategoryEnum.INFRASTRUCTURE_COSTS"
-                        [budgetTable]="data.budgetTables.infrastructureCosts"
-                        [editable]="budgetsForm.enabled"
-                        [tableName]="constants.FORM_CONTROL_NAMES.infrastructure"
-                        [projectPeriods]="data.periods">
-                </app-general-budget-table>
-                <ng-container *ngIf="data.unitCosts?.length">
+                <ng-container *ngIf="allowedBudgetCategories.external.realOrUnitCosts()">
+                    <h4>{{'project.partner.budget.external' | translate}}</h4>
+                    <app-general-budget-table
+                            *ngIf="external"
+                            [allowedBudgetCategory]="allowedBudgetCategories.external"
+                            [availableUnitCosts]="data.unitCosts  | filterUnitCosts:  true : BudgetCostCategoryEnum.EXTERNAL_COSTS"
+                            [budgetTable]="data.budgetTables.externalCosts"
+                            [editable]="budgetsForm.enabled"
+                            [investmentSummaries]="data.investments"
+                            [projectPeriods]="data.periods"
+                            [tableName]="constants.FORM_CONTROL_NAMES.external"
+                            appNoWidthLimit>
+                    </app-general-budget-table>
+                </ng-container>
+
+                <ng-container *ngIf="allowedBudgetCategories.equipment.realOrUnitCosts()">
+                    <h4>{{'project.partner.budget.equipment' | translate}}</h4>
+                    <app-general-budget-table
+                            *ngIf="equipment"
+                            [allowedBudgetCategory]="allowedBudgetCategories.equipment"
+                            [availableUnitCosts]="data.unitCosts  | filterUnitCosts:  true : BudgetCostCategoryEnum.EQUIPMENT_COSTS"
+                            [budgetTable]="data.budgetTables.equipmentCosts"
+                            [editable]="budgetsForm.enabled"
+                            [investmentSummaries]="data.investments"
+                            [projectPeriods]="data.periods"
+                            [tableName]="constants.FORM_CONTROL_NAMES.equipment"
+                            appNoWidthLimit>
+                    </app-general-budget-table>
+                </ng-container>
+
+                <ng-container *ngIf="allowedBudgetCategories.infrastructure.realOrUnitCosts()">
+                    <h4>{{'project.partner.budget.infrastructure' | translate}}</h4>
+                    <app-general-budget-table
+                            *ngIf="infrastructure"
+                            [allowedBudgetCategory]="allowedBudgetCategories.infrastructure"
+                            [availableUnitCosts]="data.unitCosts  | filterUnitCosts:  true : BudgetCostCategoryEnum.INFRASTRUCTURE_COSTS"
+                            [budgetTable]="data.budgetTables.infrastructureCosts"
+                            [editable]="budgetsForm.enabled"
+                            [investmentSummaries]="data.investments"
+                            [projectPeriods]="data.periods"
+                            [tableName]="constants.FORM_CONTROL_NAMES.infrastructure"
+                            appNoWidthLimit>
+                    </app-general-budget-table>
+                </ng-container>
+
+                <ng-container *ngIf="data.unitCostsWithMultipleCategoriesDefined">
                     <h4>{{'project.partner.budget.unitcosts' | translate}}</h4>
                     <app-unit-costs-budget-table
-                            appNoWidthLimit
                             *ngIf="unitCosts"
                             [availableUnitCosts]="data.unitCosts | filterUnitCosts:  false"
-                            [unitCostTable]="data.budgetTables.unitCosts"
                             [editable]="budgetsForm.enabled"
-                            [projectPeriods]="data.periods">
+                            [projectPeriods]="data.periods"
+                            [unitCostTable]="data.budgetTables.unitCosts"
+                            appNoWidthLimit>
                     </app-unit-costs-budget-table>
                 </ng-container>
             </ng-container>
@@ -109,9 +124,9 @@
                 <h4>{{'project.partner.budget.other.costs.flat.rate.header' | translate}}</h4>
                 <p>{{'project.partner.budget.other.costs.flat.rate.description' | translate}}</p>
                 <app-budget-flat-rate-table
-                        appNoWidthLimit
+                        [description]="'project.partner.budget.other.costs.flat.rate' | translate"
                         [total]="data.otherCostsFlatRateTotal"
-                        [description]="'project.partner.budget.other.costs.flat.rate' | translate"></app-budget-flat-rate-table>
+                        appNoWidthLimit></app-budget-flat-rate-table>
             </ng-container>
         </form>
     </app-form>

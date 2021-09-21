@@ -2,19 +2,22 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, Input, TemplateRef, V
 import {ProjectApplicationFormSidenavService} from '../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Alert} from '@common/components/forms/alert';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectVersionDTO} from '@cat/api';
+import {ProjectVersionDTO, UserRoleDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {ProjectPageTemplateStore} from './project-page-template-store.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
+@UntilDestroy()
 @Component({
   selector: 'app-project-page-template',
   templateUrl: './project-page-template.component.html',
   styleUrls: ['./project-page-template.component.scss'],
-  providers: [ProjectPageTemplateStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectPageTemplateComponent implements AfterViewInit {
   Alert = Alert;
+  PermissionsEnum = PermissionsEnum;
 
   @ViewChild('sidenavVersionSelect', {static: true})
   sidenavVersionSelect: TemplateRef<any>;
@@ -26,6 +29,9 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
 
   @Input() subTitleText: string;
   @Input() subTitleKey: string;
+
+  @Input() descriptionText: string;
+  @Input() descriptionKey: string;
 
   versionWarnData$: Observable<{
     current: ProjectVersionDTO | undefined,
@@ -57,6 +63,8 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.projectSidenavService.versionSelectTemplate$.next(this.sidenavVersionSelect);
+    this.pageStore.versionsUpdatedEvent$.pipe(untilDestroyed(this)).subscribe(() =>
+      this.projectSidenavService.versionSelectTemplate$.next(this.sidenavVersionSelect)
+    );
   }
 }

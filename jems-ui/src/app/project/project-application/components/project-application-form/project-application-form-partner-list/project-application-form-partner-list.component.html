@@ -21,7 +21,7 @@
 
 <ng-template #budgetCell let-partner>
     <button mat-raised-button color="primary" class="button"
-            (click)="goToPartnerBudget(partner.id)">
+            [routerLink]="[partner.id, 'budget']">
         {{'project.application.form.partner.list.budget' | translate}}
     </button>
 </ng-template>

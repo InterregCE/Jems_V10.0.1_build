@@ -5,7 +5,7 @@
                 <button mat-icon-button disabled></button>
                 <mat-checkbox
                         [(ngModel)]="node.checked"
-                        [disabled]="disabled  || ((programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) && node.initiallyChecked)"
+                        [disabled]="disabled || ((programmeEditableStateStore.hasOnlyViewPermission$ | async) || (programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) && node.initiallyChecked)"
                         (ngModelChange)="leafChanged(node)">
                     {{node.title}}
                 </mat-checkbox>
@@ -25,7 +25,7 @@
                     <mat-checkbox
                             [indeterminate]="!node.checked && node.someChecked"
                             [(ngModel)]="node.checked"
-                            [disabled]="disabled  || ((programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) && node.initiallyChecked)"
+                            [disabled]="disabled || ((programmeEditableStateStore.hasOnlyViewPermission$ | async) || (programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async) && node.initiallyChecked)"
                             (change)="parentChanged(node)">
                         {{node.code}} {{node.title}}
                     </mat-checkbox>

@@ -5,7 +5,7 @@ spring:
   flyway:
     out-of-order: true
   messages:
-    basename: classpath:/messages, classpath:/plugin_messages
+    basename: file:${app.translations-folder:resources/translations}/Application, file:${app.translations-folder:resources/translations}/System, classpath:/Application, classpath:/System, classpath:/messages, classpath:/plugin_messages
   datasource:
     url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/jemsdb}"
     username: root
@@ -21,7 +21,7 @@ spring:
     multipart:
       enabled: true
       max-file-size: 50MB
-      max-request-size: 50MB
+      max-request-size: 51MB
 
 audit-service:
   enabled: "${AUDIT_ENABLED:true}"
@@ -49,6 +49,10 @@ management:
       enabled: "${AUDIT_ENABLED:true}"
 info:
   helpdesk-url: "https://helpdesk.interact-eu.net"
+  accessibility-statement-url: ""
+  terms-privacy-policy-url: ""
 app:
   security:
     default-password-prefix: Jems@2020
+  translations-folder: resources/translations/
+

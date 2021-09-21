@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.plugin.entity.PluginStatusEntity
 import io.cloudflight.jems.server.plugin.repository.PluginStatusRepository
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -108,7 +109,7 @@ class SubmitApplicationInteractorTest : UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = projectId.toString(), name = "project acronym"),
+                project = AuditProject(id = projectId.toString(), customIdentifier = projectId.toString(), name = "project acronym"),
                 description = "Project application status changed from DRAFT to SUBMITTED"
             )
         )
@@ -161,16 +162,18 @@ class SubmitApplicationInteractorTest : UnitTest() {
         isAdditionalFundAllowed: Boolean = true,
         flatRates: Set<ProjectCallFlatRate> = emptySet(),
         lumpSums: List<ProgrammeLumpSum> = emptyList(),
-        unitCosts: List<ProgrammeUnitCost> = emptyList()
+        unitCosts: List<ProgrammeUnitCost> = emptyList(),
+        stateAids : List<ProgrammeStateAid> = emptyList(),
     ) =
         ProjectCallSettings(
             callId, callName, startDate, endDate, endDateStep1,
-            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts
+            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
     private fun buildProjectSummary(
         id: Long = 1L, callName: String = "call name",
         acronym: String = "project acronym", status: ApplicationStatus
     ) =
-        ProjectSummary(id, callName, acronym, status)
+        ProjectSummary(id, id.toString(), callName, acronym, status)
 }

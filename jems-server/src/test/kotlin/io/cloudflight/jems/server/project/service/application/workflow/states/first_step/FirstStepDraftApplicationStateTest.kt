@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.application.workflow.states.first_step
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
@@ -26,6 +25,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -47,6 +47,8 @@ class FirstStepDraftApplicationStateTest : UnitTest() {
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),
+            stateAids = emptyList(),
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
         private val actionInfo = ApplicationActionInfo(
@@ -62,7 +64,7 @@ class FirstStepDraftApplicationStateTest : UnitTest() {
     lateinit var projectWorkflowPersistence: ProjectWorkflowPersistence
 
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
     lateinit var securityService: SecurityService

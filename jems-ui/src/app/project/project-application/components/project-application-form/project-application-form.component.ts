@@ -8,14 +8,21 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectData, InputTranslation, OutputProgrammePrioritySimple, ProjectDetailDTO} from '@cat/api';
+import {
+  InputProjectData,
+  InputTranslation,
+  OutputProgrammePrioritySimple,
+  ProjectDetailDTO,
+  ProjectDetailFormDTO, ProjectPartnerDetailDTO
+} from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
-import {Tools} from '../../../../common/utils/tools';
+import {Tools} from '@common/utils/tools';
 import {catchError, distinctUntilChanged, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectStore} from '../../containers/project-application-detail/services/project-store.service';
-import {LanguageStore} from '../../../../common/services/language-store.service';
+import {LanguageStore} from '@common/services/language-store.service';
+import { APPLICATION_FORM } from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-application-form',
@@ -28,9 +35,13 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   Permission = Permission;
   tools = Tools;
   LANGUAGE = InputTranslation.LanguageEnum;
-
+  APPLICATION_FORM = APPLICATION_FORM;
   @Input()
   project: ProjectDetailDTO;
+  @Input()
+  projectForm: ProjectDetailFormDTO;
+  @Input()
+  leadPartner: ProjectPartnerDetailDTO | null;
   @Input()
   priorities: OutputProgrammePrioritySimple[];
   @Input()
@@ -42,6 +53,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
 
   applicationForm: FormGroup = this.formBuilder.group({
     projectId: [''],
+    nameOfTheLeadPartner: [''],
+    nameOfTheLeadPartnerInEnglish: [''],
     acronym: ['', Validators.compose([
       Validators.maxLength(25),
       Validators.required])
@@ -63,7 +76,6 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     required: 'project.objective.should.not.be.empty'
   };
   projectAcronymErrors = {
-    maxlength: 'project.acronym.size.too.long',
     required: 'project.acronym.should.not.be.empty'
   };
   projectDurationErrors = {
@@ -94,6 +106,16 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       .subscribe(duration =>
         this.applicationForm.controls.projectPeriodCount.setValue(this.projectPeriodCount(duration))
       );
+
+    this.projectStore.projectEditable$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(() => {
+        this.applicationForm.controls.projectId.disable();
+        this.applicationForm.controls.nameOfTheLeadPartner.disable();
+        this.applicationForm.controls.nameOfTheLeadPartnerInEnglish.disable();
+        this.applicationForm.controls.projectPeriodLength.disable();
+        this.applicationForm.controls.projectPeriodCount.disable();
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -108,8 +130,10 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       duration: this.applicationForm.controls.duration.value,
       specificObjective: this.selectedSpecificObjective
     } as InputProjectData;
-    if (this.applicationForm.controls.introEn.value[0]) {
-      data.intro.push(this.applicationForm.controls.introEn.value[0]);
+    const english = this.applicationForm.controls.introEn?.value?.find((translation: any) => translation.language === 'EN');
+    if (english) {
+      data.intro = data.intro.filter(translation => translation.language !== 'EN')
+        .concat(english);
     }
     this.projectStore.updateProjectData(data)
       .pipe(
@@ -120,22 +144,24 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   }
 
   resetForm(): void {
-    this.applicationForm.controls.projectId.setValue(this.project.id);
-    this.applicationForm.controls.acronym.setValue(this.project.acronym);
-    this.applicationForm.controls.title.setValue(this.project?.projectData?.title);
-    this.applicationForm.controls.duration.setValue(this.project?.projectData?.duration);
+    this.applicationForm.controls.projectId.setValue(this.projectForm.customIdentifier);
+    this.applicationForm.controls.nameOfTheLeadPartner.setValue(this.leadPartner?.nameInOriginalLanguage);
+    this.applicationForm.controls.nameOfTheLeadPartnerInEnglish.setValue(this.leadPartner?.nameInEnglish);
+    this.applicationForm.controls.acronym.setValue(this.projectForm.acronym);
+    this.applicationForm.controls.title.setValue(this.projectForm?.title);
+    this.applicationForm.controls.duration.setValue(this.projectForm?.duration);
     this.applicationForm.controls.projectPeriodLength.setValue(this.project?.callSettings.lengthOfPeriod);
     this.applicationForm.controls.projectPeriodCount.setValue(
-      this.projectPeriodCount(this.project?.projectData?.duration)
+      this.projectPeriodCount(this.projectForm?.duration)
     );
-    this.applicationForm.controls.intro.setValue(this.project?.projectData?.intro || []);
+    this.applicationForm.controls.intro.setValue(this.projectForm?.intro || []);
     if (!this.languageStore.isInputLanguageExist(this.LANGUAGE.EN)) {
-      this.applicationForm.controls.introEn.setValue(this.project?.projectData?.intro || []);
+      this.applicationForm.controls.introEn.setValue(this.projectForm?.intro || []);
     }
-    if (this.project?.projectData?.specificObjective) {
-      this.previousObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
-      this.selectedSpecificObjective = this.project?.projectData?.specificObjective.programmeObjectivePolicy;
-      const prevPriority = this.project?.projectData?.programmePriority;
+    if (this.projectForm?.specificObjective) {
+      this.previousObjective = this.projectForm?.specificObjective.programmeObjectivePolicy;
+      this.selectedSpecificObjective = this.projectForm?.specificObjective.programmeObjectivePolicy;
+      const prevPriority = this.projectForm?.programmePriority;
       this.currentPriority = prevPriority.code;
       this.applicationForm.controls.programmePriority.setValue(prevPriority.code);
       this.applicationForm.controls.specificObjective.setValue(this.selectedSpecificObjective);
@@ -144,9 +170,6 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
       this.applicationForm.controls.programmePriority.setValue(null);
       this.applicationForm.controls.specificObjective.setValue(null);
     }
-    this.applicationForm.controls.projectId.disable();
-    this.applicationForm.controls.projectPeriodLength.disable();
-    this.applicationForm.controls.projectPeriodCount.disable();
   }
 
   private projectPeriodCount(projectDuration: number): number {

@@ -1,21 +1,25 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.InputProjectContact
-import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerCreate
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
+import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
-import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
+import io.cloudflight.jems.server.project.repository.workpackage.activity.toActivityHistoricalData
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -29,22 +33,29 @@ import java.util.stream.StreamSupport
 class PartnerPersistenceProvider(
     private val projectVersionUtils: ProjectVersionUtils,
     private val projectPartnerRepository: ProjectPartnerRepository,
-    private val projectPersistence: ProjectPersistence,
     private val legalStatusRepo: ProgrammeLegalStatusRepository,
     private val projectRepo: ProjectRepository,
+    private val projectPartnerStateAidRepository: ProjectPartnerStateAidRepository,
     private val projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
+    private val workPackageActivityRepository: WorkPackageActivityRepository,
+    private val programmeStateAidRepository: ProgrammeStateAidRepository
 ) : PartnerPersistence {
 
-    companion object {
-        // when changing also change repository findTop*() methods
-        const val MAX_PROJECT_PARTNERS = 30
+    @Transactional(readOnly = true)
+    override fun throwIfNotExistsInProject(projectId: Long, partnerId: Long) {
+        if (!projectPartnerRepository.existsByProjectIdAndId(projectId, partnerId))
+            throw PartnerNotFoundInProjectException(projectId, partnerId)
     }
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long, version: String?): OutputProjectPartnerDetail {
-        return projectVersionUtils.fetch(version, projectPersistence.getProjectIdForPartner(id),
+    override fun getById(id: Long, version: String?): ProjectPartnerDetail {
+        return projectVersionUtils.fetch(version,
+            projectId = projectVersionUtils.fetchProjectId(version, id,
+                currentVersionOnlyFetcher = { projectPartnerRepository.getProjectIdForPartner(id) },
+                historicVersionFetcher = { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(id) }
+            ),
             currentVersionFetcher = {
-                getPartnerOrThrow(id).toOutputProjectPartnerDetail()
+                getPartnerOrThrow(id).toProjectPartnerDetail()
             },
             previousVersionFetcher = { timestamp ->
                 getPartnerHistoricalDetail(id, timestamp)
@@ -53,14 +64,14 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<OutputProjectPartner> {
+    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectPartnerSummary> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                projectPartnerRepository.findAllByProjectId(projectId, page).map { it.toOutputProjectPartner() }
+                projectPartnerRepository.findAllByProjectId(projectId, page).map { it.toModel() }
             },
             previousVersionFetcher = { timestamp ->
                 projectPartnerRepository.findAllByProjectIdAsOfTimestamp(projectId, page, timestamp)
-                    .map { it.toOutputProjectPartnerHistoricalData() }
+                    .map { it.toProjectPartnerDTOHistoricalData() }
             }
         ) ?: Page.empty()
     }
@@ -70,116 +81,126 @@ class PartnerPersistenceProvider(
         projectId: Long,
         sort: Sort,
         version: String?
-    ): List<OutputProjectPartner> {
+    ): List<ProjectPartnerSummary> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 StreamSupport.stream(
                     projectPartnerRepository.findTop30ByProjectId(projectId, sort).spliterator(),
                     false
-                ).map { it.toOutputProjectPartner() }.collect(Collectors.toList())
+                ).map { it.toModel() }.collect(Collectors.toList())
             },
             previousVersionFetcher = { timestamp ->
                 projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
-                    .toOutputProjectPartnerHistoricalData()
+                    .map { it.toProjectPartnerDTOHistoricalData() }
             }
         ) ?: emptyList()
     }
 
     // used for authorization
     @Transactional(readOnly = true)
-    override fun getProjectIdForPartnerId(id: Long): Long {
+    override fun getProjectIdForPartnerId(id: Long, version: String?): Long {
+        if (version != null) {
+            return getProjectIdIfExistedOrThrow(id)
+        }
         return getPartnerOrThrow(id).project.id
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectId(projectId: Long): Iterable<OutputProjectPartnerDetail> {
-        return projectPartnerRepository.findAllByProjectId(projectId).map { it.toOutputProjectPartnerDetail() }.toSet()
+    override fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerDetail> {
+        return projectPartnerRepository.findAllByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
+    }
+
+    @Transactional(readOnly = true)
+    override fun countByProjectId(projectId: Long): Long =
+        projectPartnerRepository.countByProjectId(projectId)
+
+    @Transactional
+    override fun changeRoleOfLeadPartnerToPartnerIfItExists(projectId: Long) {
+        projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER).ifPresent {
+            it.role = ProjectPartnerRole.PARTNER
+        }
+    }
+
+    @Transactional(readOnly = true)
+    override fun throwIfPartnerAbbreviationAlreadyExists(projectId: Long, abbreviation: String) {
+        if (projectPartnerRepository.existsByProjectIdAndAbbreviation(projectId, abbreviation))
+            throw PartnerAbbreviationNotUnique(abbreviation)
     }
 
     @Transactional
-    override fun create(projectId: Long, projectPartner: InputProjectPartnerCreate): OutputProjectPartnerDetail {
-        val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
-        val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!)
-            .orElseThrow { ResourceNotFoundException("legalstatus") }
-
-        val partnerCreated =
-            projectPartnerRepository.save(projectPartner.toEntity(project = project, legalStatus = legalStatus))
-        // save translations for which the just created Id is needed
+    override fun create(projectId: Long, projectPartner: ProjectPartner): ProjectPartnerDetail =
         projectPartnerRepository.save(
-            partnerCreated.copy(
-                translatedValues = projectPartner.combineTranslatedValues(partnerCreated.id)
+            projectPartner.toEntity(
+                project = projectRepo.getReferenceIfExistsOrThrow(projectId),
+                legalStatus = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId)
             )
-        )
-        updateSortByRole(projectId)
-        // entity is attached, number will have been updated
-        return partnerCreated.toOutputProjectPartnerDetail()
-    }
+        ).also { updateSortByRole(projectId) }.toProjectPartnerDetail()
+
 
     @Transactional
-    override fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail {
-        val oldProjectPartner = getPartnerOrThrow(projectPartner.id)
-        val projectId = oldProjectPartner.project.id
-        val legalStatus = legalStatusRepo.findById(projectPartner.legalStatusId!!)
-            .orElseThrow { ResourceNotFoundException("legalstatus") }
+    override fun update(projectPartner: ProjectPartner): ProjectPartnerDetail =
+        getPartnerOrThrow(projectPartner.id!!).let { entity ->
+            projectPartnerRepository.save(
+                entity.copy(
+                    projectPartner = projectPartner,
+                    legalStatusRef = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId)
+                )
+            ).also { updateSortByRole(entity.project.id) }
+        }.toProjectPartnerDetail()
 
-        val makingThisLead = !oldProjectPartner.role.isLead && projectPartner.role!!.isLead
-        val partnerUpdated = projectPartnerRepository.save(
-            oldProjectPartner.copy(
-                abbreviation = projectPartner.abbreviation!!,
-                role = projectPartner.role!!,
-                nameInOriginalLanguage = projectPartner.nameInOriginalLanguage,
-                nameInEnglish = projectPartner.nameInEnglish,
-                translatedValues = projectPartner.combineTranslatedValues(oldProjectPartner.id),
-                partnerType = projectPartner.partnerType,
-                legalStatus = legalStatus,
-                vat = projectPartner.vat,
-                vatRecovery = projectPartner.vatRecovery
-            )
-        )
-        // update sorting if leadPartner changed
-        if (projectPartner.oldLeadPartnerId != null || makingThisLead)
-            updateSortByRole(projectId)
-
-        return partnerUpdated.toOutputProjectPartnerDetail()
-    }
 
     @Transactional
     override fun updatePartnerAddresses(
-        partnerId: Long,
-        addresses: Set<ProjectPartnerAddressDTO>
-    ): OutputProjectPartnerDetail {
-        val projectPartner = getPartnerOrThrow(partnerId)
-        return projectPartnerRepository.save(
-            projectPartner.copy(
-                addresses = addresses.mapTo(HashSet()) { it.toEntity(projectPartner) }
-            )
-        ).toOutputProjectPartnerDetail()
-    }
+        partnerId: Long, addresses: Set<ProjectPartnerAddress>
+    ): ProjectPartnerDetail =
+        projectPartnerRepository.save(
+            getPartnerOrThrow(partnerId).copy(newAddresses = addresses)
+        ).toProjectPartnerDetail()
+
 
     @Transactional
     override fun updatePartnerContacts(
-        partnerId: Long,
-        contacts: Set<InputProjectContact>
-    ): OutputProjectPartnerDetail {
-        val projectPartner = getPartnerOrThrow(partnerId)
-        return projectPartnerRepository.save(
-            projectPartner.copy(
-                contacts = contacts.mapTo(HashSet()) { it.toEntity(projectPartner) }
-            )
-        ).toOutputProjectPartnerDetail()
-    }
+        partnerId: Long, contacts: Set<ProjectPartnerContact>
+    ): ProjectPartnerDetail =
+        projectPartnerRepository.save(
+            getPartnerOrThrow(partnerId).copy(newContacts = contacts)
+        ).toProjectPartnerDetail()
 
     @Transactional
     override fun updatePartnerMotivation(
-        partnerId: Long,
-        motivation: ProjectPartnerMotivationDTO
-    ): OutputProjectPartnerDetail {
-        val projectPartner = getPartnerOrThrow(partnerId)
-        return projectPartnerRepository.save(
-            projectPartner.copy(
-                motivation = motivation.toEntity(projectPartner.id)
-            )
-        ).toOutputProjectPartnerDetail()
+        partnerId: Long, motivation: ProjectPartnerMotivation
+    ): ProjectPartnerDetail =
+        projectPartnerRepository.save(
+            getPartnerOrThrow(partnerId).copy(newMotivation = motivation)
+        ).toProjectPartnerDetail()
+
+
+    @Transactional(readOnly = true)
+    override fun getPartnerStateAid(partnerId: Long, version: String?): ProjectPartnerStateAid {
+        val projectId = getProjectIdForPartnerId(partnerId, version)
+        return projectVersionUtils.fetch(version,
+            projectId = projectId,
+            currentVersionFetcher = {
+                projectPartnerStateAidRepository.findById(partnerId)
+                    .orElse(ProjectPartnerStateAidEntity(partnerId)).toModel()
+            },
+            previousVersionFetcher = { timestamp ->
+                getPartnerStateAidHistorical(partnerId, timestamp)
+            }
+        ) ?: throw ApplicationVersionNotFoundException()
+    }
+
+    @Transactional
+    override fun updatePartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAid): ProjectPartnerStateAid {
+        val workPackageActivities =
+            stateAid.activities?.map { workPackageActivityRepository.getReferenceIfExistsOrThrow(it.activityId) }
+                .orEmpty()
+                .filterNotNull()
+        return projectPartnerStateAidRepository.save(stateAid.toEntity(
+            partnerId = partnerId,
+            workPackageActivities = workPackageActivities,
+            programmeStateAid = programmeStateAidRepository.getReferenceIfExistsOrThrow(stateAid.stateAidScheme?.id)
+        )).toModel()
     }
 
     @Transactional
@@ -201,15 +222,14 @@ class PartnerPersistenceProvider(
             )
         )
 
-        val projectPartners = projectPartnerRepository.findTop30ByProjectId(projectId, sort)
-            .mapIndexed { index, old -> old.copy(sortNumber = index.plus(1)) }
-        projectPartnerRepository.saveAll(projectPartners)
+        projectPartnerRepository.findTop30ByProjectId(projectId, sort)
+            .forEachIndexed { index, old -> old.sortNumber = index.plus(1) }
     }
 
     private fun getPartnerHistoricalDetail(
         partnerId: Long,
         timestamp: Timestamp,
-    ): OutputProjectPartnerDetail {
+    ): ProjectPartnerDetail {
         val addresses = projectPartnerRepository.findPartnerAddressesByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerAddressHistoricalData()
         val contacts = projectPartnerRepository.findPartnerContactsByIdAsOfTimestamp(partnerId, timestamp)
@@ -220,8 +240,32 @@ class PartnerPersistenceProvider(
             .toProjectPartnerDetailHistoricalData(addresses, contacts, motivation)
     }
 
+    private fun getPartnerStateAidHistorical(
+        partnerId: Long,
+        timestamp: Timestamp,
+    ): ProjectPartnerStateAid {
+        val activityIds =
+            projectPartnerStateAidRepository.findPartnerStateAidActivitiesByPartnerIdAsOfTimestamp(partnerId, timestamp)
+        val workPackageActivities =
+            workPackageActivityRepository.findAllByActivityIdInAsOfTimestamp(activityIds, timestamp)
+        val partnerStateAidRows =
+            projectPartnerStateAidRepository.findPartnerStateAidByIdAsOfTimestamp(partnerId, timestamp)
+        val programmeStateAidId = partnerStateAidRows.firstOrNull { it.stateAidId != null }?.stateAidId
+        val programmeStateAid =
+            if (programmeStateAidId != null) { programmeStateAidRepository.findById(programmeStateAidId) } else { null }
+
+        return partnerStateAidRows.toModel(workPackageActivities.toActivityHistoricalData(), programmeStateAid?.get())
+            ?: ProjectPartnerStateAid(answer1 = null, answer2 = null, answer3 = null, answer4 = null, stateAidScheme = null)
+    }
+
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity {
         return projectPartnerRepository.findById(partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
     }
+
+    private fun getProjectIdIfExistedOrThrow(partnerId: Long): Long {
+        return projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId)
+            ?: throw ResourceNotFoundException("projectPartner")
+    }
+
 }

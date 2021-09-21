@@ -18,7 +18,7 @@ import {SecurityService} from '../../security/security.service';
 export class HasPermissionDirective implements OnInit {
   private alternativeCondition: boolean;
   private currentUser: OutputCurrentUser | null;
-  private permissionNeeded: UserRoleDTO.PermissionsEnum;
+  private permissionsNeeded: UserRoleDTO.PermissionsEnum[];
 
   @Input()
   set hasPermissionAlternativeCondition(val: boolean) {
@@ -42,18 +42,25 @@ export class HasPermissionDirective implements OnInit {
   }
 
   @Input()
-  set hasPermission(permission: UserRoleDTO.PermissionsEnum) {
-    this.permissionNeeded = permission;
+  set hasPermission(permission: UserRoleDTO.PermissionsEnum | UserRoleDTO.PermissionsEnum[]) {
+    this.permissionsNeeded = Array.isArray(permission) ? permission : [permission];
     this.updateView();
   }
 
   private updateView(): void {
-    const hasEnoughPermissions = this.currentUser && (this.currentUser.role.permissions.includes(this.permissionNeeded));
-    if (hasEnoughPermissions || this.alternativeCondition) {
+    const userPermissions: string[] = this.currentUser?.role?.permissions || [];
+    const intersection: string[] = this.getArraysIntersection(this.permissionsNeeded, userPermissions);
+    const permissionIntersectionExists = !!intersection.length;
+
+    if (permissionIntersectionExists || this.alternativeCondition) {
       this.viewContainer.createEmbeddedView(this.templateRef);
     } else {
       this.viewContainer.clear();
     }
+  }
+
+  private getArraysIntersection(a1: string[], a2: string[]): string[] {
+    return a1.filter(n => a2.indexOf(n) !== -1);
   }
 
 }

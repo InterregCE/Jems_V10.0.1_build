@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.programme.service.legalstatus.get_legal_status
 
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest

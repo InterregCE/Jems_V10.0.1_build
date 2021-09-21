@@ -62,7 +62,7 @@ class AuditServiceTest {
         assertEquals("1", event.captured.project?.id,
             "project ID should not be lost when creating audit log entry")
         assertEquals(
-            AuditUser(applicantUser.user.id!!, applicantUser.user.email), event.captured.user,
+            AuditUser(applicantUser.user.id, applicantUser.user.email), event.captured.user,
             "Correct User should be assigned to audit log entry.")
         assertEquals("status change from X to Y", event.captured.description,
             "Description should be saved to audit log entry.")

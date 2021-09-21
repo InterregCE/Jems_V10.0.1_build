@@ -1,0 +1,60 @@
+<app-form *ngIf="workPackage$ | async as workPackage"
+          (save)="onSubmit()"
+          (discard)="discard(workPackage)">
+    <form appFormLayout [formGroup]="form">
+        <h3>{{'project.application.form.workpackage.form.header' | translate}}</h3>
+
+        <mat-form-field>
+            <mat-label>{{'project.application.form.workpackage.field.number' | translate}}</mat-label>
+            <input name="number" formControlName="number" matInput>
+        </mat-form-field>
+
+        <app-multi-language-container
+                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES.TITLE">
+            <app-multi-language-form-field
+                    label="project.application.form.workpackage.field.title"
+                    formControlName="name"
+                    maxLength="100">
+            </app-multi-language-form-field>
+        </app-multi-language-container>
+
+        <ng-container *appFormFieldVisibilityStatus="{
+            first: APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES.SPECIFIC_OBJECTIVE,
+            second: APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES.COMMUNICATION_OBJECTIVES_AND_TARGET_AUDIENCE}">
+            <h4>{{'project.application.form.workpackage.form.objectives' | translate}}</h4>
+            <div>
+                <p>{{'project.application.form.workpackage.form.objectives.intro.line.three' | translate}}</p>
+                <ul>
+                    <li>{{'project.application.form.workpackage.form.objectives.intro.line.four' | translate}}</li>
+                    <li>{{'project.application.form.workpackage.form.objectives.intro.line.five' | translate}}</li>
+                    <li>{{'project.application.form.workpackage.form.objectives.intro.line.six' | translate}}</li>
+                </ul>
+            </div>
+            <ng-container
+                    *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES.SPECIFIC_OBJECTIVE">
+                <p>{{'project.application.form.workpackage.form.objectives.intro.line.one' | translate}}</p>
+                <app-multi-language-container>
+                    <app-multi-language-form-field
+                            type="textarea"
+                            label="project.application.form.workpackage.field.specific.objective"
+                            formControlName="specificObjective"
+                            maxLength="250">
+                    </app-multi-language-form-field>
+                </app-multi-language-container>
+            </ng-container>
+
+            <ng-container
+                    *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES.COMMUNICATION_OBJECTIVES_AND_TARGET_AUDIENCE">
+                <p>{{'project.application.form.workpackage.form.objectives.intro.line.two' | translate}}</p>
+                <app-multi-language-container>
+                    <app-multi-language-form-field
+                            type="textarea"
+                            label="project.application.form.workpackage.field.target.audience"
+                            formControlName="objectiveAndAudience"
+                            maxLength="500">
+                    </app-multi-language-form-field>
+                </app-multi-language-container>
+            </ng-container>
+        </ng-container>
+    </form>
+</app-form>

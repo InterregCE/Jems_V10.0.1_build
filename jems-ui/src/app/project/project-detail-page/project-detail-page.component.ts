@@ -1,24 +1,32 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProjectDetailPageStore} from './project-detail-page-store';
-import {OutputProjectFile} from '@cat/api';
-import {ActivatedRoute} from '@angular/router';
-import {Permission} from '../../security/permissions/permission';
+import {ProjectDetailDTO} from '@cat/api';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {combineLatest, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-detail-page',
   templateUrl: './project-detail-page.component.html',
   styleUrls: ['./project-detail-page.component.scss'],
-  providers: [ProjectDetailPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectDetailPageComponent {
-  fileType = OutputProjectFile.TypeEnum;
-  Permission = Permission;
 
-  projectId = this.activatedRoute.snapshot.params.projectId;
+  data$: Observable<{
+    project: ProjectDetailDTO,
+    projectTitle: string,
+  }>;
 
-  constructor(public projectDetailStore: ProjectDetailPageStore,
-              private activatedRoute: ActivatedRoute) {
+  constructor(public projectStore: ProjectStore) {
+    this.data$ = combineLatest([
+      this.projectStore.project$,
+      this.projectStore.projectTitle$,
+    ]).pipe(
+      map(([project, projectTitle]) => ({
+        project,
+        projectTitle,
+      }))
+    );
   }
 
 }

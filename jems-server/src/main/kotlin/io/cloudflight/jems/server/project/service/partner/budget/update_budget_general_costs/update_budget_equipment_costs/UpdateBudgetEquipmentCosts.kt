@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -14,10 +15,11 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateBudgetEquipmentCosts(
     private val persistence: ProjectPartnerBudgetCostsUpdatePersistence,
     private val projectPersistence: ProjectPersistence,
+    private val partnerPersistence: PartnerPersistence,
     budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     budgetCostValidator: BudgetCostValidator
 ) : UpdateBudgetEquipmentCostsInteractor,
-    UpdateBudgetGeneralCosts(projectPersistence, budgetOptionsPersistence, budgetCostValidator) {
+    UpdateBudgetGeneralCosts(projectPersistence, partnerPersistence, budgetOptionsPersistence, budgetCostValidator) {
 
     @Transactional
     @CanUpdateProjectPartner
@@ -28,7 +30,7 @@ class UpdateBudgetEquipmentCosts(
     @CanUpdateProjectPartner
     override fun createOrUpdateBudgetGeneralCosts(partnerId: Long, budgetGeneralCosts: List<BudgetGeneralCostEntry>) =
         persistence.createOrUpdateBudgetEquipmentCosts(
-            projectPersistence.getProjectIdForPartner(partnerId),
+            partnerPersistence.getProjectIdForPartnerId(partnerId),
             partnerId,
             budgetGeneralCosts)
 

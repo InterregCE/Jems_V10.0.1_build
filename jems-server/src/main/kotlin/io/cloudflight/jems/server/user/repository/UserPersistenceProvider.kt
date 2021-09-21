@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.user.repository.userrole.toModel
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
+import io.cloudflight.jems.server.user.service.model.UserSearchRequest
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import org.springframework.data.domain.Page
@@ -23,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserPersistenceProvider(
     private val userRepo: UserRepository,
     private val userRoleRepo: UserRoleRepository,
-    private val userRolePermissionRepo: UserRolePermissionRepository,
+    private val userRolePermissionRepo: UserRolePermissionRepository
 ) : UserPersistence {
 
     @Transactional(readOnly = true)
@@ -33,14 +34,20 @@ class UserPersistenceProvider(
         }
 
     @Transactional(readOnly = true)
+    override fun throwIfNotExists(id: Long) {
+        if (!userRepo.existsById(id))
+            throw UserNotFound()
+    }
+
+    @Transactional(readOnly = true)
     override fun getByEmail(email: String): UserWithPassword? =
         userRepo.getOneByEmail(email)?.let {
             it.toModelWithPassword(userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
         }
 
     @Transactional(readOnly = true)
-    override fun findAll(pageable: Pageable): Page<UserSummary> =
-        userRepo.findAll(pageable).toModel()
+    override fun findAll(pageable: Pageable, userSearchRequest: UserSearchRequest?): Page<UserSummary> =
+        userRepo.findAll(pageable, userSearchRequest).toModel()
 
     @Transactional
     override fun create(user: UserChange, passwordEncoded: String): User =

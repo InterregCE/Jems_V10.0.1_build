@@ -4,6 +4,6 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 
 interface UpdateActivityInteractor {
 
-    fun updateActivitiesForWorkPackage(workPackageId: Long, activities: List<WorkPackageActivity>): List<WorkPackageActivity>
+    fun updateActivitiesForWorkPackage(projectId: Long, workPackageId: Long, activities: List<WorkPackageActivity>): List<WorkPackageActivity>
 
 }

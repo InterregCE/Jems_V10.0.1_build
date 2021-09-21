@@ -4,12 +4,16 @@
 </app-top-bar>
 
 <mat-sidenav-container>
-    <mat-sidenav *ngIf="headlines$ | async as headlines "
+    <mat-sidenav #sidenav  *ngIf="headlines$ | async as headlines"
+                 [ngClass]="{'stayVisible' : !!headlines.length}"
                  [opened]="!!headlines.length"
                  class="side-nav-container" mode="side">
         <app-side-nav
                 [headlines]="headlines">
         </app-side-nav>
+        <button class="side-nav-toggle-button mat-elevation-z3" mat-mini-fab color="basic" (click)="sidenav.toggle()">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
     </mat-sidenav>
 
     <mat-sidenav-content>

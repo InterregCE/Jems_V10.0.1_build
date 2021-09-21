@@ -13,7 +13,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
-import {Permission} from '../../../../security/permissions/permission';
 import {
   ProgrammeUnitCostDTO
 } from '@cat/api';
@@ -32,7 +31,6 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements OnInit {
 
-  Permission = Permission;
   MIN_VALUE = 0.01;
   MAX_VALUE =  999999999.99;
 
@@ -61,18 +59,6 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     ],
     categories: ['', Validators.required]
   });
-
-  nameErrors = {
-    maxlength: 'unit.cost.name.size.too.long',
-  };
-
-  descriptionErrors = {
-    maxlength: 'unit.cost.description.size.too.long',
-  };
-
-  typeErrors = {
-    maxlength: 'unit.cost.type.size.too.long',
-  };
 
   costErrors = {
     required: 'programme.unitCost.costPerUnit.invalid',
@@ -115,13 +101,12 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
               public numberService: NumberService) {
     super(changeDetectorRef, translationService);
 
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
         tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
         untilDestroyed(this)
@@ -145,10 +130,10 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     this.unitCostForm.controls.description.setValue(this.unitCost.description);
     this.unitCostForm.controls.type.setValue(this.unitCost.type);
     this.unitCostForm.controls.costPerUnit.setValue(this.unitCost.costPerUnit);
-    this.unitCostForm.controls.isOneCostCategory.setValue(this.unitCost.isOneCostCategory);
+    this.unitCostForm.controls.isOneCostCategory.setValue(this.unitCost.oneCostCategory);
     this.selectionMultiple.clear();
     this.selectionSingle.clear();
-    if (this.unitCost.isOneCostCategory) {
+    if (this.unitCost.oneCostCategory) {
       this.selectionSingle.select(this.unitCost.categories[0]);
       this.validNumberOfSelections = this.selectionMultiple.selected.length === 1;
     } else {
@@ -179,7 +164,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
-          isOneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
+          oneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
           categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
         } as ProgrammeUnitCostDTO);
       } else {
@@ -189,7 +174,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
-          isOneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
+          oneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
           categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
         });
       }
@@ -240,8 +225,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
       this.unitCostForm.controls.type.setErrors(null);
       this.unitCostForm.controls.categories.setErrors(null);
     }
-    if ((this.unitCost.isOneCostCategory && this.unitCost.categories?.length === 1)
-        || (!this.unitCost.isOneCostCategory && this.unitCost.categories?.length >= 2)) {
+    if ((this.unitCost.oneCostCategory && this.unitCost.categories?.length === 1)
+        || (!this.unitCost.oneCostCategory && this.unitCost.categories?.length >= 2)) {
       this.validNumberOfSelections = true;
     }
     if (this.isProgrammeSetupLocked && !this.isCreate) {

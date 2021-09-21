@@ -15,6 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.context.ApplicationEventPublisher
 import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
@@ -28,6 +29,11 @@ internal class UpdateUserRoleTest {
             name = "maintainer",
             permissions = setOf(UserRolePermission.ProjectSubmission)
         )
+
+        private val userRoleSummary = UserRoleSummary(
+            id = ROLE_ID,
+            name = "maintainer"
+        )
     }
 
     @MockK
@@ -36,23 +42,32 @@ internal class UpdateUserRoleTest {
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
 
+    @RelaxedMockK
+    lateinit var auditPublisher: ApplicationEventPublisher
+
     @InjectMockKs
     lateinit var updateUserRole: UpdateUserRole
 
     @Test
     fun `updateUserRole - change to different role - OK`() {
-        every { persistence.existsById(ROLE_ID) } returns true
+        every { persistence.findById(ROLE_ID) } returns userRoleSummary
         every { persistence.findUserRoleByName(userRoleUpdate.name) } returns Optional.empty()
         every { persistence.update(any()) } returnsArgument 0
 
         assertThat(updateUserRole.updateUserRole(userRoleUpdate)).isEqualTo(userRoleUpdate)
         verify(exactly = 1) { persistence.update(userRoleUpdate) }
+        verify(exactly = 1) { auditPublisher.publishEvent(any()) }
     }
 
     @Test
     fun `updateUserRole - no change in role - OK`() {
-        every { persistence.existsById(ROLE_ID) } returns true
-        every { persistence.findUserRoleByName(userRoleUpdate.name) } returns Optional.of(UserRoleSummary(id = ROLE_ID, name = userRoleUpdate.name))
+        every { persistence.findById(ROLE_ID) } returns userRoleSummary
+        every { persistence.findUserRoleByName(userRoleUpdate.name) } returns Optional.of(
+            UserRoleSummary(
+                id = ROLE_ID,
+                name = userRoleUpdate.name
+            )
+        )
         every { persistence.update(any()) } returnsArgument 0
 
         assertThat(updateUserRole.updateUserRole(userRoleUpdate)).isEqualTo(userRoleUpdate)
@@ -60,15 +75,14 @@ internal class UpdateUserRoleTest {
     }
 
     @Test
-    fun `updateUserRole - role does not exist`() {
-        every { persistence.existsById(ROLE_ID) } returns false
-        assertThrows<UserRoleNotFound> { updateUserRole.updateUserRole(userRoleUpdate) }
-    }
-
-    @Test
     fun `updateUserRole - role name already taken`() {
-        every { persistence.existsById(ROLE_ID) } returns true
-        every { persistence.findUserRoleByName(userRoleUpdate.name) } returns Optional.of(UserRoleSummary(id = 126L, name = userRoleUpdate.name))
+        every { persistence.findById(ROLE_ID) } returns userRoleSummary
+        every { persistence.findUserRoleByName(userRoleUpdate.name) } returns Optional.of(
+            UserRoleSummary(
+                id = 126L,
+                name = userRoleUpdate.name
+            )
+        )
         assertThrows<UserRoleNameAlreadyTaken> { updateUserRole.updateUserRole(userRoleUpdate) }
     }
 

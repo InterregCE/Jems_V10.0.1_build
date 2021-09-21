@@ -1,4 +1,13 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputProjectRelevance,
@@ -12,6 +21,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import { APPLICATION_FORM } from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-project-relevance-and-context-detail',
@@ -20,8 +30,8 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends BaseComponent implements OnInit {
-
+export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends BaseComponent implements OnInit, OnChanges {
+  APPLICATION_FORM = APPLICATION_FORM;
   // TODO: remove these and adapt the component to save independently
   @Input()
   error$: Observable<HttpErrorResponse | null>;
@@ -60,7 +70,6 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   }
 
   ngOnInit(): void {
-    this.resetForm();
 
     this.formService.init(this.projectRelevanceForm, this.projectStore.projectEditable$);
     this.error$
@@ -75,6 +84,12 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
         tap(() => this.formService.setSuccess('project.application.form.relevance.save.success'))
       )
       .subscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.project) {
+      this.resetForm();
+    }
   }
 
   onSubmit(): void {

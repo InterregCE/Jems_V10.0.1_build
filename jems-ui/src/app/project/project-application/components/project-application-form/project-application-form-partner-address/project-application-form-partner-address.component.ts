@@ -4,6 +4,7 @@ import {OutputNuts, ProjectPartnerAddressDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-partner-address',
@@ -19,6 +20,7 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
   nuts: OutputNuts[];
   @Input()
   organizationDetails: ProjectPartnerAddressDTO[];
+  APPLICATION_FORM = APPLICATION_FORM;
 
   partnerAddressForm: FormGroup = this.formBuilder.group({
     organization: this.formBuilder.group({

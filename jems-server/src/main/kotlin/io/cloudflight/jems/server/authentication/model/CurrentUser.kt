@@ -10,12 +10,6 @@ interface CurrentUser {
     val isAdmin: Boolean
         get() = hasRole(ADMINISTRATOR)
 
-    val isProgrammeUser: Boolean
-        get() = hasRole(PROGRAMME_USER)
-
-    val isApplicant: Boolean
-        get() = hasRole(APPLICANT_USER)
-
     fun getAuthorities(): Collection<GrantedAuthority>
 
     fun hasRole(role: String): Boolean {

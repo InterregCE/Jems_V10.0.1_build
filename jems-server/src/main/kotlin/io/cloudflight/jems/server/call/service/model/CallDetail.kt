@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLu
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import java.time.ZonedDateTime
 import java.util.SortedSet
 import java.util.TreeSet
@@ -24,11 +25,17 @@ data class CallDetail (
     val objectives: List<ProgrammePriority> = emptyList(),
     val strategies: SortedSet<ProgrammeStrategy> = sortedSetOf(),
     val funds: List<ProgrammeFund> = emptyList(),
+    val stateAids: List<ProgrammeStateAid> = emptyList(),
     val flatRates: SortedSet<ProjectCallFlatRate> = sortedSetOf(),
     val lumpSums: List<ProgrammeLumpSum> = emptyList(),
-    val unitCosts: List<ProgrammeUnitCost> = emptyList()
+    val unitCosts: List<ProgrammeUnitCost> = emptyList(),
+    val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
 ) {
     fun isPublished() = status == CallStatus.PUBLISHED
+
+    fun getCallApplyDeadline(): ZonedDateTime = endDateStep1 ?: endDate
+
+    fun is2StepCall(): Boolean = endDateStep1 != null
 
     fun getAllSpecificObjectives() = objectives
         .map { it.specificObjectives.map { it.programmeObjectivePolicy }.toSet() }

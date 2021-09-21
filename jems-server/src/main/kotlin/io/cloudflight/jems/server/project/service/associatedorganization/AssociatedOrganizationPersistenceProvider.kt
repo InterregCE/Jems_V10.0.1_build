@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartnerHistoricalData
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDTOHistoricalData
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -58,11 +58,11 @@ class AssociatedOrganizationPersistenceProvider(
         projectId: Long,
         timestamp: Timestamp,
     ): OutputProjectAssociatedOrganizationDetail {
-        val partnerId = projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, id)
-            .map { it.toOutputProjectAssociatedOrganizationDetail() }
-            .orElseThrow { ResourceNotFoundException("projectAssociatedOrganisation") }.partner.id
-        val partner = projectPartnerRepo.findOneByIdAsOfTimestamp(partnerId!!, timestamp)
-            .toOutputProjectPartnerHistoricalData()
+        val partnerId =
+            projectAssociatedOrganizationRepo.getPartnerIdByProjectIdAndIdAsOfTimestamp(projectId, id, timestamp)
+                ?: throw ResourceNotFoundException("projectAssociatedOrganisation")
+        val partner = projectPartnerRepo.findOneByIdAsOfTimestamp(partnerId, timestamp)
+            .toProjectPartnerDTOHistoricalData()
         val address =
             projectAssociatedOrganizationRepo.findAssociatedOrganizationAddressesByIdAsOfTimestamp(id, timestamp)
                 .toProjectAssociatedOrganizationAddressHistoricalData().firstOrNull()

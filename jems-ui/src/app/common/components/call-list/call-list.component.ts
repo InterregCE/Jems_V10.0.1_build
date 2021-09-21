@@ -2,9 +2,11 @@ import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChil
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {Router} from '@angular/router';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {CallDTO} from '@cat/api';
+import {CallDTO, PageCallDTO} from '@cat/api';
 import moment from 'moment/moment';
 import {CallListStore} from '@common/components/call-list/call-list-store.service';
+import {combineLatest, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-call-list',
@@ -20,16 +22,39 @@ export class CallListComponent implements OnInit {
   endDateCell: TemplateRef<any>;
 
   @Input()
-  isApplicant: boolean;
+  publishedCallsOnly: boolean;
 
-  tableConfiguration: TableConfiguration;
+  data$: Observable<{
+    page: PageCallDTO,
+    tableConfiguration: TableConfiguration
+  }>;
 
   constructor(private router: Router,
               public listStore: CallListStore) {
   }
 
   ngOnInit(): void {
-    this.tableConfiguration = new TableConfiguration({
+    this.data$ = combineLatest([
+      this.publishedCallsOnly ? this.listStore.publishedCallPage$ : this.listStore.callPage$,
+      this.listStore.canApply$
+    ])
+      .pipe(
+        map(([page, canApply]) => ({page, tableConfiguration: this.getTableConfig(canApply)}))
+      );
+  }
+
+  applyToCall(callId: number): void {
+    this.router.navigate(['/app/project/applyTo/' + callId]);
+  }
+
+  isOpen(call: CallDTO): boolean {
+    const currentDate = moment(new Date());
+    const endDateTime = call.endDateTimeStep1 || call.endDateTime;
+    return currentDate.isBefore(endDateTime) && currentDate.isAfter(call.startDateTime);
+  }
+
+  private getTableConfig(canApply: boolean): TableConfiguration {
+    const config = new TableConfiguration({
       routerLink: '/app/call/detail',
       isTableClickable: true,
       columns: [
@@ -62,22 +87,13 @@ export class CallListComponent implements OnInit {
         }
       ]
     });
-    if (this.isApplicant) {
-      this.tableConfiguration.columns.push({
+    if (this.publishedCallsOnly && canApply) {
+      config.columns.push({
         displayedColumn: 'call.table.column.name.action',
         customCellTemplate: this.actionsCell
       });
     }
-  }
-
-  applyToCall(callId: number): void {
-    this.router.navigate(['/app/project/applyTo/' + callId]);
-  }
-
-  isOpen(call: CallDTO): boolean {
-    const currentDate = moment(new Date());
-    const endDateTime = call.endDateTimeStep1 || call.endDateTime;
-    return currentDate.isBefore(endDateTime) && currentDate.isAfter(call.startDateTime);
+    return config;
   }
 
 }

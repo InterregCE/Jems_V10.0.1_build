@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.audit.service
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditProject
+import io.cloudflight.jems.server.project.service.model.ProjectDetail
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 
 class AuditBuilder(action: AuditAction) {
 
@@ -14,7 +16,8 @@ class AuditBuilder(action: AuditAction) {
     var description: String? = null
         private set
 
-    fun project(id: Long, name: String? = null) = apply { this.project = AuditProject(id = id.toString(), name = name) }
+    fun project(project: ProjectSummary) = apply { this.project = AuditProject(id = project.id.toString(), customIdentifier = project.customIdentifier, name = project.acronym) }
+    fun project(project: ProjectDetail) = apply { this.project = AuditProject(id = project.id.toString(), customIdentifier = project.customIdentifier, name = project.acronym) }
     fun entityRelatedId(entityRelatedId: Long) = apply { this.entityRelatedId = entityRelatedId }
     fun description(description: String) = apply { this.description = description }
 

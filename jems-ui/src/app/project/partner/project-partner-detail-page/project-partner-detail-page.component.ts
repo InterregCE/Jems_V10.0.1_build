@@ -1,39 +1,36 @@
-import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component
+} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {ProgrammeLegalStatusService} from '@cat/api';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {TabService} from '../../../common/services/tab.service';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {RoutingService} from '@common/services/routing.service';
 
 @Component({
   templateUrl: './project-partner-detail-page.component.html',
   styleUrls: ['./project-partner-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectPartnerDetailPageComponent implements OnDestroy {
-
-  projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
-
-  activeTab$ = this.tabService.currentTab(
-    ProjectPartnerDetailPageComponent.name + this.partnerId
-  );
-  legalStatuses$ = this.programmeLegalStatusService.getProgrammeLegalStatusList();
+export class ProjectPartnerDetailPageComponent {
+  APPLICATION_FORM = APPLICATION_FORM;
 
   constructor(private programmeLegalStatusService: ProgrammeLegalStatusService,
               private activatedRoute: ActivatedRoute,
               public projectStore: ProjectStore,
               public partnerStore: ProjectPartnerStore,
-              private router: Router,
-              private tabService: TabService) {
+              private router: RoutingService,
+              private projectSidenavService: ProjectApplicationFormSidenavService) {
   }
 
-  ngOnDestroy(): void {
-    this.tabService.cleanupTab(ProjectPartnerDetailPageComponent.name + this.partnerId);
+  activeTab(route: string): boolean {
+    return this.router.url?.includes(route);
   }
 
-  changeTab(tabIndex: number): void {
-    this.tabService.changeTab(ProjectPartnerDetailPageComponent.name + this.partnerId, tabIndex);
+  routeTo(route: string): void {
+    this.router.navigate([route], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'});
   }
-
 }

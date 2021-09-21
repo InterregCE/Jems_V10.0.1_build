@@ -53,7 +53,7 @@ export class ProgrammePriorityDetailPageComponent {
               private formBuilder: FormBuilder,
               private changeDetectorRef: ChangeDetectorRef, // TODO: remove when new edit mode is introduced
               private dialog: MatDialog,
-              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
               public pageStore: ProgrammePriorityDetailPageStore) {
 
     this.data$ = combineLatest([
@@ -65,20 +65,25 @@ export class ProgrammePriorityDetailPageComponent {
       ),
       map(([priority, setup]) => ({
           priority,
+          // tslint:disable-next-line
           objectives: this.getAvailableObjectives((priority as any).objective, setup.freePrioritiesWithPolicies),
           freePrioritiesWithPolicies: setup.freePrioritiesWithPolicies,
           objectivePoliciesAlreadyInUse: setup.objectivePoliciesAlreadyInUse as string[]
         })
       ),
       tap(data => this.resetForm(data.priority as ProgrammePriorityDTO, data.freePrioritiesWithPolicies)),
+      // tslint:disable-next-line
       tap(data => (data.priority as any)?.id ? this.form.disable() : this.form.enable())
     );
 
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
-        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
-        untilDestroyed(this)
+      tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+      untilDestroyed(this)
     ).subscribe();
+  }
+
+  get specificObjectives(): FormArray {
+    return this.form.get(this.constants.SPECIFIC_OBJECTIVES.name) as FormArray;
   }
 
   save(): void {
@@ -159,7 +164,7 @@ export class ProgrammePriorityDetailPageComponent {
       return null;
     }
     const args: string[] = [];
-    Object.keys(this.saveError?.formErrors?.specificObjectives?.i18nArguments).forEach(argKey => args.push(this.saveError?.formErrors?.specificObjectives?.i18nArguments[argKey]));
+    Object.keys(this.saveError?.formErrors?.specificObjectives?.i18nArguments as any).forEach(argKey => args.push((this.saveError?.formErrors?.specificObjectives?.i18nArguments as any)[argKey]));
     return {
       i18nKey: this.saveError?.formErrors?.specificObjectives.i18nKey,
       i8nArguments: {
@@ -208,9 +213,5 @@ export class ProgrammePriorityDetailPageComponent {
       return objectives;
     }
     return [currentObjective, ...objectives];
-  }
-
-  get specificObjectives(): FormArray {
-    return this.form.get(this.constants.SPECIFIC_OBJECTIVES.name) as FormArray;
   }
 }

@@ -6,17 +6,13 @@ export class ProgrammePriorityDetailPageConstants {
   public static CODE: AppControl = {
     name: 'code',
     errorMessages: {
-      required: 'programme.priority.code.should.not.be.empty',
-      maxlength: 'programme.priority.code.size.too.long',
+      required: 'programme.priority.code.should.not.be.empty'
     },
     validators: [Validators.maxLength(50), Validators.required]
   };
 
   public static TITLE: AppControl = {
     name: 'title',
-    errorMessages: {
-      maxlength: 'programme.priority.title.size.too.long',
-    },
     validators: [Validators.maxLength(300), Validators.required]
   };
 
@@ -42,7 +38,6 @@ export class ProgrammePriorityDetailPageConstants {
   public static POLICY_CODE: AppControl = {
     name: 'code',
     errorMessages: {
-      maxlength: 'programme.priority.specific.objective.code.size.too.long',
       required: 'programme.priority.specific.objective.code.should.not.be.empty'
     },
     validators: [Validators.maxLength(50)]

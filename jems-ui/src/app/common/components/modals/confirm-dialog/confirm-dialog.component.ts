@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Alert} from '@common/components/forms/alert';
-import {I18nMessage} from '../../../models/I18nMessage';
+import {I18nMessage} from '@common/models/I18nMessage';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -16,14 +16,6 @@ export class ConfirmDialogComponent {
   constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public confirmDialogData: ConfirmDialogData) {
     this.data = confirmDialogData;
-  }
-
-  onConfirm(): void {
-    this.dialogRef.close(true);
-  }
-
-  onDismiss(): void {
-    this.dialogRef.close(false);
   }
 
   get message(): string {
@@ -42,10 +34,18 @@ export class ConfirmDialogComponent {
     return (this.data?.warnMessage as any)?.i18nArguments;
   }
 
+  onConfirm(): void {
+    this.dialogRef.close(true);
+  }
+
+  onDismiss(): void {
+    this.dialogRef.close(false);
+  }
+
 }
 
 export class ConfirmDialogData {
   public title: string;
-  public message: I18nMessage | string;
+  public message?: I18nMessage | string;
   public warnMessage?: I18nMessage | string;
 }

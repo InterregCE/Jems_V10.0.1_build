@@ -40,13 +40,12 @@ export class StrategyTableComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.resetForm();
     this.strategyEnum = this.callStrategies.map(strategy => InputProjectRelevanceStrategy.StrategyEnum[strategy]);
     this.strategyEnum.push('Other');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.strategies && this.editable) {
+    if (changes.strategies) {
       this.resetForm();
     }
   }
@@ -63,6 +62,9 @@ export class StrategyTableComponent implements OnInit, OnChanges {
   private resetForm(): void {
     this.strategiesForm.clear();
     this.strategies.forEach(strategy => this.addControl(strategy));
+    if (!this.editable) {
+      this.strategiesForm.disable();
+    }
   }
 
   private addControl(strategy?: InputProjectRelevanceStrategy): void {

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.user.repository
 
+import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.entity.UserRolePermissionEntity
 import io.cloudflight.jems.server.user.entity.UserRolePermissionId
 import io.cloudflight.jems.server.user.repository.userrole.UserRoleNotFound
@@ -21,23 +22,31 @@ import java.util.Optional
 class UserRolePersistenceProvider(
     private val userRoleRepo: UserRoleRepository,
     private val userRolePermissionRepo: UserRolePermissionRepository,
+    private val programmeDataPersistence: ProgrammeDataPersistence
 ) : UserRolePersistence {
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): UserRole {
+        val defaultUserRoleId = programmeDataPersistence.getDefaultUserRole()
         val permissions = userRolePermissionRepo.findAllByIdUserRoleId(id).toModel()
-        return userRoleRepo.getOne(id).toModel(permissions)
+        return userRoleRepo.getOne(id).toModel(permissions, defaultUserRoleId)
     }
 
     @Transactional(readOnly = true)
-    override fun findAll(pageable: Pageable): Page<UserRoleSummary> =
-        userRoleRepo.findAll(pageable).toModel()
+    override fun findAll(pageable: Pageable): Page<UserRoleSummary> {
+        val defaultUserRoleId = programmeDataPersistence.getDefaultUserRole()
+        return userRoleRepo.findAll(pageable).toModel(defaultUserRoleId)
+    }
 
     @Transactional
     override fun create(userRole: UserRoleCreate): UserRole {
         val role = userRoleRepo.save(userRole.toEntity())
         val permissions = userRolePermissionRepo.saveAll(userRole.permissions.toEntity(role)).toModel()
-        return role.toModel(permissions)
+        if (userRole.isDefault) {
+            programmeDataPersistence.updateDefaultUserRole(role.id)
+        }
+        val defaultUserRoleId = if (userRole.isDefault) role.id else null
+        return role.toModel(permissions, defaultUserRoleId)
     }
 
     @Transactional
@@ -55,16 +64,22 @@ class UserRolePersistenceProvider(
             userRole.permissions.filter { !existingPermissions.contains(it) }
                 .map { UserRolePermissionEntity(UserRolePermissionId(role, it)) }
         )
+        var currentDefaultUserRoleId = programmeDataPersistence.getDefaultUserRole()
+        if (userRole.isDefault && currentDefaultUserRoleId != userRole.id) {
+            programmeDataPersistence.updateDefaultUserRole(role.id)
+            currentDefaultUserRoleId = userRole.id
+        }
 
-        return role.toModel(userRolePermissionRepo.findAllByIdUserRoleId(role.id).toModel())
+        return role.toModel(userRolePermissionRepo.findAllByIdUserRoleId(role.id).toModel(), currentDefaultUserRoleId)
     }
 
     @Transactional(readOnly = true)
     override fun findUserRoleByName(name: String): Optional<UserRoleSummary> =
-        userRoleRepo.findByName(name).map { it.toModel() }
+        userRoleRepo.findByName(name).map { it.toModel(null) }
 
     @Transactional(readOnly = true)
-    override fun existsById(id: Long): Boolean =
-        userRoleRepo.existsById(id)
+    override fun findById(id: Long): UserRoleSummary =
+        userRoleRepo.findById(id).map { it.toModel(null) }
+            .orElseThrow { UserRoleNotFound() }
 
 }

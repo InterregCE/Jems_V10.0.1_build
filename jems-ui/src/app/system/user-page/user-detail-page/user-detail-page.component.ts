@@ -14,6 +14,7 @@ import {SystemPageSidenavService} from '../../services/system-page-sidenav.servi
 import {FormState} from '@common/components/forms/form-state';
 import {RoutingService} from '../../../common/services/routing.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {PermissionService} from '../../../security/permissions/permission.service';
 
 @Component({
   selector: 'app-user-detail-page',
@@ -28,7 +29,8 @@ export class UserDetailPageComponent extends ViewEditForm {
   details$: Observable<{
     user: UserDTO,
     currentUser: OutputCurrentUser | null,
-    roles: UserRoleSummaryDTO[]
+    roles: UserRoleSummaryDTO[],
+    canUpdatePassword: boolean
   }>;
 
   userForm = this.formBuilder.group({
@@ -60,16 +62,18 @@ export class UserDetailPageComponent extends ViewEditForm {
               private sidenavService: SystemPageSidenavService,
               public userStore: UserDetailPageStore,
               protected changeDetectorRef: ChangeDetectorRef,
-              protected translationService: TranslateService) {
+              protected translationService: TranslateService,
+              private permissionService: PermissionService) {
     super(changeDetectorRef, translationService);
 
     this.details$ = combineLatest([
       this.userStore.user$,
       this.userStore.currentUser$,
-      this.userStore.roles$
+      this.userStore.roles$,
+      this.permissionService.hasPermission(PermissionsEnum.UserUpdate)
     ])
       .pipe(
-        map(([user, currentUser, roles]) => ({user, currentUser, roles})),
+        map(([user, currentUser, roles, canUpdateUser]) => ({user, currentUser, roles, canUpdatePassword: canUpdateUser || currentUser?.id === user.id})),
         // TODO: remove after new edit
         tap(details => this.resetUser(details.user)),
         tap(details => {

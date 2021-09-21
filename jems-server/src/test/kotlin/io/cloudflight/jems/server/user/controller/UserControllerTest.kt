@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.user.dto.UserDTO
 import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO
 import io.cloudflight.jems.api.user.dto.UserRoleSummaryDTO
+import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
 import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.user.service.model.Password
@@ -14,6 +15,7 @@ import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserSearchRequest
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.user.create_user.CreateUserInteractor
 import io.cloudflight.jems.server.user.service.user.get_user.GetUserInteractor
@@ -35,6 +37,21 @@ class UserControllerTest : UnitTest() {
     companion object {
         private const val USER_ID = 7L
         private const val ROLE_ID = 4L
+
+        private val userSearchRequestDTO = UserSearchRequestDTO(
+            email = "email@smaple.com",
+            name = "name",
+            surname = "surname",
+            roles = setOf(ROLE_ID)
+        )
+
+        private val userSearchRequest = UserSearchRequest(
+            email = "email@smaple.com",
+            name = "name",
+            surname = "surname",
+            roles = setOf(ROLE_ID)
+        )
+
         private val userRoleSummary = UserRoleSummary(
             id = ROLE_ID,
             name = "maintainer",
@@ -62,10 +79,12 @@ class UserControllerTest : UnitTest() {
         private val expectedUserRoleSummary = UserRoleSummaryDTO(
             id = ROLE_ID,
             name = "maintainer",
+            defaultForRegisteredUser = false
         )
         private val expectedUserRole = UserRoleDTO(
             id = ROLE_ID,
             name = expectedUserRoleSummary.name,
+            defaultForRegisteredUser = false,
             permissions = listOf(UserRolePermissionDTO.ProjectSubmission)
         )
         private val expectedUserSummary = UserSummaryDTO(
@@ -101,8 +120,10 @@ class UserControllerTest : UnitTest() {
 
     @Test
     fun list() {
-        every { getUserInteractor.getUsers(any()) } returns PageImpl(listOf(userSummary))
-        assertThat(controller.list(Pageable.unpaged()).content).containsExactly(expectedUserSummary)
+        val slot = slot<UserSearchRequest>()
+        every { getUserInteractor.getUsers(any(), capture(slot)) } returns PageImpl(listOf(userSummary))
+        assertThat(controller.list(Pageable.unpaged(), userSearchRequestDTO).content).containsExactly(expectedUserSummary)
+        assertThat(slot.captured).isEqualTo(userSearchRequest)
     }
 
     @Test

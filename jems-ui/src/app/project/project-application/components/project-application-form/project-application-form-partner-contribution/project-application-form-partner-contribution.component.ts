@@ -1,9 +1,11 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
-import {OutputProjectPartnerDetail, ProjectPartnerMotivationDTO} from '@cat/api';
+import {ProjectPartnerDetailDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
+import { APPLICATION_FORM } from '@project/common/application-form-model';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-project-application-form-partner-contribution',
@@ -12,9 +14,10 @@ import {catchError, take, tap} from 'rxjs/operators';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerContributionComponent implements OnChanges {
-  @Input()
-  partner: OutputProjectPartnerDetail;
+export class ProjectApplicationFormPartnerContributionComponent {
+  APPLICATION_FORM = APPLICATION_FORM;
+
+  partner$: Observable<ProjectPartnerDetailDTO>;
 
   partnerContributionForm = this.formBuilder.group({
     organizationRelevance: [],
@@ -26,21 +29,14 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnCha
               private partnerStore: ProjectPartnerStore,
               private formService: FormService) {
     this.formService.init(this.partnerContributionForm, this.partnerStore.isProjectEditable$);
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.partner) {
-      this.resetForm();
-    }
+    this.partner$ = this.partnerStore.partner$
+      .pipe(
+        tap(partner => this.resetForm(partner))
+      );
   }
 
   onSubmit(): void {
-    const partnerContribution = {
-      organizationRelevance: this.controls.organizationRelevance.value,
-      organizationRole: this.controls.organizationRole.value,
-      organizationExperience: this.controls.organizationExperience.value,
-    } as ProjectPartnerMotivationDTO;
-    this.partnerStore.updatePartnerMotivation(partnerContribution)
+    this.partnerStore.updatePartnerMotivation(this.partnerContributionForm.value)
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.partner.motivation.save.success')),
@@ -48,10 +44,12 @@ export class ProjectApplicationFormPartnerContributionComponent implements OnCha
       ).subscribe();
   }
 
-  resetForm(): void {
-    this.partnerContributionForm.get('organizationRelevance')?.setValue(this.partner?.motivation?.organizationRelevance || []);
-    this.partnerContributionForm.get('organizationRole')?.setValue(this.partner?.motivation?.organizationRole || []);
-    this.partnerContributionForm.get('organizationExperience')?.setValue(this.partner?.motivation?.organizationExperience || []);
+  resetForm(partner: ProjectPartnerDetailDTO): void {
+    this.partnerContributionForm.patchValue(partner?.motivation || {
+      organizationRelevance: [],
+      organizationRole: [],
+      organizationExperience: [],
+    });
   }
 
   get controls(): any {

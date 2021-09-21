@@ -1,5 +1,4 @@
 import {Routes} from '@angular/router';
-import {ProgrammePageComponent} from './programme-page/containers/programme-page/programme-page.component';
 import {ProgrammeOutputIndicatorSubmissionPageComponent} from './programme-page/containers/programme-output-indicator-submission-page/programme-output-indicator-submission-page.component';
 import {ProgrammeResultIndicatorSubmissionPageComponent} from './programme-page/containers/programme-result-indicator-submission-page/programme-result-indicator-submission-page.component';
 import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
@@ -10,21 +9,27 @@ import {ProgrammeLegalStatusComponent} from './programme-page/containers/program
 import {ProgrammeSimplifiedCostOptionsComponent} from './programme-page/containers/programme-simplified-cost-options/programme-simplified-cost-options.component';
 import {ProgrammeLumpSumsSubmissionPageComponent} from './programme-page/containers/programme-lump-sums-submission-page/programme-lump-sums-submission-page.component';
 import {ProgrammeUnitCostsSubmissionPageComponent} from './programme-page/containers/programme-unit-costs-submission-page/programme-unit-costs-submission-page.component';
-import {Permission} from '../security/permissions/permission';
 import {ProgrammePriorityDetailPageComponent} from './priorities/programme-priority-list-page/programme-priority-detail-page/programme-priority-detail-page.component';
 import {ProgrammePriorityListPageComponent} from './priorities/programme-priority-list-page/programme-priority-list-page.component';
+import {TranslationManagementPageComponent} from './translation-management-page/translation-management-page.component';
+import {ProgrammeStateAidComponent} from './programme-page/containers/programme-state-aid/programme-state-aid.component';
+import {ProgrammeBasicDataComponent} from './programme-basic-data/programme-basic-data.component';
+import {ProgrammeFundsComponent} from './programme-funds/programme-funds.component';
 
 export const routes: Routes = [
   {
     path: '',
     data: {
       breadcrumb: 'programme.breadcrumb.setup',
-      permissionsOnly: [Permission.ADMINISTRATOR, Permission.PROGRAMME_USER],
     },
     children: [
       {
         path: '',
-        component: ProgrammePageComponent,
+        component: ProgrammeBasicDataComponent,
+      },
+      {
+        path: 'funds',
+        component: ProgrammeFundsComponent,
       },
       {
         path: 'priorities',
@@ -55,6 +60,11 @@ export const routes: Routes = [
         path: 'languages',
         component: ProgrammeLanguagesPageComponent,
         data: {breadcrumb: 'programme.breadcrumb.languages'},
+      },
+      {
+        path: 'translationManagement',
+        component: TranslationManagementPageComponent,
+        data: {breadcrumb: 'programme.breadcrumb.translation.management'},
       },
       {
         path: 'indicators',
@@ -161,6 +171,11 @@ export const routes: Routes = [
             ]
           },
         ],
+      },
+      {
+        path: 'stateAid',
+        component: ProgrammeStateAidComponent,
+        data: {breadcrumb: 'programme.breadcrumb.state.aid'},
       },
     ]
   }

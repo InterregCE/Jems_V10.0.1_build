@@ -9,8 +9,11 @@ import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.repository.CallRepository
+import io.cloudflight.jems.server.common.entity.toYear
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.nuts.service.toOutput
-import io.cloudflight.jems.server.programme.authorization.CanReadNuts
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveNuts
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.entity.ProgrammeData
 import org.springframework.stereotype.Service
@@ -21,22 +24,24 @@ class ProgrammeDataServiceImpl(
     private val programmeDataRepository: ProgrammeDataRepository,
     private val callRepository: CallRepository,
     private val nutsRegion3Repository: NutsRegion3Repository,
-    private val auditService: AuditService
+    private val auditService: AuditService,
+    private val generalValidator: GeneralValidatorService
 ) : ProgrammeDataService {
 
     @Transactional(readOnly = true)
-    @CanUpdateProgrammeSetup
+    @CanRetrieveProgrammeSetup
     override fun get(): OutputProgrammeData =
         getProgrammeDataOrThrow().toOutputProgrammeData()
 
     @Transactional
     @CanUpdateProgrammeSetup
     override fun update(basicData: InputProgrammeData): OutputProgrammeData {
+        validateInputProgrammeData(basicData)
         val oldProgrammeData = getProgrammeDataOrThrow()
         val oldProgrammeBasicData = oldProgrammeData.toOutputProgrammeData()
 
         val savedProgrammeData = programmeDataRepository.save(
-            basicData.toEntity(oldProgrammeData.programmeNuts)
+            basicData.toEntity(oldProgrammeData.programmeNuts, oldProgrammeData.defaultUserRoleId)
         ).toOutputProgrammeData()
 
         programmeBasicDataChanged(changes = oldProgrammeBasicData.getChange(savedProgrammeData))
@@ -66,7 +71,7 @@ class ProgrammeDataServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    @CanReadNuts
+    @CanRetrieveNuts
     override fun getAvailableNuts(): List<OutputNuts> =
         getProgrammeDataOrThrow().programmeNuts.toDto()
 
@@ -74,4 +79,17 @@ class ProgrammeDataServiceImpl(
     private fun getProgrammeDataOrThrow(): ProgrammeData =
         programmeDataRepository.findById(1).orElseThrow { ResourceNotFoundException() }
 
+    private fun validateInputProgrammeData(basicData: InputProgrammeData){
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.startDateBeforeEndDate(basicData.firstYear.toYear(), basicData.lastYear.toYear(),"firstYear","lastYear"),
+            generalValidator.maxLength(basicData.cci, 15, "cci"),
+            generalValidator.maxLength(basicData.title, 255, "title"),
+            generalValidator.maxLength(basicData.version, 255, "version"),
+            generalValidator.numberBetween(basicData.firstYear, 1000,9999, "firstYear"),
+            generalValidator.numberBetween(basicData.lastYear, 1000,9999, "lastYear"),
+            generalValidator.maxLength(basicData.commissionDecisionNumber, 255, "commissionDecisionNumber"),
+            generalValidator.maxLength(basicData.programmeAmendingDecisionNumber, 255, "programmeAmendingDecisionNumber"),
+            generalValidator.maxLength(basicData.projectIdProgrammeAbbreviation, 12, "projectIdProgrammeAbbreviation"),
+        )
+    }
 }

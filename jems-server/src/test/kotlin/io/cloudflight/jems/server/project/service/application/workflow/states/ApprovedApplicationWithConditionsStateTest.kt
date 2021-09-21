@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.application.workflow.states
 
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 
 @ExtendWith(MockKExtension::class)
@@ -49,7 +49,7 @@ class ApprovedApplicationWithConditionsStateTest {
     lateinit var projectWorkflowPersistence: ProjectWorkflowPersistence
 
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
     lateinit var securityService: SecurityService
@@ -70,10 +70,10 @@ class ApprovedApplicationWithConditionsStateTest {
     @Test
     fun approve() {
         every { projectWorkflowPersistence.getProjectEligibilityDecisionDate(PROJECT_ID) } returns LocalDate.now().minusDays(1)
-        every { projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, any()) } returns ApplicationStatus.APPROVED
+        every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, any()) } returns ApplicationStatus.APPROVED
 
         assertThat(approvedApplicationWithConditionsState.approve(actionInfo)).isEqualTo(ApplicationStatus.APPROVED)
-        verify(exactly = 1) { projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, actionInfo)  }
+        verify(exactly = 1) { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, actionInfo)  }
     }
 
     @Test
@@ -103,10 +103,10 @@ class ApprovedApplicationWithConditionsStateTest {
     @Test
     fun refuse() {
         every { projectWorkflowPersistence.getProjectEligibilityDecisionDate(PROJECT_ID) } returns LocalDate.now().minusDays(1)
-        every { projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, any()) } returns ApplicationStatus.NOT_APPROVED
+        every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, any()) } returns ApplicationStatus.NOT_APPROVED
 
         assertThat(approvedApplicationWithConditionsState.refuse(actionInfo)).isEqualTo(ApplicationStatus.NOT_APPROVED)
-        verify(exactly = 1) { projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, actionInfo)  }
+        verify(exactly = 1) { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, actionInfo)  }
     }
 
     @Test

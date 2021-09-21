@@ -1,19 +1,23 @@
 import {Injectable} from '@angular/core';
-import {ProjectVersionStore} from '../services/project-version-store.service';
+import {ProjectVersionStore} from '../common/services/project-version-store.service';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {ProjectVersionDTO} from '@cat/api';
 import {distinctUntilChanged, map, shareReplay, tap} from 'rxjs/operators';
-import {ProjectUtil} from '../project-util';
-import {Log} from '../../common/utils/log';
+import {ProjectUtil} from '../common/project-util';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ProjectPageTemplateStore {
 
+  private versionsUpdatedEventSubject = new Subject();
+  versionsUpdatedEvent$ = this.versionsUpdatedEventSubject.asObservable();
   versions$: Observable<ProjectVersionDTO[]>;
   currentVersion$: Observable<ProjectVersionDTO>;
   latestVersion$: Observable<ProjectVersionDTO | undefined>;
   currentVersionIsLatest$: Observable<boolean>;
+  isThisUserOwner$: Observable<boolean>;
 
   constructor(private projectVersionStore: ProjectVersionStore,
               private projectStore: ProjectStore) {
@@ -21,6 +25,19 @@ export class ProjectPageTemplateStore {
     this.currentVersion$ = this.currentVersion();
     this.latestVersion$ = this.latestVersion();
     this.currentVersionIsLatest$ = this.projectStore.currentVersionIsLatest$;
+    this.isThisUserOwner$ = this.projectStore.userIsProjectOwner$;
+  }
+
+  private static latest(versions?: ProjectVersionDTO[]): ProjectVersionDTO | undefined {
+    return versions?.length ? versions[0] : undefined;
+  }
+
+  private static nextVersion(versions: ProjectVersionDTO[]): ProjectVersionDTO {
+    return {
+      version: (Number(versions?.length ? versions[0].version : '0') + 1).toFixed(1),
+      createdAt: null as any,
+      status: null as any
+    };
   }
 
   changeVersion(versionDTO: ProjectVersionDTO): void {
@@ -36,8 +53,9 @@ export class ProjectPageTemplateStore {
     return combineLatest([this.projectVersionStore.versions$, project$])
       .pipe(
         map(([versions, project]) =>
-          ProjectUtil.isOpenForModifications(project) ? [this.nextVersion(versions), ...versions] : versions
+          ProjectUtil.isOpenForModifications(project) ? [ProjectPageTemplateStore.nextVersion(versions), ...versions] : versions
         ),
+        tap(() => this.versionsUpdatedEventSubject.next(true)),
         shareReplay(1)
       );
   }
@@ -46,8 +64,8 @@ export class ProjectPageTemplateStore {
     return combineLatest([this.versions$, this.projectVersionStore.currentRouteVersion$])
       .pipe(
         map(([versions, routeVersion]) => {
-            const latestVersion = routeVersion || this.latest(versions)?.version;
-            return versions.find(version => version.version === latestVersion) || this.nextVersion(versions);
+            const latestVersion = routeVersion || ProjectPageTemplateStore.latest(versions)?.version;
+            return versions.find(version => version.version === latestVersion) || ProjectPageTemplateStore.nextVersion(versions);
           }
         ),
         shareReplay(1)
@@ -57,19 +75,8 @@ export class ProjectPageTemplateStore {
   private latestVersion(): Observable<ProjectVersionDTO | undefined> {
     return this.versions$
       .pipe(
-        map(versions => this.latest(versions)),
+        map(versions => ProjectPageTemplateStore.latest(versions)),
       );
   }
 
-  private latest(versions?: ProjectVersionDTO[]): ProjectVersionDTO | undefined {
-    return versions?.length ? versions[0] : undefined;
-  }
-
-  private nextVersion(versions: ProjectVersionDTO[]): ProjectVersionDTO {
-    return {
-      version: (Number(versions?.length ? versions[0].version : '0') + 1).toFixed(1),
-      createdAt: null as any,
-      status: null as any
-    };
-  }
 }

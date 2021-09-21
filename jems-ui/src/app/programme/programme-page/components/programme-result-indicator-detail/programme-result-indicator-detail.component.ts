@@ -12,7 +12,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
-import {Forms} from '../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {
   InputTranslation,
   ProgrammePriorityDTO,
@@ -20,16 +20,14 @@ import {
   ResultIndicatorDetailDTO,
   ResultIndicatorUpdateRequestDTO
 } from '@cat/api';
-import {Permission} from '../../../../security/permissions/permission';
 import {
-  ResultIndicatorCodeRelation,
-  ProgrammeResultIndicatorConstants
+  ProgrammeResultIndicatorConstants,
+  ResultIndicatorCodeRelation
 } from './constants/programme-result-indicator-constants';
 import {TranslateService} from '@ngx-translate/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
-import {LanguageStore} from '../../../../common/services/language-store.service';
-
+import {LanguageStore} from '@common/services/language-store.service';
 @UntilDestroy()
 @Component({
   selector: 'app-programme-result-indicator-detail',
@@ -39,9 +37,9 @@ import {LanguageStore} from '../../../../common/services/language-store.service'
 })
 export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implements OnInit {
 
-  Permission = Permission;
   programmeResultIndicatorConstants = ProgrammeResultIndicatorConstants;
   isProgrammeSetupLocked: boolean;
+  baselineOption = {min: 0};
 
   @Input()
   resultIndicator: ResultIndicatorDetailDTO;
@@ -64,9 +62,9 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
     indicatorName: [[]],
     specificObjective: ['', Validators.required],
     measurementUnit: [[]],
-    baseline: [null],
+    baseline: [0],
     referenceYear: ['', Validators.maxLength(10)],
-    finalTarget: [null],
+    finalTarget: [0],
     sourceOfData: [[]],
     comments: ['', Validators.maxLength(1000)]
   });
@@ -78,13 +76,12 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
-              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
               private languageStore: LanguageStore,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService) {
     super(changeDetectorRef, translationService);
 
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
       tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
       untilDestroyed(this)
@@ -94,16 +91,6 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
   ngOnInit(): void {
     super.ngOnInit();
     this.resetForm();
-    this.resultIndicatorForm.get('indicatorCode')?.valueChanges
-      .pipe(
-        tap((relation: ResultIndicatorCodeRelation) => this.resultIndicatorForm.get('indicatorName')
-          ?.setValue(this.extractFromCodeRelation(relation, code => code.name))
-        ),
-        tap((relation: ResultIndicatorCodeRelation) => this.resultIndicatorForm.get('measurementUnit')
-          ?.setValue(this.extractFromCodeRelation(relation, code => code.measurementUnit))
-        ),
-        untilDestroyed(this),
-      ).subscribe();
   }
 
   resetForm(): void {
@@ -179,9 +166,16 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
     }
   }
 
+  updateIndicatorCode(indicatorCode: ResultIndicatorCodeRelation): void {
+    this.resultIndicatorForm.get('indicatorName')?.setValue(this.extractFromCodeRelation(indicatorCode, code => code.name));
+    this.resultIndicatorForm.get('measurementUnit')?.setValue(this.extractFromCodeRelation(indicatorCode, code => code.measurementUnit));
+  }
+
   protected enterEditMode(): void {
     if (this.isProgrammeSetupLocked && !this.isCreate) {
+      this.resultIndicatorForm.controls.indicatorCode.disable();
       this.resultIndicatorForm.controls.specificObjective.disable();
+      this.baselineOption = {min: this.resultIndicator.baseline};
     }
   }
 

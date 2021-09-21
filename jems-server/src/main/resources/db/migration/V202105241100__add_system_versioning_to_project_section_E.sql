@@ -1,2 +1,0 @@
-ALTER TABLE project_lump_sum
-    ADD SYSTEM VERSIONING;

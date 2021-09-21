@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageI
 
 interface AddWorkPackageInvestmentInteractor {
     fun addWorkPackageInvestment(
+        projectId: Long,
         workPackageId: Long,
         workPackageInvestment: WorkPackageInvestment,
     ): Long

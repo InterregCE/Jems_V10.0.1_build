@@ -1,9 +1,12 @@
 package io.cloudflight.jems.server.project.authorization
 
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO.*
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.ProjectService
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
@@ -14,105 +17,69 @@ import org.springframework.stereotype.Component
 annotation class CanSubmitApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canApproveOrRefuse(#projectId)")
-annotation class CanApproveApplication
+@PreAuthorize("@projectStatusAuthorization.canCheckApplication(#projectId)")
+annotation class CanCheckApplicationForm
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canApproveWithConditions(#projectId)")
-annotation class CanApproveApplicationWithConditions
-
-@Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canApproveOrRefuse(#projectId)")
-annotation class CanRefuseApplication
-
-@Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canSetEligibility(#projectId)")
-annotation class CanSetApplicationAsEligible
-
-@Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canSetEligibility(#projectId)")
-annotation class CanSetApplicationAsIneligible
-
-@Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canReturnToApplicant(#projectId)")
+@PreAuthorize("hasAuthority('ProjectStatusReturnToApplicant')")
 annotation class CanReturnApplicationToApplicant
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canReadProject(#projectId) && @projectStatusAuthorization.canStartSecondStep(#projectId)")
+@PreAuthorize("hasAuthority('ProjectStatusDecideApproved')")
+annotation class CanApproveApplication
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectStatusDecideApprovedWithConditions')")
+annotation class CanApproveApplicationWithConditions
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectStatusDecideNotApproved')")
+annotation class CanRefuseApplication
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectStatusDecideEligible')")
+annotation class CanSetApplicationAsEligible
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectStatusDecideIneligible')")
+annotation class CanSetApplicationAsIneligible
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectStartStepTwo')")
 annotation class CanStartSecondStep
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectStatusDecisionRevert')")
+annotation class CanRevertDecision
 
 @Component
 class ProjectStatusAuthorization(
     override val securityService: SecurityService,
-    val projectAuthorization: ProjectAuthorization,
-    val projectService: ProjectService
+    val projectPersistence: ProjectPersistence,
 ) : Authorization(securityService) {
 
     fun canSubmit(projectId: Long): Boolean {
-        val project = projectService.getById(projectId)
-        val oldStatus = project.projectStatus.status
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+        val isOwner = isActiveUserIdEqualTo(userId = project.applicantId)
 
-        return (oldStatus.isDraft() || oldStatus == RETURNED_TO_APPLICANT)
-            && (isApplicantOwner(project.applicant.id!!) || isAdmin() || hasPermission(UserRolePermission.ProjectSubmission))
+        if (isOwner || hasPermission(UserRolePermission.ProjectSubmission))
+            return project.projectStatus.isDraftOrReturned()
+        else if (hasPermission(UserRolePermission.ProjectRetrieve))
+            return false
+        else
+            throw ResourceNotFoundException("project")
     }
 
-    fun canApproveOrRefuse(projectId: Long): Boolean {
-        val project = projectService.getById(projectId)
-        val oldStatus = project.projectStatus.status
-        val oldPossibilities = setOf(STEP1_ELIGIBLE, ELIGIBLE, APPROVED_WITH_CONDITIONS)
+    fun canCheckApplication(projectId: Long): Boolean {
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+        val isOwner = isActiveUserIdEqualTo(userId = project.applicantId)
 
-        return oldPossibilities.contains(oldStatus)
-            && project.getDecision()?.qualityAssessment != null
-            && (isProgrammeUser() || isAdmin())
-    }
-
-    fun canApproveWithConditions(projectId: Long): Boolean {
-        val project = projectService.getById(projectId)
-        val oldStatus = project.projectStatus.status
-
-        return oldStatus.isEligible() && (isProgrammeUser() || isAdmin())
-    }
-
-    fun canSetEligibility(projectId: Long): Boolean {
-        val project = projectService.getById(projectId)
-        val oldStatus = project.projectStatus.status
-
-        return oldStatus.isSubmitted()
-            && project.getDecision()?.eligibilityAssessment != null
-            && (isProgrammeUser() || isAdmin())
-    }
-
-    fun canReturnToApplicant(projectId: Long): Boolean {
-        val project = projectService.getById(projectId)
-        val oldStatus = project.projectStatus.status
-        val oldPossibilities = setOf(SUBMITTED, ELIGIBLE, APPROVED_WITH_CONDITIONS, APPROVED)
-
-        return oldPossibilities.contains(oldStatus) && (isProgrammeUser() || isAdmin())
-    }
-
-    fun canStartSecondStep(projectId: Long): Boolean {
-        val project = projectService.getById(projectId)
-        val oldStatus = project.projectStatus.status
-        val oldPossibilities = setOf(STEP1_APPROVED_WITH_CONDITIONS, STEP1_APPROVED)
-
-        return oldPossibilities.contains(oldStatus) && (isProgrammeUser() || isAdmin())
-    }
-
-    fun canSetQualityAssessment(projectId: Long): Boolean {
-        val project = projectService.getById(projectId)
-        val allowedStatuses = listOf(SUBMITTED, ELIGIBLE, STEP1_SUBMITTED, STEP1_ELIGIBLE)
-
-        return project.getDecision()?.qualityAssessment == null
-            && (isProgrammeUser() || isAdmin())
-            && allowedStatuses.contains(project.projectStatus.status)
-    }
-
-    fun canSetEligibilityAssessment(projectId: Long): Boolean {
-        val project = projectService.getById(projectId)
-
-        return project.getDecision()?.eligibilityAssessment == null
-            && (isProgrammeUser() || isAdmin())
-            && project.projectStatus.status.isSubmitted()
+        if (isOwner || hasPermission(UserRolePermission.ProjectCheckApplicationForm))
+            return project.projectStatus.isDraftOrReturned()
+        else if (hasPermission(UserRolePermission.ProjectRetrieve))
+            return false
+        else
+            throw ResourceNotFoundException("project")
     }
 
 }

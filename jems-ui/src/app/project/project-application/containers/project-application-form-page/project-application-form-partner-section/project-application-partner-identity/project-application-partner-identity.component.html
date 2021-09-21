@@ -3,9 +3,5 @@
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} ">
     <h2 page-sub-title *ngIf="!partner?.abbreviation">{{'project.application.form.partner.add' | translate}}</h2>
 
-    <app-project-application-form-partner-edit
-            [partner]="partner"
-            [projectId]="projectId"
-            [legalStatuses]="legalStatuses$ | async">
-    </app-project-application-form-partner-edit>
+    <app-project-application-form-partner-edit></app-project-application-form-partner-edit>
 </app-project-page-template>

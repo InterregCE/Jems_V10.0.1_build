@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.authorization
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.authorization.Authorization
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -10,26 +11,26 @@ import org.springframework.stereotype.Component
 annotation class CanRetrieveAuditLog
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@programmeSetupAuthorization.canAccessSetup()")
+@PreAuthorize("hasAuthority('ProgrammeSetupUpdate')")
 annotation class CanUpdateProgrammeSetup
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@programmeSetupAuthorization.canReadProgrammeSetup()")
-annotation class CanReadProgrammeSetup
+annotation class CanRetrieveProgrammeSetup
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@programmeSetupAuthorization.canReadNuts()")
-annotation class CanReadNuts
+@PreAuthorize("@programmeSetupAuthorization.canReadProgrammeSetup()")
+annotation class CanRetrieveNuts
 
 @Component
 class ProgrammeSetupAuthorization(
     override val securityService: SecurityService
 ): Authorization(securityService) {
 
-    fun canAccessSetup() = isAdmin() || isProgrammeUser()
-
-    fun canReadProgrammeSetup() = canAccessSetup() || isApplicantUser()
-
-    fun canReadNuts() = canAccessSetup() || isApplicantUser()
+    /**
+     * currently applicant users need programme setup data as well for filling in the form,
+     * that's why this is always true (core logic).
+     */
+    fun canReadProgrammeSetup() = hasPermission(UserRolePermission.ProgrammeSetupRetrieve) || true
 
 }

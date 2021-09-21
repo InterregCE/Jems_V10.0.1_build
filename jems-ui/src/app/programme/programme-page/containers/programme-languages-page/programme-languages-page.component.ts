@@ -7,7 +7,6 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {merge, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
-import {Permission} from '../../../../security/permissions/permission';
 import {LanguageStore} from '../../../../common/services/language-store.service';
 
 @Component({
@@ -17,8 +16,6 @@ import {LanguageStore} from '../../../../common/services/language-store.service'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeLanguagesPageComponent extends BaseComponent implements OnDestroy {
-  Permission = Permission;
-
   languagesSaveError$ = new Subject<I18nValidationError | null>();
   languagesSaveSuccess$ = new Subject<boolean>();
   saveLanguages$ = new Subject<ProgrammeLanguageDTO[]>();

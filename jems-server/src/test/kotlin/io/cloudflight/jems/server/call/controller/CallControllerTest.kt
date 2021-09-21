@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS
+import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumListDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
@@ -22,13 +23,18 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.Atlantic
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
+import io.cloudflight.jems.server.call.service.get_allow_real_costs.GetAllowedRealCostsInteractor
 import io.cloudflight.jems.server.call.service.get_call.GetCallInteractor
-import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.list_calls.ListCallsException
+import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallSummary
+import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.publish_call.PublishCallInteractor
+import io.cloudflight.jems.server.call.service.update_allow_real_costs.UpdateAllowedRealCostsInteractor
 import io.cloudflight.jems.server.call.service.update_call.UpdateCallInteractor
 import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
 import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallLumpSumsInteractor
@@ -44,11 +50,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime
 
-class CallControllerTest: UnitTest() {
+class CallControllerTest : UnitTest() {
 
     companion object {
 
@@ -76,20 +83,22 @@ class CallControllerTest: UnitTest() {
                 InputTranslation(language = EN, translation = "EN desc"),
                 InputTranslation(language = SK, translation = "SK desc"),
             ),
-            objectives = listOf(ProgrammePriority(
-                code = "PRIO_CODE",
-                objective = PO1,
-                specificObjectives = listOf(
-                    ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
-                    ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
+            objectives = listOf(
+                ProgrammePriority(
+                    code = "PRIO_CODE",
+                    objective = PO1,
+                    specificObjectives = listOf(
+                        ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
+                        ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
+                    )
                 )
-            )),
+            ),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             funds = listOf(
                 ProgrammeFund(id = 10L, selected = true),
             ),
             flatRates = sortedSetOf(
-                ProjectCallFlatRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 5, isAdjustable = true),
+                ProjectCallFlatRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 5, adjustable = true),
             ),
             lumpSums = listOf(
                 ProgrammeLumpSum(splittingAllowed = true),
@@ -97,6 +106,7 @@ class CallControllerTest: UnitTest() {
             unitCosts = listOf(
                 ProgrammeUnitCost(isOneCostCategory = true),
             ),
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
         private val callDto = CallDTO(
@@ -115,31 +125,36 @@ class CallControllerTest: UnitTest() {
             startDateTime = call.startDate,
             endDateTimeStep1 = null,
             endDateTime = call.endDate,
-            isAdditionalFundAllowed = true,
+            additionalFundAllowed = true,
             lengthOfPeriod = 8,
             description = setOf(
                 InputTranslation(language = EN, translation = "EN desc"),
                 InputTranslation(language = SK, translation = "SK desc"),
             ),
-            objectives = listOf(ProgrammePriorityDTO(
-                code = "PRIO_CODE",
-                objective = PO1,
-                specificObjectives = listOf(
-                    ProgrammeSpecificObjectiveDTO(AdvancedTechnologies, "CODE_ADVA"),
-                    ProgrammeSpecificObjectiveDTO(Digitisation, "CODE_DIGI"),
+            objectives = listOf(
+                ProgrammePriorityDTO(
+                    code = "PRIO_CODE",
+                    objective = PO1,
+                    specificObjectives = listOf(
+                        ProgrammeSpecificObjectiveDTO(AdvancedTechnologies, "CODE_ADVA"),
+                        ProgrammeSpecificObjectiveDTO(Digitisation, "CODE_DIGI"),
+                    )
                 )
-            )),
+            ),
             strategies = listOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             funds = listOf(
                 ProgrammeFundDTO(id = 10L, selected = true),
             ),
-            flatRates = FlatRateSetupDTO(officeAndAdministrationOnDirectCostsFlatRateSetup = FlatRateDTO(rate = 5, isAdjustable = true)),
+            flatRates = FlatRateSetupDTO(
+                officeAndAdministrationOnDirectCostsFlatRateSetup = FlatRateDTO(rate = 5, adjustable = true)
+            ),
             lumpSums = listOf(
                 ProgrammeLumpSumListDTO(id = 0L, splittingAllowed = true),
             ),
             unitCosts = listOf(
                 ProgrammeUnitCostListDTO(id = 0L),
             ),
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
         private val callUpdateDto = CallUpdateRequestDTO(
@@ -147,7 +162,7 @@ class CallControllerTest: UnitTest() {
             name = "call name",
             startDateTime = call.startDate,
             endDateTime = call.endDate,
-            isAdditionalFundAllowed = true,
+            additionalFundAllowed = true,
             lengthOfPeriod = 8,
             description = setOf(
                 InputTranslation(language = EN, translation = "EN desc"),
@@ -181,6 +196,9 @@ class CallControllerTest: UnitTest() {
     lateinit var getCall: GetCallInteractor
 
     @MockK
+    lateinit var listCalls: ListCallsInteractor
+
+    @MockK
     lateinit var createCall: CreateCallInteractor
 
     @MockK
@@ -198,6 +216,12 @@ class CallControllerTest: UnitTest() {
     @MockK
     lateinit var publishCall: PublishCallInteractor
 
+    @MockK
+    lateinit var getAllowedRealCostsInteractor: GetAllowedRealCostsInteractor
+
+    @MockK
+    lateinit var updateAllowedRealCostsInteractor: UpdateAllowedRealCostsInteractor
+
     @InjectMockKs
     private lateinit var controller: CallController
 
@@ -205,6 +229,27 @@ class CallControllerTest: UnitTest() {
     fun getCalls() {
         every { getCall.getCalls(any()) } returns PageImpl(listOf(call))
         assertThat(controller.getCalls(Pageable.unpaged()).content).containsExactly(callDto)
+    }
+
+    @Test
+    fun `list calls`() {
+        val idNamePair = IdNamePair(id = ID, name = "name")
+        val idNamePairDTO = IdNamePairDTO(id = ID, name = "name")
+        every { listCalls.list() } returns listOf(idNamePair)
+        assertThat(controller.listCalls()).containsExactly(idNamePairDTO)
+    }
+
+    @Test
+    fun `list calls fails on list exception`() {
+        val exception = ListCallsException(Exception())
+        every { listCalls.list() } throws exception
+        assertThrows<ListCallsException> { controller.listCalls() }
+    }
+
+    @Test
+    fun getPublishedCalls() {
+        every { getCall.getPublishedCalls(any()) } returns PageImpl(listOf(call.copy(status = CallStatus.PUBLISHED)))
+        assertThat(controller.getPublishedCalls(Pageable.unpaged()).content).containsExactly(callDto.copy(status = CallStatus.PUBLISHED))
     }
 
     @Test
@@ -240,7 +285,9 @@ class CallControllerTest: UnitTest() {
         val slotFlatRate = slot<Set<ProjectCallFlatRate>>()
         every { updateCallFlatRates.updateFlatRateSetup(30L, capture(slotFlatRate)) } returns callDetail
         controller.updateCallFlatRateSetup(30L, FlatRateSetupDTO(staffCostFlatRateSetup = FlatRateDTO(15, true)))
-        assertThat(slotFlatRate.captured).containsExactly(ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, isAdjustable = true))
+        assertThat(slotFlatRate.captured).containsExactly(
+            ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, adjustable = true)
+        )
     }
 
     @Test

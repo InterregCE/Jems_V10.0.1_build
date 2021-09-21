@@ -16,7 +16,6 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
-import javax.persistence.OneToOne
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project")
@@ -25,6 +24,10 @@ data class ProjectEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
+
+    @Column(unique = true)
+    @field:NotNull
+    var customIdentifier: String = "",
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_call_id")
@@ -55,17 +58,25 @@ data class ProjectEntity(
     @JoinColumn(name = "last_resubmission_id")
     var lastResubmission: ProjectStatusHistoryEntity? = null,
 
-    @Column(name = "step2_active")
-    @field:NotNull
-    var step2Active: Boolean,
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "eligibility_decision_step1_id")
+    var decisionEligibilityStep1: ProjectStatusHistoryEntity? = null,
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name="first_step_decision_id")
-    var firstStepDecision: ProjectDecisionEntity? = null,
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "funding_decision_step1_id")
+    var decisionFundingStep1: ProjectStatusHistoryEntity? = null,
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name="second_step_decision_id")
-    var secondStepDecision: ProjectDecisionEntity? = null,
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "eligibility_decision_id")
+    var decisionEligibilityStep2: ProjectStatusHistoryEntity? = null,
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "funding_pre_decision_id")
+    var decisionPreFundingStep2: ProjectStatusHistoryEntity? = null,
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "funding_final_decision_id")
+    var decisionFundingStep2: ProjectStatusHistoryEntity? = null,
 
     @Embedded
     val projectData: ProjectData? = null,

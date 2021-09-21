@@ -60,8 +60,8 @@ internal class GetUserTest : UnitTest() {
 
     @Test
     fun getUsers() {
-        every { persistence.findAll(any()) } returns PageImpl(listOf(userSummary))
-        assertThat(getUser.getUsers(Pageable.unpaged()).content).containsExactly(userSummary)
+        every { persistence.findAll(any(), null) } returns PageImpl(listOf(userSummary))
+        assertThat(getUser.getUsers(Pageable.unpaged(), null).content).containsExactly(userSummary)
     }
 
     @Test

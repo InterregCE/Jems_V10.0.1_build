@@ -1,13 +1,6 @@
 import {Injectable} from '@angular/core';
 import {distinctUntilChanged, filter, map, take, tap} from 'rxjs/operators';
-import {
-  ActivatedRoute,
-  ActivatedRouteSnapshot,
-  NavigationEnd,
-  NavigationExtras,
-  ResolveEnd,
-  Router
-} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, NavigationExtras, ResolveEnd, Router} from '@angular/router';
 import {Forms} from '../utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Log} from '../utils/log';
@@ -36,6 +29,10 @@ export class RoutingService {
       .subscribe();
   }
 
+  get url(): string {
+    return this.router.url;
+  }
+
   navigate(commands: any[], extras?: NavigationExtras): void {
     const navigationExtras = extras || {queryParamsHandling: 'merge'} as NavigationExtras;
     if (!this.confirmLeave) {
@@ -43,10 +40,12 @@ export class RoutingService {
       return;
     }
 
-    Forms.confirmDialog(
+    Forms.confirm(
       this.dialog,
-      'common.sidebar.dialog.title',
-      'common.sidebar.dialog.message'
+      {
+        title: 'common.sidebar.dialog.title',
+        warnMessage: 'common.sidebar.dialog.message'
+      }
     ).pipe(
       take(1),
       filter(yes => !!yes),
@@ -67,14 +66,15 @@ export class RoutingService {
   routeParameterChanges(url: string, parameter: string): Observable<string | number | null> {
     return this.currentRoute
       .pipe(
-        map(route => this.containsPath(route, url) ? this.getParameter(route.snapshot, parameter) : null),
+        map(route => this.containsPath(route, url) ? this.getParameter(route, parameter) : null),
         distinctUntilChanged((o, n) => o === n),
         tap(param => Log.debug('Route param changed', this, url, param)),
       );
   }
 
-  private getParameter(routeSnapshot: ActivatedRouteSnapshot, param: string): string | number | null {
-    return routeSnapshot.params[param] || routeSnapshot.queryParams[param];
+  getParameter(route: ActivatedRoute, param: string): string | number | null {
+    return route?.snapshot.params[param] || route?.snapshot.queryParams[param]
+      || route?.parent?.snapshot.params[param] || route?.parent?.snapshot.queryParams[param];
   }
 
   private containsPath(route: ActivatedRoute, path: string): boolean {

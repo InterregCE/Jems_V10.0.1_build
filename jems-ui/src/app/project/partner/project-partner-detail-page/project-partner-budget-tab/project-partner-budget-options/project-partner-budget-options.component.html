@@ -20,7 +20,7 @@
                         <input matInput currencyMask type="integer"
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.staffCostFlatRateSetup.rate, align: 'right'}"
                                [formControl]="staffCostsFlatRate"
-                               [readonly]="!data.callFlatRateSettings.staffCostFlatRateSetup.isAdjustable"
+                               [readonly]="!data.callFlatRateSettings.staffCostFlatRateSetup.adjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix
@@ -51,7 +51,7 @@
                                currencyMask type="integer"
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.rate, align: 'right'}"
                                [formControl]="officeOnStaffCostsFlatRate"
-                               [readonly]="!data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.isAdjustable"
+                               [readonly]="!data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.adjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix
@@ -85,7 +85,7 @@
                         <input matInput currencyMask type="integer"
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.rate, align: 'right'}"
                                [formControl]="officeOnDirectCostsFlatRate"
-                               [readonly]="!data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.isAdjustable"
+                               [readonly]="!data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.adjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix
@@ -120,7 +120,7 @@
                                currencyMask type="integer"
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.rate, align: 'right'}"
                                [formControl]="travelOnStaffCostsFlatRate"
-                               [readonly]="!data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.isAdjustable"
+                               [readonly]="!data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.adjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix
@@ -152,7 +152,7 @@
                                currencyMask type="integer"
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.rate, align: 'right'}"
                                [formControl]="otherCostsOnStaffCostsFlatRate"
-                               [readonly]="!data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.isAdjustable"
+                               [readonly]="!data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.adjustable"
                                (paste)="Tools.checkDigitsOnPaste($event)"
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <span matSuffix

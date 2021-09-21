@@ -5,6 +5,7 @@ import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditi
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.repository.PluginStatusRepository
+import io.cloudflight.jems.server.project.authorization.CanCheckApplicationForm
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,13 +22,14 @@ class ExecutePreConditionCheck(
 
     @ExceptionWrapper(ExecutePreConditionCheckException::class)
     @Transactional(readOnly = true)
+    @CanCheckApplicationForm
     override fun execute(projectId: Long): PreConditionCheckResult =
         if (isPluginEnabled())
             projectPersistence.getProjectCallSettings(projectId).let { callSettings ->
                 projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                     when {
                         // todo pluginKey should be fetched from call settings for the project when it is added
-                        callSettings.endDateStep1 == null || projectSummary.status.isInStepTwo() ->
+                        callSettings.endDateStep1 == null || projectSummary.status.isInStep2() ->
                             jemsPluginRegistry.get(
                                 PreConditionCheckPlugin::class, key = pluginKey
                             ).check(projectId)

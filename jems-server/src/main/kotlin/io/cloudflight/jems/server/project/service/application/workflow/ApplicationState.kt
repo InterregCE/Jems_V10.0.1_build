@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.application.workflow
 
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
@@ -8,12 +7,13 @@ import io.cloudflight.jems.server.project.service.application.ApplicationActionI
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.callAlreadyEnded
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 
 abstract class ApplicationState(
     protected open val projectSummary: ProjectSummary,
     protected open val projectWorkflowPersistence: ProjectWorkflowPersistence,
-    protected open val auditService: AuditService,
+    protected open val auditPublisher: ApplicationEventPublisher,
     protected open val securityService: SecurityService,
     protected open val projectPersistence: ProjectPersistence
 ) {
@@ -125,7 +125,7 @@ abstract class ApplicationState(
     protected fun isCallStep1Open() =
         projectPersistence.getProjectCallSettings(projectSummary.id).also { projectCallSettings ->
             if (projectCallSettings.isCallStep1Closed()) {
-                auditService.logEvent(callAlreadyEnded(projectCallSettings.callId))
+                auditPublisher.publishEvent(callAlreadyEnded(this, projectCallSettings))
 
                 throw CallIsNotOpenException()
             }
@@ -134,7 +134,7 @@ abstract class ApplicationState(
     protected fun isCallStep2Open() =
         projectPersistence.getProjectCallSettings(projectSummary.id).also { projectCallSettings ->
             if (projectCallSettings.isCallStep2Closed()) {
-                auditService.logEvent(callAlreadyEnded(projectCallSettings.callId))
+                auditPublisher.publishEvent(callAlreadyEnded(this, projectCallSettings))
 
                 throw CallIsNotOpenException()
             }

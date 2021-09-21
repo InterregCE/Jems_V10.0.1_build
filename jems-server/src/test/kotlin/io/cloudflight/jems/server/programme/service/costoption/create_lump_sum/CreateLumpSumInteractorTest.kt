@@ -10,7 +10,6 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -66,10 +65,10 @@ class CreateLumpSumInteractorTest : UnitTest() {
             phase = null,
             categories = setOf(OfficeAndAdministrationCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createLumpSum.createLumpSum(wrongLumpSum) }
-        assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "cost" to I18nFieldError(i18nKey = "lump.sum.out.of.range"),
-            "categories" to I18nFieldError(i18nKey = "programme.lumpSum.categories.min.2"),
+        val ex = assertThrows<LumpSumIsInvalid> { createLumpSum.createLumpSum(wrongLumpSum) }
+        assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
+            "cost" to I18nMessage(i18nKey = "lump.sum.out.of.range"),
+            "categories" to I18nMessage(i18nKey = "programme.lumpSum.categories.min.2"),
         ))
     }
 
@@ -85,8 +84,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createLumpSum.createLumpSum(lumpSum) }
-        assertThat(ex.i18nKey).isEqualTo("programme.lumpSum.max.allowed.reached")
+        assertThrows<MaxAllowedLumpSumsReached> { createLumpSum.createLumpSum(lumpSum) }
     }
 
     @Test
@@ -123,7 +121,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             phase = Implementation,
         )
 
-        assertThrows<I18nValidationException>("when creating id cannot be filled in") {
+        assertThrows<IdHasToBeNull>("when creating id cannot be filled in") {
             createLumpSum.createLumpSum(lumpSum) }
     }
 

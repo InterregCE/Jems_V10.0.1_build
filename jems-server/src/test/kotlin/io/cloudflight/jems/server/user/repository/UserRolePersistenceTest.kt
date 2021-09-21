@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.user.repository
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.entity.UserRolePermissionEntity
 import io.cloudflight.jems.server.user.entity.UserRolePermissionId
@@ -21,8 +22,6 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.util.Optional
@@ -31,6 +30,7 @@ internal class UserRolePersistenceTest : UnitTest() {
 
     companion object {
         private const val ROLE_ID = 8L
+        private const val defaultUserRoleId = 2L
 
         private val userRoleEntity = UserRoleEntity(
             id = ROLE_ID,
@@ -50,11 +50,15 @@ internal class UserRolePersistenceTest : UnitTest() {
     @MockK
     lateinit var userRolePermissionRepo: UserRolePermissionRepository
 
+    @MockK
+    lateinit var programmeDataPersistence: ProgrammeDataPersistence
+
     @InjectMockKs
     private lateinit var persistence: UserRolePersistenceProvider
 
     @Test
     fun getById() {
+        every { programmeDataPersistence.getDefaultUserRole() } returns defaultUserRoleId
         every { userRolePermissionRepo.findAllByIdUserRoleId(ROLE_ID) } returns listOf(permissionEntity)
         every { userRoleRepo.getOne(ROLE_ID) } returns userRoleEntity
 
@@ -62,6 +66,23 @@ internal class UserRolePersistenceTest : UnitTest() {
             UserRole(
                 id = ROLE_ID,
                 name = "maintainer",
+                isDefault = false,
+                permissions = setOf(ProjectSubmission)
+            )
+        )
+    }
+
+    @Test
+    fun `get by id including default role`() {
+        every { programmeDataPersistence.getDefaultUserRole() } returns ROLE_ID
+        every { userRolePermissionRepo.findAllByIdUserRoleId(ROLE_ID) } returns listOf(permissionEntity)
+        every { userRoleRepo.getOne(ROLE_ID) } returns userRoleEntity
+
+        assertThat(persistence.getById(ROLE_ID)).isEqualTo(
+            UserRole(
+                id = ROLE_ID,
+                name = "maintainer",
+                isDefault = true,
                 permissions = setOf(ProjectSubmission)
             )
         )
@@ -69,6 +90,7 @@ internal class UserRolePersistenceTest : UnitTest() {
 
     @Test
     fun findAll() {
+        every { programmeDataPersistence.getDefaultUserRole() } returns defaultUserRoleId
         every { userRoleRepo.findAll(Pageable.unpaged()) } returns PageImpl(listOf(userRoleEntity))
 
         assertThat(persistence.findAll(Pageable.unpaged()).content).containsExactly(
@@ -83,6 +105,7 @@ internal class UserRolePersistenceTest : UnitTest() {
     fun create() {
         val userRoleCreate = UserRoleCreate(
             name = userRoleEntity.name,
+            isDefault = false,
             permissions = setOf(ProjectSubmission)
         )
 
@@ -113,7 +136,8 @@ internal class UserRolePersistenceTest : UnitTest() {
     fun update() {
         val userRetrievePermission = UserRolePermissionId(userRole = userRoleEntity, permission = UserRetrieve)
         val userCreatePermission = UserRolePermissionId(userRole = userRoleEntity, permission = UserCreate)
-        val projectSubmissionPermission = UserRolePermissionId(userRole = userRoleEntity, permission = ProjectSubmission)
+        val projectSubmissionPermission =
+            UserRolePermissionId(userRole = userRoleEntity, permission = ProjectSubmission)
 
         val userRoleUpdate = UserRole(
             id = ROLE_ID,
@@ -124,11 +148,14 @@ internal class UserRolePersistenceTest : UnitTest() {
             )
         )
 
+        every { programmeDataPersistence.getDefaultUserRole() } returns defaultUserRoleId
         every { userRoleRepo.findById(ROLE_ID) } returns Optional.of(userRoleEntity)
-        every { userRolePermissionRepo.findAllByIdUserRoleId(ROLE_ID) } returns listOf( // before save
+        every { userRolePermissionRepo.findAllByIdUserRoleId(ROLE_ID) } returns listOf(
+            // before save
             UserRolePermissionEntity(userRetrievePermission),   // to be removed
             UserRolePermissionEntity(userCreatePermission),     // to stay
-        ) andThen listOf(   // after save
+        ) andThen listOf(
+            // after save
             UserRolePermissionEntity(projectSubmissionPermission),
             UserRolePermissionEntity(userCreatePermission),
         )
@@ -137,7 +164,8 @@ internal class UserRolePersistenceTest : UnitTest() {
         every { userRolePermissionRepo.saveAll(capture(slotSavedPermissions)) } returnsArgument 0
 
         val result = persistence.update(userRoleUpdate)
-        assertThat(result).isEqualTo(userRoleUpdate).overridingErrorMessage("what I expected to be saved is saved exactly")
+        assertThat(result).isEqualTo(userRoleUpdate)
+            .overridingErrorMessage("what I expected to be saved is saved exactly")
         assertThat(result !== userRoleUpdate).isTrue.overridingErrorMessage("model objects are not same")
 
         // verify UserRetrieve permission has been removed
@@ -147,6 +175,24 @@ internal class UserRolePersistenceTest : UnitTest() {
         assertThat(slotSavedPermissions.captured.size).isEqualTo(1)
         assertThat(slotSavedPermissions.captured[0].id.userRole).isEqualTo(userRoleEntity)
         assertThat(slotSavedPermissions.captured[0].id.permission).isEqualTo(ProjectSubmission)
+    }
+
+    @Test
+    fun `update set default`() {
+        val userRoleUpdate = UserRole(
+            id = ROLE_ID,
+            name = userRoleEntity.name,
+            isDefault = true,
+            permissions = emptySet()
+        )
+
+        every { programmeDataPersistence.getDefaultUserRole() } returns defaultUserRoleId
+        every { userRoleRepo.findById(ROLE_ID) } returns Optional.of(userRoleEntity)
+        every { userRolePermissionRepo.findAllByIdUserRoleId(ROLE_ID) } returns emptyList()
+        every { programmeDataPersistence.updateDefaultUserRole(ROLE_ID) } returns Unit
+
+        val result = persistence.update(userRoleUpdate)
+        assertThat(result).isEqualTo(userRoleUpdate)
     }
 
     @Test
@@ -179,13 +225,6 @@ internal class UserRolePersistenceTest : UnitTest() {
     fun `findUserRoleByName - not existing role name`() {
         every { userRoleRepo.findByName("not existing name") } returns Optional.empty()
         assertThat(persistence.findUserRoleByName("not existing name")).isNotPresent
-    }
-
-    @ParameterizedTest(name = "exists by id = {0}")
-    @ValueSource(booleans = [true, false])
-    fun existsById(isExisting: Boolean) {
-        every { userRoleRepo.existsById(263L) } returns isExisting
-        assertThat(persistence.existsById(263L)).isEqualTo(isExisting)
     }
 
 }

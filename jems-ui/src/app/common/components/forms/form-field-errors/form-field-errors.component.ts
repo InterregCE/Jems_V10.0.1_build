@@ -1,6 +1,5 @@
 import {Component, Input} from '@angular/core';
 import {ValidationErrors} from '@angular/forms';
-import {Log} from '../../../utils/log';
 
 @Component({
   selector: 'app-form-field-errors',
@@ -8,7 +7,6 @@ import {Log} from '../../../utils/log';
   styleUrls: ['./form-field-errors.component.scss']
 })
 export class FormFieldErrorsComponent {
-  Log = Log;
 
   @Input()
   errors: ValidationErrors | null;

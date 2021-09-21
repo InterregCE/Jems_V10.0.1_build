@@ -1,0 +1,14 @@
+<div *ngIf="canReadFiles$ | async" appNoWidthLimit id="project-files">
+    <app-project-application-files-tree class="mr-3" id="project-files-tree">
+    </app-project-application-files-tree>
+
+    <div id="project-files-table">
+        <div *ngIf="selectedCategoryPath$ | async as selectedCategoryPath" class="mb-3">
+            <span *ngFor="let item of selectedCategoryPath; let last = last">
+                <span [class.mat-body-strong]="item === last">{{item.i18nKey | translate : item.i18nArguments}}</span>
+                <span *ngIf="!last"> / </span>
+            </span>
+        </div>
+        <app-project-application-files-table></app-project-application-files-table>
+    </div>
+</div>

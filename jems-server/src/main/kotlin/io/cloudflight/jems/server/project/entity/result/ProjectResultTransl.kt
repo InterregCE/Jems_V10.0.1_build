@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.entity.result
 
 import io.cloudflight.jems.server.project.entity.TranslationResultId
-import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
@@ -13,6 +12,5 @@ data class ProjectResultTransl (
     @EmbeddedId
     val translationId: TranslationResultId,
 
-    @Column
     val description: String? = null
 )

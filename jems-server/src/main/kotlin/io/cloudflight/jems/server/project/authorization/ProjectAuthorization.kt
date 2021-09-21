@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.call.authorization.CallAuthorization
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -13,18 +13,33 @@ import org.springframework.stereotype.Component
 annotation class CanRetrieveProject
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectRetrieve') || hasAuthority('ProjectFormRetrieve') || @projectAuthorization.isUserOwnerOfProject(#projectId)")
+annotation class CanRetrieveProjectVersion
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('ProjectRetrieve')")
 annotation class CanRetrieveProjects
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectUpdate') || @projectAuthorization.canOwnerUpdateProject(#projectId)")
-annotation class CanUpdateProject
+@PreAuthorize("hasAuthority('ProjectsWithOwnershipRetrieve')")
+annotation class CanRetrieveProjectsWithOwnership
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectCreate')")
+annotation class CanCreateProject
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectFormRetrieve') || @projectAuthorization.isUserOwnerOfProject(#projectId)")
+annotation class CanRetrieveProjectForm
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+annotation class CanUpdateProjectForm
 
 @Component
 class ProjectAuthorization(
     override val securityService: SecurityService,
     val projectPersistence: ProjectPersistence,
-    val callAuthorization: CallAuthorization
 ) : Authorization(securityService) {
 
     fun isUserOwnerOfProject(projectId: Long): Boolean {
@@ -34,27 +49,11 @@ class ProjectAuthorization(
         throw ResourceNotFoundException("project") // should be same exception as if entity not found
     }
 
-    fun canReadProject(id: Long): Boolean {
-        val project = projectPersistence.getApplicantAndStatusById(id)
-        if (isAdmin() || isApplicantOwner(project.applicantId) || isProgrammeUser())
-            return true
-
-        if (isApplicantNotOwner(project.applicantId))
-            throw ResourceNotFoundException("project")
-
-        return false
-    }
-
-    fun canCreateProjectForCall(callId: Long): Boolean {
-        return callAuthorization.canReadCall(callId)
-            && (isAdmin() || isApplicantUser())
-    }
-
-    fun canOwnerUpdateProject(projectId: Long): Boolean {
+    fun canUpdateProject(projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val isOwner = isActiveUserIdEqualTo(project.applicantId)
-        if (isOwner)
-            return project.projectStatus.isNotSubmittedNow()
+        val canSeeProject = hasPermission(UserRolePermission.ProjectFormUpdate) || isActiveUserIdEqualTo(project.applicantId)
+        if (canSeeProject)
+            return project.projectStatus.hasNotBeenSubmittedYet()
         throw ResourceNotFoundException("project") // should be same exception as if entity not found
     }
 

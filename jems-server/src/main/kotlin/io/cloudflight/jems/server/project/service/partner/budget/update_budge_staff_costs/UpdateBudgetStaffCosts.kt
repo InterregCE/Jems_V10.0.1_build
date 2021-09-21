@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budge_staff_costs
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateBudgetStaffCosts(
     private val persistence: ProjectPartnerBudgetCostsUpdatePersistence,
     private val projectPersistence: ProjectPersistence,
+    private val partnerPersistence: PartnerPersistence,
     private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     private val budgetCostValidator: BudgetCostValidator
 ) : UpdateBudgetStaffCostsInteractor {
@@ -33,7 +36,12 @@ class UpdateBudgetStaffCosts(
 
         throwIfStaffCostFlatRateIsSet(budgetOptionsPersistence.getBudgetOptions(partnerId))
 
-        val projectId = projectPersistence.getProjectIdForPartner(partnerId)
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        budgetCostValidator.validateAllowedRealCosts(
+            projectPersistence.getCallIdOfProject(projectId),
+            staffCosts,
+            BudgetCategory.StaffCosts
+        )
 
         budgetCostValidator.validateBudgetPeriods(
             staffCosts.map { it.budgetPeriods }.flatten().toSet(),

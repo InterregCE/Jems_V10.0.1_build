@@ -1,7 +1,7 @@
 <ol class="breadcrumbs" *ngIf="breadcrumbs">
     <li *ngFor="let breadcrumb of breadcrumbs; let first = first; let last = last" [class.active]="last">
 
-        <a *ngIf="!last" [routerLink]="[breadcrumb.url]" queryParamsHandling="merge">
+        <a *ngIf="!last" (click)="navigate(breadcrumb.url, {queryParamsHandling: breadcrumb.queryParamsHandling})">
             <mat-icon *ngIf="first" color="secondary">home</mat-icon>
             <ng-container *ngTemplateOutlet="breadcrumbLabel; context:{$implicit: breadcrumb}"></ng-container>
         </a>

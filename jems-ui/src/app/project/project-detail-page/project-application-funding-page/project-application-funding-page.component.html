@@ -2,7 +2,7 @@
                            titleKey="project.application.form.lifecycle.title">
 
     <div page-sub-title appNoWidthLimit appFormLayout>
-        <h2>{{details.acronym}}</h2>
+        <h2>{{details.project.acronym}}</h2>
         <app-project-application-information
                 appNoWidthLimit
                 [project]="details.project">
@@ -13,24 +13,26 @@
         <h3>{{'project.assessment.fundingDecision.dialog.title' | translate}}</h3>
         <app-project-application-funding-decision
                 appNoWidthLimit
-                *ngIf="details.showWithConditions"
+                *ngIf="details.showSecondDecision"
                 [project]="details.project"
-                [status]="details.withConditionsStatus"
+                [status]="details.finalFundingDecision"
+                [userCanChangeFunding]="details.userCanChangeFunding"
                 [stepStatus]="stepStatus"
-                [fundingDecision]="details.fundingDecision"
+                [fundingDecision]="details.finalFundingDecision"
                 [eligibilityDecisionDate]="details.eligibilityDecisionDate"
-                [options]="details.withConditionsStatusOptions"
-                [submitLabel]="details.withConditionsSubmitLabel">
+                [options]="details.optionsForSecondDecision"
+                [submitLabel]="'project.assessment.fundingDecision.submit.finalize.label'">
         </app-project-application-funding-decision>
         <app-project-application-funding-decision
                 appNoWidthLimit
                 [project]="details.project"
-                [status]="details.fundingDecision"
+                [status]="step === '2' ? (details.preFundingDecision || details.finalFundingDecision) : details.finalFundingDecision"
+                [userCanChangeFunding]="details.userCanChangeFunding"
                 [stepStatus]="stepStatus"
-                [fundingDecision]="details.fundingDecision"
+                [fundingDecision]="step === '2' ? (details.preFundingDecision || details.finalFundingDecision) : details.finalFundingDecision"
                 [eligibilityDecisionDate]="details.eligibilityDecisionDate"
-                [options]="details.statusOptions"
-                [submitLabel]="details.submitLabel">
+                [options]="details.fullOptions"
+                [submitLabel]="'project.assessment.fundingDecision.submit.label'">
         </app-project-application-funding-decision>
     </div>
 </app-project-page-template>

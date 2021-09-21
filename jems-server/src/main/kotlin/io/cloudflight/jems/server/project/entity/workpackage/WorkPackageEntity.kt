@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull
         attributeNodes = [NamedAttributeNode(value = "translatedValues")],
     ),
 )
-data class WorkPackageEntity(
+class WorkPackageEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,14 +37,39 @@ data class WorkPackageEntity(
     val project: ProjectEntity,
 
     @Column
-    val number: Int? = null,
+    var number: Int? = null,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.workPackageId", fetch = FetchType.EAGER)
-    val translatedValues: Set<WorkPackageTransl> = mutableSetOf(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity", fetch = FetchType.EAGER)
+    val translatedValues: MutableSet<WorkPackageTransl> = mutableSetOf(),
 
     @OneToMany(mappedBy = "outputId.workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val outputs: List<WorkPackageOutputEntity> = emptyList(),
+    val outputs: MutableList<WorkPackageOutputEntity> = mutableListOf(),
 
-    @OneToMany(mappedBy = "activityId.workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val activities: List<WorkPackageActivityEntity> = emptyList(),
-)
+    @OneToMany(mappedBy = "workPackage", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val activities: MutableList<WorkPackageActivityEntity> = mutableListOf(),
+){
+
+    fun copy(translatedValues: MutableSet<WorkPackageTransl>?): WorkPackageEntity =
+        WorkPackageEntity(
+            id = this.id,
+            project = this.project,
+            number = this.number,
+            translatedValues = translatedValues ?: this.translatedValues,
+            outputs = this.outputs,
+            activities = this.activities
+        )
+
+    fun updateActivities(newActivities: MutableList<WorkPackageActivityEntity>){
+        this.activities.removeIf { activity -> !newActivities.map { it.id }.contains(activity.id) }
+        this.activities.forEach { currentActivity ->
+            val newActivity = newActivities.first { it.id==currentActivity.id }
+            currentActivity.activityNumber =  newActivity.activityNumber
+            currentActivity.startPeriod = newActivity.startPeriod
+            currentActivity.endPeriod = newActivity.endPeriod
+            currentActivity.updateDeliverables(newActivity.deliverables)
+            currentActivity.updateTranslations(newActivity.translatedValues)
+            currentActivity.updatePartners(newActivity.partners)
+        }
+        this.activities.addAll(newActivities.filter { it.id == 0L })
+    }
+}

@@ -1,6 +1,5 @@
 <app-main-page-template
         [needsCard]="true"
-        *ngxPermissionsOnly="Permission.APPLICANT_USER"
         titleKey="project.detail.new.title">
 
     <form appFormLayout *ngIf="callStore.call$ | async as call" [formGroup]="submissionForm">

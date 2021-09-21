@@ -11,17 +11,17 @@
                            [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
                            class="travel-budget-table">
 
-                    <ng-container sticky matColumnDef="unitCost">
+                    <ng-container matColumnDef="unitCost" sticky>
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.unitcosts.selection' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field appFormFieldWidth="full">
                                 <mat-select
-                                        (selectionChange)="onUnitCostChange($event, control, i)"
-                                        #unitCostSelect
-                                        [matTooltip]="unitCostSelect.triggerValue"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.unitCost"
-                                        [placeholder]="getUnitCost(control).value? '': 'common.not.applicable.option' | translate">
+                                    #unitCostSelect
+                                    (selectionChange)="onUnitCostChange($event, control, i)"
+                                    [formControlName]="constants.FORM_CONTROL_NAMES.unitCost"
+                                    [matTooltip]="unitCostSelect.triggerValue"
+                                    [placeholder]="getUnitCost(control).value? '': 'common.not.applicable.option' | translate">
                                     <mat-option
                                             [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
                                     <mat-option *ngFor="let unitCost of availableUnitCosts"
@@ -38,24 +38,28 @@
                             </mat-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
-                            <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            <ng-container *ngIf="columnsToDisplay[0]==='unitCost'">
+                                <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            </ng-container>
                         </mat-footer-cell>
                     </ng-container>
 
-                    <ng-container sticky matColumnDef="description">
+                    <ng-container matColumnDef="description" sticky>
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <div class="text-overflow-ellipsis" *ngIf="getUnitCost(control).value">
-                                {{getUnitCost(control).value.description | translateByInputLanguage | async}}
-                            </div>
-                            <app-multi-language-form-field
-                                    *ngIf="!getUnitCost(control).value"
-                                    [formControlName]="constants.FORM_CONTROL_NAMES.description">
-                            </app-multi-language-form-field>
+                            <ng-container *ngIf="fieldEnabled(control)">
+                                <div *ngIf="getUnitCost(control).value" class="text-overflow-ellipsis">
+                                    {{getUnitCost(control).value.description | translateByInputLanguage | async}}
+                                </div>
+                                <app-multi-language-form-field
+                                        *ngIf="!getUnitCost(control).value"
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.description">
+                                </app-multi-language-form-field>
+                            </ng-container>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
-                            <ng-container *ngIf="availableUnitCosts.length<=0">
+                            <ng-container *ngIf="columnsToDisplay[0]==='description'">
                                 <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
                             </ng-container>
                         </mat-footer-cell>
@@ -65,27 +69,33 @@
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <div class="text-overflow-ellipsis" *ngIf="getUnitCost(control).value">
-                                {{getUnitCost(control).value.type | translateByInputLanguage | async}}
-                            </div>
-                            <app-multi-language-form-field
-                                    *ngIf="!getUnitCost(control).value"
-                                    [maxLength]="constants.MAX_UNIT_TYPE_TEXT_LENGTH"
-                                    [formControlName]="constants.FORM_CONTROL_NAMES.unitType">
-                            </app-multi-language-form-field>
+                            <ng-container *ngIf="fieldEnabled(control)">
+                                <div *ngIf="getUnitCost(control).value" class="text-overflow-ellipsis">
+                                    {{getUnitCost(control).value.type | translateByInputLanguage | async}}
+                                </div>
+                                <app-multi-language-form-field
+                                        *ngIf="!getUnitCost(control).value"
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.unitType"
+                                        [maxLength]="constants.MAX_UNIT_TYPE_TEXT_LENGTH">
+                                </app-multi-language-form-field>
+                            </ng-container>
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef>
+                            <ng-container *ngIf="columnsToDisplay[0]==='unitType'">
+                                <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            </ng-container>
+                        </mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="numberOfUnits">
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.number.of.units' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field appFormFieldWidth="full">
-                                <input currencyMask
+                            <mat-form-field *ngIf="fieldEnabled(control)" appFormFieldWidth="full">
+                                <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
                                        [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
-                                       [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits" type="decimal"
-                                       matInput>
+                                       currencyMask matInput
+                                       type="decimal">
                             </mat-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -95,70 +105,85 @@
                         <mat-header-cell
                                 *matHeaderCellDef> {{'project.partner.budget.table.price.per.unit' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field appFormFieldWidth="full"
-                                            [class.mat-form-field-disabled]="getUnitCost(control).value">
-                                <input currencyMask
-                                       [readonly]="getUnitCost(control).value"
+                            <mat-form-field *ngIf="fieldEnabled(control)"
+                                            [class.mat-form-field-disabled]="getUnitCost(control).value"
+                                            appFormFieldWidth="full">
+                                <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
                                        [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
-                                       [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit" type="decimal"
-                                       matInput>
+                                       [readonly]="getUnitCost(control).value"
+                                       currencyMask matInput
+                                       type="decimal">
                             </mat-form-field>
                         </mat-cell>
-                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        <mat-footer-cell *matFooterCellDef>
+                            <ng-container *ngIf="columnsToDisplay[0]==='pricePerUnit'">
+                                <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
+                            </ng-container>
+                        </mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="total" stickyEnd>
-                        <mat-header-cell class="justify-end"
-                                         *matHeaderCellDef> {{'project.partner.budget.table.total' | translate}} </mat-header-cell>
-                        <mat-cell *matCellDef="let control;" class="justify-end"
-                                  [class.invalid]="control.get(constants.FORM_CONTROL_NAMES.rowSum).invalid">
-                            <div class="text-overflow-ellipsis">{{control.get(constants.FORM_CONTROL_NAMES.rowSum).value | asMoney}}</div>
+                        <mat-header-cell *matHeaderCellDef
+                                         class="justify-end"> {{'project.partner.budget.table.total' | translate}} </mat-header-cell>
+                        <mat-cell *matCellDef="let control;"
+                                  [class.invalid]="control.get(constants.FORM_CONTROL_NAMES.rowSum).invalid"
+                                  class="justify-end">
+                            <div *ngIf="fieldEnabled(control)" class="text-overflow-ellipsis">
+                                {{control.get(constants.FORM_CONTROL_NAMES.rowSum).value | asMoney}}
+                            </div>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef
-                                         class="justify-end"
-                                         [class.invalid]="total.invalid">
+                                         [class.invalid]="total.invalid"
+                                         class="justify-end">
                             <div class="text-overflow-ellipsis">{{total.value | asMoney}}</div>
                         </mat-footer-cell>
                     </ng-container>
 
                     <ng-container *ngFor="let period of projectPeriods; let j = index"
                                   matColumnDef="{{'period' + period.number}}">
-                        <mat-header-cell class="justify-end" *matHeaderCellDef>
+                        <mat-header-cell *matHeaderCellDef class="justify-end">
                             {{'project.partner.budget.table.period' | translate }} {{period.number}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let k = index" [formArrayName]="k">
-                            <mat-form-field [formArrayName]="constants.FORM_CONTROL_NAMES.budgetPeriods"
+                            <mat-form-field *ngIf="fieldEnabled(control)"
+                                            [formArrayName]="constants.FORM_CONTROL_NAMES.budgetPeriods"
                                             appFormFieldWidth="full">
                                 <ng-container [formGroupName]="j">
-                                    <input currencyMask type="decimal" matInput
-                                           [formControlName]="constants.FORM_CONTROL_NAMES.amount"
-                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.amount"
+                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                           currencyMask
+                                           matInput
+                                           type="decimal">
                                 </ng-container>
                             </mat-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef class="justify-end">
-                            <div class="text-overflow-ellipsis">{{periodTotal(period.number) | asMoney}} </div>
+                            <div class="text-overflow-ellipsis">{{items | periodsTotal :period.number | asMoney}} </div>
                         </mat-footer-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="openForPeriods">
-                        <mat-header-cell class="justify-end"
-                                         *matHeaderCellDef> {{'project.partner.budget.table.gap' | translate}}</mat-header-cell>
-                        <mat-cell *matCellDef="let control; let k = index" [formArrayName]="k" class="justify-end"
-                                  [class.allocation-warn]="openForPeriods(k).value !== 0">
-                            <div class="text-overflow-ellipsis">{{openForPeriods(k).value | asMoney}}</div>
+                        <mat-header-cell *matHeaderCellDef
+                                         class="justify-end"> {{'project.partner.budget.table.gap' | translate}}</mat-header-cell>
+                        <mat-cell *matCellDef="let control; let k = index"
+                                  [class.allocation-warn]="openForPeriods(k).value !== 0" [formArrayName]="k"
+                                  class="justify-end">
+                            <div *ngIf="fieldEnabled(control)" class="text-overflow-ellipsis">
+                                {{openForPeriods(k).value | asMoney}}
+                            </div>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                     </ng-container>
 
-                    <ng-container stickyEnd matColumnDef="action">
+                    <ng-container matColumnDef="action" stickyEnd>
                         <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                        <mat-cell class="justify-center" *matCellDef="let control;let index=index">
-                            <button *ngIf="editable" class="delete-button"
-                                    type="button"
-                                    tabindex="-1" mat-icon-button color="accent"
+                        <mat-cell *matCellDef="let control;let index=index" class="justify-end">
+                            <button (click)="removeItem(index)" *ngIf="editable"
+                                    class="delete-button"
+                                    color="accent" mat-icon-button
                                     matTooltip="{{'common.delete.entry.tooltip' | translate}}"
-                                    (click)="removeItem(index)">
+                                    tabindex="-1"
+                                    type="button">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </mat-cell>
@@ -171,10 +196,10 @@
 
                 </mat-table>
             </app-multi-language-container>
-            <mat-error class="mt-3" *ngIf="total.errors">
+            <mat-error *ngIf="total.errors" class="mt-3">
                 <app-form-field-errors
-                        [errors]="total.errors"
                         [args]="constants.FORM_ERRORS_ARGS.total"
+                        [errors]="total.errors"
                         [messages]="constants.FORM_ERRORS.total">
                 </app-form-field-errors>
             </mat-error>
@@ -183,15 +208,15 @@
 </ng-container>
 <ng-template #addTableButton>
     <p *ngIf="editable">
-        <button mat-raised-button color="primary"
-                (click)="addNewItem()">+ {{'project.partner.budget.button.add' | translate}}
+        <button (click)="addNewItem()" color="primary"
+                mat-raised-button>+ {{'project.partner.budget.button.add' | translate}}
         </button>
     </p>
 </ng-template>
 <ng-template #addItemButton let-numberOfItems>
-    <button *ngIf="editable" mat-icon-button type="button"
-            [disabled]="numberOfItems  >= constants.MAX_NUMBER_OF_ITEMS"
-            (click)="addNewItem()">
+    <button (click)="addNewItem()" *ngIf="editable" [disabled]="numberOfItems  >= constants.MAX_NUMBER_OF_ITEMS"
+            mat-icon-button
+            type="button">
         <mat-icon>add</mat-icon>
     </button>
 </ng-template>

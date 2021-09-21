@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.result.get_project_result
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
-import io.cloudflight.jems.server.project.service.result.model.ProjectResultTranslatedValue
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -18,9 +18,10 @@ class GetProjectResultTest: UnitTest() {
         resultNumber = 1,
         programmeResultIndicatorId = 74L,
         programmeResultIndicatorIdentifier = "DFG98",
+        baseline = BigDecimal.ZERO,
         targetValue = BigDecimal.TEN,
         periodNumber = 4,
-        translatedValues = setOf(ProjectResultTranslatedValue(language = EN, description = "EN desc")),
+        description = setOf(InputTranslation(language = EN, translation = "EN desc")),
     )
 
     @MockK
@@ -31,7 +32,7 @@ class GetProjectResultTest: UnitTest() {
 
     @Test
     fun getResultsForProject() {
-        every { persistence.getResultsForProject(1L) } returns listOf(result1)
-        assertThat(getProjectResult.getResultsForProject(1L)).containsExactly(result1.copy())
+        every { persistence.getResultsForProject(1L, null) } returns listOf(result1)
+        assertThat(getProjectResult.getResultsForProject(1L, null)).containsExactly(result1.copy())
     }
 }

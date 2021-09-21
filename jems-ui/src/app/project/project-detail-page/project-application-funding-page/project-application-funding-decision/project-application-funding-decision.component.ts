@@ -1,13 +1,14 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {FormBuilder, Validators} from '@angular/forms';
 import {tap} from 'rxjs/operators';
 import {ProjectFundingDecisionStore} from '../project-funding-decision-store.service';
-import {RoutingService} from '../../../../common/services/routing.service';
+import {RoutingService} from '@common/services/routing.service';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/internal/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {ProjectStepStatus} from '../../project-step-status';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-project-application-funding-decision',
@@ -16,11 +17,14 @@ import {ProjectStepStatus} from '../../project-step-status';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFundingDecisionComponent implements OnInit {
+  PermissionsEnum = PermissionsEnum;
 
   @Input()
   project: ProjectDetailDTO;
   @Input()
   status: ProjectStatusDTO;
+  @Input()
+  userCanChangeFunding = false;
   @Input()
   fundingDecision: ProjectStatusDTO;
   @Input()
@@ -41,9 +45,6 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
     matDatepickerMin: 'project.decision.date.must.be.after.eligibility.date',
     matDatepickerParse: 'common.date.should.be.valid'
   };
-  noteErrors = {
-    maxlength: 'project.decision.notes.too.long'
-  };
 
   decisionForm = this.formBuilder.group({
     status: ['', Validators.required],
@@ -60,6 +61,9 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
     this.decisionForm.controls.status.setValue(this.status?.status);
     this.decisionForm.controls.notes.setValue(this.status?.note);
     this.decisionForm.controls.decisionDate.setValue(this.status?.decisionDate);
+    if (this.project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT) {
+      this.decisionForm.disable();
+    }
   }
 
   onSubmit(): void {
@@ -68,12 +72,12 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
       .pipe(
         take(1),
         tap(() => this.actionPending = false),
-        tap(() => this.redirectToProject())
+        tap(() => this.redirectToAssessmentAndDecisions())
       ).subscribe();
   }
 
-  redirectToProject(): void {
-    this.router.navigate(['app', 'project', 'detail', this.project.id]);
+  redirectToAssessmentAndDecisions(): void {
+    this.router.navigate(['app', 'project', 'detail', this.project.id, 'assessmentAndDecision']);
   }
 
   private getDecisionAction(): Observable<string> {

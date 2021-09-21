@@ -10,7 +10,7 @@ fun ProgrammeUnitCost.toDto() = ProgrammeUnitCostDTO(
     description = description,
     type = type,
     costPerUnit = costPerUnit,
-    isOneCostCategory = isOneCostCategory,
+    oneCostCategory = isOneCostCategory,
     categories = categories
 )
 
@@ -30,6 +30,6 @@ fun ProgrammeUnitCostDTO.toModel() = ProgrammeUnitCost(
     description = description,
     type = type,
     costPerUnit = costPerUnit,
-    isOneCostCategory = isOneCostCategory,
+    isOneCostCategory = oneCostCategory,
     categories = categories
 )

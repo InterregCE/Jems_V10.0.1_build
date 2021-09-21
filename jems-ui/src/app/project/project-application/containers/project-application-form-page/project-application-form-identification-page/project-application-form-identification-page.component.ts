@@ -1,17 +1,19 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {combineLatest} from 'rxjs';
+import {combineLatest, of} from 'rxjs';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {map, mergeMap, tap} from 'rxjs/operators';
-import {Log} from '../../../../../common/utils/log';
+import {map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {Log} from '@common/utils/log';
 import {
   CallService,
   InputProjectData,
   OutputProgrammePrioritySimple,
-  ProgrammePriorityDTO,
+  ProgrammePriorityDTO, ProjectPartnerService,
   ProjectService
 } from '@cat/api';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
 
 @Component({
   selector: 'app-project-application-form-identification-page',
@@ -22,7 +24,7 @@ import {
 export class ProjectApplicationFormIdentificationPageComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  private callObjectives$ = this.projectStore.getProject()
+  private callObjectives$ = this.projectStore.project$
     .pipe(
       mergeMap(project => this.callService.getCallById(project.callSettings.callId)),
       map(call => call.objectives),
@@ -39,12 +41,14 @@ export class ProjectApplicationFormIdentificationPageComponent {
     );
 
   details$ = combineLatest([
-    this.projectStore.getProject(),
+    this.projectStore.project$,
+    this.projectStore.projectForm$,
     this.callObjectives$,
+    this.partnerStore.leadPartner$,
   ])
     .pipe(
       map(
-        ([project, callObjectives]) => ({project, callObjectives})
+        ([project, projectForm, callObjectives, leadPartner]) => ({project, projectForm, callObjectives, leadPartner})
       )
     );
 
@@ -52,6 +56,8 @@ export class ProjectApplicationFormIdentificationPageComponent {
               private projectApplicationFormStore: ProjectApplicationFormStore,
               private projectService: ProjectService,
               private activatedRoute: ActivatedRoute,
+              private partnerStore: ProjectPartnerStore,
+              private partnerService: ProjectPartnerService,
               private callService: CallService) {
     this.projectApplicationFormStore.init(this.projectId);
   }

@@ -1,6 +1,7 @@
 import {ProgrammeLumpSum} from './lump-sums/programmeLumpSum';
 import {ProgrammeUnitCost} from './programmeUnitCost';
 import {CallFlatRateSetting} from './call-flat-rate-setting';
+import {ApplicationFormFieldConfigurationDTO} from '@cat/api';
 
 export class ProjectCallSettings {
   callId: number;
@@ -13,8 +14,9 @@ export class ProjectCallSettings {
   lumpSums: Array<ProgrammeLumpSum>;
   unitCosts: Array<ProgrammeUnitCost>;
   multipleFundsAllowed: boolean;
+  applicationFormFieldConfigurations: Array<ApplicationFormFieldConfigurationDTO>;
 
-  constructor(callId: number, callName: string, startDate: Date, endDate: Date, endDateStep1: Date, lengthOfPeriod: number, flatRates: CallFlatRateSetting, lumpSums: Array<ProgrammeLumpSum>, unitCosts: Array<ProgrammeUnitCost>, multipleFundsAllowed: boolean) {
+  constructor(callId: number, callName: string, startDate: Date, endDate: Date, endDateStep1: Date, lengthOfPeriod: number, flatRates: CallFlatRateSetting, lumpSums: Array<ProgrammeLumpSum>, unitCosts: Array<ProgrammeUnitCost>, multipleFundsAllowed: boolean, applicationFormFieldConfigurations: Array<ApplicationFormFieldConfigurationDTO>) {
     this.callId = callId;
     this.callName = callName;
     this.startDate = startDate;
@@ -25,5 +27,6 @@ export class ProjectCallSettings {
     this.lumpSums = lumpSums;
     this.unitCosts = unitCosts;
     this.multipleFundsAllowed = multipleFundsAllowed;
+    this.applicationFormFieldConfigurations = applicationFormFieldConfigurations;
   }
 }

@@ -18,9 +18,8 @@ const val FIELD_USER_ID = "id"
 const val FIELD_USER_EMAIL = "email"
 const val FIELD_PROJECT = "project"
 const val FIELD_PROJECT_ID = "id"
+const val FIELD_PROJECT_CUSTOM_IDENTIFIER = "customIdentifier"
 const val FIELD_PROJECT_NAME = "name"
-const val TIME_FROM = "timeFrom"
-const val TIME_TO = "timeTo"
 private const val FIELD_ENTITY_RELATED_ID = "entityRelatedId"
 private const val FIELD_DESCRIPTION = "description"
 
@@ -43,6 +42,7 @@ fun Audit.toElasticsearchEntity(): XContentBuilder {
     if (project != null) {
         entityBuilder.startObject(FIELD_PROJECT)
             .field(FIELD_PROJECT_ID, project.id)
+            .field(FIELD_PROJECT_CUSTOM_IDENTIFIER, project.customIdentifier)
             .field(FIELD_PROJECT_NAME, project.name)
             .endObject()
     }
@@ -56,6 +56,7 @@ private fun SearchHit.toModel(): Audit {
     if (!projectSourceAsMap.isNullOrEmpty())
         project = AuditProject(
             id = projectSourceAsMap.getOrDefault(FIELD_PROJECT_ID, "") as String,
+            customIdentifier = projectSourceAsMap.getOrDefault(FIELD_PROJECT_CUSTOM_IDENTIFIER, null) as String?,
             name = projectSourceAsMap.getOrDefault(FIELD_PROJECT_NAME, null) as String?
         )
 

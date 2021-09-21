@@ -93,6 +93,6 @@ class AuthenticationServiceTest {
         val currentUser = authenticationService.getCurrentUser()
 
         assertThat(currentUser.name).isEqualTo("")
-        assertThat(currentUser.role).isEqualTo(UserRoleDTO(name = "", permissions = emptyList()))
+        assertThat(currentUser.role).isEqualTo(UserRoleDTO(name = "", permissions = emptyList(), defaultForRegisteredUser = false))
     }
 }

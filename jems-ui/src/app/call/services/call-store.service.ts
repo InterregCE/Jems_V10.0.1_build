@@ -1,20 +1,19 @@
 import {Injectable} from '@angular/core';
 import {
   CallDetailDTO,
-  CallDTO,
   CallService,
-  CallUpdateRequestDTO,
   FlatRateSetupDTO,
   ProgrammeCostOptionService,
   ProgrammeLumpSumListDTO,
-  ProgrammeUnitCostListDTO
+  ProgrammeUnitCostListDTO,
+  UserRoleCreateDTO
 } from '@cat/api';
 import {merge, Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {PermissionService} from '../../security/permissions/permission.service';
-import {Permission} from '../../security/permissions/permission';
-import {RoutingService} from '../../common/services/routing.service';
+import {RoutingService} from '@common/services/routing.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable()
 export class CallStore {
@@ -23,45 +22,24 @@ export class CallStore {
   call$: Observable<CallDetailDTO>;
   unitCosts$: Observable<ProgrammeUnitCostListDTO[]>;
   lumpSums$: Observable<ProgrammeLumpSumListDTO[]>;
-  isApplicant$: Observable<boolean>;
+  userCanApply$: Observable<boolean>;
+  callIsReadable$: Observable<boolean>;
+  callIsEditable$: Observable<boolean>;
+  callIsPublished$: Observable<boolean>;
 
-  private savedCall$ = new Subject<CallDetailDTO>();
+  savedCall$ = new Subject<CallDetailDTO>();
 
   constructor(private callService: CallService,
               private programmeCostOptionService: ProgrammeCostOptionService,
               private permissionService: PermissionService,
               private router: RoutingService) {
-    this.isApplicant$ = this.permissionService.permissionsChanged()
-      .pipe(
-        map(permissions => permissions.some(perm => perm === Permission.APPLICANT_USER)),
-        shareReplay(1)
-      );
     this.call$ = this.call();
     this.unitCosts$ = this.unitCosts();
     this.lumpSums$ = this.lumpSums();
-  }
-
-  saveCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
-    return this.callService.updateCall(call)
-      .pipe(
-        tap(saved => this.savedCall$.next(saved)),
-        tap(saved => Log.info('Updated call:', this, saved))
-      );
-  }
-
-  createCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
-    return this.callService.createCall(call)
-      .pipe(
-        tap(created => this.savedCall$.next(created)),
-        tap(created => Log.info('Created call:', this, created)),
-      );
-  }
-
-  publishCall(callId: number): Observable<CallDTO> {
-    return this.callService.publishCall(callId)
-      .pipe(
-        tap(saved => Log.info('Published call:', this, saved))
-      );
+    this.userCanApply$ = this.permissionService.hasPermission(PermissionsEnum.ProjectCreate);
+    this.callIsEditable$ = this.permissionService.hasPermission(PermissionsEnum.CallUpdate);
+    this.callIsReadable$ = this.permissionService.hasPermission(PermissionsEnum.CallRetrieve);
+    this.callIsPublished$ = this.callIsPublished();
   }
 
   saveFlatRates(flatRates: FlatRateSetupDTO): Observable<CallDetailDTO> {
@@ -112,6 +90,13 @@ export class CallStore {
     return this.programmeCostOptionService.getProgrammeLumpSums()
       .pipe(
         tap(list => Log.info('Fetched the Lump Sums:', this, list))
+      );
+  }
+
+  private callIsPublished(): Observable<boolean> {
+    return this.call$
+      .pipe(
+        map(call => call?.status === CallDetailDTO.StatusEnum.PUBLISHED)
       );
   }
 }

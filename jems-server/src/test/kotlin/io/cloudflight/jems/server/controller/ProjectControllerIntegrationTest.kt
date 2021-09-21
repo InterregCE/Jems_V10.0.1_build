@@ -1,8 +1,9 @@
 package io.cloudflight.jems.server.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.jems.api.project.dto.InputProject
+import io.cloudflight.jems.api.project.dto.ProjectCreateDTO
 import io.cloudflight.jems.server.factory.CallFactory
+import io.cloudflight.jems.server.factory.ProgrammeDataFactory
 import io.cloudflight.jems.server.factory.UserFactory
 import io.cloudflight.jems.server.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
 import net.bytebuddy.utility.RandomString
@@ -28,17 +29,22 @@ class ProjectControllerIntegrationTest {
     private lateinit var callFactory: CallFactory
 
     @Autowired
+    private lateinit var programmeDataFactory: ProgrammeDataFactory
+
+    @Autowired
     private lateinit var userFactory: UserFactory
 
     @Autowired
     private lateinit var jsonMapper: ObjectMapper
 
+
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
-    fun `project created`() {
-        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
-        val inputProject = InputProject(acronym = "acronym", projectCallId = call.id)
 
+    fun `project created`() {
+        programmeDataFactory.saveProgrammeData()
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
+        val inputProject = ProjectCreateDTO(acronym = "acronym", projectCallId = call.id)
         mockMvc.perform(
             post("/api/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -52,34 +58,36 @@ class ProjectControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project create fails with missing required fields`() {
-        val inputProject = InputProject(null, null)
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
+        val inputProject = ProjectCreateDTO("", call.id)
 
         mockMvc.perform(
             post("/api/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(inputProject))
         )
-            .andExpect(status().isBadRequest)
+            .andExpect(status().isUnprocessableEntity)
             .andExpect(
                 jsonPath("$.formErrors.acronym.i18nKey")
-                    .value("project.acronym.should.not.be.empty")
+                    .value("common.error.field.blank")
             )
     }
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `project create fails with invalid fields`() {
-        val inputProject = InputProject(RandomString.make(26), null)
+        val call = callFactory.savePublishedCallWithoutPolicy(userFactory.adminUser)
+        val inputProject = ProjectCreateDTO(RandomString.make(26), call.id)
 
         mockMvc.perform(
             post("/api/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(inputProject))
         )
-            .andExpect(status().isBadRequest)
+            .andExpect(status().isUnprocessableEntity)
             .andExpect(
                 jsonPath("$.formErrors.acronym.i18nKey")
-                    .value("project.acronym.size.too.long")
+                    .value("common.error.field.max.length")
             )
     }
 }

@@ -3,7 +3,7 @@ import {ProjectStore} from '../../project-application/containers/project-applica
 import {Observable} from 'rxjs';
 import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO, ProjectStatusService} from '@cat/api';
 import {map, tap} from 'rxjs/operators';
-import {Log} from '../../../common/utils/log';
+import {Log} from '@common/utils/log';
 
 @Injectable()
 export class ProjectEligibilityDecisionStore {
@@ -12,7 +12,7 @@ export class ProjectEligibilityDecisionStore {
 
   constructor(private projectStore: ProjectStore,
               private projectStatusService: ProjectStatusService) {
-    this.project$ = this.projectStore.getProject();
+    this.project$ = this.projectStore.project$;
   }
 
   eligibilityDecision(step: number | undefined): Observable<ProjectStatusDTO> {

@@ -1,15 +1,16 @@
 package io.cloudflight.jems.server.factory
 
-import io.cloudflight.jems.server.user.entity.UserEntity
-import io.cloudflight.jems.server.user.entity.UserRoleEntity
-import io.cloudflight.jems.server.user.repository.user.UserRepository
-import io.cloudflight.jems.server.user.repository.userrole.UserRoleRepository
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.authentication.model.APPLICANT_USER
 import io.cloudflight.jems.server.authentication.model.PROGRAMME_USER
+import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.entity.UserRolePermissionEntity
 import io.cloudflight.jems.server.user.entity.UserRolePermissionId
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.userrole.UserRolePermissionRepository
+import io.cloudflight.jems.server.user.repository.userrole.UserRoleRepository
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
@@ -20,6 +21,7 @@ class UserFactory(
     val userRepository: UserRepository,
     val userRoleRepository: UserRoleRepository,
     val userRolePermissionRepository: UserRolePermissionRepository,
+    val programmeDataPersistence: ProgrammeDataPersistence,
     val passwordEncoder: PasswordEncoder
 ) {
 
@@ -28,7 +30,11 @@ class UserFactory(
     val applicantUser: UserEntity = saveApplicantUser(APPLICANT_USER_EMAIL)
 
     @Transactional
-    fun saveRole(roleName: String, permissions: List<UserRolePermission> = emptyList()): UserRoleEntity {
+    fun saveRole(
+        roleName: String,
+        permissions: List<UserRolePermission> = emptyList(),
+        isDefault: Boolean = false
+    ): UserRoleEntity {
         var role = userRoleRepository.findByName(roleName).orElse(null)
         if (role != null)
             return role
@@ -50,6 +56,9 @@ class UserFactory(
                     UserRolePermissionEntity(UserRolePermissionId(role, UserRolePermission.AuditRetrieve))
                 )
             }
+        }
+        if (isDefault) {
+            programmeDataPersistence.updateDefaultUserRole(role.id)
         }
 
         return role

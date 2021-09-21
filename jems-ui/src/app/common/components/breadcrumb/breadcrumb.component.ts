@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, NavigationExtras, QueryParamsHandling} from '@angular/router';
 import {Breadcrumb} from '@common/components/breadcrumb/breadcrumb';
 import {takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
+import {RoutingService} from '@common/services/routing.service';
 
 @Component({
   selector: 'app-breadcrumb',
@@ -14,7 +15,8 @@ export class BreadcrumbComponent extends BaseComponent implements OnInit {
 
   breadcrumbs: Breadcrumb[] = [];
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute,
+              private routingService: RoutingService) {
     super();
   }
 
@@ -26,26 +28,34 @@ export class BreadcrumbComponent extends BaseComponent implements OnInit {
       ).subscribe();
   }
 
-  private buildBreadcrumbs(route: ActivatedRoute, url: string, previous: Breadcrumb[] = []): Breadcrumb[] {
+  navigate(url: string, extras: NavigationExtras): void {
+    this.routingService.navigate([url], extras);
+  }
+
+  private buildBreadcrumbs(route: ActivatedRoute,
+                           url: string,
+                           previous: Breadcrumb[] = [],
+                           paramsHandling?: string): Breadcrumb[] {
     let newBreadcrumbs = previous;
     let nextUrl = url;
 
     const data = route.routeConfig?.data;
-
+    const queryParamsHandling = data?.queryParamsHandling || paramsHandling || '';
     if (data) {
       nextUrl = `${url}/${this.extractPathFrom(route)}`;
       if (!data.skipBreadcrumb) {
         const breadcrumb = {
           i18nKey: !data.dynamicBreadcrumb && data.breadcrumb,
           dynamicValue: data.dynamicBreadcrumb && route.snapshot?.data?.breadcrumb$,
-          url: nextUrl
+          url: nextUrl,
+          queryParamsHandling
         };
         newBreadcrumbs = [...newBreadcrumbs, breadcrumb];
       }
     }
 
     if (route.firstChild) {
-      return this.buildBreadcrumbs(route.firstChild, nextUrl, newBreadcrumbs);
+      return this.buildBreadcrumbs(route.firstChild, nextUrl, newBreadcrumbs, queryParamsHandling);
     }
 
     return newBreadcrumbs;

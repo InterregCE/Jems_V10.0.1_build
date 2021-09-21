@@ -1,16 +1,15 @@
 package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationCreate
-import io.cloudflight.jems.api.project.dto.InputProjectContact
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationUpdate
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerContact
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.TranslationOrganizationId
@@ -23,11 +22,11 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationTransl
-import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
-import io.cloudflight.jems.server.project.repository.partner.toOutputProjectPartner
+import io.cloudflight.jems.server.project.repository.partner.toModel
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 
-fun InputProjectAssociatedOrganizationCreate.toEntity(
+fun InputProjectAssociatedOrganization.toEntity(
     partner: ProjectPartnerEntity
 ) = ProjectAssociatedOrganization(
     project = partner.project,
@@ -39,21 +38,7 @@ fun InputProjectAssociatedOrganizationCreate.toEntity(
     // contacts - need organization Id
 )
 
-fun InputProjectAssociatedOrganizationCreate.combineTranslatedValues(
-    organizationId: Long
-): MutableSet<ProjectAssociatedOrganizationTransl> {
-    val roleDescriptionMap = roleDescription.associateBy( { it.language }, { it.translation } )
-    val languages = roleDescriptionMap.keys.toMutableSet()
-
-    return languages.mapTo(HashSet()) {
-        ProjectAssociatedOrganizationTransl(
-            TranslationOrganizationId(organizationId, it),
-            roleDescriptionMap[it]
-        )
-    }
-}
-
-fun InputProjectAssociatedOrganizationUpdate.combineTranslatedValues(
+fun InputProjectAssociatedOrganization.combineTranslatedValues(
     organizationId: Long
 ): MutableSet<ProjectAssociatedOrganizationTransl> {
     val roleDescriptionMap = roleDescription.associateBy( { it.language }, { it.translation } )
@@ -99,7 +84,7 @@ fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganization() = Outp
 
 fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganizationDetail() = OutputProjectAssociatedOrganizationDetail(
     id = id,
-    partner = partner.toOutputProjectPartner(),
+    partner = partner.toModel().toDto(),
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
     sortNumber = sortNumber,
@@ -108,7 +93,7 @@ fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganizationDetail() 
     roleDescription = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.roleDescription) }
 )
 
-fun Set<InputProjectContact>.toEntity(organizationId: Long): MutableSet<ProjectAssociatedOrganizationContact> = mapTo(HashSet()) {
+fun Set<ProjectContactDTO>.toEntity(organizationId: Long): MutableSet<ProjectAssociatedOrganizationContact> = mapTo(HashSet()) {
     ProjectAssociatedOrganizationContact(
         contactId = ProjectAssociatedOrganizationContactId(organizationId, it.type),
         contact = Contact(
@@ -121,7 +106,7 @@ fun Set<InputProjectContact>.toEntity(organizationId: Long): MutableSet<ProjectA
     )
 }
 
-fun ProjectAssociatedOrganizationContact.toOutputProjectAssociatedOrganizationContact() = OutputProjectPartnerContact(
+fun ProjectAssociatedOrganizationContact.toOutputProjectAssociatedOrganizationContact() = ProjectPartnerContactDTO(
     type = contactId.type,
     title = contact?.title,
     firstName = contact?.firstName,
@@ -142,12 +127,12 @@ fun ProjectAssociatedOrganizationAddress.toOutputProjectAssociatedOrganizationDe
 )
 
 fun List<ProjectAssociatedOrganizationRow>.toAssociatedOrganizationDetailHistoricalData(
-    partner: OutputProjectPartner,
+    partner: ProjectPartnerSummary,
     address: OutputProjectAssociatedOrganizationAddress?,
-    contacts: List<OutputProjectPartnerContact>) =
+    contacts: List<ProjectPartnerContactDTO>) =
     this.groupBy { it.id }.map { groupedRows -> OutputProjectAssociatedOrganizationDetail(
         id = groupedRows.value.first().id,
-        partner = partner,
+        partner = partner.toDto(),
         nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
         nameInEnglish = groupedRows.value.first().nameInEnglish,
         sortNumber = groupedRows.value.first().sortNumber,
@@ -180,7 +165,7 @@ fun AssociatedOrganizationSimpleRow.toOutputAssociatedOrganizationHistoricalData
 
 fun Collection<AssociatedOrganizationContactRow>.toAssociatedOrganizationContactHistoricalData() = map { it.toModel() }.toList()
 
-fun AssociatedOrganizationContactRow.toModel() = OutputProjectPartnerContact(
+fun AssociatedOrganizationContactRow.toModel() = ProjectPartnerContactDTO(
     type = type,
     title = title,
     firstName = firstName,

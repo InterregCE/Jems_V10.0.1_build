@@ -1,0 +1,27 @@
+<app-project-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
+                           titleKey="project.application.form.section.part.c"
+                           subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
+    <nav mat-tab-nav-bar
+         *ngIf="workPackageId">
+        <a [active]="activeTab('objectives')" mat-tab-link
+           (click)="routeTo('objectives')">
+            {{'workpackage.tab.objectives' | translate}}
+        </a>
+        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS"
+           [active]="activeTab('investments')" mat-tab-link
+           (click)="routeTo('investments')">
+            {{'workpackage.tab.investments' | translate}}
+        </a>
+        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES"
+           [active]="activeTab('activities')" mat-tab-link
+           (click)="routeTo('activities')">
+            {{'workpackage.tab.activities' | translate}}
+        </a>
+        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS"
+           [active]="activeTab('outputs')" mat-tab-link
+           (click)="routeTo('outputs')">
+            {{'workpackage.tab.outputs' | translate}}
+        </a>
+    </nav>
+    <router-outlet></router-outlet>
+</app-project-page-template>

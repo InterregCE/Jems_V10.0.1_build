@@ -1,0 +1,166 @@
+<form id="stateAids" appFormLayout [formGroup]="stateAidForm">
+    <div>
+        <h3 class="mb-2">{{'programme.state.aid.list.title' | translate}}</h3>
+        <button color="primary" mat-raised-button
+                *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length > 0"
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'common.edit.label' | translate}}
+        </button>
+        <button mat-stroked-button
+                *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length == 0"
+                (click)="addNewStateAidAndChangeFormState()">
+            <mat-icon>add</mat-icon>&nbsp;{{ 'programme.state.aid.add' | translate }}
+        </button>
+    </div>
+    <app-multi-language-container
+                *ngIf="stateAids.length > 0 || (changeFormState$ | async) !== FormState.VIEW"
+                appNoWidthLimit [useSystemLanguages]="true"
+                [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
+        <div [appTableConfig]="[{minInRem: 17},{minInRem: 15},{minInRem: 21},{minInRem: 7},{maxInRem: 5},{minInRem: 10},{minInRem: 10},{maxInRem: 5}]">
+            <div>
+                <span class="mat-body-strong">{{ 'programme.state.aid.list.measure' | translate }}</span>
+                <span class="mat-body-strong">{{ 'programme.state.aid.list.name' | translate }}</span>
+                <div class="mat-body-strong">
+                    {{ 'programme.state.aid.list.abbreviated.name' | translate }}
+                    <app-context-info
+                            infoText="{{'programme.state.aid.list.abbreviated.name.info' | translate}}"
+                            infoPosition="right">
+                    </app-context-info>
+                </div>
+                <span class="mat-body-strong">{{ 'programme.state.aid.list.gber.scheme.number' | translate }}</span>
+                <span class="mat-body-strong">{{ 'programme.state.aid.list.maximum.intensity' | translate }}</span>
+                <div class="mat-body-strong">
+                    {{ 'programme.state.aid.list.threshold' | translate }}
+                    <app-context-info
+                            infoText="{{'programme.state.aid.list.threshold.info' | translate}}"
+                            infoPosition="right">
+                    </app-context-info>
+                </div>
+
+                <span class="mat-body-strong">{{ 'programme.state.aid.list.comments' | translate }}</span>
+                <span class="mat-body-strong"
+                      *ngIf="(changeFormState$ | async) === FormState.EDIT">{{ 'common.delete.entry.tooltip' | translate }}</span>
+            </div>
+
+            <div *ngFor="let stateAid of stateAidsForm.controls; let i = index">
+                <ng-container formArrayName="stateAids">
+                    <ng-container [formGroupName]="i">
+                        <mat-form-field >
+                            <input name="measure" formControlName="measure" matInput required
+                                   [matAutocomplete]="measure"
+                                   (focusout)="selectionUnfocused($event, stateAid)">
+                            <mat-autocomplete #measure="matAutocomplete"
+                                              (optionSelected)="relationChanged($event.option?.value, stateAid)" [displayWith]="displayFn">
+                                <mat-option *ngFor="let relation of filteredStateAidMeasureValues(i)" [value]="relation">
+                                    {{relation.measureDisplayValue}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <mat-error>
+                                <app-form-field-errors
+                                        [errors]="stateAid.get('measure')?.errors">
+                                </app-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <app-multi-language-form-field
+                                formControlName="name"
+                                maxLength="250"
+                                minRows="5"
+                                type="textarea"
+                                [useFallBackLanguage]="true">
+                        </app-multi-language-form-field>
+
+                        <app-multi-language-form-field
+                                formControlName="abbreviatedName"
+                                maxLength="50"
+                                [useFallBackLanguage]="true">
+                        </app-multi-language-form-field>
+
+                        <mat-form-field>
+                            <input #schemeNumberInput name="schemeNumber" formControlName="schemeNumber" matInput>
+                            <mat-hint [appHintFor]="schemeNumberInput" [hide]="stateAid.get('schemeNumber')?.errors !== null">
+                                <app-text-hint [currentLength]="schemeNumberInput?.value?.length" [maxLength]="25"></app-text-hint>
+                            </mat-hint>
+                            <mat-error>
+                                <app-form-field-errors
+                                        [errors]="stateAid.get('schemeNumber')?.errors">
+                                </app-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field class="text-right">
+                            <input currencyMask type="decimal" [options]="{nullable: true, min: 0, max: 100, align: 'right'}"
+                                   name="maxIntensity" formControlName="maxIntensity"
+                                   matInput>
+                            <div matSuffix class="pl-1">%</div>
+                            <mat-error>
+                                <app-form-field-errors
+                                        [errors]="stateAid.get('maxIntensity')?.errors">
+                                </app-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field>
+                            <input currencyMask type="decimal" [options]="{nullable: true}"
+                                   name="threshold" formControlName="threshold" matInput>
+                            <mat-error>
+                                <app-form-field-errors
+                                        [errors]="stateAid.get('threshold')?.errors">
+                                </app-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <app-multi-language-form-field
+                                formControlName="comments"
+                                maxLength="500"
+                                [useFallBackLanguage]="true">
+                        </app-multi-language-form-field>
+
+                        <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
+                            <button mat-icon-button color="accent"
+                                    type="button"
+                                    [disabled]="isProgrammeSetupRestricted ? !!stateAid.get('id').value : false"
+                                    matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                                    (click)="deleteStateAid(i, stateAid.get('id').value)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+
+                    </ng-container>
+                </ng-container>
+            </div>
+            <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
+                <div>
+                    <button mat-icon-button
+                            *ngIf="addStateAidVisible()"
+                            type="button"
+                            (click)="addNewStateAid()">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </app-multi-language-container>
+    <div appMultiColumnRow *ngIf="(changeFormState$ | async) === FormState.EDIT">
+        <button mat-stroked-button type="button"
+                (click)="resetForm()">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button color="primary" type="button"
+                [disabled]="submitted || !stateAidForm.valid"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+    <app-alert
+            [show]="!submitted && (showSuccessMessage$ | async)"
+            [type]="Alert.SUCCESS">
+        <p *ngIf="success$ | async as successMessage">{{successMessage | translate}}</p>
+    </app-alert>
+    <app-alert *ngIf="error$ | async as error"
+               [show]="!submitted && !!error.i18nMessage?.i18nKey"
+               [type]="Alert.ERROR">
+        <app-api-error-content [error]="error"></app-api-error-content>
+    </app-alert>
+
+</form>

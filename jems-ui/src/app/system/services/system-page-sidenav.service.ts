@@ -1,15 +1,14 @@
 import {Injectable} from '@angular/core';
 import {SideNavService} from '@common/components/side-nav/side-nav.service';
-import {RoutingService} from '../../common/services/routing.service';
-import {filter, map, startWith, switchMap, tap} from 'rxjs/operators';
+import {RoutingService} from '@common/services/routing.service';
+import {filter, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PermissionService} from '../../security/permissions/permission.service';
-import {combineLatest, of, Subject} from 'rxjs';
+import {combineLatest} from 'rxjs';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
-import {UserRoleDTO, UserRoleService, UserRoleSummaryDTO} from '@cat/api';
-import {Tables} from '../../common/utils/tables';
-import {Log} from '../../common/utils/log';
-import {UserRoleStore} from '../user-page-role/user-role-detail-page/user-role-store.service';
+import {UserRoleDTO, UserRoleSummaryDTO} from '@cat/api';
+import {UserRoleDetailPageStore} from '../user-page-role/user-role-detail-page/user-role-detail-page-store.service';
+import {RoleStore} from './role-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -17,41 +16,27 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 export class SystemPageSidenavService {
   public static SYSTEM_DETAIL_PATH = '/app/system';
 
-  rolesChanged$ = new Subject<void>();
 
   constructor(private sideNavService: SideNavService,
               private routingService: RoutingService,
               private permissionService: PermissionService,
-              private roleService: UserRoleService) {
+              private roleStore: RoleStore) {
+    const systemPath$ = this.routingService.routeChanges(SystemPageSidenavService.SYSTEM_DETAIL_PATH)
+      .pipe(
+        filter(systemPath => systemPath)
+      );
+
     combineLatest([
-      this.routing$,
+      systemPath$,
       this.permissionService.permissionsChanged(),
-      this.roles$
+      this.roleStore.roles$
     ]).pipe(
-      tap(([routing, permissions, roles]) =>
+      filter(([systemPath]) => systemPath),
+      tap(([systemPath, permissions, roles]) =>
         this.setHeadlines(permissions as PermissionsEnum[], roles)),
       untilDestroyed(this)
     ).subscribe();
   }
-
-  private routing$ = this.routingService.routeChanges(SystemPageSidenavService.SYSTEM_DETAIL_PATH)
-    .pipe(
-      filter(systemPath => systemPath)
-    );
-
-  private roles$ = combineLatest([
-    this.permissionService.permissionsChanged(),
-    this.rolesChanged$.pipe(startWith(null))
-  ]).pipe(
-    switchMap(([perms]) =>
-      perms.includes(PermissionsEnum.RoleRetrieve) ? this.roleService.list(
-        Tables.DEFAULT_INITIAL_PAGE_INDEX,
-        Tables.DEFAULT_INITIAL_PAGE_SIZE,
-        Tables.DEFAULT_INITIAL_SORT.active
-      ) : of({content: []})),
-    map(page => page?.content),
-    tap(roles => Log.info('Fetched roles for sidenav', this, roles))
-  );
 
   private setHeadlines(permissions: PermissionsEnum[], roles: UserRoleSummaryDTO[]): void {
     const bulletsArray: HeadlineRoute[] = [];
@@ -68,19 +53,22 @@ export class SystemPageSidenavService {
         bullets: [{
           headline: {i18nKey: 'topbar.main.user.user.management'},
           route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/user`,
+          baseRoute: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/user`,
           scrollToTop: true,
-        }]
+        } as HeadlineRoute ]
       };
       if (permissions.includes(PermissionsEnum.RoleRetrieve)) {
         const rolesHeadline = {
           headline: {i18nKey: 'topbar.main.user.role.management'},
-          route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/userRole`,
+          route: `${SystemPageSidenavService.SYSTEM_DETAIL_PATH}/role`,
           scrollToTop: true,
           bullets: roles.map(role => ({
             headline: {i18nKey: role.name},
-            route: `${UserRoleStore.USER_ROLE_DETAIL_PATH}/${role.id}`,
-            scrollToTop: true
-          }))
+            route: `${UserRoleDetailPageStore.USER_ROLE_DETAIL_PATH}/${role.id}`,
+            scrollToTop: true,
+            badgeText: role.defaultForRegisteredUser && 'userRole.default.flag',
+            badgeTooltip: 'userRole.default.flag.info',
+          } as HeadlineRoute))
         };
         userManagementHeadline.bullets.push(rolesHeadline);
       }
@@ -94,5 +82,4 @@ export class SystemPageSidenavService {
       },
     ]);
   }
-
 }

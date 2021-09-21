@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.call.service.update_call_unit_costs
 
-import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
+import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callUpdated
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -16,7 +16,7 @@ class UpdateCallUnitCosts(
 ) : UpdateCallUnitCostsInteractor {
 
     @Transactional
-    @CanUpdateCalls
+    @CanUpdateCall
     @ExceptionWrapper(UpdateCallUnitCostsExceptions::class)
     override fun updateUnitCosts(callId: Long, unitCostIds: Set<Long>): CallDetail {
         validateAllUnitCostsExists(unitCostIds) { persistence.existsAllProgrammeUnitCostsByIds(it) }

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.controller.partner.budget
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
@@ -69,17 +70,23 @@ class ProjectPartnerBudgetController(
     override fun updateBudgetExternal(partnerId: Long, externals: List<BudgetGeneralCostEntryDTO>) =
         updateBudgetExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(
             partnerId,
-            externals.toBudgetGeneralCostEntryList()
+            externals.toBudgetGeneralCostEntryList(),
+            BudgetCategory.ExternalCosts
         ).toBudgetGeneralCostsEntryDTOList()
 
     override fun updateBudgetEquipment(partnerId: Long, equipment: List<BudgetGeneralCostEntryDTO>) =
-        updateBudgetEquipmentCosts.updateBudgetGeneralCosts(partnerId, equipment.toBudgetGeneralCostEntryList())
+        updateBudgetEquipmentCosts.updateBudgetGeneralCosts(
+            partnerId,
+            equipment.toBudgetGeneralCostEntryList(),
+            BudgetCategory.EquipmentCosts
+        )
             .toBudgetGeneralCostsEntryDTOList()
 
     override fun updateBudgetInfrastructure(partnerId: Long, infrastructures: List<BudgetGeneralCostEntryDTO>) =
         updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(
             partnerId,
-            infrastructures.toBudgetGeneralCostEntryList()
+            infrastructures.toBudgetGeneralCostEntryList(),
+            BudgetCategory.InfrastructureCosts
         ).toBudgetGeneralCostsEntryDTOList()
 
     override fun updateBudgetUnitCosts(partnerId: Long, unitCosts: List<BudgetUnitCostEntryDTO>) =

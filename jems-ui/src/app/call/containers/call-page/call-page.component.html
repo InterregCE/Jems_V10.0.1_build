@@ -2,7 +2,7 @@
 
     <h2 page-sub-title> {{'call.list.header' | translate}}</h2>
 
-    <button *ngxPermissionsExcept="Permission.APPLICANT_USER" mat-raised-button color="primary"
+    <button *hasPermission="PermissionsEnum.CallUpdate" mat-raised-button color="primary"
             [routerLink]="'/app/call/create'">
         + {{'call.add.new' | translate}}
     </button>
@@ -12,6 +12,6 @@
             <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
         </div>
     </div>
-    <app-call-list appNoWidthLimit [isApplicant]="false"></app-call-list>
+    <app-call-list appNoWidthLimit [publishedCallsOnly]="false"></app-call-list>
 
 </app-main-page-template>

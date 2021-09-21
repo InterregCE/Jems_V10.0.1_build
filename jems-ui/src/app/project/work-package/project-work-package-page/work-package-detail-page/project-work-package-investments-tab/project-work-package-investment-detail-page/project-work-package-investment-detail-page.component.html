@@ -1,0 +1,176 @@
+<app-project-page-template
+        *ngIf="data$ | async as data"
+        titleKey="project.application.form.section.part.c"
+        subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{data.workPackageNumber}}">
+    <app-form (save)="onSubmit()"
+              (discard)="discard(data.investment, data.workPackageNumber)">
+        <form appFormLayout [formGroup]="workPackageInvestmentForm">
+
+            <h3>{{'project.application.form.workpackage.investment.form.title' | translate}}
+                <span *ngIf="data.investment.investmentNumber">
+                    {{data.workPackageNumber}}.{{data.investment.investmentNumber}}
+            </span>
+            </h3>
+
+            <mat-form-field>
+                <mat-label>{{'project.application.form.workpackage.investment.number' | translate}}</mat-label>
+                <input name="number" formControlName="number" matInput>
+            </mat-form-field>
+
+            <app-multi-language-container
+                    *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE">
+                <app-multi-language-form-field
+                        label="project.application.form.workpackage.investment.title"
+                        [formControlName]="constants.TITLE.name"
+                        [maxLength]="constants.TITLE.maxLength">
+                </app-multi-language-form-field>
+            </app-multi-language-container>
+
+            <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION">
+
+                <h4>{{'project.application.form.workpackage.investment.justification' | translate}}</h4>
+
+                <ng-container
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION.WHY_IS_INVESTMENT_NEEDED">
+                    <p>{{'project.application.form.workpackage.investment.justification.explanation' | translate}}</p>
+                    <app-multi-language-container>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="constants.JUSTIFICATION_EXPLANATION.name"
+                                [maxLength]="constants.JUSTIFICATION_EXPLANATION.maxLength">
+                        </app-multi-language-form-field>
+                    </app-multi-language-container>
+                </ng-container>
+
+                <ng-container
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION.CROSS_BORDER_TRANSNATIONAL_RELEVANCE_OF_INVESTMENT">
+                    <p>{{'project.application.form.workpackage.investment.justification.transactional.relevance' | translate}}</p>
+                    <app-multi-language-container>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.name"
+                                [maxLength]="constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.maxLength">
+                        </app-multi-language-form-field>
+                    </app-multi-language-container>
+                </ng-container>
+
+                <ng-container
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION.WHO_IS_BENEFITING">
+                    <p>{{'project.application.form.workpackage.investment.justification.benefits' | translate}}</p>
+                    <app-multi-language-container>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="constants.JUSTIFICATION_BENEFITS.name"
+                                [maxLength]="constants.JUSTIFICATION_BENEFITS.maxLength">
+                        </app-multi-language-form-field>
+                    </app-multi-language-container>
+                </ng-container>
+
+                <ng-container
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION.PILOT_CLARIFICATION">
+                    <p>{{'project.application.form.workpackage.investment.justification.pilot' | translate}}</p>
+                    <app-multi-language-container>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="constants.JUSTIFICATION_PILOT.name"
+                                [maxLength]="constants.JUSTIFICATION_PILOT.maxLength">
+                        </app-multi-language-form-field>
+                    </app-multi-language-container>
+                </ng-container>
+
+            </ng-container>
+
+            <ng-container
+                    *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS">
+                <h4>{{'project.application.form.workpackage.investment.location' | translate}}</h4>
+                <p>{{'project.application.form.workpackage.investment.location.description' | translate}}</p>
+
+                <app-project-application-form-address
+                        [addressForm]="workPackageInvestmentForm.controls.address"
+                        [nuts]="data.nuts"
+                        [fieldIds]="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS"
+                >
+                </app-project-application-form-address>
+            </ng-container>
+
+            <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.RISK">
+                <h4>{{'project.application.form.workpackage.investment.risk' | translate}}</h4>
+
+                <p>{{'project.application.form.workpackage.investment.risk.description' | translate}}</p>
+                <app-multi-language-container>
+                    <app-multi-language-form-field
+                            type="textarea"
+                            [label]="'common.textarea.enter.text'"
+                            [formControlName]="constants.RISK.name"
+                            [maxLength]="constants.RISK.maxLength">
+                    </app-multi-language-form-field>
+                </app-multi-language-container>
+            </ng-container>
+
+            <ng-container
+                    *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.DOCUMENTATION">
+                <h4>{{'project.application.form.workpackage.investment.documentation' | translate}}</h4>
+
+                <p>{{'project.application.form.workpackage.investment.documentation.description.line.1' | translate}}</p>
+                <p>{{'project.application.form.workpackage.investment.documentation.description.line.2' | translate}}</p>
+                <app-multi-language-container>
+                    <app-multi-language-form-field
+                            type="textarea"
+                            [label]="'common.textarea.enter.text'"
+                            [formControlName]="constants.DOCUMENTATION.name"
+                            [maxLength]="constants.DOCUMENTATION.maxLength">
+                    </app-multi-language-form-field>
+                </app-multi-language-container>
+            </ng-container>
+
+            <ng-container
+                    *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.OWNERSHIP">
+                <h4>{{'project.application.form.workpackage.investment.ownership' | translate}}</h4>
+
+                <ng-container
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.OWNERSHIP.WHO_OWNS_THE_INVESTMENT_SITE">
+                    <p>{{'project.application.form.workpackage.investment.ownership.site.location' | translate}}</p>
+                    <app-multi-language-container>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="constants.OWNERSHIP_SITE_LOCATION.name"
+                                [maxLength]="constants.OWNERSHIP_SITE_LOCATION.maxLength">
+                        </app-multi-language-form-field>
+                    </app-multi-language-container>
+                </ng-container>
+
+
+                <ng-container
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.OWNERSHIP.OWNERSHIP_AFTER_END_OF_PROJECT">
+                    <p>{{'project.application.form.workpackage.investment.ownership.retain' | translate}}</p>
+                    <app-multi-language-container>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="constants.OWNERSHIP_RETAIN.name"
+                                [maxLength]="constants.OWNERSHIP_RETAIN.maxLength">
+                        </app-multi-language-form-field>
+                    </app-multi-language-container>
+                </ng-container>
+
+                <ng-container
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.OWNERSHIP.MAINTENANCE">
+                    <p>{{'project.application.form.workpackage.investment.ownership.maintenance' | translate}}</p>
+                    <app-multi-language-container>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="constants.OWNERSHIP_MAINTENANCE.name"
+                                [maxLength]="constants.OWNERSHIP_MAINTENANCE.maxLength">
+                        </app-multi-language-form-field>
+                    </app-multi-language-container>
+                </ng-container>
+            </ng-container>
+        </form>
+    </app-form>
+</app-project-page-template>

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner
 
-import io.cloudflight.jems.api.project.dto.ProjectContactType
+import io.cloudflight.jems.server.project.service.model.ProjectContactType
 import java.io.Serializable
 import javax.persistence.Column
 import javax.persistence.Embeddable
@@ -9,7 +9,7 @@ import javax.persistence.Enumerated
 import javax.validation.constraints.NotNull
 
 @Embeddable
-data class ProjectPartnerContactId (
+data class ProjectPartnerContactId(
 
     @Column(name = "partner_id")
     @field:NotNull

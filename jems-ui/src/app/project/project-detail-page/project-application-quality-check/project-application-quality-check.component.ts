@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {InputProjectQualityAssessment, OutputProjectQualityAssessment, ProjectDetailDTO} from '@cat/api';
+import {ProjectAssessmentQualityDTO, OutputProjectQualityAssessment, ProjectDetailDTO} from '@cat/api';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {ProjectQualityCheckPageStore} from './project-quality-check-page-store.service';
 import {map, tap} from 'rxjs/operators';
@@ -19,7 +19,7 @@ import {ProjectStepStatus} from '../project-step-status';
 export class ProjectApplicationQualityCheckComponent {
   step = this.activatedRoute.snapshot.params.step;
   stepStatus = new ProjectStepStatus(this.step);
-  assessment = InputProjectQualityAssessment.ResultEnum;
+  assessment = ProjectAssessmentQualityDTO.ResultEnum;
   projectId = this.activatedRoute.snapshot.params.projectId;
   options: string[] = [this.assessment.RECOMMENDEDFORFUNDING, this.assessment.RECOMMENDEDWITHCONDITIONS, this.assessment.NOTRECOMMENDED];
 
@@ -64,7 +64,7 @@ export class ProjectApplicationQualityCheckComponent {
   }
 
   onCancel(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId]);
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'assessmentAndDecision']);
   }
 
   private confirmQualityAssessment(): void {

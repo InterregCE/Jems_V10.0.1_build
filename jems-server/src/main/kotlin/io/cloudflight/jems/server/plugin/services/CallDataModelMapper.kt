@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
+import io.cloudflight.jems.plugin.contract.models.call.ApplicationFormFieldConfigurationData
 import io.cloudflight.jems.plugin.contract.models.call.CallDetailData
 import io.cloudflight.jems.plugin.contract.models.call.CallStatusData
+import io.cloudflight.jems.plugin.contract.models.call.FieldVisibilityStatusData
 import io.cloudflight.jems.plugin.contract.models.call.flatrate.FlatRateData
 import io.cloudflight.jems.plugin.contract.models.call.flatrate.FlatRateSetupData
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
@@ -17,16 +19,18 @@ import io.cloudflight.jems.plugin.contract.models.programme.priority.ProgrammeSp
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.entity.TranslationEntity
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 
-fun CallDetail.toDataModel() = CallDetailData(
+fun CallDetail.toDataModel(inputLanguages: List<ProgrammeLanguage>) = CallDetailData(
     id = id,
     name = name,
     isAdditionalFundAllowed = isAdditionalFundAllowed,
@@ -42,6 +46,8 @@ fun CallDetail.toDataModel() = CallDetailData(
     flatRates = flatRates.toDataModel(),
     lumpSums = lumpSums.toLumpSumDataModel(),
     unitCosts = unitCosts.toUnitCostDataModel(),
+    applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDataModel(),
+    inputLanguages = inputLanguages.map { SystemLanguageData.valueOf(it.code.name) }.toSet()
 )
 
 fun ProgrammePriority.toDataModel() = ProgrammePriorityData(
@@ -81,8 +87,15 @@ fun Set<ProjectCallFlatRate>.toDataModel(): FlatRateSetupData {
 
 fun ProjectCallFlatRate.toDataModel() = FlatRateData(
     rate = rate,
-    isAdjustable = isAdjustable,
+    isAdjustable = adjustable,
 )
+
+fun MutableSet<ApplicationFormFieldConfiguration>.toDataModel() = map {
+    ApplicationFormFieldConfigurationData(
+        it.id, FieldVisibilityStatusData.valueOf(it.visibilityStatus.name)
+    )
+}.toMutableSet()
+
 
 fun Iterable<ProgrammeLumpSum>.toLumpSumDataModel() = map {
     ProgrammeLumpSumListData(

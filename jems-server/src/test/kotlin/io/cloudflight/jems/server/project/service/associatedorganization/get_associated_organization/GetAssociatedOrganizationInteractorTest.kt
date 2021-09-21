@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.service.associatedorganization.get_as
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartner
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.toOutputProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.service.associatedorganization.toOutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.mockk.every
@@ -74,7 +75,6 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
         call = call,
         applicant = user,
         currentStatus = projectStatus,
-        step2Active = false
     )
 
     private val projectPartner = ProjectPartnerEntity(
@@ -86,10 +86,10 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
         sortNumber = 1,
     )
 
-    private val outputProjectPartner = OutputProjectPartner(
+    private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
         abbreviation = projectPartner.abbreviation,
-        role = ProjectPartnerRole.LEAD_PARTNER,
+        role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
     )
 
@@ -112,7 +112,7 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
             sortNumber = sortNr
         )
 
-    private fun outputOrganizationDetail(id: Long, partner: OutputProjectPartner, name: String, sortNr: Int? = null) =
+    private fun outputOrganizationDetail(id: Long, partner: ProjectPartnerSummaryDTO, name: String, sortNr: Int? = null) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
             partner = partner,
@@ -127,7 +127,7 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
         every { persistence.getById(1, 1) } returns org.toOutputProjectAssociatedOrganizationDetail()
 
         assertThat(getInteractor.getById(1, 1))
-            .isEqualTo(outputOrganizationDetail(1, outputProjectPartner, "test", 1))
+            .isEqualTo(outputOrganizationDetail(1, projectPartnerDTO, "test", 1))
     }
 
     @Test

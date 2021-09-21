@@ -3,12 +3,15 @@ package io.cloudflight.jems.server.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
+import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
+import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.factory.UserFactory
 import io.cloudflight.jems.server.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
 import io.cloudflight.jems.server.factory.UserFactory.Companion.APPLICANT_USER_EMAIL
-import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import org.junit.Ignore
+import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -44,22 +47,25 @@ class UserControllerIntegrationTest {
         userFactory.saveAdminUser("u1")
 
         mockMvc.perform(
-            get("/api/user?page=0")
+            post("/api/user/list?page=0")
                 .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.numberOfElements").value(2))
             .andExpect(status().isOk())
 
         mockMvc.perform(
-            get("/api/user?page=1")
+            post("/api/user/list?page=1")
                 .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.numberOfElements").value(1))
             .andExpect(status().isOk())
 
         mockMvc.perform(
-            get("/api/user?sort=email,desc")
+            post("/api/user/list?sort=email,desc")
                 .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.content[0].email").value("u1"))
             .andExpect(status().isOk())
@@ -130,7 +136,8 @@ class UserControllerIntegrationTest {
     fun `list, edit create unauthorized for limited user`() {
 
         mockMvc.perform(
-            get("/api/user?page=0")
+            post("/api/user/list?page=0")
+                .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isForbidden())
@@ -233,6 +240,57 @@ class UserControllerIntegrationTest {
                 .content(jsonMapper.writeValueAsString(PasswordDTO("StrongPa55word", null)))
         )
             .andExpect(status().isOk)
+    }
+
+    @Test
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
+    @Transactional
+    @TestFactory
+    fun `should return filtered list of users when userSearchRequest is provided`() =
+        listOf(
+            Pair("email", UserSearchRequestDTO("", "", "u1", emptySet())),
+            Pair("surname", UserSearchRequestDTO("", "u1", "", emptySet())),
+            Pair("name", UserSearchRequestDTO("u1", "", "", emptySet())),
+        ).map { input ->
+            DynamicTest.dynamicTest(
+                "should return filtered list of users when '${input.first}' is provided in userSearchRequest"
+            ) {
+                userFactory.saveAdminUser("u1")
+                userFactory.saveApplicantUser("u2")
+
+                mockMvc.perform(
+                    post("/api/user/list?page=0")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(input.second))
+                )
+                    .andExpect(jsonPath("$.numberOfElements").value(1))
+                    .andExpect(jsonPath("$.content[0].email").value("u1"))
+                    .andExpect(status().isOk())
+            }
+        }
+
+    @Test
+    @WithUserDetails(value = ADMINISTRATOR_EMAIL)
+    @Transactional
+    fun `should return filtered list of users when role is provided in userSearchRequest`() {
+
+        val testRole = userFactory.saveRole("testRole")
+        val testUser = userFactory.saveUser("u3", testRole)
+
+
+        val searchRequestDTO = UserSearchRequestDTO("", "", "", setOf(testUser.userRole.id))
+
+        mockMvc.perform(
+            post("/api/user/list?page=0")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonMapper.writeValueAsString(searchRequestDTO))
+        )
+            .andExpect(jsonPath("$.numberOfElements").value(1))
+            .andExpect(jsonPath("$.content[0].email").value("u3"))
+            .andExpect(status().isOk())
+
     }
 
 }

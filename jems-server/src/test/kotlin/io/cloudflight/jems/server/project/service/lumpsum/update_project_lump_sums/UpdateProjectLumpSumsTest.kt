@@ -44,6 +44,8 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             flatRates = emptySet(),
             lumpSums = lumpSums,
             unitCosts = listOf(),
+            stateAids = emptyList(),
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
         private val periods = listOf(
@@ -80,17 +82,21 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
     @Test
     fun `updateLumpSums - everything OK - splitting not allowed`() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = false)
-        val lumpSumNonSplittable = lumpSum.copy(lumpSumContributions = listOf(
-            ProjectPartnerLumpSum(partnerId = 1, amount = BigDecimal.ZERO),
-            ProjectPartnerLumpSum(partnerId = 2, amount = BigDecimal.TEN),
-        ))
+        val lumpSumNonSplittable = lumpSum.copy(
+            lumpSumContributions = listOf(
+                ProjectPartnerLumpSum(partnerId = 1, amount = BigDecimal.ZERO),
+                ProjectPartnerLumpSum(partnerId = 2, amount = BigDecimal.TEN),
+            )
+        )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
         every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns periods
 
         every { persistence.updateLumpSums(PROJECT_ID, any()) } returnsArgument 1
 
-        assertThat(updateProjectLumpSums.updateLumpSums(PROJECT_ID, listOf(lumpSumNonSplittable))).containsExactly(lumpSumNonSplittable.copy())
+        assertThat(updateProjectLumpSums.updateLumpSums(PROJECT_ID, listOf(lumpSumNonSplittable))).containsExactly(
+            lumpSumNonSplittable.copy()
+        )
     }
 
     @Test
@@ -124,7 +130,13 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
-        every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns  listOf(ProjectPeriod(number = 1, start = 1, end = 6))
+        every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns listOf(
+            ProjectPeriod(
+                number = 1,
+                start = 1,
+                end = 6
+            )
+        )
 
         every { persistence.updateLumpSums(PROJECT_ID, any()) } returnsArgument 1
 

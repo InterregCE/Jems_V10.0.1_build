@@ -3,7 +3,11 @@ package io.cloudflight.jems.server.project.authorization
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackageService
@@ -11,6 +15,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 
@@ -30,6 +36,9 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
     @MockK
     lateinit var workPackagePersistence: WorkPackagePersistence
 
+    @MockK
+    lateinit var projectPersistence: ProjectPersistence
+
     @InjectMockKs
     lateinit var projectWorkPackageAuthorization: ProjectWorkPackageAuthorization
 
@@ -41,7 +50,7 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
             projectStatus = status,
         )
         every { securityService.currentUser } returns applicantUser
-        assertThat(projectWorkPackageAuthorization.isUserOwnerOfWorkPackage(WORK_PACKAGE_ID)).isTrue
+        assertThat(projectWorkPackageAuthorization.isUserOwnerOfWorkPackage(1L, WORK_PACKAGE_ID, null)).isTrue
     }
 
     @ParameterizedTest(name = "isUserOwnerOfWorkPackage - false (no-matter status - {0})")
@@ -52,43 +61,66 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
             projectStatus = status,
         )
         every { securityService.currentUser } returns applicantUser
-        assertThat(projectWorkPackageAuthorization.isUserOwnerOfWorkPackage(WORK_PACKAGE_ID)).isFalse
+        assertThat(projectWorkPackageAuthorization.isUserOwnerOfWorkPackage(1L, WORK_PACKAGE_ID, null)).isFalse
     }
 
-    @ParameterizedTest(name = "canOwnerUpdatePartner should return true, because {0} is valid and user is owner)")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"])
-    fun `canOwnerUpdateProjectWorkPackage - user is owner and status is open`(status: ApplicationStatus) {
-        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns ProjectApplicantAndStatus(
-            applicantId = applicantUser.user.id,
-            projectStatus = status,
-        )
-        every { securityService.currentUser } returns applicantUser
-        assertThat(projectWorkPackageAuthorization.canOwnerUpdateProjectWorkPackage(WORK_PACKAGE_ID)).isTrue
+    @Test
+    fun `can update workpackage - no permissions`() {
+        every { securityService.currentUser } returns programmeUser
+        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns
+            ProjectApplicantAndStatus(applicantId = 2480L, projectStatus = ApplicationStatus.SUBMITTED)
+
+        assertThrows<ResourceNotFoundException> { projectWorkPackageAuthorization.canUpdateProjectWorkPackage(WORK_PACKAGE_ID) }
     }
 
-    @ParameterizedTest(name = "canOwnerUpdateProjectWorkPackage should return false, because {0} is NOT valid although user is owner)")
+    @ParameterizedTest(name = "can update workpackage - OWNER, but wrong status {0}")
     @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
-    fun `canOwnerUpdateProjectWorkPackage - user is owner but status is NOT open`(status: ApplicationStatus) {
-        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns ProjectApplicantAndStatus(
-            applicantId = applicantUser.user.id,
-            projectStatus = status,
-        )
+    fun `can update workpackage - OWNER, but wrong status`(status: ApplicationStatus) {
         every { securityService.currentUser } returns applicantUser
-        assertThat(projectWorkPackageAuthorization.canOwnerUpdateProjectWorkPackage(WORK_PACKAGE_ID)).isFalse
+        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns
+            ProjectApplicantAndStatus(applicantId = applicantUser.user.id, projectStatus = status)
+
+        assertThat(projectWorkPackageAuthorization.canUpdateProjectWorkPackage(WORK_PACKAGE_ID)).isFalse
     }
 
-    @ParameterizedTest(name = "canOwnerUpdateProjectWorkPackage should return false, {0} is valid, but user is NOT owner)")
-    @EnumSource(value = ApplicationStatus::class)
-    fun `canOwnerUpdatePartner - user is NOT owner (no-matter the status)`(status: ApplicationStatus) {
-        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns ProjectApplicantAndStatus(
-            applicantId = 363L,
-            projectStatus = status,
-        )
-        every { securityService.currentUser } returns applicantUser
-        assertThat(projectWorkPackageAuthorization.canOwnerUpdateProjectWorkPackage(WORK_PACKAGE_ID)).isFalse
+    @ParameterizedTest(name = "can update workpackage - HAS PERMISSION, but wrong status {0}")
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    fun `can update workpackage - HAS PERMISSION, but wrong status`(status: ApplicationStatus) {
+        every { securityService.currentUser } returns adminUser
+        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns
+            ProjectApplicantAndStatus(applicantId = 2699L, projectStatus = status)
+
+        assertThat(projectWorkPackageAuthorization.canUpdateProjectWorkPackage(WORK_PACKAGE_ID)).isFalse
     }
 
+    @Test
+    fun `can update investment - no permissions`() {
+        every { securityService.currentUser } returns programmeUser
+        every { workPackagePersistence.getProjectFromWorkPackageInvestment(INVESTMENT_ID) } returns
+            ProjectApplicantAndStatus(applicantId = 2480L, projectStatus = ApplicationStatus.SUBMITTED)
 
+        assertThrows<ResourceNotFoundException> { projectWorkPackageAuthorization.canUpdateProjectInvestment(INVESTMENT_ID) }
+    }
+
+    @ParameterizedTest(name = "can update investment - OWNER, but wrong status {0}")
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    fun `can update investment - OWNER, but wrong status`(status: ApplicationStatus) {
+        every { securityService.currentUser } returns applicantUser
+        every { workPackagePersistence.getProjectFromWorkPackageInvestment(INVESTMENT_ID) } returns
+            ProjectApplicantAndStatus(applicantId = applicantUser.user.id, projectStatus = status)
+
+        assertThat(projectWorkPackageAuthorization.canUpdateProjectInvestment(INVESTMENT_ID)).isFalse
+    }
+
+    @ParameterizedTest(name = "can update investment - HAS PERMISSION, but wrong status {0}")
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    fun `can update investment - HAS PERMISSION, but wrong status`(status: ApplicationStatus) {
+        every { securityService.currentUser } returns adminUser
+        every { workPackagePersistence.getProjectFromWorkPackageInvestment(INVESTMENT_ID) } returns
+            ProjectApplicantAndStatus(applicantId = 2699L, projectStatus = status)
+
+        assertThat(projectWorkPackageAuthorization.canUpdateProjectInvestment(INVESTMENT_ID)).isFalse
+    }
 
     @ParameterizedTest(name = "isUserOwnerOfInvestment - true (no-matter status - {0})")
     @EnumSource(value = ApplicationStatus::class)
@@ -98,7 +130,7 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
             projectStatus = status,
         )
         every { securityService.currentUser } returns applicantUser
-        assertThat(projectWorkPackageAuthorization.isUserOwnerOfInvestment(INVESTMENT_ID)).isTrue
+        assertThat(projectWorkPackageAuthorization.isUserOwnerOfInvestment(1L, INVESTMENT_ID, null)).isTrue
     }
 
     @ParameterizedTest(name = "isUserOwnerOfInvestment - false (no-matter status - {0})")
@@ -109,40 +141,7 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
             projectStatus = status,
         )
         every { securityService.currentUser } returns applicantUser
-        assertThat(projectWorkPackageAuthorization.isUserOwnerOfInvestment(INVESTMENT_ID)).isFalse
-    }
-
-    @ParameterizedTest(name = "canOwnerUpdateProjectInvestment should return true, because {0} is valid and user is owner)")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"])
-    fun `canOwnerUpdateProjectInvestment - user is owner and status is open`(status: ApplicationStatus) {
-        every { workPackagePersistence.getProjectFromWorkPackageInvestment(INVESTMENT_ID) } returns ProjectApplicantAndStatus(
-            applicantId = applicantUser.user.id,
-            projectStatus = status,
-        )
-        every { securityService.currentUser } returns applicantUser
-        assertThat(projectWorkPackageAuthorization.canOwnerUpdateProjectInvestment(INVESTMENT_ID)).isTrue
-    }
-
-    @ParameterizedTest(name = "canOwnerUpdateProjectInvestment should return false, because {0} is NOT valid although user is owner)")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
-    fun `canOwnerUpdateProjectInvestment - user is owner but status is NOT open`(status: ApplicationStatus) {
-        every { workPackagePersistence.getProjectFromWorkPackageInvestment(INVESTMENT_ID) } returns ProjectApplicantAndStatus(
-            applicantId = applicantUser.user.id,
-            projectStatus = status,
-        )
-        every { securityService.currentUser } returns applicantUser
-        assertThat(projectWorkPackageAuthorization.canOwnerUpdateProjectInvestment(INVESTMENT_ID)).isFalse
-    }
-
-    @ParameterizedTest(name = "canOwnerUpdateProjectInvestment should return false, {0} is valid, but user is NOT owner)")
-    @EnumSource(value = ApplicationStatus::class)
-    fun `canOwnerUpdateProjectInvestment - user is NOT owner (no-matter the status)`(status: ApplicationStatus) {
-        every { workPackagePersistence.getProjectFromWorkPackageInvestment(INVESTMENT_ID) } returns ProjectApplicantAndStatus(
-            applicantId = 368L,
-            projectStatus = status,
-        )
-        every { securityService.currentUser } returns applicantUser
-        assertThat(projectWorkPackageAuthorization.canOwnerUpdateProjectInvestment(INVESTMENT_ID)).isFalse
+        assertThat(projectWorkPackageAuthorization.isUserOwnerOfInvestment(1L, INVESTMENT_ID, null)).isFalse
     }
 
 }

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {InputTranslation} from '@cat/api';
-import {LanguageStore} from '../../../services/language-store.service';
+import {LanguageStore} from '@common/services/language-store.service';
 import {MultiLanguageGlobalService} from './multi-language-global.service';
 
 export enum MultiLanguageContainerTypeEnum {
@@ -40,8 +40,10 @@ export class MultiLanguageContainerService {
     }
   }
 
-  multiLanguageFormFieldDefaultValue(): InputTranslation[] {
-    return this.getCurrentLanguagesValue()?.map(language => ({translation: '', language} as InputTranslation)) || [];
+  multiLanguageFormFieldDefaultValue(includeFallbackIfNotExist?: boolean): InputTranslation[] {
+    const neededLanguages = [...this.getCurrentLanguagesValue()] || [];
+    if (includeFallbackIfNotExist && neededLanguages.indexOf(this.languageStore.getFallbackLanguageValue()) < 0) { neededLanguages.push(this.languageStore.getFallbackLanguageValue()); }
+    return neededLanguages.map(language => ({translation: '', language} as InputTranslation));
   }
 
   changeLanguage(language: string, useSystemLanguages: boolean): void {

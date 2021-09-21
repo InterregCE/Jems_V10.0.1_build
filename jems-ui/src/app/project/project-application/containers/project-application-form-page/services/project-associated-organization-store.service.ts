@@ -1,20 +1,20 @@
 import {Injectable} from '@angular/core';
 import {
-  InputProjectAssociatedOrganizationCreate,
-  InputProjectAssociatedOrganizationUpdate,
+  InputProjectAssociatedOrganization,
   OutputNuts,
   OutputProjectAssociatedOrganizationDetail,
-  OutputProjectPartner,
+  ProjectPartnerSummaryDTO,
   ProjectAssociatedOrganizationService,
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
-import {ProjectVersionStore} from '../../../../services/project-version-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectPartnerStore} from './project-partner-store.service';
-import {RoutingService} from '../../../../../common/services/routing.service';
-import {NutsStore} from '../../../../../common/services/nuts.store';
+import {RoutingService} from '@common/services/routing.service';
+import {NutsStore} from '@common/services/nuts.store';
+import {ProjectPaths} from '@project/common/project-util';
 
 @Injectable()
 export class ProjectAssociatedOrganizationStore {
@@ -22,7 +22,7 @@ export class ProjectAssociatedOrganizationStore {
 
   associatedOrganization$: Observable<OutputProjectAssociatedOrganizationDetail | {}>;
   nuts$: Observable<OutputNuts[]>;
-  dropdownPartners$: Observable<OutputProjectPartner[]>;
+  dropdownPartners$: Observable<ProjectPartnerSummaryDTO[]>;
   organizationEditable$: Observable<boolean>;
   projectTitle$: Observable<string>;
 
@@ -37,12 +37,12 @@ export class ProjectAssociatedOrganizationStore {
               private nutsStore: NutsStore) {
     this.associatedOrganization$ = this.associatedOrganization();
     this.nuts$ = this.nutsStore.getNuts();
-    this.dropdownPartners$ = this.partnerStore.dropdownPartners$;
+    this.dropdownPartners$ = this.partnerStore.partnerSummaries$;
     this.organizationEditable$ = this.projectStore.projectEditable$;
     this.projectTitle$ = this.projectStore.projectTitle$;
   }
 
-  createAssociatedOrganization(create: InputProjectAssociatedOrganizationCreate): Observable<void> {
+  createAssociatedOrganization(create: InputProjectAssociatedOrganization): Observable<void> {
     return this.associatedOrganizationService.createAssociatedOrganization(this.projectId, create)
       .pipe(
         tap(saved => this.savedAssociatedOrganization$.next(saved)),
@@ -53,7 +53,7 @@ export class ProjectAssociatedOrganizationStore {
       );
   }
 
-  updateAssociatedOrganization(update: InputProjectAssociatedOrganizationUpdate): Observable<OutputProjectAssociatedOrganizationDetail> {
+  updateAssociatedOrganization(update: InputProjectAssociatedOrganization): Observable<OutputProjectAssociatedOrganizationDetail> {
     return this.associatedOrganizationService.updateAssociatedOrganization(this.projectId, update)
       .pipe(
         tap(saved => this.savedAssociatedOrganization$.next(saved)),
@@ -68,14 +68,13 @@ export class ProjectAssociatedOrganizationStore {
       this.projectVersionStore.currentRouteVersion$
     ]).pipe(
       tap(([organizationId, projectId]) => {
-        // this.organizationId = Number(organizationId);
         this.projectId = Number(projectId);
       }),
       switchMap(([organizationId, projectId, version]) => organizationId
         ? this.associatedOrganizationService.getAssociatedOrganizationById(organizationId as number, projectId, version)
           .pipe(
-            catchError(err => {
-              this.router.navigate([ProjectStore.PROJECT_DETAIL_PATH, projectId]);
+            catchError(() => {
+              this.router.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId]);
               return of({});
             })
           )

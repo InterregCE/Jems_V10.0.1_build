@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.project.service.budget.get_project_budget
 
-import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -20,25 +20,25 @@ class GetProjectBudget(
 ) : GetProjectBudgetInteractor {
 
     @Transactional(readOnly = true)
-    @CanRetrieveProject
-    override fun getBudget(projectId: Long): List<PartnerBudget> {
-        val partners = persistence.getPartnersForProjectId(projectId = projectId).associateBy { it.id!! }
+    @CanRetrieveProjectForm
+    override fun getBudget(projectId: Long, version: String?): List<PartnerBudget> {
+        val partners = persistence.getPartnersForProjectId(projectId = projectId, version).associateBy { it.id!! }
 
         val options =
-            optionPersistence.getBudgetOptions(partners.keys).iterator().asSequence().associateBy { it.partnerId }
+            optionPersistence.getBudgetOptions(partners.keys, projectId, version).iterator().asSequence().associateBy { it.partnerId }
 
-        val lumpSumContributionPerPartner = persistence.getLumpSumContributionPerPartner(partners.keys)
-        val unitCostsPerPartner = persistence.getUnitCostsPerPartner(partners.keys)
+        val lumpSumContributionPerPartner = persistence.getLumpSumContributionPerPartner(partners.keys, projectId, version)
+        val unitCostsPerPartner = persistence.getUnitCostsPerPartner(partners.keys, projectId, version)
 
-        val externalCostsPerPartner = persistence.getExternalCosts(partners.keys).groupByPartnerId()
-        val equipmentCostsPerPartner = persistence.getEquipmentCosts(partners.keys).groupByPartnerId()
-        val infrastructureCostsPerPartner = persistence.getInfrastructureCosts(partners.keys).groupByPartnerId()
+        val externalCostsPerPartner = persistence.getExternalCosts(partners.keys, projectId, version).groupByPartnerId()
+        val equipmentCostsPerPartner = persistence.getEquipmentCosts(partners.keys, projectId, version).groupByPartnerId()
+        val infrastructureCostsPerPartner = persistence.getInfrastructureCosts(partners.keys, projectId, version).groupByPartnerId()
 
         val staffCostsPerPartner =
-            persistence.getStaffCosts(partners.filter { options[it.key]?.staffCostsFlatRate == null }.keys)
+            persistence.getStaffCosts(partners.filter { options[it.key]?.staffCostsFlatRate == null }.keys, projectId, version)
                 .groupByPartnerId()
         val travelCostsPerPartner =
-            persistence.getTravelCosts(partners.filter { options[it.key]?.travelAndAccommodationOnStaffCostsFlatRate == null }.keys)
+            persistence.getTravelCosts(partners.filter { options[it.key]?.travelAndAccommodationOnStaffCostsFlatRate == null }.keys, projectId, version)
                 .groupByPartnerId()
 
         return partners.map { (partnerId, partner) ->
@@ -70,7 +70,7 @@ class GetProjectBudget(
     private fun Collection<ProjectPartnerCost>.groupByPartnerId() = associateBy({ it.partnerId }, { it.sum })
 
     private fun BudgetCostsCalculationResult.toPartnerBudget(
-        partner: ProjectPartner,
+        partner: ProjectPartnerSummary,
         unitCosts: BigDecimal,
         lumpSumCosts: BigDecimal,
         externalCosts: BigDecimal,

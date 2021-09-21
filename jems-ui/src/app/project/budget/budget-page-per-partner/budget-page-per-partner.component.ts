@@ -12,7 +12,8 @@ import {NumberService} from '../../../common/services/number.service';
 import {ProjectPartnerDetailPageStore} from '../../partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ProjectPartnerBudgetModel} from './models/ProjectPartnerBudgetModel';
 import {ProjectPartnerBudgetAndContribution} from './models/ProjectPartnerBudgetAndContribution';
-import {take} from 'rxjs/internal/operators';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-budget-page-per-partner',
@@ -29,16 +30,13 @@ export class BudgetPagePerPartnerComponent {
         this.getColumnsToDisplay(funds);
       }),
     );
-
+  budgetColumns: ProjectPartnerBudgetAndContribution[] = [];
   budgets$ = this.projectStore.getProjectCoFinancing()
     .pipe(
       tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => this.calculateTotal(data)),
       tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => this.constructBudgetColumns(data)),
       tap(() => this.calculateContributionSums(this.budgetColumns)),
-      take(1)
     );
-
-  budgetColumns: ProjectPartnerBudgetAndContribution[] = [];
   totalPublicContribution = 0;
   totalAutoPublicContribution = 0;
   totalPrivateContribution = 0;
@@ -48,7 +46,8 @@ export class BudgetPagePerPartnerComponent {
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
-              private pageStore: ProjectPartnerDetailPageStore) {
+              private pageStore: ProjectPartnerDetailPageStore,
+              private visibilityStatusService: FormVisibilityStatusService) {
   }
 
   getBudgetAmountForFund(fund: ProgrammeFundDTO, budgets: ProjectPartnerBudgetModel[]): number {
@@ -81,7 +80,12 @@ export class BudgetPagePerPartnerComponent {
     return NumberService.truncateNumber(totalSum);
   }
 
+  public getTotalPercentageRounded(fund: ProgrammeFundDTO, totalEligibleBudget: number): number {
+    return NumberService.roundNumber((NumberService.product([NumberService.divide(this.getTotalBudgetAmountForFund(fund), totalEligibleBudget), 100])), 1);
+  }
+
   private constructBudgetColumns(budgets: ProjectPartnerBudgetCoFinancingDTO[]): void {
+    this.budgetColumns = [];
     budgets.forEach((budget: ProjectPartnerBudgetCoFinancingDTO) => {
       this.budgetColumns.push({
         partnerSortNumber: budget?.partner.sortNumber,
@@ -131,16 +135,19 @@ export class BudgetPagePerPartnerComponent {
   }
 
   private getColumnsToDisplay(funds: ProgrammeFundDTO[]): void {
-    this.displayedColumns.push('partner', 'country');
+    this.displayedColumns = ['partner', 'country'];
     funds.forEach(fund => {
       this.displayedColumns.push('budget' + fund.id, 'percentage' + fund.id);
     });
-    this.displayedColumns.push('publicContribution', 'autoPublicContribution', 'privateContribution', 'totalContribution', 'totalEligibleBudget', 'percentOfTotalBudget');
+    this.displayedColumns.push('publicContribution');
+    if (this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN)) {
+      this.displayedColumns.push('autoPublicContribution');
+    }
+    this.displayedColumns.push('privateContribution', 'totalContribution', 'totalEligibleBudget', 'percentOfTotalBudget');
   }
 
   private getPercentOfTotalBudget(budgetTotal: number): number {
     const perEligibleBudget = NumberService.divide(NumberService.truncateNumber(budgetTotal), this.totalEligibleBudget);
     return NumberService.truncateNumber(NumberService.product([100, perEligibleBudget]), 0);
   }
-
 }

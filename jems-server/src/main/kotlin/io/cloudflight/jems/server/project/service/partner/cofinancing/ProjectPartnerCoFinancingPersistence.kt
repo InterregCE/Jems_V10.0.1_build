@@ -15,7 +15,7 @@ interface ProjectPartnerCoFinancingPersistence {
 
     fun updateCoFinancingAndContribution(
         partnerId: Long,
-        finances: Collection<UpdateProjectPartnerCoFinancing>,
+        finances: List<UpdateProjectPartnerCoFinancing>,
         partnerContributions: List<ProjectPartnerContribution>
     ): ProjectPartnerCoFinancingAndContribution
 

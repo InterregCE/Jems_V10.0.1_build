@@ -11,9 +11,19 @@ import java.util.regex.Pattern
 // password should have: at least 10 characters, one upper case letter, one lower case letter and one digit
 const val PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,}).+\$"
 const val EMAIL_REGEX = "^(.+)@(.+)\$"
+const val ONLY_DIGITS_REGEX = "\\d+\$"
 
 @Service
 class GeneralValidatorDefaultImpl : GeneralValidatorService {
+
+    override fun exactLength(input: String?, length: Int, fieldName: String) =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (!input.isNullOrBlank() && input.length != length)
+                this[fieldName] = I18nMessage(
+                    "common.error.field.length",
+                    mapOf("actualLength" to input.length.toString(), "requiredLength" to length.toString())
+                )
+        }
 
     override fun maxLength(input: String?, maxLength: Int, fieldName: String) =
         mutableMapOf<String, I18nMessage>().apply {
@@ -39,9 +49,35 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
             }
         }
 
-    override fun numberBetween(number: Int, minValue: Int, maxValue: Int, fieldName: String) =
+    override fun numberBetween(number: Int?, minValue: Int, maxValue: Int, fieldName: String) =
         mutableMapOf<String, I18nMessage>().apply {
-            if (number < minValue || number > maxValue)
+            if (number != null && (number < minValue || number > maxValue))
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.field.number.out.of.range",
+                    i18nArguments = mapOf(
+                        "number" to "$number",
+                        "min" to "$minValue",
+                        "max" to "$maxValue",
+                    )
+                )
+        }
+
+    override fun scale(number: BigDecimal?, maxScale: Int, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (number != null && number.scale() > maxScale)
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.field.number.scale.is.not.valid",
+                    i18nArguments = mapOf(
+                        "number" to "$number",
+                        "maxScale" to "$maxScale",
+                    )
+                )
+        }
+
+
+    override fun numberBetween(number: BigDecimal?, minValue: BigDecimal, maxValue: BigDecimal, fieldName: String) =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (number != null && (number < minValue || number > maxValue))
                 this[fieldName] = I18nMessage(
                     i18nKey = "common.error.field.number.out.of.range",
                     i18nArguments = mapOf(
@@ -101,23 +137,32 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
             }
         }
 
+    override fun onlyDigits(input: String?, fieldName: String): Map<String, I18nMessage> =
+        if (input == null) emptyMap() else matches(input, ONLY_DIGITS_REGEX, fieldName, "common.error.only.digits")
+
     override fun startDateBeforeEndDate(
-        start: ZonedDateTime,
-        end: ZonedDateTime,
+        start: ZonedDateTime?,
+        end: ZonedDateTime?,
         startDateFieldName: String,
         endDateFieldName: String
     ): Map<String, I18nMessage> =
         mutableMapOf<String, I18nMessage>().apply {
-            if (end.isBefore(start)) {
-                this[startDateFieldName] = I18nMessage(i18nKey = "common.error.start.before.end")
-                this[endDateFieldName] = I18nMessage(i18nKey = "common.error.end.after.start")
+            if (start != null && end != null && end.isBefore(start)) {
+                this[startDateFieldName] = I18nMessage(
+                    i18nKey = "common.error.field.start.before.end",
+                    i18nArguments = mapOf("endDate" to endDateFieldName, "startDate" to startDateFieldName)
+                )
+                this[endDateFieldName] = I18nMessage(
+                    i18nKey = "common.error.field.end.after.start",
+                    i18nArguments = mapOf("endDate" to endDateFieldName, "startDate" to startDateFieldName)
+                )
             }
         }
 
     override fun dateNotInFuture(date: LocalDate, fieldName: String): Map<String, I18nMessage> =
         mutableMapOf<String, I18nMessage>().apply {
             if (date.isAfter(LocalDate.now())) {
-                this[fieldName] = I18nMessage(i18nKey = "common.error.date.is.in.future")
+                this[fieldName] = I18nMessage(i18nKey = "common.error.field.date.is.in.future")
             }
         }
 
@@ -133,6 +178,16 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                 this[fieldName] = I18nMessage(
                     i18nKey = "common.error.field.max.size",
                     i18nArguments = mapOf("maxSize" to maxSize.toString())
+                )
+            }
+        }
+
+    override fun minSize(items: Collection<Any>?, minSize: Int, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (items != null && items.size < minSize) {
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.field.min.size",
+                    i18nArguments = mapOf("minSize" to minSize.toString())
                 )
             }
         }

@@ -1,7 +1,8 @@
 <form appFormLayout [formGroup]="lumpSumForm">
     <div appMultiColumnRow>
         <h3 class="mb-0">{{'lump.sum.title' | translate}}</h3>
-        <button *ngIf="formState === FormState.VIEW" mat-raised-button color="primary"
+        <button mat-raised-button color="primary"
+                *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'lump.sum.button.edit' | translate}}
         </button>
@@ -46,13 +47,13 @@
                     value="Yes"
                     [checked]="previousSplitting === 'Yes'"
                     (change)="changeSplitting($event.value)">
-                {{'lump.sum.splitting.yes' | translate}}
+                {{'common.yes' | translate}}
             </mat-button-toggle>
             <mat-button-toggle
                     value="No"
                     [checked]="previousSplitting === 'No'"
                     (change)="changeSplitting($event.value)">
-                {{'lump.sum.splitting.no' | translate}}
+                {{'common.no' | translate}}
             </mat-button-toggle>
         </mat-button-toggle-group>
         <mat-error>
@@ -114,8 +115,7 @@
     </div>
 
     <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
-        <button *ngxPermissionsExcept="Permission.APPLICANT_USER"
-                mat-stroked-button
+        <button mat-stroked-button
                 type="button"
                 (click)="onCancel()">
             {{'lump.sum.new.button.cancel' | translate}}

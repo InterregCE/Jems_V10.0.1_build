@@ -4,10 +4,9 @@ import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.project.ProjectStatusApi
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
-import io.cloudflight.jems.api.project.dto.status.InputProjectEligibilityAssessment
-import io.cloudflight.jems.api.project.dto.status.InputProjectQualityAssessment
-import io.cloudflight.jems.server.project.service.ProjectStatusService
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityDTO
 import io.cloudflight.jems.server.project.service.application.approve_application.ApproveApplicationInteractor
 import io.cloudflight.jems.server.project.service.application.approve_application_with_conditions.ApproveApplicationWithConditionsInteractor
 import io.cloudflight.jems.server.project.service.application.execute_pre_condition_check.ExecutePreConditionCheckInteractor
@@ -18,24 +17,26 @@ import io.cloudflight.jems.server.project.service.application.start_second_step.
 import io.cloudflight.jems.server.project.service.application.revert_application_decision.RevertApplicationDecisionInteractor
 import io.cloudflight.jems.server.project.service.application.set_application_as_eligible.SetApplicationAsEligibleInteractor
 import io.cloudflight.jems.server.project.service.application.set_application_as_ineligible.SetApplicationAsIneligibleInteractor
+import io.cloudflight.jems.server.project.service.application.set_assessment_eligibility.SetAssessmentEligibilityInteractor
+import io.cloudflight.jems.server.project.service.application.set_assessment_quality.SetAssessmentQualityInteractor
 import io.cloudflight.jems.server.project.service.application.submit_application.SubmitApplicationInteractor
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProjectStatusController(
-    private val projectStatusService: ProjectStatusService,
     private val executePreConditionCheck: ExecutePreConditionCheckInteractor,
     private val submitApplication: SubmitApplicationInteractor,
-    private val approveApplication: ApproveApplicationInteractor,
-    private val approveApplicationWithConditions: ApproveApplicationWithConditionsInteractor,
     private val setApplicationAsEligible: SetApplicationAsEligibleInteractor,
     private val setApplicationAsIneligible: SetApplicationAsIneligibleInteractor,
+    private val approveApplication: ApproveApplicationInteractor,
+    private val approveApplicationWithConditions: ApproveApplicationWithConditionsInteractor,
+    private val refuseApplication: RefuseApplicationInteractor,
     private val returnApplicationToApplicant: ReturnApplicationToApplicantInteractor,
     private val startSecondStep: StartSecondStepInteractor,
-    private val revertApplicationDecision: RevertApplicationDecisionInteractor,
     private val getPossibleStatusToRevertTo: GetPossibleStatusToRevertToInteractor,
-    private val refuseApplication: RefuseApplicationInteractor
+    private val revertApplicationDecision: RevertApplicationDecisionInteractor,
+    private val setAssessmentEligibilityInteractor: SetAssessmentEligibilityInteractor,
+    private val setAssessmentQualityInteractor: SetAssessmentQualityInteractor,
 ) : ProjectStatusApi {
     override fun preConditionCheck(id: Long): PreConditionCheckResultDTO =
         executePreConditionCheck.execute(id).toDTO()
@@ -70,14 +71,10 @@ class ProjectStatusController(
     override fun revertApplicationDecision(id: Long): ApplicationStatusDTO =
         revertApplicationDecision.revert(id).toDTO()
 
-    @PreAuthorize("@projectStatusAuthorization.canSetQualityAssessment(#id)")
-    override fun setQualityAssessment(id: Long, data: InputProjectQualityAssessment): ProjectDetailDTO {
-        return projectStatusService.setQualityAssessment(id, data)
-    }
+    override fun setQualityAssessment(id: Long, data: ProjectAssessmentQualityDTO): ProjectDetailDTO =
+        setAssessmentQualityInteractor.setQualityAssessment(id, data.result, data.note).toDto()
 
-    @PreAuthorize("@projectStatusAuthorization.canSetEligibilityAssessment(#id)")
-    override fun setEligibilityAssessment(id: Long, data: InputProjectEligibilityAssessment): ProjectDetailDTO {
-        return projectStatusService.setEligibilityAssessment(id, data)
-    }
+    override fun setEligibilityAssessment(id: Long, data: ProjectAssessmentEligibilityDTO): ProjectDetailDTO =
+        setAssessmentEligibilityInteractor.setEligibilityAssessment(id, data.result, data.note).toDto()
 
 }

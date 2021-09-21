@@ -1,14 +1,14 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Permission} from '../../../../security/permissions/permission';
 import {combineLatest, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {mergeMap, map, startWith, tap} from 'rxjs/operators';
 import {Tables} from '../../../../common/utils/tables';
 import {Log} from '../../../../common/utils/log';
 import {IndicatorsStore} from '../../services/indicators-store.service';
-import {ProgrammeIndicatorService} from '@cat/api';
+import {ProgrammeIndicatorService, UserRoleDTO} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-programme-indicators-overview-page',
@@ -18,7 +18,7 @@ import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav
 })
 export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
 
-  Permission = Permission;
+  PermissionsEnum = PermissionsEnum;
   outputIndicator$ = this.indicatorsStore.outputIndicator();
   resultIndicator$ = this.indicatorsStore.resultIndicator();
 

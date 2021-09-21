@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
-import io.cloudflight.jems.server.project.service.toProjectStatus
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import java.time.LocalDate
 import org.springframework.stereotype.Repository
@@ -22,10 +21,10 @@ class ProjectWorkflowPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getProjectEligibilityDecisionDate(projectId: Long): LocalDate? =
         getProjectOrThrow(projectId)!!.let {
-            if (it.step2Active)
-                it.secondStepDecision!!.eligibilityDecision?.decisionDate
+            if (it.currentStatus.status.isInStep2())
+                it.decisionEligibilityStep2?.decisionDate
             else
-                it.firstStepDecision!!.eligibilityDecision?.decisionDate
+                it.decisionEligibilityStep1?.decisionDate
         }
 
     @Transactional(readOnly = true)
@@ -99,7 +98,6 @@ class ProjectWorkflowPersistenceProvider(
                     note = actionInfo?.note
                 )
             )
-            step2Active = true
         }.currentStatus.status
 
     @Transactional
@@ -114,10 +112,13 @@ class ProjectWorkflowPersistenceProvider(
     @Transactional
     override fun resetProjectFundingDecisionToCurrentStatus(projectId: Long) =
         projectRepository.getOne(projectId).apply {
-            if (this.step2Active)
-                this.secondStepDecision!!.fundingDecision = currentStatus
+            if (this.currentStatus.status.isInStep2())
+                if (this.currentStatus.status == ApplicationStatus.APPROVED_WITH_CONDITIONS)
+                    this.decisionFundingStep2 = null
+                else
+                    this.decisionPreFundingStep2 = null
             else
-                this.firstStepDecision!!.fundingDecision = currentStatus
+                this.decisionFundingStep1 = null
         }.currentStatus.status
 
 
@@ -132,20 +133,20 @@ class ProjectWorkflowPersistenceProvider(
                     decisionDate = actionInfo.date, user = userRepository.getOne(userId)
                 )
             )
-            if (this.step2Active)
-                this.secondStepDecision!!.eligibilityDecision = newStatus
+            if (this.currentStatus.status.isInStep2())
+                this.decisionEligibilityStep2 = newStatus
             else
-                this.firstStepDecision!!.eligibilityDecision = newStatus
+                this.decisionEligibilityStep1 = newStatus
             currentStatus = newStatus
         }.currentStatus.status
 
     @Transactional
     override fun clearProjectEligibilityDecision(projectId: Long) {
         projectRepository.getOne(projectId).apply {
-            if (this.step2Active)
-                this.secondStepDecision!!.eligibilityDecision = null
+            if (this.currentStatus.status.isInStep2())
+                this.decisionEligibilityStep2 = null
             else
-                this.firstStepDecision!!.eligibilityDecision = null
+                this.decisionEligibilityStep1 = null
         }
     }
 
@@ -160,20 +161,26 @@ class ProjectWorkflowPersistenceProvider(
                     decisionDate = actionInfo.date, user = userRepository.getOne(userId)
                 )
             )
-            if (this.step2Active)
-                this.secondStepDecision!!.fundingDecision = newStatus
+            if (this.currentStatus.status.isInStep2())
+                if (status == ApplicationStatus.APPROVED_WITH_CONDITIONS)
+                    this.decisionPreFundingStep2 = newStatus
+                else
+                    this.decisionFundingStep2 = newStatus
             else
-                this.firstStepDecision!!.fundingDecision = newStatus
+                this.decisionFundingStep1 = newStatus
             currentStatus = newStatus
         }.currentStatus.status
 
     @Transactional
     override fun clearProjectFundingDecision(projectId: Long) {
         projectRepository.getOne(projectId).apply {
-            if (this.step2Active)
-                this.secondStepDecision!!.fundingDecision = null
+            if (this.currentStatus.status.isInStep2())
+                if (this.currentStatus.status == ApplicationStatus.APPROVED_WITH_CONDITIONS)
+                    this.decisionPreFundingStep2 = null
+                else
+                    this.decisionFundingStep2 = null
             else
-                this.firstStepDecision!!.fundingDecision = null
+                this.decisionFundingStep1 = null
         }
     }
 

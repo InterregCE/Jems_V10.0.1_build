@@ -1,6 +1,8 @@
 <nav class="navbar navbar-expand-lg">
-    <a class="navbar-brand" href="/">{{ 'app.name' | translate }}</a>
-
+    <img *ngIf="smallLogo$ | async as logo; else defaultLogo" class="img" src="data:image/png;base64,{{logo.value}}" alt="">
+    <ng-template #defaultLogo>
+        <img class="img" src="assets/logos/InteractProgrammeLogo_48.png" alt="">
+    </ng-template>
     <!--Hamburger Menu-->
     <button mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
             data-toggle="collapse"
@@ -12,20 +14,22 @@
 
     <!-- Content -->
     <div class="navbar-collapse collapse" [ngClass]="{'show': !isNavBarCollapsed}" id="navbarSupportedContent">
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav ml-auto left-side-menu">
 
             <ng-container *ngIf="currentUser">
-                <li class="nav-item" *ngFor="let item of menuItems | async"
+                <li class="nav-item" *ngFor="let item of menuItems$ | async"
                     [ngClass]="{
                          'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
                          'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
                        }">
-                    <a class="nav-link" *ngIf="item.isInternal" [routerLink]="item.route"
-                       (click)="isNavBarCollapsed = true">
-                        {{item.name | translate}}
+                    <a class="nav-link" *ngIf="item.isInternal"
+                       (click)="isNavBarCollapsed = true; router.navigate([item.route])">
+                        <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
+                        <span class="icon-text">{{item.name | translate}}</span>
                     </a>
                     <a class="nav-link" *ngIf="!item.isInternal" [href]="item.route" target="_blank">
-                        {{item.name | translate}}
+                        <mat-icon *ngIf="item.icon">{{item.icon}}</mat-icon>
+                        <span class="icon-text">{{item.name | translate}}</span>
                     </a>
                 </li>
             </ng-container>

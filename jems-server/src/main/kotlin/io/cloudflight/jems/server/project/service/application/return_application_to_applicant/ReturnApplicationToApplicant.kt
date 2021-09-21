@@ -42,7 +42,6 @@ class ReturnApplicationToApplicant(
                         version = ProjectVersionUtils.increaseMajor(
                             projectVersionPersistence.getLatestVersionOrNull(projectId)?.version
                         ),
-                        createdAt = ZonedDateTime.now(ZoneOffset.UTC)
                     )
                 )
 

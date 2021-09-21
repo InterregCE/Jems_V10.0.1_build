@@ -30,13 +30,14 @@ internal class InfoControllerTest : UnitTest() {
     fun getVersionInfo() {
         every { serverModuleIdentification.getVersion() } returns "1.1.0"
         every { serverModuleIdentification.getId() } returns COMMIT_ID
-        every { infoEndpoint.info() } returns mapOf("helpdesk-url" to "https://unit-test.mock/")
-
+        every { infoEndpoint.info() } returns mapOf("helpdesk-url" to "https://unit-test.mock/", "accessibility-statement-url" to "/accessibility", "terms-privacy-policy-url" to "/terms")
         assertThat(controller.getVersionInfo()).isEqualTo(
             VersionDTO(
                 version = "1.1.0",
                 commitId = COMMIT_ID,
-                helpdeskUrl = "https://unit-test.mock/"
+                helpdeskUrl = "https://unit-test.mock/",
+                accessibilityStatementUrl = "/accessibility",
+                termsAndPrivacyPolicyUrl = "/terms"
             )
         )
     }

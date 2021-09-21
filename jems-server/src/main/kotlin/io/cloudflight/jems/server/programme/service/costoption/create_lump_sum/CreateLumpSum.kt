@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
@@ -21,6 +22,7 @@ class CreateLumpSum(
 
     @CanUpdateProgrammeSetup
     @Transactional
+    @ExceptionWrapper(CreateLumpSumException::class)
     override fun createLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum {
         validateInput(lumpSum)
         validateCreateLumpSum(lumpSumToValidate = lumpSum, currentCount = persistence.getCount())

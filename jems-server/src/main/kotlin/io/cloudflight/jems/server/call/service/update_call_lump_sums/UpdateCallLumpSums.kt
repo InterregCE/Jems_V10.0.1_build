@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.call.service.update_call_lump_sums
 
-import io.cloudflight.jems.server.call.authorization.CanUpdateCalls
+import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callUpdated
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -16,7 +16,7 @@ class UpdateCallLumpSums(
 ) : UpdateCallLumpSumsInteractor {
 
     @Transactional
-    @CanUpdateCalls
+    @CanUpdateCall
     @ExceptionWrapper(UpdateCallLumpSumsException::class)
     override fun updateLumpSums(callId: Long, lumpSumIds: Set<Long>): CallDetail {
         validateAllLumpSumsExists(lumpSumIds) { persistence.existsAllProgrammeLumpSumsByIds(it) }

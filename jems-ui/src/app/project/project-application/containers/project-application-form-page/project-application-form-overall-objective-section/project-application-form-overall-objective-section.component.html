@@ -5,7 +5,7 @@
             *ngIf="details$ | async as details"
             [success$]="saveSuccess$"
             [project]="details.description"
-            [specificObjective]="details.project.projectData?.specificObjective"
+            [specificObjective]="details.project.specificObjective"
             [editable]="projectStore.projectEditable$ | async"
             [error$]="saveError$"
             (updateData)="updateProjectDescription$.next($event)">

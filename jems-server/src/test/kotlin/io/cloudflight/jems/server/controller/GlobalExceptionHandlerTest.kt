@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.expression.ExpressionInvocationTargetException
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.client.RestClientException
@@ -18,9 +19,15 @@ import java.time.ZonedDateTime
 
 internal class GlobalExceptionHandlerTest {
 
-    lateinit var globalExceptionHandler: GlobalExceptionHandler
+    private lateinit var globalExceptionHandler: GlobalExceptionHandler
 
-    val MSG_EXPRESS_SURPRISE = "wehee!"
+    companion object {
+        const val MSG_EXPRESS_SURPRISE = "wehee!"
+        const val MSG_ILLEGAL_ARG = "$"
+
+        val i18nEx = I18nValidationException(i18nKey = "key")
+        val e404Ex = ResourceNotFoundException("entityName")
+    }
 
     @BeforeEach
     fun setup() {
@@ -58,6 +65,29 @@ internal class GlobalExceptionHandlerTest {
         assertThrows<RestClientException> {
             globalExceptionHandler.nestedRuntimeExceptionTransformer(RestClientException(MSG_EXPRESS_SURPRISE), ServletWebRequest(MockHttpServletRequest()))
         }
+    }
+
+    @Test
+    fun `exception thrown by illegal argument exception`() {
+        assertThrows<IllegalArgumentException> {
+            globalExceptionHandler.illegalArgumentExceptionHandler(IllegalArgumentException(MSG_ILLEGAL_ARG), ServletWebRequest(MockHttpServletRequest()))
+        }
+    }
+
+    @Test
+    fun `response from i18n validation by illegal argument exception`() {
+        val i18nException = IllegalArgumentException(ExpressionInvocationTargetException(MSG_ILLEGAL_ARG, i18nEx))
+        val response = globalExceptionHandler.illegalArgumentExceptionHandler(i18nException, ServletWebRequest(MockHttpServletRequest()))
+        assertThat(response.statusCode).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+        assertThat(response.body?.i18nMessage?.i18nKey).isEqualTo(i18nEx.i18nKey)
+    }
+
+    @Test
+    fun `response from 404 error by illegal argument exception`() {
+        val e404Exception = IllegalArgumentException(ExpressionInvocationTargetException(MSG_ILLEGAL_ARG, e404Ex))
+        val response = globalExceptionHandler.illegalArgumentExceptionHandler(e404Exception, ServletWebRequest(MockHttpServletRequest()))
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body?.i18nMessage?.i18nKey).isEqualTo(e404Ex.entity + ".not.exists")
     }
 
     @Test

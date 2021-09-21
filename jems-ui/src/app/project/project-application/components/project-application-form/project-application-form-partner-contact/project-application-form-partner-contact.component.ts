@@ -1,9 +1,11 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectContact, OutputProjectPartnerDetail} from '@cat/api';
+import {ProjectContactDTO, ProjectPartnerDetailDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {catchError, take, tap} from 'rxjs/operators';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-project-application-form-partner-contact',
@@ -12,9 +14,10 @@ import {catchError, take, tap} from 'rxjs/operators';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectApplicationFormPartnerContactComponent implements OnInit, OnChanges {
-  @Input()
-  partner: OutputProjectPartnerDetail;
+export class ProjectApplicationFormPartnerContactComponent {
+  APPLICATION_FORM = APPLICATION_FORM;
+
+  partner$: Observable<ProjectPartnerDetailDTO>;
 
   partnerContactForm: FormGroup = this.formBuilder.group({
     partnerRepresentativeTitle: ['', Validators.maxLength(25)],
@@ -40,14 +43,14 @@ export class ProjectApplicationFormPartnerContactComponent implements OnInit, On
     pattern: 'project.contact.telephone.wrong.format'
   };
 
-  private static isContactDtoEmpty(contactDto: InputProjectContact): boolean {
+  private static isContactDtoEmpty(contactDto: ProjectContactDTO): boolean {
     return !(contactDto.title || contactDto.firstName || contactDto.lastName ||
       contactDto.email || contactDto.telephone);
   }
 
-  private static getValidatedDataToEmit(legalRepresentative: InputProjectContact,
-                                        contactPerson: InputProjectContact): InputProjectContact[] {
-    const dataToEmit: InputProjectContact[] = [];
+  private static getValidatedDataToEmit(legalRepresentative: ProjectContactDTO,
+                                        contactPerson: ProjectContactDTO): ProjectContactDTO[] {
+    const dataToEmit: ProjectContactDTO[] = [];
     if (!ProjectApplicationFormPartnerContactComponent.isContactDtoEmpty(legalRepresentative)) {
       dataToEmit.push(legalRepresentative);
     }
@@ -60,23 +63,16 @@ export class ProjectApplicationFormPartnerContactComponent implements OnInit, On
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private partnerStore: ProjectPartnerStore) {
-  }
-
-  ngOnInit(): void {
     this.formService.init(this.partnerContactForm, this.partnerStore.isProjectEditable$);
-    this.resetForm();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.partner) {
-      this.resetForm();
-      this.formService.setDirty(false);
-    }
+    this.partner$ = this.partnerStore.partner$
+      .pipe(
+        tap(partner => this.resetForm(partner))
+      );
   }
 
   onSubmit(): void {
     const legalRepresentative = {
-      type: InputProjectContact.TypeEnum.LegalRepresentative,
+      type: ProjectContactDTO.TypeEnum.LegalRepresentative,
       title: this.partnerContactForm.controls.partnerRepresentativeTitle.value,
       firstName: this.partnerContactForm.controls.partnerRepresentativeFirstName.value,
       lastName: this.partnerContactForm.controls.partnerRepresentativeLastName.value,
@@ -84,7 +80,7 @@ export class ProjectApplicationFormPartnerContactComponent implements OnInit, On
       telephone: ''
     };
     const contactPerson = {
-      type: InputProjectContact.TypeEnum.ContactPerson,
+      type: ProjectContactDTO.TypeEnum.ContactPerson,
       title: this.partnerContactForm.controls.partnerContactTitle.value,
       firstName: this.partnerContactForm.controls.partnerContactFirstName.value,
       lastName: this.partnerContactForm.controls.partnerContactLastName.value,
@@ -102,20 +98,21 @@ export class ProjectApplicationFormPartnerContactComponent implements OnInit, On
       ).subscribe();
   }
 
-  resetForm(): void {
-    this.initLegalRepresentative();
-    this.initContactPerson();
+  resetForm(partner: ProjectPartnerDetailDTO): void {
+    this.initLegalRepresentative(partner);
+    this.initContactPerson(partner);
+    this.formService.resetEditable();
   }
 
-  private initLegalRepresentative(): void {
-    const legalRepresentative = this.partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.LegalRepresentative);
+  private initLegalRepresentative(partner: ProjectPartnerDetailDTO): void {
+    const legalRepresentative = partner?.contacts?.find(person => person.type === ProjectContactDTO.TypeEnum.LegalRepresentative);
     this.partnerContactForm.controls.partnerRepresentativeTitle.setValue(legalRepresentative?.title);
     this.partnerContactForm.controls.partnerRepresentativeFirstName.setValue(legalRepresentative?.firstName);
     this.partnerContactForm.controls.partnerRepresentativeLastName.setValue(legalRepresentative?.lastName);
   }
 
-  private initContactPerson(): void {
-    const contactPerson = this.partner?.contacts?.find(person => person.type === InputProjectContact.TypeEnum.ContactPerson);
+  private initContactPerson(partner: ProjectPartnerDetailDTO): void {
+    const contactPerson = partner?.contacts?.find(person => person.type === ProjectContactDTO.TypeEnum.ContactPerson);
     this.partnerContactForm.controls.partnerContactTitle.setValue(contactPerson?.title);
     this.partnerContactForm.controls.partnerContactFirstName.setValue(contactPerson?.firstName);
     this.partnerContactForm.controls.partnerContactLastName.setValue(contactPerson?.lastName);

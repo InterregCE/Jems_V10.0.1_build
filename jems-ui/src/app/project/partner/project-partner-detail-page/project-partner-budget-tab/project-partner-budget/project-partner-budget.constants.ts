@@ -1,4 +1,6 @@
 import {NumberService} from '../../../../../common/services/number.service';
+import {AbstractControl, ValidationErrors, ValidatorFn} from '@angular/forms';
+import {AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 
 export class ProjectPartnerBudgetConstants {
 
@@ -45,5 +47,14 @@ export class ProjectPartnerBudgetConstants {
       max: {maxValue: NumberService.toLocale(ProjectPartnerBudgetConstants.MAX_VALUE)}
     },
   };
+
+  public static requiredUnitCost(allowedBudgetCategory: AllowedBudgetCategory): ValidatorFn | null {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!allowedBudgetCategory.unitCostsOnly() || control.value) {
+        return null;
+      }
+      return {required: true} as any;
+    };
+  }
 
 }

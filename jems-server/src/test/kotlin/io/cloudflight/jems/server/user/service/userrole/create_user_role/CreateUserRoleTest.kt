@@ -15,6 +15,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 import java.util.Optional
 
 internal class CreateUserRoleTest : UnitTest() {
@@ -24,6 +25,7 @@ internal class CreateUserRoleTest : UnitTest() {
 
         private val userRoleCreate = UserRoleCreate(
             name = "maintainer",
+            isDefault = false,
             permissions = setOf(UserRolePermission.ProjectSubmission)
         )
         private val expectedUserRole = UserRole(
@@ -39,6 +41,9 @@ internal class CreateUserRoleTest : UnitTest() {
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
 
+    @RelaxedMockK
+    lateinit var auditPublisher: ApplicationEventPublisher
+
     @InjectMockKs
     lateinit var createUserRole: CreateUserRole
 
@@ -49,11 +54,17 @@ internal class CreateUserRoleTest : UnitTest() {
 
         assertThat(createUserRole.createUserRole(userRoleCreate)).isEqualTo(expectedUserRole)
         verify(exactly = 1) { persistence.create(userRoleCreate) }
+        verify(exactly = 1) { auditPublisher.publishEvent(any()) }
     }
 
     @Test
     fun `createUserRole - name already taken`() {
-        every { persistence.findUserRoleByName(userRoleCreate.name) } returns Optional.of(UserRoleSummary(id = 96L, name = userRoleCreate.name))
+        every { persistence.findUserRoleByName(userRoleCreate.name) } returns Optional.of(
+            UserRoleSummary(
+                id = 96L,
+                name = userRoleCreate.name
+            )
+        )
         assertThrows<UserRoleNameAlreadyTaken> { createUserRole.createUserRole(userRoleCreate) }
     }
 

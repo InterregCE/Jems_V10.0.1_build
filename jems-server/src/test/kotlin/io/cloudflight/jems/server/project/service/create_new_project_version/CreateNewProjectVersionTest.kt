@@ -51,6 +51,7 @@ internal class CreateNewProjectVersionTest : UnitTest() {
 
     private val projectSummary = ProjectSummary(
         id = projectId,
+        customIdentifier = "01",
         callName = "",
         acronym = "Gleason Inc",
         status = ApplicationStatus.SUBMITTED

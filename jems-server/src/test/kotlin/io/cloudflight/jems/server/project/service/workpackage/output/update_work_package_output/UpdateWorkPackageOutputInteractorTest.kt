@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -18,7 +18,9 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
 
     companion object {
         private val testOutput = WorkPackageOutput(
-            translatedValues = setOf(WorkPackageOutputTranslatedValue(SystemLanguage.EN, "Test")),
+            workPackageId = 1L,
+            title = setOf(InputTranslation(SystemLanguage.EN, "Test")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "Test")),
             periodNumber = 10,
             programmeOutputIndicatorId = 7L,
             targetValue = BigDecimal.ONE,
@@ -37,13 +39,13 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
     @Test
     fun `delete work package outputs from a work package`() {
         every { persistence.updateWorkPackageOutputs(1L, any()) } returns emptyList()
-        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(1L, emptyList())).isEmpty()
+        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(1L, 1L, emptyList())).isEmpty()
     }
 
     @Test
     fun `update - valid`() {
         every { persistence.updateWorkPackageOutputs(2L, any()) } returnsArgument 1
-        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(2L, listOf(testOutput)))
+        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(1L, 2L, listOf(testOutput)))
             .containsExactly(testOutput)
     }
 
@@ -51,7 +53,7 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
     fun `update - too many outputs`() {
         every { mockedList.size } returns 11
         val ex = assertThrows<I18nValidationException> {
-            updateOutputInteractor.updateOutputsForWorkPackage(3L, mockedList)
+            updateOutputInteractor.updateOutputsForWorkPackage(1L, 3L, mockedList)
         }
         assertThat(ex.i18nKey).isEqualTo("project.workPackage.outputs.max.allowed.reached")
     }
@@ -66,7 +68,7 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
 
     private fun assertTargetValueThrowException(value: BigDecimal) {
         val toBeSaved = listOf(testOutput.copy(targetValue = value))
-        val exception = assertThrows<I18nValidationException> { updateOutputInteractor.updateOutputsForWorkPackage(10L, toBeSaved) }
+        val exception = assertThrows<I18nValidationException> { updateOutputInteractor.updateOutputsForWorkPackage(1L, 10L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("project.workPackage.targetValue.not.valid")
     }
 

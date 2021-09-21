@@ -14,7 +14,7 @@ class RegisterUserException(cause: Throwable) : ApplicationException(
     cause = cause
 )
 
-class UserRoleNotFound : ApplicationNotFoundException(
+class DefaultUserRoleNotFound : ApplicationNotFoundException(
     code = "$REGISTER_USER_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$REGISTER_USER_ERROR_KEY_PREFIX.user.role.not.found"),
 )

@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.application.workflow
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
@@ -21,6 +20,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.springframework.context.ApplicationEventPublisher
 import java.util.stream.Stream
 
 class ApplicationStateFactoryTest : UnitTest() {
@@ -30,6 +30,7 @@ class ApplicationStateFactoryTest : UnitTest() {
 
         private fun summary(status: ApplicationStatus) = ProjectSummary(
             id = PROJECT_ID,
+            customIdentifier = "01",
             callName = "",
             acronym = "project acronym",
             status = status
@@ -38,7 +39,7 @@ class ApplicationStateFactoryTest : UnitTest() {
     }
 
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @RelaxedMockK
     lateinit var securityService: SecurityService

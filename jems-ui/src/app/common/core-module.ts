@@ -1,5 +1,4 @@
 import {APP_INITIALIZER, NgModule, Optional, SkipSelf} from '@angular/core';
-import {TopBarService} from '@common/components/top-bar/top-bar.service';
 import {DatePipe, KeyValuePipe} from '@angular/common';
 import {MatSortHeader} from '@angular/material/sort';
 import {SecurityService} from '../security/security.service';
@@ -24,7 +23,6 @@ export function loadLanguages(appInitializerService: AppInitializerService): () 
   ],
   providers: [
     DatePipe,
-    TopBarService,
     KeyValuePipe,
     MatSortHeader,
     SecurityService,

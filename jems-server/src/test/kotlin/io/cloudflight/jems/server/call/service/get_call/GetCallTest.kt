@@ -9,7 +9,6 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.D
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallSummary
@@ -20,16 +19,12 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUn
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
-import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
-import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
-import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.userApplicant
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime
@@ -66,7 +61,7 @@ class GetCallTest: UnitTest() {
                 ProjectCallFlatRate(
                     type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
                     rate = 5,
-                    isAdjustable = true
+                    adjustable = true
                 ),
             ),
             lumpSums = listOf(
@@ -75,6 +70,7 @@ class GetCallTest: UnitTest() {
             unitCosts = listOf(
                 ProgrammeUnitCost(isOneCostCategory = true),
             ),
+            applicationFormFieldConfigurations = mutableSetOf()
         )
 
         private val call = CallSummary(
@@ -98,30 +94,17 @@ class GetCallTest: UnitTest() {
     private lateinit var getCall: GetCall
 
     @Test
-    fun `getCalls - applicant`() {
+    fun `get published calls`() {
         every { securityService.currentUser } returns applicantUser
         every { persistence.getPublishedAndOpenCalls(any()) } returns PageImpl(listOf(call))
-        assertThat(getCall.getCalls(Pageable.unpaged()).content).containsExactly(call)
+        assertThat(getCall.getPublishedCalls(Pageable.unpaged()).content).containsExactly(call)
     }
 
     @Test
-    fun `getCalls - admin user`() {
-        every { securityService.currentUser } returns adminUser
+    fun `get calls`() {
+        every { securityService.currentUser } returns applicantUser
         every { persistence.getCalls(any()) } returns PageImpl(listOf(call))
         assertThat(getCall.getCalls(Pageable.unpaged()).content).containsExactly(call)
-    }
-
-    @Test
-    fun `getCalls - programme user`() {
-        every { securityService.currentUser } returns programmeUser
-        every { persistence.getCalls(any()) } returns PageImpl(listOf(call))
-        assertThat(getCall.getCalls(Pageable.unpaged()).content).containsExactly(call)
-    }
-
-    @Test
-    fun `getCalls - no role`() {
-        every { securityService.currentUser } returns LocalCurrentUser(user = userApplicant, password = "hash_pass", authorities = emptyList())
-        assertThat(getCall.getCalls(Pageable.unpaged())).isEqualTo(Page.empty<CallSummary>())
     }
 
     @Test

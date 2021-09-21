@@ -20,7 +20,7 @@ import io.cloudflight.jems.server.project.entity.partner.budget.unit_cost.Projec
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.ProjectPartnerLumpSumRepository
-import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
@@ -36,7 +36,6 @@ import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import kotlin.reflect.KClass
-
 
 open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
 
@@ -60,7 +59,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
     lateinit var projectVersionUtils: ProjectVersionUtils
 
     @MockK
-    lateinit var projectPersistence: ProjectPersistence
+    lateinit var projectPartnerRepository: ProjectPartnerRepository
 
     @MockK
     lateinit var budgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository
@@ -88,14 +87,23 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
 
     @BeforeAll
     fun setup() {
+        // mock to call method for getting current version, historic version of data
         every {
             projectVersionUtils.fetch<Any>(version, projectId, any(), any())
         } answers { lastArg<(Timestamp) -> Any>().invoke(timestamp) }
         every {
             projectVersionUtils.fetch<Any>(null, projectId, any(), any())
         } answers { thirdArg<() -> Any>().invoke() }
+        // mock to call method for getting current version, historic version of projectId for partnerId
+        every {
+            projectVersionUtils.fetchProjectId(null, partnerId, any(), any())
+        } answers { thirdArg<(Long) -> Long>().invoke(partnerId) }
+        every {
+            projectVersionUtils.fetchProjectId(version, partnerId, any(), any())
+        } answers { lastArg<(Long) -> Long>().invoke(partnerId) }
 
-        every { projectPersistence.getProjectIdForPartner(partnerId) } returns projectId
+        every { projectPartnerRepository.getProjectIdForPartner(partnerId) } returns projectId
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) } returns projectId
         every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp
     }
 

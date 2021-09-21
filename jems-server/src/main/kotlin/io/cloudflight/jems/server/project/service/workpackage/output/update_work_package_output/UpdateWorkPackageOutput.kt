@@ -15,6 +15,7 @@ class UpdateWorkPackageOutput(
     @CanUpdateProjectWorkPackage
     @Transactional
     override fun updateOutputsForWorkPackage(
+        projectId: Long,
         workPackageId: Long,
         outputs: List<WorkPackageOutput>,
     ): List<WorkPackageOutput> {

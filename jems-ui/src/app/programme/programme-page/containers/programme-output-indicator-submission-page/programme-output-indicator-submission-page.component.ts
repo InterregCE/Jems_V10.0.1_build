@@ -7,11 +7,10 @@ import {
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {catchError, take, takeUntil, tap} from 'rxjs/operators';
-import {Log} from '../../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
-import {TabService} from '../../../../common/services/tab.service';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
@@ -40,7 +39,6 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
 
   constructor(private programmeIndicatorService: ProgrammeIndicatorService,
               private activatedRoute: ActivatedRoute,
-              private tabService: TabService,
               private programmePriorityService: ProgrammePriorityService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();

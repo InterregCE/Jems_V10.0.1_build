@@ -8,7 +8,6 @@ import {
   Output
 } from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {Permission} from '../../../../security/permissions/permission';
 import {
   InputTranslation,
   OutputIndicatorCreateRequestDTO,
@@ -43,7 +42,6 @@ import {LanguageStore} from '../../../../common/services/language-store.service'
 })
 export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implements OnInit {
 
-  Permission = Permission;
   programmeOutputIndicatorConstants = ProgrammeOutputIndicatorConstants;
   isProgrammeSetupLocked: boolean;
 
@@ -74,8 +72,8 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
     indicatorName: [[]],
     specificObjective: ['', Validators.required],
     measurementUnit: [[]],
-    milestone: [null],
-    finalTarget: [null],
+    milestone: [0],
+    finalTarget: [0],
     resultIndicatorId: [null]
   });
 
@@ -90,11 +88,10 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
               protected translationService: TranslateService,
               private languageStore: LanguageStore,
               private programmeIndicatorService: ProgrammeIndicatorService,
-              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
   ) {
     super(changeDetectorRef, translationService);
 
-    this.programmeEditableStateStore.init();
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
       tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
       untilDestroyed(this)
@@ -104,17 +101,6 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
   ngOnInit(): void {
     super.ngOnInit();
     this.resetForm();
-
-    this.outputIndicatorForm.get('indicatorCode')?.valueChanges
-      .pipe(
-        tap((relation: OutputIndicatorCodeRelation) => this.outputIndicatorForm.get('indicatorName')
-          ?.setValue(this.extractFromCodeRelation(relation, code => code.name))
-        ),
-        tap((relation: OutputIndicatorCodeRelation) => this.outputIndicatorForm.get('measurementUnit')
-          ?.setValue(this.extractFromCodeRelation(relation, code => code.measurementUnit))
-        ),
-        untilDestroyed(this),
-      ).subscribe();
   }
 
   resetForm(): void {
@@ -199,8 +185,14 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
     }
   }
 
+  updateIndicatorCode(indicatorCode: OutputIndicatorCodeRelation): void {
+    this.outputIndicatorForm.get('indicatorName')?.setValue(this.extractFromCodeRelation(indicatorCode, code => code.name));
+    this.outputIndicatorForm.get('measurementUnit')?.setValue(this.extractFromCodeRelation(indicatorCode, code => code.measurementUnit));
+  }
+
   protected enterEditMode(): void {
     if (this.isProgrammeSetupLocked && !this.isCreate) {
+      this.outputIndicatorForm.controls.indicatorCode.disable();
       this.outputIndicatorForm.controls.specificObjective.disable();
     }
   }

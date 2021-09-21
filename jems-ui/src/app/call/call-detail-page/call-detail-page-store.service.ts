@@ -1,16 +1,16 @@
 import {Injectable} from '@angular/core';
-import {Log} from 'src/app/common/utils/log';
-import {combineLatest, Observable} from 'rxjs';
+import {Log} from '@common/utils/log';
+import {Observable} from 'rxjs';
 import {
-  CallDetailDTO,
+  CallDetailDTO, CallDTO, CallService, CallUpdateRequestDTO,
   OutputProgrammeStrategy,
   ProgrammeFundDTO,
   ProgrammeFundService,
-  ProgrammePriorityService,
-  ProgrammeStrategyService
+  ProgrammePriorityService, ProgrammeStateAidDTO, ProgrammeStateAidService,
+  ProgrammeStrategyService,
 } from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
-import {map, shareReplay, tap} from 'rxjs/operators';
+import {map, tap, withLatestFrom} from 'rxjs/operators';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {ActivatedRoute} from '@angular/router';
 import {CallStore} from '../services/call-store.service';
@@ -18,14 +18,16 @@ import {ProgrammeEditableStateStore} from '../../programme/programme-page/servic
 
 @Injectable()
 export class CallDetailPageStore {
-
   call$: Observable<CallDetailDTO>;
-  isApplicant$: Observable<boolean>;
+  userCanApply$: Observable<boolean>;
   allPriorities$: Observable<CallPriorityCheckbox[]>;
   allActiveStrategies$: Observable<OutputProgrammeStrategy[]>;
   allFunds$: Observable<ProgrammeFundDTO[]>;
+  allStateAids$: Observable<ProgrammeStateAidDTO[]>;
+  callIsReadable$: Observable<boolean>;
   callIsEditable$: Observable<boolean>;
   isFirstCall$: Observable<boolean>;
+  callIsPublished$: Observable<boolean>;
 
   constructor(public callStore: CallStore,
               private activatedRoute: ActivatedRoute,
@@ -33,17 +35,49 @@ export class CallDetailPageStore {
               private programmeEditableStateStore: ProgrammeEditableStateStore,
               private programmePriorityService: ProgrammePriorityService,
               private programmeStrategyService: ProgrammeStrategyService,
-              private programmeFundService: ProgrammeFundService) {
+              private programmeFundService: ProgrammeFundService,
+              private programmeStateAidService: ProgrammeStateAidService,
+              private callService: CallService) {
     this.call$ = this.callStore.call$;
-    this.isApplicant$ = this.callStore.isApplicant$;
+    this.userCanApply$ = this.callStore.userCanApply$;
     this.allPriorities$ = this.allPriorities();
     this.allActiveStrategies$ = this.allActiveStrategies();
     this.allFunds$ = this.allFunds();
-    this.callIsEditable$ = this.callIsEditable();
+    this.allStateAids$ = this.allStateAids();
+    this.callIsReadable$ = this.callStore.callIsReadable$;
+    this.callIsEditable$ = this.callStore.callIsEditable$;
     this.isFirstCall$ = this.isFirstCall();
+    this.callIsPublished$ = this.callStore.callIsPublished$;
+  }
 
-    // remove this
-    this.programmeEditableStateStore.init();
+  saveCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
+    return this.callService.updateCall(call)
+      .pipe(
+        tap(saved => this.callStore.savedCall$.next(saved)),
+        tap(saved => Log.info('Updated call:', this, saved))
+      );
+  }
+
+  createCall(call: CallUpdateRequestDTO): Observable<CallDetailDTO> {
+    return this.callService.createCall(call)
+      .pipe(
+        tap(created => this.callStore.savedCall$.next(created)),
+        tap(created => Log.info('Created call:', this, created)),
+      );
+  }
+
+  publishCall(callId: number): Observable<CallDTO> {
+    return this.callService.publishCall(callId)
+      .pipe(
+        withLatestFrom(this.isFirstCall$),
+        tap(([call, isFirstCall]) => {
+          if (isFirstCall) {
+            this.programmeEditableStateStore.firstCallPublished$.next();
+          }
+        }),
+        map(([call, isFirstCall]) => call),
+        tap(saved => Log.info('Published call:', this, saved)),
+      );
   }
 
   private allPriorities(): Observable<CallPriorityCheckbox[]> {
@@ -68,11 +102,10 @@ export class CallDetailPageStore {
       );
   }
 
-  private callIsEditable(): Observable<boolean> {
-    return combineLatest([this.call$, this.isApplicant$])
+  private allStateAids(): Observable<ProgrammeStateAidDTO[]> {
+    return this.programmeStateAidService.getProgrammeStateAidList()
       .pipe(
-        map(([call, isApplicant]) => call?.status !== CallDetailDTO.StatusEnum.PUBLISHED && !isApplicant),
-        shareReplay(1)
+        tap(programmeStateAids => Log.info('Fetched programme state aids:', this, programmeStateAids))
       );
   }
 
@@ -82,4 +115,5 @@ export class CallDetailPageStore {
         map(isProgrammeEditingLimited => !isProgrammeEditingLimited),
       );
   }
+
 }

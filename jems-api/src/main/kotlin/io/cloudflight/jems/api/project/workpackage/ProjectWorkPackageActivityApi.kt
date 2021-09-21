@@ -9,18 +9,24 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("WorkPackageActivity")
-@RequestMapping("/api/project/workPackage/activity/forWorkPackage/{workPackageId}")
+@RequestMapping("/api/project/{projectId}/workPackage/{workPackageId}/activity")
 interface ProjectWorkPackageActivityApi {
 
     @ApiOperation("Returns all work package activities for a work package")
     @GetMapping
-    fun getActivities(@PathVariable workPackageId: Long): List<WorkPackageActivityDTO>
+    fun getActivities(
+        @PathVariable projectId: Long,
+        @PathVariable workPackageId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<WorkPackageActivityDTO>
 
     @ApiOperation("Updates activities for a work package")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateActivities(
+        @PathVariable projectId: Long,
         @PathVariable workPackageId: Long,
         @RequestBody activities: List<WorkPackageActivityDTO>
     ): List<WorkPackageActivityDTO>

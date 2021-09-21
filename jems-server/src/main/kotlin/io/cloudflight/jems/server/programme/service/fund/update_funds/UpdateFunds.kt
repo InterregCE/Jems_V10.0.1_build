@@ -17,7 +17,7 @@ class UpdateFunds(
     private val persistence: ProgrammeFundPersistence,
     private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
     private val generalValidator: GeneralValidatorService,
-    private val auditPublisher: ApplicationEventPublisher,
+    private val auditPublisher: ApplicationEventPublisher
 ) : UpdateFundsInteractor {
 
     companion object {
@@ -48,7 +48,7 @@ class UpdateFunds(
         throwIfChangesAreNotAllowed(currentFunds, toUpdateFunds, toDeleteFundIds)
 
         return persistence.updateFunds(toDeleteIds = toDeleteFundIds, funds.toSet()).also {
-            auditPublisher.publishEvent(programmeFundsChanged(it))
+            auditPublisher.publishEvent(programmeFundsChanged(this, it))
         }
     }
 

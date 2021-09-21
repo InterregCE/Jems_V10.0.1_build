@@ -1,9 +1,9 @@
-<ng-container *ngIf="listStore.page$ | async as page">
-    <p *ngIf="!page?.content.length">No calls submitted</p>
-    <app-table *ngIf="page.content.length"
-               [configuration]="tableConfiguration"
-               [rows]="page.content"
-               [totalElements]="page?.totalElements"
+<ng-container *ngIf="data$ | async as data">
+    <p *ngIf="!data.page?.content.length">No calls submitted</p>
+    <app-table *ngIf="data.page.content.length"
+               [configuration]="data.tableConfiguration"
+               [rows]="data.page.content"
+               [totalElements]="data.page?.totalElements"
                [pageIndex]="listStore.newPageIndex$ | async"
                (newPageIndex)="listStore.newPageIndex$.next($event)"
                (newPageSize)="listStore.newPageSize$.next($event)"

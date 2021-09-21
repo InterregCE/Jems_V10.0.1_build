@@ -1,0 +1,87 @@
+<app-main-page-template [needsCard]="true"
+                        *ngIf="funds$ | async as funds"
+                        titleKey="programme.data.page.title"
+                        subTitleKey="programme.tab.funds">
+
+    <form id="funds" appFormLayout [formGroup]="editableFundsForm">
+        <div appMultiColumnRow>
+            <h3 class="mb-0">{{'programme.fund.list.title' | translate}}</h3>
+            <button color="primary" mat-raised-button
+                    *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
+                    (click)="changeFormState$.next(FormState.EDIT)">
+                {{'common.edit.label' | translate}}
+            </button>
+        </div>
+        <app-multi-language-container appNoWidthLimit [useSystemLanguages]="true"
+                                      [switchButtonsVisible]="formState === FormState.EDIT">
+            <div [appTableConfig]="[{maxInRem: 2},{maxInRem: 10},{},{}]">
+                <div>
+                    <span class="mat-body-strong">{{ 'programme.fund.list.select' | translate }}</span>
+                    <span class="mat-body-strong">{{ 'programme.legal.status.list.type' | translate }}</span>
+                    <span class="mat-body-strong">{{ 'programme.fund.list.abbreviation' | translate }}</span>
+                    <span class="mat-body-strong">{{ 'programme.fund.list.description' | translate }}</span>
+                </div>
+                <div *ngFor="let fund of fundsForm.controls;let i=index">
+                    <ng-container formArrayName="funds">
+                        <ng-container [formGroupName]="i">
+
+                            <mat-checkbox
+                                    name="multipleFundsAllowed"
+                                    formControlName="selected"
+                                    (click)="$event.stopPropagation()"
+                                    [disabled]="formState === FormState.VIEW || fund.get('selected').status === 'DISABLED'">
+                            </mat-checkbox>
+
+                            <div>{{fund?.value?.type}}</div>
+
+                            <app-multi-language-form-field
+                                    formControlName="abbreviation"
+                                    [useFallBackLanguage]="true"
+                                    [isFallBackLanguageReadonly]="isPredefinedFund(fund)"
+                                    maxLength="127">
+                            </app-multi-language-form-field>
+
+                            <app-multi-language-form-field
+                                    formControlName="description"
+                                    [useFallBackLanguage]="true"
+                                    [isFallBackLanguageReadonly]="isPredefinedFund(fund)"
+                                    maxLength="127">
+                            </app-multi-language-form-field>
+
+                        </ng-container>
+                    </ng-container>
+                </div>
+                <div *ngIf="formState === FormState.EDIT">
+                    <div>
+                        <button mat-icon-button type="button"
+                                (click)="addNewFund()">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </app-multi-language-container>
+        <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+            <button mat-stroked-button type="button"
+                    (click)="changeFormState$.next(FormState.VIEW)">
+                {{'common.cancel.label' | translate}}
+            </button>
+            <button mat-raised-button color="primary" type="button"
+                    [disabled]="submitted"
+                    (click)="onSubmit()">
+                {{'common.save.label' | translate}}
+            </button>
+        </div>
+        <app-alert
+                [show]="!submitted && (showSuccessMessage$ | async)"
+                [type]="Alert.SUCCESS">
+            <p>{{'programme.fund.save.success' | translate}}</p>
+        </app-alert>
+        <app-alert *ngIf="error$ | async as error"
+                   [show]="!submitted && !!error.i18nMessage?.i18nKey"
+                   [type]="Alert.ERROR">
+            <app-api-error-content [error]="error"></app-api-error-content>
+        </app-alert>
+    </form>
+</app-main-page-template>

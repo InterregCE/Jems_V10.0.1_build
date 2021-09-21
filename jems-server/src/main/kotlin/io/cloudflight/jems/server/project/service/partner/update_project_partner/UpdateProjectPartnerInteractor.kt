@@ -1,18 +1,19 @@
 package io.cloudflight.jems.server.project.service.partner.update_project_partner
 
-import io.cloudflight.jems.api.project.dto.InputProjectContact
-import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
-import io.cloudflight.jems.api.project.dto.partner.InputProjectPartnerUpdate
-import io.cloudflight.jems.api.project.dto.partner.OutputProjectPartnerDetail
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 
 interface UpdateProjectPartnerInteractor {
 
-    fun update(projectPartner: InputProjectPartnerUpdate): OutputProjectPartnerDetail
+    fun update(projectPartner: ProjectPartner): ProjectPartnerDetail
 
-    fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddressDTO>): OutputProjectPartnerDetail
+    fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddress>): ProjectPartnerDetail
 
-    fun updatePartnerContacts(partnerId: Long, contacts: Set<InputProjectContact>): OutputProjectPartnerDetail
+    fun updatePartnerContacts(partnerId: Long, contacts: Set<ProjectPartnerContact>): ProjectPartnerDetail
 
-    fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivationDTO): OutputProjectPartnerDetail
+    fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivation): ProjectPartnerDetail
+
 }

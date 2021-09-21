@@ -14,7 +14,7 @@ internal class AuthorizationUtil {
             email = "admin@admin.dev",
             name = "Name",
             surname = "Surname",
-            userRole = UserRole(id = 1, name = "administrator", permissions = UserRolePermission.values().toSet())
+            userRole = UserRole(id = 1, name = "administrator", permissions = UserRolePermission.values().toSet(), isDefault = false)
         )
 
         val userProgramme = User(
@@ -22,7 +22,7 @@ internal class AuthorizationUtil {
             email = "user@programme.dev",
             name = "",
             surname = "",
-            userRole = UserRole(id = 2, name = "programme user", permissions = emptySet())
+            userRole = UserRole(id = 2, name = "programme user", permissions = emptySet(), isDefault = false)
         )
 
         val userApplicant = User(
@@ -30,18 +30,23 @@ internal class AuthorizationUtil {
             email = "user@applicant.dev",
             name = "applicant",
             surname = "",
-            userRole = UserRole(id = 3, name = "applicant user", permissions = emptySet())
+            userRole = UserRole(id = 3, name = "applicant user", permissions = emptySet(), isDefault = true)
         )
 
         internal val programmeUser = LocalCurrentUser(
             userProgramme, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name)
+                SimpleGrantedAuthority("ROLE_" + userProgramme.userRole.name),
+                SimpleGrantedAuthority(UserRolePermission.ProgrammeSetupRetrieve.key),
+                SimpleGrantedAuthority(UserRolePermission.ProgrammeSetupUpdate.key),
             )
         )
 
         internal val adminUser = LocalCurrentUser(
             userAdmin, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name)
+                SimpleGrantedAuthority("ROLE_" + userAdmin.userRole.name),
+                SimpleGrantedAuthority(UserRolePermission.ProgrammeSetupRetrieve.key),
+                SimpleGrantedAuthority(UserRolePermission.ProgrammeSetupUpdate.key),
+                SimpleGrantedAuthority(UserRolePermission.ProjectFormUpdate.key),
             )
         )
 

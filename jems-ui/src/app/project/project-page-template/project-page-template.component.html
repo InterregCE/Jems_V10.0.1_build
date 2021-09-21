@@ -1,32 +1,39 @@
 <app-main-page-template
         [needsCard]="needsCard"
         [headerTemplate]="versionWarn"
+        [titleKey]="titleKey"
         [titleText]="titleText"
-        [subTitleKey]="subTitleKey">
+        [subTitleKey]="subTitleKey"
+        [subTitleText]="subTitleText"
+        [descriptionKey]="descriptionKey"
+        [descriptionText]="descriptionText"
+>
     <ng-content></ng-content>
 </app-main-page-template>
 
 <ng-template #versionWarn>
-    <app-alert *ngIf="versionWarnData$ | async as data"
-               [type]="Alert.WARNING"
-               [show]="!data.currentIsLatest">
-        <div id="version-warn">
-            <span class="mt-2">{{'project.versions.warn.old.version' | translate}}</span>
-            <span class="mt-2">
-                {{data.current?.version}}, {{data.current?.status}}
-                ({{data.current?.createdAt | localeDate: 'L' : 'LT'}})
-            </span>
-            <button id="switch-to-current" mat-raised-button
-                    (click)="pageStore.changeVersion(data.latest)">
-                {{'project.versions.warn.switch' | translate}}
-            </button>
-        </div>
-    </app-alert>
+    <ng-container *hasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition pageStore.isThisUserOwner$ | async">
+        <app-alert *ngIf="versionWarnData$ | async as data"
+                   [type]="Alert.WARNING"
+                   [show]="!data.currentIsLatest">
+            <div id="version-warn">
+                <span class="mt-2">{{'project.versions.warn.old.version' | translate}}</span>
+                <span class="mt-2">
+                    {{data.current?.version}}, {{data.current?.status}}
+                    ({{data.current?.createdAt | localeDate: 'L' : 'LT'}})
+                </span>
+                <button id="switch-to-current" mat-raised-button
+                        (click)="pageStore.changeVersion(data.latest)">
+                    {{'project.versions.warn.switch' | translate}}
+                </button>
+            </div>
+        </app-alert>
+    </ng-container>
 </ng-template>
 
 <ng-template #sidenavVersionSelect>
     <ng-container *ngIf="versionSelectData$ | async as data">
-        <mat-form-field *ngIf="data.versions.length" class="ml-4">
+        <mat-form-field *ngIf="data.versions.length" class="ml-4 mt-2">
             <mat-label>{{'project.versions.select.label' | translate}}</mat-label>
             <mat-select *ngIf="data.current?.version"
                         [value]="data.current"

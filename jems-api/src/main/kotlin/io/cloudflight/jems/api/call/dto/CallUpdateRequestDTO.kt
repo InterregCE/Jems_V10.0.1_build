@@ -11,10 +11,11 @@ data class CallUpdateRequestDTO (
     val startDateTime: ZonedDateTime,
     val endDateTimeStep1: ZonedDateTime? = null,
     val endDateTime: ZonedDateTime,
-    val isAdditionalFundAllowed: Boolean,
+    val additionalFundAllowed: Boolean,
     val lengthOfPeriod: Int,
     val description: Set<InputTranslation> = emptySet(),
     val priorityPolicies: Set<ProgrammeObjectivePolicy> = emptySet(),
     val strategies: Set<ProgrammeStrategy> = emptySet(),
     val fundIds: Set<Long> = emptySet(),
+    val stateAidIds: Set<Long> = emptySet(),
 )

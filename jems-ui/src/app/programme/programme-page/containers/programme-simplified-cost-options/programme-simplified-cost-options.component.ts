@@ -4,11 +4,11 @@ import {Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
-import { Permission } from '../../../../security/permissions/permission';
 import {LumpSumsStore} from '../../services/lump-sums-store.service';
-import {ProgrammeCostOptionService, ProgrammeLumpSumListDTO, ProgrammeUnitCostListDTO} from '@cat/api';
+import {ProgrammeCostOptionService, ProgrammeLumpSumListDTO, ProgrammeUnitCostListDTO, UserRoleDTO} from '@cat/api';
 import {UnitCostStore} from '../../services/unit-cost-store.service';
 import {MatTableDataSource} from '@angular/material/table';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-programme-simplified-cost-options',
@@ -18,7 +18,7 @@ import {MatTableDataSource} from '@angular/material/table';
 })
 export class ProgrammeSimplifiedCostOptionsComponent extends BaseComponent {
 
-  Permission = Permission;
+  PermissionsEnum = PermissionsEnum;
   lumpSum$ = this.lumpSumsStore.lumpSum();
   unitCost$ = this.unitCostStore.unitCost();
 

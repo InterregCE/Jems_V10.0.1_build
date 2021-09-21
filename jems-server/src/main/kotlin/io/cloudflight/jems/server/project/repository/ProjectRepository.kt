@@ -10,15 +10,29 @@ import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
+import java.util.Optional
+
+interface CustomProjectRepository {
+    fun getReferenceIfExistsOrThrow(id: Long?): ProjectEntity
+}
+
+open class CustomProjectRepositoryImpl(val repository: ProjectRepository) :
+    CustomProjectRepository {
+    @Transactional(readOnly = true)
+    override fun getReferenceIfExistsOrThrow(id: Long?) : ProjectEntity =
+        runCatching { repository.getOne(id!!) }.onFailure { throw ProjectNotFoundException() }.getOrThrow()
+}
 
 @Repository
-interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
+interface ProjectRepository : JpaRepository<ProjectEntity, Long>, CustomProjectRepository {
 
     @Query(
         """
             SELECT
-             entity.*, entity.step2_active as step2Active,
+             entity.*,
+             entity.custom_identifier as customIdentifier,
              translation.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.project_id
@@ -30,6 +44,17 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
     fun findByIdAsOfTimestamp(
         id: Long, timestamp: Timestamp
     ): List<ProjectRow>
+
+
+    @Query(
+        """
+            SELECT count(entity) > 0
+            FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+            WHERE entity.id = :id
+             """,
+        nativeQuery = true
+    )
+    fun existsByIsAsOfTimestamp(id: Long): Boolean
 
 
     @Query(
@@ -46,6 +71,9 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
     fun findPeriodsByProjectIdAsOfTimestamp(
         projectId: Long, timestamp: Timestamp
     ): List<ProjectPeriodRow>
+
+    @Query("SELECT e.call.id FROM #{#entityName} e where e.id=:projectId")
+    fun findCallIdFor(projectId: Long): Optional<Long>
 
     @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
     override fun findAll(pageable: Pageable): Page<ProjectEntity>

@@ -1,68 +1,80 @@
-<app-main-page-template [needsCard]="true" *ngIf="auditLogStore.auditPage$ | async as auditPage">
-        <h3 class="mb-0">{{'audit.list.title' | translate}}</h3>
-        <div [formGroup]="referenceForm">
-            <div appMultiColumnRow>
-                <mat-form-field>
-                    <mat-label>{{'audit.user.ids' | translate}}</mat-label>
-                    <input (keyup.enter)="addFilter(MAT_CHIP_USER_IDS_INDEX, $event, false)" matInput name="userId" formControlName="userId" currencyMask type="integer" [options]="{allowZero:true, thousands:'', nullable: true}">
-                </mat-form-field>
-                <mat-form-field>
-                    <mat-label>{{'audit.user.emails' | translate}}</mat-label>
-                    <input (keyup.enter)="addFilter(MAT_CHIP_USER_EMAILS_INDEX, $event, false)" matInput name="userEmail" formControlName="userEmail">
-                </mat-form-field>
-                <mat-form-field class="actions-field">
-                    <mat-label>{{'audit.actions' | translate}}</mat-label>
-                    <input (keyup.enter)="addFilter(MAT_CHIP_ACTIONS_INDEX, $event, false)" matInput [matAutocomplete]="autoActions" name="actions" formControlName="actions">
-                    <mat-autocomplete #autoActions="matAutocomplete">
-                        <mat-option *ngFor="let action of filteredActions | async" [value]="action">
-                            {{action}}
-                        </mat-option>
-                    </mat-autocomplete>
-                </mat-form-field>
-                <mat-form-field>
-                    <mat-label>{{'audit.projectIds' | translate}}</mat-label>
-                    <input (keyup.enter)="addFilter(MAT_CHIP_PROJECT_IDS_INDEX, $event, false)" matInput name="projectIds" formControlName="projectIds" currencyMask type="integer" [options]="{allowZero:true, thousands:'', nullable: true}">
-                </mat-form-field>
-            </div>
-            <div appMultiColumnRow>
-                <mat-form-field>
-                    <mat-label>{{'audit.start.date' | translate | dateFormatInfo : true}}</mat-label>
-                    <input formControlName="timeFrom" (keyup.enter)="addFilter(MAT_CHIP_START_DATE_INDEX, $event, true)" matInput name="timeFrom"
-                           [ngxMatDatetimePicker]="start">
-                    <mat-datepicker-toggle matSuffix [for]="start">
-                    </mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #start></ngx-mat-datetime-picker>
-                </mat-form-field>
-                <mat-form-field>
-                    <mat-label>{{'audit.end.date' | translate | dateFormatInfo : true}}</mat-label>
-                    <input formControlName="timeTo" (keyup.enter)="addFilter(MAT_CHIP_END_DATE_INDEX, $event, true)" matInput name="timeTo"
-                           [ngxMatDatetimePicker]="end">
-                    <mat-datepicker-toggle matSuffix [for]="end">
-                    </mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #end></ngx-mat-datetime-picker>
-                </mat-form-field>
-            </div>
+<app-main-page-template *ngIf="auditLogStore.auditPage$ | async as auditPage" [needsCard]="true">
+    <h3 class="mb-0">{{'audit.list.title' | translate}}</h3>
+    <div [formGroup]="referenceForm">
+        <div appMultiColumnRow>
+            <mat-form-field>
+                <mat-label>{{'audit.user.ids' | translate}}</mat-label>
+                <input (keyup.enter)="addFilter(MAT_CHIP_USER_IDS_INDEX, $event, false)"
+                       [options]="{allowZero:true, thousands:'', nullable: true}" currencyMask
+                       formControlName="userId" matInput name="userId"
+                       type="integer">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>{{'audit.user.emails' | translate}}</mat-label>
+                <input (keyup.enter)="addFilter(MAT_CHIP_USER_EMAILS_INDEX, $event, false)" formControlName="userEmail"
+                       matInput
+                       name="userEmail">
+            </mat-form-field>
+            <mat-form-field class="actions-field">
+                <mat-label>{{'audit.actions' | translate}}</mat-label>
+                <input (keyup.enter)="addFilter(MAT_CHIP_ACTIONS_INDEX, $event, false)" [matAutocomplete]="autoActions"
+                       formControlName="actions" matInput name="actions">
+                <mat-autocomplete #autoActions="matAutocomplete">
+                    <mat-option *ngFor="let action of filteredActions | async" [value]="action">
+                        {{action}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>{{'audit.projectIds' | translate}}</mat-label>
+                <input (keyup.enter)="addFilter(MAT_CHIP_PROJECT_IDS_INDEX, $event, false)"
+                       [options]="{allowZero:true, thousands:'', nullable: true}" currencyMask
+                       formControlName="projectIds" matInput name="projectIds"
+                       type="integer">
+            </mat-form-field>
         </div>
+        <div appMultiColumnRow>
+            <mat-form-field>
+                <mat-label>{{'audit.start.date' | translate | dateFormatInfo : true}}</mat-label>
+                <input (keyup.enter)="addFilter(MAT_CHIP_START_DATE_INDEX, $event, true)" [ngxMatDatetimePicker]="start"
+                       formControlName="timeFrom" matInput
+                       name="timeFrom">
+                <mat-datepicker-toggle [for]="start" matSuffix>
+                </mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #start [enableMeridian]="true"></ngx-mat-datetime-picker>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>{{'audit.end.date' | translate | dateFormatInfo : true}}</mat-label>
+                <input (keyup.enter)="addFilter(MAT_CHIP_END_DATE_INDEX, $event, true)" [ngxMatDatetimePicker]="end"
+                       formControlName="timeTo" matInput
+                       name="timeTo">
+                <mat-datepicker-toggle [for]="end" matSuffix>
+                </mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #end [enableMeridian]="true"></ngx-mat-datetime-picker>
+            </mat-form-field>
+        </div>
+    </div>
 
-        <mat-chip-list [selectable]="false">
-            <ng-container *ngFor="let control of filtersForm.controls; let filterIndex = index;">
-                <mat-chip *ngFor="let filterItem of control.get('values').value; let itemIndex = index;"
-                          [removable]="true"
-                          [selectable]="false"
-                          (removed)="getValuesForFilterOnIndex(filterIndex).removeAt(itemIndex)">
-                    {{ control.get('name').value }} = {{ formatDateValueInChip(filterItem) }}<mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-            </ng-container>
-        </mat-chip-list>
+    <mat-chip-list [selectable]="false">
+        <ng-container *ngFor="let control of filtersForm.controls; let filterIndex = index;">
+            <mat-chip (removed)="getValuesForFilterOnIndex(filterIndex).removeAt(itemIndex)"
+                      *ngFor="let filterItem of control.get('values').value; let itemIndex = index;"
+                      [removable]="true"
+                      [selectable]="false">
+                {{ control.get('name').value }} = {{ formatDateValueInChip(filterItem) }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+        </ng-container>
+    </mat-chip-list>
 
-    <app-table *ngIf="auditPage?.content.length"
-               [configuration]="auditTableConfiguration"
-               [rows]="auditPage?.content"
-               [totalElements]="auditPage?.totalElements"
-               [pageIndex]="auditLogStore.auditPageIndex$ | async"
-               (newPageIndex)="auditLogStore.auditPageIndex$.next($event)"
+    <app-table (newPageIndex)="auditLogStore.auditPageIndex$.next($event)"
                (newPageSize)="auditLogStore.auditPageSize$.next($event)"
-               (sortRows)="auditLogStore.auditPageSort$.next($event)">
+               (sortRows)="auditLogStore.auditPageSort$.next($event)"
+               *ngIf="auditPage?.content.length"
+               [configuration]="auditTableConfiguration"
+               [pageIndex]="auditLogStore.auditPageIndex$ | async"
+               [rows]="auditPage?.content"
+               [totalElements]="auditPage?.totalElements">
     </app-table>
 </app-main-page-template>
 
@@ -78,4 +90,8 @@
         <span [matTooltip]="audit.project.name">{{audit.project.id}}</span>
         <mat-icon (click)="addFilterToIndex(MAT_CHIP_PROJECT_IDS_INDEX, audit.project.id)">zoom_in</mat-icon>
     </ng-container>
+</ng-template>
+
+<ng-template #descriptionCell let-audit>
+    <span [innerHTML]="getDescription(audit.description)"></span>
 </ng-template>

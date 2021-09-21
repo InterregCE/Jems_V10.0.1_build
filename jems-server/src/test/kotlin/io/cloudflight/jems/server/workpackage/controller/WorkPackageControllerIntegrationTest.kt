@@ -49,7 +49,7 @@ class WorkPackageControllerIntegrationTest {
         val inputWorkPackage = InputWorkPackageCreate(setOf(translationEn), setOf(), setOf())
 
         mockMvc.perform(
-            post("/api/project/workPackage/forProject/${project.id}")
+            post("/api/project/${project.id}/workPackage")
 
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(inputWorkPackage))
@@ -68,9 +68,10 @@ class WorkPackageControllerIntegrationTest {
         val project = projectFactory.saveProject(userFactory.adminUser, call)
 
         val firstWorkPackage = InputWorkPackageCreate(setOf(InputTranslation(SystemLanguage.EN, "Work package name")), setOf(), setOf())
+        val secondWorkPackage = InputWorkPackageCreate(setOf(InputTranslation(SystemLanguage.EN, "Work package name 2")), setOf(), setOf())
 
         mockMvc.perform(
-            post("/api/project/workPackage/forProject/${project.id}")
+            post("/api/project/${project.id}/workPackage")
 
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(firstWorkPackage))
@@ -78,9 +79,17 @@ class WorkPackageControllerIntegrationTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
 
         mockMvc.perform(
-            get("/api/project/workPackage/perProject/${project.id}?page=0")
+            post("/api/project/${project.id}/workPackage")
+
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jsonMapper.writeValueAsString(secondWorkPackage))
         )
-            .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value(1))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+
+        mockMvc.perform(
+            get("/api/project/${project.id}/workPackage")
+        )
+            .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(2))
     }
 
 

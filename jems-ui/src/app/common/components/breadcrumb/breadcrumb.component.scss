@@ -16,6 +16,7 @@ ol.breadcrumbs {
     a {
       color: var(--font-color-secondary);
       text-decoration: none;
+      cursor: pointer;
     }
 
     a:hover {

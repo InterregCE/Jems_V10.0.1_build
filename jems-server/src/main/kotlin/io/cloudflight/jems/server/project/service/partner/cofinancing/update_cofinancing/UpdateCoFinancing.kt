@@ -17,7 +17,7 @@ class UpdateCoFinancing(
     @CanUpdateProjectPartner
     override fun updateCoFinancing(
         partnerId: Long,
-        finances: Collection<UpdateProjectPartnerCoFinancing>,
+        finances: List<UpdateProjectPartnerCoFinancing>,
         partnerContributions: List<ProjectPartnerContribution>
     ): ProjectPartnerCoFinancingAndContribution {
 

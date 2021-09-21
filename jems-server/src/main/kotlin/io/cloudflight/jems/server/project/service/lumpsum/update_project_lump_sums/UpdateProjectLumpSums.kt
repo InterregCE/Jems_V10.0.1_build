@@ -3,11 +3,10 @@ package io.cloudflight.jems.server.project.service.lumpsum.update_project_lump_s
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
-import io.cloudflight.jems.server.project.authorization.CanUpdateProject
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
-import io.cloudflight.jems.server.project.service.model.ProjectPeriods
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import org.springframework.stereotype.Service
@@ -29,7 +28,7 @@ class UpdateProjectLumpSums(
     }
 
     @Transactional
-    @CanUpdateProject
+    @CanUpdateProjectForm
     override fun updateLumpSums(projectId: Long, lumpSums: List<ProjectLumpSum>): List<ProjectLumpSum> {
         validateMaxAllowedSize(lumpSums)
         validateWrongSplitting(lumpSums, projectPersistence.getProjectCallSettings(projectId))

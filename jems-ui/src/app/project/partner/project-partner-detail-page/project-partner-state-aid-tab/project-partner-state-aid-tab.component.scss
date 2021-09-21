@@ -1,0 +1,15 @@
+.table-header {
+  display: flex;
+  flex-direction: column;
+}
+
+#check-result{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--table-highlight-color);
+  border: 1px solid var(--table-border-color);
+  .hint{
+    color: var(--table-header-text-color);
+  }
+}

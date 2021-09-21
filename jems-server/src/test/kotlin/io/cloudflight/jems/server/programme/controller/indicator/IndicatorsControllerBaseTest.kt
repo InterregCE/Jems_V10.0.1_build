@@ -130,6 +130,7 @@ abstract class IndicatorsControllerBaseTest : UnitTest() {
         name: Set<InputTranslation> = indicatorNameSet,
         programmePriorityCode: String = indicatorProgrammePriorityCode,
         measurementUnit: Set<InputTranslation> = indicatorMeasurementUnitSet,
+        baseline: BigDecimal = BigDecimal.TEN
     ) =
         ResultIndicatorSummary(
             id,
@@ -138,6 +139,7 @@ abstract class IndicatorsControllerBaseTest : UnitTest() {
             name,
             programmePriorityCode,
             measurementUnit,
+            baseline
         )
 
     protected fun buildResultIndicatorDetailInstance(

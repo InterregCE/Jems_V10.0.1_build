@@ -4,11 +4,14 @@ import {TemplateRef} from '@angular/core';
 export class HeadlineRoute {
   headline?: I18nLabel;
   route?: string;
+  baseRoute?: string;
   scrollRoute?: string;
   scrollToTop ? = false;
   bullets?: HeadlineRoute[] = [];
-  // TODO: remove this feature when project versioning is finished
-  disabled?: boolean;
+  badgeText?: string;
+  badgeTooltip?: string;
+  icon?: string;
+  versionedSection ? = false;
 
   // TODO: refactor this out in a HeadlineTemplate or a generic base Headline
   headlineTemplate?: TemplateRef<any>;

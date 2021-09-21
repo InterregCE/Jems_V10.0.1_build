@@ -12,14 +12,16 @@ import {MatTableDataSource} from '@angular/material/table';
 import {ProjectPartnerBudgetConstants} from '../project-partner-budget.constants';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import {NumberService} from '../../../../../../common/services/number.service';
+import {NumberService} from '@common/services/number.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {BudgetPeriodDTO, ProjectPeriodDTO} from '@cat/api';
-import {UnitCostsBudgetTable} from '../../../../../model/budget/unit-costs-budget-table';
-import {TableConfig} from '../../../../../../common/directives/table-config/TableConfig';
+import {ProjectPeriodDTO} from '@cat/api';
+import {UnitCostsBudgetTable} from '@project/model/budget/unit-costs-budget-table';
+import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {Alert} from '@common/components/forms/alert';
-import {ProgrammeUnitCost} from '../../../../../model/programmeUnitCost';
+import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
+import {ProjectPartnerBudgetTabService} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @UntilDestroy()
 @Component({
@@ -49,14 +51,8 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   columnsToDisplay: string[];
   tableConfig: TableConfig[];
 
-  constructor(private formService: FormService,
-              private controlContainer: ControlContainer,
-              private formBuilder: FormBuilder) {
+  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private budgetTabService: ProjectPartnerBudgetTabService) {
     this.budgetForm = this.controlContainer.control as FormGroup;
-  }
-
-  ngOnInit(): void {
-
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
 
@@ -64,29 +60,33 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
       this.dataSource.data = this.items.controls;
       this.items.controls.forEach(control => {
         this.setRowTotal(control as FormGroup);
-        this.setOpenForPeriods(control as FormGroup);
+        this.budgetTabService.setOpenForPeriods(this.projectPeriods, control as FormGroup);
       });
-      this.setTableTotal();
-      this.setOpenForPeriodsWarning();
+      this.budgetTabService.setTotal(this.items, this.total);
+      this.warnOpenForPeriods = this.budgetTabService.shouldShowWarningForPeriods(this.projectPeriods, this.items);
     });
+  }
+
+  ngOnInit(): void {
 
     this.formService.reset$.pipe(
       map(() => this.resetUnitCostFormGroup(this.unitCostTable)),
       untilDestroyed(this)
     ).subscribe();
 
-    const periodColumns = this.projectPeriods?.length
-      ? [...this.projectPeriods?.map(period => 'period' + period.number), 'openForPeriods'] : [];
     this.columnsToDisplay = [
-      'unitCost', 'description', 'unitType', 'numberOfUnits',
-      'pricePerUnit', 'total', ...periodColumns, 'action',
+      'unitCost',
+      ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS.DESCRIPTION, ['description']),
+      'unitType', 'numberOfUnits', 'pricePerUnit', 'total',
+      ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods), 'action',
     ];
 
-    const periodWidths = this.projectPeriods?.length
-      ? [...this.projectPeriods?.map(() => ({minInRem: 8})), {minInRem: 8}] : [];
     this.tableConfig = [
-      {minInRem: 10}, {minInRem: 12}, {minInRem: 5}, {minInRem: 12},
-      {minInRem: 5}, {minInRem: 8}, ...periodWidths, {minInRem: 3, maxInRem: 3}
+      {minInRem: 10, maxInRem: 10},
+      ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS.DESCRIPTION, [{minInRem: 12}]),
+      {minInRem: 12}, {minInRem: 5, maxInRem: 5}, {minInRem: 8, maxInRem: 8}, {minInRem: 8},
+      ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods),
+      {minInRem: 3, maxInRem: 3}
     ];
   }
 
@@ -111,7 +111,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
       budgetPeriods: this.formBuilder.array([]),
       openForPeriods: [0],
     }));
-    this.addPeriods(this.items.length - 1);
+    this.budgetTabService.addPeriods(this.items, this.projectPeriods);
     this.formService.setDirty(true);
   }
 
@@ -127,19 +127,11 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
         budgetPeriods: this.formBuilder.array([]),
         openForPeriods: [0],
       }));
-      this.addPeriods(this.items.length - 1, item.budgetPeriods);
-      this.setOpenForPeriods(this.items.at(this.items.length - 1) as any);
-      this.setOpenForPeriodsWarning();
+      this.budgetTabService.addPeriods(this.items, this.projectPeriods, item.budgetPeriods);
+      this.budgetTabService.setOpenForPeriods(this.projectPeriods, this.items.at(this.items.length - 1) as FormGroup);
+      this.warnOpenForPeriods = this.budgetTabService.shouldShowWarningForPeriods(this.projectPeriods, this.items);
     });
     this.formService.resetEditable();
-  }
-
-  private setTableTotal(): void {
-    let total = 0;
-    this.items.controls.forEach(control => {
-      total = NumberService.sum([control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.value || 0, total]);
-    });
-    this.total.setValue(NumberService.truncateNumber(total));
   }
 
   private setRowTotal(control: FormGroup): void {
@@ -148,7 +140,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
     control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.setValue(NumberService.truncateNumber(NumberService.product([numberOfUnits, pricePerUnit])), {emitEvent: false});
   }
 
-  getUnitCostValue(formGroup: FormGroup): ProgrammeUnitCost | null{
+  getUnitCostValue(formGroup: FormGroup): ProgrammeUnitCost | null {
     return formGroup.get(this.constants.FORM_CONTROL_NAMES.unitCost)?.value as ProgrammeUnitCost;
   }
   get table(): FormGroup {
@@ -165,56 +157,6 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
 
   openForPeriods(rowIndex: number): FormControl {
     return this.items.at(rowIndex).get(this.constants.FORM_CONTROL_NAMES.openForPeriods) as FormControl;
-  }
-
-  periods(rowIndex: number): FormArray {
-    return this.items.at(rowIndex).get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray;
-  }
-
-  periodTotal(periodIndex: number): number {
-    let total = 0;
-    this.items.controls.forEach(control => {
-      const periods = control.get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray;
-      const periodAmount = periods?.at(periodIndex - 1)?.get(this.constants.FORM_CONTROL_NAMES.amount)?.value;
-      total = NumberService.sum([periodAmount || 0, total]);
-    });
-    return total;
-  }
-
-  private addPeriods(rowIndex: number, budgetPeriods?: BudgetPeriodDTO[]): void {
-    if (!this.projectPeriods?.length) {
-      return;
-    }
-    this.projectPeriods.forEach(projectPeriod => {
-      const budgetPeriod = budgetPeriods?.find(period => period.number === projectPeriod.number);
-      this.periods(rowIndex).push(this.formBuilder.group({
-        amount: this.formBuilder.control(
-          budgetPeriod?.amount || 0,
-          [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]
-        ),
-        number: this.formBuilder.control(projectPeriod.number)
-      }));
-    });
-  }
-
-  private setOpenForPeriodsWarning(): void {
-    if (!this.projectPeriods?.length) {
-      return;
-    }
-    this.warnOpenForPeriods = this.items.controls.some(
-      control => control.get(this.constants.FORM_CONTROL_NAMES.openForPeriods)?.value !== 0
-    );
-  }
-
-  private setOpenForPeriods(control: FormGroup): void {
-    let periodsSum = 0;
-    (control.get(this.constants.FORM_CONTROL_NAMES.budgetPeriods) as FormArray).controls.forEach(period => {
-      periodsSum = NumberService.sum([period.get(this.constants.FORM_CONTROL_NAMES.amount)?.value || 0, periodsSum]);
-    });
-    const rowSum = control.get(this.constants.FORM_CONTROL_NAMES.rowSum)?.value || 0;
-    control.get(this.constants.FORM_CONTROL_NAMES.openForPeriods)?.setValue(
-      NumberService.minus(rowSum, periodsSum), {emitEvent: false}
-    );
   }
 
 }

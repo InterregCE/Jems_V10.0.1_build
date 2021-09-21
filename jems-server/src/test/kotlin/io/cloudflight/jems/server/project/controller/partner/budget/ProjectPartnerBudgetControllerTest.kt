@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.controller.partner.budget
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetPeriodDTO
@@ -8,13 +9,13 @@ import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommo
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionDTO
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.AutomaticPublic
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Private
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatus.Public
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.AutomaticPublic
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCosts
@@ -49,7 +50,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     private val expectedDto = ProjectPartnerCoFinancingAndContributionOutputDTO(
         finances = listOf(
             ProjectPartnerCoFinancingOutputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(20.5),
                 fund = ProgrammeFundDTO(
                     id = 10,
@@ -57,12 +58,12 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 )
             ),
             ProjectPartnerCoFinancingOutputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(30.5),
                 fund = ProgrammeFundDTO(id = 2, selected = true /* abbreviation missing for ids 1..9 */)
             ),
             ProjectPartnerCoFinancingOutputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(50.5),
                 fund = null
             )
@@ -72,21 +73,21 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 id = 21,
                 name = "PartnerName",
                 status = Public,
-                isPartner = true,
+                partner = true,
                 amount = BigDecimal.ONE
             ),
             ProjectPartnerContributionDTO(
                 id = 22,
                 name = "supporter 1",
                 status = Private,
-                isPartner = false,
+                partner = false,
                 amount = BigDecimal.TEN
             ),
             ProjectPartnerContributionDTO(
                 id = 23,
                 name = "supporter 2",
                 status = AutomaticPublic,
-                isPartner = false,
+                partner = false,
                 amount = BigDecimal.TEN
             )
         )
@@ -119,7 +120,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     private val modelMock = ProjectPartnerCoFinancingAndContribution(
         finances = listOf(
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 percentage = BigDecimal.valueOf(20.5),
                 fund = ProgrammeFund(
                     id = 10,
@@ -127,12 +128,12 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 )
             ),
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(30.5),
                 fund = ProgrammeFund(id = 2, selected = true)
             ),
             ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 percentage = BigDecimal.valueOf(50.5),
                 fund = null
             )
@@ -245,7 +246,8 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         every {
             updateBudgetExternalExpertiseAndServicesCosts.updateBudgetGeneralCosts(
                 PARTNER_ID,
-                any()
+                any(),
+                BudgetCategory.ExternalCosts
             )
         } returns externals.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetExternal(PARTNER_ID, externals)).isEqualTo(externals)
@@ -257,7 +259,8 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         every {
             updateBudgetEquipmentCosts.updateBudgetGeneralCosts(
                 PARTNER_ID,
-                equipments.toBudgetGeneralCostEntryList()
+                equipments.toBudgetGeneralCostEntryList(),
+                BudgetCategory.EquipmentCosts
             )
         } returns equipments.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetEquipment(PARTNER_ID, equipments)).isEqualTo(equipments)
@@ -269,7 +272,8 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         every {
             updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(
                 PARTNER_ID,
-                infrastructures.toBudgetGeneralCostEntryList()
+                infrastructures.toBudgetGeneralCostEntryList(),
+                BudgetCategory.InfrastructureCosts
             )
         } returns infrastructures.toBudgetGeneralCostEntryList()
         assertThat(controller.updateBudgetInfrastructure(PARTNER_ID, infrastructures)).isEqualTo(infrastructures)
@@ -326,7 +330,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 id = null,
                 name = "test abbr",
                 status = null,
-                isPartner = true,
+                partner = true,
                 amount = null
             )
         )
@@ -336,24 +340,24 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     fun updateProjectPartnerCoFinancing() {
         val inputFinances = listOf(
             ProjectPartnerCoFinancingInputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = 2,
                 percentage = BigDecimal.valueOf(30.5)
             ),
             ProjectPartnerCoFinancingInputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
                 fundId = 10,
                 percentage = BigDecimal.valueOf(20.5)
             ),
             ProjectPartnerCoFinancingInputDTO(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(50.5)
             )
         )
         val inputPartnerContributions = expectedDto.partnerContributions
 
-        val slotFinances = slot<Collection<UpdateProjectPartnerCoFinancing>>()
+        val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()
         val slotPartnerContributions = slot<List<ProjectPartnerContribution>>()
 
         every {
@@ -374,17 +378,14 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         // no matter the order
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.MainFund,
                 fundId = 2,
                 percentage = BigDecimal.valueOf(30.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.AdditionalFund,
                 fundId = 10,
                 percentage = BigDecimal.valueOf(20.5)
             ),
             UpdateProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundType.PartnerContribution,
                 fundId = null,
                 percentage = BigDecimal.valueOf(50.5)
             )

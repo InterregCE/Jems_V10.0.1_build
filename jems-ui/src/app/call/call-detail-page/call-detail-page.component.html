@@ -1,20 +1,20 @@
 <app-main-page-template *ngIf="data$ | async as data" titleKey="call.detail.title"
                         subTitleKey="call.general.settings">
-    <app-form (discard)="onCancel(data.call, data.isApplicant)"
-              (save)="onSubmit(data.call, data.priorityCheckboxes, data.strategies, data.funds)">
-        <app-alert [show]="published && !data.isApplicant"
+    <app-form (discard)="onCancel(data.call)"
+              (save)="onSubmit(data.call, data.priorityCheckboxes, data.strategies, data.funds, data.stateAids)">
+        <app-alert [show]="published && data.callIsEditable"
                    [type]="Alert.WARNING">
             <span>{{'call.detail.edit.published.warning' | translate}}</span>
         </app-alert>
-        <app-alert [show]="data.isApplicant && !isOpen(data.call)"
+        <app-alert [show]="published && data.userCanApply && !isOpen(data.call)"
                    [type]="Alert.WARNING">
             <span>{{'call.table.column.action.apply.inactive.note' | translate}}</span>
         </app-alert>
         <form appFormLayout [formGroup]="callForm">
             <app-pending-button
-                    *ngIf="data.call?.id && data.callIsEditable"
-                    [confirm]="confirmData()"
-                    [disabled]="publishingRequirementsNotAchieved(data.priorityCheckboxes, data.funds)"
+                    *ngIf="data.call?.id && data.callIsEditable && !published"
+                    [confirm]="confirmData() | async"
+                    [disabled]="isPublishDisabled(data.call) | async"
                     [pending]="publishPending"
                     (clicked)="publishCall()">
                 {{'call.detail.button.publish' | translate}}
@@ -26,7 +26,9 @@
                 <mat-error>
                     <app-form-field-errors
                             [errors]="callForm?.controls?.name?.errors"
-                            [messages]="inputErrorMessages">
+                            [messages]="inputErrorMessages"
+                            [args]="dateNameArgs"
+                    >
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -46,11 +48,13 @@
                            [ngxMatDatetimePicker]="start">
                     <mat-datepicker-toggle matSuffix [for]="start" [disabled]="published">
                     </mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #start></ngx-mat-datetime-picker>
+                    <ngx-mat-datetime-picker [enableMeridian]="true" #start></ngx-mat-datetime-picker>
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="callForm?.controls?.startDateTime?.errors"
-                                [messages]="inputErrorMessages">
+                                [messages]="inputErrorMessages"
+                                [args]="dateNameArgs"
+                        >
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>
@@ -64,7 +68,7 @@
                            [ngxMatDatetimePicker]="endStep1">
                     <mat-datepicker-toggle matSuffix [for]="endStep1">
                     </mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #endStep1></ngx-mat-datetime-picker>
+                    <ngx-mat-datetime-picker [enableMeridian]="true" #endStep1></ngx-mat-datetime-picker>
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="callForm?.controls?.endDateTimeStep1?.errors"
@@ -80,17 +84,19 @@
                            [ngxMatDatetimePicker]="end">
                     <mat-datepicker-toggle matSuffix [for]="end">
                     </mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #end></ngx-mat-datetime-picker>
+                    <ngx-mat-datetime-picker [enableMeridian]="true" #end></ngx-mat-datetime-picker>
                     <mat-error>
                         <app-form-field-errors
                                 [errors]="callForm?.controls?.endDateTime?.errors"
-                                [messages]="inputErrorMessages">
+                                [messages]="inputErrorMessages"
+                                [args]="dateNameArgs"
+                        >
                         </app-form-field-errors>
                     </mat-error>
                 </mat-form-field>
             </div>
 
-            <p *ngIf="!data.isApplicant">{{'call.detail.field.lengthOfPeriod.help' | translate}}</p>
+            <p *ngIf="!data.userCanApply">{{'call.detail.field.lengthOfPeriod.help' | translate}}</p>
             <mat-form-field>
                 <mat-label>{{'call.detail.field.lengthOfPeriod' | translate}}</mat-label>
                 <input required type="number" name="lengthOfPeriod" formControlName="lengthOfPeriod" matInput
@@ -98,7 +104,9 @@
                 <mat-error>
                     <app-form-field-errors
                             [errors]="callForm?.controls?.lengthOfPeriod?.errors"
-                            [messages]="inputErrorMessages">
+                            [messages]="inputErrorMessages"
+                            [args]="dateNameArgs"
+                    >
                     </app-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -106,7 +114,7 @@
             <app-multi-language-container
                     class="pb-3"
                     [useSystemLanguages]="true"
-                    [switchButtonsVisible]="data.callIsEditable || (published && !data.isApplicant)">
+                    [switchButtonsVisible]="data.callIsEditable || (published && !data.userCanApply)">
                 <app-multi-language-form-field
                         type="textarea"
                         formControlName="description"
@@ -120,8 +128,6 @@
                     *ngIf="data.priorityCheckboxes"
                     [priorityCheckboxes]="data.priorityCheckboxes"
                     [initialPriorityCheckboxes]="data.initialPriorityCheckboxes"
-                    [disabled]="published || data.isApplicant"
-                    [isApplicant]="data.isApplicant"
                     (selectionChanged)="formChanged()">
             </app-call-priority-tree>
 
@@ -129,36 +135,38 @@
             <app-call-strategies
                     [strategies]="data.strategies"
                     [initialStrategies]="data.initialStrategies"
-                    [disabled]="!data.callIsEditable"
-                    [isApplicant]="data.isApplicant"
                     (selectionChanged)="formChanged()">
             </app-call-strategies>
 
             <h3>{{'call.funds.title' | translate}}</h3>
-            <h4 *ngIf="!data.isApplicant || callForm?.controls?.isAdditionalFundAllowed.value">{{'call.funds.options' | translate}}</h4>
-            <div *ngIf="!data.isApplicant || callForm?.controls?.isAdditionalFundAllowed.value">
+            <span *ngIf="data.callIsEditable || callForm?.controls?.additionalFundAllowed.value">
+                <h4>{{'call.funds.options' | translate}}</h4>
                 <mat-checkbox
-                        name="isAdditionalFundAllowed"
-                        formControlName="isAdditionalFundAllowed"
-                        (click)="$event.stopPropagation()"
-                        [disabled]="!data.callIsEditable && (!data.isApplicant && published && data.call.isAdditionalFundAllowed)"
-                        [checked]="callForm?.controls?.isAdditionalFundAllowed.value">
+                    name="additionalFundAllowed"
+                    formControlName="additionalFundAllowed"
+                    (click)="$event.stopPropagation()"
+                    [disabled]="!data.callIsEditable && (!data.userCanApply && published && data.call.additionalFundAllowed)"
+                    [checked]="callForm?.controls?.additionalFundAllowed.value">
                     {{'call.multiple.funds.allowed' | translate}}
                 </mat-checkbox>
-            </div>
-
+            </span>
             <h4>{{'call.funds.select.funds' | translate}}</h4>
             <app-call-funds
                     [funds]="data.funds"
                     [initialFunds]="data.initialFunds"
-                    [disabled]="!data.callIsEditable"
-                    [isApplicant]="data.isApplicant"
                     (selectionChanged)="formChanged()">
             </app-call-funds>
+
+            <h3>{{'call.state.aid.title' | translate}}</h3>
+            <app-call-state-aids
+                    [stateAids]="data.stateAids"
+                    [initialStateAids]="data.initialStateAids"
+                    (selectionChanged)="formChanged()">
+            </app-call-state-aids>
         </form>
     </app-form>
 
-    <mat-card-footer *ngIf="data.isApplicant && isOpen(data.call)" class="footer">
+    <mat-card-footer *ngIf="published && data.userCanApply && isOpen(data.call)" class="footer">
         <button mat-raised-button color="primary"
                 class="action-button"
                 (click)="applyToCall(data.call.id)">

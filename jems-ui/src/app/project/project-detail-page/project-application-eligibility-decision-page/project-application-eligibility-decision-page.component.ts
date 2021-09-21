@@ -1,13 +1,14 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Permission} from '../../../security/permissions/permission';
 import {FormBuilder, Validators} from '@angular/forms';
-import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO} from '@cat/api';
+import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {map, tap} from 'rxjs/operators';
 import {ProjectEligibilityDecisionStore} from './project-eligibility-decision-store.service';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {combineLatest} from 'rxjs';
 import {ProjectStepStatus} from '../project-step-status';
+import {PermissionService} from '../../../security/permissions/permission.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-project-application-eligibility-decision-page',
@@ -17,7 +18,7 @@ import {ProjectStepStatus} from '../project-step-status';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationEligibilityDecisionPageComponent {
-  Permission = Permission;
+  PermissionsEnum = PermissionsEnum;
 
   projectId = this.activatedRoute.snapshot.params.projectId;
   step = this.activatedRoute.snapshot.params.step;
@@ -25,11 +26,12 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
 
   data$ = combineLatest([
     this.eligibilityPageStore.project$,
-    this.eligibilityPageStore.eligibilityDecision(this.step)]
-  )
+    this.eligibilityPageStore.eligibilityDecision(this.step),
+    this.permissionService.hasPermission([PermissionsEnum.ProjectStatusDecideEligible, PermissionsEnum.ProjectStatusDecideIneligible]),
+  ])
     .pipe(
-      tap(([project, eligibilityDecision]) => this.resetForm(project, eligibilityDecision)),
-      map(([project, eligibilityDecision]) => ({project, eligibilityDecision}))
+      tap(([project, eligibilityDecision, canSetEligibleDecision]) => this.resetForm(project, eligibilityDecision)),
+      map(([project, eligibilityDecision, canSetEligibleDecision]) => ({project, eligibilityDecision, canSetEligibleDecision}))
     );
 
   options: string[] = [this.stepStatus.eligible, this.stepStatus.ineligible];
@@ -55,6 +57,7 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
 
   constructor(public eligibilityPageStore: ProjectEligibilityDecisionStore,
               private router: Router,
+              private permissionService: PermissionService,
               private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder) {
   }
@@ -65,8 +68,8 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
     this.notesForm.controls.decisionDate.setValue(eligibilityDecision?.decisionDate);
   }
 
-  redirectToProjectDetail(): void {
-    this.router.navigate(['app', 'project', 'detail', this.projectId]);
+  redirectToAssessmentAndDecisions(): void {
+    this.router.navigate(['app', 'project', 'detail', this.projectId, 'assessmentAndDecision']);
   }
 
   submitEligibilityDecision(): void {
@@ -80,7 +83,7 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
       : this.eligibilityPageStore.setApplicationAsIneligible(this.projectId, statusInfo))
       .pipe(
         tap(() => this.actionPending = false),
-        tap(() => this.redirectToProjectDetail())
+        tap(() => this.redirectToAssessmentAndDecisions())
       ).subscribe();
   }
 

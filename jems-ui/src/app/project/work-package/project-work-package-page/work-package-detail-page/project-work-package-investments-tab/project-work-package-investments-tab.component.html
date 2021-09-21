@@ -1,0 +1,49 @@
+<ng-container *ngIf="investments$ | async as investments">
+    <app-form>
+        <div appFormLayout>
+            <h3>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h3>
+            <div>{{'project.work.package.tab.investment.intro' | translate}}</div>
+
+            <button mat-stroked-button
+                    routerLink="create"
+                    [disabled]="(projectStore.projectEditable$ | async) === false">
+                + {{'project.application.form.add.workpackage.investment' | translate}}
+            </button>
+
+            <app-table appNoWidthLimit
+                       *ngIf="investments.length"
+                       [configuration]="tableConfiguration"
+                       [rows]="investments"
+                       [totalElements]="investments.length">
+            </app-table>
+        </div>
+    </app-form>
+</ng-container>
+
+<ng-template #numberingCell let-workPackageInvestment>
+    <span *ngIf="workPackageInvestment.investmentNumber">
+        I{{workPackageNumber}}.{{workPackageInvestment.investmentNumber}}</span>
+    <span *ngIf="!workPackageInvestment.investmentNumber"> {{'project.application.form.partner.number.info.auto' | translate}}</span>
+</ng-template>
+
+<ng-template #titleCell let-workPackageInvestment>
+    {{workPackageInvestment?.title | translateContainerLessInputsBySystemLanguage | async}}
+</ng-template>
+
+<ng-template #deletionCell let-workPackageInvestment>
+    <ng-container *ngIf="projectStore.projectEditable$ | async" >
+        <button *ngIf="(workPackageInvestment.title | translateContainerLessInputsBySystemLanguage | async) as title; else noTitle"
+                mat-icon-button color="accent"
+                (click)="$event.stopPropagation();delete(workPackageInvestment, title)"
+                matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
+            <em class="mat-column-delete fas fa-trash"></em>
+        </button>
+        <ng-template #noTitle>
+            <button mat-icon-button color="accent"
+                    (click)="$event.stopPropagation();delete(workPackageInvestment)"
+                    matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
+                <em class="mat-column-delete fas fa-trash"></em>
+            </button>
+        </ng-template>
+    </ng-container>
+</ng-template>

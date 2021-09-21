@@ -1,41 +1,58 @@
-<div class="side-nav">
-    <div *ngFor="let data of headlines">
+<div class="menu">
+    <div *ngFor="let data of headlines" class="level-1">
         <mat-expansion-panel class="mat-elevation-z0"
                              [expanded]="data.bullets?.length"
-                             [disabled]="!data.bullets?.length">
+                             [disabled]="!data.bullets?.length"
+                             [class.link]="data.route"
+                             (click)="sideNavService.navigate(data)"
+                             [class.route-active]="(currentUrl$ | async) | IsMenuActive : (data.baseRoute || data.route) : !data.baseRoute">
             <mat-expansion-panel-header>
                 <mat-panel-title>
-                    <div class="side-nav-title">{{data.headline.i18nKey | translate}}</div>
+                    <div class="title">
+                        <mat-icon *ngIf="data.icon">{{data.icon}}</mat-icon>
+                        {{data.headline.i18nKey | translate}}
+                    </div>
                 </mat-panel-title>
             </mat-expansion-panel-header>
-            <div *ngFor="let subtitle of data.bullets" class="side-nav-main">
+            <div *ngFor="let subtitle of data.bullets" [class.versioned-section]="subtitle.versionedSection" class="level-2">
                 <ng-container *ngIf="subtitle.headlineTemplate"
                               [ngTemplateOutlet]="subtitle.headlineTemplate"></ng-container>
 
                 <mat-expansion-panel *ngIf="!subtitle.headlineTemplate"
                                      class="mat-elevation-z0"
                                      [expanded]="subtitle.bullets?.length"
-                                     [disabled]="!subtitle.bullets?.length">
+                                     [disabled]="!subtitle.bullets?.length"
+                                     [class.link]="subtitle.route"
+                                     [class.route-active]="(currentUrl$ | async) | IsMenuActive : (subtitle.baseRoute || subtitle.route) : !subtitle.baseRoute"
+                                     (click)="sideNavService.navigate(subtitle)"
+                >
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            <span *ngIf="subtitle.bullets?.length">
-                                {{subtitle.headline.i18nKey | translate}}
-                            </span>
-                            <span *ngIf="!subtitle.bullets?.length" class="side-nav-main_title_white-text"
-                               (click)="sideNavService.navigate(subtitle)">
+                            <span class="title">
+                                <mat-icon *ngIf="subtitle.icon">{{subtitle.icon}}</mat-icon>
                                 {{subtitle.headline.i18nKey | translate}}
                             </span>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
-                    <ul class="side-nav-section" *ngIf="subtitle.bullets?.length">
-                        <li *ngFor="let section of subtitle.bullets" [class.disabled]="subtitle.disabled"
-                            (click)="sideNavService.navigate(section)">
-                            <span class="first-list-item">
-                                {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}</span>
-                            <ul class="side-nav-subsection" *ngIf="section.bullets?.length">
-                                <li *ngFor="let subsection of section.bullets" [class.disabled]="subtitle.disabled"
+                    <ul class="level-3" *ngIf="subtitle.bullets?.length">
+                        <li *ngFor="let section of subtitle.bullets">
+                                <span [class.link]="section.route"
+                                      [class.route-active]="(currentUrl$ | async) | IsMenuActive : (section.baseRoute || section.route) : !section.baseRoute"
+                                      (click)="sideNavService.navigate(section)">
+                                    {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}</span>
+                            <ul class="level-4" *ngIf="section.bullets?.length">
+                                <li *ngFor="let subsection of section.bullets"
+                                    [class.link]="section.route"
+                                    [class.route-active]="(currentUrl$ | async) | IsMenuActive : (subsection.baseRoute || subsection.route) : !subsection.baseRoute"
                                     (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
-                                    <span class="second-list-item">{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</span>
+
+                                    <span>{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</span>
+
+                                    <mat-chip-list *ngIf="subsection.badgeText" [selectable]="false"
+                                                   class="standard-chip-list">
+                                        <mat-chip class="standard-chip" disableRipple
+                                                  [matTooltip]="subsection.badgeTooltip | translate">{{subsection.badgeText | translate}}</mat-chip>
+                                    </mat-chip-list>
                                 </li>
                             </ul>
                         </li>
@@ -43,6 +60,6 @@
                 </mat-expansion-panel>
             </div>
         </mat-expansion-panel>
-        <hr class="solid">
+        <hr>
     </div>
 </div>

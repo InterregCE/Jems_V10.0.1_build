@@ -31,7 +31,8 @@ fun AuditUser?.tDto() = let { user ->
 
 fun AuditProject.tDto() = AuditProjectDTO(
     id = id,
-    name = name,
+    customIdentifier = customIdentifier,
+    name = name
 )
 
 fun AuditSearchRequestDTO?.toModel(pageable: Pageable) =

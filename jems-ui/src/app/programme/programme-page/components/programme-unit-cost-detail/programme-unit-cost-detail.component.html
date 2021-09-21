@@ -1,7 +1,8 @@
 <form appFormLayout [formGroup]="unitCostForm">
     <div appMultiColumnRow>
         <h3 class="mb-0">{{'unit.cost.title' | translate}}</h3>
-        <button *ngIf="formState === FormState.VIEW" mat-raised-button color="primary"
+        <button mat-raised-button color="primary"
+                *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'unit.cost.button.edit' | translate}}
         </button>
@@ -106,8 +107,7 @@
     </div>
 
     <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
-        <button *ngxPermissionsExcept="Permission.APPLICANT_USER"
-                mat-stroked-button
+        <button mat-stroked-button
                 type="button"
                 (click)="onCancel()">
             {{'unit.cost.new.button.cancel' | translate}}

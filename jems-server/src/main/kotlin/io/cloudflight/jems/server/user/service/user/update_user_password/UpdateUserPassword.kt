@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.user.service.user.update_user_password
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.user.service.authorization.CanUpdateUserPassword
 import io.cloudflight.jems.server.user.service.UserPersistence
+import io.cloudflight.jems.server.user.service.authorization.CanUpdateUserPassword
 import io.cloudflight.jems.server.user.service.model.Password
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import io.cloudflight.jems.server.user.service.passwordChanged

@@ -9,7 +9,7 @@ dependencies {
     implementation('io.cloudflight.jems.plugin.contract:jems-plugin-contract')
     // load for local development (if projects are cloned in same root as jems)
     //implementation files('../../jems-plugin-contract/build/libs/jems-plugin-contract-1.0.2-SNAPSHOT.jar')
-    //implementation files('../../jems-standard-plugin/build/libs/jems-standard-plugin-1.0.1-SNAPSHOT.jar')
+    //implementation files("../../jems-standard-plugin/build/libs/jems-standard-plugin-$jemsStandardPluginVersion-SNAPSHOT.jar")
 
     toDownload('io.cloudflight.jems.plugin.standard:jems-standard-plugin')
 
@@ -28,6 +28,9 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-security')
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('io.cloudflight.platform:platform-jpa')
+    kapt('io.cloudflight.platform:platform-jpa')
+    implementation('com.querydsl:querydsl-jpa')
+    kapt('com.querydsl:querydsl-apt::jpa')
     implementation('org.springframework.boot:spring-boot-starter-validation')
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
@@ -51,7 +54,7 @@ dependencies {
 
     constraints {
         implementation('commons-io:commons-io:2.8.0')
-        implementation('io.minio:minio:7.0.2')
+        implementation('io.minio:minio:8.3.0')
         implementation('org.mariadb.jdbc:mariadb-java-client:2.7.2')
         implementation('io.springfox:springfox-swagger-ui:2.9.2')
         implementation('io.springfox:springfox-swagger2:2.9.2')

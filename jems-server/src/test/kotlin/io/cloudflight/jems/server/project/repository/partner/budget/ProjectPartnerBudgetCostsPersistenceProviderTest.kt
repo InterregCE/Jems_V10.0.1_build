@@ -99,7 +99,6 @@ class ProjectPartnerBudgetCostsPersistenceProviderTest : ProjectPartnerBudgetCos
 
     @Test
     fun `should return current version of budget lump sums total`() {
-
         every { budgetPartnerLumpSumRepository.sumTotalForPartner(partnerId) } returns BigDecimal.TEN
         assertThat(persistence.getBudgetLumpSumsCostTotal(partnerId)).isEqualTo(BigDecimal.TEN)
         verify { budgetPartnerLumpSumRepository.sumTotalForPartner(partnerId) }
@@ -107,7 +106,6 @@ class ProjectPartnerBudgetCostsPersistenceProviderTest : ProjectPartnerBudgetCos
 
     @Test
     fun `should return previous version of budget lump sums total`() {
-
         every { budgetPartnerLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) } returns BigDecimal.ONE
         assertThat(persistence.getBudgetLumpSumsCostTotal(partnerId, version)).isEqualTo(BigDecimal.ONE)
         verify { budgetPartnerLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) }

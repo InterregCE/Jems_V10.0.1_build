@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.programme.service.indicator.update_result_indicator
 
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -9,6 +8,7 @@ import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPer
 import io.cloudflight.jems.server.programme.service.indicator.indicatorEdited
 import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndicator
 import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndicatorDetail
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -18,27 +18,24 @@ class UpdateResultIndicator(
     private val persistence: ResultIndicatorPersistence,
     private val generalValidator: GeneralValidatorService,
     private val callPersistence: CallPersistence,
-    private val auditService: AuditService
+    private val auditPublisher: ApplicationEventPublisher,
 ) : UpdateResultIndicatorInteractor {
 
     @Transactional
     @CanUpdateProgrammeSetup
     @ExceptionWrapper(UpdateResultIndicatorException::class)
     override fun updateResultIndicator(resultIndicator: ResultIndicator): ResultIndicatorDetail {
-
         validateInput(resultIndicator)
-
-        if (persistence.isIdentifierUsedByAnotherResultIndicator(resultIndicator.id, resultIndicator.identifier))
-            throw IdentifierIsUsedException()
+        validateResultIndicatorDetail(resultIndicator)
 
         val oldResultIndicator = persistence.getResultIndicator(resultIndicator.id!!)
-
         checkUpdateConstraintsAfterFirstPublishedCall(resultIndicator, oldResultIndicator)
 
         val savedResultIndicator = persistence.saveResultIndicator(resultIndicator)
 
-        auditService.logEvent(
+        auditPublisher.publishEvent(
             indicatorEdited(
+                context = this,
                 identifier = savedResultIndicator.identifier,
                 changes = oldResultIndicator.getDiff(savedResultIndicator)
             )
@@ -63,11 +60,31 @@ class UpdateResultIndicator(
             generalValidator.digits(resultIndicator.finalTarget, 9, 2, "finalTarget")
         )
 
+    private fun validateResultIndicatorDetail(resultIndicator: ResultIndicator) {
+        if (persistence.isIdentifierUsedByAnotherResultIndicator(resultIndicator.id, resultIndicator.identifier))
+            throw IdentifierIsUsedException()
+    }
+
+
     private fun checkUpdateConstraintsAfterFirstPublishedCall(
         resultIndicator: ResultIndicator,
         oldResultIndicatorDetail: ResultIndicatorDetail
     ) {
-        if (oldResultIndicatorDetail.programmeObjectivePolicy != resultIndicator.programmeObjectivePolicy && callPersistence.hasAnyCallPublished())
-            throw SpecificObjectiveCannotBeChangedException()
+        if (!callPersistence.hasAnyCallPublished())
+            return
+
+        val changedLockedFields = HashSet<String>()
+
+        if (oldResultIndicatorDetail.programmeObjectivePolicy != resultIndicator.programmeObjectivePolicy)
+            changedLockedFields.add("specificObjective")
+
+        if (oldResultIndicatorDetail.getBaselineOrDefault() > resultIndicator.getBaselineOrDefault())
+            changedLockedFields.add("baseline")
+
+        if (oldResultIndicatorDetail.code != resultIndicator.code)
+            changedLockedFields.add("indicatorCode")
+
+        if (changedLockedFields.isNotEmpty())
+            throw ResultIndicatorCannotBeChangedAfterCallIsPublished(changedLockedFields)
     }
 }

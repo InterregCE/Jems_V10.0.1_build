@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.programme.service.priority.get_priority
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.server.programme.authorization.CanReadProgrammeSetup
+import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -16,17 +16,17 @@ class GetPriority(
 ) : GetPriorityInteractor {
 
     @Transactional(readOnly = true)
-    @CanReadProgrammeSetup
+    @CanRetrieveProgrammeSetup
     override fun getAllPriorities(): List<ProgrammePriority> =
         persistence.getAllMax56Priorities()
 
     @Transactional(readOnly = true)
-    @CanUpdateProgrammeSetup
+    @CanRetrieveProgrammeSetup
     override fun getPriority(priorityId: Long): ProgrammePriority =
         persistence.getPriorityById(priorityId)
 
     @Transactional(readOnly = true)
-    @CanUpdateProgrammeSetup
+    @CanRetrieveProgrammeSetup
     override fun getAvailableSetup(): ProgrammePriorityAvailableSetup = ProgrammePriorityAvailableSetup(
         freePrioritiesWithPolicies = getFreePrioritiesWithPolicies(),
         objectivePoliciesAlreadyInUse = persistence.getObjectivePoliciesAlreadyInUse(),

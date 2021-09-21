@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.programme.service.indicator.create_output_indicator
 
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
@@ -9,6 +8,7 @@ import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPer
 import io.cloudflight.jems.server.programme.service.indicator.indicatorAdded
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicator
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorDetail
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -20,7 +20,7 @@ class CreateOutputIndicator(
     private val persistence: OutputIndicatorPersistence,
     private val resultIndicatorPersistence: ResultIndicatorPersistence,
     private val generalValidator: GeneralValidatorService,
-    private val auditService: AuditService
+    private val auditPublisher: ApplicationEventPublisher,
 ) : CreateOutputIndicatorInteractor {
 
     @Transactional
@@ -33,7 +33,7 @@ class CreateOutputIndicator(
         validateOutputIndicatorDetail(outputIndicator)
 
         return persistence.saveOutputIndicator(outputIndicator).also {
-            auditService.logEvent(indicatorAdded(outputIndicator.identifier))
+            auditPublisher.publishEvent(indicatorAdded(this, outputIndicator.identifier))
         }
     }
 

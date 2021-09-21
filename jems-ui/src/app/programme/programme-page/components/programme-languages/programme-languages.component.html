@@ -2,7 +2,7 @@
     <div appMultiColumnRow>
         <h3 class="mb-0">{{'programme.languages.header' | translate}}</h3>
         <button color="primary"
-                *ngIf="formState === FormState.VIEW" mat-raised-button
+                *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)"
                 [disabled]="(programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async)">
             {{'common.edit.label' | translate}}

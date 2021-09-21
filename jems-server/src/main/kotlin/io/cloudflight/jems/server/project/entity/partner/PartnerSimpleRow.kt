@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 
 interface PartnerSimpleRow {
     val id: Long?

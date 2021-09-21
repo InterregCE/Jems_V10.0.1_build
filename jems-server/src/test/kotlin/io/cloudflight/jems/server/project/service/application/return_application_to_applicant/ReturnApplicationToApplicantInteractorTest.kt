@@ -27,6 +27,7 @@ class ReturnApplicationToApplicantInteractorTest : UnitTest() {
         private const val PROJECT_ID = 1L
         private val summary = ProjectSummary(
             id = PROJECT_ID,
+            customIdentifier = "01",
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.SUBMITTED
@@ -71,7 +72,7 @@ class ReturnApplicationToApplicantInteractorTest : UnitTest() {
         assertThat(slotAudit[0].auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), name = "project acronym"),
+                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
                 description = "Project application status changed from SUBMITTED to RETURNED_TO_APPLICANT"
             )
         )
@@ -79,7 +80,7 @@ class ReturnApplicationToApplicantInteractorTest : UnitTest() {
         assertThat(slotAudit[1].auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_VERSION_RECORDED,
-                project = AuditProject(id = PROJECT_ID.toString(), name = "project acronym"),
+                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
                 description = slotAudit[1].auditCandidate.description
             )
         )

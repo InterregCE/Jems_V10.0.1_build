@@ -1,22 +1,27 @@
 package io.cloudflight.jems.server.project.entity.partner.cofinancing
 
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundType
 import java.io.Serializable
+import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.Embeddable
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
 import javax.validation.constraints.NotNull
 
 @Embeddable
-data class ProjectPartnerCoFinancingFundId(
+class ProjectPartnerCoFinancingFundId(
 
     @Column
     @field:NotNull
     val partnerId: Long,
 
-    @Enumerated(EnumType.STRING)
+    @Column
     @field:NotNull
-    val type: ProjectPartnerCoFinancingFundType
+    val orderNr: Int
 
-) : Serializable
+) : Serializable {
+
+    override fun equals(other: Any?): Boolean = this === other ||
+        other is ProjectPartnerCoFinancingFundId && partnerId == other.partnerId && orderNr == other.orderNr
+
+    override fun hashCode(): Int = Objects.hash(partnerId, orderNr)
+
+}

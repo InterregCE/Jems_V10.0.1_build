@@ -9,7 +9,7 @@ export class TranslateBySystemLanguagePipe implements PipeTransform {
   constructor(private languageStore: LanguageStore) {
   }
 
-  transform(translations: Array<InputTranslation> | null, useFallbackLanguage: boolean = true): Observable<string> {
+  transform(translations: Array<InputTranslation> | null, useFallbackLanguage = true): Observable<string> {
     if (translations === null || translations.length === 0) {
       return of('');
     }
@@ -17,7 +17,9 @@ export class TranslateBySystemLanguagePipe implements PipeTransform {
     return  this.languageStore.currentSystemLanguage$.pipe(
       map(language => translations.find(translation => translation.language === language)?.translation || ''),
       withLatestFrom(this.languageStore.fallbackLanguage$),
-      map(([originalTranslation, fallbackLanguage]) => useFallbackLanguage && originalTranslation === '' ? translations.find(translation => translation.language === fallbackLanguage)?.translation || '' : originalTranslation)
+      map(([originalTranslation, fallbackLanguage]) => useFallbackLanguage && originalTranslation === ''
+        ? translations.find(translation => translation.language === fallbackLanguage)?.translation || ''
+        : originalTranslation)
     );
 
   }

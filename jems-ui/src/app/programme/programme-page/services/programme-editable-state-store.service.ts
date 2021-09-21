@@ -1,25 +1,50 @@
 import {Injectable} from '@angular/core';
-import {ReplaySubject} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
+import {map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
-import {ProgrammeDataService} from '@cat/api';
+import {ProgrammeDataService, UserRoleCreateDTO} from '@cat/api';
+import {PermissionService} from '../../../security/permissions/permission.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable()
 export class ProgrammeEditableStateStore {
-    isProgrammeEditableDependingOnCall$ = new ReplaySubject<boolean>(1);
+  isProgrammeEditableDependingOnCall$: Observable<boolean>;
+  hasOnlyViewPermission$: Observable<boolean>;
+  hasEditPermission$: Observable<boolean>;
 
-    constructor(private programmeDataService: ProgrammeDataService) {
-    }
+  firstCallPublished$ = new Subject<void>();
 
-    init(): void {
-        this.isProgrammeEditable();
-    }
+  constructor(
+    private programmeDataService: ProgrammeDataService,
+    private permissionService: PermissionService,
+  ) {
+    this.isProgrammeEditableDependingOnCall$ = this.isProgrammeEditable();
+    this.hasOnlyViewPermission$ = this.hasUserOnlyViewPermission();
+    this.hasEditPermission$ = this.hasUserEditPermission();
+  }
 
-    private isProgrammeEditable(): void {
-        this.programmeDataService.isProgrammeSetupLocked()
-            .pipe(
-                tap(flag => Log.info('Fetched programme is locked:', flag)),
-                tap(flag => this.isProgrammeEditableDependingOnCall$.next(flag))
-            ).subscribe();
-    }
+  private isProgrammeEditable(): Observable<boolean> {
+    return this.firstCallPublished$
+      .pipe(
+        startWith(null),
+        switchMap(() => this.programmeDataService.isProgrammeSetupLocked()),
+        tap(flag => Log.info('Fetched programme is locked:', flag)),
+        shareReplay(1),
+      );
+  }
+
+  private hasUserOnlyViewPermission(): Observable<boolean> {
+    return this.permissionService.hasPermission(PermissionsEnum.ProgrammeSetupUpdate)
+      .pipe(
+        map(hasUpdate => !hasUpdate),
+        shareReplay(1),
+      );
+  }
+
+  private hasUserEditPermission(): Observable<boolean> {
+    return this.permissionService.hasPermission(PermissionsEnum.ProgrammeSetupUpdate)
+      .pipe(
+        shareReplay(1),
+      );
+  }
 }

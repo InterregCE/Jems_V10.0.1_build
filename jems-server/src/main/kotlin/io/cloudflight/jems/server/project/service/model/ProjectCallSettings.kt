@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.project.service.model
 
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import java.time.ZonedDateTime
 
 data class ProjectCallSettings(
@@ -16,6 +18,8 @@ data class ProjectCallSettings(
     val flatRates: Set<ProjectCallFlatRate>,
     val lumpSums: List<ProgrammeLumpSum>,
     val unitCosts: List<ProgrammeUnitCost>,
+    val stateAids: List<ProgrammeStateAid>,
+    var applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
 ) {
     fun isCallStep1Closed(): Boolean {
         return if (endDateStep1 == null) {

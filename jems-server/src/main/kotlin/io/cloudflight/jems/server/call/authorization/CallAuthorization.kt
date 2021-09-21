@@ -1,20 +1,28 @@
+
 package io.cloudflight.jems.server.call.authorization
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.authorization.Authorization
-import io.cloudflight.jems.server.call.repository.CallNotFound
 import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@callAuthorization.canUpdateCalls()")
-annotation class CanUpdateCalls
+@PreAuthorize("@callAuthorization.canRetrieveCall(#callId)")
+annotation class CanRetrieveCall
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@callAuthorization.canReadCall(#callId)")
-annotation class CanReadCall
+@PreAuthorize("hasAuthority('CallRetrieve')")
+annotation class CanRetrieveCalls
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('CallPublishedRetrieve')")
+annotation class CanRetrievePublishedCalls
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('CallUpdate')")
+annotation class CanUpdateCall
 
 @Component
 class CallAuthorization(
@@ -22,23 +30,6 @@ class CallAuthorization(
     val callPersistence: CallPersistence,
 ) : Authorization(securityService) {
 
-    fun canUpdateCalls(): Boolean = isAdmin() || isProgrammeUser()
-
-    fun canReadCall(callId: Long): Boolean {
-        if (isApplicantUser()) {
-            val call: CallDetail
-            try {
-                call = callPersistence.getCallById(callId)
-            } catch (e: CallNotFound) {
-                return false
-            }
-            return call.isPublished()
-        }
-
-        if (isAdmin() || isProgrammeUser())
-            return true
-
-        return false
-    }
-
+    fun canRetrieveCall(callId: Long): Boolean =
+        hasPermission(UserRolePermission.CallRetrieve) || callPersistence.getCallById(callId).isPublished()
 }

@@ -43,7 +43,7 @@ class ProgrammeUnitCostControllerTest {
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
             costPerUnit = BigDecimal.ONE,
-            isOneCostCategory = false,
+            oneCostCategory = false,
             categories = setOf(EquipmentCosts, TravelAndAccommodationCosts),
         )
 
