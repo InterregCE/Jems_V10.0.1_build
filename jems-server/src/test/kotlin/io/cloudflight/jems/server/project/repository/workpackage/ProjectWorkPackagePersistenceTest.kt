@@ -35,13 +35,14 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
+import io.cloudflight.jems.server.utils.partner.activityEntity
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -130,6 +131,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         val activity1_model = WorkPackageActivity(
             id = activityId1,
             workPackageId = 1L,
+            workPackageNumber = 10,
             activityNumber = 1,
             startPeriod = 4,
             endPeriod = 6,
@@ -167,6 +169,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         val activity2_model = WorkPackageActivity(
             id = activityId2,
             workPackageId = 1L,
+            workPackageNumber = 10,
             activityNumber = 2,
             title = setOf(
                 InputTranslation(language = SK, translation = "sk_title"),
@@ -305,10 +308,10 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
     @MockK
     lateinit var repositoryOutput: WorkPackageOutputRepository
 
-    @RelaxedMockK
+    @MockK
     lateinit var investmentRepository: WorkPackageInvestmentRepository
 
-    @RelaxedMockK
+    @MockK
     lateinit var outputIndicatorRepository: OutputIndicatorRepository
 
     @MockK
@@ -353,7 +356,7 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         every { activityPartnerMock.id } returns WorkPackageActivityPartnerId(activity1, activityProjectPartnerId)
         every {
             repositoryActivity.findAllByWorkPackageIdIn(wkPackages)
-        } returns listOf(activity2, activity1)
+        } returns listOf(activity1, activity2)
         every {
             repositoryOutput.findAllByOutputIdWorkPackageIdIn(wkPackages)
         } returns listOf(output2, output1)
@@ -580,40 +583,86 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
     }
 
     @Test
-    fun updateWorkPackageActivities() {
-        val slot = slot<List<WorkPackageActivityEntity>>()
-        every { repository.existsById(WORK_PACKAGE_ID) } returns true
-        every { repositoryActivity.findAllByWorkPackageId(WORK_PACKAGE_ID) } returns mutableListOf()
-        every { repositoryActivity.deleteAll(any()) } returns Unit
-        every { repositoryActivity.saveAll(capture(slot)) } returnsArgument 0
-        every { repositoryActivity.saveAll(capture(slot)) } returnsArgument 0
-
-        every { repositoryActivityPartner.deleteAllByIdActivityIdIn(listOf(activityId1, activityId2)) } returns Unit
-        every { repositoryActivityPartner.saveAll(emptyList()) } returns emptyList()
-
+    fun `update WorkPackage Activities`() {
+        val wpNr = 10
+        val wp = WorkPackageEntity(
+            id = WORK_PACKAGE_ID,
+            project = project,
+            number = wpNr,
+            activities = mutableListOf(
+                WorkPackageActivityEntity(
+                    id = activityId2,
+                    workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project),
+                    activityNumber = 2,
+                    startPeriod = 1,
+                    endPeriod = 3,
+                    translatedValues = mutableSetOf(),
+                    deliverables = mutableSetOf(deliverable2_2, deliverable2_1)
+                ),
+                WorkPackageActivityEntity(
+                    id = activityId1,
+                    workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project),
+                    activityNumber = 1,
+                    startPeriod = 4,
+                    endPeriod = 6,
+                    partners = mutableSetOf(activityPartnerMock)
+                )
+            ),
+            translatedValues = mutableSetOf()
+        ).apply {
+            translatedValues.addAll(
+                setOf(WorkPackageTransl(translationId = TranslationId(this, EN), name = "name"))
+            )
+        }
+        every { repository.findById(eq(WORK_PACKAGE_ID)) } returns Optional.of(wp)
         val toBeSaved = listOf(
-            activity,
             WorkPackageActivity(
-                workPackageId = 1L,
+                id = activityId2,
+                workPackageId = wp.id,
+                workPackageNumber = wpNr,
+                activityNumber = 99,
                 startPeriod = 4,
                 endPeriod = 6,
                 deliverables = listOf(
                     WorkPackageActivityDeliverable(period = 4),
-                    WorkPackageActivityDeliverable(period = 5),
                     WorkPackageActivityDeliverable(period = 6)
                 )
+            ),
+            WorkPackageActivity(
+                id = activityId1,
+                workPackageId = wp.id,
+                workPackageNumber = wpNr,
+                startPeriod = 2,
+                endPeriod = 3,
+                deliverables = emptyList()
             )
         )
 
         val activities = persistence.updateWorkPackageActivities(WORK_PACKAGE_ID, toBeSaved)
 
-        assertThat(activities).containsExactly(*toBeSaved.mapIndexed { index, it ->
-            it.copy(activityNumber = index.plus(1),
-                deliverables = it.deliverables.mapIndexed { i, deliverable ->
-                    deliverable.copy(deliverableNumber = i.plus(1))
-                }
+        assertThat(activities).containsExactly(
+            WorkPackageActivity(
+                id = activityId2,
+                workPackageId = wp.id,
+                workPackageNumber = wpNr,
+                activityNumber = 1,
+                startPeriod = 4,
+                endPeriod = 6,
+                deliverables = listOf(
+                    WorkPackageActivityDeliverable(period = 4, deliverableNumber = 1),
+                    WorkPackageActivityDeliverable(period = 6, deliverableNumber = 2)
+                )
+            ),
+            WorkPackageActivity(
+                id = activityId1,
+                workPackageId = wp.id,
+                workPackageNumber = wpNr,
+                activityNumber = 2,
+                startPeriod = 2,
+                endPeriod = 3,
+                deliverables = emptyList()
             )
-        }.toTypedArray())
+        )
     }
 
     @Test
@@ -695,11 +744,43 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         }
     }
 
-
     @Test
     fun `should return Unit when investment exists in the project`() {
         every { investmentRepository.existsByWorkPackageProjectIdAndId(PROJECT_ID, INVESTMENT_ID) } returns true
         assertThat(persistence.throwIfInvestmentNotExistsInProject(PROJECT_ID, INVESTMENT_ID)).isEqualTo(Unit)
+    }
+
+    @Test
+    fun getWorkPackagesWithAllDataByProjectId() {
+        every { repository.findAllByProjectId(PROJECT_ID, Sort.by(Sort.Direction.ASC, "id")) } returns listOf(workPackageWithActivities)
+        val workPackageIds = setOf(WORK_PACKAGE_ID)
+        every { repositoryActivity.findAllByWorkPackageIdIn(workPackageIds) } returns listOf(activityEntity)
+        every { repositoryOutput.findAllByOutputIdWorkPackageIdIn(workPackageIds) } returns emptyList()
+        every { investmentRepository.findInvestmentsByProjectId(PROJECT_ID) } returns emptyList()
+
+        val workPackages = persistence.getWorkPackagesWithAllDataByProjectId(PROJECT_ID)
+        assertThat(workPackages).containsExactly(
+            ProjectWorkPackageFull(
+                id = WORK_PACKAGE_ID,
+                workPackageNumber = workPackageWithActivities.number!!,
+                name = setOf(InputTranslation(CS, "WP CS name")),
+                specificObjective = emptySet(),
+                objectiveAndAudience = emptySet(),
+                activities = listOf(WorkPackageActivity(
+                    id = activityEntity.id,
+                    workPackageId = WORK_PACKAGE_ID,
+                    workPackageNumber = workPackageWithActivities.number!!,
+                    activityNumber = activityEntity.activityNumber,
+                    title = emptySet(),
+                    description = emptySet(),
+                    startPeriod = 1,
+                    endPeriod = 3,
+                    deliverables = emptyList()
+                )),
+                outputs = emptyList(),
+                investments = emptyList()
+            )
+        )
     }
 
     data class WorkPackageActivityRowImpl(

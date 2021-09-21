@@ -75,6 +75,7 @@ fun WorkPackageActivityEntity.toModel() =
     WorkPackageActivity(
         id = id,
         workPackageId = workPackage.id,
+        workPackageNumber = workPackage.number!!,
         activityNumber = activityNumber,
         title = translatedValues.extractField { it.title },
         description = translatedValues.extractField { it.description },

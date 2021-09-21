@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, } from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ViewEditForm} from '@common/components/forms/view-edit-form';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
@@ -12,7 +12,7 @@ import {MatSort} from '@angular/material/sort';
 import {Log} from '@common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {APIError} from '@common/models/APIError';
-import {Permission} from 'src/app/security/permissions/permission';
+import {Permission} from '../../security/permissions/permission';
 import {ProgrammeEditableStateStore} from '../programme-page/services/programme-editable-state-store.service';
 import {ProgrammePageSidenavService} from '../programme-page/services/programme-page-sidenav.service';
 import {FormState} from '@common/components/forms/form-state';
