@@ -1,7 +1,7 @@
 <app-main-page-template *ngIf="data$ | async as data" titleKey="call.detail.title"
                         subTitleKey="call.general.settings">
     <app-form (discard)="onCancel(data.call)"
-              (save)="onSubmit(data.call, data.priorityCheckboxes, data.strategies, data.funds, data.stateAids)">
+              (save)="onSubmit(data.call, data.priorityCheckboxes, data.strategies, callFundsForm.value, data.stateAids)">
         <app-alert [show]="published && data.callIsEditable"
                    [type]="Alert.WARNING">
             <span>{{'call.detail.edit.published.warning' | translate}}</span>
@@ -152,8 +152,8 @@
             </span>
             <h4>{{'call.funds.select.funds' | translate}}</h4>
             <app-call-funds
-                    [funds]="data.funds"
-                    [initialFunds]="data.initialFunds"
+                    [callFundsForm]="callFundsForm"
+                    appFormFieldWidth="full"
                     (selectionChanged)="formChanged()">
             </app-call-funds>
 

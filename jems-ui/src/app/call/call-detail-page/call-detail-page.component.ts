@@ -10,7 +10,7 @@ import {
   ProgrammeStateAidDTO
 } from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
-import {FormBuilder, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallPageSidenavService} from '../services/call-page-sidenav.service';
@@ -43,6 +43,8 @@ export class CallDetailPageComponent {
   publishPending = false;
   published = false;
 
+  callFundsForm : FormGroup;
+
   data$: Observable<{
     call: CallDetailDTO,
     userCanApply: boolean,
@@ -51,8 +53,6 @@ export class CallDetailPageComponent {
     initialPriorityCheckboxes: CallPriorityCheckbox[],
     strategies: OutputProgrammeStrategy[],
     initialStrategies: OutputProgrammeStrategy[],
-    funds: ProgrammeFundDTO[],
-    initialFunds: ProgrammeFundDTO[],
     stateAids: CallStateAidDTO[],
     initialStateAids: CallStateAidDTO[],
   }>;
@@ -103,12 +103,11 @@ export class CallDetailPageComponent {
       this.pageStore.callIsEditable$,
       this.pageStore.allPriorities$,
       this.pageStore.allActiveStrategies$,
-      this.pageStore.allFunds$,
       this.pageStore.allStateAids$,
       this.resetEvent$
     ])
       .pipe(
-        map(([call, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allFunds, allStateAids]: any) => ({
+        map(([call, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allStateAids]: any) => ({
           call,
           userCanApply,
           callIsEditable,
@@ -116,13 +115,15 @@ export class CallDetailPageComponent {
           initialPriorityCheckboxes: this.getPriorities(allPriorities, call),
           strategies: this.getStrategies(allActiveStrategies, call),
           initialStrategies: this.getStrategies(allActiveStrategies, call),
-          funds: this.getFunds(allFunds, call),
-          initialFunds: this.getFunds(allFunds, call),
           stateAids: this.getStateAids(allStateAids, call),
           initialStateAids: this.getStateAids(allStateAids, call),
         })),
         tap(data => this.resetForm(data.call, data.callIsEditable))
       );
+
+    this.callFundsForm = this.formBuilder.group({
+      fundArray: this.formBuilder.array([{}])
+    });
   }
 
   onSubmit(savedCall: CallDetailDTO,
@@ -287,25 +288,6 @@ export class CallDetailPageComponent {
       .flatMap(priority => priority.specificObjectives)
       .map(specificObjectives => specificObjectives.programmeObjectivePolicy);
     return allPriorities.map(priority => CallPriorityCheckbox.fromSavedPolicies(priority, savedPolicies));
-  }
-
-  private getFunds(allFunds: ProgrammeFundDTO[], call: CallDetailDTO): ProgrammeFundDTO[] {
-    const savedFunds = allFunds
-      .filter(fund => fund.selected)
-      .map(element => ({
-        id: element.id,
-        abbreviation: element.abbreviation,
-        description: element.description,
-        selected: false
-      } as ProgrammeFundDTO));
-    if (!call || !call.funds?.length) {
-      return savedFunds;
-    }
-    const callFundIds = call.funds.map(element => element.id ? element.id : element);
-    savedFunds
-      .filter(element => callFundIds.includes(element.id))
-      .forEach(element => element.selected = true);
-    return savedFunds;
   }
 
   private getStateAids(allStateAids: ProgrammeStateAidDTO[], call: CallDetailDTO): CallStateAidDTO[] {
