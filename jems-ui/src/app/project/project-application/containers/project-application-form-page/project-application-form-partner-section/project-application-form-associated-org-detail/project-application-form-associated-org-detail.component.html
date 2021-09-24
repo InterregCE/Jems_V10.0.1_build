@@ -42,6 +42,9 @@
                         {{ 'common.label.project.partner.role.shortcut.' + partner.role | translate : {partner: partner.sortNumber + ' ' + partner.abbreviation} }}
                     </mat-option>
                 </mat-select>
+                <app-context-info
+                        infoText="{{'project.organization.partner.contextinfo' | translate}}">
+                </app-context-info>
                 <mat-error>
                     <app-form-field-errors [errors]="associatedOrganizationForm.controls?.partnerId?.errors">
                     </app-form-field-errors>
