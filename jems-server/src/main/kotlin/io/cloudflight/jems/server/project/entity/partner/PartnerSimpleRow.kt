@@ -8,4 +8,5 @@ interface PartnerSimpleRow {
     val role: ProjectPartnerRole
     val sortNumber: Int?
     val country: String?
+    val region: String?
 }

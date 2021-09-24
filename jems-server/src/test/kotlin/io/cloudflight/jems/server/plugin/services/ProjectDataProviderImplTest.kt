@@ -392,7 +392,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 abbreviation = projectPartner.abbreviation,
                 role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name),
                 sortNumber = projectPartner.sortNumber,
-                country = "AT"
+                country = "AT",
+                region = "nutsRegion3"
             ),
             nameInOriginalLanguage = "nameInOriginalLanguage",
             nameInEnglish = "nameInEnglish",

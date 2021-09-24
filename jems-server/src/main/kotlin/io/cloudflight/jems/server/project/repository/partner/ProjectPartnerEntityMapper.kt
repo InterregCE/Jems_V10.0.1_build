@@ -86,7 +86,8 @@ fun ProjectPartnerEntity.toProjectPartner() = ProjectPartnerSummary(
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
-    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
+    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country,
+    region = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.nutsRegion3
 )
 
 fun ProjectPartnerEntity.copy(
@@ -131,7 +132,8 @@ fun ProjectPartnerEntity.toModel() = ProjectPartnerSummary(
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
-    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
+    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country,
+    region = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.nutsRegion3
 )
 
 fun Iterable<ProjectPartnerEntity>.toModel() = map { it.toModel() }
@@ -330,7 +332,8 @@ fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartnerSummary(
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
-    country = country
+    country = country,
+    region = region
 )
 
 fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummary(
@@ -338,7 +341,8 @@ fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummary
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
-    country = country
+    country = country,
+    region = region
 )
 
 fun ProjectPartnerStateAid.toEntity(

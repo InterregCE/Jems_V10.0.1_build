@@ -228,6 +228,7 @@ class ProjectBudgetPersistenceTest {
         every { mockPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPRow.sortNumber } returns 1
         every { mockPRow.country } returns "AT"
+        every { mockPRow.region } returns "nutsRegion3"
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
         every { projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(1L, timestamp) } returns listOf(mockPRow)
 
@@ -237,7 +238,8 @@ class ProjectBudgetPersistenceTest {
                 abbreviation = "abbreviation",
                 role = ProjectPartnerRole.LEAD_PARTNER,
                 sortNumber = 1,
-                country = "AT"
+                country = "AT",
+                region = "nutsRegion3"
             ))
     }
 

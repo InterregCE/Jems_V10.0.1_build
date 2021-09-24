@@ -11,7 +11,7 @@
 </app-table>
 
 <ng-template #deletionCell let-partner>
-    <app-delete-action-cell
+    <app-delete-action-cell class="ml-auto"
             (click)="$event.stopPropagation()"
             [element]="partner"
             [disabled]="!editable"
@@ -19,9 +19,9 @@
     </app-delete-action-cell>
 </ng-template>
 
-<ng-template #budgetCell let-partner>
-    <button mat-raised-button color="primary" class="button"
-            [routerLink]="[partner.id, 'budget']">
-        {{'project.application.form.partner.list.budget' | translate}}
-    </button>
+<ng-template #budgetCell let-partner >
+    <div class="ml-auto">
+        {{partner.totalBudget | asMoney : undefined : { style: 'currency', currency: 'EUR' } }}
+    </div>
+    <mat-icon [routerLink]="[partner.id, 'budget']" class="ml-2 mr-5 mat-primary">launch</mat-icon>
 </ng-template>

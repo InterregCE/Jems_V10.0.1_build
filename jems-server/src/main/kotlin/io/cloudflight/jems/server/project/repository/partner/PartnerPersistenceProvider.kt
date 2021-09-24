@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPa
 import io.cloudflight.jems.server.project.repository.workpackage.activity.toActivityHistoricalData
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCostInteractor
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
