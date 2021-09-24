@@ -75,13 +75,14 @@
                 </button>
             </div>
             <app-alert
+                    [closable]="false"
                     [show]="!submitted && (showSuccessMessage$ | async)"
                     [type]="Alert.SUCCESS">
+
                 <p>{{'user.registration.save.success' | translate}}</p>
-                <br>
-                <a class="mat-body-strong" (click)="redirectToLogin()">
+                <button mat-stroked-button (click)="redirectToLogin()">
                     {{'user.registration.save.success.redirect.login' | translate}}
-                </a>
+                </button>
             </app-alert>
 
             <app-alert *ngIf="error$ | async as error"
