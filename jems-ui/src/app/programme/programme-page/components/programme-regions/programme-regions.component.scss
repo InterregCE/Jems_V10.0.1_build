@@ -2,17 +2,25 @@
   display: inline-block;
   width: 100%;
 }
-
 #nuts-explorer-container{
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  gap: 0.5em;
+  height: 40em;
+  position: relative;
+  border: 1px solid var(--table-border-color);
   > * {
     flex: 1 1 0;
     min-width: 0;
+    column-gap: 0.5em;
+  }
+  .selected-areas {
+    padding: 1em 0 0 1em;
+    box-sizing: border-box
   }
 }
-.pane {
-  height: 40rem;
-  overflow-y: scroll;
+.scroll-area {
+  max-height: 100%;
+  overflow: auto;
 }
