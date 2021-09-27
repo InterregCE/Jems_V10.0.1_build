@@ -66,8 +66,8 @@ class GetPartnerBudgetPerPeriod(
         ) }
 
         // find last period that is not Preparation or Closure so that we can set a different total to it
-        val lastPeriodNumber = projectPeriods.maxOf { it.number }
-        val lastPeriod = projectPeriods.first { it.number == lastPeriodNumber }
+        val lastPeriodNumber = if (projectPeriods.isNotEmpty()) { projectPeriods.maxOf { it.number } } else { 0 }
+        val lastPeriod = projectPeriods.firstOrNull { it.number == lastPeriodNumber }
 
         // determine values for total budget of preparation and closure
         val preparationTotalBudget = lumpSumsForPartner.filter { it.period == 0 }.sumOf { it.amount }
@@ -77,7 +77,7 @@ class GetPartnerBudgetPerPeriod(
         // we make a list of the amounts and we add them together
         val projectPartnerBudgetPerPeriod = ProjectPartnerBudgetPerPeriod(
             partner = partner,
-            periodBudgets = projectPeriods.filter{ period -> period.number != lastPeriodNumber}.map { period ->
+            periodBudgets = projectPeriods.filter{ period -> period.number != lastPeriodNumber }.map { period ->
                 getTotalBudgetForPeriod(
                     period,
                     partnerBudgetOptions,
@@ -96,18 +96,21 @@ class GetPartnerBudgetPerPeriod(
         val totalOfBudgetsPerPeriodBesidesLast = projectPartnerBudgetPerPeriod.periodBudgets.sumOf { it.totalBudgetPerPeriod }
 
         // add last Period with different total budget calculation
-        projectPartnerBudgetPerPeriod.periodBudgets.add(
-            ProjectPeriodBudget(
-                periodNumber = lastPeriodNumber,
-                periodStart = lastPeriod.start,
-                periodEnd = lastPeriod.end,
-                totalBudgetPerPeriod = projectPartnerBudgetPerPeriod.totalPartnerBudget
-                    .minus(totalOfBudgetsPerPeriodBesidesLast)
-                    .minus(preparationTotalBudget)
-                    .minus(closureTotalBudget)
-                    .setScale(2, RoundingMode.DOWN),
-                isLastPeriod = false
-            ))
+        if (lastPeriod != null) {
+            projectPartnerBudgetPerPeriod.periodBudgets.add(
+                ProjectPeriodBudget(
+                    periodNumber = lastPeriodNumber,
+                    periodStart = lastPeriod.start,
+                    periodEnd = lastPeriod.end,
+                    totalBudgetPerPeriod = projectPartnerBudgetPerPeriod.totalPartnerBudget
+                        .minus(totalOfBudgetsPerPeriodBesidesLast)
+                        .minus(preparationTotalBudget)
+                        .minus(closureTotalBudget)
+                        .setScale(2, RoundingMode.DOWN),
+                    isLastPeriod = false
+                )
+            )
+        }
 
         // add Preparation period which only has lump sum as total budget
         projectPartnerBudgetPerPeriod.periodBudgets.add(
@@ -185,7 +188,9 @@ class GetPartnerBudgetPerPeriod(
                 officeAndAdministrationOnStaffCostFlatRateForPeriod =
                     (options.officeAndAdministrationOnStaffCostsFlatRate.toBigDecimal()
                         .divide(BigDecimal(100))
-                        .multiply(totalStaffCostsPerPeriod))
+                        .multiply(totalStaffCostsPerPeriod
+                            .add(staffCostFlatRateForPeriod)
+                        ))
                         .setScale(2, RoundingMode.DOWN)
             }
 
@@ -193,7 +198,9 @@ class GetPartnerBudgetPerPeriod(
                 travelAndAccommodationOnStaffCostFlatRateForPeriod =
                     (options.travelAndAccommodationOnStaffCostsFlatRate.toBigDecimal()
                         .divide(BigDecimal(100))
-                        .multiply(totalStaffCostsPerPeriod))
+                        .multiply(totalStaffCostsPerPeriod
+                            .add(staffCostFlatRateForPeriod)
+                        ))
                         .setScale(2, RoundingMode.DOWN)
             }
             if (options.otherCostsOnStaffCostsFlatRate != null) {
@@ -229,17 +236,13 @@ class GetPartnerBudgetPerPeriod(
         );
     }
 
-    private fun getAmountOfCostPerPeriod(costs: MutableSet<BudgetPeriod>, period: ProjectPeriod): BigDecimal {
-        if (costs.isNotEmpty()) {
-            return costs.first { it.number == period.number }.amount
-        }
-        return BigDecimal.ZERO
-    }
+    private fun getAmountOfCostPerPeriod(costs: MutableSet<BudgetPeriod>, period: ProjectPeriod) =
+        costs.filter { it.number == period.number }
+            .map { it.amount }
+            .fold(BigDecimal.ZERO) { first, second -> first.add(second) }
 
-    private fun getAmountLumpSumPeriod(lumpSum: List<ProjectPartnerLumpSum>, partnerId: Long): BigDecimal {
-        if (lumpSum.isNotEmpty()) {
-            return lumpSum.first { it.partnerId == partnerId }.amount
-        }
-        return BigDecimal.ZERO
-    }
+    private fun getAmountLumpSumPeriod(lumpSum: List<ProjectPartnerLumpSum>, partnerId: Long) =
+        lumpSum.filter { it.partnerId == partnerId }
+            .map { it.amount }
+            .fold(BigDecimal.ZERO) { first, second -> first.add(second) }
 }
