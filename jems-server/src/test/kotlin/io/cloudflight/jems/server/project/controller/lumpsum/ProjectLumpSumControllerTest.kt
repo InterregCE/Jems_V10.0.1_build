@@ -14,13 +14,10 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.util.UUID
 
 internal class ProjectLumpSumControllerTest : UnitTest() {
 
     companion object {
-        private val id1: UUID = UUID.randomUUID()
-        private val id2: UUID = UUID.randomUUID()
         private val lumpSum1 = ProjectLumpSum(
             programmeLumpSumId = 1,
             period = 3,
@@ -62,6 +59,12 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 period = 4,
             ),
         )
+    }
+
+    @Test
+    fun getTotalSumOfLumpSumsPerPartner() {
+        every { getLumpSumInteractor.getLumpSumsTotalForPartner(8L, "2.0") } returns BigDecimal.ONE
+        assertThat(controller.getProjectLumpSumsTotalForPartner(1L, 8L, "2.0")).isEqualByComparingTo(BigDecimal.ONE)
     }
 
     @Test

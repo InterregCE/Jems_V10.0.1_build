@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.lumpsum.ProjectLumpSumApi
 import io.cloudflight.jems.server.project.service.lumpsum.get_project_lump_sums.GetProjectLumpSumsInteractor
 import io.cloudflight.jems.server.project.service.lumpsum.update_project_lump_sums.UpdateProjectLumpSumsInteractor
 import org.springframework.web.bind.annotation.RestController
+import java.math.BigDecimal
 
 @RestController
 class ProjectLumpSumController(
@@ -17,5 +18,8 @@ class ProjectLumpSumController(
 
     override fun updateProjectLumpSums(projectId: Long, lumpSums: List<ProjectLumpSumDTO>): List<ProjectLumpSumDTO> =
         updateProjectLumpSumsInteractor.updateLumpSums(projectId, lumpSums.toModel()).toDto()
+
+    override fun getProjectLumpSumsTotalForPartner(projectId: Long, partnerId: Long, version: String?): BigDecimal =
+        getProjectLumpSumsInteractor.getLumpSumsTotalForPartner(partnerId, version)
 
 }

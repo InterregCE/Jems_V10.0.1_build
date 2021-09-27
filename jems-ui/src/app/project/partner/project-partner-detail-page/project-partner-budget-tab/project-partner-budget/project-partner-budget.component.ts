@@ -109,12 +109,20 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     );
 
     this.officeAndAdministrationFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$, this.travelAndAccommodationTotal$.pipe(distinctUntilChanged())]).pipe(
-      map(([budgetOptions, staffCostTotal, travelCostTotal]) => this.calculateOfficeAndAdministrationFlatRateTotal(budgetOptions.officeAndAdministrationOnStaffCostsFlatRate, budgetOptions.officeAndAdministrationOnDirectCostsFlatRate, staffCostTotal, travelCostTotal)),
+      map(([budgetOptions, staffCostTotal, travelCostTotal]) => ProjectPartnerDetailPageStore.calculateOfficeAndAdministrationFlatRateTotal(
+        budgetOptions.officeAndAdministrationOnStaffCostsFlatRate,
+        budgetOptions.officeAndAdministrationOnDirectCostsFlatRate,
+        staffCostTotal,
+        travelCostTotal,
+        this.getTotalOf(this.external),
+        this.getTotalOf(this.equipment),
+        this.getTotalOf(this.infrastructure),
+      )),
       startWith(0)
     );
 
     this.otherCostsFlatRateTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$.pipe(distinctUntilChanged())]).pipe(
-      map(([budgetOptions, staffCostTotal]) => this.calculateOtherCostsFlatRateTotal(budgetOptions.staffCostsFlatRate, budgetOptions.otherCostsOnStaffCostsFlatRate || 0, staffCostTotal)),
+      map(([budgetOptions, staffCostTotal]) => ProjectPartnerDetailPageStore.calculateOtherCostsFlatRateTotal(budgetOptions.staffCostsFlatRate, budgetOptions.otherCostsOnStaffCostsFlatRate || 0, staffCostTotal)),
       startWith(0)
     );
 
@@ -178,23 +186,6 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       NumberService.sum([travelTotal, externalTotal, equipmentTotal, infrastructureTotal])
     ]));
 
-  }
-
-  private calculateOfficeAndAdministrationFlatRateTotal(officeFlatRateBasedOnStaffCost: number | null, officeFlatRateBasedOnDirectCosts: number | null, staffTotal: number, travelCostTotal: number): number {
-    return NumberService.truncateNumber(NumberService.product([
-      NumberService.divide(officeFlatRateBasedOnStaffCost || officeFlatRateBasedOnDirectCosts, 100),
-      officeFlatRateBasedOnStaffCost !== null ? staffTotal :
-        NumberService.sum([this.getTotalOf(this.external), this.getTotalOf(this.equipment), this.getTotalOf(this.infrastructure), staffTotal, travelCostTotal])]));
-  }
-
-  private calculateOtherCostsFlatRateTotal(staffCostsFlatRateBasedOnDirectCost: number | null, otherCostsFlatRateBasedOnStaffCost: number, staffTotal: number): number {
-    if (staffCostsFlatRateBasedOnDirectCost != null) {
-      return 0;
-    }
-    return NumberService.truncateNumber(NumberService.product([
-      NumberService.divide(otherCostsFlatRateBasedOnStaffCost, 100),
-      staffTotal
-    ]));
   }
 
   private calculateTravelAndAccommodationCostsTotal(travelFlatRateBasedOnStaffCost: number | null, staffTotal: number): number {

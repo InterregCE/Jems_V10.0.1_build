@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -27,6 +28,9 @@ internal class GetProjectLumpSumsTest : UnitTest() {
     @MockK
     lateinit var persistence: ProjectLumpSumPersistence
 
+    @MockK
+    lateinit var budgetCostsPersistence: ProjectPartnerBudgetCostsPersistence
+
     @InjectMockKs
     lateinit var getProjectLumpSums: GetProjectLumpSums
 
@@ -34,6 +38,12 @@ internal class GetProjectLumpSumsTest : UnitTest() {
     fun getActivitiesForWorkPackage() {
         every { persistence.getLumpSums(1L) } returns listOf(lumpSum)
         assertThat(getProjectLumpSums.getLumpSums(1L)).containsExactly(lumpSum)
+    }
+
+    @Test
+    fun getLumpSumsTotalForPartner() {
+        every { budgetCostsPersistence.getBudgetLumpSumsCostTotal(7L, "1.0") } returns BigDecimal.ONE
+        assertThat(getProjectLumpSums.getLumpSumsTotalForPartner(7L, "1.0")).isEqualByComparingTo(BigDecimal.ONE)
     }
 
 }
