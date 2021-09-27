@@ -4,8 +4,6 @@ import {combineLatest, Observable} from 'rxjs';
 import {catchError, distinctUntilChanged, map, startWith, tap} from 'rxjs/operators';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {BudgetOptions} from '@project/model/budget/budget-options';
-import {NumberService} from '@common/services/number.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectPartnerBudgetConstants} from './project-partner-budget.constants';
 import {GeneralBudgetTableEntry} from '@project/model/budget/general-budget-table-entry';
@@ -99,12 +97,23 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     this.pageStore.budgets$.pipe(untilDestroyed(this)).subscribe();
 
     this.staffCostsTotal$ = combineLatest([this.pageStore.budgetOptions$, this.budgetsForm.valueChanges]).pipe(
-      map(([budgetOptions]) => this.calculateStaffCostsTotal(budgetOptions)),
+      map(([budgetOptions]) => ProjectPartnerDetailPageStore.calculateStaffCostsTotal(
+        budgetOptions,
+        this.getTotalOf(this.staff),
+        this.getTotalOf(this.travel),
+        this.getTotalOf(this.external),
+        this.getTotalOf(this.equipment),
+        this.getTotalOf(this.infrastructure),
+      )),
       startWith(0)
     );
 
     this.travelAndAccommodationTotal$ = combineLatest([this.pageStore.budgetOptions$, this.staffCostsTotal$.pipe(distinctUntilChanged())]).pipe(
-      map(([budgetOptions, staffCostTotal]) => this.calculateTravelAndAccommodationCostsTotal(budgetOptions.travelAndAccommodationOnStaffCostsFlatRate, staffCostTotal)),
+      map(([budgetOptions, staffCostTotal]) => ProjectPartnerDetailPageStore.calculateTravelAndAccommodationCostsTotal(
+        budgetOptions.travelAndAccommodationOnStaffCostsFlatRate,
+        staffCostTotal,
+        this.getTotalOf(this.travel),
+      )),
       startWith(0),
     );
 
@@ -170,32 +179,6 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       catchError((error: HttpErrorResponse) => this.formService.setError(error)),
       untilDestroyed(this)
     ).subscribe();
-  }
-
-  private calculateStaffCostsTotal(budgetOptions: BudgetOptions): number {
-    if (!budgetOptions?.staffCostsFlatRate) {
-      return this.getTotalOf(this.staff);
-    }
-    const travelTotal = budgetOptions.travelAndAccommodationOnStaffCostsFlatRate ? 0 : this.getTotalOf(this.travel);
-    const externalTotal = this.getTotalOf(this.external);
-    const equipmentTotal = this.getTotalOf(this.equipment);
-    const infrastructureTotal = this.getTotalOf(this.infrastructure);
-
-    return NumberService.truncateNumber(NumberService.product([
-      NumberService.divide(budgetOptions.staffCostsFlatRate, 100),
-      NumberService.sum([travelTotal, externalTotal, equipmentTotal, infrastructureTotal])
-    ]));
-
-  }
-
-  private calculateTravelAndAccommodationCostsTotal(travelFlatRateBasedOnStaffCost: number | null, staffTotal: number): number {
-    if (travelFlatRateBasedOnStaffCost === null) {
-      return this.getTotalOf(this.travel);
-    }
-    return NumberService.truncateNumber(NumberService.product([
-      NumberService.divide(travelFlatRateBasedOnStaffCost, 100),
-      staffTotal
-    ]));
   }
 
   private formToBudgetTables(): PartnerBudgetTables {

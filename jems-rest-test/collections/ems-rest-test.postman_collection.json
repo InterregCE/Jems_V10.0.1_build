@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5b9c2017-5661-4f09-b498-91dbc9315df6",
+		"_postman_id": "25ab0d69-25b7-47f8-8000-b9fa5b2e37cc",
 		"name": "ems-rest-test",
 		"description": "Check JEMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -8893,7 +8893,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -9379,7 +9379,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -10199,7 +10199,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
