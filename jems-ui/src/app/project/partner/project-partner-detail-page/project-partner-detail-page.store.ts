@@ -97,6 +97,35 @@ export class ProjectPartnerDetailPageStore {
     ]));
   }
 
+  public static calculateStaffCostsTotal(
+    budgetOptions: BudgetOptions,
+    staffCostsTotal: number,
+    travelCostsTotal: number,
+    externalCostsTotal: number,
+    equipmentCostsTotal: number,
+    infrastructureCostsTotal: number,
+  ): number {
+    if (!budgetOptions?.staffCostsFlatRate) {
+      return staffCostsTotal;
+    }
+    const travelTotal = budgetOptions.travelAndAccommodationOnStaffCostsFlatRate ? 0 : travelCostsTotal;
+
+    return NumberService.truncateNumber(NumberService.product([
+      NumberService.divide(budgetOptions.staffCostsFlatRate, 100),
+      NumberService.sum([travelTotal, externalCostsTotal, equipmentCostsTotal, infrastructureCostsTotal])
+    ]));
+  }
+
+  public static calculateTravelAndAccommodationCostsTotal(travelFlatRateBasedOnStaffCost: number | null, staffTotal: number, travelTotal: number): number {
+    if (travelFlatRateBasedOnStaffCost === null) {
+      return travelTotal;
+    }
+    return NumberService.truncateNumber(NumberService.product([
+      NumberService.divide(travelFlatRateBasedOnStaffCost, 100),
+      staffTotal
+    ]));
+  }
+
   constructor(private projectStore: ProjectStore,
               private partnerStore: ProjectPartnerStore,
               private callService: CallService,
