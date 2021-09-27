@@ -46,6 +46,9 @@ dependencies {
     implementation('org.mapstruct:mapstruct')
     kapt('org.mapstruct:mapstruct-processor')
 
+    implementation ('org.springframework.boot:spring-boot-starter-mail')
+    implementation ('org.springframework.boot:spring-boot-starter-thymeleaf')
+
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.security:spring-security-test')
     testImplementation('org.junit.jupiter:junit-jupiter-api')

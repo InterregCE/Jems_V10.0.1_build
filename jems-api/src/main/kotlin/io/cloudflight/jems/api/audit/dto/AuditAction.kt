@@ -67,5 +67,9 @@ enum class AuditAction {
 
     //plugin
     PLUGIN_CALLED,
-    PLUGIN_EXECUTED
+    PLUGIN_EXECUTED,
+
+    //email
+    MAIL_SENT,
+    MAIL_NOT_SENT
 }

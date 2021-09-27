@@ -51,6 +51,7 @@ Requirements:
  - MinIO
  - Elastic Search
  - Kibana (optional, only if needed)
+ - Mailhog (optional, only if you want to test sending mail notifications)
 
 Currently, there are two environments set up for internal development [4] and testing [5] with external access.
 Both are deployed on the Cloudflight OpenShift and updated automatically within each development cycle.
@@ -64,6 +65,7 @@ Manual deployment using docker compose:
    - jems-minio (Object storage for files)
    - audit-database (logging into elastic search, needed for Audit Logs)
    - audit-analyzer (Kibana for additional Audit Log access)
+   - mailhog (mail server to test sending mail notification)
  - run the jar (jems-server `./build/libs`) as Spring Boot application
    - the webapp uses flyway to automatically migrate the relational database (mariaDB)
    - `--audit-service.url-and-port=127.0.0.1:9200` can be specified to use a local elastic search instance
@@ -72,6 +74,7 @@ Manual deployment using docker compose:
    [localhost:18080/actuator/info](http://localhost:18080/actuator/info)
  - use the following environment variables to control
    - `AUDIT_ENABLED=false` to enable/disable logging into elastic search
+   - `MAIL_ENABLED=false` to enable/disable sending mail notifications
 
 application.yaml can be added to root of the full executable jems-server.jar
 the properties specified will override the default ones within resources/application.yaml
@@ -121,6 +124,18 @@ You can define following startup parameters (see also [application.yaml](jems-se
 - `info.accessibility-statement-url` URL for accessibility statement, which is available in the login page that can be modified by the user
 - `info.terms-privacy-policy-url` URL for the Terms of service and privacy policy page, that is available in the login and register pages and can be modified by the user
 - `app.translations-folder` Path for translations folder that will be uploaded by the users
+- `app.notification.mail.enabled`=[true,false] (or env variable `MAIL_ENABLED`) if this one is set to true, you need to provide also:
+  - `spring.mail.host` with address of SMTP server
+  - `spring.mail.port` with port number on which SMTP server is listening
+  - `spring.mail.username` with the username defined in the SMTP server
+  - `spring.mail.password`  with the password of the specified username
+  - `spring.mail.properties.mail.smtp.auth`=[true,false] (by default set to `false`)
+  - optional `spring.mail.properties.mail.smtp.connectiontimeout` (by default set to `5000`)
+  - optional `spring.mail.properties.mail.smtp.timeout` (by default set to `5000`)
+  - optional `spring.mail.properties.mail.smtp.writetimeout` (by default set to `5000`)
+  - optional `spring.mail.properties.mail.smtp.starttls.enabled` (by default set to `false`)
+- `app.notification.mail.sender` The sender address that will be used as from in the outgoing mail notifications
+- `app.notification.mail.bcc-list` List of BCC recipients that should receive a copy of all the outgoing mail notifications
 
 
 ### Plugins
