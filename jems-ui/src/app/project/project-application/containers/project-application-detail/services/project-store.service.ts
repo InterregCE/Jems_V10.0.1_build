@@ -17,6 +17,8 @@ import {
   ProjectVersionDTO,
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO,
+  ProjectBudgetService,
+  ProjectPartnerBudgetPerPeriodDTO
 } from '@cat/api';
 import {
   distinctUntilChanged,
@@ -69,6 +71,7 @@ export class ProjectStore {
   userIsProjectOwner$: Observable<boolean>;
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
   activities$: Observable<WorkPackageActivitySummaryDTO[]>;
+  projectPartnersBudgetPerPeriods$: Observable<ProjectPartnerBudgetPerPeriodDTO[]>
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -103,7 +106,8 @@ export class ProjectStore {
               private securityService: SecurityService,
               private permissionService: PermissionService,
               private projectVersionStore: ProjectVersionStore,
-              private callService: CallService) {
+              private callService: CallService,
+              private projectBudgetService: ProjectBudgetService) {
     this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
@@ -126,6 +130,7 @@ export class ProjectStore {
     this.userIsProjectOwner$ = this.userIsProjectOwner();
     this.allowedBudgetCategories$ = this.allowedBudgetCategories();
     this.activities$ = this.projectActivities();
+    this.projectPartnersBudgetPerPeriods$ = this.projectPartnersBudgetPerPeriods();
   }
 
   private static latestVersion(versions?: ProjectVersionDTO[]): number {
@@ -370,5 +375,13 @@ export class ProjectStore {
         ),
         tap(activities => Log.info('Fetched project activities', activities))
       );
+  }
+
+  private projectPartnersBudgetPerPeriods(): Observable<ProjectPartnerBudgetPerPeriodDTO[]> {
+    return combineLatest([this.project$, this.projectVersionStore.currentRouteVersion$])
+      .pipe(
+        switchMap(([project,version]) =>
+          this.projectBudgetService.getProjectPartnerBudgetPerPeriod(project.id, version)
+        ))
   }
 }

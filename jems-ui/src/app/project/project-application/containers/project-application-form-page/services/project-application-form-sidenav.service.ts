@@ -267,6 +267,10 @@ export class ProjectApplicationFormSidenavService {
               {
                 headline: {i18nKey: 'project.application.form.section.part.d.subsection.two'},
                 route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudget`,
+              },
+              {
+                headline: {i18nKey: 'project.application.form.section.part.d.subsection.three'},
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudgetPartnerPerPeriod`,
               }
             ],
             versionedSection: true

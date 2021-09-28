@@ -97,6 +97,7 @@ import {ProjectWorkPackageInvestmentDetailPageStore} from '@project/work-package
 import {InvestmentBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
 import {ProjectPartnerBudgetOverviewComponent} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-overview/project-partner-budget-overview.component';
 import {BudgetTableComponent} from '@project/budget/budget-page/budget-table/budget-table.component';
+import {BudgetPagePartnerPerPeriodComponent} from './budget/budget-page-partner-per-period/budget-page-partner-per-period.component';
 
 @NgModule({
   declarations: [
@@ -185,6 +186,7 @@ import {BudgetTableComponent} from '@project/budget/budget-page/budget-table/bud
     CheckAndSubmitComponent,
     AssessmentAndDecisionComponent,
     ProjectWorkPackageActivitiesFilterPipe,
+    BudgetPagePartnerPerPeriodComponent,
   ],
   imports: [
     SharedModule,
