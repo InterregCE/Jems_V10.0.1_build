@@ -93,10 +93,7 @@ export class ProjectPartnerDetailPageStore {
     this.financingAndContribution$ = this.financingAndContribution();
     this.callFunds$ = this.callFunds();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
-    this.periods$ = this.projectStore.projectForm$
-      .pipe(
-        map(projectForm => projectForm.periods)
-      );
+    this.periods$ = this.projectStore.projectPeriods$;
     this.multipleFundsAllowed$ = this.projectStore.projectCall$.pipe(map(it => it.multipleFundsAllowed));
     this.partner$ = this.partnerStore.partner$;
     this.stateAid$ = this.stateAid();

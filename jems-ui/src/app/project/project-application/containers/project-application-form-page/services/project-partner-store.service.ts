@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {
+  ProjectBudgetService,
   ProjectContactDTO,
   ProjectPartnerAddressDTO,
+  ProjectPartnerBudgetPerPeriodDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerDTO,
   ProjectPartnerMotivationDTO,
@@ -9,7 +11,7 @@ import {
   ProjectPartnerSummaryDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectPartner} from '@project/model/ProjectPartner';
@@ -32,14 +34,16 @@ export class ProjectPartnerStore {
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
   private updatedPartner$ = new Subject<ProjectPartnerDetailDTO>();
+  projectPartnersBudgetPerPeriods$ = new Observable<ProjectPartnerBudgetPerPeriodDTO[]>();
 
   constructor(private partnerService: ProjectPartnerService,
               private projectStore: ProjectStore,
               private routingService: RoutingService,
-              private projectVersionStore: ProjectVersionStore) {
+              private projectVersionStore: ProjectVersionStore,
+              private projectBudgetService: ProjectBudgetService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.partnerSummaries$ = this.partnerSummaries();
-
+    this.projectPartnersBudgetPerPeriods$ = this.projectPartnersBudgetPerPeriods();
     this.partners$ = combineLatest([
       this.projectStore.project$,
       this.projectVersionStore.currentRouteVersion$,
@@ -145,5 +149,15 @@ export class ProjectPartnerStore {
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
       );
+  }
+
+  private projectPartnersBudgetPerPeriods(): Observable<ProjectPartnerBudgetPerPeriodDTO[]> {
+    return combineLatest([this.projectStore.project$, this.projectVersionStore.currentRouteVersion$,this.partnerUpdateEvent$])
+      .pipe(
+        switchMap(([project,version]) =>
+          this.projectBudgetService.getProjectPartnerBudgetPerPeriod(project.id, version)
+        ),
+        distinctUntilChanged()
+      )
   }
 }

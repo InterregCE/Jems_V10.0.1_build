@@ -1,11 +1,12 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectPartnerBudgetPerPeriodDTO} from '@cat/api';
-import {ProjectPartnerDetailPageStore} from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
 import {map, tap} from 'rxjs/operators';
 import {NumberService} from '@common/services/number.service';
 import {Alert} from '@common/components/forms/alert';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 
 @Component({
@@ -14,10 +15,11 @@ import {Alert} from '@common/components/forms/alert';
   styleUrls: ['./budget-page-partner-per-period.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BudgetPagePartnerPerPeriodComponent implements OnInit {
+export class BudgetPagePartnerPerPeriodComponent {
 
   private readonly PERIOD_PREPARATION = 0;
   private readonly PERIOD_CLOSURE: number = 255;
+  APPLICATION_FORM = APPLICATION_FORM;
 
   Alert = Alert;
   displayedColumns: string[] = [];
@@ -26,36 +28,50 @@ export class BudgetPagePartnerPerPeriodComponent implements OnInit {
   periodsPercentOfTotalBudgets: number[] = [];
   periodsTotalBudgets: Map<number, number> = new Map<number, number>();
   periodsAvailable: boolean = false;
+  totalPercent: number = 100;
+
 
   data$: Observable<{
-    periods: number[],
-    partners: ProjectPartnerBudgetPerPeriodDTO[]
+    periodNumbers: number[],
+    partners: ProjectPartnerBudgetPerPeriodDTO[],
+    displayColumns: string[],
+    footerColumns: string[]
   }>
 
-  constructor(public projectStore: ProjectStore,
-              private projectPartnerDetailPageStore: ProjectPartnerDetailPageStore) {
+  constructor(public projectStore: ProjectStore, private projectPartnerStore: ProjectPartnerStore ) {
 
-    this.data$ = combineLatest([this.projectPartnerDetailPageStore.periods$,  this.projectStore.projectPartnersBudgetPerPeriods$])
+    this.data$ = combineLatest([this.projectStore.projectPeriods$, this.projectPartnerStore.projectPartnersBudgetPerPeriods$ ])
       .pipe(
         map(([periods, projectPartnersBudgetPerPeriods]) => ({
-            periods: [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE],
-            partners: projectPartnersBudgetPerPeriods
+            periodNumbers: [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE],
+            partners: projectPartnersBudgetPerPeriods,
+            displayColumns: ['partner', 'country','period0',
+              ...periods.map(period => `period${period.number}`),
+              'period255',
+              'totalEligibleBudget'
+            ],
+            footerColumns: ['percentOfTotalBudget','blankCell','budgetPercent0',
+            ...periods.map(period => `budgetPercent${period.number}`),
+              'budgetPercent255', 'budgetPercentTotal'
+          ]
           })),
-        tap((data: any) => this.getDisplayColumns(data.periods)),
-        tap(data => this.periodsAvailable = data.periods.length > 0))
+        //tap((data: any) => this.getDisplayColumns(data.periodNumbers)),
+        tap(data => this.periodsAvailable = data.periodNumbers.length > 0),
+
+      )
   }
 
   ngOnInit(): void {}
 
-  getDisplayColumns(periods: number[]): void {
+  getDisplayColumns(periodNumbers: number[]): void {
     this.displayedColumns = [];
     this.displayedColumns.push('partner', 'country');
-    periods.forEach(period => this.displayedColumns.push("period" + period));
+    periodNumbers.forEach(periodNumber => this.displayedColumns.push("period" + periodNumber));
     this.displayedColumns.push('totalEligibleBudget');
 
     this.displayedFooterPercentColumns.push('percentOfTotalBudget');
     this.displayedFooterPercentColumns.push('blankCell');
-    periods.forEach(period => this.displayedFooterPercentColumns.push("budgetPercent" + period));
+    periodNumbers.forEach(periodNumber => this.displayedFooterPercentColumns.push("budgetPercent" + periodNumber));
     this.displayedFooterPercentColumns.push('budgetPercentTotal');
   }
 
@@ -80,9 +96,12 @@ export class BudgetPagePartnerPerPeriodComponent implements OnInit {
     return this.totalEligibleBudget;
   }
 
-  calculateTotalPeriodBudgetPercentage(period: number): number {
-    const periodTotalBudget = this.periodsTotalBudgets.get(period);
-    const periodPercentOfTotalBudget = NumberService.divide(periodTotalBudget? periodTotalBudget : null, this.totalEligibleBudget);
+  calculateTotalPeriodBudgetPercentage(periodNumber: number): number {
+    //this.periodsPercentOfTotalBudgets = [];
+    const periodTotalBudget = this.periodsTotalBudgets.get(periodNumber);
+    const periodPercentOfTotalBudget = NumberService
+      .product([100 , NumberService
+        .divide(periodTotalBudget? periodTotalBudget : null, this.totalEligibleBudget)]);
     this.periodsPercentOfTotalBudgets.push(periodPercentOfTotalBudget);
     return periodPercentOfTotalBudget;
   }

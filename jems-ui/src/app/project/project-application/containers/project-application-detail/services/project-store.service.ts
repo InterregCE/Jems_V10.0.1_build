@@ -18,7 +18,8 @@ import {
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO,
   ProjectBudgetService,
-  ProjectPartnerBudgetPerPeriodDTO
+  ProjectPartnerBudgetPerPeriodDTO,
+  ProjectPeriodDTO
 } from '@cat/api';
 import {
   distinctUntilChanged,
@@ -71,7 +72,7 @@ export class ProjectStore {
   userIsProjectOwner$: Observable<boolean>;
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
   activities$: Observable<WorkPackageActivitySummaryDTO[]>;
-  projectPartnersBudgetPerPeriods$: Observable<ProjectPartnerBudgetPerPeriodDTO[]>
+  projectPeriods$: Observable<ProjectPeriodDTO[]>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -130,7 +131,9 @@ export class ProjectStore {
     this.userIsProjectOwner$ = this.userIsProjectOwner();
     this.allowedBudgetCategories$ = this.allowedBudgetCategories();
     this.activities$ = this.projectActivities();
-    this.projectPartnersBudgetPerPeriods$ = this.projectPartnersBudgetPerPeriods();
+    this.projectPeriods$ = this.projectForm$.pipe(
+      map(projectForm => projectForm.periods)
+    )
   }
 
   private static latestVersion(versions?: ProjectVersionDTO[]): number {
@@ -375,13 +378,5 @@ export class ProjectStore {
         ),
         tap(activities => Log.info('Fetched project activities', activities))
       );
-  }
-
-  private projectPartnersBudgetPerPeriods(): Observable<ProjectPartnerBudgetPerPeriodDTO[]> {
-    return combineLatest([this.project$, this.projectVersionStore.currentRouteVersion$])
-      .pipe(
-        switchMap(([project,version]) =>
-          this.projectBudgetService.getProjectPartnerBudgetPerPeriod(project.id, version)
-        ))
   }
 }
