@@ -133,7 +133,7 @@ export class ProjectStore {
     this.activities$ = this.projectActivities();
     this.projectPeriods$ = this.projectForm$.pipe(
       map(projectForm => projectForm.periods)
-    )
+    );
   }
 
   private static latestVersion(versions?: ProjectVersionDTO[]): number {

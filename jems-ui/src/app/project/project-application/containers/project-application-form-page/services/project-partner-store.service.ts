@@ -152,12 +152,12 @@ export class ProjectPartnerStore {
   }
 
   private projectPartnersBudgetPerPeriods(): Observable<ProjectPartnerBudgetPerPeriodDTO[]> {
-    return combineLatest([this.projectStore.project$, this.projectVersionStore.currentRouteVersion$,this.partnerUpdateEvent$])
+    return combineLatest([this.projectStore.project$, this.projectVersionStore.currentRouteVersion$, this.partnerUpdateEvent$])
       .pipe(
-        switchMap(([project,version]) =>
+        switchMap(([project, version]) =>
           this.projectBudgetService.getProjectPartnerBudgetPerPeriod(project.id, version)
         ),
         distinctUntilChanged()
-      )
+      );
   }
 }

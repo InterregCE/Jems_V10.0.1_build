@@ -22,13 +22,13 @@ export class BudgetPagePartnerPerPeriodComponent {
   APPLICATION_FORM = APPLICATION_FORM;
 
   Alert = Alert;
-  displayedColumns: string[] = [];
-  displayedFooterPercentColumns: string[] = [];
-  totalEligibleBudget: number = 0;
-  periodsPercentOfTotalBudgets: number[] = [];
-  periodsTotalBudgets: Map<number, number> = new Map<number, number>();
-  periodsAvailable: boolean = false;
-  totalPercent: number = 100;
+  displayedColumns: string[];
+  displayedFooterPercentColumns: string[];
+  totalEligibleBudget: number;
+  periodsPercentOfTotalBudgets: number[];
+  periodsTotalBudgets: Map<number, number>;
+  periodsAvailable: boolean;
+  totalPercent: number;
 
 
   data$: Observable<{
@@ -36,7 +36,7 @@ export class BudgetPagePartnerPerPeriodComponent {
     partners: ProjectPartnerBudgetPerPeriodDTO[],
     displayColumns: string[],
     footerColumns: string[]
-  }>
+  }>;
 
   constructor(public projectStore: ProjectStore, private projectPartnerStore: ProjectPartnerStore ) {
 
@@ -45,44 +45,41 @@ export class BudgetPagePartnerPerPeriodComponent {
         map(([periods, projectPartnersBudgetPerPeriods]) => ({
             periodNumbers: [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE],
             partners: projectPartnersBudgetPerPeriods,
-            displayColumns: ['partner', 'country','period0',
-              ...periods.map(period => `period${period.number}`),
-              'period255',
-              'totalEligibleBudget'
-            ],
-            footerColumns: ['percentOfTotalBudget','blankCell','budgetPercent0',
-            ...periods.map(period => `budgetPercent${period.number}`),
-              'budgetPercent255', 'budgetPercentTotal'
-          ]
+            displayColumns: ['partner', 'country', 'period0', ...periods.map(period => `period${period.number}`), 'period255', 'totalEligibleBudget'],
+            footerColumns: ['percentOfTotalBudget', 'blankCell', 'budgetPercent0', ...periods.map(period => `budgetPercent${period.number}`), 'budgetPercent255', 'budgetPercentTotal']
           })),
-        //tap((data: any) => this.getDisplayColumns(data.periodNumbers)),
         tap(data => this.periodsAvailable = data.periodNumbers.length > 0),
 
-      )
+      );
+    this.displayedColumns = [];
+    this.displayedFooterPercentColumns = [];
+    this.totalEligibleBudget = 0;
+    this.periodsPercentOfTotalBudgets = [];
+    this.periodsTotalBudgets = new Map<number, number>();
+    this.periodsAvailable = false;
+    this.totalPercent = 100;
   }
-
-  ngOnInit(): void {}
 
   getDisplayColumns(periodNumbers: number[]): void {
     this.displayedColumns = [];
     this.displayedColumns.push('partner', 'country');
-    periodNumbers.forEach(periodNumber => this.displayedColumns.push("period" + periodNumber));
+    periodNumbers.forEach(periodNumber => this.displayedColumns.push('period' + periodNumber));
     this.displayedColumns.push('totalEligibleBudget');
 
     this.displayedFooterPercentColumns.push('percentOfTotalBudget');
     this.displayedFooterPercentColumns.push('blankCell');
-    periodNumbers.forEach(periodNumber => this.displayedFooterPercentColumns.push("budgetPercent" + periodNumber));
+    periodNumbers.forEach(periodNumber => this.displayedFooterPercentColumns.push('budgetPercent' + periodNumber));
     this.displayedFooterPercentColumns.push('budgetPercentTotal');
   }
 
   getPeriodTotalBudgetForPartner(partner: ProjectPartnerBudgetPerPeriodDTO, period: number): number {
-    const budget = partner.periodBudgets.find(budget => budget.periodNumber === period);
+    const budget = partner.periodBudgets.find(periodBudget => periodBudget.periodNumber === period);
     return budget ? budget.totalBudgetPerPeriod : 0;
   }
 
   calculateTotalBudgetPerPeriod(period: number, partners: ProjectPartnerBudgetPerPeriodDTO[]): number {
     const periodPartnersBudgets = partners.flatMap(partner => partner.periodBudgets
-      .filter(periodBudget => periodBudget.periodNumber == period)
+      .filter(periodBudget => periodBudget.periodNumber === period)
       .map(periodBudget => periodBudget.totalBudgetPerPeriod));
     const totalPeriodBudget = NumberService.sum(periodPartnersBudgets);
     this.periodsTotalBudgets.set(period, totalPeriodBudget);
@@ -97,17 +94,11 @@ export class BudgetPagePartnerPerPeriodComponent {
   }
 
   calculateTotalPeriodBudgetPercentage(periodNumber: number): number {
-    //this.periodsPercentOfTotalBudgets = [];
     const periodTotalBudget = this.periodsTotalBudgets.get(periodNumber);
     const periodPercentOfTotalBudget = NumberService
       .product([100 , NumberService
-        .divide(periodTotalBudget? periodTotalBudget : null, this.totalEligibleBudget)]);
+        .divide(periodTotalBudget ? periodTotalBudget : null, this.totalEligibleBudget)]);
     this.periodsPercentOfTotalBudgets.push(periodPercentOfTotalBudget);
     return periodPercentOfTotalBudget;
   }
-
-  calculateTotalEligibleBudgetPercentage(){
-    return NumberService.sum(this.periodsPercentOfTotalBudgets);
-  }
-
 }
