@@ -1,0 +1,134 @@
+<ng-container *ngIf="dataSource$ | async as dataSource">
+
+    <app-alert [closable]="false" [type]="Alert.WARNING"
+               [show]="!dataSource?.length">
+        <p>{{'project.application.form.a4.indicators.overview.table.not.available' | translate}}</p>
+    </app-alert>
+
+    <table mat-table
+           *ngIf="dataSource?.length"
+           [dataSource]="dataSource"
+           id="indicators-overview"
+           aria-label="Overview of project results and outputs in connection to indicators">
+        <ng-container matColumnDef="resultIndicatorName">
+            <th mat-header-cell *matHeaderCellDef scope="col">
+                {{ 'project.results.result.indicator' | translate }}
+            </th>
+            <td mat-cell class="border-cell-bottom"
+                *matCellDef="let data; let i = index"
+                [matTooltip]="data.resultIndicatorIdentifier"
+                matTooltipPosition="right"
+                [attr.rowspan]="getRowSpan('resultIndicator', i)"
+                [style.display]="getRowSpan('resultIndicator', i) ? '' : 'none'">
+                {{ data.resultIndicatorName | translateByInputLanguage | async }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="resultIndicatorMeasurementUnit">
+            <th mat-header-cell *matHeaderCellDef scope="col">
+                {{ 'project.results.result.measurement.unit' | translate }}
+            </th>
+            <td mat-cell class="border-cell-bottom"
+                *matCellDef="let data; let i = index"
+                [attr.rowspan]="getRowSpan('resultIndicator', i)"
+                [style.display]="getRowSpan('resultIndicator', i) ? '' : 'none'">
+                {{ data.resultIndicatorMeasurementUnit | translateByInputLanguage | async }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="resultIndicatorBaseline">
+            <th mat-header-cell *matHeaderCellDef scope="col" class="justify-end">
+                {{ 'project.results.result.baseline' | translate }}
+            </th>
+            <td mat-cell class="border-cell-bottom justify-end"
+                *matCellDef="let data; let i = index"
+                [attr.rowspan]="getRowSpan('resultIndicator', i)"
+                [style.display]="getRowSpan('resultIndicator', i) ? '' : 'none'">
+            <span *ngFor="let baseline of data.resultIndicatorBaseline">
+                {{ baseline | asMoney }}<br/>
+            </span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="resultIndicatorTargetValueSumUp">
+            <th mat-header-cell *matHeaderCellDef scope="col" class="border-cell-right justify-end">
+                {{ 'project.application.form.a4.table.result.indicator.value' | translate }}
+            </th>
+            <td mat-cell class="border-cell-bottom border-cell-right justify-end"
+                *matCellDef="let data; let i = index"
+                [attr.rowspan]="getRowSpan('resultIndicator', i)"
+                [style.display]="getRowSpan('resultIndicator', i) ? '' : 'none'">
+                {{ data.resultIndicatorTargetValueSumUp | asMoney }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="outputIndicatorName">
+            <th mat-header-cell *matHeaderCellDef scope="col" class="border-cell-left">
+                {{ 'project.application.form.work.package.output.programme.output.indicator' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let data; let i = index" class="border-cell-bottom border-cell-left"
+                [matTooltip]="data.outputIndicatorIdentifier"
+                matTooltipPosition="right"
+                [attr.rowspan]="getRowSpan('outputIndicator', i)"
+                [style.display]="getRowSpan('outputIndicator', i) ? '' : 'none'">
+                {{ data.outputIndicatorName | translateByInputLanguage | async }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="outputIndicatorMeasurementUnit">
+            <th mat-header-cell *matHeaderCellDef scope="col" class="no-left-padding">
+                {{ 'project.application.form.work.package.output.measurement.unit' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let data; let i = index" class="border-cell-bottom no-left-padding"
+                [attr.rowspan]="getRowSpan('outputIndicator', i)"
+                [style.display]="getRowSpan('outputIndicator', i) ? '' : 'none'">
+                {{ data.outputIndicatorMeasurementUnit | translateByInputLanguage | async }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="outputIndicatorTargetValueSumUp">
+            <th mat-header-cell *matHeaderCellDef scope="col" class="justify-end">
+                {{ 'project.application.form.a4.table.aggregated.value' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let data; let i = index" class="justify-end border-cell-bottom"
+                [attr.rowspan]="getRowSpan('outputIndicator', i)"
+                [style.display]="getRowSpan('outputIndicator', i) ? '' : 'none'">
+                {{ data.outputIndicatorTargetValueSumUp | asMoney }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="projectOutputNumber">
+            <th mat-header-cell *matHeaderCellDef scope="col" class="border-cell-left">
+                {{ 'project.application.form.work.package.output' | translate }}
+            </th>
+            <td *matCellDef="let data; let i = index" class="border-cell-bottom border-cell-left">
+                <ng-container *ngIf="data.projectOutputNumber">
+                    {{ 'project.application.form.work.package.output' | translate }} {{ data.projectOutputNumber }}
+                </ng-container>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="projectOutputTitle">
+            <th mat-header-cell *matHeaderCellDef scope="col">
+                {{ 'project.application.form.work.package.output.title' | translate }}
+            </th>
+            <td *matCellDef="let data; let i = index" class="border-cell-bottom">
+                {{ data.projectOutputTitle | translateByInputLanguage | async }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="projectOutputTargetValue">
+            <th mat-header-cell *matHeaderCellDef scope="col" class="justify-end border-cell-right">
+                {{ 'project.application.form.a4.table.output.target.value' | translate }}
+            </th>
+            <td *matCellDef="let data; let i = index" class="justify-end border-cell-bottom border-cell-right">
+                {{ data.projectOutputTargetValue | asMoney }}
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+</ng-container>
+

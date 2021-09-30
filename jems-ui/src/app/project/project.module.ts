@@ -76,7 +76,6 @@ import {FilterUnitCostsPipe} from './partner/project-partner-detail-page/project
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
 import {ProjectApplicationPreConditionCheckResultComponent} from './project-detail-page/project-application-pre-condition-check-result/project-application-pre-condition-check-result.component';
 import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
-import {ProjectVersionStore} from './common/services/project-version-store.service';
 import {ProjectPageTemplateComponent} from './project-page-template/project-page-template.component';
 import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
 import {FormFieldVisibilityStatusDirective} from './common/directives/form-field-visibility-status.directive';
@@ -98,6 +97,7 @@ import {InvestmentBreadcrumbResolver} from '@project/project-application/contain
 import {ProjectPartnerBudgetOverviewComponent} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-overview/project-partner-budget-overview.component';
 import {BudgetTableComponent} from '@project/budget/budget-page/budget-table/budget-table.component';
 import {BudgetPagePartnerPerPeriodComponent} from './budget/budget-page-partner-per-period/budget-page-partner-per-period.component';
+import {ProjectApplicationFormA4Component} from '@project/project-application/components/project-application-form/project-application-form-a4/project-application-form-a4.component';
 
 @NgModule({
   declarations: [
@@ -154,6 +154,7 @@ import {BudgetPagePartnerPerPeriodComponent} from './budget/budget-page-partner-
     ProjectPartnerBudgetOverviewComponent,
     ProjectApplicationPartnerIdentityComponent,
     ProjectApplicationFormIdentificationPageComponent,
+    ProjectApplicationFormA4Component,
     ProjectApplicationFormAssociatedOrgPageComponent,
     ProjectApplicationFormAddressComponent,
     BudgetPageComponent,
@@ -197,7 +198,6 @@ import {BudgetPagePartnerPerPeriodComponent} from './budget/budget-page-partner-
   ],
   providers: [
     DatePipe,
-    ProjectVersionStore,
     ProjectApplicationFormSidenavService,
     ProjectApplicationFormStore,
     ProjectAcronymResolver,

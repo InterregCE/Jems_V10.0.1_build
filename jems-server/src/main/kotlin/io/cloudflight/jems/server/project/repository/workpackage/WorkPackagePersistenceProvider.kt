@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEnti
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
+import io.cloudflight.jems.server.project.entity.workpackage.output.OutputRowWithTranslations
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityPartnerRepository
@@ -23,6 +24,7 @@ import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPack
 import io.cloudflight.jems.server.project.repository.workpackage.output.toIndexedEntity
 import io.cloudflight.jems.server.project.repository.workpackage.output.toModel
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.service.result.model.OutputRow
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
@@ -293,6 +295,17 @@ class WorkPackagePersistenceProvider(
     @Transactional(readOnly = true)
     override fun getProjectFromWorkPackageInvestment(workPackageInvestmentId: Long): ProjectApplicantAndStatus =
         getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.toApplicantAndStatus()
+
+    @Transactional(readOnly = true)
+    override fun getAllOutputsForProjectIdSortedByNumbers(projectId: Long, version: String?): List<OutputRow> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                workPackageOutputRepository.findAllByProjectIdOrderedByNumbers(projectId).toModel()
+            },
+            previousVersionFetcher = { timestamp ->
+                workPackageOutputRepository.findAllByProjectIdAsOfTimestampOrderedByNumbers(projectId, timestamp).toModel()
+            }
+        ) ?: emptyList()
 
     private fun getWorkPackageOrThrow(workPackageId: Long): WorkPackageEntity =
         workPackageRepository.findById(workPackageId).orElseThrow { ResourceNotFoundException("workPackage") }
