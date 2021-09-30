@@ -38,18 +38,17 @@ export class BudgetPagePartnerPerPeriodComponent {
     footerColumns: string[]
   }>;
 
-  constructor(public projectStore: ProjectStore, private projectPartnerStore: ProjectPartnerStore ) {
+  constructor(public projectStore: ProjectStore, private projectPartnerStore: ProjectPartnerStore) {
 
-    this.data$ = combineLatest([this.projectStore.projectPeriods$, this.projectPartnerStore.projectPartnersBudgetPerPeriods$ ])
+    this.data$ = combineLatest([this.projectStore.projectPeriods$, this.projectPartnerStore.projectPartnersBudgetPerPeriods$])
       .pipe(
         map(([periods, projectPartnersBudgetPerPeriods]) => ({
-            periodNumbers: [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE],
-            partners: projectPartnersBudgetPerPeriods,
-            displayColumns: ['partner', 'country', 'period0', ...periods.map(period => `period${period.number}`), 'period255', 'totalEligibleBudget'],
-            footerColumns: ['percentOfTotalBudget', 'blankCell', 'budgetPercent0', ...periods.map(period => `budgetPercent${period.number}`), 'budgetPercent255', 'budgetPercentTotal']
-          })),
+          periodNumbers: [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE],
+          partners: projectPartnersBudgetPerPeriods,
+          displayColumns: ['partner', 'country', 'period0', ...periods.map(period => `period${period.number}`), 'period255', 'totalEligibleBudget'],
+          footerColumns: ['percentOfTotalBudget', 'blankCell', 'budgetPercent0', ...periods.map(period => `budgetPercent${period.number}`), 'budgetPercent255', 'budgetPercentTotal']
+        })),
         tap(data => this.periodsAvailable = data.periodNumbers.length > 0),
-
       );
     this.displayedColumns = [];
     this.displayedFooterPercentColumns = [];
@@ -60,27 +59,15 @@ export class BudgetPagePartnerPerPeriodComponent {
     this.totalPercent = 100;
   }
 
-  getDisplayColumns(periodNumbers: number[]): void {
-    this.displayedColumns = [];
-    this.displayedColumns.push('partner', 'country');
-    periodNumbers.forEach(periodNumber => this.displayedColumns.push('period' + periodNumber));
-    this.displayedColumns.push('totalEligibleBudget');
-
-    this.displayedFooterPercentColumns.push('percentOfTotalBudget');
-    this.displayedFooterPercentColumns.push('blankCell');
-    periodNumbers.forEach(periodNumber => this.displayedFooterPercentColumns.push('budgetPercent' + periodNumber));
-    this.displayedFooterPercentColumns.push('budgetPercentTotal');
-  }
-
   getPeriodTotalBudgetForPartner(partner: ProjectPartnerBudgetPerPeriodDTO, period: number): number {
-    const budget = partner.periodBudgets.find(periodBudget => periodBudget.periodNumber === period);
+    const budget = partner.periodBudgets.find((periodBudget: { periodNumber: number; }) => periodBudget.periodNumber === period);
     return budget ? budget.totalBudgetPerPeriod : 0;
   }
 
   calculateTotalBudgetPerPeriod(period: number, partners: ProjectPartnerBudgetPerPeriodDTO[]): number {
     const periodPartnersBudgets = partners.flatMap(partner => partner.periodBudgets
-      .filter(periodBudget => periodBudget.periodNumber === period)
-      .map(periodBudget => periodBudget.totalBudgetPerPeriod));
+      .filter((periodBudget: { periodNumber: number; }) => periodBudget.periodNumber === period)
+      .map((periodBudget: { totalBudgetPerPeriod: any; }) => periodBudget.totalBudgetPerPeriod));
     const totalPeriodBudget = NumberService.sum(periodPartnersBudgets);
     this.periodsTotalBudgets.set(period, totalPeriodBudget);
     return totalPeriodBudget;
@@ -96,7 +83,7 @@ export class BudgetPagePartnerPerPeriodComponent {
   calculateTotalPeriodBudgetPercentage(periodNumber: number): number {
     const periodTotalBudget = this.periodsTotalBudgets.get(periodNumber);
     const periodPercentOfTotalBudget = NumberService
-      .product([100 , NumberService
+      .product([100, NumberService
         .divide(periodTotalBudget ? periodTotalBudget : null, this.totalEligibleBudget)]);
     this.periodsPercentOfTotalBudgets.push(periodPercentOfTotalBudget);
     return periodPercentOfTotalBudget;
