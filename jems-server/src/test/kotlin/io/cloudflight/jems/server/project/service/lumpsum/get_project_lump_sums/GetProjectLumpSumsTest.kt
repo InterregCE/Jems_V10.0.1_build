@@ -35,13 +35,19 @@ internal class GetProjectLumpSumsTest : UnitTest() {
     lateinit var getProjectLumpSums: GetProjectLumpSums
 
     @Test
-    fun getActivitiesForWorkPackage() {
+    fun getLumpSums() {
         every { persistence.getLumpSums(1L) } returns listOf(lumpSum)
         assertThat(getProjectLumpSums.getLumpSums(1L)).containsExactly(lumpSum)
     }
 
     @Test
     fun getLumpSumsTotalForPartner() {
+        every { budgetCostsPersistence.getBudgetLumpSumsCostTotal(6L) } returns BigDecimal.TEN
+        assertThat(getProjectLumpSums.getLumpSumsTotalForPartner(6L)).isEqualByComparingTo(BigDecimal.TEN)
+    }
+
+    @Test
+    fun getLumpSumsTotalForPartnerHistoric() {
         every { budgetCostsPersistence.getBudgetLumpSumsCostTotal(7L, "1.0") } returns BigDecimal.ONE
         assertThat(getProjectLumpSums.getLumpSumsTotalForPartner(7L, "1.0")).isEqualByComparingTo(BigDecimal.ONE)
     }

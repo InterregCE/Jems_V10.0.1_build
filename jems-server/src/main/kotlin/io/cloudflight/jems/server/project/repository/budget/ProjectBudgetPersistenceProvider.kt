@@ -9,14 +9,16 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetUnitCostRepository
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartner
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerHistoricalData
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import java.math.BigDecimal
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Repository
 class ProjectBudgetPersistenceProvider(
@@ -126,4 +128,16 @@ class ProjectBudgetPersistenceProvider(
                 projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
                     .map { it.toProjectPartnerHistoricalData() }
             }) ?: emptyList()
+
+    @Transactional(readOnly = true)
+    override fun getBudgetPerPartner(partnerIds: Set<Long>, projectId: Long, version: String?): List<ProjectPartnerBudget> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectPartnerRepository.getAllBudgetsByIds(partnerIds).toProjectPartnerBudgetPerPeriod()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectPartnerRepository.getAllBudgetsByPartnerIdsAsOfTimestamp(partnerIds, timestamp)
+                    .toProjectPartnerBudgetPerPeriod()
+            }
+        ) ?: emptyList()
 }

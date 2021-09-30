@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerMotivationRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import org.springframework.data.domain.Page
@@ -34,6 +35,88 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun existsByProjectIdAndAbbreviation(projectId: Long, name: String): Boolean
 
+    @Query(
+        """
+            SELECT
+                new io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRowImpl(
+                partner.id,
+                period.id.number,
+                sum(staffCostPeriod.amount),
+                sum(travelPeriod.amount),
+                sum(equipmentPeriod.amount),
+                sum(externalPeriod.amount),
+                sum(infrastructurePeriod.amount),
+                sum(unitCostPeriod.amount))
+            FROM #{#entityName} AS partner
+                LEFT JOIN project_period AS period ON partner.project.id = period.id.projectId
+                LEFT JOIN #{#entityName}_budget_staff_cost AS staffCost ON partner.id = staffCost.baseProperties.partnerId
+                LEFT JOIN #{#entityName}_budget_staff_cost_period AS staffCostPeriod
+                    ON staffCost.id = staffCostPeriod.budgetPeriodId.budget.id AND staffCostPeriod.budgetPeriodId.period.id.number = period.id.number
+                LEFT JOIN #{#entityName}_budget_travel AS travel ON partner.id = travel.baseProperties.partnerId
+                LEFT JOIN #{#entityName}_budget_travel_period AS travelPeriod
+                    ON travel.id = travelPeriod.budgetPeriodId.budget.id AND travelPeriod.budgetPeriodId.period.id.number = period.id.number
+                LEFT JOIN #{#entityName}_budget_equipment AS equipment ON partner.id = equipment.baseProperties.partnerId
+                LEFT JOIN #{#entityName}_budget_equipment_period AS equipmentPeriod
+                    ON equipment.id = equipmentPeriod.budgetPeriodId.budget.id AND equipmentPeriod.budgetPeriodId.period.id.number = period.id.number
+                LEFT JOIN #{#entityName}_budget_infrastructure AS infrastructure ON partner.id = infrastructure.baseProperties.partnerId
+                LEFT JOIN #{#entityName}_budget_infrastructure_period AS infrastructurePeriod
+                    ON infrastructure.id = infrastructurePeriod.budgetPeriodId.budget.id AND infrastructurePeriod.budgetPeriodId.period.id.number = period.id.number
+                LEFT JOIN #{#entityName}_budget_external AS external ON partner.id = external.baseProperties.partnerId
+                LEFT JOIN #{#entityName}_budget_external_period AS externalPeriod
+                    ON external.id = externalPeriod.budgetPeriodId.budget.id AND externalPeriod.budgetPeriodId.period.id.number = period.id.number
+                LEFT JOIN #{#entityName}_budget_unit_cost AS unitCost ON partner.id = unitCost.baseProperties.partnerId
+                LEFT JOIN #{#entityName}_budget_unit_cost_period AS unitCostPeriod
+                    ON unitCost.id = unitCostPeriod.budgetPeriodId.budget.id AND unitCostPeriod.budgetPeriodId.period.id.number = period.id.number
+            WHERE partner.id IN :ids
+            GROUP BY partner.id, period.id.number
+            """
+    )
+    fun getAllBudgetsByIds(ids: Set<Long>): List<ProjectPartnerBudgetPerPeriodRow>
+
+    @Query(
+        """
+            SELECT
+                partner.id AS id,
+                period.number AS periodNumber,
+                sum(staffCostPeriod.amount) AS staffCostsPerPeriod,
+                sum(travelPeriod.amount) AS travelAndAccommodationCostsPerPeriod,
+                sum(equipmentPeriod.amount) AS equipmentCostsPerPeriod,
+                sum(externalPeriod.amount) AS externalExpertiseAndServicesCostsPerPeriod,
+                sum(infrastructurePeriod.amount) AS infrastructureAndWorksCostsPerPeriod,
+                sum(unitCostPeriod.amount) AS unitCostsPerPeriod
+            FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partner
+                LEFT JOIN project_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS period
+                    ON partner.project_id = period.project_id
+                LEFT JOIN #{#entityName}_budget_staff_cost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS staffCost
+                    ON partner.id = staffCost.partner_id
+                LEFT JOIN #{#entityName}_budget_staff_cost_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS staffCostPeriod
+                    ON staffCost.id = staffCostPeriod.budget_id AND staffCostPeriod.period_number = period.number
+                LEFT JOIN #{#entityName}_budget_travel FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS travel
+                    ON partner.id = travel.partner_id
+                LEFT JOIN #{#entityName}_budget_travel_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS travelPeriod
+                    ON travel.id = travelPeriod.budget_id AND travelPeriod.period_number = period.number
+                LEFT JOIN #{#entityName}_budget_equipment FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS equipment
+                    ON partner.id = equipment.partner_id
+                LEFT JOIN #{#entityName}_budget_equipment_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS equipmentPeriod
+                    ON equipment.id = equipmentPeriod.budget_id AND equipmentPeriod.period_number = period.number
+                LEFT JOIN #{#entityName}_budget_infrastructure FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS infrastructure
+                    ON partner.id = infrastructure.partner_id
+                LEFT JOIN #{#entityName}_budget_infrastructure_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS infrastructurePeriod
+                    ON infrastructure.id = infrastructurePeriod.budget_id AND infrastructurePeriod.period_number = period.number
+                LEFT JOIN #{#entityName}_budget_external FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS external
+                    ON partner.id = external.partner_id
+                LEFT JOIN #{#entityName}_budget_external_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS externalPeriod
+                    ON external.id = externalPeriod.budget_id AND externalPeriod.period_number = period.number
+                LEFT JOIN #{#entityName}_budget_unit_cost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS unitCost
+                    ON partner.id = unitCost.partner_id
+                LEFT JOIN #{#entityName}_budget_unit_cost_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS unitCostPeriod
+                    ON unitCost.id = unitCostPeriod.budget_id AND unitCostPeriod.period_number = period.number
+            WHERE partner.id IN :ids
+            GROUP BY partner.id, period.number
+            """,
+        nativeQuery = true
+    )
+    fun getAllBudgetsByPartnerIdsAsOfTimestamp(ids: Set<Long>, timestamp: Timestamp): List<ProjectPartnerBudgetPerPeriodRow>
 
     fun countByProjectId(projectId: Long): Long
 

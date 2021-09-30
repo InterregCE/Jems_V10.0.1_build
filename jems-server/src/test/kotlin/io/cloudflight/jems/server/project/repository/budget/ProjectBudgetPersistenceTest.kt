@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRowImpl
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetRow
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetView
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
@@ -22,12 +23,14 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetUnitCostRepository
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.toScaledBigDecimal
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -288,7 +291,6 @@ class ProjectBudgetPersistenceTest {
         )
     }
 
-
     @Test
     fun getBudgetUnitCostsPerPartnerHistoric() {
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
@@ -299,4 +301,64 @@ class ProjectBudgetPersistenceTest {
                 PARTNER_ID to BigDecimal.TEN
             ))
     }
+
+    @Test
+    fun getBudgetPerPartner() {
+        val projectId = 1L
+        val partnerId = 2L
+        val ppBudgetRow = ProjectPartnerBudgetPerPeriodRowImpl(
+            id = partnerId,
+            periodNumber = 1,
+            staffCostsPerPeriod = 10.toScaledBigDecimal(),
+            travelAndAccommodationCostsPerPeriod = 20.toScaledBigDecimal(),
+            equipmentCostsPerPeriod = 30.toScaledBigDecimal(),
+            externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
+            infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
+            unitCostsPerPeriod = 60.toScaledBigDecimal()
+        )
+        every { projectPartnerRepository.getAllBudgetsByIds(setOf(partnerId)) } returns listOf(ppBudgetRow)
+
+        assertThat(projectBudgetPersistence.getBudgetPerPartner(setOf(partnerId), projectId))
+            .containsExactly(ProjectPartnerBudget(
+                id = partnerId,
+                periodNumber = 1,
+                staffCostsPerPeriod = 10.toScaledBigDecimal(),
+                travelAndAccommodationCostsPerPeriod = 20.toScaledBigDecimal(),
+                equipmentCostsPerPeriod = 30.toScaledBigDecimal(),
+                externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
+                infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
+                unitCostsPerPeriod = 60.toScaledBigDecimal(),
+            ))
+    }
+
+    @Test
+    fun getBudgetPerPartnerHistoric() {
+        val projectId = 1L
+        val partnerId = 2L
+        every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp
+        val ppBudgetRow = ProjectPartnerBudgetPerPeriodRowImpl(
+            id = partnerId,
+            periodNumber = 1,
+            staffCostsPerPeriod = 10.toScaledBigDecimal(),
+            travelAndAccommodationCostsPerPeriod = 20.toScaledBigDecimal(),
+            equipmentCostsPerPeriod = 30.toScaledBigDecimal(),
+            externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
+            infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
+            unitCostsPerPeriod = 60.toScaledBigDecimal()
+        )
+        every { projectPartnerRepository.getAllBudgetsByPartnerIdsAsOfTimestamp(setOf(partnerId), timestamp) } returns listOf(ppBudgetRow)
+
+        assertThat(projectBudgetPersistence.getBudgetPerPartner(setOf(partnerId), projectId, version))
+            .containsExactly(ProjectPartnerBudget(
+                id = partnerId,
+                periodNumber = 1,
+                staffCostsPerPeriod = 10.toScaledBigDecimal(),
+                travelAndAccommodationCostsPerPeriod = 20.toScaledBigDecimal(),
+                equipmentCostsPerPeriod = 30.toScaledBigDecimal(),
+                externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
+                infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
+                unitCostsPerPeriod = 60.toScaledBigDecimal(),
+            ))
+    }
+
 }

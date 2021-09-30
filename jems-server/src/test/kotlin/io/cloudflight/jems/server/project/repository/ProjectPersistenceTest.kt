@@ -345,6 +345,27 @@ internal class ProjectPersistenceTest : UnitTest() {
     }
 
     @Test
+    fun `get Project Periods historic`() {
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val version = "3.0"
+        val project = dummyProject()
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
+        val mockPeriodRow: ProjectPeriodRow = mockk()
+        every { mockPeriodRow.periodNumber } returns 1
+        every { mockPeriodRow.periodStart } returns 1
+        every { mockPeriodRow.periodEnd } returns 12
+        every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockPeriodRow)
+
+        assertThat(persistence.getProjectPeriods(PROJECT_ID, version))
+            .containsExactly(ProjectPeriod(
+                number = 1,
+                start = 1,
+                end = 12
+            ))
+    }
+
+    @Test
     fun `get Project without version`() {
         val statusChange = ZonedDateTime.now()
         val user = dummyCall().creator
