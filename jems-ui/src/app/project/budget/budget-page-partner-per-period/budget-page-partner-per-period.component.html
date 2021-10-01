@@ -45,7 +45,7 @@
             <ng-container matColumnDef="totalEligibleBudget">
                 <mat-header-cell
                         *matHeaderCellDef>{{ 'project.partner.total.eligible.budget' | translate }}</mat-header-cell>
-                <mat-cell *matCellDef="let partner">{{ partner.totalPartnerBudget | asMoney }}</mat-cell>
+                <mat-cell *matCellDef="let projectPartnerBudgetPerPeriod">{{ projectPartnerBudgetPerPeriod.totalPartnerBudget | asMoney }}</mat-cell>
                 <mat-footer-cell
                         *matFooterCellDef>{{ data.totalEligibleBudget | asMoney}}</mat-footer-cell>
             </ng-container>

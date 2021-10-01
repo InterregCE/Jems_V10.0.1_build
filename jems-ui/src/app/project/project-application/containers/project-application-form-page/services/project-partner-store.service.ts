@@ -157,7 +157,7 @@ export class ProjectPartnerStore {
         switchMap(([project, version]) =>
           this.projectBudgetService.getProjectPartnerBudgetPerPeriod(project.id, version)
         ),
-        distinctUntilChanged()
+        shareReplay(1)
       );
   }
 }
