@@ -52,7 +52,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements On
     name: [[]],
     description: [[]],
     type: [[]],
-    costPerUnit: ['', Validators.compose([
+    costPerUnit: [null, Validators.compose([
       Validators.min(this.MIN_VALUE),
       Validators.max(this.MAX_VALUE),
       Validators.required])

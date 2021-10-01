@@ -41,8 +41,26 @@
 
 @mixin custom-general-form-field-styles() {
   .mat-form-field-label {
-    color: var(--input-label-color);
+    color: var(--font-color-secondary);
   }
+
+  .mat-form-field-required-marker {
+    color: inherit;
+    float: left;
+    margin-right: 0.25em;
+    font-weight: 500;
+    font-size: 1.25em;
+    line-height: 0.725em;
+    &.empty {
+      color: var(--error-color);
+    }
+  }
+  .mat-focused, label.mat-empty.mat-form-field-empty {
+    .mat-form-field-required-marker {
+      color: var(--error-color);
+    }
+  }
+
 }
 
 @mixin custom-disabled-form-fields() {
@@ -52,7 +70,7 @@
     border-bottom: 1px dotted;
     border-color: var(--outline-color);
   }
-  
+
   .mat-form-field-disabled .mat-form-field-underline {
     height: 0;
   }
@@ -64,18 +82,45 @@
 
     .mat-form-field-label-wrapper {
       .mat-form-field-label {
-        color: var(--input-label-color);
+        color: var(--font-color-secondary);
       }
     }
 
     .mat-form-field-wrapper {
       .mat-input-element {
-        color: var(--font-color-secondary);
+        color: var(--font-color-primary);
       }
     }
   }
 
   .mat-form-field-disabled .mat-select-value-text, .light-theme .mat-input-element:disabled {
     color: var(--font-color-primary);
+  }
+
+  /* usage:
+   * on dropdowns and inputs inside of tables, use the "placeholder" property instead of a label
+   * add class "placeholder-required" to the e.g. mat-select or mat-input...
+   *
+   * use the mat-required-marker class to show the same asterisk on related text e.g. the intro-text for a toggle-switch
+   * "mat-required-marker empty" (red) while user input is missing
+   * "mat-required-marker" (neutral color) when input value is fine
+  */
+  .mat-required-marker.empty::before,
+  .placeholder-required span.mat-select-placeholder::before {
+    content: "*";
+    font-weight: 500;
+    margin-right: 0.2em;
+    font-size: 1.25em;
+    line-height: 0.725em;
+    color: var(--error-color);
+  }
+  .mat-required-marker::before{
+    content: "*";
+    margin-right: 0.2em;
+    font-weight: 200;
+    font-size: 1.25em;
+    line-height: 0.725em;
+    display: inline;
+    color: inherit;
   }
 }

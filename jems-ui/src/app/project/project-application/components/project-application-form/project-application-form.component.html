@@ -2,31 +2,30 @@
           (discard)="resetForm()">
     <form appFormLayout [formGroup]="applicationForm">
         <h3>{{'project.application.form.section.part.a.subsection.one' | translate}}</h3>
+        <app-alert [type]="Alert.INFO" [closable]="false" [show]="true">
+            <span class="mat-required-marker empty"> {{'common.hint.required' | translate}}</span>
+        </app-alert>
         <mat-form-field appFormFieldWidth="xx-large"
                         *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ID">
             <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
             <input name="projectId" formControlName="projectId" matInput>
         </mat-form-field>
 
-        <mat-form-field appFormFieldWidth="half"
-                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION">
-            <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartner' | translate}}</mat-label>
-            <input name="nameOfTheLeadPartner" formControlName="nameOfTheLeadPartner" matInput>
-            <mat-hint *ngIf="!applicationForm?.controls?.nameOfTheLeadPartner?.value && (projectStore.projectEditable$ | async)"
-                      class="mat-error">
-                {{'project.application.form.name.of.the.lead.partner.required' | translate}}
-            </mat-hint>
-        </mat-form-field>
+        <div *ngIf="applicationForm?.controls?.nameOfTheLeadPartner?.value">
+            <mat-form-field appFormFieldWidth="half"
+                            *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION">
+                <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartner' | translate}}</mat-label>
+                <input name="nameOfTheLeadPartner" formControlName="nameOfTheLeadPartner" matInput>
+            </mat-form-field>
+        </div>
 
-        <mat-form-field appFormFieldWidth="half"
-                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION">
-            <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartnerInEnglish' | translate}}</mat-label>
-            <input name="nameOfTheLeadPartnerInEnglish" formControlName="nameOfTheLeadPartnerInEnglish" matInput>
-            <mat-hint *ngIf="!applicationForm?.controls?.nameOfTheLeadPartnerInEnglish?.value && (projectStore.projectEditable$ | async)"
-                      class="mat-error">
-                {{'project.application.form.nameOfTheLeadPartnerInEnglish.required' | translate}}
-            </mat-hint>
-        </mat-form-field>
+        <div *ngIf="applicationForm?.controls?.nameOfTheLeadPartnerInEnglish?.value">
+            <mat-form-field appFormFieldWidth="half"
+                            *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION">
+                <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartnerInEnglish' | translate}}</mat-label>
+                <input name="nameOfTheLeadPartnerInEnglish" formControlName="nameOfTheLeadPartnerInEnglish" matInput>
+            </mat-form-field>
+        </div>
 
         <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ACRONYM">
             <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
@@ -104,10 +103,12 @@
                 </mat-error>
             </mat-form-field>
         </ng-container>
-
         <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.OBJECTIVE">
             <ng-container *ngIf="applicationForm.enabled && currentPriority">
-                <h4>{{'programme.priority.objective.title' | translate}}</h4>
+                <p class="mat-required-marker"
+                    [ngClass]="{'empty': applicationForm?.controls?.specificObjective?.errors}">
+                    {{'programme.priority.objective.title' | translate}}:
+                </p>
                 <mat-radio-group
                         formControlName="specificObjective"
                         (change)="selectedSpecificObjective= $event.value">
@@ -118,12 +119,6 @@
                         <div>{{'programme.policy.' + objective | translate}}</div>
                     </mat-radio-button>
                 </mat-radio-group>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="applicationForm?.controls?.specificObjective?.errors"
-                            [messages]="specificObjectiveErrors">
-                    </app-form-field-errors>
-                </mat-error>
             </ng-container>
         </ng-container>
 

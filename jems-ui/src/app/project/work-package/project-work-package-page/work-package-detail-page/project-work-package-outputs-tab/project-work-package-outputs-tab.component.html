@@ -29,7 +29,12 @@
                         </app-multi-language-form-field>
                     </app-multi-language-container>
 
-                    <mat-form-field [class.mat-form-field-invalid]="!data.outputIndicators.length" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
+                    <app-alert [closable]="false"
+                               [type]="Alert.WARNING"
+                               [show]="!data.outputIndicators?.length">
+                            {{'project.application.form.overall.objective.specific.objective.required' | translate}}
+                    </app-alert>
+                    <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
                         <mat-label>{{'project.application.form.work.package.output.programme.output.indicator' | translate}}</mat-label>
                         <mat-select [disabled]="!data.outputIndicators.length"
                                     [formControlName]="constants.RESULT_INDICATOR.name">
@@ -38,9 +43,6 @@
                                 {{resultIndicator.name | translateBySystemLanguage | async}}
                             </mat-option>
                         </mat-select>
-                        <mat-hint *ngIf="!data.outputIndicators?.length" class="mat-error">
-                            {{'project.application.form.overall.objective.specific.objective.required' | translate}}
-                        </mat-hint>
                     </mat-form-field>
 
                     <div appMultiColumnRow stretch>
@@ -49,7 +51,7 @@
                             <input readonly matInput
                                    value="{{getMeasurementUnit(output.get(constants.RESULT_INDICATOR.name)?.value, data.outputIndicators)
                                             | translateBySystemLanguage | async}}"
-                                   [disabled]="form.disabled">
+                                   [disabled]="true">
                         </mat-form-field>
 
                         <mat-form-field appFormFieldWidth="medium" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TARGET_VALUE">

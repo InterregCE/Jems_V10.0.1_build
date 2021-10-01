@@ -22,7 +22,7 @@
             <h3>{{'call.identification.title' | translate}}</h3>
             <mat-form-field>
                 <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
-                <input formControlName="name" matInput name="name">
+                <input formControlName="name" matInput name="name" required>
                 <mat-error>
                     <app-form-field-errors
                             [args]="dateNameArgs"
