@@ -1,17 +1,18 @@
 <app-project-page-template [needsCard]="true"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
-                           subTitleKey="project.application.form.section.part.d">
+                           subTitleKey="project.application.form.section.part.d"
+                           *ngIf="data$ | async as data">
     <h3>{{ 'project.application.form.budgetPartnerPerPeriod.d.three.one.title' | translate }}</h3>
 
-    <app-alert [show]="!periodsAvailable"
+    <app-alert [show]="!data.periodsAvailable"
                [type]="Alert.WARNING">
         <span>{{'project.application.form.section.part.c.subsection.six.no.data' | translate}}</span>
     </app-alert>
     <ng-container
             *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
-        <mat-table *ngIf="data$ | async as data" id="budget-table-partner-per-period"
-                   [dataSource]="data.partners">
-            <ng-container matColumnDef="partner">
+        <mat-table  id="budget-table-partner-per-period"
+                   [dataSource]="data.projectPartnersBudgetPerPeriods">
+            <ng-container matColumnDef="projectPartnerBudgetPerPeriod">
                 <mat-header-cell *matHeaderCellDef>{{ 'project.breadcrumb.partnerName' | translate }}</mat-header-cell>
                 <mat-cell *matCellDef="let partner">
                     {{ partner.partner.abbreviation | translate : {partner: partner.partner.abbreviation} }}
@@ -24,7 +25,7 @@
             <ng-container matColumnDef="country">
                 <mat-header-cell
                         *matHeaderCellDef>{{ 'project.partner.main-address.country' | translate }}</mat-header-cell>
-                <mat-cell *matCellDef="let partner">{{ partner.partner.country | translate}}</mat-cell>
+                <mat-cell *matCellDef="let projectPartnerBudgetPerPeriod">{{ projectPartnerBudgetPerPeriod.partner.country | translate}}</mat-cell>
                 <mat-footer-cell *matFooterCellDef></mat-footer-cell>
             </ng-container>
 
@@ -35,9 +36,9 @@
                         (periodNumber === 255 ? 'Closure' : ('project.partner.budget.table.period' | translate) + ' ' + periodNumber) }}
                     </mat-header-cell>
                     <mat-cell
-                            *matCellDef="let partner">{{ getPeriodTotalBudgetForPartner(partner, periodNumber) | asMoney }}</mat-cell>
+                            *matCellDef="let projectPartnerBudgetPerPeriod">{{projectPartnerBudgetPerPeriod.periodBudgets[i].totalBudgetPerPeriod | asMoney }}</mat-cell>
                     <mat-footer-cell
-                            *matFooterCellDef>{{ calculateTotalBudgetPerPeriod(periodNumber, data.partners) | asMoney }}</mat-footer-cell>
+                            *matFooterCellDef>{{ calculateTotalBudgetPerPeriod(periodNumber, data.projectPartnersBudgetPerPeriods) | asMoney }}</mat-footer-cell>
                 </ng-container>
             </ng-container>
 
@@ -46,7 +47,7 @@
                         *matHeaderCellDef>{{ 'project.partner.total.eligible.budget' | translate }}</mat-header-cell>
                 <mat-cell *matCellDef="let partner">{{ partner.totalPartnerBudget | asMoney }}</mat-cell>
                 <mat-footer-cell
-                        *matFooterCellDef>{{ calculateTotalEligibleBudget(data.partners) | asMoney}}</mat-footer-cell>
+                        *matFooterCellDef>{{ data.totalEligibleBudget | asMoney}}</mat-footer-cell>
             </ng-container>
 
 
@@ -59,16 +60,15 @@
                 <mat-footer-cell *matFooterCellDef></mat-footer-cell>
             </ng-container>
 
-            <ng-container *ngFor="let periodNumber of data.periodNumbers">
+            <ng-container *ngFor="let periodNumber of data.periodNumbers; let i = index">
                 <ng-container matColumnDef="{{'budgetPercent'+ periodNumber}}">
-                    <mat-footer-cell *matFooterCellDef>{{ calculateTotalPeriodBudgetPercentage(periodNumber) | asMoney}}
-                        %
+                    <mat-footer-cell *matFooterCellDef>{{ data.periodTotalBudgetPercentages[i] | percent: '1.2'}}
                     </mat-footer-cell>
                 </ng-container>
             </ng-container>
 
             <ng-container matColumnDef="budgetPercentTotal">
-                <mat-footer-cell *matFooterCellDef>{{ totalPercent | asMoney }}%</mat-footer-cell>
+                <mat-footer-cell *matFooterCellDef>{{ data.totalPercent | asMoney }}%</mat-footer-cell>
             </ng-container>
 
             <mat-header-row *matHeaderRowDef="data.displayColumns"></mat-header-row>

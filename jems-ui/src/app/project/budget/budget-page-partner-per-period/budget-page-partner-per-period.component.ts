@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectPartnerBudgetPerPeriodDTO} from '@cat/api';
-import {map, tap} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {NumberService} from '@common/services/number.service';
 import {Alert} from '@common/components/forms/alert';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
@@ -22,70 +22,49 @@ export class BudgetPagePartnerPerPeriodComponent {
   APPLICATION_FORM = APPLICATION_FORM;
 
   Alert = Alert;
-  displayedColumns: string[];
-  displayedFooterPercentColumns: string[];
-  totalEligibleBudget: number;
-  periodsPercentOfTotalBudgets: number[];
-  periodsTotalBudgets: Map<number, number>;
-  periodsAvailable: boolean;
-  totalPercent: number;
-
 
   data$: Observable<{
     periodNumbers: number[],
-    partners: ProjectPartnerBudgetPerPeriodDTO[],
+    projectPartnersBudgetPerPeriods: ProjectPartnerBudgetPerPeriodDTO[],
     displayColumns: string[],
-    footerColumns: string[]
+    footerColumns: string[],
+    totalEligibleBudget: number,
+    totalPercent: number,
+    periodTotalBudgets: number[],
+    periodTotalBudgetPercentages: number[]
+    periodsAvailable: boolean
   }>;
 
   constructor(public projectStore: ProjectStore, private projectPartnerStore: ProjectPartnerStore) {
 
     this.data$ = combineLatest([this.projectStore.projectPeriods$, this.projectPartnerStore.projectPartnersBudgetPerPeriods$])
       .pipe(
-        map(([periods, projectPartnersBudgetPerPeriods]) => ({
-          periodNumbers: [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE],
-          partners: projectPartnersBudgetPerPeriods,
-          displayColumns: ['partner', 'country', 'period0', ...periods.map(period => `period${period.number}`), 'period255', 'totalEligibleBudget'],
-          footerColumns: ['percentOfTotalBudget', 'blankCell', 'budgetPercent0', ...periods.map(period => `budgetPercent${period.number}`), 'budgetPercent255', 'budgetPercentTotal']
-        })),
-        tap(data => this.periodsAvailable = data.periodNumbers.length > 0),
+        map(([periods, projectPartnersBudgetPerPeriods]) => {
+          const periodTotalBudgets = [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE].map(periodNumber => this.calculateTotalBudgetPerPeriod(periodNumber, projectPartnersBudgetPerPeriods));
+          const totalEligibleBudget = NumberService.sum(projectPartnersBudgetPerPeriods.map(partner => partner.totalPartnerBudget));
+          console.log(totalEligibleBudget + ' --- periodTotalBudgets' + periodTotalBudgets );
+          return {
+              periodNumbers: [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE],
+              projectPartnersBudgetPerPeriods,
+              displayColumns: ['projectPartnerBudgetPerPeriod', 'country', 'period0', ...periods.map(period => `period${period.number}`), 'period255', 'totalEligibleBudget'],
+              footerColumns: ['percentOfTotalBudget', 'blankCell', 'budgetPercent0', ...periods.map(period => `budgetPercent${period.number}`), 'budgetPercent255', 'budgetPercentTotal'],
+              totalEligibleBudget,
+              totalPercent: 100,
+              periodTotalBudgets,
+              periodTotalBudgetPercentages: periodTotalBudgets.map(periodTotalBudget => this.calculateTotalPeriodBudgetPercentage(periodTotalBudget, totalEligibleBudget)),
+              periodsAvailable : periods.length > 0
+          };
+        }),
       );
-    this.displayedColumns = [];
-    this.displayedFooterPercentColumns = [];
-    this.totalEligibleBudget = 0;
-    this.periodsPercentOfTotalBudgets = [];
-    this.periodsTotalBudgets = new Map<number, number>();
-    this.periodsAvailable = false;
-    this.totalPercent = 100;
   }
 
-  getPeriodTotalBudgetForPartner(partner: ProjectPartnerBudgetPerPeriodDTO, period: number): number {
-    const budget = partner.periodBudgets.find((periodBudget: { periodNumber: number; }) => periodBudget.periodNumber === period);
-    return budget ? budget.totalBudgetPerPeriod : 0;
+  calculateTotalBudgetPerPeriod(periodNumber: number, projectPartnersBudgetPerPeriods: ProjectPartnerBudgetPerPeriodDTO[]): number {
+    return NumberService.sum(projectPartnersBudgetPerPeriods.flatMap(partner => partner.periodBudgets
+      .filter((periodBudget: { periodNumber: number; }) => periodBudget.periodNumber === periodNumber)
+      .map((periodBudget: { totalBudgetPerPeriod: any; }) => periodBudget.totalBudgetPerPeriod)));
   }
 
-  calculateTotalBudgetPerPeriod(period: number, partners: ProjectPartnerBudgetPerPeriodDTO[]): number {
-    const periodPartnersBudgets = partners.flatMap(partner => partner.periodBudgets
-      .filter((periodBudget: { periodNumber: number; }) => periodBudget.periodNumber === period)
-      .map((periodBudget: { totalBudgetPerPeriod: any; }) => periodBudget.totalBudgetPerPeriod));
-    const totalPeriodBudget = NumberService.sum(periodPartnersBudgets);
-    this.periodsTotalBudgets.set(period, totalPeriodBudget);
-    return totalPeriodBudget;
-  }
-
-  calculateTotalEligibleBudget(partners: ProjectPartnerBudgetPerPeriodDTO[]): number {
-    this.totalEligibleBudget = NumberService.sum(
-      partners.map(partner => partner.totalPartnerBudget)
-    );
-    return this.totalEligibleBudget;
-  }
-
-  calculateTotalPeriodBudgetPercentage(periodNumber: number): number {
-    const periodTotalBudget = this.periodsTotalBudgets.get(periodNumber);
-    const periodPercentOfTotalBudget = NumberService
-      .product([100, NumberService
-        .divide(periodTotalBudget ? periodTotalBudget : null, this.totalEligibleBudget)]);
-    this.periodsPercentOfTotalBudgets.push(periodPercentOfTotalBudget);
-    return periodPercentOfTotalBudget;
+  calculateTotalPeriodBudgetPercentage(periodBudgetTotal: number, totalEligibleBudget: number): number {
+    return NumberService.divide(periodBudgetTotal ? periodBudgetTotal : null, totalEligibleBudget);
   }
 }
