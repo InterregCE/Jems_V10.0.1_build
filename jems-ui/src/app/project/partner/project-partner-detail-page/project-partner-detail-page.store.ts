@@ -19,7 +19,7 @@ import {
   BudgetStaffCostEntryDTO,
   BudgetTravelAndAccommodationCostEntryDTO,
   BudgetUnitCostEntryDTO,
-  CallDetailDTO,
+  CallDetailDTO, CallFundRateDTO,
   CallService,
   ProgrammeFundDTO, ProjectLumpSumService,
   ProjectPartnerBudgetOptionsDto,
@@ -60,7 +60,7 @@ export class ProjectPartnerDetailPageStore {
   investmentSummaries$: Observable<InvestmentSummary[]>;
   unitCosts$: Observable<ProgrammeUnitCost[]>;
   financingAndContribution$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
-  callFunds$: Observable<ProgrammeFundDTO[]>;
+  callFunds$: Observable<Map<number, CallFundRateDTO>>;
   periods$: Observable<ProjectPeriodDTO[]>;
   multipleFundsAllowed$: Observable<boolean>;
   stateAid$: Observable<ProjectPartnerStateAidDTO>;
@@ -71,6 +71,37 @@ export class ProjectPartnerDetailPageStore {
   private updateBudgetEvent$ = new Subject();
   private updateFinancingAndContributionEvent = new Subject();
   private updatedStateAid$ = new Subject<ProjectPartnerStateAidDTO>();
+
+  constructor(private projectStore: ProjectStore,
+              private partnerStore: ProjectPartnerStore,
+              private callService: CallService,
+              private projectWorkPackagePageStore: WorkPackagePageStore,
+              private projectPartnerBudgetService: ProjectPartnerBudgetService,
+              private projectPartnerService: ProjectPartnerService,
+              private projectLumpSumService: ProjectLumpSumService,
+              private projectVersionStore: ProjectVersionStore) {
+    this.investmentSummaries$ = this.projectStore.investmentSummaries$;
+    this.unitCosts$ = this.projectStore.projectCall$.pipe(
+      map(projectCall => projectCall.unitCosts),
+      shareReplay(1)
+    );
+    this.budgets$ = this.budgets();
+    this.budgetOptions$ = this.budgetOptions();
+    this.partnerTotalLumpSum$ = this.partnerTotalLumpSum();
+    this.callFlatRatesSettings$ = this.callFlatRateSettings();
+    this.totalBudget$ = this.totalBudget();
+    this.financingAndContribution$ = this.financingAndContribution();
+    this.callFunds$ = this.callFunds();
+    this.isProjectEditable$ = this.projectStore.projectEditable$;
+    this.periods$ = this.projectStore.projectForm$
+      .pipe(
+        map(projectForm => projectForm.periods)
+      );
+    this.multipleFundsAllowed$ = this.projectStore.projectCall$.pipe(map(it => it.multipleFundsAllowed));
+    this.partner$ = this.partnerStore.partner$;
+    this.stateAid$ = this.stateAid();
+    this.allowedBudgetCategories$ = this.projectStore.allowedBudgetCategories$;
+  }
 
   public static calculateOfficeAndAdministrationFlatRateTotal(
     officeFlatRateBasedOnStaffCost: number | null,
@@ -124,37 +155,6 @@ export class ProjectPartnerDetailPageStore {
       NumberService.divide(travelFlatRateBasedOnStaffCost, 100),
       staffTotal
     ]));
-  }
-
-  constructor(private projectStore: ProjectStore,
-              private partnerStore: ProjectPartnerStore,
-              private callService: CallService,
-              private projectWorkPackagePageStore: WorkPackagePageStore,
-              private projectPartnerBudgetService: ProjectPartnerBudgetService,
-              private projectPartnerService: ProjectPartnerService,
-              private projectLumpSumService: ProjectLumpSumService,
-              private projectVersionStore: ProjectVersionStore) {
-    this.investmentSummaries$ = this.projectStore.investmentSummaries$;
-    this.unitCosts$ = this.projectStore.projectCall$.pipe(
-      map(projectCall => projectCall.unitCosts),
-      shareReplay(1)
-    );
-    this.budgets$ = this.budgets();
-    this.budgetOptions$ = this.budgetOptions();
-    this.partnerTotalLumpSum$ = this.partnerTotalLumpSum();
-    this.callFlatRatesSettings$ = this.callFlatRateSettings();
-    this.totalBudget$ = this.totalBudget();
-    this.financingAndContribution$ = this.financingAndContribution();
-    this.callFunds$ = this.callFunds();
-    this.isProjectEditable$ = this.projectStore.projectEditable$;
-    this.periods$ = this.projectStore.projectForm$
-      .pipe(
-        map(projectForm => projectForm.periods)
-      );
-    this.multipleFundsAllowed$ = this.projectStore.projectCall$.pipe(map(it => it.multipleFundsAllowed));
-    this.partner$ = this.partnerStore.partner$;
-    this.stateAid$ = this.stateAid();
-    this.allowedBudgetCategories$ = this.projectStore.allowedBudgetCategories$;
   }
 
   updateBudgetOptions(budgetOptions: BudgetOptions): Observable<any> {
@@ -219,13 +219,17 @@ export class ProjectPartnerDetailPageStore {
     }
   }
 
-  private callFunds(): Observable<ProgrammeFundDTO[]> {
+  private callFunds(): Observable<Map<number, CallFundRateDTO>> {
     return this.projectStore.project$
       .pipe(
         map(project => project.callSettings.callId),
         switchMap(callId => this.callService.getCallById(callId)),
-        map((call: CallDetailDTO) => call.funds),
-        map((funds: ProgrammeFundDTO[]) => [...funds].sort((a, b) => (a.id > b.id) ? 1 : -1)),
+        map(call => new Map(call.funds
+            .sort((a, b) => (a.programmeFund.id > b.programmeFund.id) ? 1 : -1)
+            .map(fund => [fund.programmeFund.id, fund])
+          )
+        ),
+        shareReplay(1)
       );
   }
 
@@ -274,7 +278,7 @@ export class ProjectPartnerDetailPageStore {
     ])
       .pipe(
         filter(([partner]) => !!partner.id),
-        switchMap(([partner, version, projectId]) => this.projectLumpSumService.getProjectLumpSumsTotalForPartner(partner.id, projectId,  version)),
+        switchMap(([partner, version, projectId]) => this.projectLumpSumService.getProjectLumpSumsTotalForPartner(partner.id, projectId, version)),
         shareReplay(1)
       );
   }

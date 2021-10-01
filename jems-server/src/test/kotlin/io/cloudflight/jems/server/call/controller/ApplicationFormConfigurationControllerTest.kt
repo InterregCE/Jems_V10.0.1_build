@@ -11,19 +11,20 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.service.get_application_form_field_configurations.GetApplicationFormConfigurationException
 import io.cloudflight.jems.server.call.service.get_application_form_field_configurations.GetApplicationFormFieldConfigurationsInteractor
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.update_application_form_field_configuration.UpdateApplicationFormFieldConfigurationsException
 import io.cloudflight.jems.server.call.service.update_application_form_field_configuration.UpdateApplicationFormFieldConfigurationsInteractor
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.mockk.every
@@ -36,7 +37,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.ZonedDateTime
 
-class ApplicationFormConfigurationControllerTest: UnitTest() {
+class ApplicationFormConfigurationControllerTest : UnitTest() {
 
     companion object {
         private const val ID = 1L
@@ -56,20 +57,22 @@ class ApplicationFormConfigurationControllerTest: UnitTest() {
             ),
             objectives = listOf(
                 ProgrammePriority(
-                code = "PRIO_CODE",
-                objective = ProgrammeObjective.PO1,
-                specificObjectives = listOf(
-                    ProgrammeSpecificObjective(ProgrammeObjectivePolicy.AdvancedTechnologies, "CODE_ADVA"),
-                    ProgrammeSpecificObjective(ProgrammeObjectivePolicy.Digitisation, "CODE_DIGI"),
+                    code = "PRIO_CODE",
+                    objective = ProgrammeObjective.PO1,
+                    specificObjectives = listOf(
+                        ProgrammeSpecificObjective(ProgrammeObjectivePolicy.AdvancedTechnologies, "CODE_ADVA"),
+                        ProgrammeSpecificObjective(ProgrammeObjectivePolicy.Digitisation, "CODE_DIGI"),
+                    )
                 )
-            )
             ),
             strategies = sortedSetOf(ProgrammeStrategy.EUStrategyBalticSeaRegion, ProgrammeStrategy.AtlanticStrategy),
-            funds = listOf(
-                ProgrammeFund(id = 10L, selected = true),
-            ),
+            funds = sortedSetOf(callFundRate(10L)),
             flatRates = sortedSetOf(
-                ProjectCallFlatRate(type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 5, adjustable = true),
+                ProjectCallFlatRate(
+                    type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
+                    rate = 5,
+                    adjustable = true
+                ),
             ),
             lumpSums = listOf(
                 ProgrammeLumpSum(splittingAllowed = true),
@@ -80,7 +83,7 @@ class ApplicationFormConfigurationControllerTest: UnitTest() {
             applicationFormFieldConfigurations = mutableSetOf()
         )
 
-        private val configDTO =  mutableSetOf(
+        private val configDTO = mutableSetOf(
             ApplicationFormFieldConfigurationDTO(
                 id = ApplicationFormFieldSetting.PROJECT_ACRONYM.id,
                 visible = true,

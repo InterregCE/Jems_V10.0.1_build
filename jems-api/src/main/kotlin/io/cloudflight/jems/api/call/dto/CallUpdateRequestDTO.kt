@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.time.ZonedDateTime
 
-data class CallUpdateRequestDTO (
+data class CallUpdateRequestDTO(
     val id: Long? = null,
     val name: String,
     val startDateTime: ZonedDateTime,
@@ -16,6 +16,6 @@ data class CallUpdateRequestDTO (
     val description: Set<InputTranslation> = emptySet(),
     val priorityPolicies: Set<ProgrammeObjectivePolicy> = emptySet(),
     val strategies: Set<ProgrammeStrategy> = emptySet(),
-    val fundIds: Set<Long> = emptySet(),
+    val funds: Set<CallFundRateDTO> = emptySet(),
     val stateAidIds: Set<Long> = emptySet(),
 )

@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.time.ZonedDateTime
 
-data class Call (
+data class Call(
     val id: Long = 0,
     val name: String,
     var status: CallStatus? = null,
@@ -18,7 +18,7 @@ data class Call (
     val description: Set<InputTranslation> = emptySet(),
     val priorityPolicies: Set<ProgrammeObjectivePolicy> = emptySet(),
     val strategies: Set<ProgrammeStrategy> = emptySet(),
-    val fundIds: Set<Long> = emptySet(),
+    val funds: Set<CallFundRate> = emptySet(),
     val stateAidIds: Set<Long> = emptySet(),
 ) {
     fun is2StepProcedureEnabled() = endDateStep1 != null

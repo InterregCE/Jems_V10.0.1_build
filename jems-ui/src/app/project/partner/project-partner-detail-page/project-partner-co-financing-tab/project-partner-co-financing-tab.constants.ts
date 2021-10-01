@@ -22,6 +22,9 @@ export class ProjectPartnerCoFinancingTabConstants {
     fundIdErrors: {
       required: 'project.partner.coFinancing.fundId.should.not.be.empty',
     },
+    fundRateTotalErrors: {
+      min: 'project.partner.coFinancing.fundRateTotal.should.not.exceed.100',
+    },
     partnerContributionNameErrors: {
       required: 'project.partner.coFinancing.contribution.origin.name.required',
     },

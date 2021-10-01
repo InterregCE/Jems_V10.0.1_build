@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.call.entity.AllowedRealCostsEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.entity.CallFundRateEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
@@ -16,6 +17,7 @@ import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
@@ -29,14 +31,16 @@ import io.cloudflight.jems.server.programme.repository.costoption.toModel
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.programme.repository.priority.toModel
 import io.cloudflight.jems.server.programme.repository.stateaid.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.user.entity.UserEntity
+import io.swagger.models.properties.PropertyBuilder.toModel
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
-import java.util.TreeSet
+import java.util.*
 import kotlin.collections.HashSet
 
 fun CallEntity.toModel() = CallSummary(
@@ -50,7 +54,10 @@ fun CallEntity.toModel() = CallSummary(
 
 fun Page<CallEntity>.toModel() = map { it.toModel() }
 
-fun CallEntity.toDetailModel(applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>, stateAids: MutableSet<ProjectCallStateAidEntity>) = CallDetail(
+fun CallEntity.toDetailModel(
+    applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>,
+    stateAids: MutableSet<ProjectCallStateAidEntity>
+) = CallDetail(
     id = id,
     name = name,
     status = status,
@@ -62,7 +69,7 @@ fun CallEntity.toDetailModel(applicationFormFieldConfigurationEntities: MutableS
     description = translatedValues.extractField { it.description },
     objectives = prioritySpecificObjectives.groupSpecificObjectives(),
     strategies = strategies.mapTo(TreeSet()) { it.strategy },
-    funds = funds.toModel(),
+    funds = funds.mapTo(TreeSet()) { it.toModel() },
     stateAids = stateAids.map { it.setupId.stateAid.toModel() },
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.toModel(),
@@ -90,7 +97,6 @@ fun Call.toEntity(
     user: UserEntity,
     retrieveSpecificObjective: (ProgrammeObjectivePolicy) -> ProgrammeSpecificObjectiveEntity,
     retrieveStrategies: (Set<ProgrammeStrategy>) -> Set<ProgrammeStrategyEntity>,
-    retrieveFunds: (Set<Long>) -> Set<ProgrammeFundEntity>,
     existingEntity: CallEntity? = null
 ) = CallEntity(
     id = id,
@@ -105,7 +111,7 @@ fun Call.toEntity(
     translatedValues = mutableSetOf(),
     prioritySpecificObjectives = priorityPolicies.mapTo(HashSet()) { retrieveSpecificObjective.invoke(it) },
     strategies = retrieveStrategies.invoke(strategies).toMutableSet(),
-    funds = retrieveFunds.invoke(fundIds).toMutableSet(),
+    funds = existingEntity?.funds ?: mutableSetOf(),
     flatRates = existingEntity?.flatRates ?: mutableSetOf(),
     lumpSums = existingEntity?.lumpSums ?: mutableSetOf(),
     unitCosts = existingEntity?.unitCosts ?: mutableSetOf()
@@ -153,6 +159,11 @@ fun Set<ProjectCallFlatRate>.toEntity(call: CallEntity) = mapTo(HashSet()) {
     )
 }
 
+fun CallFundRateEntity.toModel() = CallFundRate(
+    programmeFund = setupId.programmeFund.toModel(),
+    rate = rate,
+    adjustable = isAdjustable
+)
 
 fun MutableSet<ApplicationFormFieldConfigurationEntity>.toModel() =
     callEntityMapper.map(this)
@@ -161,7 +172,7 @@ fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(call: CallEntity) =
     map { callEntityMapper.map(call, it) }.toMutableSet()
 
 fun MutableSet<ProgrammeStateAidEntity>.toEntities(call: CallEntity) =
-    map { ProjectCallStateAidEntity(StateAidSetupId(call, it))}
+    map { ProjectCallStateAidEntity(StateAidSetupId(call, it)) }
 
 fun MutableSet<ProjectCallStateAidEntity>.toModel() = map { it.setupId.stateAid.toModel() }
 

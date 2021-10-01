@@ -14,13 +14,13 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.validator.CallValidator
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.mockk.clearMocks
@@ -31,7 +31,6 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -43,7 +42,7 @@ import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 import java.util.stream.Stream
 
-class UpdateCallTest: UnitTest() {
+class UpdateCallTest : UnitTest() {
 
     companion object {
         private const val CALL_ID = 592L
@@ -71,10 +70,13 @@ class UpdateCallTest: UnitTest() {
                 )
             ),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
-            funds = listOf(
-                ProgrammeFund(id = FUND_ID, selected = true),
-            ),
-            applicationFormFieldConfigurations = mutableSetOf(ApplicationFormFieldConfiguration("field.id", FieldVisibilityStatus.STEP_TWO_ONLY), ApplicationFormFieldConfiguration("field.id", FieldVisibilityStatus.STEP_ONE_AND_TWO))
+            funds = sortedSetOf(callFundRate(FUND_ID)),
+            applicationFormFieldConfigurations = mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    "field.id",
+                    FieldVisibilityStatus.STEP_TWO_ONLY
+                ), ApplicationFormFieldConfiguration("field.id", FieldVisibilityStatus.STEP_ONE_AND_TWO)
+            )
         )
 
         private val callToUpdate = Call(
@@ -88,7 +90,7 @@ class UpdateCallTest: UnitTest() {
             description = emptySet(),
             priorityPolicies = setOf(AdvancedTechnologies, Digitisation, Growth),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy, MediterraneanSeaBasin),
-            fundIds = setOf(FUND_ID),
+            funds = setOf(callFundRate(FUND_ID)),
         )
     }
 
@@ -105,10 +107,11 @@ class UpdateCallTest: UnitTest() {
     private lateinit var updateCall: UpdateCall
 
     @BeforeEach
-    fun reset(){
+    fun reset() {
         every { persistence.saveApplicationFormFieldConfigurations(any(), any()) } returns existingCall
         clearMocks(auditPublisher)
     }
+
     @Test
     fun `update published Call - changes are allowed`() {
         every { persistence.getCallIdForNameIfExists(callToUpdate.name) } returns null
@@ -185,7 +188,7 @@ class UpdateCallTest: UnitTest() {
             Arguments.of(callToUpdate.copy(lengthOfPeriod = callToUpdate.lengthOfPeriod.plus(1))),
             Arguments.of(callToUpdate.copy(priorityPolicies = emptySet())),
             Arguments.of(callToUpdate.copy(strategies = emptySet())),
-            Arguments.of(callToUpdate.copy(fundIds = emptySet())),
+            Arguments.of(callToUpdate.copy(funds = emptySet())),
         )
     }
 }

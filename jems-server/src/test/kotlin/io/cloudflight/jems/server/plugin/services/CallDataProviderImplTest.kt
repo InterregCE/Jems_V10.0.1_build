@@ -29,6 +29,7 @@ internal class CallDataProviderImplTest : UnitTest() {
 
     @MockK
     lateinit var callPersistence: CallPersistence
+
     @MockK
     lateinit var programmeLanguagePersistence: ProgrammeLanguagePersistence
 
@@ -65,7 +66,7 @@ internal class CallDataProviderImplTest : UnitTest() {
             description = setOf(InputTranslation(SystemLanguage.EN, "description")),
             objectives = listOf(),
             strategies = sortedSetOf(),
-            funds = listOf(),
+            funds = sortedSetOf(),
             flatRates = sortedSetOf(),
             lumpSums = listOf(),
             unitCosts = listOf(),

@@ -1,13 +1,12 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
+import io.cloudflight.jems.server.call.callFundRateEntity
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -15,7 +14,6 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
-import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
@@ -43,10 +41,10 @@ class ProjectBudgetCoFinancingPersistenceTest {
     companion object {
         private const val PARTNER_ID = 1L
 
-        private val fund1 = ProgrammeFundEntity(id = 10, selected = true)
-        private val fund2 = ProgrammeFundEntity(id = 11, selected = true)
+        private val fund1 = callFundRateEntity(callWithId(10), 10L)
+        private val fund2 = callFundRateEntity(callWithId(10), 11L)
 
-        private val fund1Model = ProgrammeFund(id = fund1.id, selected = true)
+        private val fund1Model = ProgrammeFund(id = fund1.setupId.programmeFund.id, selected = true)
 
         private fun dummyCall(): CallEntity {
             val call = callWithId(10)
@@ -126,7 +124,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
                 coFinancingFundId = ProjectPartnerCoFinancingFundId(
                     partnerId = PARTNER_ID,
                     orderNr = 1,
-                ), percentage = BigDecimal.valueOf(24.5), programmeFund = fund1
+                ), percentage = BigDecimal.valueOf(24.5), programmeFund = fund1.setupId.programmeFund
             ),
             ProjectPartnerCoFinancingEntity(
                 coFinancingFundId = ProjectPartnerCoFinancingFundId(
@@ -149,7 +147,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
                 status = Private,
                 amount = BigDecimal.ONE,
                 isPartner = false,
-                )
+            )
         )
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(
             dummyPartner.copy(
@@ -197,7 +195,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
 
         val toBeSavedFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
-                fundId = fund1.id,
+                fundId = fund1.setupId.programmeFund.id,
                 percentage = BigDecimal.valueOf(29.5)
             ),
             UpdateProjectPartnerCoFinancing(

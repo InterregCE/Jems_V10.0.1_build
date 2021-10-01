@@ -6,11 +6,10 @@ import {
   CallDTO,
   CallUpdateRequestDTO,
   OutputProgrammeStrategy,
-  ProgrammeFundDTO,
   ProgrammeStateAidDTO
 } from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallPageSidenavService} from '../services/call-page-sidenav.service';
@@ -42,9 +41,6 @@ export class CallDetailPageComponent {
   callId = this.activatedRoute?.snapshot?.params?.callId;
   publishPending = false;
   published = false;
-
-  callFundsForm : FormGroup;
-
   data$: Observable<{
     call: CallDetailDTO,
     userCanApply: boolean,
@@ -120,22 +116,17 @@ export class CallDetailPageComponent {
         })),
         tap(data => this.resetForm(data.call, data.callIsEditable))
       );
-
-    this.callFundsForm = this.formBuilder.group({
-      fundArray: this.formBuilder.array([{}])
-    });
   }
 
   onSubmit(savedCall: CallDetailDTO,
            priorityCheckboxes: CallPriorityCheckbox[],
            strategies: OutputProgrammeStrategy[],
-           funds: ProgrammeFundDTO[],
            stateAids: CallStateAidDTO[]): void {
     const call = this.callForm.getRawValue(); // get raw value to include disabled controls
     call.priorityPolicies = priorityCheckboxes
       .flatMap(checkbox => checkbox.getCheckedChildPolicies());
     call.strategies = strategies.filter(strategy => strategy.active).map(strategy => strategy.strategy);
-    call.fundIds = funds.filter(fund => fund.selected).map(fund => fund.id);
+    call.funds = call.funds.filter((fund: any) => !!fund.selected);
     call.stateAidIds = stateAids.filter(stateAid => stateAid.selected).map(stateAid => stateAid.id);
     if (!this.callForm.controls.is2Step.value) {
       call.endDateTimeStep1 = null;
@@ -161,31 +152,6 @@ export class CallDetailPageComponent {
     }
 
     this.updateCall(call);
-  }
-
-  private createCall(call: CallUpdateRequestDTO): void {
-    this.pageStore.createCall(call)
-      .pipe(
-        take(1),
-        tap(created => this.callNavService.redirectToCallDetail(
-          created.id,
-          {
-            i18nKey: 'call.detail.created.success',
-            i18nArguments: {name: created.name}
-          })
-        ),
-        catchError(err => this.formService.setError(err))
-      ).subscribe();
-  }
-
-  private updateCall(call: CallUpdateRequestDTO): void {
-    call.id = this.callId;
-    this.pageStore.saveCall(call)
-      .pipe(
-        take(1),
-        tap(() => this.formService.setSuccess('call.detail.save.success')),
-        catchError(err => this.formService.setError(err))
-      ).subscribe();
   }
 
   onCancel(call: CallDetailDTO): void {
@@ -265,6 +231,31 @@ export class CallDetailPageComponent {
 
   applyToCall(callId: number): void {
     this.router.navigate(['/app/project/applyTo/' + callId]);
+  }
+
+  private createCall(call: CallUpdateRequestDTO): void {
+    this.pageStore.createCall(call)
+      .pipe(
+        take(1),
+        tap(created => this.callNavService.redirectToCallDetail(
+          created.id,
+          {
+            i18nKey: 'call.detail.created.success',
+            i18nArguments: {name: created.name}
+          })
+        ),
+        catchError(err => this.formService.setError(err))
+      ).subscribe();
+  }
+
+  private updateCall(call: CallUpdateRequestDTO): void {
+    call.id = this.callId;
+    this.pageStore.saveCall(call)
+      .pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('call.detail.save.success')),
+        catchError(err => this.formService.setError(err))
+      ).subscribe();
   }
 
   private getStrategies(allActiveStrategies: OutputProgrammeStrategy[], call: CallDetailDTO): OutputProgrammeStrategy[] {

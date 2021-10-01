@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.call.controller
 import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
+import io.cloudflight.jems.api.call.dto.CallFundRateDTO
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.StepSelectionOptionDTO
@@ -11,6 +12,7 @@ import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.CommonDTOMapper
@@ -45,7 +47,7 @@ fun CallDetail.toDto() = CallDetailDTO(
     description = description,
     objectives = objectives.map { it.toDto() },
     strategies = strategies.sorted(),
-    funds = funds.toDto(),
+    funds = funds.map { it.toDto() },
     stateAids = stateAids.toDto(),
     flatRates = flatRates.toDto(),
     lumpSums = lumpSums.toDto(),
@@ -64,7 +66,7 @@ fun CallUpdateRequestDTO.toModel() = Call(
     description = description,
     priorityPolicies = priorityPolicies,
     strategies = strategies,
-    fundIds = fundIds,
+    funds = funds.map { it.toModel() }.toMutableSet(),
     stateAidIds = stateAidIds,
 )
 
@@ -84,6 +86,9 @@ fun FieldVisibilityStatus.toDTO() =
 fun AllowedRealCosts.toDto() = callDTOMapper.map(this)
 fun AllowedRealCostsDTO.toModel() = callDTOMapper.map(this)
 
+fun CallFundRate.toDto() = callDTOMapper.map(this)
+fun CallFundRateDTO.toModel() = callDTOMapper.map(this)
+
 private val callDTOMapper = Mappers.getMapper(CallDTOMapper::class.java)
 
 @Mapper(uses = [CommonDTOMapper::class])
@@ -94,6 +99,9 @@ abstract class CallDTOMapper {
 
     abstract fun map(allowedRealCostsDTO: AllowedRealCostsDTO): AllowedRealCosts
     abstract fun map(allowedRealCosts: AllowedRealCosts): AllowedRealCostsDTO
+
+    abstract fun map(callFundRateDTO: CallFundRateDTO): CallFundRate
+    abstract fun map(callFundRate: CallFundRate): CallFundRateDTO
 
     fun mapUpdateRequest(updateApplicationFormFieldConfigurationDTOs: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>): MutableSet<ApplicationFormFieldConfiguration> =
         updateApplicationFormFieldConfigurationDTOs.map {

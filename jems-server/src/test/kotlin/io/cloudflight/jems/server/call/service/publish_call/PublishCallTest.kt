@@ -7,10 +7,10 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.mockk.clearMocks
 import io.mockk.every
@@ -51,7 +51,7 @@ class PublishCallTest : UnitTest() {
         lengthOfPeriod = 12,
         applicationFormFieldConfigurations = mutableSetOf(),
         strategies = sortedSetOf(ProgrammeStrategy.AtlanticStrategy),
-        funds = listOf(ProgrammeFund(1, true)),
+        funds = sortedSetOf(callFundRate(1)),
         objectives = listOf(ProgrammePriority(code = "code", objective = ProgrammeObjective.ISO1))
     )
 
@@ -98,7 +98,7 @@ class PublishCallTest : UnitTest() {
     @TestFactory
     fun `should throw CannotPublishCallException when funds or strategies or programmePriorities are empty`() =
         listOf(
-            Pair("funds", callDetail.copy(funds = listOf())),
+            Pair("funds", callDetail.copy(funds = sortedSetOf())),
             Pair("programmePriorities", callDetail.copy(objectives = listOf())),
         ).map { input ->
             DynamicTest.dynamicTest(

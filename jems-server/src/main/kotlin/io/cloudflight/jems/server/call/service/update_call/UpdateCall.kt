@@ -58,10 +58,10 @@ class UpdateCall(
         val isAdditionalFundAllowedDisabled = oldCall.isAdditionalFundAllowed && !call.isAdditionalFundAllowed
 
         val newSpecificObjectives: Set<ProgrammeObjectivePolicy> = call.priorityPolicies
-        val newFundIds = call.fundIds
+        val newFundIds = call.funds.map { it.programmeFund.id }
         val newStateAidIds = call.stateAidIds
         val oldSpecificObjectives = oldCall.objectives.mergeAllSpecificObjectives()
-        val oldFundIds = oldCall.funds.mapTo(HashSet()) { it.id }
+        val oldFundIds = oldCall.funds.mapTo(HashSet()) { it.programmeFund.id }
         val oldStateAidIds = oldCall.stateAids.mapTo(HashSet()) { it.id }
 
         val specificObjectivesRemoved = !newSpecificObjectives.containsAll(oldSpecificObjectives)

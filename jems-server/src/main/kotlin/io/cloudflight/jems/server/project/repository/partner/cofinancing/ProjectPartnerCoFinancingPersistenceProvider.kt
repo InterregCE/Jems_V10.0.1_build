@@ -23,7 +23,9 @@ class ProjectPartnerCoFinancingPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getAvailableFundIds(partnerId: Long): Set<Long> =
-        getPartnerOrThrow(partnerId).project.call.funds.mapTo(HashSet()) { it.id }
+        getPartnerOrThrow(partnerId).project.call.funds
+            .map { it.setupId.programmeFund }
+            .mapTo(HashSet()) { it.id }
 
     @Transactional(readOnly = true)
     override fun getCoFinancingAndContributions(
@@ -57,7 +59,9 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         partnerContributions: List<ProjectPartnerContribution>
     ): ProjectPartnerCoFinancingAndContribution {
         val partner = getPartnerOrThrow(partnerId)
-        val availableFundsGroupedById = partner.project.call.funds.associateBy { it.id }
+        val availableFundsGroupedById = partner.project.call.funds
+            .map { it.setupId.programmeFund }
+            .associateBy { it.id }
 
         val updatedPartner = projectPartnerRepository.save(
             partner.copy(
@@ -66,7 +70,12 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         )
 
         projectPartnerCoFinancingRepository.deleteByCoFinancingFundIdPartnerId(partnerId)
-        val financesSaved = projectPartnerCoFinancingRepository.saveAll(finances.toCoFinancingEntity(partnerId, availableFundsGroupedById))
+        val financesSaved = projectPartnerCoFinancingRepository.saveAll(
+            finances.toCoFinancingEntity(
+                partnerId,
+                availableFundsGroupedById
+            )
+        )
 
         return ProjectPartnerCoFinancingAndContribution(
             finances = financesSaved.toCoFinancingModel(),
@@ -84,10 +93,12 @@ class ProjectPartnerCoFinancingPersistenceProvider(
     ): ProjectPartnerCoFinancingAndContribution {
         val finances = projectPartnerCoFinancingRepository.findPartnerFinancingByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerFinancingHistoricalData()
-        val partnerContributions = projectPartnerRepository.findPartnerContributionByIdAsOfTimestamp(partnerId, timestamp)
-            .toProjectPartnerContributionHistoricalData()
+        val partnerContributions =
+            projectPartnerRepository.findPartnerContributionByIdAsOfTimestamp(partnerId, timestamp)
+                .toProjectPartnerContributionHistoricalData()
         val partnerAbbrev =
-            projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp).firstOrNull()?.abbreviation
+            projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp)
+                .firstOrNull()?.abbreviation
         return ProjectPartnerCoFinancingAndContribution(
             finances = finances,
             partnerContributions = partnerContributions,

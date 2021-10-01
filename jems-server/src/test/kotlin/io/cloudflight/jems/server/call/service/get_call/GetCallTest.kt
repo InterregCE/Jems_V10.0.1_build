@@ -10,13 +10,13 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
@@ -29,7 +29,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime
 
-class GetCallTest: UnitTest() {
+class GetCallTest : UnitTest() {
 
     companion object {
         private const val FUND_ID = 22L
@@ -47,16 +47,18 @@ class GetCallTest: UnitTest() {
                 InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
                 InputTranslation(language = SystemLanguage.SK, translation = "SK desc"),
             ),
-            objectives = listOf(ProgrammePriority(
-                code = "PRIO_CODE",
-                objective = PO1,
-                specificObjectives = listOf(
-                    ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
-                    ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
+            objectives = listOf(
+                ProgrammePriority(
+                    code = "PRIO_CODE",
+                    objective = PO1,
+                    specificObjectives = listOf(
+                        ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
+                        ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
+                    )
                 )
-            )),
+            ),
             strategies = sortedSetOf(ProgrammeStrategy.EUStrategyBalticSeaRegion, ProgrammeStrategy.AtlanticStrategy),
-            funds = listOf(ProgrammeFund(id = FUND_ID, selected = true)),
+            funds = sortedSetOf(callFundRate(FUND_ID)),
             flatRates = sortedSetOf(
                 ProjectCallFlatRate(
                     type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
