@@ -22,6 +22,20 @@ spring:
       enabled: true
       max-file-size: 50MB
       max-request-size: 51MB
+  mail:
+    host: "${SMTP_HOST:localhost}"
+    port: 1025
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: false
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: false
 
 audit-service:
   enabled: "${AUDIT_ENABLED:true}"
@@ -55,4 +69,9 @@ app:
   security:
     default-password-prefix: Jems@2020
   translations-folder: resources/translations/
+  notification:
+    mail:
+      enabled: "${MAIL_ENABLED:false}"
+      sender: jems@jems.com
+      bcc-list:
 

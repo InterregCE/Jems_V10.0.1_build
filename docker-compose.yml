@@ -41,6 +41,17 @@ services:
       - discovery.type=single-node
 
 #
+#  Optional: if you need, you can create mailhog container to test sending mail notifications:
+#
+#  mailhog:
+#    image: mailhog/mailhog:latest
+#    container_name: mailhog
+#    restart: always
+#    ports:
+#      - '1025:1025'
+#      - '8025:8025'
+
+#
 #  Optional: if you need, you can create kibana container to analyze all ElasticSearch data:
 #
 #  audit-analyzer:

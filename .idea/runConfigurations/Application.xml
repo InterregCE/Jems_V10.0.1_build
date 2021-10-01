@@ -7,7 +7,8 @@
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateResources" />
     <envs>
-      <env name="AUDIT_ENABLED" value="false"></env>
+      <env name="AUDIT_ENABLED" value="false" />
+      <env name="MAIL_ENABLED" value="false" />
     </envs>
     <method v="2">
       <option name="Make" enabled="true" />

@@ -16,6 +16,10 @@ class ProgrammeDataPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
+    override fun getProgrammeName(): String? =
+        getProgrammeDataOrThrow().title
+
+    @Transactional(readOnly = true)
     override fun getDefaultUserRole(): Long? {
         return getProgrammeDataOrThrow().defaultUserRoleId
     }

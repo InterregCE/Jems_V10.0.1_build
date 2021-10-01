@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRegistration
 import io.cloudflight.jems.server.user.service.user.validatePassword
 import io.cloudflight.jems.server.user.service.user.validateUserCommon
-import io.cloudflight.jems.server.user.service.userRegistered
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -20,7 +19,7 @@ class RegisterUser(
     private val persistence: UserPersistence,
     private val programmeDataPersistence: ProgrammeDataPersistence,
     private val passwordEncoder: PasswordEncoder,
-    private val auditPublisher: ApplicationEventPublisher,
+    private val eventPublisher: ApplicationEventPublisher,
     private val generalValidator: GeneralValidatorService,
 ) : RegisterUserInteractor {
 
@@ -28,16 +27,17 @@ class RegisterUser(
     @ExceptionWrapper(RegisterUserException::class)
     override fun registerUser(user: UserRegistration): User {
         val userRoleId = programmeDataPersistence.getDefaultUserRole()
-        if(userRoleId == null || !persistence.userRoleExists(userRoleId))
+        if (userRoleId == null || !persistence.userRoleExists(userRoleId))
             throw DefaultUserRoleNotFound()
         val userToBeRegistered = user.toUserChange(userRoleId)
 
         validateUser(userToBeRegistered)
         validatePassword(generalValidator, user.password)
 
-        return persistence.create(user = userToBeRegistered, passwordEncoded = passwordEncoder.encode(user.password)).also {
-            auditPublisher.publishEvent(userRegistered(this, it))
-        }
+        return persistence.create(user = userToBeRegistered, passwordEncoded = passwordEncoder.encode(user.password))
+            .also {
+                eventPublisher.publishEvent(UserRegisteredEvent(it))
+            }
     }
 
     private fun validateUser(user: UserChange) {

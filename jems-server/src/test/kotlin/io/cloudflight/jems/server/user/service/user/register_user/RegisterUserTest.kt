@@ -90,10 +90,10 @@ internal class RegisterUserTest : UnitTest() {
         assertThat(registerUser.registerUser(userRegistration)).isEqualTo(expectedUser)
         assertThat(slotPassword.captured).isEqualTo("hash_my_plain_pass")
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = slot<UserRegisteredEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.overrideCurrentUser).isEqualTo(AuditUser(id= USER_ID, email="applicant@interact.eu"))
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(AuditCandidate(
+        assertThat(slotAudit.captured.auditUser).isEqualTo(AuditUser(id= USER_ID, email="applicant@interact.eu"))
+        assertThat(slotAudit.captured.getAuditCandidate()).isEqualTo(AuditCandidate(
             action = AuditAction.USER_REGISTERED,
             entityRelatedId = USER_ID,
             description = "A new user applicant@interact.eu registered:\n" +
