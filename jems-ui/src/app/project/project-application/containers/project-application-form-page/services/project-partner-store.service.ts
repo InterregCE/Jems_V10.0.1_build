@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {
+  ProjectBudgetService,
   ProjectContactDTO,
   ProjectPartnerAddressDTO,
+  ProjectPartnerBudgetPerPeriodDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerDTO,
   ProjectPartnerMotivationDTO,
@@ -32,14 +34,16 @@ export class ProjectPartnerStore {
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
   private updatedPartner$ = new Subject<ProjectPartnerDetailDTO>();
+  projectPartnersBudgetPerPeriods$ = new Observable<ProjectPartnerBudgetPerPeriodDTO[]>();
 
   constructor(private partnerService: ProjectPartnerService,
               private projectStore: ProjectStore,
               private routingService: RoutingService,
-              private projectVersionStore: ProjectVersionStore) {
+              private projectVersionStore: ProjectVersionStore,
+              private projectBudgetService: ProjectBudgetService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.partnerSummaries$ = this.partnerSummaries();
-
+    this.projectPartnersBudgetPerPeriods$ = this.projectPartnersBudgetPerPeriods();
     this.partners$ = combineLatest([
       this.projectStore.project$,
       this.projectVersionStore.currentRouteVersion$,
@@ -144,6 +148,16 @@ export class ProjectPartnerStore {
     return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$, this.partnerUpdateEvent$])
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
+      );
+  }
+
+  private projectPartnersBudgetPerPeriods(): Observable<ProjectPartnerBudgetPerPeriodDTO[]> {
+    return combineLatest([this.projectStore.project$, this.projectVersionStore.currentRouteVersion$, this.partnerUpdateEvent$])
+      .pipe(
+        switchMap(([project, version]) =>
+          this.projectBudgetService.getProjectPartnerBudgetPerPeriod(project.id, version)
+        ),
+        shareReplay(1)
       );
   }
 }

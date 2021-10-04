@@ -2,16 +2,7 @@ import {Injectable} from '@angular/core';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
 import {BudgetOptions} from '../../model/budget/budget-options';
 import {CallFlatRateSetting} from '../../model/call-flat-rate-setting';
-import {
-  filter,
-  map,
-  share,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-  withLatestFrom
-} from 'rxjs/operators';
+import {filter, map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {
   BaseBudgetEntryDTO,
@@ -19,9 +10,9 @@ import {
   BudgetStaffCostEntryDTO,
   BudgetTravelAndAccommodationCostEntryDTO,
   BudgetUnitCostEntryDTO,
-  CallDetailDTO, CallFundRateDTO,
+  CallFundRateDTO,
   CallService,
-  ProgrammeFundDTO, ProjectLumpSumService,
+  ProjectLumpSumService,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
@@ -93,10 +84,7 @@ export class ProjectPartnerDetailPageStore {
     this.financingAndContribution$ = this.financingAndContribution();
     this.callFunds$ = this.callFunds();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
-    this.periods$ = this.projectStore.projectForm$
-      .pipe(
-        map(projectForm => projectForm.periods)
-      );
+    this.periods$ = this.projectStore.projectPeriods$;
     this.multipleFundsAllowed$ = this.projectStore.projectCall$.pipe(map(it => it.multipleFundsAllowed));
     this.partner$ = this.partnerStore.partner$;
     this.stateAid$ = this.stateAid();

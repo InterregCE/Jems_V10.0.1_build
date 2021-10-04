@@ -46,6 +46,7 @@ import {AssessmentAndDecisionComponent} from '@project/project-application/asses
 import {PartnerBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/partner-breadcrumb-resolver.service';
 import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-breadcrumb-resolver.service';
 import {InvestmentBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
+import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-partner-per-period/budget-page-partner-per-period.component';
 
 export const routes: Routes = [
   {
@@ -307,6 +308,11 @@ export const routes: Routes = [
             path: 'applicationFormBudget',
             data: {breadcrumb: 'project.breadcrumb.applicationForm.budget'},
             component: BudgetPageComponent,
+          },
+          {
+            path: 'applicationFormBudgetPartnerPerPeriod',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.budget'},
+            component: BudgetPagePartnerPerPeriodComponent,
           },
           {
             path: 'applicationFormLumpSums',
