@@ -857,7 +857,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDateTime\": \"{{callDateStart}}\",\n\t\"endDateTime\": \"{{callDateEnd}}\",\n    \"isAdditionalFundAllowed\": true,\n    \"lengthOfPeriod\": 12,\n    \"description\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{inputLanguage}} description\"\n        }\n    ],\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"strategies\": [\"EUStrategyDanubeRegion\", \"SeaBasinStrategyOutermostRegions\"],\n    \"fundIds\": [{{programmeFundId}}]\n}\n"
+							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDateTime\": \"{{callDateStart}}\",\n\t\"endDateTime\": \"{{callDateEnd}}\",\n    \"isAdditionalFundAllowed\": true,\n    \"lengthOfPeriod\": 12,\n    \"description\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{inputLanguage}} description\"\n        }\n    ],\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"strategies\": [\"EUStrategyDanubeRegion\", \"SeaBasinStrategyOutermostRegions\"],\n    \"funds\": [ {\n        \"programmeFund\": {\n            \"id\": \"{{programmeFundId}}\"\n        },\n        \"rate\": 100,\n        \"isAdjustable\": true\n    }]\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/call",
