@@ -2,16 +2,7 @@ import {Injectable} from '@angular/core';
 import {combineLatest, forkJoin, merge, Observable, of, Subject} from 'rxjs';
 import {BudgetOptions} from '../../model/budget/budget-options';
 import {CallFlatRateSetting} from '../../model/call-flat-rate-setting';
-import {
-  filter,
-  map,
-  share,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-  withLatestFrom
-} from 'rxjs/operators';
+import {filter, map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {
   BaseBudgetEntryDTO,
@@ -19,9 +10,9 @@ import {
   BudgetStaffCostEntryDTO,
   BudgetTravelAndAccommodationCostEntryDTO,
   BudgetUnitCostEntryDTO,
-  CallDetailDTO, CallFundRateDTO,
+  CallFundRateDTO,
   CallService,
-  ProgrammeFundDTO, ProjectLumpSumService,
+  ProjectLumpSumService,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
