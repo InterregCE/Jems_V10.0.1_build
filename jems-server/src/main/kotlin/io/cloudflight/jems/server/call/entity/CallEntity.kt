@@ -77,13 +77,8 @@ class CallEntity(
     )
     val strategies: MutableSet<ProgrammeStrategyEntity> = mutableSetOf(),
 
-    @OneToMany
-    @JoinTable(
-        name = "project_call_fund",
-        joinColumns = [JoinColumn(name = "call_id")],
-        inverseJoinColumns = [JoinColumn(name = "programme_fund")]
-    )
-    val funds: MutableSet<ProgrammeFundEntity> = mutableSetOf(),
+    @OneToMany(mappedBy = "setupId.call", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val funds: MutableSet<CallFundRateEntity> = mutableSetOf(),
 
     @OneToMany(mappedBy = "setupId.call", cascade = [CascadeType.ALL], orphanRemoval = true)
     val flatRates: MutableSet<ProjectCallFlatRateEntity> = mutableSetOf(),

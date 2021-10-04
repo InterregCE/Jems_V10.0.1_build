@@ -8,7 +8,7 @@ import {
 import {tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {NumberService} from '../../../common/services/number.service';
+import {NumberService} from '@common/services/number.service';
 import {ProjectPartnerDetailPageStore} from '../../partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ProjectPartnerBudgetModel} from './models/ProjectPartnerBudgetModel';
 import {ProjectPartnerBudgetAndContribution} from './models/ProjectPartnerBudgetAndContribution';
@@ -27,7 +27,7 @@ export class BudgetPagePerPartnerComponent {
   chosenProjectFunds$ = this.pageStore.callFunds$
     .pipe(
       tap((funds) => {
-        this.getColumnsToDisplay(funds);
+        this.getColumnsToDisplay([...funds.values()].map(fund => fund.programmeFund));
       }),
     );
   budgetColumns: ProjectPartnerBudgetAndContribution[] = [];

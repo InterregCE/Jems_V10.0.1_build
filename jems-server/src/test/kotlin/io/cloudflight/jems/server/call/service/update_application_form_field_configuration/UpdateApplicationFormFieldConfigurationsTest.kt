@@ -57,7 +57,7 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         description = setOf(),
         objectives = listOf(),
         strategies = sortedSetOf(),
-        funds = listOf(),
+        funds = sortedSetOf(),
         flatRates = sortedSetOf(),
         lumpSums = listOf(),
         unitCosts = listOf(),
@@ -169,7 +169,8 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
 
         val result = updateApplicationFormConfiguration.update(CALL_ID, applicationFormFieldConfigurations)
 
-        val budgetSetting = applicationFormFieldConfigurations.first { it.id == ApplicationFormFieldSetting.PARTNER_BUDGET_AND_CO_FINANCING.id }
+        val budgetSetting =
+            applicationFormFieldConfigurations.first { it.id == ApplicationFormFieldSetting.PARTNER_BUDGET_AND_CO_FINANCING.id }
         assertThat(slot.captured).containsAll(
             applicationFormFieldConfigurations.map {
                 if (fieldsThatDependsOnBudget.contains(it.id) && it.visibilityStatus != FieldVisibilityStatus.NONE)

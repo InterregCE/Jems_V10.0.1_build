@@ -24,7 +24,7 @@ data class CallDetailDTO(
     val description: Set<InputTranslation> = emptySet(),
     val objectives: List<ProgrammePriorityDTO> = emptyList(),
     val strategies: List<ProgrammeStrategy> = emptyList(),
-    val funds: List<ProgrammeFundDTO> = emptyList(),
+    val funds: List<CallFundRateDTO> = emptyList(),
     val stateAids: List<ProgrammeStateAidDTO> = emptyList(),
     val flatRates: FlatRateSetupDTO,
     val lumpSums: List<ProgrammeLumpSumListDTO> = emptyList(),

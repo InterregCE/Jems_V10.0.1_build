@@ -10,6 +10,7 @@ import {
   Validators
 } from '@angular/forms';
 import {
+  CallFundRateDTO,
   ProgrammeFundDTO,
   ProjectPartnerCoFinancingAndContributionInputDTO,
   ProjectPartnerCoFinancingAndContributionOutputDTO,
@@ -53,7 +54,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
 
   data$: Observable<{
     financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO,
-    callFunds: ProgrammeFundDTO[],
+    callFunds: Map<number, CallFundRateDTO>,
     totalBudget: number,
     publicContributionSubTotal: number,
     privateContributionSubTotal: number,
@@ -93,15 +94,6 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
 
   get finances(): FormArray {
     return this.coFinancingForm.get(this.constants.FORM_CONTROL_NAMES.finances) as FormArray;
-  }
-
-  getMaxFundPercentage(fund: AbstractControl): number {
-    const totalPercentageLeft = NumberService.sum(
-      this.finances.controls
-        .filter(control => control !== fund)
-        .map(control => control.get(this.constants.FORM_CONTROL_NAMES.fundPercentage)?.value || 0)
-    );
-    return NumberService.minus(100, totalPercentageLeft);
   }
 
   ngOnInit(): void {
@@ -174,22 +166,26 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     ).subscribe();
   }
 
-  addAdditionalFund(fund?: ProjectPartnerCoFinancingOutputDTO): void {
-    this.finances.push(this.formBuilder.group({
+  addAdditionalFund(callFunds: Map<number, CallFundRateDTO>, fund?: ProjectPartnerCoFinancingOutputDTO): void {
+    const fundControl = this.formBuilder.group({
       fundId: this.formBuilder.control(fund?.fund?.id, Validators.required),
       fundType: ProjectPartnerCoFinancingInputDTO.FundTypeEnum.MainFund,
       percentage: this.formBuilder.control(fund?.percentage || 0, Validators.required),
-    }));
+    });
+    this.finances.push(fundControl);
+    if (!callFunds.get(fund?.fund.id as any)?.adjustable) {
+      fundControl.get(this.constants.FORM_CONTROL_NAMES.fundPercentage)?.disable();
+    }
   }
 
-  notSelectedFunds(allFunds: ProgrammeFundDTO[], currentFund?: AbstractControl): ProgrammeFundDTO[] {
+  notSelectedFunds(callFunds: Map<number, CallFundRateDTO>, currentFund?: AbstractControl): ProgrammeFundDTO[] {
     const selectedFundIds = this.finances.controls.map(
       control => control.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value
     );
     const currentFundId = currentFund?.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value;
-    return allFunds.filter((fund: ProgrammeFundDTO) =>
-      currentFundId && currentFundId === fund.id ? true : !selectedFundIds.includes(fund.id)
-    );
+    return [...callFunds.values()]
+      .filter(fund => currentFundId === fund?.programmeFund?.id ? true : !selectedFundIds.includes(fund.programmeFund.id))
+      .map(fund => fund.programmeFund);
   }
 
   deleteAdditionalFund(fundIndex: number, totalBudget: number): void {
@@ -198,11 +194,11 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     this.financesPercentsChanged(totalBudget);
   }
 
-  canAddFund(allFunds: ProgrammeFundDTO[], editable: boolean): boolean {
+  canAddFund(callFunds: Map<number, CallFundRateDTO>, editable: boolean): boolean {
     return this.multipleFundsAllowed && editable
       && this.finances.length < this.constants.MAX_NUMBER_OF_FINANCES
       && !this.finances.controls.find(control => !control.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value)
-      && !!this.notSelectedFunds(allFunds)?.length;
+      && !!this.notSelectedFunds(callFunds)?.length;
   }
 
   getFundAmount(fund: AbstractControl, totalBudget: number): number {
@@ -225,18 +221,45 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     this.partnerContributions.updateValueAndValidity();
   }
 
-  private resetForm(financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO, totalBudget: number): void {
+  callFundChanged(fund: AbstractControl, callFunds: Map<number, CallFundRateDTO>): void {
+    const currentFundId = fund?.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value;
+    const fundRate = callFunds.get(currentFundId);
+
+    setTimeout(() => {
+      // timeout needed in order for the currency mask max option to be updated first
+      const funRateControl = fund.get(this.constants.FORM_CONTROL_NAMES.fundPercentage);
+      funRateControl?.setValue(fundRate?.rate || 0);
+      if (!fundRate?.adjustable) {
+        funRateControl?.disable();
+      } else {
+        funRateControl?.enable();
+      }
+    },         100);
+  }
+
+  getMaxRate(fund: AbstractControl, callFunds: Map<number, CallFundRateDTO>): number {
+    return callFunds.get(fund.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value)?.rate || 100;
+  }
+
+  private resetForm(financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO,
+                    totalBudget: number,
+                    callFunds: Map<number, CallFundRateDTO>,
+                    isProjectEditable: boolean): void {
     const mainFunds = financingAndContribution.finances.filter(
       x => x.fundType === ProjectPartnerCoFinancingInputDTO.FundTypeEnum.MainFund
     );
     this.finances.clear();
-    mainFunds.forEach(fund => this.addAdditionalFund(fund));
+    mainFunds.forEach(fund => this.addAdditionalFund(callFunds, fund));
     if (!mainFunds.length) {
-      this.addAdditionalFund();
+      this.addAdditionalFund(callFunds, undefined);
     }
 
     this.financesPercentsChanged(totalBudget);
     this.resetPartnerContributions(financingAndContribution);
+
+    if (!isProjectEditable) {
+      this.formService.resetEditable();
+    }
   }
 
   private partnerContributionsErrorArgs(): Observable<{}> {
@@ -257,7 +280,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
 
   private formToProjectPartnerCoFinancingAndContributionInputDTO(): ProjectPartnerCoFinancingAndContributionInputDTO {
     const finances = [
-      ...this.finances.value,
+      ...this.finances.getRawValue(), // raw value because of fixed (disabled) fund rates
       {
         percentage: this.partnerPercentage.value,
         fundType: ProjectPartnerCoFinancingInputDTO.FundTypeEnum.PartnerContribution,
@@ -302,9 +325,13 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     combineLatest([
       this.pageStore.financingAndContribution$,
       this.pageStore.totalBudget$,
+      this.pageStore.callFunds$,
+      this.pageStore.isProjectEditable$,
       this.formService.reset$.pipe(startWith(null)),
     ]).pipe(
-      tap(([financingAndContribution, totalBudget]) => this.resetForm(financingAndContribution, totalBudget)),
+      tap(([financingAndContribution, totalBudget, callFunds, isProjectEditable]) =>
+        this.resetForm(financingAndContribution, totalBudget, callFunds, isProjectEditable)
+      ),
       untilDestroyed(this)
     ).subscribe();
   }
@@ -312,7 +339,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
   private initForm(): void {
     this.coFinancingForm = this.formBuilder.group({
       finances: this.formBuilder.array([]),
-      partnerPercentage: [0, [Validators.required]],
+      partnerPercentage: [0, [Validators.required, Validators.min(0)]],
       partnerAmount: [0],
       partnerContributions: this.formBuilder.array([], {
         validators: [totalContributionValidator(0), Validators.maxLength(this.constants.MAX_NUMBER_OF_PARTNER_CONTRIBUTIONS)]
@@ -326,6 +353,5 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     financingAndContribution.partnerContributions.forEach((item: ProjectPartnerContributionDTO) => {
       this.addNewPartnerContribution(item);
     });
-    this.formService.resetEditable();
   }
 }

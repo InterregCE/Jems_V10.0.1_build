@@ -16,14 +16,15 @@
                     <ng-container [formArrayName]="constants.FORM_CONTROL_NAMES.finances">
                         <ng-container [formGroupName]="i">
                             <mat-form-field>
-                                <mat-select [disabled]="coFinancingForm.disabled"
+                                <mat-select (ngModelChange)="callFundChanged(fund, data.callFunds)"
+                                            [disabled]="coFinancingForm.disabled"
                                             [formControlName]="constants.FORM_CONTROL_NAMES.fundId">
                                     <mat-option *ngFor="let callFund of notSelectedFunds(data.callFunds, fund)"
                                                 [value]="callFund.id">
                                         {{callFund.abbreviation | translateBySystemLanguage | async}}
                                     </mat-option>
                                 </mat-select>
-                                <mat-hint   *ngIf="!fund.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value"
+                                <mat-hint *ngIf="!fund.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value"
                                           class="mat-error">
                                     {{'project.partner.coFinancing.required' | translate}}
                                 </mat-hint>
@@ -38,7 +39,7 @@
                             <mat-form-field class="text-right">
                                 <input (ngModelChange)="financesPercentsChanged(data.totalBudget)"
                                        [formControlName]="constants.FORM_CONTROL_NAMES.fundPercentage"
-                                       [options]="{min: 0, max: getMaxFundPercentage(fund), align: 'right'}"
+                                       [options]="{min: 0, max: getMaxRate(fund, data.callFunds), align: 'right'}"
                                        currencyMask matInput name="percentage"
                                        type="decimal">
                                 <div class="pl-1" matSuffix>%</div>
@@ -52,7 +53,15 @@
                         </ng-container>
                     </ng-container>
                 </div>
-                <button (click)="addAdditionalFund()"
+                <div *ngIf="partnerPercentage?.errors" class="text-right">
+                    <mat-error>
+                        <app-form-field-errors
+                                [errors]="partnerPercentage?.errors"
+                                [messages]="constants.FORM_ERRORS.fundRateTotalErrors">
+                        </app-form-field-errors>
+                    </mat-error>
+                </div>
+                <button (click)="addAdditionalFund(data.callFunds, undefined)"
                         *ngIf="canAddFund(data.callFunds, data.editable)" class="mt-2 co-financing-button"
                         mat-icon-button type="button">
                     <mat-icon>add</mat-icon>
@@ -102,8 +111,8 @@
                             <mat-form-field
                                     *ngIf="!partnerContribution.get(constants.FORM_CONTROL_NAMES.partner)?.value">
                                 <input [formControlName]="constants.FORM_CONTROL_NAMES.name" matInput required>
-                                <mat-hint   *ngIf="!partnerContribution?.value?.name"
-                                            class="mat-error">
+                                <mat-hint *ngIf="!partnerContribution?.value?.name"
+                                          class="mat-error">
                                     {{'project.partner.coFinancing.required' | translate}}
                                 </mat-hint>
                                 <mat-error>
@@ -123,8 +132,8 @@
                                             *ngIf="!partnerContribution?.value?.partner"
                                             [value]="partnerContributionStatus.AutomaticPublic">{{partnerContributionStatus.AutomaticPublic}}</mat-option>
                                 </mat-select>
-                                <mat-hint   *ngIf="!partnerContribution?.value?.status"
-                                            class="mat-error">
+                                <mat-hint *ngIf="!partnerContribution?.value?.status"
+                                          class="mat-error">
                                     {{'project.partner.coFinancing.required' | translate}}
                                 </mat-hint>
                                 <mat-error>
@@ -214,4 +223,5 @@
             </ng-container>
         </form>
     </app-form>
+    <pre>{{coFinancingForm.getRawValue() | json}}</pre>
 </ng-container>

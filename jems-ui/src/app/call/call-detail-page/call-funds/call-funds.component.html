@@ -1,13 +1,36 @@
 <ng-container *ngIf="data$ | async as data">
-    <ng-container *ngFor="let fund of funds">
-        <div *ngIf="data.callIsReadable || (data.userCanApply && fund.selected)" class="mt-2">
-            <mat-checkbox
-                    (click)="$event.stopPropagation()"
-                    (change)="fund.selected = !fund.selected; selectionChanged.emit()"
-                    [disabled]="fundDisabled(data.callIsEditable, data.callIsPublished, fund)"
-                    [checked]="fund.selected">
-                {{ fund.abbreviation | translateBySystemLanguage | async }}
-            </mat-checkbox>
+    <form [formGroup]="callForm" appFormLayout appNoWidthLimit>
+        <div [appTableConfig]="[{maxInRem:15},{},{maxInRem:5},{maxInRem:8}]"
+             appNoWidthLimit>
+            <div>
+                <span>{{'call.detail.flat.rate.table.activate.option' | translate}}</span>
+                <span>  </span>
+                <span>{{'call.detail.flat.rate.table.set.rate' | translate}}</span>
+                <span>{{'call.detail.flat.rate.table.fixed.rate' | translate}}</span>
+            </div>
+
+            <div *ngFor="let fund of fundArray.controls;let i=index" formArrayName="funds">
+                <ng-container [formGroupName]="i">
+                    <mat-checkbox
+                            formControlName="selected">
+                        {{fund.get('programmeFund')?.value?.abbreviation[0].translation}}
+                    </mat-checkbox>
+
+                    <div></div>
+
+                    <mat-form-field>
+                        <input [options]="{min: 1, max: 100, align: 'right'}"
+                               currencyMask formControlName="rate" matInput name="fundRateValue" type="decimal">
+                        <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
+                    </mat-form-field>
+
+                    <app-call-flat-rates-toggle-column
+                            (selected)="fund.get('adjustable').setValue($event); callForm.markAsDirty()"
+                            [disabled]="fund.get('adjustable').disabled"
+                            [previousSelection]="fund.get('adjustable').value">
+                    </app-call-flat-rates-toggle-column>
+                </ng-container>
+            </div>
         </div>
-    </ng-container>
+    </form>
 </ng-container>

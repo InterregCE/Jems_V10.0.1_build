@@ -12,6 +12,8 @@ import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.AtlanticStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.call.callFundRate
+import io.cloudflight.jems.server.call.callFundRateEntity
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
@@ -37,7 +39,6 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBu
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
@@ -49,7 +50,6 @@ import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecifi
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
@@ -88,14 +88,14 @@ internal class CallPersistenceProviderTest {
         private val START = ZonedDateTime.now().withSecond(0).withNano(0)
         private val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
 
-        private fun applicationFormFieldConfigurationEntities(callEntity: CallEntity)= mutableSetOf(
+        private fun applicationFormFieldConfigurationEntities(callEntity: CallEntity) = mutableSetOf(
             ApplicationFormFieldConfigurationEntity(
-                ApplicationFormFieldConfigurationId("fieldId" , callEntity),
+                ApplicationFormFieldConfigurationId("fieldId", callEntity),
                 FieldVisibilityStatus.STEP_ONE_AND_TWO
             )
         )
 
-        private fun stateAidEntities(callEntity: CallEntity)= mutableSetOf(
+        private fun stateAidEntities(callEntity: CallEntity) = mutableSetOf(
             ProjectCallStateAidEntity(
                 StateAidSetupId(callEntity, stateAid)
             )
@@ -117,17 +117,31 @@ internal class CallPersistenceProviderTest {
             ),
             ProgrammeSpecificObjectiveEntity(
                 programmeObjectivePolicy = AdvancedTechnologies, code = "CODE_ADVA",
-                programmePriority = ProgrammePriorityEntity(code = "PRIO_CODE", objective = AdvancedTechnologies.objective)
+                programmePriority = ProgrammePriorityEntity(
+                    code = "PRIO_CODE",
+                    objective = AdvancedTechnologies.objective
+                )
             ),
         )
 
-        val strategies = setOf(ProgrammeStrategyEntity(EUStrategyBalticSeaRegion, true), ProgrammeStrategyEntity(AtlanticStrategy, true))
+        val strategies = setOf(
+            ProgrammeStrategyEntity(EUStrategyBalticSeaRegion, true),
+            ProgrammeStrategyEntity(AtlanticStrategy, true)
+        )
 
-        val fund=ProgrammeFundEntity(id = FUND_ID, selected = true)
+        var fund = callFundRateEntity(callWithId(CALL_ID), FUND_ID)
 
-        val stateAid=ProgrammeStateAidEntity(id = STATE_AID_ID, measure = ProgrammeStateAidMeasure.OTHER_1, maxIntensity = BigDecimal.ZERO, threshold = BigDecimal.ZERO, schemeNumber = "")
+        val stateAid = ProgrammeStateAidEntity(
+            id = STATE_AID_ID,
+            measure = ProgrammeStateAidMeasure.OTHER_1,
+            maxIntensity = BigDecimal.ZERO,
+            threshold = BigDecimal.ZERO,
+            schemeNumber = ""
+        )
+
         private fun callEntity(id: Long? = null): CallEntity {
             val call = callWithId(id ?: CALL_ID)
+            fund = callFundRateEntity(call, FUND_ID)
             call.startDate = START
             call.endDate = END
             call.prioritySpecificObjectives.clear()
@@ -151,7 +165,12 @@ internal class CallPersistenceProviderTest {
                     cost = BigDecimal.ONE,
                     splittingAllowed = true,
                     phase = ProgrammeLumpSumPhase.Closure,
-                    categories = mutableSetOf(ProgrammeLumpSumBudgetCategoryEntity(programmeLumpSumId = LUMP_SUM_ID, category = BudgetCategory.InfrastructureCosts)),
+                    categories = mutableSetOf(
+                        ProgrammeLumpSumBudgetCategoryEntity(
+                            programmeLumpSumId = LUMP_SUM_ID,
+                            category = BudgetCategory.InfrastructureCosts
+                        )
+                    ),
                 )
             )
             call.unitCosts.clear()
@@ -160,7 +179,12 @@ internal class CallPersistenceProviderTest {
                     id = UNIT_COST_ID,
                     costPerUnit = BigDecimal.TEN,
                     isOneCostCategory = true,
-                    categories = mutableSetOf(ProgrammeUnitCostBudgetCategoryEntity(programmeUnitCostId = UNIT_COST_ID, category = BudgetCategory.InfrastructureCosts))
+                    categories = mutableSetOf(
+                        ProgrammeUnitCostBudgetCategoryEntity(
+                            programmeUnitCostId = UNIT_COST_ID,
+                            category = BudgetCategory.InfrastructureCosts
+                        )
+                    )
                 )
             )
             return call
@@ -175,41 +199,55 @@ internal class CallPersistenceProviderTest {
             endDate = END,
             isAdditionalFundAllowed = false,
             lengthOfPeriod = 1,
-            description = setOf(InputTranslation(SystemLanguage.EN ,"This is a dummy call")),
-            objectives = listOf(ProgrammePriority(
-                id = 0L,
-                code = "PRIO_CODE",
-                objective = PO1,
-                specificObjectives = listOf(
-                    ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
-                    ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
+            description = setOf(InputTranslation(SystemLanguage.EN, "This is a dummy call")),
+            objectives = listOf(
+                ProgrammePriority(
+                    id = 0L,
+                    code = "PRIO_CODE",
+                    objective = PO1,
+                    specificObjectives = listOf(
+                        ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
+                        ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
+                    )
                 )
-            )),
+            ),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
-            funds = listOf(ProgrammeFund(id = FUND_ID, selected = true)),
-            stateAids = listOf(ProgrammeStateAid(
-                id = STATE_AID_ID,
-                measure = ProgrammeStateAidMeasure.OTHER_1,
-                threshold = BigDecimal.ZERO,
-                maxIntensity = BigDecimal.ZERO,
-                name = emptySet(),
-                abbreviatedName = emptySet(),
-                schemeNumber = ""
-            )),
-            flatRates = sortedSetOf(ProjectCallFlatRate(type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS, rate = 15, adjustable = true)),
-            lumpSums = listOf(ProgrammeLumpSum(
-                id = LUMP_SUM_ID,
-                cost = BigDecimal.ONE,
-                splittingAllowed = true,
-                phase = ProgrammeLumpSumPhase.Closure,
-                categories = setOf(BudgetCategory.InfrastructureCosts),
-            )),
-            unitCosts = listOf(ProgrammeUnitCost(
-                id = UNIT_COST_ID,
-                costPerUnit = BigDecimal.TEN,
-                isOneCostCategory = true,
-                categories = setOf(BudgetCategory.InfrastructureCosts),
-            )),
+            funds = sortedSetOf(callFundRate(FUND_ID)),
+            stateAids = listOf(
+                ProgrammeStateAid(
+                    id = STATE_AID_ID,
+                    measure = ProgrammeStateAidMeasure.OTHER_1,
+                    threshold = BigDecimal.ZERO,
+                    maxIntensity = BigDecimal.ZERO,
+                    name = emptySet(),
+                    abbreviatedName = emptySet(),
+                    schemeNumber = ""
+                )
+            ),
+            flatRates = sortedSetOf(
+                ProjectCallFlatRate(
+                    type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS,
+                    rate = 15,
+                    adjustable = true
+                )
+            ),
+            lumpSums = listOf(
+                ProgrammeLumpSum(
+                    id = LUMP_SUM_ID,
+                    cost = BigDecimal.ONE,
+                    splittingAllowed = true,
+                    phase = ProgrammeLumpSumPhase.Closure,
+                    categories = setOf(BudgetCategory.InfrastructureCosts),
+                )
+            ),
+            unitCosts = listOf(
+                ProgrammeUnitCost(
+                    id = UNIT_COST_ID,
+                    costPerUnit = BigDecimal.TEN,
+                    isOneCostCategory = true,
+                    categories = setOf(BudgetCategory.InfrastructureCosts),
+                )
+            ),
             applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities(callEntity()).toModel()
         )
 
@@ -229,10 +267,10 @@ internal class CallPersistenceProviderTest {
             endDate = expectedCallDetail.endDate,
             isAdditionalFundAllowed = expectedCallDetail.isAdditionalFundAllowed,
             lengthOfPeriod = expectedCallDetail.lengthOfPeriod!!,
-            description = setOf(InputTranslation(SystemLanguage.EN ,"This is a dummy call")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "This is a dummy call")),
             priorityPolicies = setOf(Digitisation, AdvancedTechnologies),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
-            fundIds = setOf(FUND_ID),
+            funds = setOf(callFundRate(FUND_ID)),
             stateAidIds = setOf(STATE_AID_ID)
         )
 
@@ -343,15 +381,27 @@ internal class CallPersistenceProviderTest {
         )
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
-        every { applicationFormFieldConfigurationRepository.saveAll(any<MutableSet<ApplicationFormFieldConfigurationEntity>>()) } returns newConfigs.toEntities(callEntity).toList()
-        assertThat(persistence.saveApplicationFormFieldConfigurations(CALL_ID, newConfigs).applicationFormFieldConfigurations).containsAll(newConfigs)
+        every { applicationFormFieldConfigurationRepository.saveAll(any<MutableSet<ApplicationFormFieldConfigurationEntity>>()) } returns newConfigs.toEntities(
+            callEntity
+        ).toList()
+        assertThat(
+            persistence.saveApplicationFormFieldConfigurations(
+                CALL_ID,
+                newConfigs
+            ).applicationFormFieldConfigurations
+        ).containsAll(newConfigs)
     }
 
     @Test
     fun `should return set of application form field configurations for the call`() {
-        val fieldId="id"
-        val configEntity = ApplicationFormFieldConfigurationEntity(ApplicationFormFieldConfigurationId(fieldId, callEntity(
-            CALL_ID)), FieldVisibilityStatus.STEP_ONE_AND_TWO)
+        val fieldId = "id"
+        val configEntity = ApplicationFormFieldConfigurationEntity(
+            ApplicationFormFieldConfigurationId(
+                fieldId, callEntity(
+                    CALL_ID
+                )
+            ), FieldVisibilityStatus.STEP_ONE_AND_TWO
+        )
         val config = ApplicationFormFieldConfiguration(fieldId, FieldVisibilityStatus.STEP_ONE_AND_TWO)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(configEntity)
         assertThat(persistence.getApplicationFormFieldConfigurations(CALL_ID)).containsExactly(config)
@@ -360,16 +410,22 @@ internal class CallPersistenceProviderTest {
     @Test
     fun getPublishedAndOpenCalls() {
         val slotStatus = slot<CallStatus>()
-        every { callRepo.findAllByStatusAndEndDateAfter(capture(slotStatus), any(), any()) } returns PageImpl(listOf(callEntity()))
+        every { callRepo.findAllByStatusAndEndDateAfter(capture(slotStatus), any(), any()) } returns PageImpl(
+            listOf(
+                callEntity()
+            )
+        )
         assertThat(persistence.getPublishedAndOpenCalls(Pageable.unpaged()).content).containsExactly(expectedCall)
         assertThat(slotStatus.captured).isEqualTo(CallStatus.PUBLISHED)
     }
 
     @Test
     fun getCallById() {
-        val callEntity= callEntity()
+        val callEntity = callEntity()
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
-        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(callEntity)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(
+            callEntity
+        )
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         assertThat(persistence.getCallById(CALL_ID)).isEqualTo(expectedCallDetail)
     }
@@ -382,10 +438,12 @@ internal class CallPersistenceProviderTest {
 
     @Test
     fun `should return call detail by project id`() {
-        val callEntity= callEntity()
+        val callEntity = callEntity()
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
-        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(callEntity)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(
+            callEntity
+        )
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         assertThat(persistence.getCallByProjectId(PROJECT_ID)).isEqualTo(expectedCallDetail)
     }
@@ -423,20 +481,38 @@ internal class CallPersistenceProviderTest {
     fun createCall() {
         val expectedResultEntity = callEntity(0L)
         expectedResultEntity.translatedValues.clear()
-        expectedResultEntity.translatedValues.add(CallTranslEntity(translationId = TranslationId(expectedResultEntity, language = SystemLanguage.EN), "This is a dummy call"))
+        expectedResultEntity.translatedValues.add(
+            CallTranslEntity(
+                translationId = TranslationId(
+                    expectedResultEntity,
+                    language = SystemLanguage.EN
+                ), "This is a dummy call"
+            )
+        )
 
         every { userRepo.getOne(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
         every { programmeSpecificObjectiveRepo.getOne(Digitisation) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
         every { programmeSpecificObjectiveRepo.getOne(AdvancedTechnologies) } returns specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
-        every { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(setOf(EUStrategyBalticSeaRegion, AtlanticStrategy)) } returns strategies
-        every { programmeFundRepo.getTop20ByIdInAndSelectedTrue(setOf(FUND_ID)) } returns setOf(fund)
-        every { applicationFormFieldConfigurationRepository.findAllByCallId(expectedResultEntity.id) } returns applicationFormFieldConfigurationEntities(expectedResultEntity)
-        every { projectCallStateAidRepository.findAllByIdCallId(expectedResultEntity.id) } returns stateAidEntities(expectedResultEntity)
+        every {
+            programmeStrategyRepo.getAllByStrategyInAndActiveTrue(
+                setOf(
+                    EUStrategyBalticSeaRegion,
+                    AtlanticStrategy
+                )
+            )
+        } returns strategies
+        every { programmeFundRepo.getTop20ByIdInAndSelectedTrue(setOf(FUND_ID)) } returns setOf(fund.setupId.programmeFund)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(expectedResultEntity.id) } returns applicationFormFieldConfigurationEntities(
+            expectedResultEntity
+        )
+        every { projectCallStateAidRepository.findAllByIdCallId(expectedResultEntity.id) } returns stateAidEntities(
+            expectedResultEntity
+        )
         val slotCall = slot<CallEntity>()
         every { callRepo.save(capture(slotCall)) } returnsArgument 0
 
         persistence.createCall(callUpdate, expectedResultEntity.creator.id)
-        with (slotCall.captured) {
+        with(slotCall.captured) {
             assertThat(id).isEqualTo(expectedResultEntity.id)
             assertThat(creator).isEqualTo(expectedResultEntity.creator)
             assertThat(name).isEqualTo(expectedResultEntity.name)
@@ -446,7 +522,7 @@ internal class CallPersistenceProviderTest {
             assertThat(lengthOfPeriod).isEqualTo(expectedResultEntity.lengthOfPeriod)
             assertThat(isAdditionalFundAllowed).isEqualTo(expectedResultEntity.isAdditionalFundAllowed)
             assertThat(prioritySpecificObjectives).containsExactlyInAnyOrderElementsOf(specificObjectives)
-            assertThat(funds).containsExactly(fund)
+            assertThat(funds.map { it.setupId.programmeFund }).containsExactly(fund.setupId.programmeFund)
             assertThat(strategies).containsExactlyInAnyOrderElementsOf(strategies)
             assertThat(flatRates).isEmpty()
             assertThat(lumpSums).isEmpty()
@@ -459,18 +535,28 @@ internal class CallPersistenceProviderTest {
         val call = callWithId(1)
         every { callRepo.findById(1L) } returns Optional.of(call)
 
-        every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(call)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(
+            call
+        )
         every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
 
-        persistence.updateProjectCallFlatRate(1, setOf(
-            ProjectCallFlatRate(type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 18, adjustable = false),
-        ))
+        persistence.updateProjectCallFlatRate(
+            1, setOf(
+                ProjectCallFlatRate(
+                    type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS,
+                    rate = 18,
+                    adjustable = false
+                ),
+            )
+        )
 
-        assertThat(call.flatRates).containsExactlyInAnyOrder(ProjectCallFlatRateEntity(
-            setupId = FlatRateSetupId(call = call, type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS),
-            rate = 18,
-            isAdjustable = false,
-        ))
+        assertThat(call.flatRates).containsExactlyInAnyOrder(
+            ProjectCallFlatRateEntity(
+                setupId = FlatRateSetupId(call = call, type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS),
+                rate = 18,
+                isAdjustable = false,
+            )
+        )
     }
 
     @Test
@@ -493,7 +579,9 @@ internal class CallPersistenceProviderTest {
         val call = callWithId(1)
         every { callRepo.findById(1L) } returns Optional.of(call)
         every { programmeLumpSumRepo.findAllById(setOf(2, 3)) } returns listOf(lumpSum2, lumpSum3)
-        every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(call)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(
+            call
+        )
         every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
         persistence.updateProjectCallLumpSum(1, setOf(2, 3))
         assertThat(call.lumpSums).containsExactlyInAnyOrder(lumpSum2, lumpSum3)
@@ -519,7 +607,9 @@ internal class CallPersistenceProviderTest {
         val call = callWithId(1)
         every { callRepo.findById(1L) } returns Optional.of(call)
         every { programmeUnitCostRepo.findAllById(setOf(2, 3)) } returns listOf(unitCost2, unitCost3)
-        every { applicationFormFieldConfigurationRepository.findAllByCallId(1) } returns applicationFormFieldConfigurationEntities(call)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(1) } returns applicationFormFieldConfigurationEntities(
+            call
+        )
         every { projectCallStateAidRepository.findAllByIdCallId(1) } returns stateAidEntities(call)
         persistence.updateProjectCallUnitCost(1, setOf(2, 3))
         assertThat(call.unitCosts).containsExactlyInAnyOrder(unitCost2, unitCost3)
