@@ -11,15 +11,13 @@ import {
   ProjectDetailDTO,
   ProjectDetailFormDTO,
   ProjectPartnerBudgetCoFinancingDTO,
+  ProjectPeriodDTO,
   ProjectService,
   ProjectStatusDTO,
   ProjectStatusService,
   ProjectVersionDTO,
   UserRoleCreateDTO,
-  WorkPackageActivitySummaryDTO,
-  ProjectBudgetService,
-  ProjectPartnerBudgetPerPeriodDTO,
-  ProjectPeriodDTO
+  WorkPackageActivitySummaryDTO
 } from '@cat/api';
 import {
   distinctUntilChanged,
@@ -107,8 +105,7 @@ export class ProjectStore {
               private securityService: SecurityService,
               private permissionService: PermissionService,
               private projectVersionStore: ProjectVersionStore,
-              private callService: CallService,
-              private projectBudgetService: ProjectBudgetService) {
+              private callService: CallService) {
     this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
