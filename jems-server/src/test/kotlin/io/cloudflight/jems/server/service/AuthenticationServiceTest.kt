@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.service.AuthenticationServiceImpl
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -50,7 +51,8 @@ class AuthenticationServiceTest {
         every { securityService.currentUser } returns LocalCurrentUser(
             User(
                 1, "admin@test.net", "test", "test",
-                UserRole(1, "Role", emptySet())
+                UserRole(1, "Role", emptySet()),
+                userStatus = UserStatus.ACTIVE
             ), "", Collections.emptyList()
         )
 
@@ -77,7 +79,8 @@ class AuthenticationServiceTest {
         every { securityService.currentUser } returns LocalCurrentUser(
             User(
                 1, "test@test.net", "test", "test",
-                UserRole(1, "Role", emptySet())
+                UserRole(1, "Role", emptySet()),
+                userStatus = UserStatus.ACTIVE
             ), "", Collections.emptyList()
         )
 
@@ -93,6 +96,12 @@ class AuthenticationServiceTest {
         val currentUser = authenticationService.getCurrentUser()
 
         assertThat(currentUser.name).isEqualTo("")
-        assertThat(currentUser.role).isEqualTo(UserRoleDTO(name = "", permissions = emptyList(), defaultForRegisteredUser = false))
+        assertThat(currentUser.role).isEqualTo(
+            UserRoleDTO(
+                name = "",
+                permissions = emptyList(),
+                defaultForRegisteredUser = false
+            )
+        )
     }
 }

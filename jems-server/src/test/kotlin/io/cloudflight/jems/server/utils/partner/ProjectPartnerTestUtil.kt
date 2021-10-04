@@ -43,6 +43,7 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import java.math.BigDecimal
@@ -96,7 +97,12 @@ fun projectPartnerDetail(
     contacts: List<ProjectPartnerContact> = emptyList(),
     motivation: ProjectPartnerMotivation? = null,
     department: Set<InputTranslation> = emptySet(),
-    address: List<ProjectPartnerAddress> = listOf(ProjectPartnerAddress(type = ProjectPartnerAddressType.Organization, country = "AT")),
+    address: List<ProjectPartnerAddress> = listOf(
+        ProjectPartnerAddress(
+            type = ProjectPartnerAddressType.Organization,
+            country = "AT"
+        )
+    ),
     sortNumber: Int = 0
 ) =
     ProjectPartnerDetail(
@@ -126,11 +132,16 @@ fun projectPartnerDetail(
 
 val legalStatusEntity = ProgrammeLegalStatusEntity(id = 1)
 
-fun projectPartnerWithOrganizationEntity(sortNumber: Int=0) = projectPartnerEntity(sortNumber = sortNumber).also {
+fun projectPartnerWithOrganizationEntity(sortNumber: Int = 0) = projectPartnerEntity(sortNumber = sortNumber).also {
     it.translatedValues.add(ProjectPartnerTranslEntity(TranslationId(it, SystemLanguage.EN), "test"))
 }
 
-fun projectPartnerEntity(id:Long = PARTNER_ID, role: ProjectPartnerRole = ProjectPartnerRole.LEAD_PARTNER, abbreviation: String = "partner", sortNumber: Int = 0) = ProjectPartnerEntity(
+fun projectPartnerEntity(
+    id: Long = PARTNER_ID,
+    role: ProjectPartnerRole = ProjectPartnerRole.LEAD_PARTNER,
+    abbreviation: String = "partner",
+    sortNumber: Int = 0
+) = ProjectPartnerEntity(
     id = id,
     project = project,
     abbreviation = abbreviation,
@@ -146,7 +157,14 @@ fun projectPartnerEntity(id:Long = PARTNER_ID, role: ProjectPartnerRole = Projec
     legalStatus = legalStatusEntity,
     vat = "test vat",
     vatRecovery = ProjectPartnerVatRecovery.Yes,
-    addresses = setOf(ProjectPartnerAddressEntity(ProjectPartnerAddressId(PARTNER_ID, ProjectPartnerAddressType.Organization), AddressEntity(country =  "AT"))),
+    addresses = setOf(
+        ProjectPartnerAddressEntity(
+            ProjectPartnerAddressId(
+                PARTNER_ID,
+                ProjectPartnerAddressType.Organization
+            ), AddressEntity(country = "AT")
+        )
+    ),
     sortNumber = sortNumber
 )
 
@@ -308,7 +326,8 @@ class ProjectPartnerTestUtil {
             password = "hash",
             email = "admin@admin.dev",
             surname = "Surname",
-            userRole = userRole
+            userRole = userRole,
+            userStatus = UserStatus.ACTIVE
         )
 
         val call = CallEntity(
@@ -344,6 +363,7 @@ class ProjectPartnerTestUtil {
             name = user.name,
             surname = user.surname,
             userRole = UserRoleSummary(id = 1, name = "ADMIN"),
+            userStatus = UserStatus.ACTIVE
         )
     }
 

@@ -1,0 +1,5 @@
+ALTER TABLE account
+    ADD COLUMN user_status ENUM ('ACTIVE', 'INACTIVE', 'UNCONFIRMED') NOT NULL DEFAULT 'UNCONFIRMED';
+
+UPDATE account
+    SET user_status = 'ACTIVE'

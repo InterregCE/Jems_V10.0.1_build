@@ -60,6 +60,7 @@ import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssess
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -311,16 +312,18 @@ internal class ProjectPersistenceTest : UnitTest() {
                 flatRates = call.flatRates.toModel(),
                 lumpSums = call.lumpSums.toModel(),
                 unitCosts = call.unitCosts.toModel(),
-                stateAids = listOf(ProgrammeStateAid(
-                    id = stateAidEntity.id,
-                    name = emptySet(),
-                    abbreviatedName = emptySet(),
-                    comments = emptySet(),
-                    measure = stateAidEntity.measure,
-                    schemeNumber = stateAidEntity.schemeNumber,
-                    maxIntensity = stateAidEntity.maxIntensity,
-                    threshold = stateAidEntity.threshold
-                )),
+                stateAids = listOf(
+                    ProgrammeStateAid(
+                        id = stateAidEntity.id,
+                        name = emptySet(),
+                        abbreviatedName = emptySet(),
+                        comments = emptySet(),
+                        measure = stateAidEntity.measure,
+                        schemeNumber = stateAidEntity.schemeNumber,
+                        maxIntensity = stateAidEntity.maxIntensity,
+                        threshold = stateAidEntity.threshold
+                    )
+                ),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
             )
         )
@@ -427,7 +430,10 @@ internal class ProjectPersistenceTest : UnitTest() {
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
-                    callSettings = project.call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities),
+                    callSettings = project.call.toSettingsModel(
+                        stateAidEntities,
+                        applicationFormFieldConfigurationEntities
+                    ),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy(),
                     assessmentStep1 = ProjectAssessment(
@@ -445,7 +451,8 @@ internal class ProjectPersistenceTest : UnitTest() {
                                 email = user.email,
                                 name = user.name,
                                 surname = user.surname,
-                                userRole = UserRoleSummary(id = 1, name = "ADMIN")
+                                userRole = UserRoleSummary(id = 1, name = "ADMIN"),
+                                userStatus = UserStatus.ACTIVE
                             ),
                             updated = statusChange,
                         )
@@ -465,7 +472,8 @@ internal class ProjectPersistenceTest : UnitTest() {
                                 email = user.email,
                                 name = user.name,
                                 surname = user.surname,
-                                userRole = UserRoleSummary(id = 1, name = "ADMIN")
+                                userRole = UserRoleSummary(id = 1, name = "ADMIN"),
+                                userStatus = UserStatus.ACTIVE
                             ),
                             updated = statusChange,
                         )
@@ -525,7 +533,10 @@ internal class ProjectPersistenceTest : UnitTest() {
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
-                    callSettings = project.call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities),
+                    callSettings = project.call.toSettingsModel(
+                        stateAidEntities,
+                        applicationFormFieldConfigurationEntities
+                    ),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
                 )

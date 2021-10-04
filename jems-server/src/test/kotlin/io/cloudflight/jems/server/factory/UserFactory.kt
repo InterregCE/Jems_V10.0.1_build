@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.userrole.UserRolePermissionRepository
 import io.cloudflight.jems.server.user.repository.userrole.UserRoleRepository
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -68,14 +69,15 @@ class UserFactory(
     fun saveUser(email: String, role: UserRoleEntity): UserEntity {
         return userRepository.getOneByEmail(email)
             ?: userRepository.save(
-                    UserEntity(
-                            id = 0,
-                            email = email,
-                            password = passwordEncoder.encode(email),
-                            name = email,
-                            surname = email,
-                            userRole = role
-                    )
+                UserEntity(
+                    id = 0,
+                    email = email,
+                    password = passwordEncoder.encode(email),
+                    name = email,
+                    surname = email,
+                    userRole = role,
+                    userStatus = UserStatus.ACTIVE
+                )
             )
     }
 

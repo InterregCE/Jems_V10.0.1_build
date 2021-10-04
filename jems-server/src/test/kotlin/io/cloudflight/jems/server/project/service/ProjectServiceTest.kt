@@ -28,6 +28,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -53,7 +54,8 @@ class ProjectServiceTest : UnitTest() {
         name = "Name",
         surname = "Surname",
         userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-        password = "hash_pass"
+        password = "hash_pass",
+        userStatus = UserStatus.ACTIVE
     )
 
     private val statusDraft = ProjectStatusHistoryEntity(
@@ -198,7 +200,13 @@ class ProjectServiceTest : UnitTest() {
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         val slot = slot<ProjectEntity>()
         every { projectRepository.save(capture(slot)) } returnsArgument 0
-        every { getProjectInteractor.getProjectForm(1L) } returns ProjectForm(id = 4L, customIdentifier = "CUST-04", callSettings = callSettings, acronym = "acronym", duration = 12)
+        every { getProjectInteractor.getProjectForm(1L) } returns ProjectForm(
+            id = 4L,
+            customIdentifier = "CUST-04",
+            callSettings = callSettings,
+            acronym = "acronym",
+            duration = 12
+        )
 
         projectService.update(1, projectData)
 

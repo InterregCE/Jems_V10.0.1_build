@@ -55,6 +55,7 @@ import io.cloudflight.jems.server.project.service.workpackage.investment.get_pro
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.cloudflight.jems.server.user.controller.toDto
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -141,8 +142,14 @@ class ProjectControllerTest {
             duration = 12,
             title = setOf(InputTranslation(SystemLanguage.EN, "title")),
             intro = setOf(InputTranslation(SystemLanguage.EN, "intro")),
-            specificObjective = OutputProgrammePriorityPolicySimpleDTO(ProgrammeObjectivePolicy.AdvancedTechnologies, "code"),
-            programmePriority = OutputProgrammePrioritySimple("code", setOf(InputTranslation(SystemLanguage.EN, "title"))),
+            specificObjective = OutputProgrammePriorityPolicySimpleDTO(
+                ProgrammeObjectivePolicy.AdvancedTechnologies,
+                "code"
+            ),
+            programmePriority = OutputProgrammePrioritySimple(
+                "code",
+                setOf(InputTranslation(SystemLanguage.EN, "title"))
+            ),
             periods = listOf(projectPeriod)
         )
         private val projectDetailFormDTO = ProjectDetailFormDTO(
@@ -310,7 +317,8 @@ class ProjectControllerTest {
     @Test
     fun `get Project by Id`() {
         val pId = 1L
-        val user = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"))
+        val user =
+            UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"), userStatus = UserStatus.ACTIVE)
         val projectStatus = ProjectStatus(5L, ApplicationStatus.APPROVED, user, updated = startDate)
         val project = ProjectDetail(
             id = pId,
@@ -408,6 +416,7 @@ class ProjectControllerTest {
                 activityId = wpASummary.activityId,
                 workPackageNumber = wpASummary.workPackageNumber,
                 activityNumber = wpASummary.activityNumber
-            ))
+            )
+        )
     }
 }

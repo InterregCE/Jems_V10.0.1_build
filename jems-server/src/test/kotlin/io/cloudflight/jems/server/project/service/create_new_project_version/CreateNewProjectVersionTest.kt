@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -32,7 +33,8 @@ internal class CreateNewProjectVersionTest : UnitTest() {
         name = "Name",
         surname = "Surname",
         userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-        password = "hash_pass"
+        password = "hash_pass",
+        userStatus = UserStatus.ACTIVE
     )
     private val currentProjectVersion = ProjectVersion(
         "1.0",

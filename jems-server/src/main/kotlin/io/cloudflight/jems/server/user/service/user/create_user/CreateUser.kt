@@ -7,9 +7,10 @@ import io.cloudflight.jems.server.user.service.authorization.CanCreateUser
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
+import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.cloudflight.jems.server.user.service.user.ConfirmUserEmailEvent
 import io.cloudflight.jems.server.user.service.user.validatePassword
 import io.cloudflight.jems.server.user.service.user.validateUserCommon
-import io.cloudflight.jems.server.user.service.userCreated
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -20,8 +21,8 @@ class CreateUser(
     private val persistence: UserPersistence,
     private val appSecurityProperties: AppSecurityProperties,
     private val passwordEncoder: PasswordEncoder,
-    private val auditPublisher: ApplicationEventPublisher,
     private val generalValidator: GeneralValidatorService,
+    private val eventPublisher: ApplicationEventPublisher
 ) : CreateUserInteractor {
 
     @CanCreateUser
@@ -34,7 +35,10 @@ class CreateUser(
         validatePassword(generalValidator, password)
 
         return persistence.create(user = user, passwordEncoded = passwordEncoder.encode(password)).also {
-            auditPublisher.publishEvent(userCreated(this, it))
+            eventPublisher.publishEvent(UserCreatedEvent(it))
+            if (user.userStatus == UserStatus.UNCONFIRMED) {
+                eventPublisher.publishEvent(ConfirmUserEmailEvent(it))
+            }
         }
     }
 

@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.FundSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
-import io.cloudflight.jems.server.call.repository.CallPersistenceProviderTest
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -25,6 +24,7 @@ import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
@@ -34,7 +34,8 @@ private val account = UserEntity(
     name = "Name",
     surname = "Surname",
     userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-    password = "hash_pass"
+    password = "hash_pass",
+    userStatus = UserStatus.ACTIVE
 )
 
 private fun testCall(id: Long = 0) = CallEntity(
@@ -91,7 +92,8 @@ fun userWithId(id: Long) = LocalCurrentUser(
         email = "x@y",
         name = "",
         surname = "",
-        userRole = UserRole(0, "", permissions = emptySet(), isDefault = false)
+        userRole = UserRole(0, "", permissions = emptySet(), isDefault = false),
+        userStatus = UserStatus.ACTIVE
     ),
     password = "hash_pass",
     authorities = emptyList(),

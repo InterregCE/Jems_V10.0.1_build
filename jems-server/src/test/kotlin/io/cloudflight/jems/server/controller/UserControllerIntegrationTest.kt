@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
 import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
+import io.cloudflight.jems.api.user.dto.UserStatusDTO
 import io.cloudflight.jems.server.authentication.model.ADMINISTRATOR
 import io.cloudflight.jems.server.factory.UserFactory
 import io.cloudflight.jems.server.factory.UserFactory.Companion.ADMINISTRATOR_EMAIL
@@ -52,7 +53,7 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.numberOfElements").value(2))
-            .andExpect(status().isOk())
+            .andExpect(status().isOk)
 
         mockMvc.perform(
             post("/api/user/list?page=1")
@@ -60,7 +61,7 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.numberOfElements").value(1))
-            .andExpect(status().isOk())
+            .andExpect(status().isOk)
 
         mockMvc.perform(
             post("/api/user/list?sort=email,desc")
@@ -68,14 +69,14 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(jsonPath("$.content[0].email").value("u1"))
-            .andExpect(status().isOk())
+            .andExpect(status().isOk)
     }
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     @Transactional
     fun `create user`() {
-        val user = UserChangeDTO(null, "user@rmail.com", "user", "user", 1)
+        val user = UserChangeDTO(null, "user@rmail.com", "user", "user", 1, UserStatusDTO.ACTIVE)
 
         mockMvc.perform(
             post("/api/user")
@@ -83,13 +84,13 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(user))
         )
-            .andExpect(status().isOk())
+            .andExpect(status().isOk)
     }
 
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `create user with invalid data fails`() {
-        val user = UserChangeDTO(null, "user", "", "", 0)
+        val user = UserChangeDTO(null, "user", "", "", 0, UserStatusDTO.ACTIVE)
 
         mockMvc.perform(
             post("/api/user")
@@ -115,7 +116,8 @@ class UserControllerIntegrationTest {
     @Test
     @WithUserDetails(value = ADMINISTRATOR_EMAIL)
     fun `create user with duplicate email fails`() {
-        val user = UserChangeDTO(null, ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, 1)
+        val user =
+            UserChangeDTO(null, ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, ADMINISTRATOR_EMAIL, 1, UserStatusDTO.ACTIVE)
 
         mockMvc.perform(
             post("/api/user")
@@ -140,16 +142,16 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
         )
-            .andExpect(status().isForbidden())
+            .andExpect(status().isForbidden)
 
-        val user = UserChangeDTO(null, "random@email.com", "user", "user", 1)
+        val user = UserChangeDTO(null, "random@email.com", "user", "user", 1, UserStatusDTO.ACTIVE)
         mockMvc.perform(
             put("/api/user")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(user))
         )
-            .andExpect(status().isForbidden())
+            .andExpect(status().isForbidden)
 
         mockMvc.perform(
             post("/api/user")
@@ -157,7 +159,7 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonMapper.writeValueAsString(user))
         )
-            .andExpect(status().isForbidden())
+            .andExpect(status().isForbidden)
     }
 
     @Test
@@ -191,7 +193,8 @@ class UserControllerIntegrationTest {
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
             APPLICANT_USER_EMAIL,
-            userFactory.saveRole(ADMINISTRATOR).id
+            userFactory.saveRole(ADMINISTRATOR).id,
+            UserStatusDTO.ACTIVE
         )
         mockMvc.perform(
             put("/api/user")
@@ -210,7 +213,7 @@ class UserControllerIntegrationTest {
             get("/api/user/byId/1")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
-            .andExpect(status().isOk())
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$.email").value(ADMINISTRATOR_EMAIL))
     }
 
@@ -266,7 +269,7 @@ class UserControllerIntegrationTest {
                 )
                     .andExpect(jsonPath("$.numberOfElements").value(1))
                     .andExpect(jsonPath("$.content[0].email").value("u1"))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isOk)
             }
         }
 
@@ -289,7 +292,7 @@ class UserControllerIntegrationTest {
         )
             .andExpect(jsonPath("$.numberOfElements").value(1))
             .andExpect(jsonPath("$.content[0].email").value("u3"))
-            .andExpect(status().isOk())
+            .andExpect(status().isOk)
 
     }
 

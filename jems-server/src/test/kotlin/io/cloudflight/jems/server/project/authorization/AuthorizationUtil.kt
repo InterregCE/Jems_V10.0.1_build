@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 internal class AuthorizationUtil {
@@ -14,7 +15,13 @@ internal class AuthorizationUtil {
             email = "admin@admin.dev",
             name = "Name",
             surname = "Surname",
-            userRole = UserRole(id = 1, name = "administrator", permissions = UserRolePermission.values().toSet(), isDefault = false)
+            userRole = UserRole(
+                id = 1,
+                name = "administrator",
+                permissions = UserRolePermission.values().toSet(),
+                isDefault = false
+            ),
+            userStatus = UserStatus.ACTIVE
         )
 
         val userProgramme = User(
@@ -22,7 +29,8 @@ internal class AuthorizationUtil {
             email = "user@programme.dev",
             name = "",
             surname = "",
-            userRole = UserRole(id = 2, name = "programme user", permissions = emptySet(), isDefault = false)
+            userRole = UserRole(id = 2, name = "programme user", permissions = emptySet(), isDefault = false),
+            userStatus = UserStatus.ACTIVE
         )
 
         val userApplicant = User(
@@ -30,7 +38,8 @@ internal class AuthorizationUtil {
             email = "user@applicant.dev",
             name = "applicant",
             surname = "",
-            userRole = UserRole(id = 3, name = "applicant user", permissions = emptySet(), isDefault = true)
+            userRole = UserRole(id = 3, name = "applicant user", permissions = emptySet(), isDefault = true),
+            userStatus = UserStatus.ACTIVE
         )
 
         internal val programmeUser = LocalCurrentUser(

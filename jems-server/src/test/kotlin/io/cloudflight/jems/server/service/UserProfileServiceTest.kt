@@ -27,16 +27,6 @@ class UserProfileServiceTest {
 
     lateinit var userProfileService: UserProfileService
 
-    // user to be used for User Profile
-    private val user = UserEntity(
-            id = 1,
-            email = "admin@admin.dev",
-            name = "Name",
-            surname = "Surname",
-            userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-            password = "test"
-    )
-
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
