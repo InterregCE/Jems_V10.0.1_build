@@ -80,6 +80,7 @@ export class CallDetailPageComponent {
     endDateTime: ['', Validators.required],
     description: [[], Validators.maxLength(1000)],
     lengthOfPeriod: ['', [Validators.required, Validators.max(99), Validators.min(1)]],
+    funds: this.formBuilder.array([]),
     additionalFundAllowed: [false]
   });
 
