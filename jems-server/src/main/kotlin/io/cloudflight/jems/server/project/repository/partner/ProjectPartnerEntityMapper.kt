@@ -25,6 +25,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.PartnerStateAidRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidActivityEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidActivityId
@@ -33,6 +34,7 @@ import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartne
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionEntity
 import io.cloudflight.jems.server.project.repository.workpackage.activity.toSummaryModel
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
@@ -44,6 +46,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
+import java.math.BigDecimal
 
 fun ProjectPartner.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
     ProjectPartnerEntity(
@@ -435,3 +438,16 @@ fun List<PartnerStateAidRow>.toModel(
             stateAidScheme = stateAid?.toModel()
         )
     }.firstOrNull()
+
+fun List<ProjectPartnerBudgetPerPeriodRow>.toProjectPartnerBudgetPerPeriod() = map { it.toModel() }.toList()
+
+fun ProjectPartnerBudgetPerPeriodRow.toModel() = ProjectPartnerBudget(
+    id = id,
+    periodNumber = periodNumber ?: 0,
+    staffCostsPerPeriod = staffCostsPerPeriod ?: BigDecimal.ZERO,
+    travelAndAccommodationCostsPerPeriod = travelAndAccommodationCostsPerPeriod ?: BigDecimal.ZERO,
+    equipmentCostsPerPeriod = equipmentCostsPerPeriod ?: BigDecimal.ZERO,
+    externalExpertiseAndServicesCostsPerPeriod = externalExpertiseAndServicesCostsPerPeriod ?: BigDecimal.ZERO,
+    infrastructureAndWorksCostsPerPeriod = infrastructureAndWorksCostsPerPeriod ?: BigDecimal.ZERO,
+    unitCostsPerPeriod = unitCostsPerPeriod ?: BigDecimal.ZERO
+)

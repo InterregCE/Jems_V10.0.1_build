@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatu
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -115,8 +116,16 @@ class ProjectPersistenceProvider(
         getProjectOrThrow(projectId).call.unitCosts.toModel()
 
     @Transactional(readOnly = true)
-    override fun getProjectPeriods(projectId: Long) =
-        getProjectOrThrow(projectId).periods.toProjectPeriods()
+    override fun getProjectPeriods(projectId: Long, version: String?): List<ProjectPeriod>  {
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                getProjectOrThrow(projectId).periods.toProjectPeriods()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData()
+            }
+        ) ?: throw ApplicationVersionNotFoundException()
+    }
 
     @Transactional
     override fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): ProjectDetail {
