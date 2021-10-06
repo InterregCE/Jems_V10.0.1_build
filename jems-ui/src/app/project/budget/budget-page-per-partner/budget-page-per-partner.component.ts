@@ -5,7 +5,7 @@ import {
   ProjectPartnerCoFinancingOutputDTO,
   ProjectPartnerContributionDTO
 } from '@cat/api';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {NumberService} from '@common/services/number.service';
@@ -26,9 +26,8 @@ export class BudgetPagePerPartnerComponent {
 
   chosenProjectFunds$ = this.pageStore.callFunds$
     .pipe(
-      tap((funds) => {
-        this.getColumnsToDisplay([...funds.values()].map(fund => fund.programmeFund));
-      }),
+      map(funds => [...funds.values()].map(fund => fund.programmeFund)),
+      tap(funds => this.getColumnsToDisplay(funds)),
     );
   budgetColumns: ProjectPartnerBudgetAndContribution[] = [];
   budgets$ = this.projectStore.getProjectCoFinancing()
