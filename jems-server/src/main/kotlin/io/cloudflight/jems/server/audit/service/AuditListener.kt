@@ -20,7 +20,7 @@ class AuditListener(
                 auditService.logEvent(audit = auditCandidate, optionalUser = overrideCurrentUser)
         }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
     fun saveAuditLog(event: JemsAuditEvent) =
         if (event.auditUser == null)
             auditService.logEvent(audit = event.getAuditCandidate())
