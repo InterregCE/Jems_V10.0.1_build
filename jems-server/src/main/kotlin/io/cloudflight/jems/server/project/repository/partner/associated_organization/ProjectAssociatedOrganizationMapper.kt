@@ -1,13 +1,14 @@
-package io.cloudflight.jems.server.project.service.associatedorganization
+package io.cloudflight.jems.server.project.repository.partner.associated_organization
 
-import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
-import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
+import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.entity.AddressEntity
@@ -15,6 +16,7 @@ import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.TranslationOrganizationId
 import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationAddressRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationContactRow
+import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationDetailRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationSimpleRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
@@ -173,3 +175,42 @@ fun AssociatedOrganizationContactRow.toModel() = ProjectPartnerContactDTO(
     email = email,
     telephone = telephone
 )
+
+fun List<AssociatedOrganizationDetailRow>.toModel() =
+    groupBy { it.id }.map { groupedRows ->
+        OutputProjectAssociatedOrganizationDetail(
+            id = groupedRows.key,
+            partner = ProjectPartnerSummaryDTO(
+                id = groupedRows.value.first().partnerId,
+                abbreviation = groupedRows.value.first().abbreviation,
+                role = groupedRows.value.first().role,
+                sortNumber = groupedRows.value.first().partnerSortNumber,
+                country = groupedRows.value.first().partnerCountry,
+                region = groupedRows.value.first().partnerNutsRegion3
+            ),
+            nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
+            nameInEnglish = groupedRows.value.first().nameInEnglish,
+            sortNumber = groupedRows.value.first().sortNumber,
+            address = OutputProjectAssociatedOrganizationAddress(
+                country = groupedRows.value.first().country,
+                nutsRegion2 = groupedRows.value.first().nutsRegion2,
+                nutsRegion3 = groupedRows.value.first().nutsRegion3,
+                street = groupedRows.value.first().street,
+                houseNumber = groupedRows.value.first().houseNumber,
+                postalCode = groupedRows.value.first().postalCode,
+                city = groupedRows.value.first().city,
+                homepage = groupedRows.value.first().homepage
+            ),
+            contacts = groupedRows.value.filter { it.contactType != null }.groupBy { it.contactType }.map { groupedContactRows ->
+                ProjectPartnerContactDTO(
+                    type = groupedContactRows.key!!,
+                    title = groupedContactRows.value.first().title,
+                    firstName = groupedContactRows.value.first().firstName,
+                    lastName = groupedContactRows.value.first().lastName,
+                    email = groupedContactRows.value.first().email,
+                    telephone = groupedContactRows.value.first().telephone
+                )
+            },
+            roleDescription = groupedRows.value.extractField { it.roleDescription }
+        )
+    }

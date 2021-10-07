@@ -34,6 +34,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.toModel
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimple
@@ -73,32 +74,39 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackagesWithAllDataByProjectId(projectId: Long): List<ProjectWorkPackageFull> {
-        // fetch all work packages in 1 request
-        val sort = Sort.by(Sort.Direction.ASC, "id")
-        val workPackages = workPackageRepository.findAllByProjectId(projectId, sort)
-        val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
+    override fun getWorkPackagesWithAllDataByProjectId(projectId: Long, version: String?): List<ProjectWorkPackageFull> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                // fetch all work packages in 1 request
+                val sort = Sort.by(Sort.Direction.ASC, "id")
+                val workPackages = workPackageRepository.findAllByProjectId(projectId, sort)
+                val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
 
-        // fetch all activities and deliverables in 1 request
-        val activitiesByWorkPackages = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds)
-            .groupBy { it.workPackage.id }
+                // fetch all activities and deliverables in 1 request
+                val activitiesByWorkPackages = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds)
+                    .groupBy { it.workPackage.id }
 
-        // fetch all outputs in 1 request
-        val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
-            .groupBy { it.outputId.workPackageId }
+                // fetch all outputs in 1 request
+                val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
+                    .groupBy { it.outputId.workPackageId }
 
-        // fetch all investments
-        val investmentsByWorkPackages = workPackageInvestmentRepository.findInvestmentsByProjectId(projectId)
-            .groupBy { it.workPackage.id }
+                // fetch all investments
+                val investmentsByWorkPackages = workPackageInvestmentRepository.findInvestmentsByProjectId(projectId)
+                    .groupBy { it.workPackage.id }
 
-        return workPackages.map { wp ->
-            wp.toModelFull(
-                getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
-                getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
-                getInvestmentsForWorkPackageId = { id -> investmentsByWorkPackages[id] },
-            )
-        }
-    }
+                workPackages.map { wp ->
+                    wp.toModelFull(
+                        getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
+                        getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
+                        getInvestmentsForWorkPackageId = { id -> investmentsByWorkPackages[id] },
+                    )
+                }
+            } ,
+            previousVersionFetcher = { timestamp ->
+                workPackageRepository.findWorkPackagesByProjectIdAsOfTimestamp(projectId, timestamp).toModel()
+            }
+        ) ?: emptyList()
+
 
     @Transactional(readOnly = true)
     override fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple> {

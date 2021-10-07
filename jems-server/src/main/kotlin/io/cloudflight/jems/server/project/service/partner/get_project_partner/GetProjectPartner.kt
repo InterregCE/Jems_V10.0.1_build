@@ -45,8 +45,4 @@ class GetProjectPartner(
         projectId: Long, sort: Sort, version: String?
     ): List<ProjectPartnerSummary> =
         persistence.findAllByProjectIdForDropdown(projectId, sort, version)
-
-    override fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerDetail> =
-        persistence.findAllByProjectId(projectId)
-
 }

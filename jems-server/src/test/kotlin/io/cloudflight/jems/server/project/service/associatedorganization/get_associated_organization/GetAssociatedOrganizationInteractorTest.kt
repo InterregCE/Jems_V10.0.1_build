@@ -15,8 +15,8 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
-import io.cloudflight.jems.server.project.service.associatedorganization.toOutputProjectAssociatedOrganization
-import io.cloudflight.jems.server.project.service.associatedorganization.toOutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.toOutputProjectAssociatedOrganization
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.toOutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity

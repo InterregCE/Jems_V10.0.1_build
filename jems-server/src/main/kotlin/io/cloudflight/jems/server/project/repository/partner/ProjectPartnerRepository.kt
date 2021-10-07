@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.partner
 
 import io.cloudflight.jems.server.project.entity.partner.PartnerAddressRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
+import io.cloudflight.jems.server.project.entity.partner.PartnerDetailRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerMotivationRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
@@ -27,7 +28,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectPartnerEntity>
 
-    fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerEntity>
+    fun findTop30ByProjectId(projectId: Long): Iterable<ProjectPartnerEntity>
 
     fun findTop30ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartnerEntity>
 
@@ -283,4 +284,53 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         nativeQuery = true
     )
     fun findOneByIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp): PartnerSimpleRow
+
+
+    @Query(
+        """
+             SELECT
+             entity.*,
+             entity.project_id as projectId,
+             entity.sort_number as sortNumber,
+             entity.name_in_original_language as nameInOriginalLanguage,
+             entity.name_in_english as nameInEnglish,
+             entity.partner_type as partnerType,
+             entity.partner_sub_type as partnerSubType,
+             entity.legal_status_id as legalStatusId,
+             entity.vat_recovery as vatRecovery,
+             entity.other_identifier_number as otherIdentifierNumber,
+
+             address.type as addressType,
+             address.country,
+             address.nuts_region2 as nutsRegion2,
+             address.nuts_region3 as nutsRegion3,
+             address.street,
+             address.house_number as houseNumber,
+             address.postal_code as postalCode,
+             address.city,
+             address.homepage,
+
+             contact.type as contactType,
+             contact.title,
+             contact.first_name as firstName,
+             contact.last_name as lastName,
+             contact.email as email,
+             contact.telephone as telephone,
+
+             motivationTranslation.language as motivationRowLanguage,
+             motivationTranslation.organization_relevance as organizationRelevance,
+             motivationTranslation.organization_role as organizationRole,
+             motivationTranslation.organization_experience as organizationExperience
+             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+             LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.source_entity_id
+             LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS address ON entity.id = address.partner_id
+             LEFT JOIN #{#entityName}_contact FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS contact ON entity.id = contact.partner_id
+             LEFT JOIN #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTranslation ON entity.id = motivationTranslation.partner_id
+             WHERE entity.project_id = :projectId AND (address.type = 'Organization' || address.type IS NULL)
+             ORDER BY entity.sort_number ASC
+             LIMIT 30
+             """,
+        nativeQuery = true
+    )
+    fun findTop30ByProjectIdAsOfTimestamp(projectId: Long, timestamp: Timestamp): List<PartnerDetailRow>
 }

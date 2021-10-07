@@ -75,7 +75,7 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLu
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
+import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
@@ -104,8 +104,6 @@ import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssess
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCostsInteractor
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCostInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
@@ -127,10 +125,8 @@ import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersist
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
-import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageTranslatedValue
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.every
@@ -160,7 +156,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
 
     @RelaxedMockK
-    lateinit var associatedOrganizationService: ProjectAssociatedOrganizationService
+    lateinit var associatedOrganizationPersistence: AssociatedOrganizationPersistence
 
     @RelaxedMockK
     lateinit var budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence
@@ -507,7 +503,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         val totalCost = BigDecimal.TEN
         every { projectPersistence.getProject(id) } returns project
         every { projectDescriptionPersistence.getProjectDescription(id) } returns projectDescription
-        every { partnerPersistence.findAllByProjectId(id) } returns listOf(projectPartner)
+        every { partnerPersistence.findTop30ByProjectId(id) } returns listOf(projectPartner)
         every { budgetOptionsPersistence.getBudgetOptions(projectPartner.id) } returns partnerBudgetOptions
         every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
         every { getBudgetCostsPersistence.getBudgetStaffCosts(projectPartner.id) } returns listOf(
@@ -529,7 +525,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(projectPartner.id) } returns emptyList()
         every { getBudgetCostsPersistence.getBudgetUnitCosts(projectPartner.id) } returns emptyList()
         every { budgetCostsCalculator.calculateCosts(any(), any(), any(), any(), any(), any(), any(), any()) } returns BudgetCostsCalculationResult(staffCosts = BigDecimal.TEN, totalCosts = totalCost, travelCosts = BigDecimal.ZERO, officeAndAdministrationCosts = BigDecimal.ZERO, otherCosts = BigDecimal.ZERO)
-        every { associatedOrganizationService.findAllByProjectId(id) } returns listOf(associatedOrganization)
+        every { associatedOrganizationPersistence.findAllByProjectId(id) } returns listOf(associatedOrganization)
         every { resultPersistence.getResultsForProject(id, null) } returns listOf(projectResult)
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns listOf(workPackage)
         every { projectLumpSumPersistence.getLumpSums(id) } returns listOf(projectLumpSum)
@@ -999,8 +995,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 projectTransferability = emptySet()
             )
         )
-        every { partnerPersistence.findAllByProjectId(id) } returns emptyList()
-        every { associatedOrganizationService.findAllByProjectId(id) } returns emptyList()
+        every { partnerPersistence.findTop30ByProjectId(id) } returns emptyList()
+        every { associatedOrganizationPersistence.findAllByProjectId(id) } returns emptyList()
         every { resultPersistence.getResultsForProject(id, null) } returns emptyList()
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns emptyList()
         every { projectLumpSumPersistence.getLumpSums(id) } returns emptyList()

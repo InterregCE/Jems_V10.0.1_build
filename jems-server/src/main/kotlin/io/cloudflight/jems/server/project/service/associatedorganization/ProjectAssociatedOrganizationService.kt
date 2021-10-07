@@ -12,7 +12,4 @@ interface ProjectAssociatedOrganizationService {
     fun delete(projectId: Long, associatedOrganizationId: Long)
 
     fun refreshSortNumbers(projectId: Long)
-
-    fun findAllByProjectId(projectId: Long): Iterable<OutputProjectAssociatedOrganizationDetail>
-
 }

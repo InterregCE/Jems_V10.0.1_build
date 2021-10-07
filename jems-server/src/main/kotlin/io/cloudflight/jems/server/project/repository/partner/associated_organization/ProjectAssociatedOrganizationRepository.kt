@@ -1,7 +1,8 @@
-package io.cloudflight.jems.server.project.repository
+package io.cloudflight.jems.server.project.repository.partner.associated_organization
 
 import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationAddressRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationContactRow
+import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationDetailRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationSimpleRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationRow
@@ -127,4 +128,53 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
     fun findAssociatedOrganizationContactsByIdAsOfTimestamp(
         organizationId: Long, timestamp: Timestamp
     ): List<AssociatedOrganizationContactRow>
+
+
+    @Query(
+        """
+            SELECT
+             entity.id,
+             entity.name_in_original_language as nameInOriginalLanguage,
+             entity.name_in_english as nameInEnglish,
+             entity.sort_number as sortNumber,
+             entityTranslation.role_description as roleDescription,
+
+             address.country,
+             address.nuts_region2 as nutsRegion2,
+             address.nuts_region3 as nutsRegion3,
+             address.street,
+             address.house_number as houseNumber,
+             address.postal_code as postalCode,
+             address.city,
+             address.homepage,
+
+             contact.type as contactType,
+             contact.title,
+             contact.first_name as firstName,
+             contact.last_name as lastName,
+             contact.email,
+             contact.telephone,
+
+             partner.id as partnerId,
+             partner.abbreviation,
+             partner.role,
+             partner.sort_number as partnerSortNumber,
+
+             partnerAddress.country as partnerCountry,
+             partnerAddress.nuts_region3 as partnerNutsRegion3
+
+             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+             LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entityTranslation ON entity.id = entityTranslation.organization_id
+             LEFT JOIN project_partner FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partner ON entity.partner_id = partner.id
+             LEFT JOIN project_partner_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerAddress ON partner.id = partnerAddress.partner_id
+             LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS address ON entity.id = address.organization_id
+             LEFT JOIN #{#entityName}_contact FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS contact ON entity.id = contact.organization_id
+             WHERE entity.project_id = :projectId
+             ORDER BY entity.id
+             """,
+        nativeQuery = true
+    )
+    fun findAllByProjectIdAsOfTimestamp(
+        projectId: Long, timestamp: Timestamp
+    ): List<AssociatedOrganizationDetailRow>
 }

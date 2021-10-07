@@ -12,7 +12,6 @@ import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPa
 import io.cloudflight.jems.server.project.repository.workpackage.activity.toActivityHistoricalData
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCostInteractor
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
@@ -107,8 +106,16 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerDetail> {
-        return projectPartnerRepository.findAllByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
+    override fun findTop30ByProjectId(projectId: Long, version: String?): Iterable<ProjectPartnerDetail> {
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectPartnerRepository.findTop30ByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectPartnerRepository.findTop30ByProjectIdAsOfTimestamp(projectId, timestamp).toModel()
+            }
+        ) ?: emptyList()
+
     }
 
     @Transactional(readOnly = true)

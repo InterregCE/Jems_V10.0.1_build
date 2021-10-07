@@ -33,6 +33,7 @@ import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion
 import io.cloudflight.jems.server.utils.partner.activityEntity
 import io.cloudflight.jems.server.utils.partner.activitySummary
 import io.cloudflight.jems.server.utils.partner.legalStatusEntity
+import io.cloudflight.jems.server.utils.partner.partnerDetailRows
 import io.cloudflight.jems.server.utils.partner.programmeStateAidEntity
 import io.cloudflight.jems.server.utils.partner.projectPartner
 import io.cloudflight.jems.server.utils.partner.projectPartnerDetail
@@ -203,11 +204,22 @@ class PartnerPersistenceProviderTest {
 
     @Test
     fun findAllByProjectIdUnpaged() {
-        every { projectPartnerRepository.findAllByProjectId(0) } returns PageImpl(emptyList())
-        every { projectPartnerRepository.findAllByProjectId(1) } returns PageImpl(listOf(projectPartnerEntity()))
+        every { projectPartnerRepository.findTop30ByProjectId(0) } returns PageImpl(emptyList())
+        every { projectPartnerRepository.findTop30ByProjectId(1) } returns PageImpl(listOf(projectPartnerEntity()))
 
-        assertThat(persistence.findAllByProjectId(0)).isEmpty()
-        assertThat(persistence.findAllByProjectId(1)).containsExactly(projectPartnerDetail(id = PARTNER_ID))
+        assertThat(persistence.findTop30ByProjectId(0)).isEmpty()
+        assertThat(persistence.findTop30ByProjectId(1)).containsExactly(projectPartnerDetail(id = PARTNER_ID))
+    }
+
+    @Test
+    fun `should return partners detail for a particular version of the project when version is specified`() {
+        val timestamp = Timestamp.valueOf(LocalDateTime.of(2020, 8, 15, 6, 0))
+        val version = "1.0"
+
+        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
+        every { projectPartnerRepository.findTop30ByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns partnerDetailRows()
+
+        assertThat(persistence.findTop30ByProjectId(PROJECT_ID, version)).containsExactly(projectPartnerDetail(id = PARTNER_ID))
     }
 
     @Test

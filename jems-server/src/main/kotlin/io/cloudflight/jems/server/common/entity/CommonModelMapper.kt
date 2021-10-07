@@ -9,8 +9,8 @@ inline fun <T : TranslationEntity> Set<T>.extractField(extractFunction: (T) -> S
     map { InputTranslation(it.language(), extractFunction.invoke(it)) }
         .filterTo(HashSet()) { !it.translation.isNullOrBlank() }
 
-inline fun <T : TranslationView> List<T>.extractField(extractFunction: (T) -> String?) =
-    filter { it.language !=null }.toHashSet().map { InputTranslation(it.language!!, extractFunction.invoke(it)) }
+inline fun <T : TranslationView> List<T>.extractField(noinline languageExtractor: ((T) -> SystemLanguage?)? = null, extractFunction: (T) -> String?) =
+    filter { (if (languageExtractor != null) languageExtractor(it) else it.language) != null }.toHashSet().map { InputTranslation((if (languageExtractor != null) languageExtractor(it) else it.language)!!, extractFunction.invoke(it)) }
         .filterTo(HashSet()) { !it.translation.isNullOrBlank() }
 
 fun <T : TranslationEntity> MutableSet<T>.resetTranslations(newTranslations: Set<T>, updater: (T, T) -> Unit) {

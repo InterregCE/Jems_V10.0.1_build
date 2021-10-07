@@ -8,7 +8,7 @@ import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
+import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.slf4j.LoggerFactory
@@ -32,7 +33,7 @@ class ProjectDataProviderImpl(
     private val workPackagePersistence: WorkPackagePersistence,
     private val resultPersistence: ProjectResultPersistence,
     private val partnerPersistence: PartnerPersistence,
-    private val associatedOrganizationService: ProjectAssociatedOrganizationService,
+    private val associatedOrganizationPersistence: AssociatedOrganizationPersistence,
     private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     private val coFinancingPersistence: ProjectPartnerCoFinancingPersistence,
     private val getBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
@@ -46,35 +47,35 @@ class ProjectDataProviderImpl(
 
     @Transactional(readOnly = true)
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
-        val project = projectPersistence.getProject(projectId)
+        val project = projectPersistence.getProject(projectId, version)
         val sectionA = project.toDataModel()
 
-        val partners = partnerPersistence.findAllByProjectId(projectId).map {
-            val budgetOptions = budgetOptionsPersistence.getBudgetOptions(it.id)?.toDataModel()
-            val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(it.id).toDataModel()
+        val partners = partnerPersistence.findTop30ByProjectId(projectId, version).map {
+            val budgetOptions = budgetOptionsPersistence.getBudgetOptions(it.id, version)
+            val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(it.id, version).toDataModel()
             val budgetCosts = BudgetCosts(
-                staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(it.id),
-                travelCosts = getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(it.id),
-                externalCosts = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(it.id),
-                equipmentCosts = getBudgetCostsPersistence.getBudgetEquipmentCosts(it.id),
-                infrastructureCosts = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(it.id),
-                unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(it.id),
+                staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(it.id, version),
+                travelCosts = getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(it.id, version),
+                externalCosts = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(it.id, version),
+                equipmentCosts = getBudgetCostsPersistence.getBudgetEquipmentCosts(it.id, version),
+                infrastructureCosts = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(it.id, version),
+                unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(it.id, version),
             ).toDataModel()
-            val budgetTotalCost = getBudgetTotalCosts(it.id).totalCosts
-            val budget = PartnerBudgetData(budgetOptions, coFinancing, budgetCosts, budgetTotalCost)
-            val stateAid = partnerPersistence.getPartnerStateAid(partnerId = it.id)
+            val budgetTotalCost = getBudgetTotalCosts(budgetOptions, it.id, version).totalCosts
+            val budget = PartnerBudgetData(budgetOptions?.toDataModel(), coFinancing, budgetCosts, budgetTotalCost)
+            val stateAid = partnerPersistence.getPartnerStateAid(partnerId = it.id, version)
             it.toDataModel(stateAid, budget)
         }.toSet()
 
         val sectionB =
-            ProjectDataSectionB(partners, associatedOrganizationService.findAllByProjectId(projectId).toDataModel())
+            ProjectDataSectionB(partners, associatedOrganizationPersistence.findAllByProjectId(projectId, version).toDataModel())
 
-        val sectionC = projectDescriptionPersistence.getProjectDescription(projectId).toDataModel(
-            workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId),
-            results = resultPersistence.getResultsForProject(projectId, null)
+        val sectionC = projectDescriptionPersistence.getProjectDescription(projectId, version).toDataModel(
+            workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, version),
+            results = resultPersistence.getResultsForProject(projectId, version)
         )
 
-        val sectionE = with(projectLumpSumPersistence.getLumpSums(projectId)) {
+        val sectionE = with(projectLumpSumPersistence.getLumpSums(projectId, version)) {
             this.toDataModel(programmeLumpSumPersistence.getLumpSums(this.map { it.programmeLumpSumId }))
         }
 
@@ -86,21 +87,20 @@ class ProjectDataProviderImpl(
         )
     }
 
-    private fun getBudgetTotalCosts(partnerId: Long): BudgetCostsCalculationResult {
-        val budgetOptions = budgetOptionsPersistence.getBudgetOptions(partnerId)
-        val unitCostTotal = getBudgetCostsPersistence.getBudgetUnitCostTotal(partnerId)
-        val lumpSumsTotal = getBudgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId)
-        val equipmentCostTotal = getBudgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId)
-        val externalCostTotal = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId)
-        val infrastructureCostTotal = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId)
+    private fun getBudgetTotalCosts(budgetOptions: ProjectPartnerBudgetOptions?, partnerId: Long, version: String?): BudgetCostsCalculationResult {
+        val unitCostTotal = getBudgetCostsPersistence.getBudgetUnitCostTotal(partnerId, version)
+        val lumpSumsTotal = getBudgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId, version)
+        val equipmentCostTotal = getBudgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId, version)
+        val externalCostTotal = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId, version)
+        val infrastructureCostTotal = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId, version)
 
         val travelCostTotal = if (budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate == null)
-            getBudgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId)
+            getBudgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId, version)
         else
             BigDecimal.ZERO
 
         val staffCostTotal = if (budgetOptions?.staffCostsFlatRate == null)
-            getBudgetCostsPersistence.getBudgetStaffCostTotal(partnerId)
+            getBudgetCostsPersistence.getBudgetStaffCostTotal(partnerId, version)
         else
             BigDecimal.ZERO
 

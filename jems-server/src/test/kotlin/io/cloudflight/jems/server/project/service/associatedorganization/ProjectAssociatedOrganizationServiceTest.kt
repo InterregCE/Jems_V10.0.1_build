@@ -16,7 +16,6 @@ import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
-import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -26,9 +25,8 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContact
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
-import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.partner.toModel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -43,7 +41,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Sort
 import java.util.Optional
 
@@ -141,15 +138,6 @@ internal class ProjectAssociatedOrganizationServiceTest {
                 projectAssociatedOrganizationRepository,
                 generalValidator
             )
-    }
-
-    @Test
-    fun findAllByProjectIdUnpaged() {
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(1) } returns
-                PageImpl(listOf(organization(1, projectPartner, "test", 1)))
-
-        assertThat(projectAssociatedOrganizationService.findAllByProjectId(1))
-            .containsExactly(outputOrganizationDetail(1, projectPartner.toModel().toDto(), "test", 1))
     }
 
     @Test
