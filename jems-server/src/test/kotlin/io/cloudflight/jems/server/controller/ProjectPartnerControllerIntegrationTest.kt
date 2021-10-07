@@ -120,8 +120,8 @@ class ProjectPartnerControllerIntegrationTest {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.numberOfElements").value(1))
-            .andExpect(jsonPath("$.content[0].id").value(projectPartner.id))
-            .andExpect(jsonPath("$.content[0].abbreviation").value(projectPartner.abbreviation))
+            .andExpect(jsonPath("$.content[0].partnerSummary.id").value(projectPartner.id))
+            .andExpect(jsonPath("$.content[0].partnerSummary.abbreviation").value(projectPartner.abbreviation))
     }
 
     @Test

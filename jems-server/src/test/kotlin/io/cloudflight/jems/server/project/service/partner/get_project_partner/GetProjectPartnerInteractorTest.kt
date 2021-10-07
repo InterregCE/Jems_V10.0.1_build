@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectBudgetPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
@@ -56,6 +57,10 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
     private val projectPartner = projectPartnerEntity.toModel()
     private val projectPartnerDetail = projectPartnerEntity.toProjectPartnerDetail()
 
+    private val projectBudgetPartnerSummary = ProjectBudgetPartnerSummary(
+        partnerSummary = projectPartner,
+        totalBudget = BigDecimal.ZERO
+    )
     private val partnerBudget = PartnerBudget(
         partner = projectPartner,
         staffCosts = BigDecimal.ZERO,
@@ -96,7 +101,7 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
         every { getProjectBudget.getBudget(any(), 1, any())} returns listOf(partnerBudget)
 
         Assertions.assertThat(getInteractor.findAllByProjectId(0, UNPAGED)).isEmpty()
-        Assertions.assertThat(getInteractor.findAllByProjectId(1, UNPAGED)).containsExactly(projectPartner)
+        Assertions.assertThat(getInteractor.findAllByProjectId(1, UNPAGED)).containsExactly(projectBudgetPartnerSummary)
     }
 
     @Test

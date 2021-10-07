@@ -45,7 +45,7 @@ class ProjectDataProviderImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getProjectDataForProjectId(projectId: Long): ProjectData {
+    override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
         val project = projectPersistence.getProject(projectId)
         val sectionA = project.toDataModel()
 
