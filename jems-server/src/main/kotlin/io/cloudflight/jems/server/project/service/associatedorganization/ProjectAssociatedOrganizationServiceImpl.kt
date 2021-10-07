@@ -4,8 +4,11 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAs
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.combineTranslatedValues
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.toEntity
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.toOutputProjectAssociatedOrganizationDetail
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -16,12 +19,6 @@ class ProjectAssociatedOrganizationServiceImpl(
     private val projectAssociatedOrganizationRepo: ProjectAssociatedOrganizationRepository,
     private val generalValidator: GeneralValidatorService
 ) : ProjectAssociatedOrganizationService {
-
-    @Transactional(readOnly = true)
-    override fun findAllByProjectId(projectId: Long): Iterable<OutputProjectAssociatedOrganizationDetail> {
-        return projectAssociatedOrganizationRepo.findAllByProjectId(projectId)
-            .map { it.toOutputProjectAssociatedOrganizationDetail() }
-    }
 
     @Transactional
     override fun create(projectId: Long, associatedOrganization: InputProjectAssociatedOrganization): OutputProjectAssociatedOrganizationDetail {

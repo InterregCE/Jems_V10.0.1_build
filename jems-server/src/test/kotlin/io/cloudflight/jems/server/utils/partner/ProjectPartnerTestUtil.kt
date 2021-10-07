@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
+import io.cloudflight.jems.server.project.entity.partner.PartnerDetailRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -22,6 +23,7 @@ import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartne
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectContactType
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
@@ -147,6 +149,53 @@ fun projectPartnerEntity(id:Long = PARTNER_ID, role: ProjectPartnerRole = Projec
     addresses = setOf(ProjectPartnerAddressEntity(ProjectPartnerAddressId(PARTNER_ID, ProjectPartnerAddressType.Organization), AddressEntity(country =  "AT"))),
     sortNumber = sortNumber
 )
+
+fun partnerDetailRows(): List<PartnerDetailRow> =
+        listOf(
+            object : PartnerDetailRow {
+                override val id = PARTNER_ID
+                override val projectId = PROJECT_ID
+                override val abbreviation = "partner"
+                override val role = ProjectPartnerRole.LEAD_PARTNER
+                override val sortNumber = 0
+                override val nameInOriginalLanguage = "test"
+                override val nameInEnglish = "test"
+                override val partnerType = ProjectTargetGroup.BusinessSupportOrganisation
+                override val partnerSubType = PartnerSubType.LARGE_ENTERPRISE
+                override val nace = NaceGroupLevel.A
+                override val otherIdentifierNumber = "12"
+                override val pic = "009"
+                override val legalStatusId = 1L
+                override val vat = "test vat"
+                override val vatRecovery = ProjectPartnerVatRecovery.Yes
+                override val language: SystemLanguage? = null
+
+                override val department: String? = null
+                override val otherIdentifierDescription: String? = null
+
+                override val addressType = ProjectPartnerAddressType.Organization
+                override val country = "AT"
+                override val nutsRegion2: String? = null
+                override val nutsRegion3: String? = null
+                override val street: String? = null
+                override val houseNumber: String? = null
+                override val postalCode: String? = null
+                override val city: String? = null
+                override val homepage: String? = null
+
+                override val contactType: ProjectContactType? = null
+                override val title: String? = null
+                override val firstName: String? = null
+                override val lastName: String? = null
+                override val email: String? = null
+                override val telephone: String? = null
+
+                override val motivationRowLanguage: SystemLanguage? = null
+                override val organizationRelevance: String? = null
+                override val organizationRole: String? = null
+                override val organizationExperience: String? = null
+            }
+        )
 
 
 val stateAidEntity = ProjectPartnerStateAidEntity(

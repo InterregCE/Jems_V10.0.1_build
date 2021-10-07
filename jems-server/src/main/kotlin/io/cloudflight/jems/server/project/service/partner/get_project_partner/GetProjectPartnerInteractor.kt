@@ -11,8 +11,6 @@ interface GetProjectPartnerInteractor {
 
     fun findAllByProjectId(projectId: Long, page: Pageable, version: String? = null): Page<ProjectBudgetPartnerSummary>
 
-    fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerDetail>
-
     fun getById(partnerId: Long, version: String? = null): ProjectPartnerDetail
 
     fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String? = null): List<ProjectPartnerSummary>

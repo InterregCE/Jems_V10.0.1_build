@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageDetailRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
@@ -57,7 +58,7 @@ import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.Optional
 
-class ProjectWorkPackagePersistenceTest : UnitTest() {
+class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val WORK_PACKAGE_ID = 1L
@@ -783,6 +784,91 @@ class ProjectWorkPackagePersistenceTest : UnitTest() {
         )
     }
 
+    @Test
+    fun `should return work packages with all the details for the specified version of the project when there is no problem`() {
+        val timestamp = Timestamp.valueOf(LocalDateTime.of(2020, 8, 15, 6, 0))
+        val version = "1.0"
+        every { repository.findWorkPackagesByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns getWorkPackageDetailRows()
+        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
+
+        val workPackages = persistence.getWorkPackagesWithAllDataByProjectId(PROJECT_ID, version)
+        assertThat(workPackages).containsExactly(
+            ProjectWorkPackageFull(
+                id = WORK_PACKAGE_ID,
+                workPackageNumber = workPackageWithActivities.number!!,
+                name = setOf(InputTranslation(CS, "WP CS name")),
+                specificObjective = emptySet(),
+                objectiveAndAudience = emptySet(),
+                activities = listOf(WorkPackageActivity(
+                    id = activityEntity.id,
+                    workPackageId = WORK_PACKAGE_ID,
+                    workPackageNumber = workPackageWithActivities.number!!,
+                    activityNumber = activityEntity.activityNumber,
+                    title = emptySet(),
+                    description = emptySet(),
+                    startPeriod = 1,
+                    endPeriod = 3,
+                    deliverables = emptyList()
+                )),
+                outputs = emptyList(),
+                investments = emptyList()
+            )
+        )
+    }
+
+    private fun getWorkPackageDetailRows() : List<WorkPackageDetailRow> {
+        return listOf(
+            object : WorkPackageDetailRow{
+                override val id = WORK_PACKAGE_ID
+                override val number = workPackageWithActivities.number!!
+                override val name = "WP CS name"
+                override val specificObjective: String? = null
+                override val objectiveAndAudience: String? = null
+                override val language = CS
+                override val activityId = activityEntity.id
+                override val activityNumber =activityEntity.activityNumber
+                override val startPeriod = 1
+                override val endPeriod = 3
+                override var partnerId: Long? = null
+                override val activityTitle: String? = null
+                override val activityLanguage: SystemLanguage? = null
+                override val activityDescription: String? = null
+                override val deliverableId: Long? = null
+                override val deliverableNumber: Int? = null
+                override val deliverableStartPeriod: Int? = null
+                override val deliverableDescription: String? = null
+                override val deliverableLanguage: SystemLanguage? = null
+                override val outputNumber: Int? = null
+                override val programmeOutputIndicatorId: Long? = null
+                override val programmeOutputIndicatorIdentifier: String? = null
+                override val targetValue: BigDecimal? = null
+                override val outputPeriodNumber: Int? = null
+                override val outputTitle: String? = null
+                override val outputDescription: String? = null
+                override val outputLanguage: SystemLanguage? = null
+                override val investmentId: Long? = null
+                override val investmentNumber: Int? = null
+                override val investmentCountry: String? = null
+                override val investmentNutsRegion2: String? = null
+                override val investmentNutsRegion3: String? = null
+                override val investmentStreet: String? = null
+                override val investmentHouseNumber: String? = null
+                override val investmentPostalCode: String? = null
+                override val investmentCity: String? = null
+                override val investmentTitle: String? = null
+                override val justificationExplanation: String? = null
+                override val justificationTransactionalRelevance: String? = null
+                override val justificationBenefits: String? = null
+                override val justificationPilot: String? = null
+                override val investmentRisk: String? = null
+                override val investmentDocumentation: String? = null
+                override val ownershipSiteLocation: String? = null
+                override val ownershipRetain: String? = null
+                override val ownershipMaintenance: String? = null
+                override val investmentLanguage: SystemLanguage? = null
+            }
+        )
+    }
     data class WorkPackageActivityRowImpl(
         override val id: Long,
         override val language: SystemLanguage?,

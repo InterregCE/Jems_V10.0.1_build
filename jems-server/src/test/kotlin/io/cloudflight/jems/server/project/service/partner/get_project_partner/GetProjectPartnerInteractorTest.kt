@@ -104,12 +104,4 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
         Assertions.assertThat(getInteractor.findAllByProjectId(1, UNPAGED)).containsExactly(projectBudgetPartnerSummary)
     }
 
-    @Test
-    fun findAllByProjectIdUnpaged() {
-        every { persistence.findAllByProjectId(0) } returns PageImpl(emptyList())
-        every { persistence.findAllByProjectId(1) } returns PageImpl(mutableListOf(projectPartnerDetail))
-
-        Assertions.assertThat(getInteractor.findAllByProjectId(0)).isEmpty()
-        Assertions.assertThat(getInteractor.findAllByProjectId(1)).containsExactly(projectPartnerDetail)
-    }
 }

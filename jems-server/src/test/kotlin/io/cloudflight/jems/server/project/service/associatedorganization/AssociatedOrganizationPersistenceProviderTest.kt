@@ -5,9 +5,9 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectContactTypeDTO
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.AddressEntity
@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.TranslationOrganizationId
 import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationAddressRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationContactRow
+import io.cloudflight.jems.server.project.entity.associatedorganization.AssociatedOrganizationDetailRow
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganization
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContact
@@ -26,10 +27,11 @@ import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerAddressId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
-import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.AssociatedOrganizationPersistenceProvider
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.MockKAnnotations
@@ -44,7 +46,7 @@ import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.Optional
 
-class AssociatedOrganizationPersistenceTest {
+class AssociatedOrganizationPersistenceProviderTest {
 
     companion object {
         private const val projectId = 2L
@@ -232,5 +234,98 @@ class AssociatedOrganizationPersistenceTest {
         every { projectAssociatedOrganizationRepo.getPartnerIdByProjectIdAndIdAsOfTimestamp(projectId, aoId, timestamp) } returns null
 
         assertThrows<ResourceNotFoundException> { persistence.getById(projectId, aoId, version) }
+    }
+
+    @Test
+    fun `should return list of all association organization for the current version of project when version is null`() {
+        every { projectAssociatedOrganizationRepo.findAllByProjectId(projectId) } returns listOf(
+            projectAssociatedOrganization
+        )
+        assertThat(persistence.findAllByProjectId(projectId)).containsExactly(projectAssociatedOrganizationOutput)
+    }
+
+    @Test
+    fun `should return list of all association organization for a particular version of project when version is specified`() {
+        val timestamp = Timestamp.valueOf(LocalDateTime.of(2020, 8, 15, 6, 0))
+        val version = "1.0"
+        every {
+            projectAssociatedOrganizationRepo.findAllByProjectIdAsOfTimestamp(
+                projectId,
+                timestamp
+            )
+        } returns getAssociatedOrganizationDetailRows()
+        every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp
+        assertThat(persistence.findAllByProjectId(projectId, version)).containsExactly(
+            projectAssociatedOrganizationOutput
+        )
+    }
+
+    private fun getAssociatedOrganizationDetailRows(): List<AssociatedOrganizationDetailRow> {
+        return listOf(
+            object : AssociatedOrganizationDetailRow {
+                override val id = 2L
+                override val nameInOriginalLanguage = "nameInOriginalLanguage"
+                override val nameInEnglish = "nameInEnglish"
+                override val sortNumber = 1
+                override val language = SystemLanguage.EN
+
+                override val roleDescription = "roleDescription"
+
+                override val partnerId = projectPartner.id
+                override val abbreviation = projectPartner.abbreviation
+                override val role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name)
+                override val partnerSortNumber = projectPartner.sortNumber
+                override val partnerCountry = "country"
+                override val partnerNutsRegion3 = "nutsRegion3"
+
+                override val country = "country"
+                override val nutsRegion2 = "nutsRegion2"
+                override val nutsRegion3 = "nutsRegion3"
+                override val street = "street"
+                override val houseNumber = "houseNumber"
+                override val postalCode = "postalCode"
+                override val city = "city"
+                override val homepage = "homepage"
+
+                override val contactType = ProjectContactTypeDTO.ContactPerson
+                override val title = "title"
+                override val firstName = "firstName"
+                override val lastName = "lastName"
+                override val email = "email"
+                override val telephone = "telephone"
+            },
+            object : AssociatedOrganizationDetailRow {
+                override val id = 2L
+                override val nameInOriginalLanguage = "nameInOriginalLanguage"
+                override val nameInEnglish = "nameInEnglish"
+                override val sortNumber = 1
+                override val language = SystemLanguage.EN
+
+                override val roleDescription = "roleDescription"
+
+                override val partnerId = projectPartner.id
+                override val abbreviation = projectPartner.abbreviation
+                override val role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name)
+                override val partnerSortNumber = projectPartner.sortNumber
+                override val partnerCountry = "country"
+                override val partnerNutsRegion3 = "nutsRegion3"
+
+                override val country: String? = null
+                override val nutsRegion2: String? = null
+                override val nutsRegion3: String? = null
+                override val street: String? = null
+                override val houseNumber: String? = null
+                override val postalCode: String? = null
+                override val city: String? = null
+                override val homepage: String? = null
+
+                override val contactType: ProjectContactTypeDTO? = null
+                override val title: String? = null
+                override val firstName: String? = null
+                override val lastName: String? = null
+                override val email: String? = null
+                override val telephone: String? = null
+            }
+        )
     }
 }

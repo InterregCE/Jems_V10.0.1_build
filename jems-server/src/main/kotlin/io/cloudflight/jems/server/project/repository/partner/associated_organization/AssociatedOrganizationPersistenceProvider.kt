@@ -1,13 +1,13 @@
-package io.cloudflight.jems.server.project.service.associatedorganization
+package io.cloudflight.jems.server.project.repository.partner.associated_organization
 
 
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDTOHistoricalData
+import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -52,6 +52,20 @@ class AssociatedOrganizationPersistenceProvider(
             }
         ) ?: Page.empty()
     }
+
+    @Transactional(readOnly = true)
+    override fun findAllByProjectId(projectId: Long, version: String?): List<OutputProjectAssociatedOrganizationDetail> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectAssociatedOrganizationRepo.findAllByProjectId(projectId)
+                    .map { it.toOutputProjectAssociatedOrganizationDetail() }
+            },
+            previousVersionFetcher = { timestamp ->
+                projectAssociatedOrganizationRepo.findAllByProjectIdAsOfTimestamp(projectId, timestamp)
+                    .toModel()
+            }
+        ) ?: emptyList()
+
 
     private fun getAssociatedOrganizationHistoricalDetail(
         id: Long,

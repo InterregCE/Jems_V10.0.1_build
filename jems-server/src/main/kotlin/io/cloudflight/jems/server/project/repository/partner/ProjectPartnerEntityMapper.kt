@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
 import io.cloudflight.jems.server.project.entity.partner.PartnerAddressRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
+import io.cloudflight.jems.server.project.entity.partner.PartnerDetailRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerMotivationRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
@@ -451,3 +452,58 @@ fun ProjectPartnerBudgetPerPeriodRow.toModel() = ProjectPartnerBudget(
     infrastructureAndWorksCostsPerPeriod = infrastructureAndWorksCostsPerPeriod ?: BigDecimal.ZERO,
     unitCostsPerPeriod = unitCostsPerPeriod ?: BigDecimal.ZERO
 )
+
+
+fun List<PartnerDetailRow>.toModel(): List<ProjectPartnerDetail> =
+    groupBy { it.id }.map { groupedRows ->
+        ProjectPartnerDetail(
+            id = groupedRows.key,
+            projectId = groupedRows.value.first().projectId,
+            abbreviation = groupedRows.value.first().abbreviation,
+            role = groupedRows.value.first().role,
+            sortNumber = groupedRows.value.first().sortNumber,
+            nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
+            nameInEnglish = groupedRows.value.first().nameInEnglish,
+            department = groupedRows.value.extractField { it.department },
+            partnerType = groupedRows.value.first().partnerType,
+            partnerSubType = groupedRows.value.first().partnerSubType,
+            nace = groupedRows.value.first().nace,
+            otherIdentifierNumber = groupedRows.value.first().otherIdentifierNumber,
+            otherIdentifierDescription = groupedRows.value.extractField { it.otherIdentifierDescription },
+            pic = groupedRows.value.first().pic,
+            legalStatusId = groupedRows.value.first().legalStatusId,
+            vat = groupedRows.value.first().vat,
+            vatRecovery = groupedRows.value.first().vatRecovery,
+            addresses = groupedRows.value.filter { it.addressType != null }.groupBy { it.addressType }.map { addressGroupedRows ->
+                ProjectPartnerAddress(
+                    type = addressGroupedRows.key!!,
+                    country = addressGroupedRows.value.first().country,
+                    nutsRegion2 = addressGroupedRows.value.first().nutsRegion2,
+                    nutsRegion3 = addressGroupedRows.value.first().nutsRegion3,
+                    street = addressGroupedRows.value.first().street,
+                    houseNumber = addressGroupedRows.value.first().houseNumber,
+                    postalCode = addressGroupedRows.value.first().postalCode,
+                    city = addressGroupedRows.value.first().city,
+                    homepage = addressGroupedRows.value.first().homepage
+                )
+            },
+            contacts = groupedRows.value.filter { it.contactType != null }.groupBy { it.contactType }.map { contactGroupedRows ->
+                ProjectPartnerContact(
+                    type = contactGroupedRows.key!!,
+                    title = contactGroupedRows.value.first().title,
+                    firstName = contactGroupedRows.value.first().firstName,
+                    lastName = contactGroupedRows.value.first().lastName,
+                    email = contactGroupedRows.value.first().email,
+                    telephone = contactGroupedRows.value.first().telephone
+                )
+            },
+            motivation = groupedRows.value.firstOrNull{ it.motivationRowLanguage != null }?.let {
+                ProjectPartnerMotivation(
+                    organizationRelevance = groupedRows.value.extractField({ it.motivationRowLanguage }) { it.organizationRelevance },
+                    organizationRole = groupedRows.value.extractField({ it.motivationRowLanguage }) { it.organizationRole },
+                    organizationExperience = groupedRows.value.extractField({ it.motivationRowLanguage }) { it.organizationExperience }
+                )
+            }
+        )
+
+    }
