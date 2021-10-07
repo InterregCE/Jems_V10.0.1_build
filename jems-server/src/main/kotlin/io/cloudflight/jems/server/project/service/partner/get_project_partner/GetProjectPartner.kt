@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartne
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartnerSummaries
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectBudgetPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.data.domain.Page
@@ -24,11 +25,11 @@ class GetProjectPartner(
     @CanRetrieveProjectForm
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnersByProjectIdException::class)
-    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectPartnerSummary>  {
+    override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectBudgetPartnerSummary>  {
         val partnersPage = persistence.findAllByProjectId(projectId, page, version)
         val partnerBudgets = getProjectBudget.getBudget(partnersPage.content, projectId, version);
 
-        return PageImpl(partnerBudgets.map {ProjectPartnerSummary(it.partner.id, it.partner.abbreviation, it.partner.role, it.partner.sortNumber, it.partner.country, it.partner.region, it.totalCosts) }, page, partnerBudgets.size.toLong())
+        return PageImpl(partnerBudgets.map { ProjectBudgetPartnerSummary(partnerSummary =  ProjectPartnerSummary(it.partner.id, it.partner.abbreviation, it.partner.role, it.partner.sortNumber, it.partner.country, it.partner.region), totalBudget = it.totalCosts)  }, page, partnerBudgets.size.toLong())
     }
 
     @CanRetrieveProjectPartner

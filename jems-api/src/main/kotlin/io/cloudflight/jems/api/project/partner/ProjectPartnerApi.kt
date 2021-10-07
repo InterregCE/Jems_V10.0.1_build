@@ -3,6 +3,7 @@ package io.cloudflight.jems.api.project.partner
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectBudgetPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
@@ -39,7 +40,7 @@ interface ProjectPartnerApi {
         @PathVariable projectId: Long,
         pageable: Pageable,
         @RequestParam(required = false) version: String? = null
-    ): Page<ProjectPartnerSummaryDTO>
+    ): Page<ProjectBudgetPartnerSummaryDTO>
 
     @ApiOperation("Returns all project partners (only name)")
     @ApiImplicitParams(

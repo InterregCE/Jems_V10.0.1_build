@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {ProjectPartnerSummaryDTO, PageProjectPartnerSummaryDTO} from '@cat/api';
+import {ProjectPartnerSummaryDTO, PageProjectBudgetPartnerSummaryDTO} from '@cat/api';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '@common/utils/forms';
 import {filter, map, take} from 'rxjs/operators';
@@ -27,7 +27,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   @Input()
   projectId: number;
   @Input()
-  partnerPage: PageProjectPartnerSummaryDTO;
+  partnerPage: PageProjectBudgetPartnerSummaryDTO;
   @Input()
   pageIndex: number;
   @Input()
@@ -60,7 +60,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
       columns: [
         {
           displayedColumn: 'project.application.form.partner.table.number',
-          elementProperty: 'sortNumber',
+          elementProperty: 'partnerSummary.sortNumber',
           alternativeValueCondition: (element: any) => {
             return element === null;
           },
@@ -69,18 +69,18 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
         },
         {
           displayedColumn: 'project.application.form.partner.table.name',
-          elementProperty: 'abbreviation',
+          elementProperty: 'partnerSummary.abbreviation',
           sortProperty: 'abbreviation',
         },
         {
           displayedColumn: 'project.application.form.partner.table.role',
-          elementProperty: 'role',
+          elementProperty: 'partnerSummary.role',
           elementTranslationKey: 'common.label.project.partner.role',
           sortProperty: 'role',
         },
         {
           displayedColumn: 'project.application.form.partner.list.nuts.title',
-          elementProperty: 'region',
+          elementProperty: 'partnerSummary.region',
           sortProperty: 'nuts',
         },
         {

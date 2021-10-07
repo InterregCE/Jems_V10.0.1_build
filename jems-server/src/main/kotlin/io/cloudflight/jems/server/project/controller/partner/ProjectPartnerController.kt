@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.partner.ProjectPartnerApi
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectBudgetPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
@@ -28,7 +29,7 @@ class ProjectPartnerController(
     private val deleteProjectPartner: DeleteProjectPartnerInteractor,
 ) : ProjectPartnerApi {
 
-    override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<ProjectPartnerSummaryDTO> =
+    override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<ProjectBudgetPartnerSummaryDTO> =
        getProjectPartner.findAllByProjectId(projectId, pageable, version).toDto()
 
     override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable, version: String?): List<ProjectPartnerSummaryDTO> =

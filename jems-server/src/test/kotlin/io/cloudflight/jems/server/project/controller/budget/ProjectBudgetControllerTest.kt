@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.budget.ProjectPeriodBudgetDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.budget.export.ExportBudgetInteractor
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
@@ -28,7 +29,6 @@ internal class ProjectBudgetControllerTest : UnitTest() {
                 sortNumber = 3,
                 country = "country",
                 region = "region",
-                totalBudget = BigDecimal.TEN
             ),
             periodBudgets = mutableListOf(ProjectPeriodBudget(
                 periodNumber = 1,
@@ -40,6 +40,9 @@ internal class ProjectBudgetControllerTest : UnitTest() {
             totalPartnerBudget = BigDecimal.TEN
         )
     }
+
+    @MockK
+    private lateinit var exportBudgetInteractor: ExportBudgetInteractor
 
     @MockK
     lateinit var getPartnerBudgetPerPeriodInteractor: GetPartnerBudgetPerPeriodInteractor
@@ -61,7 +64,6 @@ internal class ProjectBudgetControllerTest : UnitTest() {
                     sortNumber = budgetPerPeriod.partner.sortNumber,
                     country = budgetPerPeriod.partner.country,
                     region = budgetPerPeriod.partner.region,
-                    totalBudget = budgetPerPeriod.partner.totalBudget
                 ),
                 periodBudgets = setOf(ProjectPeriodBudgetDTO(
                     periodNumber = 1,

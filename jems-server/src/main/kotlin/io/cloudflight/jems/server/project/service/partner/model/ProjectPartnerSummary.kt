@@ -9,5 +9,4 @@ data class ProjectPartnerSummary(
     val sortNumber: Int? = null,
     val country: String? = null,
     val region: String? = null,
-    val totalBudget: BigDecimal? = BigDecimal(0)
 )
