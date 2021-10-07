@@ -34,7 +34,6 @@
                             class="mr-2 mt-2"
                             *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT"
                             [confirm]="{title: 'project.detail.submit.dialog.title', message: 'project.detail.submit.dialog.message'}"
-                            [disabled]="isSubmitDisabled(data.projectCallEndDate, data.hasPreConditionCheckSucceed, data.isProjectLatestVersion, data.projectStatus)"
                             [pending]="actionPending"
                             (clicked)="submitProject(data.projectId)">
                         {{'project.detail.button.submit' | translate}}

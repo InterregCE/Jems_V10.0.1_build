@@ -4,7 +4,6 @@ import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
 import {catchError, finalize, map, tap} from 'rxjs/operators';
-import * as moment from 'moment';
 import {Alert} from '@common/components/forms/alert';
 import {PreConditionCheckResult} from '@project/model/plugin/PreConditionCheckResult';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
