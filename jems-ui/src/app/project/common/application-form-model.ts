@@ -13,7 +13,10 @@ export const APPLICATION_FORM = {
     },
     PROJECT_SUMMARY: {
       SUMMARY: 'application.config.project.summary'
-    }
+    },
+    PROJECT_A4: {
+      A4: 'application.config.project.section.a.4'
+    },
   },
   SECTION_B: {
     IDENTITY: {

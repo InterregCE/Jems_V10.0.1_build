@@ -47,7 +47,8 @@ export class ProjectVersionStore {
     return this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'version')
       .pipe(
         distinctUntilChanged(),
-        map(version => version ? String(version) : undefined)
+        map(version => version ? String(version) : undefined),
+        shareReplay(1),
       );
   }
 }

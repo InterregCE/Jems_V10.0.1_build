@@ -4,10 +4,12 @@ import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
+import io.cloudflight.jems.server.project.entity.workpackage.output.OutputRowWithTranslations
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTranslationId
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTransl
+import io.cloudflight.jems.server.project.service.result.model.OutputRow
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
 import kotlin.collections.HashSet
@@ -62,3 +64,17 @@ fun Set<WorkPackageOutputTransl>.toModel() = mapTo(HashSet()) {
         title = it.title
     )
 }
+
+fun List<OutputRowWithTranslations>.toModel() = this
+    .groupBy { Pair(it.workPackageId, it.number) }
+    .map { groupedRows ->
+        OutputRow(
+            workPackageId = groupedRows.value.first().workPackageId,
+            workPackageNumber = groupedRows.value.first().workPackageNumber,
+            outputTitle = groupedRows.value.extractField { it.title },
+            outputNumber = groupedRows.value.first().number,
+            outputTargetValue = groupedRows.value.first().targetValue,
+            programmeOutputId = groupedRows.value.first().programmeOutputId,
+            programmeResultId = groupedRows.value.first().programmeResultId,
+        )
+    }

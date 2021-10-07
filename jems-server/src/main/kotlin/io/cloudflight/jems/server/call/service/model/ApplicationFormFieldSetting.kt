@@ -18,7 +18,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.summary",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-
+    PROJECT_A4(
+        "application.config.project.section.a.4",
+        setOf(FieldVisibilityStatus.STEP_TWO_ONLY),
+    ),
 
     PARTNER_ROLE("application.config.project.partner.role", setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO)),
     PARTNER_ABBREVIATED_ORGANISATION_NAME(

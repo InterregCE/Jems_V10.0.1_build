@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {combineLatest, of} from 'rxjs';
+import {combineLatest} from 'rxjs';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {
   CallService,
@@ -13,7 +13,6 @@ import {
   ProjectService
 } from '@cat/api';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
 
 @Component({
   selector: 'app-project-application-form-identification-page',

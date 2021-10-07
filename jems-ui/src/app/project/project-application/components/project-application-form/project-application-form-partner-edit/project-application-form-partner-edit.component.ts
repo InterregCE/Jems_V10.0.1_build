@@ -12,7 +12,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
-import {combineLatest, Observable, of, pipe} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Tools} from '@common/utils/tools';

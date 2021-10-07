@@ -63,7 +63,8 @@ export class ApplicationFormConfigurationPageStore {
     return [
       this.addParentNode('application.config.project.section.a', 0, [
         this.addSectionNodes('application.config.project.section.a.1', 0, APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION, callPublished, configs),
-        this.addSectionNodes('application.config.project.section.a.2', 0, APPLICATION_FORM.SECTION_A.PROJECT_SUMMARY, callPublished, configs)
+        this.addSectionNodes('application.config.project.section.a.2', 0, APPLICATION_FORM.SECTION_A.PROJECT_SUMMARY, callPublished, configs),
+        this.addSectionNodes('application.config.project.section.a.4', 0, APPLICATION_FORM.SECTION_A.PROJECT_A4, callPublished, configs),
       ]),
       this.addParentNode('application.config.project.section.b', 1, [
           this.addSectionNodes('application.config.project.section.b.1.1', 1, APPLICATION_FORM.SECTION_B.IDENTITY, callPublished, configs),
