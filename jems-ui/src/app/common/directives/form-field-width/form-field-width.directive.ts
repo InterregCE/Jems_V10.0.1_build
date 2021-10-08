@@ -1,11 +1,14 @@
 import {Directive, ElementRef, Input, OnInit} from '@angular/core';
 
+type WidthType = 'small' | 'medium' | 'large' | 'x-large' | 'xx-large' | 'half' | 'full';
+type NumberOfCharsType = 1 | 2 | 3 | 4 | 5;
+
 @Directive({
   selector: '[appFormFieldWidth]'
 })
 export class FormFieldWidthDirective implements OnInit {
-  @Input('appFormFieldWidth') formFieldWidth: 'small' | 'medium' | 'large' | 'x-large' | 'xx-large' | 'half' | 'full';
-  @Input() expectedNumberOfChars: 1 | 2 | 3 | 4 | 5;
+  @Input('appFormFieldWidth') formFieldWidth: WidthType;
+  @Input() expectedNumberOfChars: NumberOfCharsType;
   @Input() extendError: true = true;
   @Input() minWidth: string;
   @Input() maxWidth: string;

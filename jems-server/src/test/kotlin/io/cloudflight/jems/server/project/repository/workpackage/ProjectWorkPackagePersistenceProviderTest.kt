@@ -23,6 +23,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackag
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageDeliverableRow
+import io.cloudflight.jems.server.project.entity.workpackage.output.OutputRowWithTranslations
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputRow
@@ -51,6 +52,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Sort
 import java.math.BigDecimal
@@ -816,6 +819,84 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
         )
     }
 
+    @ParameterizedTest(name = "getAllOutputsForProjectIdSortedByNumbers - when version is {0}")
+    @ValueSource(strings = ["7.1", ""])
+    fun getAllOutputsForProjectIdSortedByNumbers(versionString: String) {
+        val version: String? = versionString.ifEmpty { null }
+
+        val output_row_1_1 = OutputRowImpl(
+            workPackageId = 1L,
+            workPackageNumber = 1,
+            number = 1,
+            title = "Out 1.1",
+            language = EN,
+            targetValue = BigDecimal.TEN,
+            programmeOutputId = 514L,
+            programmeResultId = 500L,
+        )
+        val output_row_1_2 = OutputRowImpl(
+            workPackageId = 1L,
+            workPackageNumber = 1,
+            number = 2,
+            title = "Out 1.2",
+            language = EN,
+            targetValue = BigDecimal.ZERO,
+            programmeOutputId = 522L,
+            programmeResultId = null,
+        )
+        val output_row_4_1 = OutputRowImpl(
+            workPackageId = 4L,
+            workPackageNumber = 4,
+            number = 1,
+            title = "Out 4.1",
+            language = EN,
+            targetValue = BigDecimal.ONE,
+            programmeOutputId = null,
+            programmeResultId = null,
+        )
+
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+
+        val data = listOf(output_row_1_1, output_row_1_2, output_row_4_1)
+        if (version != null) {
+            every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
+            every { repositoryOutput.findAllByProjectIdAsOfTimestampOrderedByNumbers(PROJECT_ID, timestamp) } returns data
+        } else {
+            every { repositoryOutput.findAllByProjectIdOrderedByNumbers(PROJECT_ID) } returns data
+        }
+
+        val resultingOutputs = persistence.getAllOutputsForProjectIdSortedByNumbers(PROJECT_ID, version)
+        assertThat(resultingOutputs).hasSize(3)
+
+        with(resultingOutputs.get(0)) {
+            assertThat(workPackageId).isEqualTo(1L)
+            assertThat(workPackageNumber).isEqualTo(1)
+            assertThat(outputTitle).containsExactlyInAnyOrder(InputTranslation(EN, "Out 1.1"))
+            assertThat(outputNumber).isEqualTo(1)
+            assertThat(outputTargetValue).isEqualByComparingTo(BigDecimal.TEN)
+            assertThat(programmeOutputId).isEqualTo(514L)
+            assertThat(programmeResultId).isEqualTo(500L)
+        }
+        with(resultingOutputs.get(1)) {
+            assertThat(workPackageId).isEqualTo(1L)
+            assertThat(workPackageNumber).isEqualTo(1)
+            assertThat(outputTitle).containsExactlyInAnyOrder(InputTranslation(EN, "Out 1.2"))
+            assertThat(outputNumber).isEqualTo(2)
+            assertThat(outputTargetValue).isEqualByComparingTo(BigDecimal.ZERO)
+            assertThat(programmeOutputId).isEqualTo(522L)
+            assertThat(programmeResultId).isNull()
+        }
+        with(resultingOutputs.get(2)) {
+            assertThat(workPackageId).isEqualTo(4L)
+            assertThat(workPackageNumber).isEqualTo(4)
+            assertThat(outputTitle).containsExactlyInAnyOrder(InputTranslation(EN, "Out 4.1"))
+            assertThat(outputNumber).isEqualTo(1)
+            assertThat(outputTargetValue).isEqualByComparingTo(BigDecimal.ONE)
+            assertThat(programmeOutputId).isNull()
+            assertThat(programmeResultId).isNull()
+        }
+    }
+
     private fun getWorkPackageDetailRows() : List<WorkPackageDetailRow> {
         return listOf(
             object : WorkPackageDetailRow{
@@ -869,6 +950,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
             }
         )
     }
+
     data class WorkPackageActivityRowImpl(
         override val id: Long,
         override val language: SystemLanguage?,
@@ -886,5 +968,16 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
         override val workPackageId: Long,
         override val projectPartnerId: Long
     ) : WorkPackageActivityPartnerRow
+
+    data class OutputRowImpl(
+        override val workPackageId: Long,
+        override val workPackageNumber: Int,
+        override val number: Int,
+        override val title: String? = null,
+        override val language: SystemLanguage?,
+        override val targetValue: BigDecimal,
+        override val programmeOutputId: Long?,
+        override val programmeResultId: Long?
+    ) : OutputRowWithTranslations
 
 }
