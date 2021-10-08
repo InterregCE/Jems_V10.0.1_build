@@ -15,6 +15,7 @@ import {FormState} from '@common/components/forms/form-state';
 import {RoutingService} from '@common/services/routing.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../security/permissions/permission.service';
+import UserStatusEnum = UserDTO.UserStatusEnum;
 
 @Component({
   selector: 'app-user-detail-page',
@@ -144,6 +145,9 @@ export class UserDetailPageComponent extends ViewEditForm {
 
   private resetUser(user: UserDTO): void {
     this.userForm.patchValue(user || {});
+    if (!user?.userStatus) {
+      this.userForm.get('userStatus')?.patchValue(UserStatusEnum.UNCONFIRMED);
+    }
     this.userRoleId?.patchValue(user?.userRole?.id);
   }
 
