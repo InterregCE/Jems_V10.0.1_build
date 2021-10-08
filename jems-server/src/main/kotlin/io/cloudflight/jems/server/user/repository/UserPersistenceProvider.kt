@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.user.repository
 
-import io.cloudflight.jems.server.user.repository.confirmation.UserConfirmationPersistenceProvider
 import io.cloudflight.jems.server.user.repository.user.UserNotFound
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.user.UserRoleNotFound
@@ -47,8 +46,13 @@ class UserPersistenceProvider(
         }
 
     @Transactional(readOnly = true)
-    override fun findAll(pageable: Pageable, userSearchRequest: UserSearchRequest?): Page<UserSummary> =
-        userRepo.findAll(pageable, userSearchRequest).toModel()
+    override fun findAll(pageable: Pageable, userSearchRequest: UserSearchRequest?): Page<UserSummary> {
+        val searchPredicate = UserRepository.buildSearchPredicate(searchRequest = userSearchRequest)
+        if (searchPredicate == null)
+            return userRepo.findAll(pageable).toModel()
+        else
+            return userRepo.findAll(searchPredicate, pageable).toModel()
+    }
 
     @Transactional
     override fun create(user: UserChange, passwordEncoded: String): User =

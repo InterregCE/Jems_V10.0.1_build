@@ -10,25 +10,9 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 
-interface CustomWorkPackageActivityRepository {
-    fun getReferenceIfExistsOrThrow(id: Long?): WorkPackageActivityEntity?
-}
-
-open class CustomWorkPackageActivityRepositoryImpl(val repository: WorkPackageActivityRepository) :
-    CustomWorkPackageActivityRepository {
-    @Transactional(readOnly = true)
-    override fun getReferenceIfExistsOrThrow(id: Long?): WorkPackageActivityEntity? {
-        var workPackageActivityEntity: WorkPackageActivityEntity? = null
-        if (id != null)
-            runCatching {
-                workPackageActivityEntity = repository.getOne(id)
-            }.onFailure { throw WorkPackageActivityNotFoundException() }
-        return workPackageActivityEntity
-    }
-}
 
 @Repository
-interface WorkPackageActivityRepository : JpaRepository<WorkPackageActivityEntity, Long>, CustomWorkPackageActivityRepository {
+interface WorkPackageActivityRepository : JpaRepository<WorkPackageActivityEntity, Long> {
 
     @EntityGraph(value = "WorkPackageActivityEntity.full")
     fun findAllByWorkPackageIdIn(workPackageIds: Collection<Long>): Iterable<WorkPackageActivityEntity>

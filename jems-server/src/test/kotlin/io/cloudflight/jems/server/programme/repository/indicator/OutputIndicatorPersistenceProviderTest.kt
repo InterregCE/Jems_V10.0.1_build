@@ -81,8 +81,8 @@ internal class OutputIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
         val outputIndicator = buildOutputIndicatorInstance()
         val outputIndicatorEntity = buildOutputIndicatorEntityInstance()
         val outputIndicatorEntitySlot= slot<OutputIndicatorEntity>()
-        every { programmeSpecificObjectiveRepository.getReferenceIfExistsOrThrow(outputIndicator.programmeObjectivePolicy) } returns indicatorProgrammeSpecificObjectiveEntity
-        every { resultIndicatorRepository.getReferenceIfExistsOrThrow(outputIndicator.resultIndicatorId) } returns defaultResultIndicatorEntity
+        every { programmeSpecificObjectiveRepository.getById(outputIndicator.programmeObjectivePolicy!!) } returns indicatorProgrammeSpecificObjectiveEntity
+        every { resultIndicatorRepository.getById(outputIndicator.resultIndicatorId!!) } returns defaultResultIndicatorEntity
         every {
             outputIndicatorRepository.save(capture(outputIndicatorEntitySlot))
         } returns outputIndicatorEntity

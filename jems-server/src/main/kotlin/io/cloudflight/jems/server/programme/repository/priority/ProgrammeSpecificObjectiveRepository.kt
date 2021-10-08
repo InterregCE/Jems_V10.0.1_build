@@ -6,30 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 
-
-interface CustomProgrammeSpecificObjectiveRepository {
-    fun getReferenceIfExistsOrThrow(programmeObjectivePolicy: ProgrammeObjectivePolicy?): ProgrammeSpecificObjectiveEntity?
-}
-
-open class CustomProgrammeSpecificObjectiveRepositoryImpl(val repository: ProgrammeSpecificObjectiveRepository) :
-    CustomProgrammeSpecificObjectiveRepository {
-    @Transactional(readOnly = true)
-    override fun getReferenceIfExistsOrThrow(programmeObjectivePolicy: ProgrammeObjectivePolicy?): ProgrammeSpecificObjectiveEntity? {
-        var programmePriorityPolicy: ProgrammeSpecificObjectiveEntity? = null
-        if (programmeObjectivePolicy != null)
-            runCatching {
-                programmePriorityPolicy =
-                    repository.getOne(programmeObjectivePolicy)
-            }.onFailure { throw ProgrammeSpecificObjectiveNotFoundException() }
-        return programmePriorityPolicy
-    }
-}
 
 @Repository
 interface ProgrammeSpecificObjectiveRepository :
-    JpaRepository<ProgrammeSpecificObjectiveEntity, ProgrammeObjectivePolicy> , CustomProgrammeSpecificObjectiveRepository{
+    JpaRepository<ProgrammeSpecificObjectiveEntity, ProgrammeObjectivePolicy> {
 
     // max = ProgrammeObjectivePolicy enum size
     fun findTop56ByOrderByProgrammeObjectivePolicy(): Iterable<ProgrammeSpecificObjectiveEntity>

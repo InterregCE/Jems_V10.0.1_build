@@ -49,11 +49,10 @@ dependencies {
     implementation ('org.springframework.boot:spring-boot-starter-mail')
     implementation ('org.springframework.boot:spring-boot-starter-thymeleaf')
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation('org.springframework.security:spring-security-test')
-    testImplementation('org.junit.jupiter:junit-jupiter-api')
-    testImplementation('com.h2database:h2')
-    testImplementation('io.cloudflight.platform:platform-test-jpa')
+    testImplementation 'io.cloudflight.platform:platform-test'
+    testImplementation 'io.cloudflight.platform:platform-test-jpa'
+    testImplementation 'io.cloudflight.platform:platform-test-testcontainers'
+    testImplementation 'com.playtika.testcontainers:embedded-mariadb'
 
     constraints {
         implementation('commons-io:commons-io:2.8.0')

@@ -234,8 +234,8 @@ class PartnerPersistenceProviderTest {
             projectPartnerRequest.role!!,
             legalStatus = legalStatusEntity
         )
-        every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns project
-        every { legalStatusRepo.getReferenceIfExistsOrThrow(legalStatusEntity.id) } returns legalStatusEntity
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { legalStatusRepo.getById(legalStatusEntity.id) } returns legalStatusEntity
 
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity
         // also handle sorting
@@ -249,8 +249,8 @@ class PartnerPersistenceProviderTest {
     @Test
     fun `createProjectPartner not existing`() {
 
-        every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } throws ProjectNotFoundException()
-        every { legalStatusRepo.getReferenceIfExistsOrThrow(1) } returns legalStatusEntity
+        every { projectRepository.getById(PROJECT_ID) } throws ProjectNotFoundException()
+        every { legalStatusRepo.getById(1) } returns legalStatusEntity
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity()
         assertThrows<ProjectNotFoundException> { persistence.create(PROJECT_ID, projectPartner()) }
 
@@ -267,7 +267,7 @@ class PartnerPersistenceProviderTest {
         every { projectPartnerRepository.save(any()) } returns updatedProjectPartnerEntity
         every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
-        every { legalStatusRepo.getReferenceIfExistsOrThrow(1) } returns legalStatusEntity
+        every { legalStatusRepo.getById(1) } returns legalStatusEntity
 
         assertThat(persistence.update(projectPartnerUpdate))
             .isEqualTo(
@@ -283,7 +283,7 @@ class PartnerPersistenceProviderTest {
         every { projectPartnerRepository.findById(3) } returns Optional.of(
             projectPartnerEntity(id = 3, role = ProjectPartnerRole.PARTNER)
         )
-        every { legalStatusRepo.getReferenceIfExistsOrThrow(1) } returns legalStatusEntity
+        every { legalStatusRepo.getById(1) } returns legalStatusEntity
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity(3, abbreviation = "updated")
         every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns listOf(projectPartnerEntity(id = 3), projectPartnerEntity(id = 2, role = ProjectPartnerRole.PARTNER))
 
@@ -392,9 +392,9 @@ class PartnerPersistenceProviderTest {
             department = setOf(InputTranslation(EN, "test"))
         )
         val updatedEntity = projectPartnerWithOrganizationEntity()
-        every { projectRepository.getReferenceIfExistsOrThrow(0) } throws ProjectNotFoundException()
-        every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns project
-        every { legalStatusRepo.getReferenceIfExistsOrThrow(legalStatusEntity.id) } returns legalStatusEntity
+        every { projectRepository.getById(0) } throws ProjectNotFoundException()
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { legalStatusRepo.getById(legalStatusEntity.id) } returns legalStatusEntity
         every { projectPartnerRepository.save(any()) } returns updatedEntity
         // also handle sorting
         val projectPartners = listOf(projectPartnerEntity(), updatedEntity)
@@ -416,8 +416,8 @@ class PartnerPersistenceProviderTest {
         val projectPartners = listOf(projectPartnerEntity(id = 2), projectPartnerWithOrganizationEntity())
 
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
-        every { legalStatusRepo.getReferenceIfExistsOrThrow(legalStatusEntity.id) } returns legalStatusEntity
-        every { projectRepository.getReferenceIfExistsOrThrow(PROJECT_ID) } returns project
+        every { legalStatusRepo.getById(legalStatusEntity.id) } returns legalStatusEntity
+        every { projectRepository.getById(PROJECT_ID) } returns project
         every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
         every { projectPartnerRepository.save(any()) } returnsArgument 0
         assertThat(persistence.update(projectPartnerUpdate))
@@ -573,8 +573,8 @@ class PartnerPersistenceProviderTest {
 
     @Test
     fun `update state aid`() {
-        every { workPackageActivityRepository.getReferenceIfExistsOrThrow(activitySummary.activityId) } returns activityEntity
-        every { programmeStateAidRepository.getReferenceIfExistsOrThrow(stateAidActivity.stateAidScheme?.id) } returns programmeStateAidEntity
+        every { workPackageActivityRepository.getById(activitySummary.activityId) } returns activityEntity
+        every { programmeStateAidRepository.getById(stateAidActivity.stateAidScheme?.id!!) } returns programmeStateAidEntity
         val stateAidEntitySlot = slot<ProjectPartnerStateAidEntity>()
         every { projectPartnerStateAidRepository.save(capture(stateAidEntitySlot)) } returnsArgument 0
 
@@ -592,7 +592,6 @@ class PartnerPersistenceProviderTest {
 
     @Test
     fun `update state aid - historical but not existing`() {
-        every { programmeStateAidRepository.getReferenceIfExistsOrThrow(null) } returns null
         val stateAidEntitySlot = slot<ProjectPartnerStateAidEntity>()
         every { projectPartnerStateAidRepository.save(capture(stateAidEntitySlot)) } returnsArgument 0
 

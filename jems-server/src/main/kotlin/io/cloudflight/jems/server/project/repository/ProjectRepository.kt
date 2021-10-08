@@ -14,19 +14,9 @@ import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.util.Optional
 
-interface CustomProjectRepository {
-    fun getReferenceIfExistsOrThrow(id: Long?): ProjectEntity
-}
-
-open class CustomProjectRepositoryImpl(val repository: ProjectRepository) :
-    CustomProjectRepository {
-    @Transactional(readOnly = true)
-    override fun getReferenceIfExistsOrThrow(id: Long?) : ProjectEntity =
-        runCatching { repository.getOne(id!!) }.onFailure { throw ProjectNotFoundException() }.getOrThrow()
-}
 
 @Repository
-interface ProjectRepository : JpaRepository<ProjectEntity, Long>, CustomProjectRepository {
+interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
 
     @Query(
         """
