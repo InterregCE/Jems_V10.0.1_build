@@ -34,6 +34,7 @@ export class ProjectPartnerStore {
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
   private updatedPartner$ = new Subject<ProjectPartnerDetailDTO>();
+  partnerBudgetAndLumpSumUpdateEvent$ = new BehaviorSubject(null);
   projectPartnersBudgetPerPeriods$ = new Observable<ProjectPartnerBudgetPerPeriodDTO[]>();
 
   constructor(private partnerService: ProjectPartnerService,
@@ -152,7 +153,7 @@ export class ProjectPartnerStore {
   }
 
   private projectPartnersBudgetPerPeriods(): Observable<ProjectPartnerBudgetPerPeriodDTO[]> {
-    return combineLatest([this.projectStore.project$, this.projectVersionStore.currentRouteVersion$, this.partnerUpdateEvent$])
+    return combineLatest([this.projectStore.project$, this.projectVersionStore.currentRouteVersion$, this.partnerBudgetAndLumpSumUpdateEvent$])
       .pipe(
         switchMap(([project, version]) =>
           this.projectBudgetService.getProjectPartnerBudgetPerPeriod(project.id, version)
