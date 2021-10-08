@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.user.service.model.UserRegistration
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.cloudflight.jems.server.user.service.user.activate_user.ActivateUserInteractor
 import io.cloudflight.jems.server.user.service.user.register_user.RegisterUserInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -57,6 +58,9 @@ class UserRegistrationControllerTest : UnitTest() {
 
     @MockK
     lateinit var registerUserInteractor: RegisterUserInteractor
+
+    @MockK
+    lateinit var activateUserInteractor: ActivateUserInteractor
 
     @InjectMockKs
     private lateinit var controller: UserRegistrationController

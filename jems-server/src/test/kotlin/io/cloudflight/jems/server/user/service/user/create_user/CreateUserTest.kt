@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.common.event.JemsEvent
 import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.config.AppSecurityProperties
+import io.cloudflight.jems.server.mail.confirmation.service.MailConfirmationService
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
@@ -50,6 +51,9 @@ internal class CreateUserTest : UnitTest() {
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
+    @RelaxedMockK
+    lateinit var mailConfirmationService: MailConfirmationService
+
     @InjectMockKs
     lateinit var createUser: CreateUser
 
@@ -89,33 +93,6 @@ internal class CreateUserTest : UnitTest() {
 
         assertThat(createUser.createUser(createUserModel)).isEqualTo(expectedUser)
         assertThat(slotPassword.captured).isEqualTo("hash_pass_prefix_maintainer@interact.eu")
-
-        val events = mutableListOf<JemsEvent>()
-        verify(exactly = 2) { auditPublisher.publishEvent(capture(events)) }
-        assertThat((events[0] as JemsAuditEvent).getAuditCandidate()).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.USER_ADDED,
-                entityRelatedId = USER_ID,
-                description = "A new user maintainer@interact.eu was created:\n" +
-                    "email set to 'maintainer@interact.eu',\n" +
-                    "name set to 'Michael',\n" +
-                    "surname set to 'Schumacher',\n" +
-                    "userRole set to 'maintainer(id=8)',\n" +
-                    "userStatus set to UNCONFIRMED",
-            )
-        )
-        assertThat((events[1] as ConfirmUserEmailEvent).getMailNotificationInfo()).isEqualTo(
-            MailNotificationInfo(
-                subject = "[Jems] Please confirm your email address",
-                templateVariables = setOf(
-                    Variable(name = "name", value = "Michael"),
-                    Variable(name = "surname", value = "Schumacher"),
-                    Variable(name = "accountValidationLink", value = "")
-                ),
-                recipients = setOf("maintainer@interact.eu"),
-                messageType = "User registration confirmation"
-            )
-        )
     }
 
     @Test

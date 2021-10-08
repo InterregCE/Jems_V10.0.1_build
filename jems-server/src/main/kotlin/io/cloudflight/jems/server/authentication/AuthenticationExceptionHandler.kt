@@ -8,6 +8,8 @@ import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.DisabledException
+import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -24,7 +26,10 @@ class AuthenticationExceptionHandler : GlobalExceptionHandler() {
         return handleApplicationException(
             ApplicationAuthenticationException(
                 AUTHENTICATION_ERROR_CODE,
-                if (isBadCredentials(exception)) I18nMessage("authentication.bad.credentials") else I18nMessage("authentication.failed"),
+                if (isBadCredentials(exception)) I18nMessage("authentication.bad.credentials")
+                else if (isLocked(exception)) I18nMessage("authentication.account.locked")
+                else if (isDisabled(exception)) I18nMessage("authentication.account.disabled")
+                else I18nMessage("authentication.failed"),
                 exception
             ),
             request
@@ -33,5 +38,13 @@ class AuthenticationExceptionHandler : GlobalExceptionHandler() {
 
     private fun isBadCredentials(exception: AuthenticationException): Boolean {
         return exception is BadCredentialsException || exception.cause is BadCredentialsException
+    }
+
+    private fun isLocked(exception: AuthenticationException): Boolean {
+        return exception is LockedException || exception.cause is LockedException
+    }
+
+    private fun isDisabled(exception: AuthenticationException): Boolean {
+        return exception is DisabledException || exception.cause is DisabledException
     }
 }

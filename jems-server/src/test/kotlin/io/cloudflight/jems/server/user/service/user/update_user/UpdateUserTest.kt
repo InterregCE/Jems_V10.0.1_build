@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.common.event.JemsEvent
 import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.mail.confirmation.service.MailConfirmationService
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
@@ -57,6 +58,9 @@ internal class UpdateUserTest : UnitTest() {
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
+    @RelaxedMockK
+    lateinit var mailConfirmationService: MailConfirmationService
+
     @InjectMockKs
     lateinit var updateUser: UpdateUser
 
@@ -88,33 +92,6 @@ internal class UpdateUserTest : UnitTest() {
         every { persistence.update(changeUser) } returns expectedUser
 
         assertThat(updateUser.updateUser(changeUser)).isEqualTo(expectedUser)
-
-        val events = mutableListOf<JemsEvent>()
-        verify(exactly = 2) { auditPublisher.publishEvent(capture(events)) }
-        assertThat((events[0] as JemsAuditEvent).getAuditCandidate()).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.USER_DATA_CHANGED,
-                entityRelatedId = USER_ID,
-                description = "User data changed for user id=6:\n" +
-                    "email changed from 'maintainer_old@interact.eu' to 'maintainer@interact.eu',\n" +
-                    "name changed from 'Michael_old' to 'Michael',\n" +
-                    "surname changed from 'Schumacher_old' to 'Schumacher',\n" +
-                    "userRole changed from 'maintainer_old(id=296)' to 'maintainer(id=9)',\n" +
-                    "userStatus changed from ACTIVE to UNCONFIRMED",
-            )
-        )
-        assertThat((events[1] as ConfirmUserEmailEvent).getMailNotificationInfo()).isEqualTo(
-            MailNotificationInfo(
-                subject = "[Jems] Please confirm your email address",
-                templateVariables = setOf(
-                    Variable(name = "name", value = "Michael"),
-                    Variable(name = "surname", value = "Schumacher"),
-                    Variable(name = "accountValidationLink", value = "")
-                ),
-                recipients = setOf("maintainer@interact.eu"),
-                messageType = "User registration confirmation"
-            )
-        )
     }
 
     @Test

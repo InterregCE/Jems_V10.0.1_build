@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.mail.confirmation.service.MailConfirmationService
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
@@ -47,6 +48,9 @@ internal class RegisterUserTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @RelaxedMockK
+    lateinit var mailConfirmationService: MailConfirmationService
 
     @InjectMockKs
     lateinit var registerUser: RegisterUser

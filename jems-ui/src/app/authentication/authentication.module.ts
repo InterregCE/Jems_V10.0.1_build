@@ -9,6 +9,7 @@ import {RouterModule} from '@angular/router';
 import {routes} from './authentication-routing.module';
 import {NoDoubleLoginGuard} from './service/no-double-login-guard.service';
 import {LoginPageService} from './login/services/login-page-service';
+import {ConfirmationComponent} from './confirmation/confirmation.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import {LoginPageService} from './login/services/login-page-service';
     LoginPageComponent,
     RegistrationPageComponent,
     UserRegistrationComponent,
+    ConfirmationComponent,
   ],
   imports: [
     SharedModule,

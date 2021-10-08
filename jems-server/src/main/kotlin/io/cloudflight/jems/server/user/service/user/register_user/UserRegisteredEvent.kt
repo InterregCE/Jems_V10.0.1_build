@@ -11,9 +11,9 @@ import io.cloudflight.jems.server.user.service.toAuditUser
 import io.cloudflight.jems.server.user.service.user.ConfirmUserEmailEvent
 
 data class UserRegisteredEvent(
-    override val user: User,
+    val user: User,
     override val auditUser: AuditUser? = user.toAuditUser()
-) : ConfirmUserEmailEvent(user), JemsAuditEvent {
+) : JemsAuditEvent {
 
     override fun getAuditCandidate(): AuditCandidate =
         AuditBuilder(AuditAction.USER_REGISTERED)

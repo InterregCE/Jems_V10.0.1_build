@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.user.service.model.User
 
 open class ConfirmUserEmailEvent(
     open val user: User,
+    open val confirmationLink: String,
     override val emailTemplateFileName: String = "user-registration-confirmation.html",
 ) : JemsMailEvent {
 
@@ -17,7 +18,7 @@ open class ConfirmUserEmailEvent(
             setOf(
                 Variable("name", user.name),
                 Variable("surname", user.surname),
-                Variable("accountValidationLink", "")
+                Variable("accountValidationLink", confirmationLink)
             ),
             recipients = setOf(user.email),
             messageType = "User registration confirmation"

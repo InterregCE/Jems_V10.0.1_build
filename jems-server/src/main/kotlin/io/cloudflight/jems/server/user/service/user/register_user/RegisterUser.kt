@@ -2,6 +2,10 @@ package io.cloudflight.jems.server.user.service.user.register_user
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.mail.confirmation.service.MailConfirmationPersistence
+import io.cloudflight.jems.server.mail.confirmation.service.MailConfirmationService
+import io.cloudflight.jems.server.mail.confirmation.service.model.MailConfirmation
+import io.cloudflight.jems.server.notification.mail.config.MailConfigProperties
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
@@ -14,6 +18,8 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
+import java.util.UUID
 
 @Service
 class RegisterUser(
@@ -22,7 +28,9 @@ class RegisterUser(
     private val passwordEncoder: PasswordEncoder,
     private val eventPublisher: ApplicationEventPublisher,
     private val generalValidator: GeneralValidatorService,
+    private val mailConfirmationService: MailConfirmationService
 ) : RegisterUserInteractor {
+
 
     @Transactional
     @ExceptionWrapper(RegisterUserException::class)
@@ -38,6 +46,7 @@ class RegisterUser(
         return persistence.create(user = userToBeRegistered, passwordEncoded = passwordEncoder.encode(user.password))
             .also {
                 eventPublisher.publishEvent(UserRegisteredEvent(it))
+                mailConfirmationService.createConfirmationEmail(it)
             }
     }
 

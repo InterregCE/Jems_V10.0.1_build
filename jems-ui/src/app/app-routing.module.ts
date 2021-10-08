@@ -18,6 +18,11 @@ export const routes: Routes = [
     redirectTo: 'no-auth/login',
   },
   {
+    path: 'registrationConfirmation',
+    pathMatch: 'full',
+    redirectTo: 'no-auth/registrationConfirmation',
+  },
+  {
     path: 'app',
     component: AppWrapComponent,
     canActivate: [AuthenticationGuard],
