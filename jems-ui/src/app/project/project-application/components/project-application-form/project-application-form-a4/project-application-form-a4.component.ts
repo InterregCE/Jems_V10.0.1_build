@@ -18,7 +18,7 @@ export class ProjectApplicationFormA4Component {
   Alert = Alert;
 
   private MAX_INDICATOR_ID_FROM_DB = 1_000_000_000_000;
-  private MAX_INDICATOR_FAKE_ID = 2_000_000_000_000;
+  private MAX_INDICATOR_FAKE_ID = 3_000_000_000_000;
 
   displayedColumns: string[] = [
     'outputIndicatorName',
@@ -28,9 +28,9 @@ export class ProjectApplicationFormA4Component {
     'projectOutputTitle',
     'projectOutputTargetValue',
     'resultIndicatorName',
-    'resultIndicatorMeasurementUnit',
     'resultIndicatorBaseline',
     'resultIndicatorTargetValueSumUp',
+    'resultIndicatorMeasurementUnit',
   ];
 
   spans: RowSpanPlan = {
@@ -144,10 +144,13 @@ export class ProjectApplicationFormA4Component {
         };
       }
 
+      // if not linked, assign custom from (bigger than) MAX_INDICATOR_ID_FROM_DB
+      const outputIndicatorId = currElem.outputIndicatorId || (this.MAX_INDICATOR_ID_FROM_DB + index);
       return {
         ...currElem,
-        outputIndicatorId: currElem.outputIndicatorId || (this.MAX_INDICATOR_ID_FROM_DB + index),
-        resultIndicatorId: currElem.resultIndicatorId || (this.MAX_INDICATOR_ID_FROM_DB + index),
+        outputIndicatorId,
+        // if not linked, calculate custom
+        resultIndicatorId: currElem.resultIndicatorId || this.MAX_INDICATOR_ID_FROM_DB + outputIndicatorId,
       };
     });
   }
