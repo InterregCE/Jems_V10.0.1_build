@@ -73,7 +73,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"email\": \"{{admin_user_email_to_create}}\",\n\t\"name\": \"{{admin_name}}\",\n\t\"surname\": \"{{admin_surname}}\",\n    \"userRoleId\": 1\n}\n"
+									"raw": "{\n\t\"email\": \"{{admin_user_email_to_create}}\",\n\t\"name\": \"{{admin_name}}\",\n\t\"surname\": \"{{admin_surname}}\",\n    \"userRoleId\": 1,\n    \"userStatus\": \"ACTIVE\"\n}\n"
 								},
 								"url": {
 									"raw": "{{url}}/api/user",
@@ -180,7 +180,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\"\r\n}\r\n",
+									"raw": "{\r\n    \"email\": \"{{programme_user_email}}\",\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"surname\": \"{{$randomLastName}}\",\r\n    \"userRoleId\": \"2\",\r\n    \"userStatus\": \"ACTIVE\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1839,7 +1839,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"userRoleId\": -1\n}"
+							"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"userRoleId\": -1,\n    \"userStatus\": \"ACTIVE\"\n}"
 						},
 						"url": {
 							"raw": "{{url}}/api/user",
@@ -1898,7 +1898,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"his.user@shouldnot.exist\",\n\t\"name\": \"This user\",\n\t\"surname\": \"should not exist\",\n    \"userRoleId\": -1\n}\n"
+							"raw": "{\n\t\"email\": \"his.user@shouldnot.exist\",\n\t\"name\": \"This user\",\n\t\"surname\": \"should not exist\",\n    \"userRoleId\": -1,\n    \"userStatus\": \"ACTIVE\"\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/user",
