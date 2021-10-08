@@ -1,27 +1,19 @@
 package io.cloudflight.jems.server.user.service.user.create_user
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.common.event.JemsAuditEvent
-import io.cloudflight.jems.server.common.event.JemsEvent
-import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.config.AppSecurityProperties
 import io.cloudflight.jems.server.mail.confirmation.service.MailConfirmationService
-import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserStatus
-import io.cloudflight.jems.server.user.service.user.ConfirmUserEmailEvent
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test

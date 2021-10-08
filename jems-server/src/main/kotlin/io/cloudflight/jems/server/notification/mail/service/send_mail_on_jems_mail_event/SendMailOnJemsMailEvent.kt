@@ -33,7 +33,7 @@ class SendMailOnJemsMailEvent(
     @EventListener
     fun enqueueMail(event: JemsMailEvent) {
         persistence.save(
-            with(event.getMailNotificationInfo()) {
+            with(event.mailNotificationInfo) {
                 MailNotification(
                     subject = subject,
                     body = mailBodyGenerator.generateBodyText(

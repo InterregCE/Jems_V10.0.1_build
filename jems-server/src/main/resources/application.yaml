@@ -66,6 +66,7 @@ info:
   accessibility-statement-url: ""
   terms-privacy-policy-url: ""
 app:
+  server-url: "${SERVER_URL:http://localhost:4200}"
   security:
     default-password-prefix: Jems@2020
   translations-folder: resources/translations/
@@ -74,4 +75,3 @@ app:
       enabled: "${MAIL_ENABLED:false}"
       sender: jems@jems.com
       bcc-list:
-      registration-server-url: "${REGISTRATION_SERVER_URL:http://localhost:4200}"
