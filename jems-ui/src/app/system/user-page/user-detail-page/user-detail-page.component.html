@@ -1,21 +1,37 @@
-<app-main-page-template [needsCard]="true" *ngIf="details$ | async as details"
-                        titleKey="topbar.main.user.user.management"
-                        subTitleText="{{'userRole.detail.short' | translate}}: {{details.user?.name}} {{details.user?.surname}}">
-    <form appFormLayout [formGroup]="userForm">
+<app-main-page-template *ngIf="details$ | async as details" [needsCard]="true"
+                        subTitleText="{{'userRole.detail.short' | translate}}: {{details.user?.name}} {{details.user?.surname}}"
+                        titleKey="topbar.main.user.user.management">
+    <form [formGroup]="userForm" appFormLayout>
         <div appMultiColumnRow>
             <h2 class="inline-block">{{'user.detail.page.title' | translate}}</h2>
             <ng-container *hasPermission="PermissionsEnum.UserUpdate">
-                <button color="primary" *ngIf="details.user?.id && formState === FormState.VIEW" mat-raised-button
-                        [disabled]="passwordIsInEditMode"
-                        (click)="changeFormState$.next(FormState.EDIT)">
+                <button (click)="changeFormState$.next(FormState.EDIT)"
+                        *ngIf="details.user?.id && formState === FormState.VIEW" [disabled]="passwordIsInEditMode"
+                        color="primary"
+                        mat-raised-button>
                     {{'common.edit.label' | translate}}
                 </button>
             </ng-container>
         </div>
 
+        <mat-form-field *hasPermission="PermissionsEnum.UserUpdateRole">
+            <mat-label>{{'user.detail.field.status' | translate}}</mat-label>
+            <mat-select formControlName="userStatus" required>
+                <mat-option [value]="userStatus.ACTIVE">
+                    {{'user.status.ACTIVE' | translate}}
+                </mat-option>
+                <mat-option [value]="userStatus.INACTIVE">
+                    {{'user.status.INACTIVE' | translate}}
+                </mat-option>
+                <mat-option [value]="userStatus.UNCONFIRMED">
+                    {{'user.status.UNCONFIRMED' | translate}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
         <mat-form-field>
             <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
-            <input name="name" formControlName="name" matInput required>
+            <input formControlName="name" matInput name="name" required>
             <mat-error>
                 <app-form-field-errors [errors]="userForm?.controls?.name?.errors"></app-form-field-errors>
             </mat-error>
@@ -23,7 +39,7 @@
 
         <mat-form-field>
             <mat-label>{{'user.detail.field.surname' | translate}}</mat-label>
-            <input name="surname" formControlName="surname" matInput required>
+            <input formControlName="surname" matInput name="surname" required>
             <mat-error>
                 <app-form-field-errors [errors]="userForm?.controls?.surname?.errors"></app-form-field-errors>
             </mat-error>
@@ -31,7 +47,7 @@
 
         <mat-form-field>
             <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
-            <input name="email" formControlName="email" matInput required>
+            <input formControlName="email" matInput name="email" required>
             <mat-error>
                 <app-form-field-errors
                         [errors]="userForm?.controls?.email?.errors"
@@ -43,7 +59,7 @@
         <div *hasPermission="PermissionsEnum.UserUpdateRole">
             <mat-form-field class="w-100">
                 <mat-label>{{'user.detail.field.role' | translate}}</mat-label>
-                <mat-select required formControlName="userRoleId">
+                <mat-select formControlName="userRoleId" required>
                     <mat-option *ngFor="let role of details.roles" [value]="role.id">{{role.name}}</mat-option>
                 </mat-select>
                 <mat-error>
@@ -52,17 +68,17 @@
             </mat-form-field>
         </div>
 
-        <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
-            <button mat-stroked-button
-                    type="button"
-                    (click)="discard(details.user)">
+        <div *ngIf="formState === FormState.EDIT" appMultiColumnRow>
+            <button (click)="discard(details.user)"
+                    mat-stroked-button
+                    type="button">
                 {{'common.cancel.label' | translate}}
             </button>
-            <button mat-raised-button
-                    color="primary"
-                    type="button"
+            <button (click)="onSubmit(details.user)"
                     [disabled]="userForm.invalid || submitted"
-                    (click)="onSubmit(details.user)">
+                    color="primary"
+                    mat-raised-button
+                    type="button">
                 {{details.user?.id && 'common.save.label' || 'common.create.label' | translate}}
             </button>
         </div>
@@ -81,16 +97,16 @@
     </form>
 
     <ng-container
-        *ngIf="details.canUpdatePassword">
+            *ngIf="details.canUpdatePassword">
         <app-user-password
+                (switchedFormState)="passwordIsInEditMode = FormState.EDIT === $event"
                 *ngIf="details.user?.id"
-                class="mt-3 block"
-                [error$]="userStore.passwordSaveError$"
-                [success$]="userStore.passwordSaveSuccess$"
-                [ownUser]="details.currentUser?.id === details.user?.id"
                 [disabled]="formState === FormState.EDIT"
+                [error$]="userStore.passwordSaveError$"
+                [ownUser]="details.currentUser?.id === details.user?.id"
+                [success$]="userStore.passwordSaveSuccess$"
                 [userId]="details.user?.id"
-                (switchedFormState)="passwordIsInEditMode = FormState.EDIT === $event">
+                class="mt-3 block">
         </app-user-password>
     </ng-container>
 </app-main-page-template>

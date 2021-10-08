@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import java.time.ZonedDateTime
 
@@ -27,11 +28,11 @@ fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMIT
     customIdentifier = "01",
     callSettings = callSettings,
     acronym = "project acronym",
-    applicant = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role")),
+    applicant = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"), UserStatus.ACTIVE),
     projectStatus = ProjectStatus(
         id = null,
         status = status,
-        user = UserSummary(0, "", "", "", UserRoleSummary(name = "")),
+        user = UserSummary(0, "", "", "", UserRoleSummary(name = ""), UserStatus.ACTIVE),
         updated = ZonedDateTime.now(),
     ),
     duration = 10,

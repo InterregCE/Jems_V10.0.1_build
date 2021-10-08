@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRegistration
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -34,6 +35,7 @@ internal class RegisterUserTest : UnitTest() {
 
     @MockK
     lateinit var persistence: UserPersistence
+
     @MockK
     lateinit var programmeDataPersistence: ProgrammeDataPersistence
 
@@ -68,6 +70,7 @@ internal class RegisterUserTest : UnitTest() {
             name = "Michael",
             surname = "Schumacher",
             userRoleId = defaultUserRoleId,
+            userStatus = UserStatus.UNCONFIRMED
         )
         val expectedUser = User(
             id = USER_ID,
@@ -78,7 +81,8 @@ internal class RegisterUserTest : UnitTest() {
                 id = defaultUserRoleId,
                 name = "applicant",
                 permissions = emptySet()
-            )
+            ),
+            userStatus = UserStatus.UNCONFIRMED
         )
 
         every { programmeDataPersistence.getDefaultUserRole() } returns defaultUserRoleId
@@ -92,16 +96,19 @@ internal class RegisterUserTest : UnitTest() {
 
         val slotAudit = slot<UserRegisteredEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditUser).isEqualTo(AuditUser(id= USER_ID, email="applicant@interact.eu"))
-        assertThat(slotAudit.captured.getAuditCandidate()).isEqualTo(AuditCandidate(
-            action = AuditAction.USER_REGISTERED,
-            entityRelatedId = USER_ID,
-            description = "A new user applicant@interact.eu registered:\n" +
-                "email set to 'applicant@interact.eu',\n" +
-                "name set to 'Michael',\n" +
-                "surname set to 'Schumacher',\n" +
-                "userRole set to 'applicant(id=3)'"
-        ))
+        assertThat(slotAudit.captured.auditUser).isEqualTo(AuditUser(id = USER_ID, email = "applicant@interact.eu"))
+        assertThat(slotAudit.captured.getAuditCandidate()).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.USER_REGISTERED,
+                entityRelatedId = USER_ID,
+                description = "A new user applicant@interact.eu registered:\n" +
+                    "email set to 'applicant@interact.eu',\n" +
+                    "name set to 'Michael',\n" +
+                    "surname set to 'Schumacher',\n" +
+                    "userRole set to 'applicant(id=3)',\n" +
+                    "userStatus set to UNCONFIRMED"
+            )
+        )
     }
 
     @Test

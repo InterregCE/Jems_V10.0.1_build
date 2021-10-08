@@ -2,14 +2,19 @@ package io.cloudflight.jems.server.user.service.user.create_user
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
+import io.cloudflight.jems.server.common.event.JemsEvent
+import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.config.AppSecurityProperties
+import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.cloudflight.jems.server.user.service.user.ConfirmUserEmailEvent
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -62,6 +67,7 @@ internal class CreateUserTest : UnitTest() {
             name = "Michael",
             surname = "Schumacher",
             userRoleId = ROLE_ID,
+            userStatus = UserStatus.UNCONFIRMED
         )
         val expectedUser = User(
             id = USER_ID,
@@ -73,6 +79,7 @@ internal class CreateUserTest : UnitTest() {
                 name = "maintainer",
                 permissions = emptySet()
             ),
+            userStatus = UserStatus.UNCONFIRMED
         )
 
         every { persistence.userRoleExists(ROLE_ID) } returns true
@@ -83,18 +90,32 @@ internal class CreateUserTest : UnitTest() {
         assertThat(createUser.createUser(createUserModel)).isEqualTo(expectedUser)
         assertThat(slotPassword.captured).isEqualTo("hash_pass_prefix_maintainer@interact.eu")
 
-        val slotAudit = slot<AuditCandidateEvent>()
-        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.overrideCurrentUser).isNull()
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(AuditCandidate(
-            action = AuditAction.USER_ADDED,
-            entityRelatedId = USER_ID,
-            description = "A new user maintainer@interact.eu was created:\n" +
-                "email set to 'maintainer@interact.eu',\n" +
-                "name set to 'Michael',\n" +
-                "surname set to 'Schumacher',\n" +
-                "userRole set to 'maintainer(id=8)'",
-        ))
+        val events = mutableListOf<JemsEvent>()
+        verify(exactly = 2) { auditPublisher.publishEvent(capture(events)) }
+        assertThat((events[0] as JemsAuditEvent).getAuditCandidate()).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.USER_ADDED,
+                entityRelatedId = USER_ID,
+                description = "A new user maintainer@interact.eu was created:\n" +
+                    "email set to 'maintainer@interact.eu',\n" +
+                    "name set to 'Michael',\n" +
+                    "surname set to 'Schumacher',\n" +
+                    "userRole set to 'maintainer(id=8)',\n" +
+                    "userStatus set to UNCONFIRMED",
+            )
+        )
+        assertThat((events[1] as ConfirmUserEmailEvent).getMailNotificationInfo()).isEqualTo(
+            MailNotificationInfo(
+                subject = "[Jems] Please confirm your email address",
+                templateVariables = setOf(
+                    Variable(name = "name", value = "Michael"),
+                    Variable(name = "surname", value = "Schumacher"),
+                    Variable(name = "accountValidationLink", value = "")
+                ),
+                recipients = setOf("maintainer@interact.eu"),
+                messageType = "User registration confirmation"
+            )
+        )
     }
 
     @Test
@@ -105,6 +126,7 @@ internal class CreateUserTest : UnitTest() {
             name = "Michael",
             surname = "Schumacher",
             userRoleId = ROLE_ID,
+            userStatus = UserStatus.ACTIVE
         )
 
         assertThrows<UserIdCannotBeSpecified> { createUser.createUser(createUserModel) }
@@ -118,6 +140,7 @@ internal class CreateUserTest : UnitTest() {
             name = "Michael",
             surname = "Schumacher",
             userRoleId = -45L,
+            userStatus = UserStatus.ACTIVE
         )
 
         every { persistence.userRoleExists(-45L) } returns false
@@ -133,6 +156,7 @@ internal class CreateUserTest : UnitTest() {
             name = "Michael",
             surname = "Schumacher",
             userRoleId = ROLE_ID,
+            userStatus = UserStatus.ACTIVE
         )
 
         every { persistence.userRoleExists(ROLE_ID) } returns true

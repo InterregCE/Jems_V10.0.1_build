@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRegistration
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.user.validatePassword
 import io.cloudflight.jems.server.user.service.user.validateUserCommon
 import org.springframework.context.ApplicationEventPublisher
@@ -52,6 +53,7 @@ class RegisterUser(
         name = name,
         surname = surname,
         userRoleId = roleId,
+        userStatus = UserStatus.UNCONFIRMED
     )
 
 }

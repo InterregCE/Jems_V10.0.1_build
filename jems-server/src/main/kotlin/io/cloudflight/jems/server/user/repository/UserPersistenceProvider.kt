@@ -66,6 +66,7 @@ class UserPersistenceProvider(
             existingUser.surname = surname
             if (existingUser.userRole.id != userRoleId)
                 existingUser.userRole = userRoleRepo.findById(userRoleId).orElseThrow { UserRoleNotFound() }
+            existingUser.userStatus = userStatus
         }
         return existingUser.let {
             it.toModel(permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())

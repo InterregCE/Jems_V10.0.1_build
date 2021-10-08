@@ -128,6 +128,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -183,7 +184,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         private val startDate = ZonedDateTime.now().minusDays(2)
         private val endDate = ZonedDateTime.now().plusDays(5)
 
-        private val user = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"))
+        private val user = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"), UserStatus.ACTIVE)
         private val projectStatus = ProjectStatus(5L, ApplicationStatus.APPROVED, user, updated = startDate)
         private val callSettings = ProjectCallSettings(
             callId = 2L,
@@ -440,7 +441,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             workPackageId = 1L,
             activityNumber = 2,
             title = setOf(InputTranslation(SystemLanguage.EN, "title")),
-            description = setOf(InputTranslation(SystemLanguage.EN,"description")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "description")),
             startPeriod = 3,
             endPeriod = 4,
             deliverables = listOf(WorkPackageActivityDeliverable()),
@@ -454,7 +455,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             targetValue = BigDecimal.TEN,
             periodNumber = 1,
             title = setOf(InputTranslation(SystemLanguage.EN, "title")),
-            description = setOf(InputTranslation(SystemLanguage.EN,"description")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "description")),
         )
         private val projectResult = ProjectResult(
             resultNumber = 1,

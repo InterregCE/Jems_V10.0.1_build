@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -26,7 +27,8 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
         name = "Name",
         surname = "Surname",
         userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-        password = "hash_pass"
+        password = "hash_pass",
+        userStatus = UserStatus.ACTIVE
     )
     private val projectVersionEntity = ProjectVersionEntity(
         id = ProjectVersionId("1.1", projectId),

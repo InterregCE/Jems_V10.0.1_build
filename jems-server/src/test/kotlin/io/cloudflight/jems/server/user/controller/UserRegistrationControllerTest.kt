@@ -4,11 +4,13 @@ import io.cloudflight.jems.api.user.dto.UserDTO
 import io.cloudflight.jems.api.user.dto.UserRegistrationDTO
 import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO
+import io.cloudflight.jems.api.user.dto.UserStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRegistration
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.user.register_user.RegisterUserInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -33,7 +35,8 @@ class UserRegistrationControllerTest : UnitTest() {
             email = "maintainer@interact.eu",
             name = "Michael",
             surname = "Schumacher",
-            userRole = userRole
+            userRole = userRole,
+            userStatus = UserStatus.ACTIVE
         )
 
         private val expectedUserRole = UserRoleDTO(
@@ -47,7 +50,8 @@ class UserRegistrationControllerTest : UnitTest() {
             email = "maintainer@interact.eu",
             name = "Michael",
             surname = "Schumacher",
-            userRole = expectedUserRole
+            userRole = expectedUserRole,
+            userStatus = UserStatusDTO.ACTIVE
         )
     }
 

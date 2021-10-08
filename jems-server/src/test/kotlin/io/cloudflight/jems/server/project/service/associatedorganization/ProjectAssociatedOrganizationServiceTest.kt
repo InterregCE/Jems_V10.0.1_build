@@ -31,6 +31,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -63,7 +64,8 @@ internal class ProjectAssociatedOrganizationServiceTest {
         password = "hash",
         email = "admin@admin.dev",
         surname = "Surname",
-        userRole = userRole
+        userRole = userRole,
+        userStatus = UserStatus.ACTIVE
     )
 
     private val call = CallEntity(
@@ -119,7 +121,12 @@ internal class ProjectAssociatedOrganizationServiceTest {
             sortNumber = sortNr
         )
 
-    private fun outputOrganizationDetail(id: Long, partner: ProjectPartnerSummaryDTO, name: String, sortNr: Int? = null) =
+    private fun outputOrganizationDetail(
+        id: Long,
+        partner: ProjectPartnerSummaryDTO,
+        name: String,
+        sortNr: Int? = null
+    ) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
             partner = partner,

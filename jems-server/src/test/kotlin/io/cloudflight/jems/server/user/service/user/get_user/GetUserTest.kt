@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import io.mockk.every
@@ -33,6 +34,7 @@ internal class GetUserTest : UnitTest() {
             name = "Michael",
             surname = "Schumacher",
             userRole = userRole,
+            userStatus = UserStatus.ACTIVE
         )
         private val userSummary = UserSummary(
             id = USER_ID,
@@ -40,6 +42,7 @@ internal class GetUserTest : UnitTest() {
             name = user.name,
             surname = user.surname,
             userRole = UserRoleSummary(id = userRole.id, name = userRole.name),
+            userStatus = UserStatus.ACTIVE
         )
 
         private val userWithPassword = UserWithPassword(
@@ -49,6 +52,7 @@ internal class GetUserTest : UnitTest() {
             surname = user.surname,
             userRole = user.userRole,
             encodedPassword = "hash_pass",
+            userStatus = UserStatus.ACTIVE
         )
     }
 

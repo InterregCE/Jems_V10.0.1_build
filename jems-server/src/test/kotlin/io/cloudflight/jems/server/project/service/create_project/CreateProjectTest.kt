@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.clearMocks
 import io.mockk.every
@@ -77,7 +78,8 @@ internal class CreateProjectTest : UnitTest() {
             applicationFormFieldConfigurations = mutableSetOf()
         )
 
-        private val user = UserSummary(id = USER_ID, "some@applicant", "", "", UserRoleSummary(0L, ""))
+        private val user =
+            UserSummary(id = USER_ID, "some@applicant", "", "", UserRoleSummary(0L, ""), userStatus = UserStatus.ACTIVE)
 
         private fun dummyProjectWithStatus(acronym: String, status: ApplicationStatus): ProjectDetail {
             return ProjectDetail(
@@ -99,22 +101,23 @@ internal class CreateProjectTest : UnitTest() {
             description = "Attempted unsuccessfully to submit or to apply for call 'call name' (id=54) that is not open.",
         )
 
-        private fun getProgrammeData(projectIdProgrammeAbbreviation: String?, projectIdUseCallId: Boolean) = OutputProgrammeData(
-            "cci",
-            "title",
-            "version",
-            2020,
-            2024,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            projectIdProgrammeAbbreviation = projectIdProgrammeAbbreviation,
-            projectIdUseCallId = projectIdUseCallId,
-            emptyList(),
-        )
+        private fun getProgrammeData(projectIdProgrammeAbbreviation: String?, projectIdUseCallId: Boolean) =
+            OutputProgrammeData(
+                "cci",
+                "title",
+                "version",
+                2020,
+                2024,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                projectIdProgrammeAbbreviation = projectIdProgrammeAbbreviation,
+                projectIdUseCallId = projectIdUseCallId,
+                emptyList(),
+            )
     }
 
     @MockK
@@ -165,13 +168,21 @@ internal class CreateProjectTest : UnitTest() {
 
         verify(exactly = 1) { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "SK-AT_5400029") }
         verify(exactly = 2) { auditPublisher.publishEvent(any()) }
-        assertThat(slot[0].auditCandidate).isEqualTo(AuditCandidate(
-            action = APPLICATION_STATUS_CHANGED,
-            project = AuditProject(id = "29", customIdentifier = "01", name = "test application"),
-            description = "Project application created with status DRAFT",
-        ))
+        assertThat(slot[0].auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = APPLICATION_STATUS_CHANGED,
+                project = AuditProject(id = "29", customIdentifier = "01", name = "test application"),
+                description = "Project application created with status DRAFT",
+            )
+        )
         assertThat(slot[1].auditCandidate.action).isEqualTo(APPLICATION_VERSION_RECORDED)
-        assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", customIdentifier = "SK-AT_5400029", name = "test application"))
+        assertThat(slot[1].auditCandidate.project).isEqualTo(
+            AuditProject(
+                id = "29",
+                customIdentifier = "SK-AT_5400029",
+                name = "test application"
+            )
+        )
         assertThat(slot[1].auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
     }
 
@@ -197,13 +208,21 @@ internal class CreateProjectTest : UnitTest() {
 
         verify(exactly = 1) { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "CZ-DE00029") }
         verify(exactly = 2) { auditPublisher.publishEvent(any()) }
-        assertThat(slot[0].auditCandidate).isEqualTo(AuditCandidate(
-            action = APPLICATION_STATUS_CHANGED,
-            project = AuditProject(id = "29", customIdentifier = "01", name = acronym),
-            description = "Project application created with status STEP1_DRAFT",
-        ))
+        assertThat(slot[0].auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = APPLICATION_STATUS_CHANGED,
+                project = AuditProject(id = "29", customIdentifier = "01", name = acronym),
+                description = "Project application created with status STEP1_DRAFT",
+            )
+        )
         assertThat(slot[1].auditCandidate.action).isEqualTo(APPLICATION_VERSION_RECORDED)
-        assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", customIdentifier = "CZ-DE00029", name = acronym))
+        assertThat(slot[1].auditCandidate.project).isEqualTo(
+            AuditProject(
+                id = "29",
+                customIdentifier = "CZ-DE00029",
+                name = acronym
+            )
+        )
         assertThat(slot[1].auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
     }
 
@@ -235,7 +254,9 @@ internal class CreateProjectTest : UnitTest() {
 
     @Test
     fun `createProject - STEP1 mode - call end already happen`() {
-        every { callPersistence.getCallById(CALL_ID) } returns call.copy(endDateStep1 = ZonedDateTime.now().minusDays(5))
+        every { callPersistence.getCallById(CALL_ID) } returns call.copy(
+            endDateStep1 = ZonedDateTime.now().minusDays(5)
+        )
 
         val slot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
@@ -246,7 +267,10 @@ internal class CreateProjectTest : UnitTest() {
 
     @Test
     fun `createProject - STEP2 mode - call end already happen`() {
-        every { callPersistence.getCallById(CALL_ID) } returns call.copy(endDateStep1 = null, endDate = ZonedDateTime.now().minusDays(5))
+        every { callPersistence.getCallById(CALL_ID) } returns call.copy(
+            endDateStep1 = null,
+            endDate = ZonedDateTime.now().minusDays(5)
+        )
 
         val slot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }

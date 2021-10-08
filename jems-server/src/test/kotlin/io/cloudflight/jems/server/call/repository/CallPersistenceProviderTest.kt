@@ -57,6 +57,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -107,7 +108,8 @@ internal class CallPersistenceProviderTest {
             name = "Name",
             surname = "Surname",
             userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-            password = "hash_pass"
+            password = "hash_pass",
+            userStatus = UserStatus.ACTIVE
         )
 
         val specificObjectives = setOf(

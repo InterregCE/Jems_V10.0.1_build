@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSubmission
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -38,7 +39,8 @@ internal class UserPersistenceProviderTest : UnitTest() {
             name = "replace",
             surname = "replace",
             password = "test",
-            userRole = userRoleEntity
+            userRole = userRoleEntity,
+            userStatus = UserStatus.ACTIVE
         )
         private val permissionEntity = UserRolePermissionEntity(
             UserRolePermissionId(
@@ -50,8 +52,10 @@ internal class UserPersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var userRepo: UserRepository
+
     @MockK
     lateinit var userRoleRepo: UserRoleRepository
+
     @MockK
     lateinit var userRolePermissionRepo: UserRolePermissionRepository
 
@@ -60,7 +64,7 @@ internal class UserPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `update user - success`() {
-        val change = UserChange(USER_ID, "email", "name", "surname", ROLE_ID)
+        val change = UserChange(USER_ID, "email", "name", "surname", ROLE_ID, userStatus = UserStatus.ACTIVE)
         every { userRepo.findById(USER_ID) } returns Optional.of(userEntity)
         every { userRoleRepo.findById(ROLE_ID) } returns Optional.of(userRoleEntity)
         every { userRolePermissionRepo.findAllByIdUserRoleId(ROLE_ID) } returns listOf(permissionEntity)
@@ -71,14 +75,15 @@ internal class UserPersistenceProviderTest : UnitTest() {
                 name = change.name,
                 email = change.email,
                 surname = change.surname,
-                userRole = UserRole(change.userRoleId, userRoleEntity.name, setOf(ProjectSubmission))
+                userRole = UserRole(change.userRoleId, userRoleEntity.name, setOf(ProjectSubmission)),
+                userStatus = UserStatus.ACTIVE
             )
         )
     }
 
     @Test
     fun `update user - role not found`() {
-        val change = UserChange(USER_ID, "email", "name", "surname", -1)
+        val change = UserChange(USER_ID, "email", "name", "surname", -1, userStatus = UserStatus.ACTIVE)
         every { userRepo.findById(USER_ID) } returns Optional.of(userEntity)
         every { userRoleRepo.findById(-1) } returns Optional.empty()
 
