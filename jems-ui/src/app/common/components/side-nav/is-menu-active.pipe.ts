@@ -3,7 +3,9 @@ import {Pipe, PipeTransform} from '@angular/core';
 @Pipe({name: 'IsMenuActive', pure: true})
 export class IsMenuActivePipe implements PipeTransform {
   transform(currentRoute: string | null, routeLink: string, exact: boolean): boolean {
-    if (!currentRoute) { return  false; }
+    if (!currentRoute) {
+      return  false;
+    }
     if (exact) {
       return this.relaxCurrentRout(currentRoute) === routeLink;
     } else {

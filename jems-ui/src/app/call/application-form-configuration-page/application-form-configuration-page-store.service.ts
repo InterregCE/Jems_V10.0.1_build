@@ -128,7 +128,7 @@ export class ApplicationFormConfigurationPageStore {
     };
   }
 
-  private addSectionNodes(id: string, rootIndex: number, section: { [key: string]: string }, callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[], showStepToggle: boolean = true, showVisibilitySwitch: boolean = true): ApplicationFormFieldNode {
+  private addSectionNodes(id: string, rootIndex: number, section: { [key: string]: string }, callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[], showStepToggle = true, showVisibilitySwitch = true): ApplicationFormFieldNode {
     return {
       id,
       rootIndex,
@@ -139,7 +139,7 @@ export class ApplicationFormConfigurationPageStore {
   }
 
   private addLeafNode(id: string, rootIndex: number, callPublished: boolean,
-                      configs: ApplicationFormFieldConfigurationDTO[], showStepToggle: boolean = true, showVisibilitySwitch: boolean = true): ApplicationFormFieldNode {
+                      configs: ApplicationFormFieldConfigurationDTO[], showStepToggle = true, showVisibilitySwitch = true): ApplicationFormFieldNode {
     const config = configs?.find(conf => conf.id === id);
     return {
       id,
@@ -154,7 +154,7 @@ export class ApplicationFormConfigurationPageStore {
   }
 
   private addLeafNodes(applicationFormModel: { [key: string]: string }, rootIndex: number, callPublished: boolean,
-                       configs: ApplicationFormFieldConfigurationDTO[], showStepToggle: boolean = true, showVisibilitySwitch: boolean = true): ApplicationFormFieldNode[] {
+                       configs: ApplicationFormFieldConfigurationDTO[], showStepToggle = true, showVisibilitySwitch = true): ApplicationFormFieldNode[] {
     return Object.keys(applicationFormModel).flatMap(key => [this.addLeafNode(applicationFormModel[key], rootIndex, callPublished, configs, showStepToggle, showVisibilitySwitch)]);
   }
 
