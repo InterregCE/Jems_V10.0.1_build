@@ -17,8 +17,6 @@ $border-color: var(--table-border-color);
 
   th {
     border-top: .0625rem solid $border-color;
-    background-color: var(--table-hover-color) !important;
-    font-weight: 600;
   }
 
   td.border-cell-bottom {
