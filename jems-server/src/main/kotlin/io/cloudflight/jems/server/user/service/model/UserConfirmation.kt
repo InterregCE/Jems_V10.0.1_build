@@ -1,11 +1,11 @@
-package io.cloudflight.jems.server.mail.confirmation.service.model
+package io.cloudflight.jems.server.user.service.model
 
 import java.time.ZonedDateTime
 import java.util.UUID
 
-data class MailConfirmation(
+data class UserConfirmation(
     val token: UUID,
     val userId: Long,
     val timestamp: ZonedDateTime,
-    val clicked: Boolean = false,
+    val confirmed: Boolean = false,
 )

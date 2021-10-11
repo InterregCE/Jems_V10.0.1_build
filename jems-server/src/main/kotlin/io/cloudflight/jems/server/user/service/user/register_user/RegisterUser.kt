@@ -34,7 +34,6 @@ class RegisterUser(
 
         validateUser(userToBeRegistered)
         validatePassword(generalValidator, user.password)
-        // todo here we should generate confirmation token and pass it to the persistence
         return persistence.create(user = userToBeRegistered, passwordEncoded = passwordEncoder.encode(user.password))
             .also {
                 eventPublisher.publishEvent(UserRegisteredEvent(it))

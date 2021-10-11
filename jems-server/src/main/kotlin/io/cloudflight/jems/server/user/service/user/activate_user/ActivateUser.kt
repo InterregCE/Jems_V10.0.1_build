@@ -1,14 +1,12 @@
 package io.cloudflight.jems.server.user.service.user.activate_user
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.mail.confirmation.service.MailConfirmationPersistence
-import io.cloudflight.jems.server.mail.confirmation.service.model.MailConfirmation
+import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPersistence
+import io.cloudflight.jems.server.user.service.model.UserConfirmation
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
-import io.cloudflight.jems.server.user.service.user.register_user.DefaultUserRoleNotFound
-import io.cloudflight.jems.server.user.service.user.register_user.RegisterUserException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -17,15 +15,15 @@ import java.util.UUID
 
 @Service
 class ActivateUser(
-    private val confirmationMailPersistence: MailConfirmationPersistence,
+    private val userConfirmationPersistence: UserConfirmationPersistence,
     private val userPersistence: UserPersistence
 ) : ActivateUserInteractor {
 
     @Transactional
     @ExceptionWrapper(ActivateUserException::class)
     override fun activateUser(token: UUID): Boolean {
-        val confirmation = confirmationMailPersistence.getByToken(token)
-        if (confirmation.clicked)
+        val confirmation = userConfirmationPersistence.getByToken(token)
+        if (confirmation.confirmed)
             throw UserAlreadyActive() // already clicked
         if (ChronoUnit.DAYS.between(confirmation.timestamp, ZonedDateTime.now()) > 6)
             throw LinkExpired() // older than 7 days
@@ -37,12 +35,14 @@ class ActivateUser(
         userPersistence.update(user.toUserChange())
 
         // update confirmation to be clicked
-        confirmationMailPersistence.save(MailConfirmation(
-            token = confirmation.token,
-            userId = confirmation.userId,
-            timestamp = confirmation.timestamp,
-            clicked = true
-        ))
+        userConfirmationPersistence.save(
+            UserConfirmation(
+                token = confirmation.token,
+                userId = confirmation.userId,
+                timestamp = confirmation.timestamp,
+                confirmed = true
+            )
+        )
 
         return true
     }

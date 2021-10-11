@@ -7,7 +7,6 @@ import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO
 import io.cloudflight.jems.api.user.dto.UserRoleSummaryDTO
 import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
-import io.cloudflight.jems.api.user.dto.UserStatusDTO
 import io.cloudflight.jems.api.user.dto.UserStatusDTO.*
 import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 import io.cloudflight.jems.server.UnitTest

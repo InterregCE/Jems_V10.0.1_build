@@ -11,13 +11,14 @@ import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import org.springframework.data.domain.Page
 
-fun UserEntity.toModel(permissions: Set<UserRolePermission>) = User(
+fun UserEntity.toModel(permissions: Set<UserRolePermission>, confirmationToken: String?) = User(
     id = id,
     email = email,
     name = name,
     surname = surname,
     userRole = userRole.toModel(permissions, null),
-    userStatus = userStatus
+    userStatus = userStatus,
+    confirmationToken = confirmationToken
 )
 
 fun UserEntity.toModelWithPassword(permissions: Set<UserRolePermission>) = UserWithPassword(

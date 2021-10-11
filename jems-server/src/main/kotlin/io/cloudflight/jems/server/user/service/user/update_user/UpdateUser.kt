@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.user.service.user.update_user
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.mail.confirmation.service.MailConfirmationService
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.authorization.CanUpdateUser
 import io.cloudflight.jems.server.user.service.model.User
@@ -17,8 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateUser(
     private val persistence: UserPersistence,
     private val generalValidator: GeneralValidatorService,
-    private val eventPublisher: ApplicationEventPublisher,
-    private val mailConfirmationService: MailConfirmationService
+    private val eventPublisher: ApplicationEventPublisher
 ) : UpdateUserInteractor {
 
     @CanUpdateUser
@@ -31,9 +29,6 @@ class UpdateUser(
         return persistence.update(user)
             .also {
                 eventPublisher.publishEvent(UserUpdatedEvent(it, oldUser))
-                if (user.userStatus == UserStatus.UNCONFIRMED && oldUser.userStatus != UserStatus.UNCONFIRMED) {
-                    mailConfirmationService.createConfirmationEmail(it)
-                }
             }
     }
 

@@ -2,11 +2,9 @@ package io.cloudflight.jems.server.user.service.user.register_user
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.mail.confirmation.service.MailConfirmationService
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
@@ -48,9 +46,6 @@ internal class RegisterUserTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
-
-    @RelaxedMockK
-    lateinit var mailConfirmationService: MailConfirmationService
 
     @InjectMockKs
     lateinit var registerUser: RegisterUser
@@ -100,19 +95,7 @@ internal class RegisterUserTest : UnitTest() {
 
         val slotAudit = slot<UserRegisteredEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditUser).isEqualTo(AuditUser(id = USER_ID, email = "applicant@interact.eu"))
-        assertThat(slotAudit.captured.getAuditCandidate()).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.USER_REGISTERED,
-                entityRelatedId = USER_ID,
-                description = "A new user applicant@interact.eu registered:\n" +
-                    "email set to 'applicant@interact.eu',\n" +
-                    "name set to 'Michael',\n" +
-                    "surname set to 'Schumacher',\n" +
-                    "userRole set to 'applicant(id=3)',\n" +
-                    "userStatus set to UNCONFIRMED"
-            )
-        )
+        assertThat(slotAudit.captured.user).isEqualTo(expectedUser)
     }
 
     @Test
