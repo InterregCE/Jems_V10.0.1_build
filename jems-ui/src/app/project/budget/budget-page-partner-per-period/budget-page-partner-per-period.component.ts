@@ -42,6 +42,7 @@ export class BudgetPagePartnerPerPeriodComponent {
         map(([periods, projectPartnersBudgetPerPeriods]) => {
           const periodTotalBudgets = [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE].map(periodNumber => this.calculateTotalBudgetPerPeriod(periodNumber, projectPartnersBudgetPerPeriods));
           const totalEligibleBudget = NumberService.sum(projectPartnersBudgetPerPeriods.map(partner => partner.totalPartnerBudget));
+          projectPartnersBudgetPerPeriods.sort((a, b) => a.partner.sortNumber - b.partner.sortNumber);
           return {
               periodNumbers: [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE],
               projectPartnersBudgetPerPeriods,
