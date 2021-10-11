@@ -5,9 +5,8 @@
         <p>{{'project.application.form.a4.indicators.overview.table.not.available' | translate}}</p>
     </app-alert>
 
-    <app-multi-language-container>
+    <app-multi-language-container *ngIf="dataSource?.length">
         <table mat-table
-               *ngIf="dataSource?.length"
                [dataSource]="dataSource"
                id="indicators-overview"
                aria-label="Overview of project results and outputs in connection to indicators">
