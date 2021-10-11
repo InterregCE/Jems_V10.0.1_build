@@ -289,7 +289,7 @@ export class ProjectPartnerDetailPageStore {
           this.toBudgetTable(data.infrastructureCosts),
           this.toUnitCostsTable(data.unitCosts)
         )),
-        tap(() => this.partnerStore.partnerBudgetAndLumpSumUpdateEvent$.next(null)),
+        tap(() => this.partnerStore.partnerBudgetPerPeriodUpdateEvent$.next(null)),
         shareReplay(1)
       );
 

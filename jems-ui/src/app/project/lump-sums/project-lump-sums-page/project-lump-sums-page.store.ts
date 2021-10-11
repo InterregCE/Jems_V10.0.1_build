@@ -55,7 +55,7 @@ export class ProjectLumpSumsPageStore {
                 contribution.partnerId,
                 contribution.amount)
             )))),
-      tap(() => this.projectPartnerStore.partnerBudgetAndLumpSumUpdateEvent$.next(null)),
+      tap(() => this.projectPartnerStore.partnerBudgetPerPeriodUpdateEvent$.next(null)),
       shareReplay(1)
     );
   }

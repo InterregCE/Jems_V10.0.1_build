@@ -34,7 +34,7 @@ export class ProjectPartnerStore {
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
   private updatedPartner$ = new Subject<ProjectPartnerDetailDTO>();
-  partnerBudgetAndLumpSumUpdateEvent$ = new BehaviorSubject(null);
+  partnerBudgetPerPeriodUpdateEvent$ = new BehaviorSubject(null);
   projectPartnersBudgetPerPeriods$ = new Observable<ProjectPartnerBudgetPerPeriodDTO[]>();
 
   constructor(private partnerService: ProjectPartnerService,
@@ -70,7 +70,8 @@ export class ProjectPartnerStore {
       .pipe(
         tap(saved => this.updatedPartner$.next(saved)),
         tap(() => this.partnerUpdateEvent$.next(null)),
-        tap(saved => Log.info('Updated partner:', this, saved))
+        tap(saved => Log.info('Updated partner:', this, saved)),
+        tap(() => this.partnerBudgetPerPeriodUpdateEvent$.next(null))
       );
   }
 
@@ -80,6 +81,7 @@ export class ProjectPartnerStore {
         tap(created => this.updatedPartner$.next(created)),
         tap(() => this.partnerUpdateEvent$.next(null)),
         tap(created => Log.info('Created partner:', this, created)),
+        tap(() => this.partnerBudgetPerPeriodUpdateEvent$.next(null))
       );
   }
 
@@ -88,6 +90,7 @@ export class ProjectPartnerStore {
       .pipe(
         tap(saved => this.updatedPartner$.next(saved)),
         tap(saved => Log.info('Updated partner addresses:', this, saved)),
+        tap(() => this.partnerBudgetPerPeriodUpdateEvent$.next(null))
       );
   }
 
@@ -112,6 +115,7 @@ export class ProjectPartnerStore {
       .pipe(
         tap(() => this.partnerUpdateEvent$.next(null)),
         tap(() => Log.info('Partner removed:', this, partnerId)),
+        tap(() => this.partnerBudgetPerPeriodUpdateEvent$.next(null))
       );
   }
 
@@ -153,7 +157,7 @@ export class ProjectPartnerStore {
   }
 
   private projectPartnersBudgetPerPeriods(): Observable<ProjectPartnerBudgetPerPeriodDTO[]> {
-    return combineLatest([this.projectStore.project$, this.projectVersionStore.currentRouteVersion$, this.partnerBudgetAndLumpSumUpdateEvent$])
+    return combineLatest([this.projectStore.project$, this.projectVersionStore.currentRouteVersion$, this.partnerBudgetPerPeriodUpdateEvent$])
       .pipe(
         switchMap(([project, version]) =>
           this.projectBudgetService.getProjectPartnerBudgetPerPeriod(project.id, version)
