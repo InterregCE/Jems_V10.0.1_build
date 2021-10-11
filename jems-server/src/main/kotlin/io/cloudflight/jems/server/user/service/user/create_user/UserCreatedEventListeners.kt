@@ -15,7 +15,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.event.TransactionalEventListener
 
-data class UserCreatedEvent(val user: User)
+data class UserCreatedEvent(val user: User, val confirmationToken: String?)
 
 @Service
 data class UserCreatedEventListeners(
@@ -40,7 +40,7 @@ data class UserCreatedEventListeners(
 
     @EventListener
     fun publishJemsMailEvent(event: UserCreatedEvent) {
-        if (event.user.confirmationToken == null) return
+        if (event.confirmationToken == null) return
         eventPublisher.publishEvent(
             JemsMailEvent(
                 emailTemplateFileName = "user-registration-confirmation.html",
@@ -52,7 +52,7 @@ data class UserCreatedEventListeners(
                         Variable("surname", event.user.surname),
                         Variable(
                             "accountValidationLink",
-                            "${appProperties.serverUrl}/registrationConfirmation?token=${event.user.confirmationToken}"
+                            "${appProperties.serverUrl}/registrationConfirmation?token=${event.confirmationToken}"
                         )
                     ),
                     recipients = setOf(event.user.email),

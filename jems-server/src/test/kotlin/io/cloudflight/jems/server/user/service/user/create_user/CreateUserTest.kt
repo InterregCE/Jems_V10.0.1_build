@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.config.AppSecurityProperties
 import io.cloudflight.jems.server.user.service.UserPersistence
+import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
@@ -41,6 +42,9 @@ internal class CreateUserTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @RelaxedMockK
+    lateinit var userConfirmationPersistence: UserConfirmationPersistence
 
     @InjectMockKs
     lateinit var createUser: CreateUser

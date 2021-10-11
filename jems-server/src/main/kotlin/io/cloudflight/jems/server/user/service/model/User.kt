@@ -6,8 +6,7 @@ data class User(
     val name: String,
     val surname: String,
     val userRole: UserRole,
-    val userStatus: UserStatus,
-    val confirmationToken: String? = null
+    val userStatus: UserStatus
 ) {
     fun getDiff(old: User? = null): Map<String, Pair<Any?, Any?>> {
         val changes = mutableMapOf<String, Pair<Any?, Any?>>()

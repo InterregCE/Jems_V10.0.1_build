@@ -14,7 +14,6 @@ import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserSearchRequest
-import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import org.springframework.data.domain.Page
@@ -26,8 +25,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserPersistenceProvider(
     private val userRepo: UserRepository,
     private val userRoleRepo: UserRoleRepository,
-    private val userRolePermissionRepo: UserRolePermissionRepository,
-    private val userConfirmationPersistenceProvider: UserConfirmationPersistenceProvider
+    private val userRolePermissionRepo: UserRolePermissionRepository
 ) : UserPersistence {
 
     @Transactional(readOnly = true)
@@ -59,8 +57,6 @@ class UserPersistenceProvider(
         ).let {
             it.toModel(
                 permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel(),
-                if (it.userStatus == UserStatus.UNCONFIRMED)
-                    userConfirmationPersistenceProvider.createNewConfirmation(it.id).token.toString() else null
             )
         }
 
@@ -68,8 +64,6 @@ class UserPersistenceProvider(
     @Transactional
     override fun update(user: UserChange): User {
         val existingUser = userRepo.findById(user.id).orElseThrow { UserNotFound() }
-        val userSetToUnconfirmed = user.userStatus == UserStatus.UNCONFIRMED
-            && existingUser.userStatus != UserStatus.UNCONFIRMED
         with(user) {
             existingUser.email = email
             existingUser.name = name
@@ -80,9 +74,7 @@ class UserPersistenceProvider(
         }
         return existingUser.let {
             it.toModel(
-                permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel(),
-                if (userSetToUnconfirmed)
-                    userConfirmationPersistenceProvider.createNewConfirmation(user.id).token.toString() else null
+                permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel()
             )
         }
     }

@@ -15,7 +15,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.event.TransactionalEventListener
 
-data class UserRegisteredEvent(val user: User)
+data class UserRegisteredEvent(val user: User, val confirmationToken: String)
 
 @Service
 data class UserRegisteredListener(
@@ -45,8 +45,10 @@ data class UserRegisteredListener(
                     setOf(
                         Variable("name", event.user.name),
                         Variable("surname", event.user.surname),
-                        // todo token should be added here
-                        Variable("accountValidationLink", "${appProperties.serverUrl}/registrationConfirmation?token=")
+                        Variable(
+                            "accountValidationLink",
+                            "${appProperties.serverUrl}/registrationConfirmation?token=${event.confirmationToken}"
+                        )
                     ),
                     recipients = setOf(event.user.email),
                     messageType = "User registration confirmation"

@@ -1,12 +1,10 @@
 package io.cloudflight.jems.server.user.service.user.register_user
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditUser
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
+import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRegistration
@@ -46,6 +44,9 @@ internal class RegisterUserTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @RelaxedMockK
+    lateinit var userConfirmationPersistence: UserConfirmationPersistence
 
     @InjectMockKs
     lateinit var registerUser: RegisterUser

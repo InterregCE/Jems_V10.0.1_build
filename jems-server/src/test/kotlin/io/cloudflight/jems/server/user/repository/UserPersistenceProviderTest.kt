@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.entity.UserRolePermissionEntity
 import io.cloudflight.jems.server.user.entity.UserRolePermissionId
-import io.cloudflight.jems.server.user.repository.confirmation.UserConfirmationPersistenceProvider
 import io.cloudflight.jems.server.user.repository.user.UserNotFound
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.user.UserRoleNotFound
@@ -59,9 +58,6 @@ internal class UserPersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var userRolePermissionRepo: UserRolePermissionRepository
-
-    @MockK
-    lateinit var userConfirmationPersistenceProvider: UserConfirmationPersistenceProvider
 
     @InjectMockKs
     private lateinit var persistence: UserPersistenceProvider

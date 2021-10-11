@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.config.AppSecurityProperties
 import io.cloudflight.jems.server.user.service.authorization.CanCreateUser
 import io.cloudflight.jems.server.user.service.UserPersistence
+import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserStatus
@@ -21,7 +22,8 @@ class CreateUser(
     private val appSecurityProperties: AppSecurityProperties,
     private val passwordEncoder: PasswordEncoder,
     private val generalValidator: GeneralValidatorService,
-    private val eventPublisher: ApplicationEventPublisher
+    private val eventPublisher: ApplicationEventPublisher,
+    private val userConfirmationPersistence: UserConfirmationPersistence
 ) : CreateUserInteractor {
 
     @CanCreateUser
@@ -33,12 +35,13 @@ class CreateUser(
         val password = getDefaultPasswordFromEmail(user.email)
         validatePassword(generalValidator, password)
 
-        if (user.userStatus == UserStatus.UNCONFIRMED) {
-            // todo here we should generate confirmation token and pass it to the persistence
-        }
-
         return persistence.create(user = user, passwordEncoded = passwordEncoder.encode(password)).also {
-            eventPublisher.publishEvent(UserCreatedEvent(it))
+            val confirmationToken =
+                if (it.userStatus == UserStatus.UNCONFIRMED)
+                    userConfirmationPersistence.createNewConfirmation(it.id).token.toString()
+                else null
+
+            eventPublisher.publishEvent(UserCreatedEvent(it, confirmationToken))
         }
     }
 

@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
+import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRegistration
@@ -21,7 +22,8 @@ class RegisterUser(
     private val programmeDataPersistence: ProgrammeDataPersistence,
     private val passwordEncoder: PasswordEncoder,
     private val eventPublisher: ApplicationEventPublisher,
-    private val generalValidator: GeneralValidatorService
+    private val generalValidator: GeneralValidatorService,
+    private val userConfirmationPersistence: UserConfirmationPersistence
 ) : RegisterUserInteractor {
 
     @Transactional
@@ -36,7 +38,8 @@ class RegisterUser(
         validatePassword(generalValidator, user.password)
         return persistence.create(user = userToBeRegistered, passwordEncoded = passwordEncoder.encode(user.password))
             .also {
-                eventPublisher.publishEvent(UserRegisteredEvent(it))
+                val confirmationToken = userConfirmationPersistence.createNewConfirmation(it.id).token.toString()
+                eventPublisher.publishEvent(UserRegisteredEvent(it, confirmationToken))
             }
     }
 
