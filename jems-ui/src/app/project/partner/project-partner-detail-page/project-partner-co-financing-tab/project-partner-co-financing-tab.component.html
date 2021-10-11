@@ -18,16 +18,14 @@
                             <mat-form-field>
                                 <mat-select (ngModelChange)="callFundChanged(fund, data.callFunds)"
                                             [disabled]="coFinancingForm.disabled"
-                                            [formControlName]="constants.FORM_CONTROL_NAMES.fundId">
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.fundId"
+                                            class="placeholder-required"
+                                            placeholder="{{'project.partner.coFinancing.source.label' | translate}}">
                                     <mat-option *ngFor="let callFund of notSelectedFunds(data.callFunds, fund)"
                                                 [value]="callFund.id">
                                         {{callFund.abbreviation | translateBySystemLanguage | async}}
                                     </mat-option>
                                 </mat-select>
-                                <mat-hint *ngIf="!fund.get(this.constants.FORM_CONTROL_NAMES.fundId)?.value"
-                                          class="mat-error">
-                                    {{'project.partner.coFinancing.required' | translate}}
-                                </mat-hint>
                                 <mat-error>
                                     <app-form-field-errors
                                             [errors]="fund.get(constants.FORM_CONTROL_NAMES.fundId)?.errors"
@@ -111,10 +109,7 @@
                             <mat-form-field
                                     *ngIf="!partnerContribution.get(constants.FORM_CONTROL_NAMES.partner)?.value">
                                 <input [formControlName]="constants.FORM_CONTROL_NAMES.name" matInput required>
-                                <mat-hint *ngIf="!partnerContribution?.value?.name"
-                                          class="mat-error">
-                                    {{'project.partner.coFinancing.required' | translate}}
-                                </mat-hint>
+                                <mat-label>{{ 'project.partner.coFinancing.contribution.source.name' | translate }}</mat-label>
                                 <mat-error>
                                     <app-form-field-errors
                                             [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.name)?.errors"
@@ -123,7 +118,9 @@
                             </mat-form-field>
 
                             <mat-form-field>
-                                <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.status" required>
+                                <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.status"
+                                            class="placeholder-required empty"
+                                            placeholder="{{'project.partner.coFinancing.contribution.legal.status.label' | translate}}">
                                     <mat-option
                                             [value]="partnerContributionStatus.Public">{{partnerContributionStatus.Public}}</mat-option>
                                     <mat-option
@@ -132,10 +129,6 @@
                                             *ngIf="!partnerContribution?.value?.partner"
                                             [value]="partnerContributionStatus.AutomaticPublic">{{partnerContributionStatus.AutomaticPublic}}</mat-option>
                                 </mat-select>
-                                <mat-hint *ngIf="!partnerContribution?.value?.status"
-                                          class="mat-error">
-                                    {{'project.partner.coFinancing.required' | translate}}
-                                </mat-hint>
                                 <mat-error>
                                     <app-form-field-errors
                                             [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.status)?.errors"

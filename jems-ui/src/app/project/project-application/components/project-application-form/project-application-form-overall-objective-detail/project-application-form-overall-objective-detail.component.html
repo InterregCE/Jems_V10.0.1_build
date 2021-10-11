@@ -3,15 +3,15 @@
     <form appFormLayout [formGroup]="overallObjectiveForm">
         <h3>{{'project.application.form.section.part.c.subsection.one' | translate}}</h3>
         <p>{{'project.application.form.overall.objective.field.row.one' | translate}}</p>
-        <mat-form-field
-                [ngClass]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && editable ? 'mat-form-field-invalid' : 'field'"
-                name="projectSpecificObjective">
+        <app-alert [show]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value"
+                   [type]="Alert.WARNING"
+                   [closable]="false">
+            <span>{{'project.application.form.overall.objective.specific.objective.required' | translate}}</span>
+        </app-alert>
+        <mat-form-field class="mat-form-field-disabled"
+                        name="projectSpecificObjective">
             <mat-label>{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}</mat-label>
             <input readonly formControlName="projectSpecificObjective" matInput>
-            <mat-hint *ngIf="!overallObjectiveForm?.controls?.projectSpecificObjective?.value && editable"
-                      class="mat-error">
-                {{'project.application.form.overall.objective.specific.objective.required' | translate}}
-            </mat-hint>
         </mat-form-field>
         <ng-container
                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE.OVERALL_OBJECTIVE">

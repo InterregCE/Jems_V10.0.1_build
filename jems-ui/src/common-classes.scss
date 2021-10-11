@@ -519,6 +519,14 @@
   color: #322200;
 }
 
+.app-alert-info {
+  color: #322200;
+  font-style: italic;
+  background-color: var(--light-blue-gray);
+  border-color: var(--table-border-color);
+}
+
+
 .inline-block {
   display: inline-block;
 }

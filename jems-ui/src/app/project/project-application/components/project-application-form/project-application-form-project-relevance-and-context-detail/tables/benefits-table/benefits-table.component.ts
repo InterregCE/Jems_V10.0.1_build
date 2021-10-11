@@ -64,7 +64,7 @@ export class BenefitsTableComponent implements OnChanges {
   private addControl(benefit?: InputProjectRelevanceBenefit): void {
     this.benefitsForm.push(this.formBuilder.group({
       targetGroup: this.formBuilder.control(
-        benefit ? benefit.group : InputProjectRelevanceBenefit.GroupEnum.Other, [Validators.required]
+        benefit ? benefit.group : null, [Validators.required]
       ),
       specification: this.formBuilder.control(benefit?.specification || [], [Validators.maxLength(2000)]),
     }));

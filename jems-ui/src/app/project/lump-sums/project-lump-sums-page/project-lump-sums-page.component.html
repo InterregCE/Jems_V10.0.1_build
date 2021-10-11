@@ -41,7 +41,9 @@
                                         <mat-form-field appFormFieldWidth="full">
                                             <mat-select
                                                     [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.name| translateByInputLanguage | async"
-                                                    [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum">
+                                                    [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum"
+                                                    class="placeholder-required"
+                                                    placeholder="{{'project.application.form.section.part.e.lump.sums.label' | translate}}">
                                                 <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum">
                                                     {{ lumpSum.name | translateByInputLanguage | async }}
                                                 </mat-option>
@@ -69,8 +71,9 @@
                                         <mat-form-field *ngIf="isLumpSumSelectedForRow(control)"
                                                         appFormFieldWidth="full">
                                             <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.periodNumber"
-                                                        [matTooltip]="getPeriodLabel(getPeriod(i, data.periods))">
-                                                <mat-option></mat-option>
+                                                        [matTooltip]="getPeriodLabel(getPeriod(i, data.periods))"
+                                                        class="placeholder-required"
+                                                        placeholder="{{'project.application.form.section.part.e.period.label' | translate}}">
                                                 <mat-option [value]="PREPARATION_PERIOD">
                                                     {{'project.application.form.section.part.e.period.preparation' | translate}}
                                                 </mat-option>
@@ -203,19 +206,17 @@
                             </mat-table>
                         </app-multi-language-container>
                     </div>
-
-
+                    <button *ngIf="lumpSumsForm.enabled" mat-stroked-button type="button" class="mt-2"
+                            [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
+                            (click)="addNewItem(data.partners)">
+                        <mat-icon>add</mat-icon>
+                    </button>
                     <mat-error class="pt-3">
                         <app-form-field-errors
                                 [errors]="data.costIsNotSplittableError"
                                 [messages]="constants.FORM_ERRORS.items">
                         </app-form-field-errors>
                     </mat-error>
-                    <button *ngIf="lumpSumsForm.enabled" mat-icon-button type="button" class="mt-2"
-                            [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
-                            (click)="addNewItem(data.partners)">
-                        <mat-icon>add</mat-icon>
-                    </button>
                 </ng-container>
             </ng-container>
         </form>

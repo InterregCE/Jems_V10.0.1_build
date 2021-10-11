@@ -9,6 +9,7 @@ import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {InputTranslation, OutputIndicatorSummaryDTO, ProjectPeriodDTO, WorkPackageOutputDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
@@ -32,6 +33,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     outputIndicators: OutputIndicatorSummaryDTO[],
     workPackageNumber: number
   }>;
+  Alert = Alert;
 
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,

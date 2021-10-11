@@ -18,6 +18,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {takeUntil, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-project-application-form-overall-objective-detail',
@@ -27,6 +28,8 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseComponent implements OnInit, OnChanges {
+
+  Alert = Alert;
 
   APPLICATION_FORM = APPLICATION_FORM;
   // TODO: remove these and adapt the component to save independently

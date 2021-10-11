@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {ProjectPeriodDTO} from '@cat/api';
 import {AbstractControl} from '@angular/forms';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-project-periods-select',
@@ -9,6 +10,8 @@ import {AbstractControl} from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectPeriodsSelectComponent {
+
+  Alert = Alert;
 
   @Input()
   periods: ProjectPeriodDTO[];

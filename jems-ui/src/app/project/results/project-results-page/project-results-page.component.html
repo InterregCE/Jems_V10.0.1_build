@@ -17,9 +17,14 @@
                             </button>
                         </div>
 
+                        <app-alert
+                            [show]="!data.resultIndicators?.length"
+                            [type]="Alert.WARNING"
+                            [closable]="false">
+                            <span>{{'project.application.form.overall.objective.specific.objective.required' | translate}}</span>
+                        </app-alert>
                         <mat-form-field
-                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT"
-                                [class.mat-form-field-invalid]="!data.resultIndicators.length">
+                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">
                             <mat-label>{{'project.results.result.indicator' | translate}}</mat-label>
                             <mat-select [disabled]="!data.resultIndicators.length"
                                         [formControlName]="constants.RESULT_INDICATOR.name"
@@ -29,9 +34,6 @@
                                     {{resultIndicator.name | translateBySystemLanguage | async}}
                                 </mat-option>
                             </mat-select>
-                            <mat-hint *ngIf="!data.resultIndicators?.length" class="mat-error">
-                                {{'project.application.form.overall.objective.specific.objective.required' | translate}}
-                            </mat-hint>
                         </mat-form-field>
                         <div appMultiColumnRow stretch>
                             <mat-form-field appFormFieldWidth="large"
@@ -40,7 +42,7 @@
                                 <input readonly matInput
                                        value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)
                                                 | translateBySystemLanguage | async}}"
-                                       [disabled]="form.disabled">
+                                       [disabled]="true">
                             </mat-form-field>
 
                             <mat-form-field appFormFieldWidth="medium"

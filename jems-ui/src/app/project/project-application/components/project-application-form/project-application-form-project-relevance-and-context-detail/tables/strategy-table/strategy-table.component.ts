@@ -41,7 +41,6 @@ export class StrategyTableComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.strategyEnum = this.callStrategies.map(strategy => InputProjectRelevanceStrategy.StrategyEnum[strategy]);
-    this.strategyEnum.push('Other');
   }
 
   ngOnChanges(changes: SimpleChanges): void {

@@ -19,22 +19,21 @@
 
         <ng-container *ngIf="partnerForm.enabled">
             <div *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ROLE">
-                <div appLabel>{{'project.partner.role.label' | translate}} *</div>
-                <mat-button-toggle-group formControlName="role">
-                    <mat-button-toggle [value]="RoleEnum.PARTNER">
+                <div appLabel class="mat-required-marker"
+                [ngClass]="{'empty': !togglePartner.checked && !toggleLeadpartner.checked}">
+                    {{'project.partner.role.label' | translate}}
+                </div>
+
+                <mat-button-toggle-group name="partnerToggle" formControlName="role">
+                    <mat-button-toggle #togglePartner [value]="RoleEnum.PARTNER">
                         {{'common.label.project.partner.role.PARTNER' | translate}}
                     </mat-button-toggle>
-                    <mat-button-toggle [value]="RoleEnum.LEADPARTNER">
+                    <mat-button-toggle #toggleLeadpartner [value]="RoleEnum.LEADPARTNER">
                         {{'common.label.project.partner.role.LEAD_PARTNER' | translate}}
                     </mat-button-toggle>
                 </mat-button-toggle-group>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="controls?.role?.errors"
-                            [messages]="roleErrors">
-                    </app-form-field-errors>
-                </mat-error>
             </div>
+            <br>
         </ng-container>
 
         <mat-form-field class="w-100"
