@@ -5,14 +5,17 @@ import {catchError, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UserRegistrationService, UserRegistrationDTO} from '@cat/api';
 import {Router} from '@angular/router';
+import {AuthenticationStore} from '../../service/authentication-store.service';
 
 
 @Injectable()
 export class RegistrationPageService {
   private userSaveError$ = new Subject<I18nValidationError | null>();
   private userSaveSuccess$ = new Subject<boolean>();
+  private confirmationSuccess$ = new Subject<boolean>();
 
   constructor(private userRegistrationService: UserRegistrationService,
+              private authenticationStore: AuthenticationStore,
               private router: Router) {
   }
 
@@ -22,6 +25,10 @@ export class RegistrationPageService {
 
   saveSuccess(): Observable<boolean> {
     return this.userSaveSuccess$.asObservable();
+  }
+
+  confirmationSuccess(): Observable<boolean> {
+    return this.confirmationSuccess$.asObservable();
   }
 
   registerApplicant(applicant: UserRegistrationDTO): void {
@@ -37,5 +44,16 @@ export class RegistrationPageService {
   redirectToLogin(): void {
     this.userSaveSuccess$.next(false);
     this.router.navigate(['login']);
+  }
+
+  confirmRegistration(token: string): void {
+    this.userRegistrationService.confirmUserRegistration(token).pipe(
+      tap(() => this.confirmationSuccess$.next(true)),
+      catchError((error: HttpErrorResponse) => {
+        this.authenticationStore.newAuthenticationError(error.error);
+        this.router.navigate(['login']);
+        throw error;
+      })
+    ).subscribe();
   }
 }

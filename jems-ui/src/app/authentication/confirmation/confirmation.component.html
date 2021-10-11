@@ -1,0 +1,11 @@
+<mat-card *ngIf="confirmationSuccess$ | async">
+    <mat-card-content>
+        <h1>{{'user.registration.confirmation.title' | translate}}</h1>
+        <p>{{'user.registration.confirmation.message' | translate}}</p>
+        <button mat-raised-button
+                color="primary"
+                (click)="redirectToLogin()">
+            {{'user.registration.save.success.redirect.login' | translate}}
+        </button>
+    </mat-card-content>
+</mat-card>

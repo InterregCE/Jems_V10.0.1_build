@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.user.repository
 
+import io.cloudflight.jems.server.user.repository.confirmation.UserConfirmationPersistenceProvider
 import io.cloudflight.jems.server.user.repository.user.UserNotFound
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.user.UserRoleNotFound
@@ -54,8 +55,11 @@ class UserPersistenceProvider(
         userRepo.save(
             user.toEntity(passwordEncoded = passwordEncoded, role = userRoleRepo.getOne(user.userRoleId))
         ).let {
-            it.toModel(permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
+            it.toModel(
+                permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel(),
+            )
         }
+
 
     @Transactional
     override fun update(user: UserChange): User {
@@ -69,7 +73,9 @@ class UserPersistenceProvider(
             existingUser.userStatus = userStatus
         }
         return existingUser.let {
-            it.toModel(permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
+            it.toModel(
+                permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel()
+            )
         }
     }
 

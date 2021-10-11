@@ -1778,7 +1778,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test\",\n\t\"name\": \"\",\n\t\"surname\": \"\"\n}"
+							"raw": "{\n\t\"email\": \"test\",\n\t\"name\": \"\",\n\t\"surname\": \"\",\n    \"userStatus\": \"ACTIVE\"\n}"
 						},
 						"url": {
 							"raw": "{{url}}/api/user",

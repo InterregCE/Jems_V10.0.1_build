@@ -1,26 +1,19 @@
 package io.cloudflight.jems.server.user.service.user.create_user
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.common.event.JemsAuditEvent
-import io.cloudflight.jems.server.common.event.JemsEvent
-import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.config.AppSecurityProperties
-import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.user.service.UserPersistence
+import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserStatus
-import io.cloudflight.jems.server.user.service.user.ConfirmUserEmailEvent
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -49,6 +42,9 @@ internal class CreateUserTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @RelaxedMockK
+    lateinit var userConfirmationPersistence: UserConfirmationPersistence
 
     @InjectMockKs
     lateinit var createUser: CreateUser
@@ -89,33 +85,6 @@ internal class CreateUserTest : UnitTest() {
 
         assertThat(createUser.createUser(createUserModel)).isEqualTo(expectedUser)
         assertThat(slotPassword.captured).isEqualTo("hash_pass_prefix_maintainer@interact.eu")
-
-        val events = mutableListOf<JemsEvent>()
-        verify(exactly = 2) { auditPublisher.publishEvent(capture(events)) }
-        assertThat((events[0] as JemsAuditEvent).getAuditCandidate()).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.USER_ADDED,
-                entityRelatedId = USER_ID,
-                description = "A new user maintainer@interact.eu was created:\n" +
-                    "email set to 'maintainer@interact.eu',\n" +
-                    "name set to 'Michael',\n" +
-                    "surname set to 'Schumacher',\n" +
-                    "userRole set to 'maintainer(id=8)',\n" +
-                    "userStatus set to UNCONFIRMED",
-            )
-        )
-        assertThat((events[1] as ConfirmUserEmailEvent).getMailNotificationInfo()).isEqualTo(
-            MailNotificationInfo(
-                subject = "[Jems] Please confirm your email address",
-                templateVariables = setOf(
-                    Variable(name = "name", value = "Michael"),
-                    Variable(name = "surname", value = "Schumacher"),
-                    Variable(name = "accountValidationLink", value = "")
-                ),
-                recipients = setOf("maintainer@interact.eu"),
-                messageType = "User registration confirmation"
-            )
-        )
     }
 
     @Test

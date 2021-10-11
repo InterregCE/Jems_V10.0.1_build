@@ -75,6 +75,7 @@ Manual deployment using docker compose:
  - use the following environment variables to control
    - `AUDIT_ENABLED=false` to enable/disable logging into elastic search
    - `MAIL_ENABLED=false` to enable/disable sending mail notifications
+   - `SERVER_URL` to specify the url by which the application would be accessible publicly
 
 application.yaml can be added to root of the full executable jems-server.jar
 the properties specified will override the default ones within resources/application.yaml

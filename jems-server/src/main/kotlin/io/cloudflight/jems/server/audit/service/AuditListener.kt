@@ -23,8 +23,8 @@ class AuditListener(
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
     fun saveAuditLog(event: JemsAuditEvent) =
         if (event.auditUser == null)
-            auditService.logEvent(audit = event.getAuditCandidate())
+            auditService.logEvent(audit = event.auditCandidate)
         else
-            auditService.logEvent(audit = event.getAuditCandidate(), optionalUser = event.auditUser)
+            auditService.logEvent(audit = event.auditCandidate, optionalUser = event.auditUser)
 
 }
