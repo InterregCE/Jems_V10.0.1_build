@@ -16,7 +16,7 @@
             <ng-container matColumnDef="projectPartnerBudgetPerPeriod">
                 <mat-header-cell *matHeaderCellDef>{{ 'project.breadcrumb.partnerName' | translate }}</mat-header-cell>
                 <mat-cell *matCellDef="let partner">
-                    {{ partner.partner.abbreviation | translate : {partner: partner.partner.abbreviation} }}
+                    {{ 'common.label.project.partner.role.shortcut.' + partner.partner.role | translate : {partner: partner.partner.sortNumber} }}
                 </mat-cell>
                 <mat-footer-cell *matFooterCellDef>
                     {{ 'project.partner.budget.table.total' | translate }}
