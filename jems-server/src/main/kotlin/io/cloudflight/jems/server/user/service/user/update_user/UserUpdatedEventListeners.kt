@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.notification.mail.service.model.MailNotificati
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.toAuditUser
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.event.TransactionalEventListener
 
@@ -37,7 +38,7 @@ data class UserUpdatedEventListeners(
             )
         )
 
-    @TransactionalEventListener
+    @EventListener
     fun publishJemsMailEvent(event: UserUpdatedEvent) {
         if (event.updatedUser.confirmationToken == null) return
         eventPublisher.publishEvent(
