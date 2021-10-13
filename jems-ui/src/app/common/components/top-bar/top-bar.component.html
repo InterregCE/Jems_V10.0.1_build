@@ -23,7 +23,7 @@
                          'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
                        }">
                     <a class="nav-link" *ngIf="item.isInternal"
-                       (click)="isNavBarCollapsed = true; router.navigate([item.route])">
+                       (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})">
                         <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
                         <span class="icon-text">{{item.name | translate}}</span>
                     </a>
