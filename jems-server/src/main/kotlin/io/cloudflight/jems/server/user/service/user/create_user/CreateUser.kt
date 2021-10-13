@@ -35,14 +35,14 @@ class CreateUser(
         val password = getDefaultPasswordFromEmail(user.email)
         validatePassword(generalValidator, password)
 
-        return persistence.create(user = user, passwordEncoded = passwordEncoder.encode(password)).also {
-            val confirmationToken =
-                if (it.userStatus == UserStatus.UNCONFIRMED)
-                    userConfirmationPersistence.createNewConfirmation(it.id).token.toString()
-                else null
+        val savedUser = persistence.create(user = user, passwordEncoded = passwordEncoder.encode(password))
+        val confirmationToken =
+            if (savedUser.userStatus == UserStatus.UNCONFIRMED)
+                userConfirmationPersistence.createNewConfirmation(savedUser.id).token.toString()
+            else null
 
-            eventPublisher.publishEvent(UserCreatedEvent(it, confirmationToken))
-        }
+        eventPublisher.publishEvent(UserCreatedEvent(savedUser, confirmationToken))
+        return savedUser
     }
 
     private fun validateUser(user: UserChange) {
