@@ -145,16 +145,12 @@ export class FileManagementStore {
   private canUpload(): Observable<boolean> {
     return combineLatest([
       this.selectedCategory$,
-      this.projectStore.currentVersionIsLatest$,
       this.projectStatus$,
       this.canChangeAssessmentFile$,
       this.canChangeApplicationFile$,
       this.userIsProjectOwner$,
     ]).pipe(
-      map(([selectedCategory, currentVersionIsLatest, projectStatus, canUploadAssessmentFile, canUploadApplicationFile, userIsProjectOwner]) => {
-        if (!currentVersionIsLatest) {
-          return false;
-        }
+      map(([selectedCategory, projectStatus, canUploadAssessmentFile, canUploadApplicationFile, userIsProjectOwner]) => {
         if (selectedCategory?.type === FileCategoryEnum.ASSESSMENT) {
           return canUploadAssessmentFile;
         }
