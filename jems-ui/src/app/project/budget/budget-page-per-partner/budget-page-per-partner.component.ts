@@ -80,7 +80,7 @@ export class BudgetPagePerPartnerComponent {
   }
 
   public getTotalPercentageRounded(fund: ProgrammeFundDTO, totalEligibleBudget: number): number {
-    return NumberService.roundNumber((NumberService.product([NumberService.divide(this.getTotalBudgetAmountForFund(fund), totalEligibleBudget), 100])), 1);
+    return NumberService.roundNumber((NumberService.product([NumberService.divide(this.getTotalBudgetAmountForFund(fund), totalEligibleBudget), 100])), 2);
   }
 
   private constructBudgetColumns(budgets: ProjectPartnerBudgetCoFinancingDTO[]): void {
@@ -147,6 +147,6 @@ export class BudgetPagePerPartnerComponent {
 
   private getPercentOfTotalBudget(budgetTotal: number): number {
     const perEligibleBudget = NumberService.divide(NumberService.truncateNumber(budgetTotal), this.totalEligibleBudget);
-    return NumberService.truncateNumber(NumberService.product([100, perEligibleBudget]), 0);
+    return NumberService.roundNumber(perEligibleBudget * 100, 2);
   }
 }
