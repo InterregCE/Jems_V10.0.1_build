@@ -63,13 +63,12 @@
 
             <ng-container *ngFor="let periodNumber of data.periodNumbers; let i = index">
                 <ng-container matColumnDef="{{'budgetPercent'+ periodNumber}}">
-                    <mat-footer-cell *matFooterCellDef>{{ data.periodTotalBudgetPercentages[i] | percent: '1.2'}}
-                    </mat-footer-cell>
+                    <mat-footer-cell *matFooterCellDef>{{ data.periodTotalBudgetPercentages[i] | asMoney }} %</mat-footer-cell>
                 </ng-container>
             </ng-container>
 
             <ng-container matColumnDef="budgetPercentTotal">
-                <mat-footer-cell *matFooterCellDef>{{ data.totalPercent | asMoney }}%</mat-footer-cell>
+                <mat-footer-cell *matFooterCellDef>{{ data.totalPercent | asMoney }} %</mat-footer-cell>
             </ng-container>
 
             <mat-header-row *matHeaderRowDef="data.displayColumns"></mat-header-row>
