@@ -36,11 +36,12 @@ class RegisterUser(
 
         validateUser(userToBeRegistered)
         validatePassword(generalValidator, user.password)
-        return persistence.create(user = userToBeRegistered, passwordEncoded = passwordEncoder.encode(user.password))
-            .also {
-                val confirmationToken = userConfirmationPersistence.createNewConfirmation(it.id).token.toString()
-                eventPublisher.publishEvent(UserRegisteredEvent(it, confirmationToken))
-            }
+        val createdUser =
+            persistence.create(user = userToBeRegistered, passwordEncoded = passwordEncoder.encode(user.password))
+        val confirmationToken = userConfirmationPersistence.createNewConfirmation(createdUser.id).token.toString()
+        eventPublisher.publishEvent(UserRegisteredEvent(createdUser, confirmationToken))
+
+        return createdUser
     }
 
     private fun validateUser(user: UserChange) {

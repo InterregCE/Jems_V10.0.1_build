@@ -28,13 +28,14 @@ class UpdateUser(
         val oldUser = persistence.getById(user.id).getUser()
         validateUser(oldUser = oldUser, newUser = user)
 
-        return persistence.update(user).also {
-            val confirmationToken =
-                if (oldUser.userStatus != UserStatus.UNCONFIRMED && it.userStatus == UserStatus.UNCONFIRMED)
-                    userConfirmationPersistence.createNewConfirmation(it.id).token.toString()
-                else null
-            eventPublisher.publishEvent(UserUpdatedEvent(it, oldUser, confirmationToken))
-        }
+        val updatedUser = persistence.update(user)
+        val confirmationToken =
+            if (oldUser.userStatus != UserStatus.UNCONFIRMED && updatedUser.userStatus == UserStatus.UNCONFIRMED)
+                userConfirmationPersistence.createNewConfirmation(updatedUser.id).token.toString()
+            else null
+        eventPublisher.publishEvent(UserUpdatedEvent(updatedUser, oldUser, confirmationToken))
+
+        return updatedUser
     }
 
     private fun validateUser(oldUser: User, newUser: UserChange) {
