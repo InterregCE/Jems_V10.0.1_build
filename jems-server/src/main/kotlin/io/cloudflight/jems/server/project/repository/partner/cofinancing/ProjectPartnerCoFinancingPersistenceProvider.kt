@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectP
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.copy
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
@@ -50,6 +51,23 @@ class ProjectPartnerCoFinancingPersistenceProvider(
             partnerContributions = emptyList(),
             partnerAbbreviation = ""
         )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getCoFinancingAndContributionsForPartnerList(
+        partnerIds: List<Long>,
+        projectId: Long,
+        version: String?
+    ): Map<Long, List<ProjectPartnerCoFinancing>>? {
+        return projectVersionUtils.fetch(version,
+            projectId,
+            currentVersionFetcher = {
+                projectPartnerCoFinancingRepository.findPartnersFinancingById(partnerIds).toPerPartnerFinancing()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectPartnerCoFinancingRepository.findPartnersFinancingByIdAsOfTimestamp(partnerIds, timestamp).toPerPartnerFinancing()
+            }
+        ) ?: partnerIds.associateBy({it}, { emptyList()})
     }
 
     @Transactional

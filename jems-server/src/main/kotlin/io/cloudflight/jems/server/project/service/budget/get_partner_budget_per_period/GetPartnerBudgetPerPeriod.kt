@@ -39,26 +39,27 @@ class GetPartnerBudgetPerPeriod(
         val lumpSums = lumpSumPersistence.getLumpSums(projectId, version)
         val budgetPerPartners = persistence.getBudgetPerPartner(partners.keys, projectId, version)
 
+        val projectPeriods = projectPersistence.getProjectPeriods(projectId, version)
+
         return partners.map {
             getProjectPartnerBudgetPerPeriodForPartner(
-                projectId = projectId,
                 partnerBudgetPerPartner = budgetPerPartners.filter { partner -> partner.id == it.key },
                 partner = it.value,
                 partnerBudgetOptions = options[it.key],
                 lumpSums = lumpSums,
+                projectPeriods = projectPeriods,
                 version = version)
         }
     }
 
     private fun getProjectPartnerBudgetPerPeriodForPartner(
-        projectId: Long,
         partnerBudgetPerPartner: List<ProjectPartnerBudget>,
         partner: ProjectPartnerSummary,
         partnerBudgetOptions: ProjectPartnerBudgetOptions?,
         lumpSums: List<ProjectLumpSum>,
+        projectPeriods: List<ProjectPeriod>,
         version: String?
     ): ProjectPartnerBudgetPerPeriod {
-        val projectPeriods = projectPersistence.getProjectPeriods(projectId, version)
 
         val lumpSumsForPartner = lumpSums.map { lumpSum ->
             PartnerLumpSum(
