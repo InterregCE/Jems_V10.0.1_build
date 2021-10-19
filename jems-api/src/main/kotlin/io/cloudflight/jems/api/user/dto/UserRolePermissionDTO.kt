@@ -10,6 +10,7 @@ enum class UserRolePermissionDTO(val key: String) {
     CallUpdate("CallUpdate"),
 
     ProjectRetrieve("ProjectRetrieve"),
+    ProjectRetrieveEditUserAssignments("ProjectRetrieveEditUserAssignments"),
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     ProjectCreate("ProjectCreate"),
 

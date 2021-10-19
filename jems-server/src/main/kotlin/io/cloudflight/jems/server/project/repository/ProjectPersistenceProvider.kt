@@ -105,11 +105,16 @@ class ProjectPersistenceProvider(
         projectRepository.findCallIdFor(projectId).orElseThrow { ProjectNotFoundException() }
 
     @Transactional(readOnly = true)
-    override fun getProjects(pageable: Pageable, filterByOwnerId: Long?): Page<ProjectSummary> =
-        if (filterByOwnerId == null)
-            projectRepository.findAll(pageable).toModel()
-        else
-            projectRepository.findAllByApplicantId(pageable = pageable, applicantId = filterByOwnerId).toModel()
+    override fun getProjects(pageable: Pageable): Page<ProjectSummary> =
+        projectRepository.findAll(pageable).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getProjectsOfUserPlusExtra(pageable: Pageable, userId: Long, extraProjectIds: Collection<Long>): Page<ProjectSummary> =
+        projectRepository.findAllByApplicantIdOrIdIn(
+            applicantId = userId,
+            projectIds = extraProjectIds,
+            pageable = pageable,
+        ).toModel()
 
     @Transactional(readOnly = true)
     override fun getProjectUnitCosts(projectId: Long): List<ProgrammeUnitCost> =

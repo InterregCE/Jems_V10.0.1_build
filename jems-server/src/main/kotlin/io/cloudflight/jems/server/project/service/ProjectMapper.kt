@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectFull
 
 fun ProjectEntity.toApplicantAndStatus() = ProjectApplicantAndStatus(
     applicantId = applicant.id,
+    projectId = id,
     projectStatus = currentStatus.status,
 )
 

@@ -6,6 +6,7 @@ data class User(
     val name: String,
     val surname: String,
     val userRole: UserRole,
+    var assignedProjects: Set<Long> = emptySet(),
     val userStatus: UserStatus
 ) {
     fun getDiff(old: User? = null): Map<String, Pair<Any?, Any?>> {

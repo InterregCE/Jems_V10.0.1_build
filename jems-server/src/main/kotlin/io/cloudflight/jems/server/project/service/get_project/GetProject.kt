@@ -52,10 +52,10 @@ class GetProject(
 
     @CanRetrieveProjectsWithOwnership
     override fun getMyProjects(pageable: Pageable): Page<ProjectSummary> =
-        persistence.getProjects(
+        persistence.getProjectsOfUserPlusExtra(
             pageable = pageable,
-            filterByOwnerId = securityService.currentUser!!.user.id,
+            userId = securityService.getUserIdOrThrow(),
+            extraProjectIds = securityService.currentUser?.user?.assignedProjects ?: emptySet(),
         )
-
 
 }

@@ -7,9 +7,6 @@ import org.springframework.security.core.GrantedAuthority
 interface CurrentUser {
     val user: User
 
-    val isAdmin: Boolean
-        get() = hasRole(ADMINISTRATOR)
-
     fun getAuthorities(): Collection<GrantedAuthority>
 
     fun hasRole(role: String): Boolean {
