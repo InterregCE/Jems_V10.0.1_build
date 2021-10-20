@@ -68,7 +68,7 @@ export class StrategyTableComponent implements OnInit, OnChanges {
 
   private addControl(strategy?: InputProjectRelevanceStrategy): void {
     this.strategiesForm.push(this.formBuilder.group({
-      strategy: this.formBuilder.control(strategy?.strategy || 'Other', []),
+      strategy: this.formBuilder.control(strategy?.strategy, [Validators.required]),
       contribution: this.formBuilder.control(strategy?.specification || [], [Validators.maxLength(2000)])
     }));
   }
