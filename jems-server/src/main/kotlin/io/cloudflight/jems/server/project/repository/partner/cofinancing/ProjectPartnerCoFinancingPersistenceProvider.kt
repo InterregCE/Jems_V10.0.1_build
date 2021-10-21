@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.repository.partner.cofinancing
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
@@ -23,10 +25,10 @@ class ProjectPartnerCoFinancingPersistenceProvider(
 ) : ProjectPartnerCoFinancingPersistence {
 
     @Transactional(readOnly = true)
-    override fun getAvailableFundIds(partnerId: Long): Set<Long> =
+    override fun getAvailableFunds(partnerId: Long): Set<ProgrammeFund> =
         getPartnerOrThrow(partnerId).project.call.funds
-            .map { it.setupId.programmeFund }
-            .mapTo(HashSet()) { it.id }
+            .map { it.setupId.programmeFund.toModel() }
+            .toSet()
 
     @Transactional(readOnly = true)
     override fun getCoFinancingAndContributions(

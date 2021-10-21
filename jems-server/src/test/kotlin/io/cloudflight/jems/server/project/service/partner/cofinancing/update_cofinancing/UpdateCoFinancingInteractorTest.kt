@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing
 
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.AutomaticPublic
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
+import io.cloudflight.jems.server.call.callFund
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
@@ -19,7 +19,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
-import kotlin.collections.HashSet
 
 internal class UpdateCoFinancingInteractorTest {
 
@@ -101,11 +100,11 @@ internal class UpdateCoFinancingInteractorTest {
         assertThat(ex.i18nKey).isEqualTo(errorMsg)
     }
 
-    private fun ignoreFundIdsRetrieval() = every { persistence.getAvailableFundIds(1L) } returns emptySet()
+    private fun ignoreFundIdsRetrieval() = every { persistence.getAvailableFunds(1L) } returns emptySet()
 
     @Test
     fun `test wrong amount of fundIds - 2 nulls`() {
-        every { persistence.getAvailableFundIds(1L) } returns setOf(101L, 102L, 103L)
+        every { persistence.getAvailableFunds(1L) } returns setOf(callFund(101L), callFund(102L), callFund(103L))
         val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(20),
@@ -145,7 +144,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test duplicate fundIds - no any null`() {
-        every { persistence.getAvailableFundIds(1L) } returns setOf(101L, 102L, 103L)
+        every { persistence.getAvailableFunds(1L) } returns setOf(callFund(101L), callFund(102L), callFund(103L))
 
         val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
@@ -170,7 +169,13 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `wrong amount of funds - more than MAX`() {
-        every { persistence.getAvailableFundIds(1L) } returns setOf(101L, 102L, 103L, 104L, 105L)
+        every { persistence.getAvailableFunds(1L) } returns setOf(
+            callFund(101L),
+            callFund(102L),
+            callFund(103L),
+            callFund(104L),
+            callFund(105L)
+        )
 
         val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
@@ -207,7 +212,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `wrong amount of funds - not enough funds available MAX`() {
-        every { persistence.getAvailableFundIds(1L) } returns setOf(101L)
+        every { persistence.getAvailableFunds(1L) } returns setOf(callFund(101L))
 
         val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
@@ -232,7 +237,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing forbidden or not-existing fund`() {
-        every { persistence.getAvailableFundIds(5) } returns setOf(fund.id)
+        every { persistence.getAvailableFunds(5) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             UpdateProjectPartnerCoFinancing(
@@ -252,7 +257,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and 1 contribution OK`() {
-        every { persistence.getAvailableFundIds(1) } returns setOf(fund.id)
+        every { persistence.getAvailableFunds(1) } returns setOf(callFund(fund.id))
 
         val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()
         val slotPartnerContributions = slot<List<ProjectPartnerContribution>>()
@@ -286,7 +291,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - wrong partner numbers`() {
-        every { persistence.getAvailableFundIds(2) } returns setOf(fund.id)
+        every { persistence.getAvailableFunds(2) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(name = "not used", amount = BigDecimal.TEN, isPartner = true, status = Public),
@@ -302,7 +307,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - wrong partner status`() {
-        every { persistence.getAvailableFundIds(3) } returns setOf(fund.id)
+        every { persistence.getAvailableFunds(3) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(
@@ -322,7 +327,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - missing name`() {
-        every { persistence.getAvailableFundIds(4) } returns setOf(fund.id)
+        every { persistence.getAvailableFunds(4) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(
@@ -342,7 +347,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - missing status`() {
-        every { persistence.getAvailableFundIds(6) } returns setOf(fund.id)
+        every { persistence.getAvailableFunds(6) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(name = "ignored", amount = BigDecimal.TEN, isPartner = true, status = null)
@@ -356,7 +361,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - missing amount`() {
-        every { persistence.getAvailableFundIds(7) } returns setOf(fund.id)
+        every { persistence.getAvailableFunds(7) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(name = "ignored", amount = null, isPartner = true, status = Public)
@@ -370,7 +375,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - amount 0`() {
-        every { persistence.getAvailableFundIds(8) } returns setOf(fund.id)
+        every { persistence.getAvailableFunds(8) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = Public)

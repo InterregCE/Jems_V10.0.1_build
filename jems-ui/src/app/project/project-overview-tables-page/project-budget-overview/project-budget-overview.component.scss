@@ -1,0 +1,31 @@
+table {
+
+  th, td {
+    text-align: right;
+  }
+
+  .total {
+    font-weight: var(--body-strong-font-weight);
+    border-top: 1px solid var(--table-border-color);
+    border-bottom: 1px solid var(--table-border-color);
+    background-color: var(--table-backaground-color);
+    min-height: 3rem;
+  }
+
+  .mat-column-programmeFunding, .mat-column-contribution {
+    text-align: center;
+  }
+
+  .mat-column-coFinancingRate, .mat-column-totalContribution {
+    padding-right: .3rem;
+  }
+
+  .mat-column-fundingSource {
+    text-align: left;
+  }
+
+  th.border-cell-left,
+  td.border-cell-left {
+    border-left: .0625rem solid var(--table-border-color);
+  }
+}

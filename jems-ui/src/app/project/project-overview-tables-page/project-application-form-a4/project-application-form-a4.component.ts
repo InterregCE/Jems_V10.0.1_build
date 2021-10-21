@@ -1,12 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {IndicatorOverviewLine} from './models/IndicatorOverviewLine';
-import {combineLatest, Observable} from 'rxjs';
-import {map, switchMap, tap} from 'rxjs/operators';
-import {RowSpanPlan} from '@project/project-application/components/project-application-form/project-application-form-a4/models/RowSpanPlan';
-import {IndicatorOverviewLineDTO, ProjectResultService} from '@cat/api';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {Observable} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
+import {RowSpanPlan} from '@project/project-overview-tables-page/project-application-form-a4/models/RowSpanPlan';
+import {IndicatorOverviewLineDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
+import {ProjectOverviewTablesPageStore} from '@project/project-overview-tables-page/project-overview-tables-page-store.service';
 
 @Component({
   selector: 'app-project-application-form-a4',
@@ -16,10 +15,6 @@ import {Alert} from '@common/components/forms/alert';
 })
 export class ProjectApplicationFormA4Component {
   Alert = Alert;
-
-  private MAX_INDICATOR_ID_FROM_DB = 1_000_000_000_000;
-  private MAX_INDICATOR_FAKE_ID = 3_000_000_000_000;
-
   displayedColumns: string[] = [
     'outputIndicatorName',
     'outputIndicatorTargetValueSumUp',
@@ -32,31 +27,26 @@ export class ProjectApplicationFormA4Component {
     'resultIndicatorTargetValueSumUp',
     'resultIndicatorMeasurementUnit',
   ];
-
   spans: RowSpanPlan = {
     resultIndicator: [],
     outputIndicator: [],
   };
 
-  dataSource$: Observable<IndicatorOverviewLineDTO[]> = combineLatest([
-    this.projectStore.projectId$,
-    this.projectVersionStore.currentRouteVersion$,
-  ]).pipe(
-    switchMap(([projectId, version]) =>
-      this.projectResultService.getProjectResultIndicatorOverview(projectId, version)
-    ),
-    map((data: IndicatorOverviewLineDTO[]) => this.transformIdsOfIndicatorsToRowIds(data)),
-    map(data => [...data].sort(this.sortByResultThenOutputIndicators)),
-    // build row-span plans
-    tap(data => this.spans.resultIndicator = this.getRowSpanPlan(['resultIndicatorId'], data)),
-    tap(data => this.spans.outputIndicator = this.getRowSpanPlan(['resultIndicatorId', 'outputIndicatorId'], data)),
-  );
+  indicatorOverviewLines$: Observable<IndicatorOverviewLineDTO[]>;
 
-  constructor(
-    private projectStore: ProjectStore,
-    private projectVersionStore: ProjectVersionStore,
-    private projectResultService: ProjectResultService,
-  ) { }
+  private MAX_INDICATOR_ID_FROM_DB = 1_000_000_000_000;
+  private MAX_INDICATOR_FAKE_ID = 3_000_000_000_000;
+
+  constructor(private pageStore: ProjectOverviewTablesPageStore) {
+    this.indicatorOverviewLines$ = this.pageStore.indicatorOverviewLines$
+      .pipe(
+        map((data: IndicatorOverviewLineDTO[]) => this.transformIdsOfIndicatorsToRowIds(data)),
+        map(data => data.sort(this.sortByResultThenOutputIndicators)),
+        // build row-span plans
+        tap(data => this.spans.resultIndicator = this.getRowSpanPlan(['resultIndicatorId'], data)),
+        tap(data => this.spans.outputIndicator = this.getRowSpanPlan(['resultIndicatorId', 'outputIndicatorId'], data)),
+      );
+  }
 
   getRowSpan(path: string, index: number): number {
     switch (path) {

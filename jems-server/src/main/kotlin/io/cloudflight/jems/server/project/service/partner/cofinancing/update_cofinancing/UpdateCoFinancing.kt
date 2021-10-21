@@ -21,7 +21,7 @@ class UpdateCoFinancing(
         partnerContributions: List<ProjectPartnerContribution>
     ): ProjectPartnerCoFinancingAndContribution {
 
-        validateFinancing(finances, persistence.getAvailableFundIds(partnerId))
+        validateFinancing(finances, persistence.getAvailableFunds(partnerId).map { it.id }.toSet())
         validateContribution(partnerContributions)
 
         return persistence.updateCoFinancingAndContribution(partnerId, finances, partnerContributions)

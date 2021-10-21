@@ -107,13 +107,13 @@ class ProjectBudgetCoFinancingPersistenceTest {
     @Test
     fun `get available fund ids`() {
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(dummyPartner)
-        assertThat(persistence.getAvailableFundIds(PARTNER_ID)).containsExactlyInAnyOrder(10, 11)
+        assertThat(persistence.getAvailableFunds(PARTNER_ID).map { it.id }).containsExactlyInAnyOrder(10, 11)
     }
 
     @Test
     fun `get available fund ids not existing`() {
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getAvailableFundIds(PARTNER_ID) }
+        val ex = assertThrows<ResourceNotFoundException> { persistence.getAvailableFunds(PARTNER_ID) }
         assertThat(ex.entity).isEqualTo("projectPartner")
     }
 

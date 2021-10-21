@@ -29,11 +29,11 @@ import {ProjectDetailPageComponent} from './project-detail-page/project-detail-p
 import {UserRoleDTO} from '@cat/api';
 import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
-import { ProjectApplicationFormRegionSelectionComponent } from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-region-selection/project-application-form-region-selection.component';
+import {ProjectApplicationFormRegionSelectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-region-selection/project-application-form-region-selection.component';
 import {ProjectApplicationFormPartnerEditComponent} from '@project/project-application/components/project-application-form/project-application-form-partner-edit/project-application-form-partner-edit.component';
 import {ProjectPartnerBudgetTabComponent} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.component';
 import {ProjectApplicationFormPartnerContactComponent} from '@project/project-application/components/project-application-form/project-application-form-partner-contact/project-application-form-partner-contact.component';
-import { ProjectApplicationFormPartnerContributionComponent } from './project-application/components/project-application-form/project-application-form-partner-contribution/project-application-form-partner-contribution.component';
+import {ProjectApplicationFormPartnerContributionComponent} from './project-application/components/project-application-form/project-application-form-partner-contribution/project-application-form-partner-contribution.component';
 import {ProjectPartnerCoFinancingTabComponent} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/project-partner-co-financing-tab.component';
 import {ProjectPartnerStateAidTabComponent} from '@project/partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
 import {ProjectWorkPackageObjectivesTabComponent} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-objectives-tab/project-work-package-objectives-tab.component';
@@ -47,6 +47,7 @@ import {PartnerBreadcrumbResolver} from '@project/project-application/containers
 import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-breadcrumb-resolver.service';
 import {InvestmentBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
 import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-partner-per-period/budget-page-partner-per-period.component';
+import {ProjectOverviewTablesPageComponent} from './project-overview-tables-page/project-overview-tables-page.component';
 
 export const routes: Routes = [
   {
@@ -127,6 +128,11 @@ export const routes: Routes = [
             path: 'applicationFormIdentification',
             data: {breadcrumb: 'project.breadcrumb.applicationForm.identification'},
             component: ProjectApplicationFormIdentificationPageComponent,
+          },
+          {
+            path: 'applicationFormOverviewTables',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.overview.tables'},
+            component: ProjectOverviewTablesPageComponent,
           },
           {
             path: 'applicationFormPartner',
@@ -259,7 +265,7 @@ export const routes: Routes = [
                   },
                   {
                     path: 'investments',
-                    data: { breadcrumb: 'project.breadcrumb.workPackageInvestment.overview'},
+                    data: {breadcrumb: 'project.breadcrumb.workPackageInvestment.overview'},
                     children: [
                       {
                         path: 'create',
@@ -272,7 +278,7 @@ export const routes: Routes = [
                         data: {dynamicBreadcrumb: true},
                         resolve: {breadcrumb$: InvestmentBreadcrumbResolver},
                       },
-                      ]
+                    ]
                   }
                 ]
               },
