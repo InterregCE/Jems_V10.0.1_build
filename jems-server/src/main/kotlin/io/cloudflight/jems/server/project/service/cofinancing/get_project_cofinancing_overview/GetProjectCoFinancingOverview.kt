@@ -27,6 +27,9 @@ class GetProjectCoFinancingOverview(
     override fun getProjectCoFinancingOverview(projectId: Long, version: String?): ProjectCoFinancingOverview {
         val partnerIds =
             projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).map { it.id!! }
+        if (partnerIds.isEmpty()) {
+            return ProjectCoFinancingOverview()
+        }
         val partnerTotals = partnerIds.associateWith { getBudgetTotalCost.getBudgetTotalCost(it, version) }
         val partnerCoFinancing = partnerIds.associateWith {
             projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(it, version)
