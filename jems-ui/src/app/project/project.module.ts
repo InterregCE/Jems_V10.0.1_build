@@ -97,7 +97,9 @@ import {InvestmentBreadcrumbResolver} from '@project/project-application/contain
 import {ProjectPartnerBudgetOverviewComponent} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-overview/project-partner-budget-overview.component';
 import {BudgetTableComponent} from '@project/budget/budget-page/budget-table/budget-table.component';
 import {BudgetPagePartnerPerPeriodComponent} from './budget/budget-page-partner-per-period/budget-page-partner-per-period.component';
-import {ProjectApplicationFormA4Component} from '@project/project-application/components/project-application-form/project-application-form-a4/project-application-form-a4.component';
+import {ProjectApplicationFormA4Component} from '@project/project-overview-tables-page/project-application-form-a4/project-application-form-a4.component';
+import {ProjectOverviewTablesPageComponent} from './project-overview-tables-page/project-overview-tables-page.component';
+import {ProjectBudgetOverviewComponent} from './project-overview-tables-page/project-budget-overview/project-budget-overview.component';
 
 @NgModule({
   declarations: [
@@ -188,6 +190,8 @@ import {ProjectApplicationFormA4Component} from '@project/project-application/co
     AssessmentAndDecisionComponent,
     ProjectWorkPackageActivitiesFilterPipe,
     BudgetPagePartnerPerPeriodComponent,
+    ProjectOverviewTablesPageComponent,
+    ProjectBudgetOverviewComponent,
   ],
   imports: [
     SharedModule,

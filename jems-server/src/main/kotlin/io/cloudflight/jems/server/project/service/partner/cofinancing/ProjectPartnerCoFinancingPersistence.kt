@@ -1,13 +1,14 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing
 
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 
 interface ProjectPartnerCoFinancingPersistence {
 
-    fun getAvailableFundIds(partnerId: Long): Set<Long>
+    fun getAvailableFunds(partnerId: Long): Set<ProgrammeFund>
 
     fun getCoFinancingAndContributions(
         partnerId: Long,

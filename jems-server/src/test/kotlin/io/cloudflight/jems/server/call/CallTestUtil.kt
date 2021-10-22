@@ -110,3 +110,8 @@ fun callFundRateEntity(call: CallEntity, fundId: Long) = CallFundRateEntity(
     rate = BigDecimal.TEN,
     isAdjustable = true
 )
+
+fun callFund(fundId: Long) = ProgrammeFund(
+    id = fundId,
+    selected = true
+)

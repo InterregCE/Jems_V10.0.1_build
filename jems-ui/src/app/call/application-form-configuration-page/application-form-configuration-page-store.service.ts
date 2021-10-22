@@ -64,7 +64,7 @@ export class ApplicationFormConfigurationPageStore {
       this.addParentNode('application.config.project.section.a', 0, [
         this.addSectionNodes('application.config.project.section.a.1', 0, APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION, callPublished, configs),
         this.addSectionNodes('application.config.project.section.a.2', 0, APPLICATION_FORM.SECTION_A.PROJECT_SUMMARY, callPublished, configs),
-        this.addSectionNodes('application.config.project.section.overview.tables', 0, APPLICATION_FORM.SECTION_A.PROJECT_A4, callPublished, configs),
+        this.addSectionNodes('application.config.project.section.overview.tables', 0, APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES, callPublished, configs),
       ]),
       this.addParentNode('application.config.project.section.b', 1, [
           this.addSectionNodes('application.config.project.section.b.1.1', 1, APPLICATION_FORM.SECTION_B.IDENTITY, callPublished, configs),
@@ -85,7 +85,7 @@ export class ApplicationFormConfigurationPageStore {
             this.addSectionNodes('application.config.project.section.b.budget.infrastructure.and.works', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.INFRASTRUCTURE_AND_WORKS, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.unit.costs', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS, callPublished, configs, false),
           ]),
-          this.addSectionNodes('application.config.project.partner.state.aid', 1,  APPLICATION_FORM.SECTION_B.STATE_AID, callPublished, configs),
+          this.addSectionNodes('application.config.project.partner.state.aid', 1, APPLICATION_FORM.SECTION_B.STATE_AID, callPublished, configs),
           this.addLeafNode(APPLICATION_FORM.SECTION_B.PARTNER_ASSOCIATED_ORGANIZATIONS, 1, callPublished, configs)
         ]
       ),

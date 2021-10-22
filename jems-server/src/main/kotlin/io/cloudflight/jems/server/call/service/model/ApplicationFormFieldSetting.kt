@@ -18,6 +18,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.summary",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PROJECT_A3(
+        "application.config.project.section.a.3",
+        setOf(FieldVisibilityStatus.STEP_TWO_ONLY),
+    ),
     PROJECT_A4(
         "application.config.project.section.a.4",
         setOf(FieldVisibilityStatus.STEP_TWO_ONLY),
@@ -523,7 +527,7 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
                 ApplicationFormFieldConfiguration(it.id, defaultVisibilityStatus)
             }.toMutableSet()
 
-        fun getFieldsThatDependsOnBudgetSetting() : Set<String> =
+        fun getFieldsThatDependsOnBudgetSetting(): Set<String> =
             setOf(
                 PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id,
                 PARTNER_BUDGET_PERIODS.id,

@@ -14,7 +14,8 @@ export const APPLICATION_FORM = {
     PROJECT_SUMMARY: {
       SUMMARY: 'application.config.project.summary'
     },
-    PROJECT_A4: {
+    PROJECT_OVERVIEW_TABLES: {
+      A3: 'application.config.project.section.a.3',
       A4: 'application.config.project.section.a.4'
     },
   },
