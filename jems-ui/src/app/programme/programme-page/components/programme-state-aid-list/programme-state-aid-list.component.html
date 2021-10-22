@@ -49,6 +49,7 @@
                             <input name="measure" formControlName="measure" matInput required
                                    [matAutocomplete]="measure"
                                    (focusout)="selectionUnfocused($event, stateAid)">
+                            <mat-label>{{ 'programme.state.aid.list.measure' | translate }}</mat-label>
                             <mat-autocomplete #measure="matAutocomplete"
                                               (optionSelected)="relationChanged($event.option?.value, stateAid)" [displayWith]="displayFn">
                                 <mat-option *ngFor="let relation of filteredStateAidMeasureValues(i)" [value]="relation">
