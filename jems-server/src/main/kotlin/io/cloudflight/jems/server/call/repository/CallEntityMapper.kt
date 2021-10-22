@@ -114,7 +114,8 @@ fun Call.toEntity(
     funds = existingEntity?.funds ?: mutableSetOf(),
     flatRates = existingEntity?.flatRates ?: mutableSetOf(),
     lumpSums = existingEntity?.lumpSums ?: mutableSetOf(),
-    unitCosts = existingEntity?.unitCosts ?: mutableSetOf()
+    unitCosts = existingEntity?.unitCosts ?: mutableSetOf(),
+    allowedRealCosts = existingEntity?.allowedRealCosts ?: AllowedRealCostsEntity()
 ).apply {
     translatedValues.addAll(description.combineDescriptionsToTranslations(this))
 }
