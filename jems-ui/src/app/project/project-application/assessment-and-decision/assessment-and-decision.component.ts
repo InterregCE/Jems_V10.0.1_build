@@ -67,9 +67,18 @@ export class AssessmentAndDecisionComponent {
     );
   }
 
-  returnToApplicant(projectId: number): void {
+  returnToApplicantForConditionsIncreaseVersion(projectId: number): void {
     this.actionPending = true;
-    this.assessmentAndDecisionStore.returnApplicationToApplicant(projectId)
+    this.assessmentAndDecisionStore.returnToApplicantForConditionsIncreaseVersion(projectId)
+      .pipe(
+        finalize(() => this.actionPending = false),
+        tap(() => this.showSuccessMessage())
+      ).subscribe();
+  }
+
+  returnToApplicantForConditions(projectId: number): void {
+    this.actionPending = true;
+    this.assessmentAndDecisionStore.returnApplicationToApplicantForConditions(projectId)
       .pipe(
         finalize(() => this.actionPending = false),
         tap(() => this.showSuccessMessage())
@@ -143,6 +152,7 @@ export class AssessmentAndDecisionComponent {
       ProjectStatusDTO.StatusEnum.ELIGIBLE,
       ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS,
       ProjectStatusDTO.StatusEnum.APPROVED,
+      ProjectStatusDTO.StatusEnum.CONDITIONSSUBMITTED,
     ];
 
     if (!isProjectLatestVersion || (callHasTwoSteps && !projectInSecondStep)) {

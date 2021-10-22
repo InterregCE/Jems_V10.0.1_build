@@ -62,7 +62,7 @@ internal class ProjectAuthorizationTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "can update project - OWNER, but wrong status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT", "RETURNED_TO_APPLICANT_FOR_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
     fun `can update project - OWNER, but wrong status`(status: ApplicationStatus) {
         every { securityService.currentUser } returns applicantUser
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
@@ -72,7 +72,7 @@ internal class ProjectAuthorizationTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "can update project - HAS PERMISSION, but wrong status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT", "RETURNED_TO_APPLICANT_FOR_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
     fun `can update project - HAS PERMISSION, but wrong status`(status: ApplicationStatus) {
         every { securityService.currentUser } returns adminUser
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns

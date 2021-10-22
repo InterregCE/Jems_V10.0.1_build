@@ -83,24 +83,6 @@ export class CheckAndSubmitComponent {
       ).subscribe();
   }
 
-  resubmitProject(projectId: number): void {
-    this.actionPending = true;
-    this.checkAndSubmitStore.submitApplication(projectId)
-      .pipe(
-        tap(() => this.redirectToProjectOverview(projectId)),
-        catchError((error) => this.showErrorMessage(error.error)),
-        finalize(() => this.actionPending = false)
-      ).subscribe();
-  }
-
-  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, isProjectLatestVersion: boolean, projectStatus: ProjectStatusDTO.StatusEnum): boolean {
-    if (!isProjectLatestVersion) {
-      return true;
-    }
-    const currentDate = moment(new Date());
-    return !(currentDate.isBefore(projectCallEndDate) && (hasPreConditionCheckSucceed || projectStatus === this.STATUS.STEP1DRAFT));
-  }
-
   private showErrorMessage(error: APIError): Observable<null> {
     this.error$.next(error);
     setTimeout(() => {
@@ -113,4 +95,11 @@ export class CheckAndSubmitComponent {
     this.router.navigate([`/app/project/detail/${projectId}`]);
   }
 
+  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, isProjectLatestVersion: boolean, projectStatus: ProjectStatusDTO.StatusEnum): boolean {
+    if (!isProjectLatestVersion) {
+      return true;
+    }
+    const currentDate = moment(new Date());
+    return !(currentDate.isBefore(projectCallEndDate) && (hasPreConditionCheckSucceed || projectStatus === this.STATUS.STEP1DRAFT));
+  }
 }

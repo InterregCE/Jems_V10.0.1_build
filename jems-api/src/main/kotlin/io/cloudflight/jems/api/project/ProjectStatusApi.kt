@@ -1,11 +1,12 @@
 package io.cloudflight.jems.api.project
 
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
-import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityDTO
 import io.cloudflight.jems.api.project.dto.ApplicationActionInfoDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityDTO
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -27,6 +28,12 @@ interface ProjectStatusApi {
     @ApiOperation("Submit project application")
     @PutMapping("submit")
     fun submitApplication(@PathVariable id: Long): ApplicationStatusDTO
+
+    @ApiOperation("Retrieve the previous status of the project application")
+    @GetMapping("previousStatus")
+    fun getApplicationPreviousStatus(
+        @PathVariable id: Long,
+    ): ProjectStatusDTO
 
     @ApiOperation("Set project application as eligible")
     @PutMapping("set-as-eligible", consumes = [MediaType.APPLICATION_JSON_VALUE])
@@ -66,6 +73,10 @@ interface ProjectStatusApi {
     @ApiOperation("Return project application to applicant")
     @PutMapping("return-to-applicant")
     fun returnApplicationToApplicant(@PathVariable id: Long): ApplicationStatusDTO
+
+    @ApiOperation("Return project application to applicant for conditions")
+    @PutMapping("hand-back-to-applicant")
+    fun handBackToApplicant(@PathVariable id: Long): ApplicationStatusDTO
 
     @ApiOperation("Start second step")
     @PutMapping("start-second-step")

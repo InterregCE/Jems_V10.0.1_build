@@ -65,7 +65,7 @@ internal class ProjectStatusAuthorizationTest: UnitTest() {
     }
 
     @ParameterizedTest(name = "owner can NOT submit project when status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT", "RETURNED_TO_APPLICANT_FOR_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
     fun `owner can NOT submit`(status: ApplicationStatus) {
         val user = userApplicant
         val PROJECT_ID = 15L
@@ -78,7 +78,7 @@ internal class ProjectStatusAuthorizationTest: UnitTest() {
     }
 
     @ParameterizedTest(name = "user with proper permission can submit project in status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"])
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT", "RETURNED_TO_APPLICANT_FOR_CONDITIONS"])
     fun `user with proper permission can submit`(status: ApplicationStatus) {
         val user = userWithProjectSubmissionPermission
         val PROJECT_ID = 16L
@@ -90,7 +90,7 @@ internal class ProjectStatusAuthorizationTest: UnitTest() {
     }
 
     @ParameterizedTest(name = "user with proper permission can NOT submit project when status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT", "RETURNED_TO_APPLICANT_FOR_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
     fun `user with proper permission can NOT submit`(status: ApplicationStatus) {
         val user = userWithProjectSubmissionPermission
         val PROJECT_ID = 17L

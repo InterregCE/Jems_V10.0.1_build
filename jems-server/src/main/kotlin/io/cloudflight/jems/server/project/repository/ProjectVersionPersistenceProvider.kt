@@ -32,4 +32,12 @@ class ProjectVersionPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getAllVersionsByProjectId(projectId: Long): List<ProjectVersion> =
         projectVersionRepository.findAllVersionsByIdProjectIdOrderByCreatedAtDesc(projectId).toProjectVersions()
+
+    @Transactional
+    override fun updateProjectLastVersion(projectId: Long) =
+        with(projectVersionRepository.findFirstByIdProjectIdOrderByCreatedAtDesc(projectId)) {
+            projectVersionRepository.deleteById(this!!.id)
+            projectVersionRepository.save(ProjectVersionEntity(id = this.id, user = this.user, status = this.status))
+                .toProjectVersion()
+        }
 }

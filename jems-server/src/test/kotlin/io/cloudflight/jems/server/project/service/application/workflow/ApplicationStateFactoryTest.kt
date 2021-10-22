@@ -7,11 +7,13 @@ import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationWithConditionsState
+import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.InEligibleApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.NotApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantApplicationState
+import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantForConditionsApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.SubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.impl.annotations.InjectMockKs
@@ -64,7 +66,9 @@ class ApplicationStateFactoryTest : UnitTest() {
         return Stream.of(
             Arguments.of(summary(ApplicationStatus.DRAFT), DraftApplicationState::class.java),
             Arguments.of(summary(ApplicationStatus.SUBMITTED), SubmittedApplicationState::class.java),
+            Arguments.of(summary(ApplicationStatus.CONDITIONS_SUBMITTED), ConditionsSubmittedApplicationState::class.java),
             Arguments.of(summary(ApplicationStatus.RETURNED_TO_APPLICANT), ReturnedToApplicantApplicationState::class.java),
+            Arguments.of(summary(ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS), ReturnedToApplicantForConditionsApplicationState::class.java),
             Arguments.of(summary(ApplicationStatus.ELIGIBLE), EligibleApplicationState::class.java),
             Arguments.of(summary(ApplicationStatus.INELIGIBLE), InEligibleApplicationState::class.java),
             Arguments.of(summary(ApplicationStatus.APPROVED), ApprovedApplicationState::class.java),

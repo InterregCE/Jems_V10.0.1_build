@@ -74,7 +74,7 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "can update workpackage - OWNER, but wrong status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT", "RETURNED_TO_APPLICANT_FOR_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
     fun `can update workpackage - OWNER, but wrong status`(status: ApplicationStatus) {
         every { securityService.currentUser } returns applicantUser
         every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns
@@ -84,7 +84,7 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "can update workpackage - HAS PERMISSION, but wrong status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT", "RETURNED_TO_APPLICANT_FOR_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
     fun `can update workpackage - HAS PERMISSION, but wrong status`(status: ApplicationStatus) {
         every { securityService.currentUser } returns adminUser
         every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns
@@ -103,7 +103,7 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "can update investment - OWNER, but wrong status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT", "RETURNED_TO_APPLICANT_FOR_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
     fun `can update investment - OWNER, but wrong status`(status: ApplicationStatus) {
         every { securityService.currentUser } returns applicantUser
         every { workPackagePersistence.getProjectFromWorkPackageInvestment(INVESTMENT_ID) } returns
@@ -113,7 +113,7 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "can update investment - HAS PERMISSION, but wrong status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT", "RETURNED_TO_APPLICANT_FOR_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
     fun `can update investment - HAS PERMISSION, but wrong status`(status: ApplicationStatus) {
         every { securityService.currentUser } returns adminUser
         every { workPackagePersistence.getProjectFromWorkPackageInvestment(INVESTMENT_ID) } returns

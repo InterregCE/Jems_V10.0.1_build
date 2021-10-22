@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {ProjectVersionStore} from '../common/services/project-version-store.service';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
-import {combineLatest, Observable, Subject} from 'rxjs';
-import {ProjectVersionDTO} from '@cat/api';
-import {distinctUntilChanged, map, shareReplay, tap} from 'rxjs/operators';
+import {combineLatest, Observable, of, Subject} from 'rxjs';
+import {ProjectStatusDTO, ProjectStatusService, ProjectVersionDTO} from '@cat/api';
+import {distinctUntilChanged, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectUtil} from '../common/project-util';
 
 @Injectable({
@@ -20,7 +20,8 @@ export class ProjectPageTemplateStore {
   isThisUserOwner$: Observable<boolean>;
 
   constructor(private projectVersionStore: ProjectVersionStore,
-              private projectStore: ProjectStore) {
+              private projectStore: ProjectStore,
+              private projectStatusService: ProjectStatusService) {
     this.versions$ = this.versions();
     this.currentVersion$ = this.currentVersion();
     this.latestVersion$ = this.latestVersion();
@@ -52,8 +53,14 @@ export class ProjectPageTemplateStore {
 
     return combineLatest([this.projectVersionStore.versions$, project$])
       .pipe(
-        map(([versions, project]) =>
-          ProjectUtil.isOpenForModifications(project) ? [ProjectPageTemplateStore.nextVersion(versions), ...versions] : versions
+        switchMap(([versions, project]) =>
+          project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS
+            ? this.projectStatusService.getApplicationPreviousStatus(project.id).pipe(
+            map(lastStatus => ({versions, project, needNewVersion: lastStatus.status !== ProjectStatusDTO.StatusEnum.CONDITIONSSUBMITTED}))
+            ) : of({versions, project, needNewVersion: true})
+        ),
+        map(data =>
+          ProjectUtil.isOpenForModifications(data.project) && data.needNewVersion ? [ProjectPageTemplateStore.nextVersion(data.versions), ...data.versions] : data.versions
         ),
         tap(() => this.versionsUpdatedEventSubject.next(true)),
         shareReplay(1)

@@ -62,7 +62,7 @@
                    [disabled]="!data.isFundingDecisionPreconditionOk"
                    [color]="data.projectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
                    [routerLink]="data.isFundingDecisionPreconditionOk ? ['./assessment/fundingDecision', step] : []" queryParamsHandling="merge">
-                    {{ (data.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS ? 'project.assessment.fundingDecision.assessment.update' : 'project.assessment.fundingDecision.assessment') | translate}}
+                    {{ (data.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS || data.projectStatus.status === STATUS.CONDITIONSSUBMITTED ? 'project.assessment.fundingDecision.assessment.update' : 'project.assessment.fundingDecision.assessment') | translate}}
                 </a>
             </ng-container>
         </div>

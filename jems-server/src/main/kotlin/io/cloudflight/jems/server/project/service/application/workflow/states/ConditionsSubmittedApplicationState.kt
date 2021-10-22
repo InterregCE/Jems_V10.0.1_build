@@ -9,7 +9,8 @@ import io.cloudflight.jems.server.project.service.application.workflow.Applicati
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.context.ApplicationEventPublisher
 
-class ApprovedApplicationWithConditionsState(
+
+class ConditionsSubmittedApplicationState(
     override val projectSummary: ProjectSummary,
     override val projectWorkflowPersistence: ProjectWorkflowPersistence,
     override val auditPublisher: ApplicationEventPublisher,
@@ -17,23 +18,14 @@ class ApprovedApplicationWithConditionsState(
     override val projectPersistence: ProjectPersistence
 ) : ApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence) {
 
-    private val canBeRevertTo = setOf(ApplicationStatus.ELIGIBLE)
-
     override fun approve(actionInfo: ApplicationActionInfo): ApplicationStatus =
         updateFundingDecision(ApplicationStatus.APPROVED, actionInfo)
 
     override fun refuse(actionInfo: ApplicationActionInfo): ApplicationStatus =
         updateFundingDecision(ApplicationStatus.NOT_APPROVED, actionInfo)
 
-    override fun returnToApplicant(): ApplicationStatus =
+    override fun handBackToApplicant(): ApplicationStatus =
         returnToApplicantDefaultImpl(ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
-
-    override fun revertDecision(): ApplicationStatus =
-        revertCurrentStatusToPreviousStatus(validRevertStatuses = canBeRevertTo).also {
-            projectWorkflowPersistence.clearProjectFundingDecision(projectSummary.id)
-        }
-
-    override fun getPossibleStatusToRevertTo() =
-        getPossibleStatusToRevertToDefaultImpl(canBeRevertTo)
 }
+
 
