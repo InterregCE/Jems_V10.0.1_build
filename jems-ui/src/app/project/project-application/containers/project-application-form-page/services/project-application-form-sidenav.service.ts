@@ -275,7 +275,7 @@ export class ProjectApplicationFormSidenavService {
               ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ?
                 [{
                   headline: {i18nKey: 'project.application.form.section.part.d.subsection.three'},
-                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudgetPartnerPerPeriod`,
+                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudgetPerPeriod`,
                 }] : [],
             ],
             versionedSection: true

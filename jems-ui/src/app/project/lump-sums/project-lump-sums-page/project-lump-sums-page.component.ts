@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
-import {ProjectLumpSumsPageStore} from './project-lump-sums-page.store';
+import {ProjectLumpSumsStore} from './project-lump-sums-store.service';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {
@@ -39,7 +39,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 })
 export class ProjectLumpSumsPageComponent implements OnInit {
 
-  constructor(public pageStore: ProjectLumpSumsPageStore,
+  constructor(public pageStore: ProjectLumpSumsStore,
               private formBuilder: FormBuilder,
               private formService: FormService,
               private translateService: TranslateService,

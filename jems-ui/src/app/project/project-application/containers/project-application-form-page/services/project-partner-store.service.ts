@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
 import {
-  ProjectBudgetService,
   ProjectContactDTO,
   ProjectPartnerAddressDTO,
-  ProjectPartnerBudgetPerPeriodDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerDTO,
   ProjectPartnerMotivationDTO,
@@ -34,17 +32,13 @@ export class ProjectPartnerStore {
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
   private updatedPartner$ = new Subject<ProjectPartnerDetailDTO>();
-  partnerBudgetPerPeriodUpdateEvent$ = new BehaviorSubject(null);
-  projectPartnersBudgetPerPeriods$ = new Observable<ProjectPartnerBudgetPerPeriodDTO[]>();
 
   constructor(private partnerService: ProjectPartnerService,
               private projectStore: ProjectStore,
               private routingService: RoutingService,
-              private projectVersionStore: ProjectVersionStore,
-              private projectBudgetService: ProjectBudgetService) {
+              private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.partnerSummaries$ = this.partnerSummaries();
-    this.projectPartnersBudgetPerPeriods$ = this.projectPartnersBudgetPerPeriods();
     this.partners$ = combineLatest([
       this.projectStore.project$,
       this.projectVersionStore.currentRouteVersion$,
@@ -70,8 +64,7 @@ export class ProjectPartnerStore {
       .pipe(
         tap(saved => this.updatedPartner$.next(saved)),
         tap(() => this.partnerUpdateEvent$.next(null)),
-        tap(saved => Log.info('Updated partner:', this, saved)),
-        tap(() => this.partnerBudgetPerPeriodUpdateEvent$.next(null))
+        tap(saved => Log.info('Updated partner:', this, saved))
       );
   }
 
@@ -80,8 +73,7 @@ export class ProjectPartnerStore {
       .pipe(
         tap(created => this.updatedPartner$.next(created)),
         tap(() => this.partnerUpdateEvent$.next(null)),
-        tap(created => Log.info('Created partner:', this, created)),
-        tap(() => this.partnerBudgetPerPeriodUpdateEvent$.next(null))
+        tap(created => Log.info('Created partner:', this, created))
       );
   }
 
@@ -89,8 +81,7 @@ export class ProjectPartnerStore {
     return this.partnerService.updateProjectPartnerAddress(this.partnerId, addresses)
       .pipe(
         tap(saved => this.updatedPartner$.next(saved)),
-        tap(saved => Log.info('Updated partner addresses:', this, saved)),
-        tap(() => this.partnerBudgetPerPeriodUpdateEvent$.next(null))
+        tap(saved => Log.info('Updated partner addresses:', this, saved))
       );
   }
 
@@ -114,8 +105,7 @@ export class ProjectPartnerStore {
     return this.partnerService.deleteProjectPartner(partnerId)
       .pipe(
         tap(() => this.partnerUpdateEvent$.next(null)),
-        tap(() => Log.info('Partner removed:', this, partnerId)),
-        tap(() => this.partnerBudgetPerPeriodUpdateEvent$.next(null))
+        tap(() => Log.info('Partner removed:', this, partnerId))
       );
   }
 
@@ -153,16 +143,6 @@ export class ProjectPartnerStore {
     return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$, this.partnerUpdateEvent$])
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
-      );
-  }
-
-  private projectPartnersBudgetPerPeriods(): Observable<ProjectPartnerBudgetPerPeriodDTO[]> {
-    return combineLatest([this.projectStore.project$, this.projectVersionStore.currentRouteVersion$, this.partnerBudgetPerPeriodUpdateEvent$])
-      .pipe(
-        switchMap(([project, version]) =>
-          this.projectBudgetService.getProjectPartnerBudgetPerPeriod(project.id, version)
-        ),
-        shareReplay(1)
       );
   }
 }

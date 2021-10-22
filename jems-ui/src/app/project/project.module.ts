@@ -69,7 +69,7 @@ import {ProjectResultsPageComponent} from './results/project-results-page/projec
 import {UnitCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/unit-costs-budget-table/unit-costs-budget-table.component';
 import {ProjectWorkPackageOutputsTabComponent} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-outputs-tab/project-work-package-outputs-tab.component';
 import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/project-lump-sums-page.component';
-import {ProjectLumpSumsPageStore} from './lump-sums/project-lump-sums-page/project-lump-sums-page.store';
+import {ProjectLumpSumsStore} from './lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/budget-page-per-partner.component';
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
 import {FilterUnitCostsPipe} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
@@ -96,10 +96,17 @@ import {ProjectWorkPackageInvestmentDetailPageStore} from '@project/work-package
 import {InvestmentBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
 import {ProjectPartnerBudgetOverviewComponent} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-overview/project-partner-budget-overview.component';
 import {BudgetTableComponent} from '@project/budget/budget-page/budget-table/budget-table.component';
-import {BudgetPagePartnerPerPeriodComponent} from './budget/budget-page-partner-per-period/budget-page-partner-per-period.component';
 import {ProjectApplicationFormA4Component} from '@project/project-overview-tables-page/project-application-form-a4/project-application-form-a4.component';
 import {ProjectOverviewTablesPageComponent} from './project-overview-tables-page/project-overview-tables-page.component';
 import {ProjectBudgetOverviewComponent} from './project-overview-tables-page/project-budget-overview/project-budget-overview.component';
+import {BudgetPageFundPerPeriodComponent} from './budget/budget-page-per-period/budget-page-fund-per-period/budget-page-fund-per-period.component';
+import {BudgetPerPeriodPageComponent} from './budget/budget-page-per-period/budget-per-period-page.component';
+import {ProjectBudgetPeriodPageStore} from '@project/budget/budget-page-per-period/budget-period-page.store';
+import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
+import {ProjectLumpSumStore} from '@project/lump-sums/services/project-lump-sum.store';
+import {ProjectPartnerCoFinancingStore} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
+import {ProjectPartnerStateAidsStore} from '@project/partner/services/project-partner-state-aids.store';
+import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-per-period/budget-page-partner-per-period/budget-page-partner-per-period.component';
 
 @NgModule({
   declarations: [
@@ -192,6 +199,8 @@ import {ProjectBudgetOverviewComponent} from './project-overview-tables-page/pro
     BudgetPagePartnerPerPeriodComponent,
     ProjectOverviewTablesPageComponent,
     ProjectBudgetOverviewComponent,
+    BudgetPageFundPerPeriodComponent,
+    BudgetPerPeriodPageComponent,
   ],
   imports: [
     SharedModule,
@@ -212,7 +221,12 @@ import {ProjectBudgetOverviewComponent} from './project-overview-tables-page/pro
     ProjectWorkPackageInvestmentDetailPageStore,
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,
-    ProjectLumpSumsPageStore
+    ProjectLumpSumsStore,
+    ProjectBudgetPeriodPageStore,
+    ProjectPartnerBudgetStore,
+    ProjectLumpSumStore,
+    ProjectPartnerCoFinancingStore,
+    ProjectPartnerStateAidsStore
   ]
 })
 export class ProjectModule {

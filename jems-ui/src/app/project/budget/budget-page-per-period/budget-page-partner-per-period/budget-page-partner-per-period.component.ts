@@ -1,12 +1,11 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {combineLatest, Observable} from 'rxjs';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {Observable} from 'rxjs';
 import {ProjectPartnerBudgetPerPeriodDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {NumberService} from '@common/services/number.service';
-import {Alert} from '@common/components/forms/alert';
-import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {TableConfig} from '@common/directives/table-config/TableConfig';
+import {ProjectBudgetPeriodPageStore} from '@project/budget/budget-page-per-period/budget-period-page.store';
 
 
 @Component({
@@ -17,17 +16,16 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 })
 export class BudgetPagePartnerPerPeriodComponent {
 
-  private readonly PERIOD_PREPARATION = 0;
-  private readonly PERIOD_CLOSURE: number = 255;
+  readonly PERIOD_PREPARATION: number = 0;
+  readonly PERIOD_CLOSURE: number = 255;
+
+  @Input() tableConfig: TableConfig[];
+  @Input() projectPeriodNumbers: number[];
+
   APPLICATION_FORM = APPLICATION_FORM;
 
-  Alert = Alert;
-
   data$: Observable<{
-    periodNumbers: number[],
     projectPartnersBudgetPerPeriods: ProjectPartnerBudgetPerPeriodDTO[],
-    displayColumns: string[],
-    footerColumns: string[],
     totalEligibleBudget: number,
     totalPercent: number,
     periodTotalBudgets: number[],
@@ -35,24 +33,22 @@ export class BudgetPagePartnerPerPeriodComponent {
     periodsAvailable: boolean
   }>;
 
-  constructor(public projectStore: ProjectStore, private projectPartnerStore: ProjectPartnerStore) {
-
-    this.data$ = combineLatest([this.projectStore.projectPeriods$, this.projectPartnerStore.projectPartnersBudgetPerPeriods$])
+  constructor(
+    private budgetPeriodStore: ProjectBudgetPeriodPageStore,
+  ) {
+    this.data$ = this.budgetPeriodStore.projectPartnersBudgetPerPeriods$
       .pipe(
-        map(([periods, projectPartnersBudgetPerPeriods]) => {
-          const periodTotalBudgets = [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE].map(periodNumber => this.calculateTotalBudgetPerPeriod(periodNumber, projectPartnersBudgetPerPeriods));
+        map((projectPartnersBudgetPerPeriods) => {
+          const periodTotalBudgets = this.projectPeriodNumbers.map(periodNumber => this.calculateTotalBudgetPerPeriod(periodNumber, projectPartnersBudgetPerPeriods));
           const totalEligibleBudget = NumberService.sum(projectPartnersBudgetPerPeriods.map(partner => partner.totalPartnerBudget));
           projectPartnersBudgetPerPeriods.sort((a, b) => a.partner.sortNumber - b.partner.sortNumber);
           return {
-              periodNumbers: [this.PERIOD_PREPARATION, ...periods.map(period => period.number), this.PERIOD_CLOSURE],
-              projectPartnersBudgetPerPeriods,
-              displayColumns: ['projectPartnerBudgetPerPeriod', 'country', 'period0', ...periods.map(period => `period${period.number}`), 'period255', 'totalEligibleBudget'],
-              footerColumns: ['percentOfTotalBudget', 'blankCell', 'budgetPercent0', ...periods.map(period => `budgetPercent${period.number}`), 'budgetPercent255', 'budgetPercentTotal'],
-              totalEligibleBudget,
-              totalPercent: 100,
-              periodTotalBudgets,
-              periodTotalBudgetPercentages: this.calculateTotalPeriodBudgetPercentages(periodTotalBudgets, totalEligibleBudget),
-              periodsAvailable : periods.length > 0
+            projectPartnersBudgetPerPeriods,
+            totalEligibleBudget,
+            totalPercent: 100,
+            periodTotalBudgets,
+            periodTotalBudgetPercentages: this.calculateTotalPeriodBudgetPercentages(periodTotalBudgets, totalEligibleBudget),
+            periodsAvailable: this.projectPeriodNumbers.length > 0
           };
         }),
       );

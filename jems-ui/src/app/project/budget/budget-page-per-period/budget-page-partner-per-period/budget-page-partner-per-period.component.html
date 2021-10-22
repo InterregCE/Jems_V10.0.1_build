@@ -1,0 +1,48 @@
+<ng-container *ngIf="data$ | async as data">
+    <h3>{{ 'project.application.form.budgetPartnerPerPeriod.title' | translate }}</h3>
+    <p *ngIf="data.periodsAvailable">{{ 'project.application.form.budgetPartnerPerPeriod.description' | translate }}</p>
+    <div class="mt-3"
+         [appTableConfig]="tableConfig"
+         *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
+
+        <div>
+            <span>{{ 'project.breadcrumb.partnerName' | translate }}</span>
+            <span>{{ 'project.partner.main-address.country' | translate }}</span>
+            <span *ngFor="let periodNumber of projectPeriodNumbers">
+                 {{ periodNumber === PERIOD_PREPARATION ? ('project.application.form.section.part.e.period.preparation' | translate) :
+                (periodNumber === PERIOD_CLOSURE ? ('project.application.form.section.part.e.period.closure' | translate) :
+                    ('project.partner.budget.table.period' | translate) + ' ' + periodNumber) }}
+            </span>
+            <span>{{ 'project.partner.total.eligible.budget' | translate }}</span>
+        </div>
+
+        <ng-container *ngFor="let partner of data.projectPartnersBudgetPerPeriods">
+            <div>
+                <span> {{ 'common.label.project.partner.role.shortcut.' + partner.partner.role | translate : {partner: partner.partner.sortNumber} }}</span>
+                <span>{{partner.partner.country | translate}}</span>
+                <span *ngFor="let periodBudget of partner.periodBudgets">{{ periodBudget.totalBudgetPerPeriod | asMoney }}</span>
+                <span>{{partner.totalPartnerBudget | asMoney}}</span>
+            </div>
+        </ng-container>
+
+        <div class="footer">
+            <span>{{ 'project.partner.budget.table.total' | translate }}</span>
+            <span></span>
+            <span *ngFor="let periodNumber of projectPeriodNumbers">{{calculateTotalBudgetPerPeriod(periodNumber, data.projectPartnersBudgetPerPeriods) | asMoney }}</span>
+            <span>{{ data.totalEligibleBudget | asMoney}}</span>
+        </div>
+
+        <div class="footer">
+            <span>{{ 'project.partner.percent.of.total.budget' | translate }}</span>
+            <span></span>
+            <span *ngFor="let periodNumber of projectPeriodNumbers; let i = index">{{ data.periodTotalBudgetPercentages[i] | asMoney }} %</span>
+            <span>{{ data.totalPercent | asMoney }} %</span>
+        </div>
+    </div>
+</ng-container>
+
+
+
+
+
+

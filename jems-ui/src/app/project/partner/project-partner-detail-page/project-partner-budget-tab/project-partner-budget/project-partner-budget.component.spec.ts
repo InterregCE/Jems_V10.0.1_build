@@ -9,6 +9,7 @@ import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.s
 import {of} from 'rxjs';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
 
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
@@ -46,7 +47,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
         },
         {
           provide: ProjectPartnerDetailPageStore,
-          useClass: ProjectPartnerDetailPageStore
+          useClass: ProjectPartnerBudgetStore
         },
         {
           provide: ProjectPartnerBudgetTabService,

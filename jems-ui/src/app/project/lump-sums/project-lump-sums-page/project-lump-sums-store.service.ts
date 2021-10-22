@@ -10,7 +10,7 @@ import {ProjectPeriod} from '../../model/ProjectPeriod';
 import {ProjectVersionStore} from '../../common/services/project-version-store.service';
 
 @Injectable()
-export class ProjectLumpSumsPageStore {
+export class ProjectLumpSumsStore {
 
   projectCallLumpSums$ = this.projectStore.projectCall$.pipe(map(it => it.lumpSums));
   projectLumpSums$: Observable<ProjectLumpSum[]>;
@@ -55,7 +55,6 @@ export class ProjectLumpSumsPageStore {
                 contribution.partnerId,
                 contribution.amount)
             )))),
-      tap(() => this.projectPartnerStore.partnerBudgetPerPeriodUpdateEvent$.next(null)),
       shareReplay(1)
     );
   }
