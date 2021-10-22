@@ -28,7 +28,6 @@ import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/pro
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
 import {UserRoleDTO} from '@cat/api';
 import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ProjectApplicationFormRegionSelectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-region-selection/project-application-form-region-selection.component';
 import {ProjectApplicationFormPartnerEditComponent} from '@project/project-application/components/project-application-form/project-application-form-partner-edit/project-application-form-partner-edit.component';
 import {ProjectPartnerBudgetTabComponent} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.component';
@@ -46,7 +45,8 @@ import {AssessmentAndDecisionComponent} from '@project/project-application/asses
 import {PartnerBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/partner-breadcrumb-resolver.service';
 import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-breadcrumb-resolver.service';
 import {InvestmentBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
-import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-partner-per-period/budget-page-partner-per-period.component';
+import {BudgetPerPeriodPageComponent} from '@project/budget/budget-page-per-period/budget-per-period-page.component';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ProjectOverviewTablesPageComponent} from './project-overview-tables-page/project-overview-tables-page.component';
 
 export const routes: Routes = [
@@ -316,9 +316,9 @@ export const routes: Routes = [
             component: BudgetPageComponent,
           },
           {
-            path: 'applicationFormBudgetPartnerPerPeriod',
+            path: 'applicationFormBudgetPerPeriod',
             data: {breadcrumb: 'project.breadcrumb.applicationForm.budget'},
-            component: BudgetPagePartnerPerPeriodComponent,
+            component: BudgetPerPeriodPageComponent,
           },
           {
             path: 'applicationFormLumpSums',
