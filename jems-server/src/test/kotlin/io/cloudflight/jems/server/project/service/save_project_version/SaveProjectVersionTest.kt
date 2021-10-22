@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.create_new_project_version
+package io.cloudflight.jems.server.project.service.save_project_version
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 
-internal class CreateNewProjectVersionTest : UnitTest() {
+internal class SaveProjectVersionTest : UnitTest() {
 
     private val projectId = 11L
     private val userId = 1L
@@ -72,7 +72,7 @@ internal class CreateNewProjectVersionTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
-    lateinit var createNewProjectVersion: CreateNewProjectVersion
+    lateinit var saveProjectVersion: SaveProjectVersion
 
     @Test
     fun `should create a new version for the project when there is no problem`() {
@@ -90,7 +90,7 @@ internal class CreateNewProjectVersionTest : UnitTest() {
         val auditEventSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditEventSlot)) } returns Unit
 
-        val createdProjectVersion = createNewProjectVersion.create(projectId, ApplicationStatus.SUBMITTED)
+        val createdProjectVersion = saveProjectVersion.createNewVersion(projectId, ApplicationStatus.SUBMITTED)
 
         verify(exactly = 1) { auditPublisher.publishEvent(auditEventSlot.captured) }
 

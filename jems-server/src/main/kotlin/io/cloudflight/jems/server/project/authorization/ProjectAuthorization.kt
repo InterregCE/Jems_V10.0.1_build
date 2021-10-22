@@ -53,7 +53,7 @@ class ProjectAuthorization(
         val project = projectPersistence.getApplicantAndStatusById(projectId)
         val canSeeProject = hasPermission(UserRolePermission.ProjectFormUpdate) || isActiveUserIdEqualTo(project.applicantId)
         if (canSeeProject)
-            return project.projectStatus.hasNotBeenSubmittedYet()
+            return project.projectStatus.canBeModified()
         throw ResourceNotFoundException("project") // should be same exception as if entity not found
     }
 

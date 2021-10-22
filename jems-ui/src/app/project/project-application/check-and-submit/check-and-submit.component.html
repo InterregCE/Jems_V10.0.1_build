@@ -12,7 +12,7 @@
         <ng-container *hasPermission="[PermissionsEnum.ProjectCheckApplicationForm, PermissionsEnum.ProjectSubmission]; alternativeCondition data.isThisUserOwner">
 
             <ng-container
-                    *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT">
+                    *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT  || data.projectStatus === STATUS.RETURNEDTOAPPLICANTFORCONDITIONS">
                 <h3>{{'project.detail.pre.condition.check.result.title' | translate}}</h3>
                 <p>{{'project.detail.pre.condition.check.result.description' | translate}}</p>
             </ng-container>
@@ -21,7 +21,7 @@
                 <ng-container *hasPermission="PermissionsEnum.ProjectCheckApplicationForm; alternativeCondition data.isThisUserOwner">
                     <app-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
+                            *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT || data.projectStatus === STATUS.RETURNEDTOAPPLICANTFORCONDITIONS"
                             [disabled]="!data.isProjectLatestVersion"
                             [pending]="preConditionCheckInProgress"
                             (clicked)="preConditionCheck(data.projectId)">
@@ -46,7 +46,16 @@
                             [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
                             [disabled]="!data.isProjectLatestVersion || !data.hasPreConditionCheckSucceed"
                             [pending]="actionPending"
-                            (clicked)="resubmitProject(data.projectId)">
+                            (clicked)="submitProject(data.projectId)">
+                        {{'project.detail.button.resubmit' | translate}}
+                    </app-pending-button>
+
+                    <app-pending-button
+                            class="mr-2 mt-2"
+                            *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANTFORCONDITIONS"
+                            [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
+                            [pending]="actionPending"
+                            (clicked)="submitProject(data.projectId)">
                         {{'project.detail.button.resubmit' | translate}}
                     </app-pending-button>
                 </ng-container>

@@ -7,12 +7,15 @@ import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityDTO
+import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
+import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.approve_application.ApproveApplicationInteractor
 import io.cloudflight.jems.server.project.service.application.approve_application_with_conditions.ApproveApplicationWithConditionsInteractor
 import io.cloudflight.jems.server.project.service.application.execute_pre_condition_check.ExecutePreConditionCheckInteractor
 import io.cloudflight.jems.server.project.service.application.get_possible_status_to_revert_to.GetPossibleStatusToRevertToInteractor
 import io.cloudflight.jems.server.project.service.application.refuse_application.RefuseApplicationInteractor
 import io.cloudflight.jems.server.project.service.application.return_application_to_applicant.ReturnApplicationToApplicantInteractor
+import io.cloudflight.jems.server.project.service.application.hand_back_to_applicant.HandBackToApplicantInteractor
 import io.cloudflight.jems.server.project.service.application.start_second_step.StartSecondStepInteractor
 import io.cloudflight.jems.server.project.service.application.revert_application_decision.RevertApplicationDecisionInteractor
 import io.cloudflight.jems.server.project.service.application.set_application_as_eligible.SetApplicationAsEligibleInteractor
@@ -32,17 +35,22 @@ class ProjectStatusController(
     private val approveApplicationWithConditions: ApproveApplicationWithConditionsInteractor,
     private val refuseApplication: RefuseApplicationInteractor,
     private val returnApplicationToApplicant: ReturnApplicationToApplicantInteractor,
+    private val handBackToApplicant: HandBackToApplicantInteractor,
     private val startSecondStep: StartSecondStepInteractor,
     private val getPossibleStatusToRevertTo: GetPossibleStatusToRevertToInteractor,
     private val revertApplicationDecision: RevertApplicationDecisionInteractor,
     private val setAssessmentEligibilityInteractor: SetAssessmentEligibilityInteractor,
     private val setAssessmentQualityInteractor: SetAssessmentQualityInteractor,
+    private val projectWorkflowPersistence: ProjectWorkflowPersistence
 ) : ProjectStatusApi {
     override fun preConditionCheck(id: Long): PreConditionCheckResultDTO =
         executePreConditionCheck.execute(id).toDTO()
 
     override fun submitApplication(id: Long) =
         submitApplication.submit(id).toDTO()
+
+    override fun getApplicationPreviousStatus(id: Long): ProjectStatusDTO =
+        projectWorkflowPersistence.getApplicationPreviousStatus(id).toDTO()
 
     override fun setApplicationAsEligible(id: Long, actionInfo: ApplicationActionInfoDTO) =
         setApplicationAsEligible.setAsEligible(id, actionInfo.toModel()).toDTO()
@@ -61,6 +69,9 @@ class ProjectStatusController(
 
     override fun returnApplicationToApplicant(id: Long) =
         returnApplicationToApplicant.returnToApplicant(id).toDTO()
+
+    override fun handBackToApplicant(id: Long) =
+        handBackToApplicant.handBackToApplicant(id).toDTO()
 
     override fun startSecondStep(id: Long): ApplicationStatusDTO =
         startSecondStep.startSecondStep(id).toDTO()

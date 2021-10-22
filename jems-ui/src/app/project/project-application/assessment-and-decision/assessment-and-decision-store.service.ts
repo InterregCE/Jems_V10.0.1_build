@@ -22,8 +22,16 @@ export class AssessmentAndDecisionStore {
     this.revertToStatus$ = this.revertToStatus();
   }
 
-  returnApplicationToApplicant(projectId: number): Observable<string> {
+  returnToApplicantForConditionsIncreaseVersion(projectId: number): Observable<string> {
     return this.projectStatusService.returnApplicationToApplicant(projectId)
+      .pipe(
+        tap(() => this.projectStore.projectStatusChanged$.next()),
+        tap(status => Log.info('Changed status for project', projectId, status))
+      );
+  }
+
+  returnApplicationToApplicantForConditions(projectId: number): Observable<string> {
+    return this.projectStatusService.handBackToApplicant(projectId)
       .pipe(
         tap(() => this.projectStore.projectStatusChanged$.next()),
         tap(status => Log.info('Changed status for project', projectId, status))

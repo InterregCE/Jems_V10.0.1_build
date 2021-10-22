@@ -16,6 +16,7 @@ interface ProjectWorkflowPersistence {
     fun updateApplicationFirstSubmission(projectId: Long, userId: Long, status: ApplicationStatus): ApplicationStatus
 
     fun updateProjectLastResubmission(projectId: Long, userId: Long, status: ProjectStatus): ApplicationStatus
+    fun updateProjectLastResubmission(projectId: Long, userId: Long, status: ApplicationStatus): ApplicationStatus
 
     fun updateProjectCurrentStatus(
         projectId: Long,

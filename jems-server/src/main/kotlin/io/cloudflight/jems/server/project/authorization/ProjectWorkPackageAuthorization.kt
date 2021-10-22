@@ -47,7 +47,7 @@ class ProjectWorkPackageAuthorization(
         val project = getProjectFromWorkPackageId(workPackageId)
         val canSeeWorkPackage = hasPermission(UserRolePermission.ProjectFormUpdate) || isActiveUserIdEqualTo(project.applicantId)
         if (canSeeWorkPackage)
-            return project.projectStatus.hasNotBeenSubmittedYet()
+            return project.projectStatus.canBeModified()
         throw ResourceNotFoundException("project")
     }
 
@@ -64,7 +64,7 @@ class ProjectWorkPackageAuthorization(
         val project = getProjectFromInvestmentId(investmentId)
         val canSeeInvestment = hasPermission(UserRolePermission.ProjectFormUpdate) || isActiveUserIdEqualTo(project.applicantId)
         if (canSeeInvestment)
-            return project.projectStatus.hasNotBeenSubmittedYet()
+            return project.projectStatus.canBeModified()
         throw ResourceNotFoundException("project")
     }
 

@@ -18,6 +18,7 @@ export class ProjectUtil {
 
     return status?.status === ProjectStatusDTO.StatusEnum.STEP1DRAFT
       || status?.status === ProjectStatusDTO.StatusEnum.DRAFT
-      || status?.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
+      || status?.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT
+      || status?.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS;
   }
 }

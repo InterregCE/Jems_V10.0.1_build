@@ -44,7 +44,7 @@ class ProjectPartnerAuthorization(
         val project = getProjectFromPartnerId(partnerId)
         val canSeePartner = hasPermission(UserRolePermission.ProjectFormUpdate) || isActiveUserIdEqualTo(project.applicantId)
         if (canSeePartner)
-            return project.projectStatus.hasNotBeenSubmittedYet()
+            return project.projectStatus.canBeModified()
         throw ResourceNotFoundException("partner")
     }
 

@@ -53,14 +53,27 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun updateProjectLastResubmission(projectId: Long, userId: Long, status: ProjectStatus) =
+        updateProjectLastResubmission(projectId, userId, status.status, status.decisionDate, status.note)
+
+    @Transactional
+    override fun updateProjectLastResubmission(projectId: Long, userId: Long, status: ApplicationStatus) =
+        updateProjectLastResubmission(projectId, userId, status, null, null)
+
+    private fun updateProjectLastResubmission(
+        projectId: Long,
+        userId: Long,
+        status: ApplicationStatus,
+        decisionDate: LocalDate? = null,
+        note: String? = null
+    ) =
         projectRepository.getOne(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
                     project = this,
-                    status = status.status,
+                    status = status,
                     user = userRepository.getOne(userId),
-                    decisionDate = status.decisionDate,
-                    note = status.note,
+                    decisionDate = decisionDate,
+                    note = note,
                 )
             )
             lastResubmission = newStatus

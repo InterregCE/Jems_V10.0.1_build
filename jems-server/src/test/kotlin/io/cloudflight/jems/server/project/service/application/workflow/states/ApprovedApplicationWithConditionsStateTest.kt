@@ -135,11 +135,11 @@ class ApprovedApplicationWithConditionsStateTest {
 
     @Test
     fun returnToApplicant() {
-        every { projectWorkflowPersistence.updateProjectCurrentStatus(any(), any(), any()) } returns ApplicationStatus.RETURNED_TO_APPLICANT
-        assertThat(approvedApplicationWithConditionsState.returnToApplicant()).isEqualTo(ApplicationStatus.RETURNED_TO_APPLICANT)
+        every { projectWorkflowPersistence.updateProjectCurrentStatus(any(), any(), any()) } returns ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS
+        assertThat(approvedApplicationWithConditionsState.returnToApplicant()).isEqualTo(ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
 
         verify(exactly = 1) {
-            projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.RETURNED_TO_APPLICANT)
+            projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
         }
     }
 

@@ -37,5 +37,4 @@ export class CheckAndSubmitStore {
         tap(status => Log.info('Changed status for project', projectId, status))
       );
   }
-
 }

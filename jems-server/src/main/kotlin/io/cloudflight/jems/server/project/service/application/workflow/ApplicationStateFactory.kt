@@ -6,11 +6,13 @@ import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.*
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationWithConditionsState
+import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.InEligibleApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.NotApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantApplicationState
+import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantForConditionsApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.SubmittedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.first_step.FirstStepApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.first_step.FirstStepApprovedApplicationWithConditionsState
@@ -47,6 +49,8 @@ class ApplicationStateFactory(
             INELIGIBLE -> InEligibleApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
             NOT_APPROVED -> NotApprovedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
             RETURNED_TO_APPLICANT -> ReturnedToApplicantApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
+            RETURNED_TO_APPLICANT_FOR_CONDITIONS -> ReturnedToApplicantForConditionsApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
             SUBMITTED -> SubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
-        }
+            CONDITIONS_SUBMITTED ->  ConditionsSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
+    }
 }

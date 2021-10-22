@@ -48,6 +48,11 @@ abstract class ApplicationState(
             projectSummary.status
         )
 
+    open fun handBackToApplicant(): ApplicationStatus =
+        throw HandBackToApplicantIsNotAllowedException(
+            projectSummary.status
+        )
+
     open fun startSecondStep(): ApplicationStatus =
         throw StartSecondStepIsNotAllowedException(
             projectSummary.status
@@ -72,11 +77,11 @@ abstract class ApplicationState(
             validRevertStatuses.firstOrNull { it === previousStatus.status }
         }
 
-    protected fun returnToApplicantDefaultImpl(): ApplicationStatus =
+    protected fun returnToApplicantDefaultImpl(nextStatus: ApplicationStatus = ApplicationStatus.RETURNED_TO_APPLICANT) =
         projectWorkflowPersistence.updateProjectCurrentStatus(
             projectId = projectSummary.id,
             userId = securityService.getUserIdOrThrow(),
-            status = ApplicationStatus.RETURNED_TO_APPLICANT
+            status = nextStatus
         )
 
     protected fun startSecondStepDefaultImpl(): ApplicationStatus =

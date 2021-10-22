@@ -8,8 +8,11 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
+import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.hand_back_to_applicant.HandBackToApplicant
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
+import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationWithConditionsState
 import io.cloudflight.jems.server.project.service.application.workflow.states.SubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.every
@@ -47,13 +50,22 @@ class ReturnApplicationToApplicantInteractorTest : UnitTest() {
     lateinit var projectVersionPersistence: ProjectVersionPersistence
 
     @RelaxedMockK
+    lateinit var projectWorkflowPersistance: ProjectWorkflowPersistence
+
+    @RelaxedMockK
     lateinit var securityService: SecurityService
 
     @InjectMockKs
     private lateinit var returnApplicationToApplicant: ReturnApplicationToApplicant
 
+    @InjectMockKs
+    private lateinit var handBackToApplicant: HandBackToApplicant
+
     @MockK
     lateinit var submittedState: SubmittedApplicationState
+
+    @MockK
+    lateinit var approvedWithConditionsState: ApprovedApplicationWithConditionsState
 
 
     @Test
@@ -74,6 +86,36 @@ class ReturnApplicationToApplicantInteractorTest : UnitTest() {
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
                 project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
                 description = "Project application status changed from SUBMITTED to RETURNED_TO_APPLICANT"
+            )
+        )
+
+        assertThat(slotAudit[1].auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.APPLICATION_VERSION_RECORDED,
+                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
+                description = slotAudit[1].auditCandidate.description
+            )
+        )
+    }
+
+    @Test
+    fun returnToApplicantFromApprovedWithConditions() {
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary
+        every { applicationStateFactory.getInstance(any()) } returns approvedWithConditionsState
+        every { approvedWithConditionsState.returnToApplicant() } returns ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS
+
+        val slotAudit = mutableListOf<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(slotAudit)) }.returnsMany(Unit)
+
+        assertThat(returnApplicationToApplicant.returnToApplicant(PROJECT_ID)).isEqualTo(ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
+
+        verify (exactly = 2){ auditPublisher.publishEvent(or(slotAudit[0], slotAudit[1])) }
+
+        assertThat(slotAudit[0].auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.APPLICATION_STATUS_CHANGED,
+                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
+                description = "Project application status changed from SUBMITTED to RETURNED_TO_APPLICANT_FOR_CONDITIONS"
             )
         )
 
