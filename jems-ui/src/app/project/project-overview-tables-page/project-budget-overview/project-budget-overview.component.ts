@@ -4,6 +4,7 @@ import {ProjectCoFinancingByFundOverviewDTO, ProjectCoFinancingOverviewDTO} from
 import {Observable} from 'rxjs';
 import {MatTableDataSource} from '@angular/material/table';
 import {tap} from 'rxjs/operators';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-project-budget-overview',
@@ -12,6 +13,7 @@ import {tap} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectBudgetOverviewComponent {
+  Alert = Alert;
   displayedColumns = [
     'fundingSource', 'fundingAmount', 'coFinancingRate',
     'autoPublicContribution', 'otherPublicContribution', 'totalPublicContribution',

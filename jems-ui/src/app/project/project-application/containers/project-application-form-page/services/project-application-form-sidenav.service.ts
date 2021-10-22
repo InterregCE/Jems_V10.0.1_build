@@ -231,10 +231,11 @@ export class ProjectApplicationFormSidenavService {
             headline: {i18nKey: 'project.application.form.section.part.a'},
             route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormIdentification`,
           },
-          {
-            headline: {i18nKey: 'project.application.form.section.part.a.overview.tables'},
-            route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormOverviewTables`,
-          },
+          ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES) ?
+            [{
+              headline: {i18nKey: 'project.application.form.section.part.a.overview.tables'},
+              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormOverviewTables`,
+            }] : [],
         ],
         versionedSection: true
       },
