@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing
 
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
@@ -12,6 +13,12 @@ interface ProjectPartnerCoFinancingPersistence {
         partnerId: Long,
         version: String? = null
     ): ProjectPartnerCoFinancingAndContribution
+
+    fun getCoFinancingAndContributionsForPartnerList(
+        partnerIds: List<Long>,
+        projectId: Long,
+        version: String? = null
+    ): Map<Long, List<ProjectPartnerCoFinancing>>?
 
     fun updateCoFinancingAndContribution(
         partnerId: Long,
