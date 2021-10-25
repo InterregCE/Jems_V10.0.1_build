@@ -45,6 +45,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.Proj
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerStateAidData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerVatRecoveryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetCostData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetCostsCalculationResultData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetGeneralCostEntryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetPeriodData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetStaffCostEntryData
@@ -81,9 +82,11 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
+import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
@@ -101,6 +104,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
@@ -179,6 +183,7 @@ fun ProjectPartnerBudgetOptions.toDataModel() = pluginDataMapper.map(this)
 fun ProjectPartnerCoFinancingAndContribution.toDataModel() = pluginDataMapper.map(this)
 
 fun BudgetCosts.toDataModel() = pluginDataMapper.map(this)
+fun BudgetCostsCalculationResult.toDataModel() = pluginDataMapper.map(this)
 
 fun ProjectPartnerDetail.toDataModel(stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData) =
     pluginDataMapper.map(this, stateAid, budget)
@@ -189,6 +194,9 @@ fun List<ProjectLumpSum>.toDataModel(lumpSumsDetail: List<ProgrammeLumpSum>) =
     ProjectDataSectionE(
         map { projectLumpSum -> pluginDataMapper.map(projectLumpSum, lumpSumsDetail.firstOrNull { it.id == projectLumpSum.programmeLumpSumId }) }
     )
+
+fun List<ProjectVersion>.toDataModel() =
+    map{pluginDataMapper.map(it)}
 
 fun Set<InputTranslation>?.toDataModel() =
     this?.map { InputTranslationData(it.language.toDataModel(), it.translation) }?.toSet() ?: emptySet()
@@ -256,6 +264,8 @@ abstract class PluginDataMapper {
     abstract fun map(programmeStateAid: ProgrammeStateAid): ProgrammeStateAidData
     abstract fun map(projectPartnerStateAid: ProjectPartnerStateAid): ProjectPartnerStateAidData
     abstract fun map(projectResult: ProjectResult): ProjectResultData
+    abstract fun map(budgetCostsCalculationResult: BudgetCostsCalculationResult): BudgetCostsCalculationResultData
+    abstract fun map(projectVersion: ProjectVersion): ProjectVersionData
 
     @Mappings(
         Mapping(target = "programmeLumpSum", source = "lumpSumsDetail")

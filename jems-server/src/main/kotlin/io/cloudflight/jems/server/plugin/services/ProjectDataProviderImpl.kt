@@ -8,6 +8,7 @@ import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
@@ -28,6 +29,7 @@ import java.math.BigDecimal
 @Service
 class ProjectDataProviderImpl(
     private val projectPersistence: ProjectPersistence,
+    private val projectVersionPersistence: ProjectVersionPersistence,
     private val programmeLumpSumPersistence: ProgrammeLumpSumPersistence,
     private val projectDescriptionPersistence: ProjectDescriptionPersistence,
     private val workPackagePersistence: WorkPackagePersistence,
@@ -61,8 +63,8 @@ class ProjectDataProviderImpl(
                 infrastructureCosts = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(it.id, version),
                 unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(it.id, version),
             ).toDataModel()
-            val budgetTotalCost = getBudgetTotalCosts(budgetOptions, it.id, version).totalCosts
-            val budget = PartnerBudgetData(budgetOptions?.toDataModel(), coFinancing, budgetCosts, budgetTotalCost)
+            val budgetCalculationResult = getBudgetTotalCosts(budgetOptions, it.id, version).toDataModel()
+            val budget = PartnerBudgetData(budgetOptions?.toDataModel(), coFinancing, budgetCosts,budgetCalculationResult.totalCosts, budgetCalculationResult)
             val stateAid = partnerPersistence.getPartnerStateAid(partnerId = it.id, version)
             it.toDataModel(stateAid, budget)
         }.toSet()
@@ -83,7 +85,8 @@ class ProjectDataProviderImpl(
 
         return ProjectData(
             sectionA, sectionB, sectionC, sectionE,
-            lifecycleData = ProjectLifecycleData(status = project.projectStatus.status.toDataModel())
+            lifecycleData = ProjectLifecycleData(status = project.projectStatus.status.toDataModel()),
+            versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel()
         )
     }
 
