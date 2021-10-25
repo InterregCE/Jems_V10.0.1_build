@@ -113,7 +113,8 @@ val DEFAULT_TOP_NAVIGATION_PERMISSIONS =
             UserRolePermissionNode(
                 name = "Applications",
                 viewPermissions = setOf(UserRolePermission.ProjectRetrieve),
-                type = UserRolePermissionNodeType.HIDDEN_VIEW,
+                editPermissions = setOf(UserRolePermission.ProjectRetrieveEditUserAssignments),
+                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
             ),
             UserRolePermissionNode(
                 name = "Calls",

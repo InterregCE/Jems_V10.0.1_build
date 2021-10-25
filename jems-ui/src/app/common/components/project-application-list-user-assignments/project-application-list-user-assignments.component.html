@@ -1,0 +1,34 @@
+<ng-container *ngIf="listStore.page$ | async as page">
+    <p *ngIf="!page.content.length">{{'project.list.empty' | translate}}</p>
+    <app-table *ngIf="page.content.length"
+               [configuration]="tableConfiguration"
+               [rows]="page.content"
+               [totalElements]="page?.totalElements"
+               [pageIndex]="listStore.newPageIndex$ | async"
+               (newPageIndex)="listStore.newPageIndex$.next($event)"
+               (newPageSize)="listStore.newPageSize$.next($event)"
+               (sortRows)="listStore.newSort$.next($event)">
+    </app-table>
+</ng-container>
+
+<ng-template #userAssignment let-project>
+    <mat-chip-list class="mt-2 mb-2">
+
+        <mat-chip
+                *ngFor="let user of project.defaultUsers"
+                matTooltip="{{ user.name }} {{ user.surname }}">
+            {{ user.email }}
+        </mat-chip>
+
+        <ng-container *ngFor="let userId of project.assignedUserIds">
+            <ng-container *ngIf="getUserByIdFromAvailable(userId, project.availableUsers) as user">
+                <mat-chip
+                        color="primary" selected
+                        matTooltip="{{ user.name }} {{ user.surname }}">
+                    {{ user?.email }}
+                </mat-chip>
+            </ng-container>
+        </ng-container>
+
+    </mat-chip-list>
+</ng-template>

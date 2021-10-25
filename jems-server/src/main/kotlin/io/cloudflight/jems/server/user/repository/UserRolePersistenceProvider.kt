@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.user.repository.userrole.toModel
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRoleCreate
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -81,5 +82,19 @@ class UserRolePersistenceProvider(
     override fun findById(id: Long): UserRoleSummary =
         userRoleRepo.findById(id).map { it.toModel(null) }
             .orElseThrow { UserRoleNotFound() }
+
+    @Transactional(readOnly = true)
+    override fun findRoleIdsHavingAndNotHavingPermissions(
+        needsToHaveAtLeastOneFrom: Set<UserRolePermission>,
+        needsNotToHaveAnyOf: Set<UserRolePermission>
+    ): Set<Long> {
+        if (needsToHaveAtLeastOneFrom.isEmpty())
+            throw PermissionFilterEmpty()
+
+        return userRolePermissionRepo.findRoleIdsHavingAndNotHavingPermissions(
+            needsToHaveAtLeastOneFrom = needsToHaveAtLeastOneFrom,
+            needsNotToHaveAnyOf = needsNotToHaveAnyOf,
+        )
+    }
 
 }

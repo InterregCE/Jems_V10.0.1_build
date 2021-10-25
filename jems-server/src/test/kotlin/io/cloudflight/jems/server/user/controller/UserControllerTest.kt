@@ -1,10 +1,16 @@
 package io.cloudflight.jems.server.user.controller
 
+import io.cloudflight.jems.api.project.dto.UserPermissionFilterDTO
+import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
 import io.cloudflight.jems.api.user.dto.UserDTO
 import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO
+import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectFormRetrieve
+import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectFileApplicationRetrieve
+import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectRetrieve
+import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectRetrieveEditUserAssignments
 import io.cloudflight.jems.api.user.dto.UserRoleSummaryDTO
 import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
 import io.cloudflight.jems.api.user.dto.UserStatusDTO.*
@@ -70,6 +76,12 @@ class UserControllerTest : UnitTest() {
             surname = "Schumacher",
             userRole = userRoleSummary,
             userStatus = UserStatus.ACTIVE
+        )
+        private val outputUser = OutputUser(
+            id = USER_ID,
+            email = "maintainer@interact.eu",
+            name = "Michael",
+            surname = "Schumacher",
         )
         private val user = User(
             id = USER_ID,
@@ -208,4 +220,24 @@ class UserControllerTest : UnitTest() {
         assertDoesNotThrow { controller.changeMyPassword(PasswordDTO(password = newPass, oldPassword = oldPass)) }
         verify(exactly = 1) { updateUserPasswordInteractor.updateMyPassword(passwordData) }
     }
+
+    @Test
+    fun listUsersByPermissions() {
+        val toHaveSlot = slot<Set<UserRolePermission>>()
+        val toNotHaveSlot = slot<Set<UserRolePermission>>()
+
+        every { getUserInteractor.getUsersFilteredByPermissions(
+            needsToHaveAtLeastOneFrom = capture(toHaveSlot),
+            needsNotToHaveAnyOf = capture(toNotHaveSlot),
+        ) } returns listOf(userSummary)
+
+        assertThat(controller.listUsersByPermissions(UserPermissionFilterDTO(
+            needsToHaveAtLeastOneFrom = setOf(ProjectFormRetrieve, ProjectFileApplicationRetrieve),
+            needsNotToHaveAnyOf = setOf(ProjectRetrieve, ProjectRetrieveEditUserAssignments),
+        ))).containsExactly(outputUser)
+
+        assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(UserRolePermission.ProjectFormRetrieve, UserRolePermission.ProjectFileApplicationRetrieve)
+        assertThat(toNotHaveSlot.captured).containsExactlyInAnyOrder(UserRolePermission.ProjectRetrieve, UserRolePermission.ProjectRetrieveEditUserAssignments)
+    }
+
 }

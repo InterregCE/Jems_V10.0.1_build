@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.user.service
 
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRoleCreate
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -20,5 +21,10 @@ interface UserRolePersistence {
     fun findUserRoleByName(name: String): Optional<UserRoleSummary>
 
     fun findById(id: Long): UserRoleSummary
+
+    fun findRoleIdsHavingAndNotHavingPermissions(
+        needsToHaveAtLeastOneFrom: Set<UserRolePermission>,
+        needsNotToHaveAnyOf: Set<UserRolePermission>,
+    ): Set<Long>
 
 }
