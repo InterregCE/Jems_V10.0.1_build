@@ -7,29 +7,10 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 import java.util.Optional
 
-interface CustomResultIndicatorRepository {
-    fun getReferenceIfExistsOrThrow(id: Long?): ResultIndicatorEntity?
-}
-
-open class CustomResultIndicatorRepositoryImpl(val repository: ResultIndicatorRepository) :
-    CustomResultIndicatorRepository {
-    @Transactional(readOnly = true)
-    override fun getReferenceIfExistsOrThrow(id: Long?): ResultIndicatorEntity? {
-        var resultIndicatorEntity: ResultIndicatorEntity? = null
-        if (id != null && id != 0L)
-            runCatching {
-                resultIndicatorEntity =
-                    repository.getOne(id)
-            }.onFailure { throw ResultIndicatorNotFoundException() }
-        return resultIndicatorEntity
-    }
-}
-
 @Repository
-interface ResultIndicatorRepository : JpaRepository<ResultIndicatorEntity, Long>, CustomResultIndicatorRepository {
+interface ResultIndicatorRepository : JpaRepository<ResultIndicatorEntity, Long> {
 
     @EntityGraph(attributePaths = ["programmePriorityPolicyEntity.programmePriority"])
     override fun findAll(pageable: Pageable): Page<ResultIndicatorEntity>
@@ -41,4 +22,5 @@ interface ResultIndicatorRepository : JpaRepository<ResultIndicatorEntity, Long>
     fun findTop50ByOrderById(): List<ResultIndicatorEntity>
     fun findOneByIdentifier(identifier: String): ResultIndicatorEntity?
     fun findAllByProgrammePriorityPolicyEntityProgrammeObjectivePolicyOrderById(programmeObjectivePolicy: ProgrammeObjectivePolicy): Iterable<ResultIndicatorEntity>
+
 }

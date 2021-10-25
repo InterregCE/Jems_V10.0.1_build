@@ -139,8 +139,8 @@ class PartnerPersistenceProvider(
     override fun create(projectId: Long, projectPartner: ProjectPartner): ProjectPartnerDetail =
         projectPartnerRepository.save(
             projectPartner.toEntity(
-                project = projectRepo.getReferenceIfExistsOrThrow(projectId),
-                legalStatus = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId)
+                project = projectRepo.getById(projectId),
+                legalStatus = legalStatusRepo.getById(projectPartner.legalStatusId!!)
             )
         ).also { updateSortByRole(projectId) }.toProjectPartnerDetail()
 
@@ -151,7 +151,7 @@ class PartnerPersistenceProvider(
             projectPartnerRepository.save(
                 entity.copy(
                     projectPartner = projectPartner,
-                    legalStatusRef = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId)
+                    legalStatusRef = projectPartner.legalStatusId?.let { legalStatusRepo.getById(it) },
                 )
             ).also { updateSortByRole(entity.project.id) }
         }.toProjectPartnerDetail()
@@ -201,13 +201,11 @@ class PartnerPersistenceProvider(
     @Transactional
     override fun updatePartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAid): ProjectPartnerStateAid {
         val workPackageActivities =
-            stateAid.activities?.map { workPackageActivityRepository.getReferenceIfExistsOrThrow(it.activityId) }
-                .orEmpty()
-                .filterNotNull()
+            stateAid.activities?.map { workPackageActivityRepository.getById(it.activityId) }.orEmpty()
         return projectPartnerStateAidRepository.save(stateAid.toEntity(
             partnerId = partnerId,
             workPackageActivities = workPackageActivities,
-            programmeStateAid = programmeStateAidRepository.getReferenceIfExistsOrThrow(stateAid.stateAidScheme?.id)
+            programmeStateAid = stateAid.stateAidScheme?.id?.let {programmeStateAidRepository.getById(it) }
         )).toModel()
     }
 

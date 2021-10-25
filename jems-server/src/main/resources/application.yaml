@@ -49,6 +49,8 @@ server:
   servlet:
     session:
       timeout: 60m
+  error:
+    path: "/error"
 
 management:
   endpoints:

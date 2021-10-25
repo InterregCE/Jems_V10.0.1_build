@@ -1,122 +1,74 @@
 package io.cloudflight.jems.server.call.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
+import io.cloudflight.jems.api.call.CallApi
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.common.dto.IdNamePairDTO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
-import io.cloudflight.jems.server.call.service.model.Call
-import io.cloudflight.jems.server.factory.UserFactory
+import io.cloudflight.platform.context.ApplicationContextProfiles
+import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.quickperf.sql.annotation.ExpectSelect
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
-import org.springframework.security.test.context.support.WithUserDetails
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.cloud.openfeign.FeignAutoConfiguration
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import org.springframework.test.context.ActiveProfiles
 import java.time.ZonedDateTime
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class CallControllerIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles(ApplicationContextProfiles.TEST_CONTAINER)
+class CallControllerIntegrationTest(
+    @Autowired @LocalServerPort private val port: Int,
+) {
 
-    @Autowired
-    private lateinit var mockMvc: MockMvc
-
-    @Autowired
-    private lateinit var jsonMapper: ObjectMapper
-
-    @Autowired
-    private lateinit var createCallInteractor: CreateCallInteractor
-
-    @Test
-    @WithUserDetails(value = UserFactory.ADMINISTRATOR_EMAIL)
-    @Transactional
-    fun `create call`() {
-        val call = CallUpdateRequestDTO(
-            name = "New Call",
-            startDateTime = ZonedDateTime.now(),
-            endDateTime = ZonedDateTime.now().plusDays(3L),
-            additionalFundAllowed = false,
-            lengthOfPeriod = 12,
-            description = setOf(InputTranslation(SystemLanguage.EN, "Short description")),
-        )
-
-        mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/call")
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jsonMapper.writeValueAsString(call))
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+    companion object {
+        private val START_DATE = ZonedDateTime.now().minusDays(1)
+        private val END_DATE = ZonedDateTime.now().plusDays(1)
     }
 
-    @Test
-    @WithUserDetails(value = UserFactory.ADMINISTRATOR_EMAIL)
-    @Transactional
-    fun `update allowed real costs`() {
-        val call = createCallInteractor.createCallInDraft(
-            Call(
-                name = "New Call",
-                startDate = ZonedDateTime.now(),
-                endDate = ZonedDateTime.now().plusDays(3L),
-                isAdditionalFundAllowed = false,
-                lengthOfPeriod = 12,
-                description = setOf(InputTranslation(SystemLanguage.EN, "Short description"))
+    private val config =   AnnotationConfigApplicationContext(
+        FeignAutoConfiguration::class.java,
+        CustomFeignClientConfiguration::class.java,
+        HttpMessageConvertersAutoConfiguration::class.java
+    )
+
+    private val callApi = FeignTestClientFactory.createClientApi(CallApi::class.java, port, config)
+
+    @BeforeEach
+    fun importData() {
+        if (callApi.listCalls().isEmpty()) {
+            callApi.createCall(
+                CallUpdateRequestDTO(
+                    name = "Call 1",
+                    startDateTime = START_DATE,
+                    endDateTime = END_DATE,
+                    additionalFundAllowed = true,
+                    lengthOfPeriod = 6,
+                    description = setOf(InputTranslation(EN, "EN desc")),
+                )
             )
-        )
-
-        val updateRealCosts = AllowedRealCostsDTO(
-            allowRealStaffCosts = false,
-            allowRealTravelAndAccommodationCosts = true,
-            allowRealExternalExpertiseAndServicesCosts = false,
-            allowRealEquipmentCosts = true,
-            allowRealInfrastructureCosts = false
-        )
-
-        mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/call/byId/${call.id}/allowedRealCosts")
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jsonMapper.writeValueAsString(updateRealCosts))
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.allowRealStaffCosts").value(false))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.allowRealTravelAndAccommodationCosts").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.allowRealExternalExpertiseAndServicesCosts").value(false))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.allowRealEquipmentCosts").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.allowRealInfrastructureCosts").value(false))
+        }
     }
 
     @Test
-    @WithUserDetails(value = UserFactory.ADMINISTRATOR_EMAIL)
-    @Transactional
-    fun `get allowed real costs`() {
-        val call = createCallInteractor.createCallInDraft(
-            Call(
-                name = "New Call",
-                startDate = ZonedDateTime.now(),
-                endDate = ZonedDateTime.now().plusDays(3L),
-                isAdditionalFundAllowed = false,
-                lengthOfPeriod = 12,
-                description = setOf(InputTranslation(SystemLanguage.EN, "Short description"))
-            )
-        )
-
-        mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/call/byId/${call.id}/allowedRealCosts")
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.allowRealStaffCosts").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.allowRealTravelAndAccommodationCosts").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.allowRealExternalExpertiseAndServicesCosts").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.allowRealEquipmentCosts").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.allowRealInfrastructureCosts").value(true))
+    // TODO solve performance issue (use Joins?)
+    @ExpectSelect(4)   // call, form field configuration, stateAids, translations
+    fun getCalls() {
+        val calls = callApi.listCalls()
+        assertThat(calls).hasSize(1)
+        assertThat(calls).containsExactly(IdNamePairDTO(1, "Call 1"))
     }
+
+    @Test
+    // TODO solve performance issue
+    @ExpectSelect(13)
+    fun getCallById() {
+        assertThat(callApi.getCallById(1)).isNotNull
+    }
+
 }

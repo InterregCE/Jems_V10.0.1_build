@@ -203,7 +203,7 @@ class ProjectPartnerBudgetPersistenceTest : UnitTest() {
         every { budgetStaffCostRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result = persistence.createOrUpdateBudgetStaffCosts(projectId, partnerId, listOf(staffCostEntry))
         assertThat(1).isEqualTo(result.size)
-        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
+        assertThat(result).allMatch { it.id == 1L }
     }
 
     @Test
@@ -215,7 +215,7 @@ class ProjectPartnerBudgetPersistenceTest : UnitTest() {
         every { budgetEquipmentRepository.saveAll(listOf(partnerBudgetEntity)) } returns listOf(partnerBudgetEntity)
         val result = persistence.createOrUpdateBudgetEquipmentCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
-        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
+        assertThat(result).allMatch { it.id == 1L }
     }
 
     @Test
@@ -232,7 +232,7 @@ class ProjectPartnerBudgetPersistenceTest : UnitTest() {
                 listOf(generalCostEntry)
             )
         assertThat(1).isEqualTo(result.size)
-        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
+        assertThat(result).allMatch { it.id == 1L }
     }
 
     @Test
@@ -245,7 +245,7 @@ class ProjectPartnerBudgetPersistenceTest : UnitTest() {
         val result =
             persistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
-        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
+        assertThat(result).allMatch { it.id == 1L }
     }
 
     @Test
@@ -258,7 +258,7 @@ class ProjectPartnerBudgetPersistenceTest : UnitTest() {
         val result =
             persistence.createOrUpdateBudgetTravelAndAccommodationCosts(projectId, partnerId, listOf(travelCostEntry))
         assertThat(1).isEqualTo(result.size)
-        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
+        assertThat(result).allMatch { it.id == 1L }
     }
 
     @Test
@@ -278,7 +278,7 @@ class ProjectPartnerBudgetPersistenceTest : UnitTest() {
 
         val result = persistence.createOrUpdateBudgetUnitCosts(projectId, partnerId, listOf(unitCostEntry))
         assertThat(1).isEqualTo(result.size)
-        assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
+        assertThat(result).allMatch { it.id == 1L }
     }
 
 }

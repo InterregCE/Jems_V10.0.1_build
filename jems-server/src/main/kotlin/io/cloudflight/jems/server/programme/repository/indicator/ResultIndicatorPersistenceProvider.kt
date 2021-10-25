@@ -43,9 +43,7 @@ class ResultIndicatorPersistenceProvider(
     override fun saveResultIndicator(resultIndicator: ResultIndicator) =
         resultIndicatorRepository.save(
             resultIndicator.toResultIndicatorEntity(
-                programmeSpecificObjectiveRepository.getReferenceIfExistsOrThrow(
-                    resultIndicator.programmeObjectivePolicy
-                )
+                resultIndicator.programmeObjectivePolicy?.let { programmeSpecificObjectiveRepository.getById(it) },
             )
         ).toResultIndicatorDetail()
 

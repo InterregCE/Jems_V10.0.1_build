@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.service
 
 import io.cloudflight.jems.api.authentication.dto.LoginRequest
 import io.cloudflight.jems.api.user.dto.UserRoleDTO
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -11,7 +12,7 @@ import io.cloudflight.jems.server.authentication.service.AuthenticationServiceIm
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserStatus
-import io.mockk.MockKAnnotations
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
@@ -24,7 +25,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import java.util.Collections
 import javax.servlet.http.HttpServletRequest
 
-class AuthenticationServiceTest {
+class AuthenticationServiceTest: UnitTest() {
 
     @RelaxedMockK
     lateinit var securityService: SecurityService
@@ -43,7 +44,7 @@ class AuthenticationServiceTest {
 
     @BeforeEach
     fun setup() {
-        MockKAnnotations.init(this)
+        clearMocks(auditService)
     }
 
     @Test
