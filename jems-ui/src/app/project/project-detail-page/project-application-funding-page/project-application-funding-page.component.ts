@@ -38,6 +38,7 @@ export class ProjectApplicationFundingPageComponent {
         eligibilityDecisionDate,
         showSecondDecision: !!project.secondStepDecision?.preFundingDecision
           && project.projectStatus.status !== StatusEnum.RETURNEDTOAPPLICANT
+          && project.projectStatus.status !== StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS
           && (!!finalFundingDecision || userCanChangeFunding),
         fullOptions: [this.stepStatus.approved, this.stepStatus.approvedWithConditions, this.stepStatus.notApproved],
         optionsForSecondDecision: [this.stepStatus.approved, this.stepStatus.notApproved],

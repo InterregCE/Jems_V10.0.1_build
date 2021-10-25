@@ -19,7 +19,7 @@ class ReturnedToApplicantForConditionsApplicationState(
 ) : ApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence) {
 
     override fun submit() =
-        ifPreviousStateIsValid().also { previousStatus ->
+        ifPreviousStateIsValid().let { previousStatus ->
             if (previousStatus.status == ApplicationStatus.CONDITIONS_SUBMITTED)
             projectWorkflowPersistence.updateProjectLastResubmission(
                 projectId = projectSummary.id,
@@ -32,7 +32,7 @@ class ReturnedToApplicantForConditionsApplicationState(
                     userId = securityService.getUserIdOrThrow(),
                     status = ApplicationStatus.CONDITIONS_SUBMITTED
                 )
-        }.status
+        }
 
 
     private fun ifPreviousStateIsValid(): ProjectStatus =

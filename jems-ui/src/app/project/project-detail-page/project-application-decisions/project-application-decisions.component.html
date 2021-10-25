@@ -56,7 +56,7 @@
                     {{'project.assessment.fundingDecision.assessment.view' | translate}}
                 </a>
             </ng-container>
-            <ng-container *ngIf="data.isProjectLatestVersion && !data.isDecisionFinal && !data.isReturnedNow">
+            <ng-container  *ngIf="data.isProjectLatestVersion && !data.isDecisionFinal && !data.isReturnedNow">
                 <a *hasPermission="[Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideApprovedWithConditions, Permissions.ProjectStatusDecideNotApproved]"
                    mat-stroked-button appFormFieldWidth="x-large"
                    [disabled]="!data.isFundingDecisionPreconditionOk"

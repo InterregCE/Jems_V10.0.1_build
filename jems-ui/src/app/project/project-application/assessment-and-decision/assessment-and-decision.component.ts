@@ -67,9 +67,9 @@ export class AssessmentAndDecisionComponent {
     );
   }
 
-  returnToApplicantForConditionsIncreaseVersion(projectId: number): void {
+  returnToApplicant(projectId: number): void {
     this.actionPending = true;
-    this.assessmentAndDecisionStore.returnToApplicantForConditionsIncreaseVersion(projectId)
+    this.assessmentAndDecisionStore.returnApplicationToApplicant(projectId)
       .pipe(
         finalize(() => this.actionPending = false),
         tap(() => this.showSuccessMessage())
