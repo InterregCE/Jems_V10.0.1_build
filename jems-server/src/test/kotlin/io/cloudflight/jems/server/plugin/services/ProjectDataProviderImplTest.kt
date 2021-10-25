@@ -68,12 +68,14 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
+import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
@@ -99,6 +101,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -127,11 +130,14 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -143,6 +149,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
+
+    @MockK
+    lateinit var projectVersionPersistence: ProjectVersionPersistence
 
     @RelaxedMockK
     lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence
@@ -184,7 +193,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         private val startDate = ZonedDateTime.now().minusDays(2)
         private val endDate = ZonedDateTime.now().plusDays(5)
 
-        private val user = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"), UserStatus.ACTIVE)
+        private val userEntity = UserEntity(3L, "email", "name", "surname", UserRoleEntity(4L, "role"), "password", UserStatus.ACTIVE)
+        private val user = UserSummary(userEntity.id, userEntity.email, userEntity.name, userEntity.surname, UserRoleSummary(4L, "role"), UserStatus.ACTIVE)
         private val projectStatus = ProjectStatus(5L, ApplicationStatus.APPROVED, user, updated = startDate)
         private val callSettings = ProjectCallSettings(
             callId = 2L,
@@ -228,6 +238,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             ),
             title = setOf(InputTranslation(SystemLanguage.EN, "title"))
         )
+        private val projectVersions = listOf(ProjectVersion("1.0", project.id!!, ZonedDateTime.now(), userEntity, ApplicationStatus.SUBMITTED))
         private val projectDescription = ProjectDescription(
             projectOverallObjective = ProjectOverallObjective(
                 overallObjective = setOf(InputTranslation(SystemLanguage.EN, "overallObjective"))
@@ -501,8 +512,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     @Test
     fun `project data provider get for project Id`() {
         val id = project.id!!
-        val totalCost = BigDecimal.TEN
+        val budgetCostsCalculationResult = BudgetCostsCalculationResult(staffCosts = BigDecimal.TEN, totalCosts = BigDecimal.TEN, travelCosts = BigDecimal.ZERO, officeAndAdministrationCosts = BigDecimal.ZERO, otherCosts = BigDecimal.ZERO)
         every { projectPersistence.getProject(id) } returns project
+        every { projectVersionPersistence.getAllVersionsByProjectId(id) } returns projectVersions
         every { projectDescriptionPersistence.getProjectDescription(id) } returns projectDescription
         every { partnerPersistence.findTop30ByProjectId(id) } returns listOf(projectPartner)
         every { budgetOptionsPersistence.getBudgetOptions(projectPartner.id) } returns partnerBudgetOptions
@@ -525,7 +537,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { getBudgetCostsPersistence.getBudgetEquipmentCosts(projectPartner.id) } returns emptyList()
         every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(projectPartner.id) } returns emptyList()
         every { getBudgetCostsPersistence.getBudgetUnitCosts(projectPartner.id) } returns emptyList()
-        every { budgetCostsCalculator.calculateCosts(any(), any(), any(), any(), any(), any(), any(), any()) } returns BudgetCostsCalculationResult(staffCosts = BigDecimal.TEN, totalCosts = totalCost, travelCosts = BigDecimal.ZERO, officeAndAdministrationCosts = BigDecimal.ZERO, otherCosts = BigDecimal.ZERO)
+        every { budgetCostsCalculator.calculateCosts(any(), any(), any(), any(), any(), any(), any(), any()) } returns budgetCostsCalculationResult
         every { associatedOrganizationPersistence.findAllByProjectId(id) } returns listOf(associatedOrganization)
         every { resultPersistence.getResultsForProject(id, null) } returns listOf(projectResult)
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns listOf(workPackage)
@@ -548,6 +560,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
         assertThat(projectData.sectionA).isEqualTo(
             ProjectDataSectionA(
+                customIdentifier = "01",
                 title = setOf(InputTranslationData(SystemLanguageData.EN, "title")),
                 intro = emptySet(),
                 acronym = project.acronym,
@@ -614,7 +627,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                 infrastructureCosts = emptyList(),
                                 unitCosts = emptyList()
                             ),
-                            projectPartnerBudgetTotalCost = totalCost
+                            projectPartnerBudgetTotalCost = budgetCostsCalculationResult.totalCosts,
+                            projectBudgetCostsCalculationResult = budgetCostsCalculationResult.toDataModel()
                         ),
                         addresses = listOf(
                             ProjectPartnerAddressData(
@@ -1007,12 +1021,13 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
         assertThat(projectData.sectionA).isEqualTo(
             ProjectDataSectionA(
+                customIdentifier = "01",
                 title = emptySet(),
                 intro = emptySet(),
                 acronym = "acronym",
                 duration = null,
                 specificObjective = null,
-                programmePriority = null
+                programmePriority = null,
             )
         )
         assertThat(projectData.sectionB).isEqualTo(
@@ -1068,6 +1083,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         assertThat(projectData.sectionE).isEqualTo(
             ProjectDataSectionE(projectLumpSums = emptyList())
         )
+
+        assertThat(projectData.versions).isEqualTo(projectVersions.toDataModel())
     }
 
     @Test
