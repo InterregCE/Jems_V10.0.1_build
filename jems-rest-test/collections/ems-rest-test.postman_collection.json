@@ -7657,8 +7657,8 @@
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
 											"\r",
-											"pm.test('status of project is set to RETURNED_TO_APPLICANT', function() {\r",
-											"    pm.expect(pm.response.json()).to.eql('RETURNED_TO_APPLICANT');\r",
+											"pm.test('status of project is set to RETURNED_TO_APPLICANT_FOR_CONDITIONS', function() {\r",
+											"    pm.expect(pm.response.json()).to.eql('RETURNED_TO_APPLICANT_FOR_CONDITIONS');\r",
 											"});\r",
 											""
 										],
@@ -7700,7 +7700,7 @@
 							"response": []
 						},
 						{
-							"name": "applicant can resubmit back to APPROVED_WC",
+							"name": "applicant can resubmit back to CONDITIONS_SUBMITTED",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -7719,8 +7719,8 @@
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
 											"\r",
-											"pm.test('status should be back to APPROVED_WITH_CONDITIONS', function() {\r",
-											"    pm.expect(pm.response.json()).to.eql('APPROVED_WITH_CONDITIONS');\r",
+											"pm.test('status should be CONDITIONS_SUBMITTED', function() {\r",
+											"    pm.expect(pm.response.json()).to.eql('CONDITIONS_SUBMITTED');\r",
 											"});\r",
 											""
 										],
@@ -7761,8 +7761,136 @@
 							},
 							"response": []
 						},
+
+
+                        {
+                          "name": "program user can hand application back to user from CONDITIONS_SUBMITTED",
+                          "event": [
+                            {
+                              "listen": "prerequest",
+                              "script": {
+                                "exec": [
+                                  ""
+                                ],
+                                "type": "text/javascript"
+                              }
+                            },
+                            {
+                              "listen": "test",
+                              "script": {
+                                "exec": [
+                                  "pm.test('program user can hand application back to user', function() {\r",
+                                  "    pm.response.to.have.status(200);\r",
+                                  "});\r",
+                                  "\r",
+                                  "pm.test('status of project is set to RETURNED_TO_APPLICANT_FOR_CONDITIONS', function() {\r",
+                                  "    pm.expect(pm.response.json()).to.eql('RETURNED_TO_APPLICANT_FOR_CONDITIONS');\r",
+                                  "});\r",
+                                  ""
+                                ],
+                                "type": "text/javascript"
+                              }
+                            }
+                          ],
+                          "request": {
+                            "auth": {
+                              "type": "basic",
+                              "basic": [
+                                {
+                                  "key": "password",
+                                  "value": "{{programme_user_password}}",
+                                  "type": "string"
+                                },
+                                {
+                                  "key": "username",
+                                  "value": "{{programme_user_email}}",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "method": "PUT",
+                            "header": [],
+                            "url": {
+                              "raw": "{{url}}/api/project/{{application_id}}/hand-back-to-applicant",
+                              "host": [
+                                "{{url}}"
+                              ],
+                              "path": [
+                                "api",
+                                "project",
+                                "{{application_id}}",
+                                "hand-back-to-applicant"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+
+
+                        {
+                          "name": "applicant can resubmit back multiple times to CONDITIONS_SUBMITTED",
+                          "event": [
+                            {
+                              "listen": "prerequest",
+                              "script": {
+                                "exec": [
+                                  ""
+                                ],
+                                "type": "text/javascript"
+                              }
+                            },
+                            {
+                              "listen": "test",
+                              "script": {
+                                "exec": [
+                                  "pm.test('applicant should be able to resubmit his application', function() {\r",
+                                  "    pm.response.to.have.status(200);\r",
+                                  "});\r",
+                                  "\r",
+                                  "pm.test('status should be CONDITIONS_SUBMITTED', function() {\r",
+                                  "    pm.expect(pm.response.json()).to.eql('CONDITIONS_SUBMITTED');\r",
+                                  "});\r",
+                                  ""
+                                ],
+                                "type": "text/javascript"
+                              }
+                            }
+                          ],
+                          "request": {
+                            "auth": {
+                              "type": "basic",
+                              "basic": [
+                                {
+                                  "key": "password",
+                                  "value": "{{applicant_email}}",
+                                  "type": "string"
+                                },
+                                {
+                                  "key": "username",
+                                  "value": "{{applicant_email}}",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "method": "PUT",
+                            "header": [],
+                            "url": {
+                              "raw": "{{url}}/api/project/{{application_id}}/submit",
+                              "host": [
+                                "{{url}}"
+                              ],
+                              "path": [
+                                "api",
+                                "project",
+                                "{{application_id}}",
+                                "submit"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
 						{
-							"name": "check APPROVED_WC application after resubmit",
+							"name": "check application after resubmit",
 							"event": [
 								{
 									"listen": "prerequest",
