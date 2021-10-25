@@ -116,7 +116,7 @@ class ProjectWorkflowPersistenceProvider(
     @Transactional
     override fun revertCurrentStatusToPreviousStatus(projectId: Long) =
         getPreviousHistoryStatusOrThrow(projectId).let { previousHistoryStatus ->
-            projectRepository.getOne(projectId).apply {
+            projectRepository.getById(projectId).apply {
                 projectStatusHistoryRepository.delete(currentStatus)
                 currentStatus = previousHistoryStatus
             }
@@ -186,7 +186,7 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun clearProjectFundingDecision(projectId: Long) {
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             if (this.currentStatus.status.isInStep2())
                 if (this.currentStatus.status == ApplicationStatus.APPROVED_WITH_CONDITIONS)
                     this.decisionPreFundingStep2 = null

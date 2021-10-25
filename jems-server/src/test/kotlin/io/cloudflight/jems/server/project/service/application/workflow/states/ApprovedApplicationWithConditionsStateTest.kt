@@ -158,6 +158,7 @@ class ApprovedApplicationWithConditionsStateTest {
     @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE"], mode = EnumSource.Mode.EXCLUDE)
     fun revertDecision(status: ApplicationStatus) {
         every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
+        every { projectWorkflowPersistence.clearProjectFundingDecision(PROJECT_ID)} returns Unit
         assertThrows<DecisionReversionIsNotPossibleException> {
             approvedApplicationWithConditionsState.revertDecision()
         }
