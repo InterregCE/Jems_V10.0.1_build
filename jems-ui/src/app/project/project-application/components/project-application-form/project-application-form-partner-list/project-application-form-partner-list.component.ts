@@ -10,12 +10,14 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {ProjectPartnerSummaryDTO, PageProjectBudgetPartnerSummaryDTO} from '@cat/api';
+import {PageProjectBudgetPartnerSummaryDTO} from '@cat/api';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '@common/utils/forms';
-import {filter, map, take} from 'rxjs/operators';
+import {filter, map, take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import '@angular/common/locales/global/de';
+import {ProjectBudgetPartner} from '@project/model/ProjectBudgetPartner';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-project-application-form-partner-list',
@@ -27,7 +29,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   @Input()
   projectId: number;
   @Input()
-  partnerPage: PageProjectBudgetPartnerSummaryDTO;
+  partnerPage$: Observable<PageProjectBudgetPartnerSummaryDTO>;
   @Input()
   pageIndex: number;
   @Input()
@@ -50,17 +52,27 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
 
   tableConfiguration: TableConfiguration;
 
+  tableRows$: Observable<ProjectBudgetPartner[]>;
+
+  totalElements = 0;
+
+
   constructor(private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
+    this.tableRows$ = this.partnerPage$.pipe(
+      tap(pageProjectBudgetPartnerSummaryDTO => this.totalElements = pageProjectBudgetPartnerSummaryDTO.totalElements),
+      map(pageProjectBudgetPartnerSummaryDTO => this.getProjectPartnerSummary(pageProjectBudgetPartnerSummaryDTO))
+    );
+
     this.tableConfiguration = new TableConfiguration({
       routerLink: '..',
       isTableClickable: true,
       columns: [
         {
           displayedColumn: 'project.application.form.partner.table.number',
-          elementProperty: 'partnerSummary.sortNumber',
+          elementProperty: 'sortNumber',
           alternativeValueCondition: (element: any) => {
             return element === null;
           },
@@ -69,18 +81,18 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
         },
         {
           displayedColumn: 'project.application.form.partner.table.name',
-          elementProperty: 'partnerSummary.abbreviation',
+          elementProperty: 'abbreviation',
           sortProperty: 'abbreviation',
         },
         {
           displayedColumn: 'project.application.form.partner.table.role',
-          elementProperty: 'partnerSummary.role',
+          elementProperty: 'role',
           elementTranslationKey: 'common.label.project.partner.role',
           sortProperty: 'role',
         },
         {
           displayedColumn: 'project.application.form.partner.list.nuts.title',
-          elementProperty: 'partnerSummary.region',
+          elementProperty: 'region',
           sortProperty: 'nuts',
         },
         {
@@ -97,7 +109,19 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
     });
   }
 
-  delete(partner: ProjectPartnerSummaryDTO): void {
+  getProjectPartnerSummary(projectPartnerSummary: PageProjectBudgetPartnerSummaryDTO): ProjectBudgetPartner[]{
+    return projectPartnerSummary.content.map(projectPartnerBudgetSummary => ( {
+      id: projectPartnerBudgetSummary.partnerSummary.id,
+      abbreviation: projectPartnerBudgetSummary.partnerSummary.abbreviation,
+      role: projectPartnerBudgetSummary.partnerSummary.role,
+      country: projectPartnerBudgetSummary.partnerSummary.country,
+      region: projectPartnerBudgetSummary.partnerSummary.region,
+      sortNumber: projectPartnerBudgetSummary.partnerSummary.sortNumber,
+      totalBudget: projectPartnerBudgetSummary.totalBudget
+    }));
+  }
+
+  delete(partner: ProjectBudgetPartner): void {
     Forms.confirm(
       this.dialog,
       {
