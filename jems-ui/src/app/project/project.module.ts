@@ -80,7 +80,7 @@ import {ProjectPageTemplateComponent} from './project-page-template/project-page
 import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
 import {FormFieldVisibilityStatusDirective} from './common/directives/form-field-visibility-status.directive';
 import {ProjectPartnerStateAidTabComponent} from './partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
-import {ProjectApplicationFilesTreeComponent} from './common/components/file-management/project-application-files-tree/project-application-files-tree.component';
+import {CategoryTreeComponent} from './common/components/category-tree/category-tree.component';
 import {PeriodsTotalPipe} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/periods-total.pipe';
 import {FileManagementComponent} from './common/components/file-management/file-management.component';
 import {ProjectApplicationFilesTableComponent} from './common/components/file-management/project-application-files-table/project-application-files-table.component';
@@ -107,6 +107,7 @@ import {ProjectLumpSumStore} from '@project/lump-sums/services/project-lump-sum.
 import {ProjectPartnerCoFinancingStore} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
 import {ProjectPartnerStateAidsStore} from '@project/partner/services/project-partner-state-aids.store';
 import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-per-period/budget-page-partner-per-period/budget-page-partner-per-period.component';
+import { ExportComponent } from './project-application/export/export.component';
 
 @NgModule({
   declarations: [
@@ -189,7 +190,7 @@ import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-p
     FormFieldVisibilityStatusDirective,
     ProjectPartnerStateAidTabComponent,
     FileManagementComponent,
-    ProjectApplicationFilesTreeComponent,
+    CategoryTreeComponent,
     ProjectApplicationFilesTableComponent,
     ProjectPartnerFilterPipe,
     ApplicationAnnexesComponent,
@@ -201,6 +202,7 @@ import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-p
     ProjectBudgetOverviewComponent,
     BudgetPageFundPerPeriodComponent,
     BudgetPerPeriodPageComponent,
+    ExportComponent
   ],
   imports: [
     SharedModule,

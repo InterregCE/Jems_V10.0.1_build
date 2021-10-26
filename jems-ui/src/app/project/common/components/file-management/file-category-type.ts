@@ -1,0 +1,7 @@
+export enum FileCategoryTypeEnum {
+  ASSESSMENT = 'ASSESSMENT',
+  APPLICATION = 'APPLICATION',
+  PARTNER = 'PARTNER',
+  INVESTMENT = 'INVESTMENT',
+  ALL = 'ALL',
+}

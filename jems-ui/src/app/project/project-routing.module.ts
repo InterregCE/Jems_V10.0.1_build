@@ -48,6 +48,7 @@ import {InvestmentBreadcrumbResolver} from '@project/project-application/contain
 import {BudgetPerPeriodPageComponent} from '@project/budget/budget-page-per-period/budget-per-period-page.component';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ProjectOverviewTablesPageComponent} from './project-overview-tables-page/project-overview-tables-page.component';
+import {ExportComponent} from '@project/project-application/export/export.component';
 
 export const routes: Routes = [
   {
@@ -123,6 +124,11 @@ export const routes: Routes = [
                 ],
               },
             ]
+          },
+          {
+            path: 'export',
+            component: ExportComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.export'},
           },
           {
             path: 'applicationFormIdentification',

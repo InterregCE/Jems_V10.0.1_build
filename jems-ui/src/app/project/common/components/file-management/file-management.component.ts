@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {FileCategoryInfo} from '@project/common/components/file-management/file-category';
+import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {Observable} from 'rxjs';
 import {I18nMessage} from '@common/models/I18nMessage';
@@ -13,7 +13,7 @@ import {I18nMessage} from '@common/models/I18nMessage';
 export class FileManagementComponent implements OnInit {
 
   @Input()
-  section: FileCategoryInfo;
+  section: CategoryInfo;
 
   canReadFiles$: Observable<boolean>;
   selectedCategoryPath$: Observable<I18nMessage[]>;

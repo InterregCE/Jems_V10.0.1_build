@@ -1,12 +1,12 @@
-#project-files {
+#export-container {
   display: flex;
 
-  #project-files-tree {
+  #export-category-tree {
     width: 20rem;
     border: 1px solid var(--table-border-color);
   }
 
-  #project-files-table {
+  #export-config {
     flex: auto;
   }
 }

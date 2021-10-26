@@ -1,6 +1,10 @@
 <div *ngIf="canReadFiles$ | async" appNoWidthLimit id="project-files">
-    <app-project-application-files-tree class="mr-3" id="project-files-tree">
-    </app-project-application-files-tree>
+    <app-category-tree
+            [categories]="fileManagementStore.fileCategories$ | async"
+            (categorySelected)="fileManagementStore.selectedCategory$.next($event)"
+            [selectedCategory]="fileManagementStore.selectedCategory$ | async"
+            class="mr-3" id="project-files-tree">
+    </app-category-tree>
 
     <div id="project-files-table">
         <div *ngIf="selectedCategoryPath$ | async as selectedCategoryPath" class="mb-3">

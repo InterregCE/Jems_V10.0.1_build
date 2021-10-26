@@ -1,0 +1,55 @@
+<app-main-page-template *ngIf="data$ | async as data" [needsCard]="true"
+                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
+                           subTitleKey="project.application.form.section.export">
+
+    <div id="export-container" *ngIf="selectedCategory$ | async as selectedCategory">
+        <app-category-tree id="export-category-tree" class="mr-3"
+                           [categories]="data.categories"
+                           (categorySelected)="onCategoryChanged($event)"
+                           [selectedCategory]="selectedCategory"
+        ></app-category-tree>
+        <div id="export-config">
+            <h3>{{'export.header.' + selectedCategory?.type?.toLowerCase() | translate}}</h3>
+            <form appFormLayout [formGroup]="exportForm">
+                <mat-form-field appFormFieldWidth="xx-large">
+                    <mat-label>{{'export.label.project.version' | translate}}</mat-label>
+                    <mat-select formControlName="version">
+                        <mat-option *ngFor="let version of data.versions; let first = first" [value]="version.version" role="option">
+                            <ng-container *ngIf="first">
+                                {{'project.versions.select.format.first' | translate : {version: version.version} }}
+                            </ng-container>
+                            <ng-container *ngIf="!first">
+                                {{'project.versions.select.format' | translate : {version: version.version} }}
+                            </ng-container>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appFormFieldWidth="xx-large">
+                    <mat-label>{{'export.label.export.language' | translate}}</mat-label>
+                    <mat-select formControlName="exportLanguage">
+                        <mat-option *ngFor="let exportLanguage of data.exportLanguages" [value]="exportLanguage"
+                                    role="option">
+                            <mat-label>{{'language.' + exportLanguage.toLowerCase() | translate}}</mat-label>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appFormFieldWidth="xx-large">
+                    <mat-label>{{'export.label.input.language' | translate}}</mat-label>
+                    <mat-select formControlName="inputLanguage">
+                        <mat-option *ngFor="let inputLanguage of data.inputLanguages" [value]="inputLanguage"
+                                    role="option">
+                            <mat-label>{{'language.' + inputLanguage.toLowerCase() | translate}}</mat-label>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </form>
+            <button mat-raised-button color="primary"
+                    [disabled]="!selectedCategory || !exportLanguage || !inputLanguage || !data.projectId"
+                    (click)="exportData(selectedCategory, exportLanguage, inputLanguage, data.projectId, getVersion(data.versions))">
+                {{'export.label.export.button' | translate}}
+            </button>
+        </div>
+    </div>
+</app-main-page-template>
