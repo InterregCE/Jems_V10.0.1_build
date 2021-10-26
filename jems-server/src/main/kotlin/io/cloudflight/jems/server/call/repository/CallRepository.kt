@@ -17,4 +17,5 @@ interface CallRepository: JpaRepository<CallEntity, Long> {
 
     fun existsByStatus(status: CallStatus): Boolean
 
+    fun existsByidAndStatus(callId: Long, status: CallStatus): Boolean
 }

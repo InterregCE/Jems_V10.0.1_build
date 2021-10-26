@@ -211,6 +211,10 @@ class CallPersistenceProvider(
         callRepo.existsByStatus(CallStatus.PUBLISHED)
 
     @Transactional(readOnly = true)
+    override fun isCallPublished(callId: Long) =
+        callRepo.existsByidAndStatus(callId, CallStatus.PUBLISHED)
+
+    @Transactional(readOnly = true)
     override fun listCalls(): List<IdNamePair> =
         callRepo.findAll().toIdNamePair()
 
