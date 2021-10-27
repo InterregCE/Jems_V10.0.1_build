@@ -4,11 +4,11 @@
     <div appFormLayout>
         <div appNoWidthLimit>
             <ng-container *hasPermission="PermissionsEnum.ProjectStatusReturnToApplicant">
-                <app-pending-button *ngIf="data.returnToApplicantAvailable && data.projectStatus === STATUS.APPROVEDWITHCONDITIONS"
+                <app-pending-button *ngIf="data.returnToApplicantAvailable && data.projectStatus !== STATUS.CONDITIONSSUBMITTED"
                                     class="mr-2 mt-2"
                                     [confirm]="{title: 'project.detail.return.dialog.title', message: 'project.detail.return.dialog.message'}"
                                     [pending]="actionPending"
-                                    (clicked)="returnToApplicantForConditionsIncreaseVersion(data.projectId)">
+                                    (clicked)="returnToApplicant(data.projectId)">
                     {{'project.detail.button.return.applicant' | translate}}
                 </app-pending-button>
                 <app-pending-button *ngIf="data.returnToApplicantAvailable && data.projectStatus === STATUS.CONDITIONSSUBMITTED"
@@ -79,7 +79,7 @@
 
         <app-alert [show]="successMessage"
                    [type]="Alert.SUCCESS">
-            <p *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT">
+            <p *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT || data.projectStatus === STATUS.RETURNEDTOAPPLICANTFORCONDITIONS">
                 {{'project.detail.returned.to.applicant.success' | translate}}
             </p>
         </app-alert>

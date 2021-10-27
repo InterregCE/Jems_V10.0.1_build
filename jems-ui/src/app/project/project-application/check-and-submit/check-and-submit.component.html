@@ -42,18 +42,9 @@
 
                     <app-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT"
+                            *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT || data.projectStatus==STATUS.RETURNEDTOAPPLICANTFORCONDITIONS"
                             [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
                             [disabled]="!data.isProjectLatestVersion || !data.hasPreConditionCheckSucceed"
-                            [pending]="actionPending"
-                            (clicked)="submitProject(data.projectId)">
-                        {{'project.detail.button.resubmit' | translate}}
-                    </app-pending-button>
-
-                    <app-pending-button
-                            class="mr-2 mt-2"
-                            *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANTFORCONDITIONS"
-                            [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
                             [pending]="actionPending"
                             (clicked)="submitProject(data.projectId)">
                         {{'project.detail.button.resubmit' | translate}}

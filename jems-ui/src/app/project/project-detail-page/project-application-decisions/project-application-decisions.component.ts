@@ -66,7 +66,7 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
             decision: this.getDecision(project),
             fundingDecisionResult: this.getDecision(project)?.finalFundingDecision || this.getDecision(project)?.preFundingDecision,
             isDecisionFinal: !!this.getDecision(project)?.finalFundingDecision?.status,
-            isReturnedNow: project.projectStatus.status === StatusEnum.RETURNEDTOAPPLICANT,
+            isReturnedNow: this.isInReturnedStatus(project.projectStatus.status),
             userCanChangeFunding: userCanEditFunding,
             preFundingDecision: this.getDecision(project)?.preFundingDecision,
             isFundingDecisionPreconditionOk: Number(this.step) === 2
@@ -97,6 +97,10 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
     } else {
       return !isDraft && !isStep1Draft;
     }
+  }
+
+  isInReturnedStatus(status: string): boolean {
+   return status === StatusEnum.RETURNEDTOAPPLICANT || status === StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS;
   }
 
 }
