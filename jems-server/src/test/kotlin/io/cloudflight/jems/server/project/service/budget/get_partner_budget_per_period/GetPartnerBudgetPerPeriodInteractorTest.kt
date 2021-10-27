@@ -3,7 +3,9 @@ package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
+import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -11,10 +13,10 @@ import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerP
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -56,7 +58,7 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
     @MockK
     lateinit var optionPersistence: ProjectPartnerBudgetOptionsPersistence
     @MockK
-    lateinit var getBudgetTotalCost: GetBudgetTotalCost
+    lateinit var budgetCostsCalculatorService: BudgetCostsCalculatorService
     @MockK
     lateinit var projectPersistence: ProjectPersistence
     @MockK
@@ -68,6 +70,23 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
     @Test
     fun `getPartnerBudgetPerPeriod - without periods`() {
         val projectId = 1L
+
+        val partnerTotal = ProjectPartnerTotalBudget(
+            partner1Id,
+            null,
+            null,
+            null,
+            null,
+            null,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO
+        )
+
         every { persistence.getPartnersForProjectId(projectId) } returns listOf(partner1)
         every { optionPersistence.getBudgetOptions(setOf(partner1Id), projectId) } returns emptyList()
         every { lumpSumPersistence.getLumpSums(projectId) } returns emptyList()
@@ -75,7 +94,24 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
         every { persistence.getBudgetPerPartner(setOf(partner1Id), projectId) } returns emptyList()
         // partner 1
         every { projectPersistence.getProjectPeriods(projectId) } returns emptyList()
-        every { getBudgetTotalCost.getBudgetTotalCost(partner1Id) } returns BigDecimal.ZERO
+        every { persistence.getBudgetTotalForPartners(setOf(partner1Id), projectId) } returns mapOf(Pair(partner1Id, partnerTotal))
+        every { budgetCostsCalculatorService.calculateCosts(
+            ProjectPartnerBudgetOptions(
+                partnerId = partnerTotal.partnerId,
+                officeAndAdministrationOnStaffCostsFlatRate = partnerTotal.officeAndAdministrationOnStaffCostsFlatRate,
+                officeAndAdministrationOnDirectCostsFlatRate = partnerTotal.officeAndAdministrationOnDirectCostsFlatRate,
+                otherCostsOnStaffCostsFlatRate = partnerTotal.otherCostsOnStaffCostsFlatRate,
+                travelAndAccommodationOnStaffCostsFlatRate = partnerTotal.travelAndAccommodationOnStaffCostsFlatRate,
+                staffCostsFlatRate = partnerTotal.staffCostsFlatRate
+            ),
+            partnerTotal.unitCostTotal,
+            partnerTotal.lumpSumsTotal,
+            partnerTotal.externalCostTotal,
+            partnerTotal.equipmentCostTotal,
+            partnerTotal.infrastructureCostTotal,
+            partnerTotal.travelCostTotal,
+            partnerTotal.staffCostTotal
+        ) } returns BudgetCostsCalculationResult(totalCosts = BigDecimal.ZERO)
 
         assertThat(getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId))
             .containsExactlyInAnyOrder(
@@ -93,6 +129,23 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
     @Test
     fun `getPartnerBudgetPerPeriod - simple with flat rates`() {
         val projectId = 1L
+
+        val partnerTotal = ProjectPartnerTotalBudget(
+            partner1Id,
+            null,
+            null,
+            null,
+            null,
+            null,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO
+        )
+
         every { persistence.getPartnersForProjectId(projectId) } returns listOf(partner1)
         every { optionPersistence.getBudgetOptions(setOf(partner1Id), projectId) } returns listOf(
             ProjectPartnerBudgetOptions(
@@ -129,7 +182,24 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             ProjectPeriod(number = 2, start = 7, end = 12),
             ProjectPeriod(number = 3, start = 13, end = 15)
         )
-        every { getBudgetTotalCost.getBudgetTotalCost(partner1Id) } returns 562.5.toScaledBigDecimal()
+        every { persistence.getBudgetTotalForPartners(setOf(partner1Id), projectId) } returns mapOf(Pair(partner1Id, partnerTotal))
+        every { budgetCostsCalculatorService.calculateCosts(
+            ProjectPartnerBudgetOptions(
+                partnerId = partnerTotal.partnerId,
+                officeAndAdministrationOnStaffCostsFlatRate = partnerTotal.officeAndAdministrationOnStaffCostsFlatRate,
+                officeAndAdministrationOnDirectCostsFlatRate = partnerTotal.officeAndAdministrationOnDirectCostsFlatRate,
+                otherCostsOnStaffCostsFlatRate = partnerTotal.otherCostsOnStaffCostsFlatRate,
+                travelAndAccommodationOnStaffCostsFlatRate = partnerTotal.travelAndAccommodationOnStaffCostsFlatRate,
+                staffCostsFlatRate = partnerTotal.staffCostsFlatRate
+            ),
+            partnerTotal.unitCostTotal,
+            partnerTotal.lumpSumsTotal,
+            partnerTotal.externalCostTotal,
+            partnerTotal.equipmentCostTotal,
+            partnerTotal.infrastructureCostTotal,
+            partnerTotal.travelCostTotal,
+            partnerTotal.staffCostTotal
+        ) } returns BudgetCostsCalculationResult(totalCosts = 562.5.toScaledBigDecimal())
 
         assertThat(getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId))
             .containsExactlyInAnyOrder(
@@ -151,6 +221,39 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
     fun `getPartnerBudgetPerPeriod - historic version`() {
         val projectId = 1L
         val version = "1.0"
+
+        val partnerTotal1 = ProjectPartnerTotalBudget(
+            partner1Id,
+            null,
+            null,
+            null,
+            null,
+            null,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO
+        )
+
+        val partnerTotal2 = ProjectPartnerTotalBudget(
+            partner2Id,
+            null,
+            null,
+            null,
+            null,
+            null,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO
+        )
+
         every { persistence.getPartnersForProjectId(projectId, version) } returns listOf(partner1, partner2)
         every { optionPersistence.getBudgetOptions(setOf(partner1Id, partner2Id), projectId, version) } returns listOf(
             ProjectPartnerBudgetOptions(
@@ -175,7 +278,24 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             staffCostsPerPeriod = 50.toScaledBigDecimal(),
             infrastructureAndWorksCostsPerPeriod = 100.toScaledBigDecimal()
         )
-        every { getBudgetTotalCost.getBudgetTotalCost(partner1Id, version) } returns 300.toBigDecimal()
+        every { persistence.getBudgetTotalForPartners(setOf(partner1Id, partner2Id), projectId, version) } returns mapOf(Pair(partner1Id, partnerTotal1), Pair(partner2Id, partnerTotal2))
+        every { budgetCostsCalculatorService.calculateCosts(
+            ProjectPartnerBudgetOptions(
+                partnerId = partnerTotal1.partnerId,
+                officeAndAdministrationOnStaffCostsFlatRate = partnerTotal1.officeAndAdministrationOnStaffCostsFlatRate,
+                officeAndAdministrationOnDirectCostsFlatRate = partnerTotal1.officeAndAdministrationOnDirectCostsFlatRate,
+                otherCostsOnStaffCostsFlatRate = partnerTotal1.otherCostsOnStaffCostsFlatRate,
+                travelAndAccommodationOnStaffCostsFlatRate = partnerTotal1.travelAndAccommodationOnStaffCostsFlatRate,
+                staffCostsFlatRate = partnerTotal1.staffCostsFlatRate
+            ),
+            partnerTotal1.unitCostTotal,
+            partnerTotal1.lumpSumsTotal,
+            partnerTotal1.externalCostTotal,
+            partnerTotal1.equipmentCostTotal,
+            partnerTotal1.infrastructureCostTotal,
+            partnerTotal1.travelCostTotal,
+            partnerTotal1.staffCostTotal
+        ) } returns BudgetCostsCalculationResult(totalCosts = 300.toScaledBigDecimal())
         // partner 2
         val p2budgetPeriod1 = ProjectPartnerBudget(
             id = partner2Id,
@@ -183,7 +303,24 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             staffCostsPerPeriod = 100.toScaledBigDecimal(),
             externalExpertiseAndServicesCostsPerPeriod = 50.toScaledBigDecimal()
         )
-        every { getBudgetTotalCost.getBudgetTotalCost(partner2Id, version) } returns 250.toBigDecimal()
+
+        every { budgetCostsCalculatorService.calculateCosts(
+            ProjectPartnerBudgetOptions(
+                partnerId = partnerTotal2.partnerId,
+                officeAndAdministrationOnStaffCostsFlatRate = partnerTotal2.officeAndAdministrationOnStaffCostsFlatRate,
+                officeAndAdministrationOnDirectCostsFlatRate = partnerTotal2.officeAndAdministrationOnDirectCostsFlatRate,
+                otherCostsOnStaffCostsFlatRate = partnerTotal2.otherCostsOnStaffCostsFlatRate,
+                travelAndAccommodationOnStaffCostsFlatRate = partnerTotal2.travelAndAccommodationOnStaffCostsFlatRate,
+                staffCostsFlatRate = partnerTotal2.staffCostsFlatRate
+            ),
+            partnerTotal2.unitCostTotal,
+            partnerTotal2.lumpSumsTotal,
+            partnerTotal2.externalCostTotal,
+            partnerTotal2.equipmentCostTotal,
+            partnerTotal2.infrastructureCostTotal,
+            partnerTotal2.travelCostTotal,
+            partnerTotal2.staffCostTotal
+        ) } returns BudgetCostsCalculationResult(totalCosts = 250.toScaledBigDecimal())
 
         every { persistence.getBudgetPerPartner(setOf(partner1Id, partner2Id), projectId, version) } returns
             listOf(p1budgetPeriod1, p1budgetPeriod2, p2budgetPeriod1)
@@ -194,12 +331,12 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
                 ProjectPartnerBudgetPerPeriod(
                     partner = partner1,
                     periodBudgets = getProjectPeriods(170.00.toScaledBigDecimal(), 130.00.toScaledBigDecimal()),
-                    totalPartnerBudget = 300.toBigDecimal()
+                    totalPartnerBudget = 300.toScaledBigDecimal()
                 ),
                 ProjectPartnerBudgetPerPeriod(
                     partner = partner2,
                     periodBudgets = getProjectPeriods(250.toScaledBigDecimal(), 0.toScaledBigDecimal()),
-                    totalPartnerBudget = 250.toBigDecimal()
+                    totalPartnerBudget = 250.toScaledBigDecimal()
                 )
             )
     }
@@ -207,6 +344,39 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
     @Test
     fun `getPartnerBudgetPerPeriod - including lump sums`() {
         val projectId = 1L
+
+        val partnerTotal1 = ProjectPartnerTotalBudget(
+            partner1Id,
+            null,
+            null,
+            null,
+            null,
+            null,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO
+        )
+
+        val partnerTotal2 = ProjectPartnerTotalBudget(
+            partner2Id,
+            null,
+            null,
+            null,
+            null,
+            null,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO
+        )
+
         every { persistence.getPartnersForProjectId(projectId) } returns listOf(partner1, partner2)
         every { optionPersistence.getBudgetOptions(setOf(partner1Id, partner2Id), projectId) } returns listOf(
             ProjectPartnerBudgetOptions(
@@ -240,7 +410,25 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             infrastructureAndWorksCostsPerPeriod = 33.3.toScaledBigDecimal(),
             unitCostsPerPeriod = 25.toScaledBigDecimal()
         )
-        every { getBudgetTotalCost.getBudgetTotalCost(partner1Id) } returns 174.3.toBigDecimal()
+
+        every { persistence.getBudgetTotalForPartners(setOf(partner1Id, partner2Id), projectId) } returns mapOf(Pair(partner1Id, partnerTotal1), Pair(partner2Id, partnerTotal2))
+        every { budgetCostsCalculatorService.calculateCosts(
+            ProjectPartnerBudgetOptions(
+                partnerId = partner1Id,
+                officeAndAdministrationOnStaffCostsFlatRate = partnerTotal1.officeAndAdministrationOnStaffCostsFlatRate,
+                officeAndAdministrationOnDirectCostsFlatRate = partnerTotal1.officeAndAdministrationOnDirectCostsFlatRate,
+                otherCostsOnStaffCostsFlatRate = partnerTotal1.otherCostsOnStaffCostsFlatRate,
+                travelAndAccommodationOnStaffCostsFlatRate = partnerTotal1.travelAndAccommodationOnStaffCostsFlatRate,
+                staffCostsFlatRate = partnerTotal1.staffCostsFlatRate
+            ),
+            partnerTotal1.unitCostTotal,
+            partnerTotal1.lumpSumsTotal,
+            partnerTotal1.externalCostTotal,
+            partnerTotal1.equipmentCostTotal,
+            partnerTotal1.infrastructureCostTotal,
+            partnerTotal1.travelCostTotal,
+            partnerTotal1.staffCostTotal
+        ) } returns BudgetCostsCalculationResult(totalCosts = 174.3.toScaledBigDecimal())
         // partner 2
         val p2budgetPeriod1 = ProjectPartnerBudget(
             id = partner2Id,
@@ -248,7 +436,23 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             externalExpertiseAndServicesCostsPerPeriod = 10.toScaledBigDecimal(),
             infrastructureAndWorksCostsPerPeriod = 2.toScaledBigDecimal()
         )
-        every { getBudgetTotalCost.getBudgetTotalCost(partner2Id) } returns 13.38.toBigDecimal()
+        every { budgetCostsCalculatorService.calculateCosts(
+            ProjectPartnerBudgetOptions(
+                partnerId = partner2Id,
+                officeAndAdministrationOnStaffCostsFlatRate = partnerTotal2.officeAndAdministrationOnStaffCostsFlatRate,
+                officeAndAdministrationOnDirectCostsFlatRate = partnerTotal2.officeAndAdministrationOnDirectCostsFlatRate,
+                otherCostsOnStaffCostsFlatRate = partnerTotal2.otherCostsOnStaffCostsFlatRate,
+                travelAndAccommodationOnStaffCostsFlatRate = partnerTotal2.travelAndAccommodationOnStaffCostsFlatRate,
+                staffCostsFlatRate = partnerTotal2.staffCostsFlatRate
+            ),
+            partnerTotal2.unitCostTotal,
+            partnerTotal2.lumpSumsTotal,
+            partnerTotal2.externalCostTotal,
+            partnerTotal2.equipmentCostTotal,
+            partnerTotal2.infrastructureCostTotal,
+            partnerTotal2.travelCostTotal,
+            partnerTotal2.staffCostTotal
+        ) } returns BudgetCostsCalculationResult(totalCosts = 13.38.toScaledBigDecimal())
 
         every { persistence.getBudgetPerPartner(setOf(partner1Id, partner2Id), projectId) } returns
             listOf(p1budgetPeriod1, p1budgetPeriod2, p2budgetPeriod1)
@@ -259,12 +463,12 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
                 ProjectPartnerBudgetPerPeriod(
                     partner = partner1,
                     periodBudgets = getProjectPeriods(123.50.toScaledBigDecimal(), 50.80.toScaledBigDecimal()),
-                    totalPartnerBudget = 174.3.toBigDecimal()
+                    totalPartnerBudget = 174.3.toScaledBigDecimal()
                 ),
                 ProjectPartnerBudgetPerPeriod(
                     partner = partner2,
                     periodBudgets = getProjectPeriods(13.38.toScaledBigDecimal(), 0.toScaledBigDecimal()),
-                    totalPartnerBudget = 13.38.toBigDecimal()
+                    totalPartnerBudget = 13.38.toScaledBigDecimal()
                 )
             )
     }

@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.PartnerLumpSum
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
+import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -13,9 +14,9 @@ import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerP
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -25,9 +26,9 @@ import java.math.RoundingMode
 class GetPartnerBudgetPerPeriod(
     private val persistence: ProjectBudgetPersistence,
     private val optionPersistence: ProjectPartnerBudgetOptionsPersistence,
-    private val getBudgetTotalCost: GetBudgetTotalCost,
     private val projectPersistence: ProjectPersistence,
     private val lumpSumPersistence: ProjectLumpSumPersistence,
+    private val budgetCostsCalculator: BudgetCostsCalculatorService
 ) : GetPartnerBudgetPerPeriodInteractor {
 
     @Transactional(readOnly = true)
@@ -40,6 +41,7 @@ class GetPartnerBudgetPerPeriod(
         val budgetPerPartners = persistence.getBudgetPerPartner(partners.keys, projectId, version)
 
         val projectPeriods = projectPersistence.getProjectPeriods(projectId, version)
+        val totalPartnerBudgets = persistence.getBudgetTotalForPartners(partners.keys, projectId, version)
 
         return partners.map {
             getProjectPartnerBudgetPerPeriodForPartner(
@@ -48,7 +50,8 @@ class GetPartnerBudgetPerPeriod(
                 partnerBudgetOptions = options[it.key],
                 lumpSums = lumpSums,
                 projectPeriods = projectPeriods,
-                version = version)
+                partnerTotal = totalPartnerBudgets[it.key]
+            )
         }
     }
 
@@ -58,7 +61,7 @@ class GetPartnerBudgetPerPeriod(
         partnerBudgetOptions: ProjectPartnerBudgetOptions?,
         lumpSums: List<ProjectLumpSum>,
         projectPeriods: List<ProjectPeriod>,
-        version: String?
+        partnerTotal: ProjectPartnerTotalBudget?
     ): ProjectPartnerBudgetPerPeriod {
 
         val lumpSumsForPartner = lumpSums.map { lumpSum ->
@@ -89,7 +92,23 @@ class GetPartnerBudgetPerPeriod(
                         .map { it.amount }
                         .sumOf { it }
                 )}.toMutableList(),
-            totalPartnerBudget = getBudgetTotalCost.getBudgetTotalCost(partner.id!!, version)
+            totalPartnerBudget = budgetCostsCalculator.calculateCosts(
+                ProjectPartnerBudgetOptions(
+                    partnerId = partnerTotal!!.partnerId,
+                    officeAndAdministrationOnStaffCostsFlatRate = partnerTotal.officeAndAdministrationOnStaffCostsFlatRate,
+                    officeAndAdministrationOnDirectCostsFlatRate = partnerTotal.officeAndAdministrationOnDirectCostsFlatRate,
+                    otherCostsOnStaffCostsFlatRate = partnerTotal.otherCostsOnStaffCostsFlatRate,
+                    travelAndAccommodationOnStaffCostsFlatRate = partnerTotal.travelAndAccommodationOnStaffCostsFlatRate,
+                    staffCostsFlatRate = partnerTotal.staffCostsFlatRate
+                ),
+                partnerTotal.unitCostTotal,
+                partnerTotal.lumpSumsTotal,
+                partnerTotal.externalCostTotal,
+                partnerTotal.equipmentCostTotal,
+                partnerTotal.infrastructureCostTotal,
+                partnerTotal.travelCostTotal,
+                partnerTotal.staffCostTotal
+            ).totalCosts
         )
 
         // determine total budget without last period, preparation or closure

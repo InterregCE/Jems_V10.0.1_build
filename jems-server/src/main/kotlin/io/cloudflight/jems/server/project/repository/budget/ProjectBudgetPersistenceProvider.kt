@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistenc
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -140,4 +141,19 @@ class ProjectBudgetPersistenceProvider(
                     .toProjectPartnerBudgetPerPeriod()
             }
         ) ?: emptyList()
+
+    @Transactional(readOnly = true)
+    override fun getBudgetTotalForPartners(
+        partnerIds: Set<Long>,
+        projectId: Long,
+        version: String?
+    ): Map<Long, ProjectPartnerTotalBudget> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectPartnerRepository.getAllPartnerTotalBudgetData(partnerIds).associateBy({ it.partnerId }, { it.toModel() })
+            },
+            previousVersionFetcher = { timestamp ->
+                projectPartnerRepository.getAllPartnerTotalBudgetDataAsOfTimestamp(partnerIds, timestamp)
+                    .associateBy({ it.partnerId }, { it.toModel() })
+            }) ?: emptyMap()
 }
