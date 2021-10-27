@@ -13,10 +13,10 @@
     </ng-container>
 
     <app-project-application-form-partner-list
-            *ngIf="partnerPage$ | async as partnerPage"
+            *ngIf="partnerPage$ | async"
             [projectId]="projectId"
             [editable]="projectStore.projectEditable$ | async"
-            [partnerPage]="partnerPage"
+            [partnerPage$]="partnerPage$"
             [pageIndex]="newPageIndex$ | async"
             (newPageSize)="newPageSize$.next($event)"
             (newPageIndex)="newPageIndex$.next($event)"
