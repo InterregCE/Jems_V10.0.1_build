@@ -8,7 +8,8 @@ import {catchError, finalize, map, tap} from 'rxjs/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {Alert} from '@common/components/forms/alert';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {FileCategoryEnum, FileCategoryInfo} from '@project/common/components/file-management/file-category';
+import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
+import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {AssessmentAndDecisionStore} from '@project/project-application/assessment-and-decision/assessment-and-decision-store.service';
 
 @Component({
@@ -23,7 +24,7 @@ export class AssessmentAndDecisionComponent {
   Permission = Permission;
   PermissionsEnum = UserRoleDTO.PermissionsEnum;
   STATUS = ProjectStatusDTO.StatusEnum;
-  fileManagementSection = {type: FileCategoryEnum.ASSESSMENT} as FileCategoryInfo;
+  fileManagementSection = {type: FileCategoryTypeEnum.ASSESSMENT} as CategoryInfo;
 
   data$: Observable<{
     project: ProjectDetailDTO,

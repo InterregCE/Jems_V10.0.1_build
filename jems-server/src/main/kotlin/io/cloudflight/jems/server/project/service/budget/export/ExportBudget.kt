@@ -6,20 +6,19 @@ import io.cloudflight.jems.plugin.contract.budget_export.ExportResult
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.service.application.set_assessment_quality.ExportBudgetException
 import org.springframework.stereotype.Service
 
 @Service
-class ExportBudget(private val jemsPluginRegistry: JemsPluginRegistry): ExportBudgetInteractor {
+class ExportBudget(private val jemsPluginRegistry: JemsPluginRegistry) : ExportBudgetInteractor {
 
 
     @ExceptionWrapper(ExportBudgetException::class)
+    @CanRetrieveProjectForm
     override fun exportDataToCsv(
-        projectId: Long,
-        exportLanguage: SystemLanguage,
-        inputLanguage: SystemLanguage,
-        version: String?
-    ):  ExportResult =
+        projectId: Long, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, version: String?
+    ): ExportResult =
         jemsPluginRegistry.get(BudgetExportPlugin::class, "standard-budget-export-plugin").export(
             projectId,
             SystemLanguageData.valueOf(exportLanguage.toString()),

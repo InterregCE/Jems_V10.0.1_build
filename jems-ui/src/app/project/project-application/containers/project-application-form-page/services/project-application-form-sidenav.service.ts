@@ -192,7 +192,8 @@ export class ProjectApplicationFormSidenavService {
                        versionTemplate: TemplateRef<any>): void {
     this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
       this.getProjectOverviewHeadline(project),
-      this.getApplicationFormHeadline(project, partners, packages, versionTemplate, showApplicationAnnexes, showAssessment, canSubmitApplication || canCheckApplication, showProjectForm)
+      this.getApplicationFormHeadline(project, partners, packages, versionTemplate, showApplicationAnnexes, showAssessment, canSubmitApplication || canCheckApplication, showProjectForm),
+      ...showProjectForm ? this.getExportHeadline(project.id) : []
     ]);
   }
 
@@ -366,6 +367,17 @@ export class ProjectApplicationFormSidenavService {
       scrollToTop: true,
       scrollRoute: '',
       icon: 'visibility'
+    }];
+  }
+
+
+  private getExportHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.form.section.export'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/export`,
+      scrollToTop: true,
+      scrollRoute: '',
+      icon: 'download'
     }];
   }
 

@@ -1,0 +1,9 @@
+#category-tree {
+  .selected-category {
+    background-color: var(--light-blue-gray)
+  }
+
+  .mat-button:disabled {
+    color: var(--font-color-primary);
+  }
+}
