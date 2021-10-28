@@ -380,12 +380,12 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     @Query(
         """
                 SELECT
-                    entity.partner_id AS partnerId,
-                    entity.staff_costs_flat_rate AS staffCostsFlatRate,
-                    entity.office_and_administration_on_staff_costs_flat_rate AS officeAndAdministrationOnStaffCostsFlatRate,
-                    entity.office_and_administration_on_direct_costs_flat_rate AS officeAndAdministrationOnDirectCostsFlatRate,
-                    entity.travel_and_accommodation_on_staff_costs_flat_rate AS travelAndAccommodationOnStaffCostsFlatRate,
-                    entity.other_costs_on_staff_costs_flat_rate AS otherCostsOnStaffCostsFlatRate,
+                    entity.id AS partnerId,
+                    partnerBudgetOptions.staff_costs_flat_rate AS staffCostsFlatRate,
+                    partnerBudgetOptions.office_and_administration_on_staff_costs_flat_rate AS officeAndAdministrationOnStaffCostsFlatRate,
+                    partnerBudgetOptions.office_and_administration_on_direct_costs_flat_rate AS officeAndAdministrationOnDirectCostsFlatRate,
+                    partnerBudgetOptions.travel_and_accommodation_on_staff_costs_flat_rate AS travelAndAccommodationOnStaffCostsFlatRate,
+                    partnerBudgetOptions.other_costs_on_staff_costs_flat_rate AS otherCostsOnStaffCostsFlatRate,
                     unitCost.row_sum AS unitCostTotal,
                     equipmentCost.row_sum AS equipmentCostTotal,
                     externalCost.row_sum AS externalCostTotal,
@@ -393,44 +393,49 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                     travelCost.row_sum AS travelCostTotal,
                     staffCost.row_sum AS staffCostTotal,
                     lumpSum.row_sum AS lumpSumsTotal
-                FROM project_partner_budget_options AS entity
+                FROM project_partner AS entity
+                LEFT JOIN (
+                    SELECT *
+                    FROM project_partner_budget_options
+                    WHERE partner_id IN :partnerIds GROUP BY partner_id
+                ) AS partnerBudgetOptions ON entity.id = partnerBudgetOptions.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_unit_cost
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS unitCost ON entity.partner_id = unitCost.partner_id
+                ) AS unitCost ON entity.id = unitCost.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_equipment
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS equipmentCost ON entity.partner_id = equipmentCost.partner_id
+                ) AS equipmentCost ON entity.id = equipmentCost.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_external
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS externalCost ON entity.partner_id = externalCost.partner_id
+                ) AS externalCost ON entity.id = externalCost.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_infrastructure
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS infrastructureCost ON entity.partner_id = infrastructureCost.partner_id
+                ) AS infrastructureCost ON entity.id = infrastructureCost.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_travel
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS travelCost ON entity.partner_id = travelCost.partner_id
+                ) AS travelCost ON entity.id = travelCost.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_staff_cost
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS staffCost ON entity.partner_id = staffCost.partner_id
+                ) AS staffCost ON entity.id = staffCost.partner_id
                 LEFT JOIN (
                     SELECT project_partner_id AS partner_id, SUM(amount) AS row_sum
                     FROM project_partner_lump_sum
                     WHERE project_partner_id IN :partnerIds GROUP BY project_partner_id
-                ) AS lumpSum ON entity.partner_id = lumpSum.partner_id
-                WHERE entity.partner_id IN :partnerIds
-                GROUP BY entity.partner_id
+                ) AS lumpSum ON entity.id = lumpSum.partner_id
+                WHERE entity.id IN :partnerIds
+                GROUP BY entity.id
             """,
         nativeQuery = true
     )
@@ -439,12 +444,12 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     @Query(
         """
             SELECT
-                    entity.partner_id AS partnerId,
-                    entity.staff_costs_flat_rate AS staffCostsFlatRate,
-                    entity.office_and_administration_on_staff_costs_flat_rate AS officeAndAdministrationOnStaffCostsFlatRate,
-                    entity.office_and_administration_on_direct_costs_flat_rate AS officeAndAdministrationOnDirectCostsFlatRate,
-                    entity.travel_and_accommodation_on_staff_costs_flat_rate AS travelAndAccommodationOnStaffCostsFlatRate,
-                    entity.other_costs_on_staff_costs_flat_rate AS otherCostsOnStaffCostsFlatRate,
+                    entity.id AS partnerId,
+                    partnerBudgetOptions.staff_costs_flat_rate AS staffCostsFlatRate,
+                    partnerBudgetOptions.office_and_administration_on_staff_costs_flat_rate AS officeAndAdministrationOnStaffCostsFlatRate,
+                    partnerBudgetOptions.office_and_administration_on_direct_costs_flat_rate AS officeAndAdministrationOnDirectCostsFlatRate,
+                    partnerBudgetOptions.travel_and_accommodation_on_staff_costs_flat_rate AS travelAndAccommodationOnStaffCostsFlatRate,
+                    partnerBudgetOptions.other_costs_on_staff_costs_flat_rate AS otherCostsOnStaffCostsFlatRate,
                     unitCost.row_sum AS unitCostTotal,
                     equipmentCost.row_sum AS equipmentCostTotal,
                     externalCost.row_sum AS externalCostTotal,
@@ -452,44 +457,49 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                     travelCost.row_sum AS travelCostTotal,
                     staffCost.row_sum AS staffCostTotal,
                     lumpSum.row_sum AS lumpSumsTotal
-                FROM project_partner_budget_options FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+                FROM project_partner FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+                LEFT JOIN (
+                    SELECT *
+                    FROM project_partner_budget_options FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
+                    WHERE partner_id IN :partnerIds GROUP BY partner_id
+                ) AS partnerBudgetOptions ON entity.id = partnerBudgetOptions.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_unit_cost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS unitCost ON entity.partner_id = unitCost.partner_id
+                ) AS unitCost ON entity.id = unitCost.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_equipment FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS equipmentCost ON entity.partner_id = equipmentCost.partner_id
+                ) AS equipmentCost ON entity.id = equipmentCost.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_external FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS externalCost ON entity.partner_id = externalCost.partner_id
+                ) AS externalCost ON entity.id = externalCost.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_infrastructure FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS infrastructureCost ON entity.partner_id = infrastructureCost.partner_id
+                ) AS infrastructureCost ON entity.id = infrastructureCost.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_travel FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS travelCost ON entity.partner_id = travelCost.partner_id
+                ) AS travelCost ON entity.id = travelCost.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_staff_cost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
                     WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS staffCost ON entity.partner_id = staffCost.partner_id
+                ) AS staffCost ON entity.id = staffCost.partner_id
                 LEFT JOIN (
                     SELECT project_partner_id AS partner_id, SUM(amount) AS row_sum
                     FROM project_partner_lump_sum FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
                     WHERE project_partner_id IN :partnerIds GROUP BY project_partner_id
-                ) AS lumpSum ON entity.partner_id = lumpSum.partner_id
-                WHERE entity.partner_id IN :partnerIds
-                GROUP BY entity.partner_id
+                ) AS lumpSum ON entity.id = lumpSum.partner_id
+                WHERE entity.id IN :partnerIds
+                GROUP BY entity.id
             """,
         nativeQuery = true
     )
