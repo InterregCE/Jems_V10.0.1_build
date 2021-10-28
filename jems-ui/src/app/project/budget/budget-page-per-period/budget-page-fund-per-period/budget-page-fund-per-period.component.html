@@ -40,7 +40,7 @@
             </div>
         </ng-container>
 
-        <div class="footer">
+        <div class="footer" *ngIf="data.nonEuFundsDetails.length > 0">
             <span>{{'project.application.form.budgetFundPerPeriod.totalFunds' | translate}}</span>
             <span><!--blank cell--></span>
             <span *ngFor="let periodTotalFunds of data.totalFundsPerPeriod"> {{periodTotalFunds | asMoney}}</span>
