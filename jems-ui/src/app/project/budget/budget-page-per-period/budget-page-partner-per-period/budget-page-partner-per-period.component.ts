@@ -61,16 +61,17 @@ export class BudgetPagePartnerPerPeriodComponent {
   }
 
   calculateTotalPeriodBudgetPercentages(periodBudgetTotals: number[], totalEligibleBudget: number): number[] {
-    const totals = periodBudgetTotals.map(periodTotalBudget => this.calculateTotalPeriodBudgetPercentage(periodTotalBudget, totalEligibleBudget));
-    if (totals.length > 3) {
-      const lastPeriod = totals[totals.length - 2];
+    const roundedTotals = periodBudgetTotals.map(periodTotalBudget => this.calculateTotalPeriodBudgetPercentage(periodTotalBudget, totalEligibleBudget));
+    if (roundedTotals.length > 3) {
+      const lastPeriod = roundedTotals[roundedTotals.length - 2];
       // to get 100 percent in total take last period from 100 instead of calculated values
-      totals[totals.length - 2] = NumberService.minus(100, NumberService.truncateNumber(NumberService.minus(NumberService.sum(totals), lastPeriod), 2));
+      roundedTotals[roundedTotals.length - 2] = 100 - (NumberService.sum(roundedTotals) - lastPeriod);
     }
-    return totals;
+    return roundedTotals;
   }
 
   calculateTotalPeriodBudgetPercentage(periodBudgetTotal: number, totalEligibleBudget: number): number {
-    return NumberService.product([NumberService.divide(periodBudgetTotal ? periodBudgetTotal : null, totalEligibleBudget), 100]);
+    return NumberService.roundNumber(
+      NumberService.product([NumberService.divide(periodBudgetTotal ? periodBudgetTotal : null, totalEligibleBudget), 100]));
   }
 }
