@@ -170,9 +170,11 @@ export class Permission {
     },
     {
       name: 'topbar.main.project',
-      mode: PermissionMode.HIDDEN_VIEW,
+      mode: PermissionMode.HIDDEN_VIEW_EDIT,
       viewPermissions: [PermissionsEnum.ProjectRetrieve],
+      editPermissions: [PermissionsEnum.ProjectRetrieveEditUserAssignments],
       icon: 'description',
+      editTooltip: 'permission.top.bar.applications.edit'
     },
     {
       name: 'Calls',

@@ -6,6 +6,7 @@ data class UserWithPassword(
     val name: String,
     val surname: String,
     val userRole: UserRole,
+    var assignedProjects: Set<Long> = emptySet(),
     val encodedPassword: String,
     val userStatus: UserStatus
 ) {
@@ -15,6 +16,7 @@ data class UserWithPassword(
         name = name,
         surname = surname,
         userRole = userRole,
+        assignedProjects = assignedProjects,
         userStatus = userStatus
     )
 }

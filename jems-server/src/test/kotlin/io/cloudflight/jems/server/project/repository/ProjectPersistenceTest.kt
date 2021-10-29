@@ -561,7 +561,7 @@ internal class ProjectPersistenceTest : UnitTest() {
     fun `getProjects - not owner`() {
         every { projectRepository.findAll(Pageable.unpaged()) } returns PageImpl(listOf(dummyProject()))
 
-        val result = persistence.getProjects(Pageable.unpaged(), null)
+        val result = persistence.getProjects(Pageable.unpaged())
 
         assertThat(result.numberOfElements).isEqualTo(1)
         assertThat(result.elementAt(0)).isEqualTo(
@@ -578,13 +578,14 @@ internal class ProjectPersistenceTest : UnitTest() {
     @Test
     fun `getProjects - owner`() {
         every {
-            projectRepository.findAllByApplicantId(
-                7006L,
-                Pageable.unpaged()
+            projectRepository.findAllByApplicantIdOrIdIn(
+                pageable = Pageable.unpaged(),
+                applicantId = 487L,
+                projectIds = setOf(45L, 32L),
             )
         } returns PageImpl(listOf(dummyProject()))
 
-        val result = persistence.getProjects(Pageable.unpaged(), 7006L)
+        val result = persistence.getProjectsOfUserPlusExtra(Pageable.unpaged(), 487L, extraProjectIds = setOf(45L, 32L))
 
         assertThat(result.numberOfElements).isEqualTo(1)
         assertThat(result.elementAt(0)).isEqualTo(

@@ -25,6 +25,10 @@ annotation class CanUpdateUser
 @PreAuthorize("hasAuthority('UserUpdatePassword')")
 annotation class CanUpdateUserPassword
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectRetrieveEditUserAssignments')")
+annotation class CanAssignUsersToProjects
+
 @Component
 class UserAuthorization(
     override val securityService: SecurityService,

@@ -69,7 +69,7 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
     override fun findAll(pageable: Pageable): Page<ProjectEntity>
 
     @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
-    fun findAllByApplicantId(applicantId: Long, pageable: Pageable): Page<ProjectEntity>
+    fun findAllByApplicantIdOrIdIn(applicantId: Long, projectIds: Collection<Long>, pageable: Pageable): Page<ProjectEntity>
 
     @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
     fun findAllByCurrentStatusStatusNot(status: ApplicationStatus, pageable: Pageable): Page<ProjectEntity>

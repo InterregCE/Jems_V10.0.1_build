@@ -57,7 +57,7 @@ class CallControllerIntegrationTest(
 
     @Test
     // TODO solve performance issue (use Joins?)
-    @ExpectSelect(4)   // call, form field configuration, stateAids, translations
+    @ExpectSelect(5)   // call, form field configuration, stateAids, translations
     fun getCalls() {
         val calls = callApi.listCalls()
         assertThat(calls).hasSize(1)
@@ -66,7 +66,7 @@ class CallControllerIntegrationTest(
 
     @Test
     // TODO solve performance issue
-    @ExpectSelect(13)
+    @ExpectSelect(14)
     fun getCallById() {
         assertThat(callApi.getCallById(1)).isNotNull
     }

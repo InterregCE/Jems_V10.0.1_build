@@ -16,23 +16,25 @@ import org.springframework.stereotype.Component
 annotation class CanUpdateProjectWorkPackage
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectFormRetrieve') || @projectWorkPackageAuthorization.isUserOwnerOfWorkPackage(#projectId, #workPackageId, #version)")
+@PreAuthorize("@projectWorkPackageAuthorization.canRetrieveProjectWorkPackage(#projectId, #workPackageId, #version)")
 annotation class CanRetrieveProjectWorkPackage
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectInvestment(#workPackageInvestment.id)")
+@PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectWorkPackageInvestment(#workPackageInvestment.id)")
 annotation class CanUpdateProjectWorkPackageInvestment
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectInvestment(#investmentId)")
+@PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectWorkPackageInvestment(#investmentId)")
 annotation class CanDeleteProjectWorkPackageInvestment
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectFormRetrieve') || @projectWorkPackageAuthorization.isUserOwnerOfInvestment(#projectId, #investmentId, #version)")
+@PreAuthorize("@projectWorkPackageAuthorization.canRetrieveProjectWorkPackageInvestment(#projectId, #investmentId, #version)")
 annotation class CanRetrieveProjectWorkPackageInvestment
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectFormRetrieve') || hasAuthority('ProjectFileApplicationRetrieve') || @projectAuthorization.isUserOwnerOfProject(#projectId)")
+// ProjectFileApplicationRetrieve is temporary hack because of broken File Upload screen,
+// where people needs to see partners even when they cannot see project
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || @projectAuthorization.isUserOwnerOrThrow(#projectId)")
 annotation class CanRetrieveProjectWorkPackageInvestmentSummaries
 
 @Component
@@ -45,32 +47,35 @@ class ProjectWorkPackageAuthorization(
 
     fun canUpdateProjectWorkPackage(workPackageId: Long): Boolean {
         val project = getProjectFromWorkPackageId(workPackageId)
-        val canSeeWorkPackage = hasPermission(UserRolePermission.ProjectFormUpdate) || isActiveUserIdEqualTo(project.applicantId)
+        val canSeeWorkPackage = hasPermissionForProject(UserRolePermission.ProjectFormUpdate, projectId = project.projectId) || isActiveUserIdEqualTo(project.applicantId)
         if (canSeeWorkPackage)
             return project.projectStatus.canBeModified()
         throw ResourceNotFoundException("project")
     }
 
-    fun isUserOwnerOfWorkPackage(projectId: Long, workPackageId: Long, version: String?): Boolean {
-        val project = if (!version.isNullOrBlank()) projectPersistence.getApplicantAndStatusById(projectId) else getProjectFromWorkPackageId(workPackageId)
-        return isActiveUserIdEqualTo(userId = project.applicantId)
+    fun canRetrieveProjectWorkPackage(projectId: Long, workPackageId: Long, version: String? = null): Boolean {
+        val project = getProject(projectId, workPackageId, version)
+        return hasPermissionForProject(UserRolePermission.ProjectFormRetrieve, projectId = project.projectId) || isActiveUserIdEqualTo(project.applicantId)
     }
 
+    fun canRetrieveProjectWorkPackageInvestment(projectId: Long, investmentId: Long, version: String? = null): Boolean {
+        val project = workPackagePersistence.getProjectFromWorkPackageInvestment(investmentId)
+        return hasPermissionForProject(UserRolePermission.ProjectFormRetrieve, projectId = project.projectId) || isActiveUserIdEqualTo(project.applicantId)
+    }
+
+    private fun getProject(projectId: Long, workPackageId: Long, version: String?): ProjectApplicantAndStatus =
+        // TODO this is still security vulnerability, because work package might be from different project
+        if (!version.isNullOrBlank()) projectPersistence.getApplicantAndStatusById(projectId) else getProjectFromWorkPackageId(workPackageId)
 
     private fun getProjectFromWorkPackageId(workPackageId: Long): ProjectApplicantAndStatus =
         workPackageService.getProjectForWorkPackageId(workPackageId)
 
-    fun canUpdateProjectInvestment(investmentId: Long): Boolean {
+    fun canUpdateProjectWorkPackageInvestment(investmentId: Long): Boolean {
         val project = getProjectFromInvestmentId(investmentId)
-        val canSeeInvestment = hasPermission(UserRolePermission.ProjectFormUpdate) || isActiveUserIdEqualTo(project.applicantId)
+        val canSeeInvestment = hasPermissionForProject(UserRolePermission.ProjectFormUpdate, projectId = project.projectId) || isActiveUserIdEqualTo(project.applicantId)
         if (canSeeInvestment)
             return project.projectStatus.canBeModified()
         throw ResourceNotFoundException("project")
-    }
-
-    fun isUserOwnerOfInvestment(projectId: Long, investmentId: Long, version: String?): Boolean {
-        val project = if (!version.isNullOrBlank()) projectPersistence.getApplicantAndStatusById(projectId) else getProjectFromInvestmentId(investmentId)
-        return isActiveUserIdEqualTo(project.applicantId)
     }
 
     private fun getProjectFromInvestmentId(investmentId: Long): ProjectApplicantAndStatus =

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.user.service.model
 
-enum class UserRolePermission(val key: String) {
+enum class UserRolePermission(val key: String, val projectRelated: Boolean = false) {
 
     // Module PROGRAMME SETUP
     ProgrammeSetupRetrieve("ProgrammeSetupRetrieve"),
@@ -13,32 +13,33 @@ enum class UserRolePermission(val key: String) {
 
     // Module APPLICATIONS
     ProjectRetrieve("ProjectRetrieve"),
+    ProjectRetrieveEditUserAssignments("ProjectRetrieveEditUserAssignments"),
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     ProjectCreate("ProjectCreate"),
 
-    ProjectFormRetrieve("ProjectFormRetrieve"),
-    ProjectFormUpdate("ProjectFormUpdate"),
+    ProjectFormRetrieve("ProjectFormRetrieve", true),
+    ProjectFormUpdate("ProjectFormUpdate", true),
 
-    ProjectFileApplicationRetrieve("ProjectFileApplicationRetrieve"),
-    ProjectFileApplicationUpdate("ProjectFileApplicationUpdate"),
-    ProjectFileAssessmentRetrieve("ProjectFileAssessmentRetrieve"),
-    ProjectFileAssessmentUpdate("ProjectFileAssessmentUpdate"),
+    ProjectFileApplicationRetrieve("ProjectFileApplicationRetrieve", true),
+    ProjectFileApplicationUpdate("ProjectFileApplicationUpdate", true),
+    ProjectFileAssessmentRetrieve("ProjectFileAssessmentRetrieve", true),
+    ProjectFileAssessmentUpdate("ProjectFileAssessmentUpdate", true),
 
     // Module APPLICATION LIFECYCLE
-    ProjectCheckApplicationForm("ProjectCheckApplicationForm"),
-    ProjectSubmission("ProjectSubmission"),
+    ProjectCheckApplicationForm("ProjectCheckApplicationForm", true),
+    ProjectSubmission("ProjectSubmission", true),
 
-    ProjectAssessmentView("ProjectAssessmentView"),
-    ProjectAssessmentQualityEnter("ProjectAssessmentQualityEnter"),
-    ProjectAssessmentEligibilityEnter("ProjectAssessmentEligibilityEnter"),
-    ProjectStatusReturnToApplicant("ProjectStatusReturnToApplicant"),
-    ProjectStatusDecideEligible("ProjectStatusDecideEligible"),
-    ProjectStatusDecideIneligible("ProjectStatusDecideIneligible"),
-    ProjectStatusDecideApproved("ProjectStatusDecideApproved"),
-    ProjectStatusDecideApprovedWithConditions("ProjectStatusDecideApprovedWithConditions"),
-    ProjectStatusDecideNotApproved("ProjectStatusDecideNotApproved"),
-    ProjectStatusDecisionRevert("ProjectStatusDecisionRevert"),
-    ProjectStartStepTwo("ProjectStartStepTwo"),
+    ProjectAssessmentView("ProjectAssessmentView", true),
+    ProjectAssessmentQualityEnter("ProjectAssessmentQualityEnter", true),
+    ProjectAssessmentEligibilityEnter("ProjectAssessmentEligibilityEnter", true),
+    ProjectStatusReturnToApplicant("ProjectStatusReturnToApplicant", true),
+    ProjectStatusDecideEligible("ProjectStatusDecideEligible", true),
+    ProjectStatusDecideIneligible("ProjectStatusDecideIneligible", true),
+    ProjectStatusDecideApproved("ProjectStatusDecideApproved", true),
+    ProjectStatusDecideApprovedWithConditions("ProjectStatusDecideApprovedWithConditions", true),
+    ProjectStatusDecideNotApproved("ProjectStatusDecideNotApproved", true),
+    ProjectStatusDecisionRevert("ProjectStatusDecisionRevert", true),
+    ProjectStartStepTwo("ProjectStartStepTwo", true),
 
     // Module SYSTEM
     AuditRetrieve("AuditRetrieve"),
