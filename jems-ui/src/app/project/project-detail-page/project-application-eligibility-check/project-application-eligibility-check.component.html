@@ -1,6 +1,6 @@
 <app-project-page-template *ngIf="data$ | async as data"
                            [needsCard]="true"
-                           titleKey="project.application.form.lifecycle.title">
+                           titleKey="project.assessment.and.decision.header">
     <div page-sub-title appNoWidthLimit appFormLayout>
         <h2>{{data.project.customIdentifier}} – {{data.project.acronym}}</h2>
         <app-project-application-information appNoWidthLimit [project]="data.project">
