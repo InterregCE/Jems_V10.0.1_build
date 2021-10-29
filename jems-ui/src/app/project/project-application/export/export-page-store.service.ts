@@ -18,7 +18,7 @@ export class ExportPageStore {
   fallBackLanguage = this.languageStore.getFallbackLanguageValue();
 
   exportCategories$: Observable<CategoryNode>;
-  selectedCategory$ = new BehaviorSubject<CategoryInfo>({type: ExportCategoryTypeEnum.APPLICATION});
+  selectedCategory$ = new BehaviorSubject<CategoryInfo>({type: ExportCategoryTypeEnum.BUDGET});
 
   constructor(private projectStore: ProjectStore,
               private languageStore: LanguageStore,
@@ -37,12 +37,10 @@ export class ExportPageStore {
         {
           name: {i18nKey: 'export.tree.type.application.form'},
           info: {type: ExportCategoryTypeEnum.APPLICATION},
-          children: [
-            {
-              name: {i18nKey: 'export.tree.type.partner.budgets'},
-              info: {type: ExportCategoryTypeEnum.BUDGET},
-            }
-          ]
+        },
+        {
+          name: {i18nKey: 'export.tree.type.partner.budgets'},
+          info: {type: ExportCategoryTypeEnum.BUDGET},
         }
       ]
     };

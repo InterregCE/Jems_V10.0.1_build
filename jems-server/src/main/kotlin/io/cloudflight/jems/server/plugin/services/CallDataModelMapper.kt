@@ -126,6 +126,8 @@ fun Iterable<ProgrammeUnitCost>.toUnitCostDataModel() = sorted().map {
             .toSet(),
         type = it.type.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }
             .toSet(),
+        description = it.description.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }
+            .toSet(),
         costPerUnit = it.costPerUnit,
         categories = it.categories.map { BudgetCategoryData.valueOf(it.name) }.toSet(),
     )
