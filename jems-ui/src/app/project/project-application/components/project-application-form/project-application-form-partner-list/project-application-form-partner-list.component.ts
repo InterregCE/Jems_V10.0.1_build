@@ -93,7 +93,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
         {
           displayedColumn: 'project.application.form.partner.list.nuts.title',
           elementProperty: 'region',
-          sortProperty: 'nuts',
+          sortProperty: 'addresses.address.country',
         },
         {
           displayedColumn: 'project.partner.coFinancing.total',
