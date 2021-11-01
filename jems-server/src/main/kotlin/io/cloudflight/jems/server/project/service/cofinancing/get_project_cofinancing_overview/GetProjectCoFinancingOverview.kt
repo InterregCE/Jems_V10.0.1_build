@@ -117,5 +117,5 @@ class GetProjectCoFinancingOverview(
     private fun divide(divisor: BigDecimal, dividend: BigDecimal): BigDecimal =
         if (dividend.compareTo(BigDecimal.ZERO) == 0)
             BigDecimal.ZERO
-        else divisor.divide(dividend, 2, RoundingMode.DOWN)
+        else divisor.divide(dividend, 2, RoundingMode.HALF_DOWN)
 }
