@@ -108,6 +108,8 @@ import {ProjectPartnerCoFinancingStore} from '@project/partner/project-partner-d
 import {ProjectPartnerStateAidsStore} from '@project/partner/services/project-partner-state-aids.store';
 import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-per-period/budget-page-partner-per-period/budget-page-partner-per-period.component';
 import { ExportComponent } from './project-application/export/export.component';
+import {UsersFilterPipe} from '@common/components/project-application-list-user-assignments/user-filter.pipe';
+import {ProjectApplicationListUserAssignmentsComponent} from '@common/components/project-application-list-user-assignments/project-application-list-user-assignments.component';
 
 @NgModule({
   declarations: [
@@ -202,7 +204,9 @@ import { ExportComponent } from './project-application/export/export.component';
     ProjectBudgetOverviewComponent,
     BudgetPageFundPerPeriodComponent,
     BudgetPerPeriodPageComponent,
-    ExportComponent
+    ExportComponent,
+    UsersFilterPipe,
+    ProjectApplicationListUserAssignmentsComponent,
   ],
   imports: [
     SharedModule,

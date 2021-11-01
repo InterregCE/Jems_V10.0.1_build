@@ -19,12 +19,6 @@ class ProjectUserController(
         getUsersAssignedToProjectsInteractor.getProjectsWithAssignedUsers(pageable).toDto()
 
     override fun updateProjectUserAssignments(projectUsers: Set<UpdateProjectUserDTO>) =
-        projectUsers.forEach {
-            assignUserToProjectInteractor.updateUserAssignmentsOnProject(
-                projectId = it.projectId,
-                userIdsToRemove = it.userIdsToRemove,
-                userIdsToAssign = it.userIdsToAdd,
-            )
-        }
+        assignUserToProjectInteractor.updateUserAssignmentsOnProject(projectUsers.toModel())
 
 }

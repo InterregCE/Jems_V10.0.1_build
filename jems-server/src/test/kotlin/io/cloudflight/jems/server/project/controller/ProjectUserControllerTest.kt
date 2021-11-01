@@ -6,13 +6,14 @@ import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.service.model.ProjectWithUsers
+import io.cloudflight.jems.server.user.service.model.UpdateProjectUser
 import io.cloudflight.jems.server.user.service.userproject.assign_user_to_project.AssignUserToProjectInteractor
 import io.cloudflight.jems.server.user.service.userproject.get_users_assigned_to_projects.GetUsersAssignedToProjectsInteractor
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.verify
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -65,14 +66,8 @@ class ProjectUserControllerTest : UnitTest() {
 
     @Test
     fun assignUserToProjectInteractor() {
-        val projectIdsSlot = mutableListOf<Long>()
-        val removeUsersSlot = mutableListOf<Set<Long>>()
-        val addUsersSlot = mutableListOf<Set<Long>>()
-        every { assignUserToProjectInteractor.updateUserAssignmentsOnProject(
-            projectId = capture(projectIdsSlot),
-            userIdsToRemove = capture(removeUsersSlot),
-            userIdsToAssign = capture(addUsersSlot),
-        ) } returnsArgument 2
+        val dataSlot = slot<Set<UpdateProjectUser>>()
+        every { assignUserToProjectInteractor.updateUserAssignmentsOnProject(capture(dataSlot)) } answers { }
 
         controller.updateProjectUserAssignments(projectUsers = setOf(
             UpdateProjectUserDTO(
@@ -87,11 +82,18 @@ class ProjectUserControllerTest : UnitTest() {
             ),
         ))
 
-        verify(exactly = 2) { assignUserToProjectInteractor.updateUserAssignmentsOnProject(any(), any(), any()) }
-
-        assertThat(projectIdsSlot).containsExactly(255L, 256L)
-        assertThat(removeUsersSlot).containsExactly(setOf(12L,13L), emptySet())
-        assertThat(addUsersSlot).containsExactly(emptySet(), setOf(24L,25L))
+        assertThat(dataSlot.captured).containsExactly(
+            UpdateProjectUser(
+                projectId = 255L,
+                userIdsToRemove = setOf(12L, 13L),
+                userIdsToAdd = emptySet(),
+            ),
+            UpdateProjectUser(
+                projectId = 256L,
+                userIdsToRemove = emptySet(),
+                userIdsToAdd = setOf(24L, 25L),
+            ),
+        )
     }
 
 }

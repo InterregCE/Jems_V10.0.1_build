@@ -29,6 +29,8 @@ export class TableComponent implements OnInit {
   totalElements: number;
   @Input()
   pageIndex: number;
+  @Input()
+  temporarilyHidePagination = false;
 
   @Output()
   sortRows = new EventEmitter<Partial<MatSort>>();
