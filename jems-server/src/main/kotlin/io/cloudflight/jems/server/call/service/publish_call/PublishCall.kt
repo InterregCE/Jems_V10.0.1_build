@@ -30,4 +30,7 @@ class PublishCall(
                 throw CannotPublishCallException()
         }
 
+    private fun isCallPublished(callId: Long) =
+        persistence.isCallPublished(callId)
+
 }
