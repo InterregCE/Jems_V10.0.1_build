@@ -26,5 +26,5 @@
     <div class="ml-auto">
         {{partnerSummary.totalBudget | asMoney : undefined : { style: 'currency', currency: 'EUR' } }}
     </div>
-    <mat-icon [routerLink]="[partnerSummary.id, 'budget']" class="ml-2 mr-5 mat-primary">launch</mat-icon>
+    <mat-icon [routerLink]="[partnerSummary.id, 'budget']" queryParamsHandling="merge" class="ml-2 mr-5 mat-primary">launch</mat-icon>
 </ng-template>
