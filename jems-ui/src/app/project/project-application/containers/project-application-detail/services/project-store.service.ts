@@ -67,6 +67,7 @@ export class ProjectStore {
   callHasTwoSteps$: Observable<boolean>;
   projectCurrentDecisions$: Observable<ProjectDecisionDTO>;
   investmentSummaries$: Observable<InvestmentSummary[]>;
+  investmentSummariesForFiles$: Observable<InvestmentSummary[]>;
   userIsProjectOwner$: Observable<boolean>;
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
   activities$: Observable<WorkPackageActivitySummaryDTO[]>;
@@ -125,6 +126,7 @@ export class ProjectStore {
     this.callHasTwoSteps$ = this.callHasTwoSteps();
     this.projectCurrentDecisions$ = this.projectCurrentDecisions();
     this.investmentSummaries$ = this.investmentSummaries();
+    this.investmentSummariesForFiles$ = this.investmentSummariesForFiles();
     this.userIsProjectOwner$ = this.userIsProjectOwner();
     this.allowedBudgetCategories$ = this.allowedBudgetCategories();
     this.activities$ = this.projectActivities();
@@ -361,6 +363,16 @@ export class ProjectStore {
         switchMap(([project, version]) => this.projectService.getProjectInvestmentSummaries(project.id, version)),
         map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
         shareReplay(1)
+      );
+  }
+
+  private investmentSummariesForFiles(): Observable<InvestmentSummary[]> {
+    return combineLatest([
+      this.project$,
+      this.investmentChangeEvent$.pipe(startWith(null))])
+      .pipe(
+        switchMap(([project]) => this.projectService.getProjectInvestmentSummaries(project.id)),
+        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber)))
       );
   }
 

@@ -28,6 +28,7 @@ export class ProjectPartnerStore {
   partners$: Observable<ProjectPartner[]>;
   leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
   partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerSummariesForFiles$: Observable<ProjectPartnerSummaryDTO[]>;
   private partnerId: number;
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
@@ -39,6 +40,7 @@ export class ProjectPartnerStore {
               private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.partnerSummaries$ = this.partnerSummaries();
+    this.partnerSummariesForFiles$ = this.partnerSummariesForFiles();
     this.partners$ = combineLatest([
       this.projectStore.project$,
       this.projectVersionStore.currentRouteVersion$,
@@ -143,6 +145,13 @@ export class ProjectPartnerStore {
     return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$, this.partnerUpdateEvent$])
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
+      );
+  }
+
+  private partnerSummariesForFiles(): Observable<ProjectPartnerSummaryDTO[]> {
+    return combineLatest([this.projectStore.projectId$, this.partnerUpdateEvent$])
+      .pipe(
+        switchMap(([projectId]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber']))
       );
   }
 }

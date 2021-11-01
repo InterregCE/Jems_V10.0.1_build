@@ -31,7 +31,7 @@ export class ProjectApplicationFilesTableComponent {
   data$: Observable<{
     files: PageProjectFileMetadataDTO,
     projectStatus: ProjectStatusDTO,
-    selectedCategory: CategoryInfo | undefined,
+    selectedCategory: CategoryInfo | undefined
   }>;
 
   editableDescriptionFileId: number | null;
@@ -41,7 +41,7 @@ export class ProjectApplicationFilesTableComponent {
     this.data$ = combineLatest([
       this.fileManagementStore.fileList$,
       this.fileManagementStore.projectStatus$,
-      this.fileManagementStore.selectedCategory$,
+      this.fileManagementStore.selectedCategory$
     ])
       .pipe(
         map(([files, projectStatus, selectedCategory]) => ({
