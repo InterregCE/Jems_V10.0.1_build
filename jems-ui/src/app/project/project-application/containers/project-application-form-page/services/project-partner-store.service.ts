@@ -126,7 +126,7 @@ export class ProjectPartnerStore {
         ? this.partnerService.getProjectPartnerById(Number(partnerId), version)
           .pipe(
             catchError(() => {
-              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, this.projectId]);
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, this.projectId, 'applicationFormPartner']);
               return of({} as ProjectPartnerDetailDTO);
             })
           )
