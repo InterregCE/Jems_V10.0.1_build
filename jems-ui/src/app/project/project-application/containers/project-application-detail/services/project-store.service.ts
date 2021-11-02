@@ -343,7 +343,7 @@ export class ProjectStore {
             const latest = ProjectStore.latestVersion(versions);
             const current = Number(currentVersion);
 
-            if (latest === current) {
+            if (project.projectStatus.toString() === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS && latest === current) {
               return true;
             }
             // if project is editable the current version is the next one
