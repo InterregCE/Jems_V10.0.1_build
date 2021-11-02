@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.user.repository.user.UserRoleNotFound
 import io.cloudflight.jems.server.user.repository.user.toEntity
 import io.cloudflight.jems.server.user.repository.user.toModel
 import io.cloudflight.jems.server.user.repository.user.toModelWithPassword
+import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.repository.userrole.UserRolePermissionRepository
 import io.cloudflight.jems.server.user.repository.userrole.UserRoleRepository
 import io.cloudflight.jems.server.user.repository.userrole.toModel
@@ -53,6 +54,11 @@ class UserPersistenceProvider(
         else
             return userRepo.findAll(searchPredicate, pageable).toModel()
     }
+
+    @Transactional(readOnly = true)
+    override fun findAllWithRoleIdIn(roleIds: Set<Long>): List<UserSummary> =
+        userRepo.findAllByUserRoleIdInOrderByEmail(userRoleIds = roleIds)
+            .map { it.toUserSummary() }
 
     @Transactional
     override fun create(user: UserChange, passwordEncoded: String): User =

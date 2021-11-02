@@ -14,7 +14,9 @@ import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSubmission
+import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -40,6 +42,23 @@ internal class UserPersistenceProviderTest : UnitTest() {
             surname = "replace",
             password = "test",
             userRole = userRoleEntity,
+            userStatus = UserStatus.ACTIVE
+        )
+        private val userEntityStatic = UserEntity(
+            id = USER_ID,
+            email = "replace",
+            name = "replace",
+            surname = "replace",
+            password = "test",
+            userRole = userRoleEntity,
+            userStatus = UserStatus.ACTIVE
+        )
+        private val userSummary = UserSummary(
+            id = USER_ID,
+            email = "replace",
+            name = "replace",
+            surname = "replace",
+            userRole = UserRoleSummary(id = ROLE_ID, name = "ruler", isDefault = false),
             userStatus = UserStatus.ACTIVE
         )
         private val permissionEntity = UserRolePermissionEntity(
@@ -100,6 +119,12 @@ internal class UserPersistenceProviderTest : UnitTest() {
     fun `should return Unit when user exists in the project`() {
         every { userRepo.existsById(USER_ID) } returns true
         assertThat(persistence.throwIfNotExists(USER_ID)).isEqualTo(Unit)
+    }
+
+    @Test
+    fun findAllWithRoleIdIn() {
+        every { userRepo.findAllByUserRoleIdInOrderByEmail(userRoleIds = setOf(602L)) } returns listOf(userEntityStatic)
+        assertThat(persistence.findAllWithRoleIdIn(roleIds = setOf(602L))).containsExactly(userSummary)
     }
 
 }

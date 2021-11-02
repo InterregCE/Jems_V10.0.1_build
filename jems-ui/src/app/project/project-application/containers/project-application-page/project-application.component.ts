@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProjectService} from '@cat/api';
-import {Permission} from '../../../../security/permissions/permission';
+import {ProjectService, UserRoleDTO} from '@cat/api';
 import {SecurityService} from '../../../../security/security.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'app-project-application',
@@ -11,7 +11,7 @@ import {SecurityService} from '../../../../security/security.service';
 })
 
 export class ProjectApplicationComponent {
-  Permission = Permission;
+  PermissionsEnum = PermissionsEnum;
 
   currentUser$ = this.securityService.currentUserDetails;
 

@@ -1,5 +1,7 @@
 package io.cloudflight.jems.api.user
 
+import io.cloudflight.jems.api.project.dto.UserPermissionFilterDTO
+import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
 import io.cloudflight.jems.api.user.dto.UserDTO
@@ -51,5 +53,9 @@ interface UserApi {
     @ApiOperation("Changes my password")
     @PutMapping("/changeMyPassword", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun changeMyPassword(@RequestBody passwordData: PasswordDTO)
+
+    @ApiOperation("Returns list of Users, which do have or do NOT have requested permissions")
+    @PostMapping("/filterUsersByPermissions", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun listUsersByPermissions(@RequestBody userPermissionFilter: UserPermissionFilterDTO): List<OutputUser>
 
 }

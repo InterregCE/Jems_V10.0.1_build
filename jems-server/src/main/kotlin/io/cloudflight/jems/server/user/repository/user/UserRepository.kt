@@ -39,4 +39,6 @@ interface UserRepository : JpaRepository<UserEntity, Long>, QuerydslPredicateExe
 
     fun existsByEmail(email: String): Boolean
 
+    fun findAllByUserRoleIdInOrderByEmail(userRoleIds: Set<Long>): Iterable<UserEntity>
+
 }

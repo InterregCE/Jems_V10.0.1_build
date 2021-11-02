@@ -18,6 +18,8 @@ interface UserPersistence {
 
     fun findAll(pageable: Pageable, userSearchRequest: UserSearchRequest?): Page<UserSummary>
 
+    fun findAllWithRoleIdIn(roleIds: Set<Long>): List<UserSummary>
+
     fun create(user: UserChange, passwordEncoded: String): User
 
     fun update(user: UserChange): User

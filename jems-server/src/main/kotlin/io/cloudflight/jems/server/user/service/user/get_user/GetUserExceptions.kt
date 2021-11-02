@@ -11,3 +11,12 @@ class GetUserException(cause: Throwable) : ApplicationException(
     i18nMessage = I18nMessage("$GET_USER_ERROR_KEY_PREFIX.failed"),
     cause = cause
 )
+
+private const val GET_USERS_FILTERED_BY_PERMISSIONS_ERROR_CODE_PREFIX = "S-GUFBP"
+private const val GET_USERS_FILTERED_BY_PERMISSIONS_ERROR_KEY_PREFIX = "use.case.get.users.filtered.by.permissions"
+
+class GetUsersFilteredByPermissionsException(cause: Throwable) : ApplicationException(
+    code = GET_USERS_FILTERED_BY_PERMISSIONS_ERROR_CODE_PREFIX,
+    i18nMessage = I18nMessage("$GET_USERS_FILTERED_BY_PERMISSIONS_ERROR_KEY_PREFIX.failed"),
+    cause = cause
+)
