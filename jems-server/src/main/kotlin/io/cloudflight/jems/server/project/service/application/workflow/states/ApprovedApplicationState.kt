@@ -16,7 +16,7 @@ class ApprovedApplicationState(
     override val projectPersistence: ProjectPersistence
 ) : ApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence) {
 
-    private val canBeRevertTo = setOf(ApplicationStatus.ELIGIBLE, ApplicationStatus.APPROVED_WITH_CONDITIONS)
+    private val canBeRevertTo = setOf(ApplicationStatus.ELIGIBLE, ApplicationStatus.APPROVED_WITH_CONDITIONS, ApplicationStatus.CONDITIONS_SUBMITTED)
 
     override fun returnToApplicant(): ApplicationStatus =
         returnToApplicantDefaultImpl()
@@ -25,7 +25,7 @@ class ApprovedApplicationState(
         revertCurrentStatusToPreviousStatus(validRevertStatuses = canBeRevertTo).also { reestablishedStatus ->
             when (reestablishedStatus) {
                 ApplicationStatus.ELIGIBLE -> projectWorkflowPersistence.clearProjectFundingDecision(projectSummary.id)
-                ApplicationStatus.APPROVED_WITH_CONDITIONS -> projectWorkflowPersistence.resetProjectFundingDecisionToCurrentStatus(
+                ApplicationStatus.APPROVED_WITH_CONDITIONS, ApplicationStatus.CONDITIONS_SUBMITTED -> projectWorkflowPersistence.resetProjectFundingDecisionToCurrentStatus(
                     projectSummary.id
                 )
                 else -> Unit
