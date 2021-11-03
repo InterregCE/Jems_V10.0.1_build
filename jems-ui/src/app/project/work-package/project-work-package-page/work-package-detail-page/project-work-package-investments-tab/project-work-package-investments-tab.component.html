@@ -36,13 +36,13 @@
                 mat-icon-button color="accent"
                 (click)="$event.stopPropagation();delete(workPackageInvestment, title)"
                 matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
-            <em class="mat-column-delete fas fa-trash"></em>
+            <mat-icon>delete</mat-icon>
         </button>
         <ng-template #noTitle>
             <button mat-icon-button color="accent"
                     (click)="$event.stopPropagation();delete(workPackageInvestment)"
                     matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
-                <em class="mat-column-delete fas fa-trash"></em>
+                <mat-icon>delete</mat-icon>
             </button>
         </ng-template>
     </ng-container>
