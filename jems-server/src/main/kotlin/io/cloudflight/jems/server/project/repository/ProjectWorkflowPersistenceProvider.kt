@@ -126,7 +126,7 @@ class ProjectWorkflowPersistenceProvider(
     override fun resetProjectFundingDecisionToCurrentStatus(projectId: Long) =
         projectRepository.getOne(projectId).apply {
             if (this.currentStatus.status.isInStep2())
-                if (this.currentStatus.status == ApplicationStatus.APPROVED_WITH_CONDITIONS)
+                if (this.currentStatus.status == ApplicationStatus.APPROVED_WITH_CONDITIONS || this.currentStatus.status == ApplicationStatus.CONDITIONS_SUBMITTED)
                     this.decisionFundingStep2 = null
                 else
                     this.decisionPreFundingStep2 = null
