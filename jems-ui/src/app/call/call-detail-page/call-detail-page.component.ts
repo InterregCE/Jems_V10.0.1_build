@@ -51,6 +51,7 @@ export class CallDetailPageComponent {
     initialStrategies: OutputProgrammeStrategy[],
     stateAids: CallStateAidDTO[],
     initialStateAids: CallStateAidDTO[],
+    numberOfSelectedStateAids: number
   }>;
 
   inputErrorMessages = {
@@ -114,6 +115,7 @@ export class CallDetailPageComponent {
           initialStrategies: this.getStrategies(allActiveStrategies, call),
           stateAids: this.getStateAids(allStateAids, call),
           initialStateAids: this.getStateAids(allStateAids, call),
+          numberOfSelectedStateAids: this.getLengthOfSelectedStateAids(this.getStateAids(allStateAids, call))
         })),
         tap(data => this.resetForm(data.call, data.callIsEditable))
       );
@@ -234,6 +236,10 @@ export class CallDetailPageComponent {
     this.router.navigate(['/app/project/applyTo/' + callId]);
   }
 
+  isStateAidSectionShown(data: any): boolean {
+    return (data.numberOfSelectedStateAids > 0 && !data.callIsEditable) || (data.stateAids.length > 0 && data.callIsEditable);
+  }
+
   private createCall(call: CallUpdateRequestDTO): void {
     this.pageStore.createCall(call)
       .pipe(
@@ -299,4 +305,7 @@ export class CallDetailPageComponent {
     return savedStateAids;
   }
 
+  private getLengthOfSelectedStateAids(stateAids: CallStateAidDTO[]): number {
+    return stateAids.filter(stateAid => stateAid.selected).length;
+  }
 }

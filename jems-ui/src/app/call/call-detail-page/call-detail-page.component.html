@@ -160,7 +160,7 @@
                             appFormFieldWidth="full">
             </app-call-funds>
 
-            <span *ngIf="data.stateAids.length > 0">
+            <span *ngIf="isStateAidSectionShown(data)">
                 <h3>{{'call.state.aid.title' | translate}}</h3>
                 <app-call-state-aids
                         (selectionChanged)="formChanged()"
