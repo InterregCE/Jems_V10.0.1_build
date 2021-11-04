@@ -1,0 +1,23 @@
+<mat-form-field appFormFieldWidth="xx-large" appearance="fill">
+    <mat-label>{{label | translate}}</mat-label>
+    <mat-chip-list #filterChip>
+        <mat-chip *ngFor="let value of values"
+                  [removable]="true"
+                  [selectable]="false">
+            {{options.get(value) || '' | translate}}
+            <mat-icon (click)="removeFromFilters(value)" matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input #filterInput
+               [matAutocomplete]="auto"
+               [matChipInputFor]="filterChip"
+               [placeholder]="placeholder | translate"
+               matInput>
+        <mat-autocomplete #auto="matAutocomplete"
+                          (optionSelected)="addToFilters($event.option.value); filterInput.value = ''; filterInput.blur()">
+            <mat-option *ngFor="let option of getNotSelectedOptions(filterInput.value)"
+                        [value]="option">
+                {{ options.get(option) || '' | translate}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-chip-list>
+</mat-form-field>

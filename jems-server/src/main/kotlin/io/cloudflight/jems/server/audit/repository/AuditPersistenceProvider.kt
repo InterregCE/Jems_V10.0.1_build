@@ -49,7 +49,7 @@ class AuditPersistenceProvider(
         if (timeTo != null)
             timestampQuery.to(timeTo)
 
-        val order = if(sort.getOrderFor("timestamp")?.direction?.isAscending == true)  SortOrder.ASC else SortOrder.DESC
+        val order = if (sort.getOrderFor("timestamp")?.direction?.isAscending == true) SortOrder.ASC else SortOrder.DESC
 
         Stream.of<Pair<String, AuditFilter<*>>>(
             Pair("$FIELD_USER.$FIELD_USER_ID", userId),

@@ -1,0 +1,52 @@
+import {ChangeDetectionStrategy, Component, forwardRef, Input, OnInit} from '@angular/core';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
+
+@Component({
+  selector: 'app-filter-list-input',
+  templateUrl: './filter-list-input.component.html',
+  styleUrls: ['./filter-list-input.component.scss'],
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => FilterListInputComponent),
+    multi: true
+  }]
+})
+export class FilterListInputComponent implements ControlValueAccessor {
+
+  @Input()
+  type: 'number' | 'text' = 'text';
+  @Input()
+  label: string;
+  @Input()
+  placeholder: string;
+
+  values: any[];
+  currentValue: any;
+
+  onChange = (value: any) => {
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+  }
+
+  writeValue(obj: any[]): void {
+    this.values = obj;
+  }
+
+  removeFromFilters(value: any): void {
+    this.values.splice(this.values.indexOf(value), 1);
+    this.onChange(this.values);
+  }
+
+  addToFilters(value: any): void {
+    if (this.values.indexOf(value) < 0) {
+      this.values.push(value);
+    }
+    this.onChange(this.values);
+  }
+
+}

@@ -1,0 +1,17 @@
+<mat-form-field *ngIf="!value" appFormFieldWidth="xx-large" appearance="fill">
+    <mat-label>{{label | translate | dateFormatInfo : true}}</mat-label>
+    <input (dateChange)="changeValue($event.target.value)"
+           [ngxMatDatetimePicker]="dateFilter"
+           [value]="value" matInput>
+    <mat-datepicker-toggle [for]="dateFilter" matSuffix></mat-datepicker-toggle>
+    <ngx-mat-datetime-picker #dateFilter [enableMeridian]="true"></ngx-mat-datetime-picker>
+</mat-form-field>
+
+<mat-form-field *ngIf="value" appFormFieldWidth="xx-large" appearance="fill">
+    <mat-label>{{label | translate | dateFormatInfo : true}}</mat-label>
+    <input [hidden]="true" matInput>
+    <mat-chip [removable]="true" [selectable]="false" class="mt-3">
+        {{value| localeDate : 'L' : 'LT'}}
+        <mat-icon (click)="changeValue(null)" matChipRemove>cancel</mat-icon>
+    </mat-chip>
+</mat-form-field>
