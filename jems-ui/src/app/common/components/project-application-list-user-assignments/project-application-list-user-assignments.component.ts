@@ -85,8 +85,9 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
       })),
       tap(data => this.resetForm(data.rows)),
       tap(() => {
-        if (this.showSuccessAfterNextRefresh)
+        if (this.showSuccessAfterNextRefresh) {
           this.formService.setSuccess('project.user.assignment.message.successful');
+        }
         this.showSuccessAfterNextRefresh = false;
       }),
     );
