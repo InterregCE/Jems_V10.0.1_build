@@ -173,7 +173,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
       percentage: this.formBuilder.control(fund?.percentage || 0, Validators.required),
     });
     this.finances.push(fundControl);
-    if (!callFunds.get(fund?.fund.id as any)?.adjustable) {
+    if (!callFunds.get(fund?.fund.id as number)?.adjustable) {
       fundControl.get(this.constants.FORM_CONTROL_NAMES.fundPercentage)?.disable();
     }
   }

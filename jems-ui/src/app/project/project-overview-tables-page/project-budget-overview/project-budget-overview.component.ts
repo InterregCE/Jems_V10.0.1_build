@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectOverviewTablesPageStore} from '@project/project-overview-tables-page/project-overview-tables-page-store.service';
 import {ProjectCoFinancingByFundOverviewDTO, ProjectCoFinancingOverviewDTO} from '@cat/api';
 import {Observable} from 'rxjs';

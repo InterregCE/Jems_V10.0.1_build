@@ -1,11 +1,8 @@
 import {Injectable} from '@angular/core';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {
-  ProjectPartnerService,
-  ProjectPartnerStateAidDTO
-} from '@cat/api';
+import {ProjectPartnerService, ProjectPartnerStateAidDTO} from '@cat/api';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {filter, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {Log} from '@common/utils/log';
 
