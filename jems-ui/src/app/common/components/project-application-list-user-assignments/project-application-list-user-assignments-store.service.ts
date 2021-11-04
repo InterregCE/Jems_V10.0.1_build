@@ -37,6 +37,6 @@ export class ProjectApplicationListUserAssignmentsStore {
   }
 
   refresh(): void {
-    this.newPageIndex$.next(this.newPageIndex$.value)
+    this.newPageIndex$.next(this.newPageIndex$.value);
   }
 }
