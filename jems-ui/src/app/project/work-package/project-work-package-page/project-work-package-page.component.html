@@ -31,7 +31,7 @@
     <button *ngIf="projectEditable$ | async" mat-icon-button color="accent"
             (click)="$event.stopPropagation(); delete(workPackage, workPackageName.value)"
             matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
-        <em class="fas fa-trash"></em>
+        <mat-icon>delete</mat-icon>
     </button>
 </ng-template>
 

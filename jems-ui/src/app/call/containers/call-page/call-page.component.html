@@ -8,7 +8,7 @@
     </button>
     <div *ngIf="success" class="success-wrapper">
         <div class="success app-alert-success">
-            <em class="far fa-check-circle"></em>
+            <mat-icon>check_circle</mat-icon>
             <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
         </div>
     </div>

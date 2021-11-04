@@ -9,7 +9,7 @@ Some parts of the software are not property of the City of Vienna. The excluded 
 
 · Spring (Apache 2.0) - version 5.2.7
 · MariaDB (GPL v.2) - version 10.3.13
-· mariadb-java-client (LGPL 2.1) - version 2.4.4 
+· mariadb-java-client (LGPL 2.1) - version 2.4.4
 · MinIO (Apache 2.0) - version RELEASE.2020-05-16T01-33-21Z
 · org.apache commons-io (Apache 2.0) - version 2.7
 · Flyway (Apache 2.0) - version 6.4.4
@@ -24,7 +24,6 @@ Some parts of the software are not property of the City of Vienna. The excluded 
 · bootstrap (MIT) - version 4.5.0
 · moment (MIT) - version 2.27.0
 · RxJS (Apache 2.0)  version 6.5.5
-· FontAwesome Free (SIL OFL) (The icon font in the project)
 · Roboto (Apache 2.0) (The copy font in the project)
 
 (3.) Productivity
