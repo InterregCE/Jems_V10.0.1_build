@@ -1,19 +1,18 @@
 package io.cloudflight.jems.server.user.controller
 
 import io.cloudflight.jems.api.project.dto.UserPermissionFilterDTO
-import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
 import io.cloudflight.jems.api.user.dto.UserDTO
 import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO
-import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectFormRetrieve
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectFileApplicationRetrieve
+import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectFormRetrieve
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectRetrieve
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectRetrieveEditUserAssignments
 import io.cloudflight.jems.api.user.dto.UserRoleSummaryDTO
 import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
-import io.cloudflight.jems.api.user.dto.UserStatusDTO.*
+import io.cloudflight.jems.api.user.dto.UserStatusDTO.ACTIVE
 import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.user.service.model.Password
@@ -76,12 +75,6 @@ class UserControllerTest : UnitTest() {
             surname = "Schumacher",
             userRole = userRoleSummary,
             userStatus = UserStatus.ACTIVE
-        )
-        private val outputUser = OutputUser(
-            id = USER_ID,
-            email = "maintainer@interact.eu",
-            name = "Michael",
-            surname = "Schumacher",
         )
         private val user = User(
             id = USER_ID,
@@ -234,7 +227,7 @@ class UserControllerTest : UnitTest() {
         assertThat(controller.listUsersByPermissions(UserPermissionFilterDTO(
             needsToHaveAtLeastOneFrom = setOf(ProjectFormRetrieve, ProjectFileApplicationRetrieve),
             needsNotToHaveAnyOf = setOf(ProjectRetrieve, ProjectRetrieveEditUserAssignments),
-        ))).containsExactly(outputUser)
+        ))).containsExactly(expectedUserSummary)
 
         assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(UserRolePermission.ProjectFormRetrieve, UserRolePermission.ProjectFileApplicationRetrieve)
         assertThat(toNotHaveSlot.captured).containsExactlyInAnyOrder(UserRolePermission.ProjectRetrieve, UserRolePermission.ProjectRetrieveEditUserAssignments)

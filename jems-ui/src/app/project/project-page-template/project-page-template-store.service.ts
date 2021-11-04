@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {ProjectVersionStore} from '../common/services/project-version-store.service';
 import {ProjectStore} from '../project-application/containers/project-application-detail/services/project-store.service';
-import {combineLatest, Observable, of, Subject} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {ProjectStatusDTO, ProjectStatusService, ProjectVersionDTO} from '@cat/api';
-import {distinctUntilChanged, map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {distinctUntilChanged, map, shareReplay, switchMap} from 'rxjs/operators';
 import {ProjectUtil} from '../common/project-util';
 
 @Injectable({

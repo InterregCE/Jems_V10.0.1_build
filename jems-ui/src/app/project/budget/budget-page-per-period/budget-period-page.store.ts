@@ -8,7 +8,7 @@ import {
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable} from 'rxjs';
-import {shareReplay, startWith, switchMap} from 'rxjs/operators';
+import {startWith, switchMap} from 'rxjs/operators';
 import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';

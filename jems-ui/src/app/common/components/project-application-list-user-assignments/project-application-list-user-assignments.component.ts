@@ -3,21 +3,22 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {
-  OutputUser,
   ProjectUserDTO,
-  ProjectUserService, UpdateProjectUserDTO,
+  ProjectUserService,
+  UpdateProjectUserDTO,
   UserPermissionFilterDTO,
   UserRoleCreateDTO,
   UserService,
+  UserSummaryDTO,
 } from '@cat/api';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
 import {catchError, map, take, tap} from 'rxjs/operators';
-import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectApplicationListUserAssignmentsStore} from './project-application-list-user-assignments-store.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
@@ -29,6 +30,8 @@ import {ProjectApplicationListUserAssignmentsStore} from './project-application-
 })
 export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
 
+  @ViewChild('callActionsCell', {static: true})
+  actionsCell: TemplateRef<any>;
   @ViewChild('userAssignment', {static: true})
   userAssignment: TemplateRef<any>;
 
@@ -79,10 +82,19 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
         needsNotToHaveAnyOf: [],
       } as UserPermissionFilterDTO),
     ]).pipe(
-      map(([page, availableUsers, defaultUsers]) => ({
-        rows: page.content.map((project, index) => ({...project, index, defaultUsers, availableUsers})),
-        totalElements: page.totalElements,
-      })),
+      map(([page, availableUsers, defaultUsers]) => {
+        const availableUsersIds = availableUsers.map(user => user.id);
+        return {
+          rows: page.content.map((project, index) => ({
+            ...project,
+            assignedUserIds: project.assignedUserIds.filter(id => availableUsersIds.includes(id)),
+            index,
+            defaultUsers,
+            availableUsers
+          })),
+          totalElements: page.totalElements
+        };
+      }),
       tap(data => this.resetForm(data.rows)),
       tap(() => {
         if (this.showSuccessAfterNextRefresh) {
@@ -118,6 +130,11 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.userAssignment
         },
+        {
+          columnWidth: ColumnWidth.IdColumn,
+          displayedColumn: 'project.table.column.name.action',
+          customCellTemplate: this.actionsCell
+        }
       ]
     });
 
@@ -155,7 +172,7 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     });
   }
 
-  getUserByIdFromAvailable(userId: number, availableUsers: OutputUser[]): OutputUser | undefined {
+  getUserByIdFromAvailable(userId: number, availableUsers: UserSummaryDTO[]): UserSummaryDTO | undefined {
     return availableUsers.find(x => x.id === userId);
   }
 
@@ -167,8 +184,12 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     return this.projectAtIndex(projectIndex).get('userIds') as FormArray;
   }
 
-  removeUser(projectIndex: number, userIndex: number, userId: number): void {
-    this.users(projectIndex).removeAt(userIndex);
+  clearUserProjectAssignments(projectIndex: number): void {
+    this.userIds(projectIndex).forEach((element) => this.removeUser(projectIndex, element));
+  }
+
+  removeUser(projectIndex: number, userId: number): void {
+    this.users(projectIndex).removeAt(this.userIds(projectIndex).indexOf(userId));
     const toAddIndex = (this.userIdsToAssign(projectIndex).value as number[]).indexOf(userId);
     if (toAddIndex !== -1) {
       this.userIdsToAssign(projectIndex).removeAt(toAddIndex);
@@ -177,7 +198,7 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     }
   }
 
-  addUser(projectIndex: number, user: OutputUser): void {
+  addUser(projectIndex: number, user: UserSummaryDTO): void {
     this.users(projectIndex).push(this.formBuilder.control(user.id));
     const toRemoveIndex = (this.userIdsToRemove(projectIndex).value as number[]).indexOf(user.id);
     if (toRemoveIndex !== -1) {
@@ -187,7 +208,7 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     }
   }
 
-  getAvailableUsersWithoutSelected(projectIndex: number, availableUsers: OutputUser[]): OutputUser[] {
+  getAvailableUsersWithoutSelected(projectIndex: number, availableUsers: UserSummaryDTO[]): UserSummaryDTO[] {
     const selectedUserIds = this.userIds(projectIndex);
     return availableUsers.filter(user => !selectedUserIds.includes(user.id));
   }

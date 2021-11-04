@@ -41,16 +41,14 @@ fun UserRegistrationDTO.toModel() = UserRegistration(
     password = password,
 )
 
-fun Page<UserSummary>.toDto() = map {
-    UserSummaryDTO(
-        id = it.id,
-        email = it.email,
-        name = it.name,
-        surname = it.surname,
-        userRole = it.userRole.toDto(),
-        userStatus = it.userStatus.toDto()
-    )
-}
+fun UserSummary.toSummaryDto() = UserSummaryDTO(
+    id = id,
+    email = email,
+    name = name,
+    surname = surname,
+    userRole = userRole.toDto(),
+    userStatus = userStatus.toDto()
+)
 
 fun User.toDto() = UserDTO(
     id = id,

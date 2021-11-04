@@ -56,6 +56,6 @@ interface UserApi {
 
     @ApiOperation("Returns list of Users, which do have or do NOT have requested permissions")
     @PostMapping("/filterUsersByPermissions", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun listUsersByPermissions(@RequestBody userPermissionFilter: UserPermissionFilterDTO): List<OutputUser>
+    fun listUsersByPermissions(@RequestBody userPermissionFilter: UserPermissionFilterDTO): List<UserSummaryDTO>
 
 }
