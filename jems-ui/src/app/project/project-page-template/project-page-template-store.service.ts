@@ -11,8 +11,6 @@ import {ProjectUtil} from '../common/project-util';
 })
 export class ProjectPageTemplateStore {
 
-  private versionsUpdatedEventSubject = new Subject();
-  versionsUpdatedEvent$ = this.versionsUpdatedEventSubject.asObservable();
   versions$: Observable<ProjectVersionDTO[]>;
   currentVersion$: Observable<ProjectVersionDTO>;
   latestVersion$: Observable<ProjectVersionDTO | undefined>;
@@ -62,7 +60,6 @@ export class ProjectPageTemplateStore {
         map(data =>
           ProjectUtil.isOpenForModifications(data.project) && data.needNewVersion ? [ProjectPageTemplateStore.nextVersion(data.versions), ...data.versions] : data.versions
         ),
-        tap(() => this.versionsUpdatedEventSubject.next(true)),
         shareReplay(1)
       );
   }

@@ -48,7 +48,6 @@ import {HasPermissionDirective} from './directives/has-permission.directive';
 import {HintDirective} from './directives/hint.directive';
 import {TextHintComponent} from '@common/components/forms/text-hint/text-hint.component';
 import {IsMenuActivePipe} from '@common/components/side-nav/is-menu-active.pipe';
-import {ProjectApplicationListUserAssignmentsComponent} from '@common/components/project-application-list-user-assignments/project-application-list-user-assignments.component';
 
 const modules = [
   CommonModule,
@@ -65,7 +64,6 @@ const modules = [
 
 const declarations = [
   ProjectApplicationListComponent,
-  ProjectApplicationListUserAssignmentsComponent,
   CallListComponent,
   TableComponent,
   PaginatorComponent,

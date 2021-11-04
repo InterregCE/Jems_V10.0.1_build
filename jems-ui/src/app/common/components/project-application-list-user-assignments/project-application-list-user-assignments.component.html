@@ -1,34 +1,57 @@
-<ng-container *ngIf="listStore.page$ | async as page">
-    <p *ngIf="!page.content.length">{{'project.list.empty' | translate}}</p>
-    <app-table *ngIf="page.content.length"
-               [configuration]="tableConfiguration"
-               [rows]="page.content"
-               [totalElements]="page?.totalElements"
-               [pageIndex]="listStore.newPageIndex$ | async"
-               (newPageIndex)="listStore.newPageIndex$.next($event)"
-               (newPageSize)="listStore.newPageSize$.next($event)"
-               (sortRows)="listStore.newSort$.next($event)">
-    </app-table>
+<ng-container *ngIf="data$ | async as data">
+    <app-form (discard)="resetForm(data.rows)" (save)="saveForm()">
+        <p *ngIf="!data.rows.length">{{'project.list.empty' | translate}}</p>
+        <app-table *ngIf="data.rows.length"
+                   [configuration]="tableConfiguration"
+                   [rows]="data.rows"
+                   [totalElements]="data.totalElements"
+                   [pageIndex]="projectUserStore.newPageIndex$ | async"
+                   [temporarilyHidePagination]="!!changes.length"
+                   (newPageIndex)="projectUserStore.newPageIndex$.next($event)"
+                   (newPageSize)="projectUserStore.newPageSize$.next($event)"
+                   (sortRows)="projectUserStore.newSort$.next($event)">
+        </app-table>
+    </app-form>
 </ng-container>
 
 <ng-template #userAssignment let-project>
-    <mat-chip-list class="mt-2 mb-2">
+    <mat-form-field appearance="fill" class="w-100 pt-2">
+        <mat-label>{{ 'project.table.column.name.users' | translate }}</mat-label>
 
-        <mat-chip
-                *ngFor="let user of project.defaultUsers"
-                matTooltip="{{ user.name }} {{ user.surname }}">
-            {{ user.email }}
-        </mat-chip>
+        <mat-chip-list #chipList [disabled]="false" class="mt-2 mb-2">
+            <mat-chip
+                    *ngFor="let user of project.defaultUsers"
+                    [selectable]="false"
+                    matTooltip="{{ user.name }} {{ user.surname }}">
+                {{ user.email }}
+            </mat-chip>
 
-        <ng-container *ngFor="let userId of project.assignedUserIds">
-            <ng-container *ngIf="getUserByIdFromAvailable(userId, project.availableUsers) as user">
-                <mat-chip
-                        color="primary" selected
-                        matTooltip="{{ user.name }} {{ user.surname }}">
-                    {{ user?.email }}
-                </mat-chip>
+            <ng-container *ngFor="let userId of users(project.index).value;let userIndex = index">
+                <ng-container *ngIf="getUserByIdFromAvailable(userId, project.availableUsers) as user">
+                    <mat-chip
+                            color="primary" selected class="mat-chip-selected-user"
+                            [selectable]="false"
+                            [removable]="true"
+                            matTooltip="{{ user.name }} {{ user.surname }}"
+                            (removed)="removeUser(project.index, userIndex, userId)">
+                        {{ user?.email }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                </ng-container>
             </ng-container>
-        </ng-container>
+            <input
+                #filterUsers
+                [matAutocomplete]="auto"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+            <mat-autocomplete #auto="matAutocomplete"
+                              (optionSelected)="addUser(project.index, $event.option.value); filterUsers.value = ''; filterUsers.blur()">
+                <mat-option *ngFor="let user of getAvailableUsersWithoutSelected(project.index, project.availableUsers) | filterUsers: filterUsers.value" [value]="user">
+                    {{ user.email }} ({{ user.name }} {{ user.surname }})
+                </mat-option>
+            </mat-autocomplete>
 
-    </mat-chip-list>
+        </mat-chip-list>
+
+    </mat-form-field>
 </ng-template>

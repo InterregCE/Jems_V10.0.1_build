@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.user.service.userproject.assign_user_to_proje
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserProjectPersistence
+import io.cloudflight.jems.server.user.service.model.UpdateProjectUser
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieveEditUserAssignments
@@ -10,7 +11,7 @@ import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -59,26 +60,50 @@ internal class AssignUserToProjectTest : UnitTest() {
 
     @Test
     fun updateUserAssignmentsOnProject() {
-        val usersToAdd = slot<Set<Long>>()
-        val usersToRemove = slot<Set<Long>>()
+        val projectIdsSlot = mutableListOf<Long>()
+        val removeUsersSlot = mutableListOf<Set<Long>>()
+        val addUsersSlot = mutableListOf<Set<Long>>()
+
         every { userProjectPersistence.changeUsersAssignedToProject(
-            362L,
-            userIdsToRemove = capture(usersToRemove),
-            userIdsToAssign = capture(usersToAdd),
+            capture(projectIdsSlot),
+            userIdsToRemove = capture(removeUsersSlot),
+            userIdsToAssign = capture(addUsersSlot),
         ) } returns setOf(USER_WITHOUT_PROJECT_RETRIEVE_ID)
 
-        val testResult = assignUserToProject.updateUserAssignmentsOnProject(
-            362L,
-            userIdsToRemove = setOf(7L, 8L),
-            userIdsToAssign = setOf(
-                USER_WITH_PROJECT_RETRIEVE_ID,
-                USER_WITH_PROJECT_RETRIEVE_EDIT_USER_ASSIGNMENTS_ID,
-                USER_WITHOUT_PROJECT_RETRIEVE_ID,
+        assignUserToProject.updateUserAssignmentsOnProject(setOf(
+            // test available users filtering
+            UpdateProjectUser(
+                362L,
+                userIdsToRemove = setOf(7L, 8L),
+                userIdsToAdd = setOf(
+                    USER_WITH_PROJECT_RETRIEVE_ID,
+                    USER_WITH_PROJECT_RETRIEVE_EDIT_USER_ASSIGNMENTS_ID,
+                    USER_WITHOUT_PROJECT_RETRIEVE_ID,
+                ),
             ),
-        )
-        assertThat(testResult).containsExactly(USER_WITHOUT_PROJECT_RETRIEVE_ID)
-        assertThat(usersToRemove.captured).containsExactlyInAnyOrder(7L, 8L)
-        assertThat(usersToAdd.captured).containsExactlyInAnyOrder(USER_WITHOUT_PROJECT_RETRIEVE_ID)
+            // test another persist call is called
+            UpdateProjectUser(
+                363L,
+                userIdsToRemove = setOf(99L),
+                userIdsToAdd = emptySet(),
+            ),
+            // test that this is not called to be persisted
+            UpdateProjectUser(
+                364L,
+                userIdsToRemove = emptySet(),
+                userIdsToAdd = emptySet(),
+            ),
+        ))
+
+        verify(exactly = 2) { userProjectPersistence.changeUsersAssignedToProject(any(), any(), any()) }
+
+        assertThat(projectIdsSlot[0]).isEqualTo(362L)
+        assertThat(removeUsersSlot[0]).containsExactlyInAnyOrder(7L, 8L)
+        assertThat(addUsersSlot[0]).containsExactly(USER_WITHOUT_PROJECT_RETRIEVE_ID)
+
+        assertThat(projectIdsSlot[1]).isEqualTo(363L)
+        assertThat(removeUsersSlot[1]).containsExactly(99L)
+        assertThat(addUsersSlot[1]).isEmpty()
     }
 
 }

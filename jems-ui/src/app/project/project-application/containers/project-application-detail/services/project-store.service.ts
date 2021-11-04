@@ -185,14 +185,14 @@ export class ProjectStore {
       .pipe(
         filter(([id]) => !!id),
         switchMap(([id, version]) => this.projectService.getProjectById(id, version)),
-        tap(project => Log.info('Fetched project:', this, project))
+        tap(project => Log.info('Fetched project byId:', this, project))
       );
 
     const byStatusChanged$ = this.projectStatusChanged$
       .pipe(
         withLatestFrom(this.projectId$),
         switchMap(([, id]) => this.projectService.getProjectById(id)),
-        tap(project => Log.info('Fetched project:', this, project))
+        tap(project => Log.info('Fetched project byStatus:', this, project))
       );
 
     const byProjectDataChanged$ = this.updatedProjectData$

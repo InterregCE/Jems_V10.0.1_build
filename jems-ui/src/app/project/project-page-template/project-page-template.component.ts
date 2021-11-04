@@ -63,7 +63,7 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.pageStore.versionsUpdatedEvent$.pipe(untilDestroyed(this)).subscribe(() =>
+    this.pageStore.versions$.pipe(untilDestroyed(this)).subscribe(() =>
       this.projectSidenavService.versionSelectTemplate$.next(this.sidenavVersionSelect)
     );
   }
