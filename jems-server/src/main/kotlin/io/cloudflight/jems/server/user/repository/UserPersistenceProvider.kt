@@ -60,6 +60,10 @@ class UserPersistenceProvider(
         userRepo.findAllByUserRoleIdInOrderByEmail(userRoleIds = roleIds)
             .map { it.toUserSummary() }
 
+    @Transactional(readOnly = true)
+    override fun findAllByIds(ids: Iterable<Long>): List<UserSummary> =
+        userRepo.findAllById(ids).map { it.toUserSummary() }
+
     @Transactional
     override fun create(user: UserChange, passwordEncoded: String): User =
         userRepo.save(

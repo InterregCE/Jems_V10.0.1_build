@@ -1,20 +1,28 @@
 package io.cloudflight.jems.server.user.service.userproject.assign_user_to_project
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.model.UpdateProjectUser
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieveEditUserAssignments
+import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 
 internal class AssignUserToProjectTest : UnitTest() {
 
@@ -22,10 +30,17 @@ internal class AssignUserToProjectTest : UnitTest() {
         private const val USER_WITH_PROJECT_RETRIEVE_ID = 17L
         private const val USER_WITH_PROJECT_RETRIEVE_EDIT_USER_ASSIGNMENTS_ID = 18L
         private const val USER_WITHOUT_PROJECT_RETRIEVE_ID = 19L
+
+        val project = ProjectSummary(1L, "cid", "call", "acronym", ApplicationStatus.STEP1_DRAFT)
+        val userRole = UserRoleSummary(2L, "role", false)
+        val user = UserSummary(USER_WITHOUT_PROJECT_RETRIEVE_ID, "email", "", "", userRole, UserStatus.ACTIVE)
     }
 
     @MockK
     lateinit var userPersistence: UserPersistence
+
+    @MockK
+    lateinit var projectPersistence: ProjectPersistence
 
     @MockK
     lateinit var userProjectPersistence: UserProjectPersistence
@@ -38,6 +53,9 @@ internal class AssignUserToProjectTest : UnitTest() {
 
     @MockK
     lateinit var userWithoutProjectRetrieve: UserWithPassword
+
+    @RelaxedMockK
+    lateinit var eventPublisher: ApplicationEventPublisher
 
     @InjectMockKs
     lateinit var assignUserToProject: AssignUserToProject
@@ -63,6 +81,13 @@ internal class AssignUserToProjectTest : UnitTest() {
         val projectIdsSlot = mutableListOf<Long>()
         val removeUsersSlot = mutableListOf<Set<Long>>()
         val addUsersSlot = mutableListOf<Set<Long>>()
+        val capturedAudits = mutableListOf<AssignUserEvent>()
+
+        val project1 = ProjectSummary(362L, "cid362", "call", "acronym1", ApplicationStatus.STEP1_DRAFT)
+        val project2 = ProjectSummary(363L, "cid363", "call", "acronym2", ApplicationStatus.STEP1_DRAFT)
+        every { projectPersistence.getProjectSummary(362L) } returns project1
+        every { projectPersistence.getProjectSummary(363L) } returns project2
+        every { userPersistence.findAllByIds(setOf(USER_WITHOUT_PROJECT_RETRIEVE_ID)) } returns listOf(user)
 
         every { userProjectPersistence.changeUsersAssignedToProject(
             capture(projectIdsSlot),
@@ -96,6 +121,11 @@ internal class AssignUserToProjectTest : UnitTest() {
         ))
 
         verify(exactly = 2) { userProjectPersistence.changeUsersAssignedToProject(any(), any(), any()) }
+        verify(exactly = 2) { eventPublisher.publishEvent(capture(capturedAudits)) }
+        assertThat(capturedAudits).containsExactly(
+            AssignUserEvent(project1, listOf(user)),
+            AssignUserEvent(project2, listOf(user))
+        )
 
         assertThat(projectIdsSlot[0]).isEqualTo(362L)
         assertThat(removeUsersSlot[0]).containsExactlyInAnyOrder(7L, 8L)

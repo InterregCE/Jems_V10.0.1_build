@@ -14,7 +14,7 @@ export class UsersFilterPipe implements PipeTransform {
     }
 
     return users.filter(user =>
-      UsersFilterPipe.getSearchValueForUser(user).toUpperCase().includes(filterText.toUpperCase())
+      UsersFilterPipe.getSearchValueForUser(user).toUpperCase().includes(filterText.trim().toUpperCase())
     );
   }
 }
