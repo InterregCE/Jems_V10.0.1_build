@@ -18,6 +18,7 @@ export class Permission {
     PermissionsEnum.UserCreate,
     PermissionsEnum.UserUpdate,
     PermissionsEnum.UserUpdateRole,
+    PermissionsEnum.UserUpdatePassword,
   ];
 
   public static readonly PROGRAMME_SETUP_MODULE_PERMISSIONS = [
@@ -207,6 +208,7 @@ export class Permission {
             PermissionsEnum.UserCreate,
             PermissionsEnum.UserUpdate,
             PermissionsEnum.UserUpdateRole,
+            PermissionsEnum.UserUpdatePassword,
             PermissionsEnum.RoleCreate,
             PermissionsEnum.RoleUpdate,
           ],
