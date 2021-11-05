@@ -49,6 +49,7 @@ export class CallDetailPageComponent {
     initialPriorityCheckboxes: CallPriorityCheckbox[],
     strategies: OutputProgrammeStrategy[],
     initialStrategies: OutputProgrammeStrategy[],
+    numberOfSelectedStrategies: number,
     stateAids: CallStateAidDTO[],
     initialStateAids: CallStateAidDTO[],
     numberOfSelectedStateAids: number
@@ -113,6 +114,7 @@ export class CallDetailPageComponent {
           initialPriorityCheckboxes: this.getPriorities(allPriorities, call),
           strategies: this.getStrategies(allActiveStrategies, call),
           initialStrategies: this.getStrategies(allActiveStrategies, call),
+          numberOfSelectedStrategies: this.getLengthOfSelectedStrategies(this.getStrategies(allActiveStrategies, call)),
           stateAids: this.getStateAids(allStateAids, call),
           initialStateAids: this.getStateAids(allStateAids, call),
           numberOfSelectedStateAids: this.getLengthOfSelectedStateAids(this.getStateAids(allStateAids, call))
@@ -240,6 +242,10 @@ export class CallDetailPageComponent {
     return (data.numberOfSelectedStateAids > 0 && !data.callIsEditable) || (data.stateAids.length > 0 && data.callIsEditable);
   }
 
+  isStrategySectionShown(data: any): boolean {
+    return (data.numberOfSelectedStrategies > 0 && !data.callIsEditable) || (data.strategies.length > 0 && data.callIsEditable);
+  }
+
   private createCall(call: CallUpdateRequestDTO): void {
     this.pageStore.createCall(call)
       .pipe(
@@ -307,5 +313,9 @@ export class CallDetailPageComponent {
 
   private getLengthOfSelectedStateAids(stateAids: CallStateAidDTO[]): number {
     return stateAids.filter(stateAid => stateAid.selected).length;
+  }
+
+  private getLengthOfSelectedStrategies(strategies: OutputProgrammeStrategy[]): number {
+    return strategies.filter(strategy => strategy.active).length;
   }
 }

@@ -135,12 +135,14 @@
                     [priorityCheckboxes]="data.priorityCheckboxes">
             </app-call-priority-tree>
 
-            <h3>{{'call.strategy.title' | translate}}</h3>
-            <app-call-strategies
-                    (selectionChanged)="formChanged()"
-                    [initialStrategies]="data.initialStrategies"
-                    [strategies]="data.strategies">
-            </app-call-strategies>
+            <span *ngIf="isStrategySectionShown(data)">
+                <h3>{{'call.strategy.title' | translate}}</h3>
+                <app-call-strategies
+                        (selectionChanged)="formChanged()"
+                        [initialStrategies]="data.initialStrategies"
+                        [strategies]="data.strategies">
+                </app-call-strategies>
+            </span>
 
             <h3>{{'call.funds.title' | translate}}</h3>
             <span *ngIf="data.callIsEditable || callForm?.controls?.additionalFundAllowed.value">
