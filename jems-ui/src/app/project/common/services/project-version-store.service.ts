@@ -28,8 +28,8 @@ export class ProjectVersionStore {
       ).subscribe();
   }
 
-  changeVersion(versionDTO: ProjectVersionDTO): void {
-    const queryParams = versionDTO.status ? {version: versionDTO.version} : {};
+  changeVersion(versionDTO: ProjectVersionDTO, currentVersionIsLatest: boolean): void {
+    const queryParams = versionDTO.status && !currentVersionIsLatest ? {version: versionDTO.version} : {};
     this.router.navigate([], {queryParams});
   }
 

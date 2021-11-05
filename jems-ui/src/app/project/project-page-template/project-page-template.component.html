@@ -23,7 +23,7 @@
                     ({{data.current?.createdAt | localeDate: 'L' : 'LT'}})
                 </span>
                 <button id="switch-to-current" mat-raised-button
-                        (click)="pageStore.changeVersion(data.latest)">
+                        (click)="pageStore.changeVersion(data.latest, data.projectStatus, data.versions)">
                     {{'project.versions.warn.switch' | translate}}
                 </button>
             </div>
@@ -37,7 +37,7 @@
             <mat-label>{{'project.versions.select.label' | translate}}</mat-label>
             <mat-select *ngIf="data.current?.version"
                         [value]="data.current"
-                        (selectionChange)="pageStore.changeVersion($event.value)">
+                        (selectionChange)="pageStore.changeVersion($event.value, data.projectStatus, data.versions)">
                 <mat-option *ngFor="let version of data.versions; let first = first"
                             [value]="version">
                     <ng-container *ngIf="first">

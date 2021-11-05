@@ -5,6 +5,7 @@ import {combineLatest, Observable, of} from 'rxjs';
 import {ProjectStatusDTO, ProjectStatusService, ProjectVersionDTO} from '@cat/api';
 import {distinctUntilChanged, map, shareReplay, switchMap} from 'rxjs/operators';
 import {ProjectUtil} from '../common/project-util';
+import {Tools} from '@common/utils/tools';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class ProjectPageTemplateStore {
   latestVersion$: Observable<ProjectVersionDTO | undefined>;
   currentVersionIsLatest$: Observable<boolean>;
   isThisUserOwner$: Observable<boolean>;
+  projectStatus$: Observable<ProjectStatusDTO>;
 
   constructor(private projectVersionStore: ProjectVersionStore,
               private projectStore: ProjectStore,
@@ -25,6 +27,7 @@ export class ProjectPageTemplateStore {
     this.latestVersion$ = this.latestVersion();
     this.currentVersionIsLatest$ = this.projectStore.currentVersionIsLatest$;
     this.isThisUserOwner$ = this.projectStore.userIsProjectOwner$;
+    this.projectStatus$ = this.projectStore.projectStatus$;
   }
 
   private static latest(versions?: ProjectVersionDTO[]): ProjectVersionDTO | undefined {
@@ -39,8 +42,10 @@ export class ProjectPageTemplateStore {
     };
   }
 
-  changeVersion(versionDTO: ProjectVersionDTO): void {
-    this.projectVersionStore.changeVersion(versionDTO);
+  changeVersion(versionDTO: ProjectVersionDTO, currentStatus: ProjectStatusDTO.StatusEnum, versions: ProjectVersionDTO[] = []): void {
+      const currentVersionIsLatest = versionDTO.version === Tools.first(versions)?.version
+        && currentStatus === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS;
+      this.projectVersionStore.changeVersion(versionDTO, currentVersionIsLatest);
   }
 
   private versions(): Observable<ProjectVersionDTO[]> {
