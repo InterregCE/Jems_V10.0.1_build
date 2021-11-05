@@ -410,6 +410,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
         every { mockWPDRow.language } returns EN
         every { mockWPDRow.startPeriod } returns 1
         every { mockWPDRow.description } returns "description"
+        every { mockWPDRow.title } returns "title"
         val mockWPORow: WorkPackageOutputRow = mockk()
         every { mockWPORow.workPackageId } returns wpId
         every { mockWPORow.outputNumber } returns 5
@@ -468,6 +469,9 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                                 deliverableNumber = mockWPDRow.deliverableNumber,
                                 description = setOf(
                                     InputTranslation(EN, mockWPDRow.description)
+                                ),
+                                title = setOf(
+                                    InputTranslation(EN, mockWPDRow.title)
                                 ),
                                 period = mockWPDRow.startPeriod
                             )
@@ -918,6 +922,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 override val deliverableNumber: Int? = null
                 override val deliverableStartPeriod: Int? = null
                 override val deliverableDescription: String? = null
+                override val deliverableTitle: String? = null
                 override val deliverableLanguage: SystemLanguage? = null
                 override val outputNumber: Int? = null
                 override val programmeOutputIndicatorId: Long? = null

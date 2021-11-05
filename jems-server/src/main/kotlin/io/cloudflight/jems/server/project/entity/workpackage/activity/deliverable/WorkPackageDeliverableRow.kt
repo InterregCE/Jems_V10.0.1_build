@@ -7,4 +7,5 @@ interface WorkPackageDeliverableRow: TranslationView {
     val deliverableNumber: Int
     val startPeriod: Int?
     val description: String?
+    val title: String?
 }

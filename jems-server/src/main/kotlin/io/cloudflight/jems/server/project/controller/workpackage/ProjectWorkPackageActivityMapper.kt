@@ -24,6 +24,7 @@ fun WorkPackageActivityDeliverableDTO.toDeliverableModel(number: Int) = WorkPack
     id = deliverableId,
     deliverableNumber = number,
     description = description,
+    title = title,
     period = period
 )
 
@@ -49,6 +50,7 @@ fun WorkPackageActivityDeliverable.toDeliverableDto(activityId: Long) = WorkPack
     deliverableId = id,
     deliverableNumber = deliverableNumber,
     description = description,
+    title = title,
     period = period
 )
 

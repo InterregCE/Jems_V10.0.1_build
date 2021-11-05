@@ -159,6 +159,7 @@ fun List<WorkPackageDetailRow>.toModel()=
                             id = groupedDeliverableRows.key!!,
                             deliverableNumber = groupedDeliverableRows.value.first().deliverableNumber!!,
                             description = groupedDeliverableRows.value.extractField({it.deliverableLanguage}) { it.deliverableDescription },
+                            title = groupedDeliverableRows.value.extractField({it.deliverableLanguage}) { it.deliverableTitle },
                             period = groupedDeliverableRows.value.first().deliverableStartPeriod
                         )
                     },
