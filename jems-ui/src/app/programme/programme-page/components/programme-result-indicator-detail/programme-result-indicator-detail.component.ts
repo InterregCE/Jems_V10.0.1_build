@@ -7,7 +7,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
@@ -35,7 +35,7 @@ import {LanguageStore} from '@common/services/language-store.service';
   styleUrls: ['./programme-result-indicator-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implements OnInit {
+export class ProgrammeResultIndicatorDetailComponent extends ViewEditFormComponent implements OnInit {
 
   programmeResultIndicatorConstants = ProgrammeResultIndicatorConstants;
   isProgrammeSetupLocked: boolean;
@@ -44,7 +44,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditForm implem
   @Input()
   resultIndicator: ResultIndicatorDetailDTO;
   @Input()
-  priorities: Array<ProgrammePriorityDTO>;
+  priorities: ProgrammePriorityDTO[];
   @Input()
   isCreate: boolean;
   @Output()

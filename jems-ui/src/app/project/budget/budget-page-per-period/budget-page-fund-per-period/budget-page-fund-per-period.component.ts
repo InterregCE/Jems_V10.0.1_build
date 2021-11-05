@@ -24,12 +24,12 @@ export class BudgetPageFundPerPeriodComponent {
   @Input() projectPeriodNumbers: number[];
 
   data$: Observable<{
-    euFundsDetails: ProjectPartnerFundsPerPeriodDTO[],
-    nonEuFundsDetails: ProjectPartnerFundsPerPeriodDTO[]
-    totalEuFundsPerPeriod: number[],
-    totalFundsPerPeriod: [],
-    totalEuFunds: number,
-    totalFunds: number
+    euFundsDetails: ProjectPartnerFundsPerPeriodDTO[];
+    nonEuFundsDetails: ProjectPartnerFundsPerPeriodDTO[];
+    totalEuFundsPerPeriod: number[];
+    totalFundsPerPeriod: [];
+    totalEuFunds: number;
+    totalFunds: number;
   }>;
 
   constructor(private budgetPeriodStore: ProjectBudgetPeriodPageStore) {

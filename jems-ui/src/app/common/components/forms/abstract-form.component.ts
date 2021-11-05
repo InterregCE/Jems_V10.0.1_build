@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Injectable, Input, OnInit} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {FormGroup} from '@angular/forms';
 import {filter, takeUntil} from 'rxjs/operators';
@@ -8,7 +8,10 @@ import {Alert} from './alert';
 import {APIError} from '../../models/APIError';
 import {TranslateService} from '@ngx-translate/core';
 
-export abstract class AbstractForm extends BaseComponent implements OnInit {
+@Component({
+  template: ''
+})
+export abstract class AbstractFormComponent extends BaseComponent implements OnInit {
   Alert = Alert;
 
   @Input()

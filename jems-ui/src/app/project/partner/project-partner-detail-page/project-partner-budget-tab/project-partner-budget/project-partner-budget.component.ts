@@ -42,20 +42,20 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   budgetsForm = this.initForm();
 
   data: {
-    budgetTables: PartnerBudgetTables,
-    investments: InvestmentSummary[],
-    unitCosts: ProgrammeUnitCost[],
-    staffCostsTotal: number,
-    officeAndAdministrationFlatRateTotal: number,
-    travelAndAccommodationTotal: number,
-    otherCostsFlatRateTotal: number,
-    periods: ProjectPeriodDTO[],
-    isStaffCostFlatRateActive: boolean,
-    isOfficeOnStaffFlatRateActive: boolean,
-    isOfficeOnDirectFlatRateActive: boolean,
-    isTravelAndAccommodationFlatRateActive: boolean,
-    isOtherFlatRateBasedOnStaffCostActive: boolean,
-    unitCostsWithMultipleCategoriesDefined: boolean
+    budgetTables: PartnerBudgetTables;
+    investments: InvestmentSummary[];
+    unitCosts: ProgrammeUnitCost[];
+    staffCostsTotal: number;
+    officeAndAdministrationFlatRateTotal: number;
+    travelAndAccommodationTotal: number;
+    otherCostsFlatRateTotal: number;
+    periods: ProjectPeriodDTO[];
+    isStaffCostFlatRateActive: boolean;
+    isOfficeOnStaffFlatRateActive: boolean;
+    isOfficeOnDirectFlatRateActive: boolean;
+    isTravelAndAccommodationFlatRateActive: boolean;
+    isOtherFlatRateBasedOnStaffCostActive: boolean;
+    unitCostsWithMultipleCategoriesDefined: boolean;
   };
 
   private otherCostsFlatRateTotal$: Observable<number>;

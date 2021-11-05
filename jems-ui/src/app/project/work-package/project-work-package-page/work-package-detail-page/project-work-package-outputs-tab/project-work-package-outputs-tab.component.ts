@@ -28,10 +28,10 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
   });
 
   data$: Observable<{
-    outputs: WorkPackageOutputDTO[],
-    periods: ProjectPeriodDTO[],
-    outputIndicators: OutputIndicatorSummaryDTO[],
-    workPackageNumber: number
+    outputs: WorkPackageOutputDTO[];
+    periods: ProjectPeriodDTO[];
+    outputIndicators: OutputIndicatorSummaryDTO[];
+    workPackageNumber: number;
   }>;
   Alert = Alert;
 

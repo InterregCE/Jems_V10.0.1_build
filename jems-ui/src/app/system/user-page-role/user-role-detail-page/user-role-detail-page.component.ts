@@ -40,8 +40,8 @@ export class UserRoleDetailPageComponent {
   PermissionMode = PermissionMode;
   roleId = this.activatedRoute?.snapshot?.params?.roleId;
   data$: Observable<{
-    role: UserRoleDTO,
-    isUpdateAllowed: boolean,
+    role: UserRoleDTO;
+    isUpdateAllowed: boolean;
   }>;
   userRoleForm = this.formBuilder.group({
     name: ['', [

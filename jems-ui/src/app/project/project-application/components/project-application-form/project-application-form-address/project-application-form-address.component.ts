@@ -20,12 +20,12 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
   nuts: OutputNuts[];
   @Input()
   fieldIds: {
-    COUNTRY_AND_NUTS: string,
-    STREET: string,
-    HOUSE_NUMBER: string,
-    POSTAL_CODE: string,
-    CITY: string,
-    HOMEPAGE?: string,
+    COUNTRY_AND_NUTS: string;
+    STREET: string;
+    HOUSE_NUMBER: string;
+    POSTAL_CODE: string;
+    CITY: string;
+    HOMEPAGE?: string;
   };
 
   selectedCountry: OutputNuts | undefined;

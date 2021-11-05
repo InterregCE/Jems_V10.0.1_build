@@ -43,8 +43,8 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
   showSuccessAfterNextRefresh = false;
 
   data$: Observable<{
-    rows: ProjectUserDTO[],
-    totalElements: number,
+    rows: ProjectUserDTO[];
+    totalElements: number;
   }>;
 
   defaultUserPermissions: PermissionsEnum[] = [

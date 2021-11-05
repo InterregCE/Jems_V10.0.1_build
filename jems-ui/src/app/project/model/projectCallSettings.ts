@@ -11,12 +11,12 @@ export class ProjectCallSettings {
   endDateStep1: Date;
   lengthOfPeriod: number;
   flatRates: CallFlatRateSetting;
-  lumpSums: Array<ProgrammeLumpSum>;
-  unitCosts: Array<ProgrammeUnitCost>;
+  lumpSums: ProgrammeLumpSum[];
+  unitCosts: ProgrammeUnitCost[];
   multipleFundsAllowed: boolean;
-  applicationFormFieldConfigurations: Array<ApplicationFormFieldConfigurationDTO>;
+  applicationFormFieldConfigurations: ApplicationFormFieldConfigurationDTO[];
 
-  constructor(callId: number, callName: string, startDate: Date, endDate: Date, endDateStep1: Date, lengthOfPeriod: number, flatRates: CallFlatRateSetting, lumpSums: Array<ProgrammeLumpSum>, unitCosts: Array<ProgrammeUnitCost>, multipleFundsAllowed: boolean, applicationFormFieldConfigurations: Array<ApplicationFormFieldConfigurationDTO>) {
+  constructor(callId: number, callName: string, startDate: Date, endDate: Date, endDateStep1: Date, lengthOfPeriod: number, flatRates: CallFlatRateSetting, lumpSums: ProgrammeLumpSum[], unitCosts: ProgrammeUnitCost[], multipleFundsAllowed: boolean, applicationFormFieldConfigurations: ApplicationFormFieldConfigurationDTO[]) {
     this.callId = callId;
     this.callName = callName;
     this.startDate = startDate;

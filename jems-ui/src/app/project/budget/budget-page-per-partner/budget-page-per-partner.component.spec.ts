@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {BudgetPagePerPartnerComponent} from './budget-page-per-partner.component';
 import {HttpTestingController} from '@angular/common/http/testing';
@@ -15,7 +15,7 @@ describe('BudgetPagePerPartnerComponent', () => {
   let httpTestingController: HttpTestingController;
   let projectStore: ProjectStore;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [TestModule, ProjectModule],
       declarations: [BudgetPagePerPartnerComponent],

@@ -59,17 +59,17 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   tableData: AbstractControl[] = [];
 
   data$: Observable<{
-    projectTitle: string,
-    columnsToDisplay: string[],
-    withConfigs: TableConfig[],
-    partners: ProjectPartner[],
-    lumpSums: ProgrammeLumpSum[],
-    periods: ProjectPeriod[],
-    showAddButton: boolean,
-    showGapExistsWarning: boolean,
-    costIsNotSplittableError: ValidationErrors | null,
-    partnerColumnsTotal: number[],
-    loading: boolean
+    projectTitle: string;
+    columnsToDisplay: string[];
+    withConfigs: TableConfig[];
+    partners: ProjectPartner[];
+    lumpSums: ProgrammeLumpSum[];
+    periods: ProjectPeriod[];
+    showAddButton: boolean;
+    showGapExistsWarning: boolean;
+    costIsNotSplittableError: ValidationErrors | null;
+    partnerColumnsTotal: number[];
+    loading: boolean;
   }>;
 
   private columnsToDisplay$: Observable<string[]>;
@@ -344,7 +344,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       }
     }
     return null;
-  }
+  };
 
   private newRowId(): number {
     ++this.rowId;

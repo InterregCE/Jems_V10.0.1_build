@@ -27,9 +27,9 @@ export class TranslationManagementPageComponent {
   applicationTranslationFileDataSource = new MatTableDataSource<TranslationFileMetaDataDTO>();
   systemTranslationFileDataSource = new MatTableDataSource<TranslationFileMetaDataDTO>();
   data$: Observable<{
-    error: APIError | null,
-    fileNameWarning: string | null,
-    inProgressUploads: string[]
+    error: APIError | null;
+    fileNameWarning: string | null;
+    inProgressUploads: string[];
   }>;
   private inProgressUploads$ = new BehaviorSubject<string[]>([]);
   private error$ = new BehaviorSubject<APIError | null>(null);

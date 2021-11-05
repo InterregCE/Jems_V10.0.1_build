@@ -6,9 +6,9 @@ import {ProjectFundingDecisionStore} from '../project-funding-decision-store.ser
 import {RoutingService} from '@common/services/routing.service';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/internal/operators';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {ProjectStepStatus} from '../../project-step-status';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
   selector: 'app-project-application-funding-decision',

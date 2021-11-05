@@ -29,9 +29,9 @@ export class ProjectApplicationFilesTableComponent {
   fileSizeOverLimitError$ = new Subject<boolean>();
 
   data$: Observable<{
-    files: PageProjectFileMetadataDTO,
-    projectStatus: ProjectStatusDTO,
-    selectedCategory: CategoryInfo | undefined
+    files: PageProjectFileMetadataDTO;
+    projectStatus: ProjectStatusDTO;
+    selectedCategory: CategoryInfo | undefined;
   }>;
 
   editableDescriptionFileId: number | null;

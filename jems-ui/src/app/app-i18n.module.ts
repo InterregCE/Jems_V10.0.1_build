@@ -19,7 +19,7 @@ import {CommonModule} from '@angular/common';
   exports: [TranslateModule]
 })
 export class AppI18nModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<AppI18nModule> {
     return {
       ngModule: AppI18nModule
     };

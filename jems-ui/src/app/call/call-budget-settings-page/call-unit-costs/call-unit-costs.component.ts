@@ -24,10 +24,10 @@ export class CallUnitCostsComponent {
   initialSelection = new SelectionModel<ProgrammeUnitCostListDTO>(true, []);
 
   data$: Observable<{
-    callUnitCosts: ProgrammeUnitCostListDTO[],
-    programmeUnitCosts: ProgrammeUnitCostListDTO[],
-    callIsEditable: boolean,
-    callIsPublished: boolean
+    callUnitCosts: ProgrammeUnitCostListDTO[];
+    programmeUnitCosts: ProgrammeUnitCostListDTO[];
+    callIsEditable: boolean;
+    callIsPublished: boolean;
   }>;
 
   constructor(private callStore: CallStore,
@@ -85,7 +85,7 @@ export class CallUnitCostsComponent {
     this.formService.setDirty(true);
   }
 
-  disabled(element: ProgrammeUnitCostListDTO, data: {callIsEditable: boolean, callIsPublished: boolean}): boolean {
+  disabled(element: ProgrammeUnitCostListDTO, data: {callIsEditable: boolean; callIsPublished: boolean}): boolean {
     return !data.callIsEditable || (data.callIsPublished && this.initialSelection.isSelected(element));
   }
 }

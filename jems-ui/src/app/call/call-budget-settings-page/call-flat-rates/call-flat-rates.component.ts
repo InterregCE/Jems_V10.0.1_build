@@ -25,8 +25,8 @@ export class CallFlatRatesComponent {
 
   data$: Observable<{
     call: CallDetailDTO;
-    callIsEditable: boolean,
-    callIsPublished: boolean
+    callIsEditable: boolean;
+    callIsPublished: boolean;
   }>;
 
   constructor(private callStore: CallStore,
@@ -116,7 +116,7 @@ export class CallFlatRatesComponent {
     this.formService.setCreation(!this.callId);
   }
 
-  disabled(flatRate: FlatRateDTO, data: {callIsEditable: boolean, callIsPublished: boolean}): boolean {
+  disabled(flatRate: FlatRateDTO, data: {callIsEditable: boolean; callIsPublished: boolean}): boolean {
     return !data.callIsEditable || (data.callIsPublished && !!flatRate);
   }
 

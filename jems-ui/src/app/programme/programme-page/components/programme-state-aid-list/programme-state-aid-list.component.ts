@@ -8,7 +8,7 @@ import {
   OnInit,
   Output, SimpleChanges
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {
   ProgrammeStateAidDTO,
   ProgrammeStateAidUpdateDTO
@@ -28,7 +28,7 @@ import {ProgrammeStateAidConstants, ProgrammeStateAidMeasureRelation} from './co
   styleUrls: ['./programme-state-aid-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeStateAidListComponent extends ViewEditForm implements OnInit, OnChanges {
+export class ProgrammeStateAidListComponent extends ViewEditFormComponent implements OnInit, OnChanges {
   programmeStateAidConstants = ProgrammeStateAidConstants;
 
   @Input()

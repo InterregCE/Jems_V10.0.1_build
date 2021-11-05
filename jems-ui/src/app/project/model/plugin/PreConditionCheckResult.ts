@@ -5,7 +5,7 @@ export class PreConditionCheckResult {
   messages: PreConditionCheckMessage[];
   submissionAllowed: boolean;
 
-  constructor(messages: Array<PreConditionCheckMessage>, submissionAllowed: boolean) {
+  constructor(messages: PreConditionCheckMessage[], submissionAllowed: boolean) {
     this.messages = messages;
     this.submissionAllowed = submissionAllowed;
   }

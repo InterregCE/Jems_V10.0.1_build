@@ -3,11 +3,11 @@ import {combineLatest, Observable} from 'rxjs';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectAssessmentQualityDTO, OutputProjectQualityAssessment, ProjectDetailDTO} from '@cat/api';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {ProjectQualityCheckPageStore} from './project-quality-check-page-store.service';
 import {map, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectStepStatus} from '../project-step-status';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
   selector: 'app-project-application-quality-check',
@@ -24,8 +24,8 @@ export class ProjectApplicationQualityCheckComponent {
   options: string[] = [this.assessment.RECOMMENDEDFORFUNDING, this.assessment.RECOMMENDEDWITHCONDITIONS, this.assessment.NOTRECOMMENDED];
 
   data$: Observable<{
-    project: ProjectDetailDTO,
-    qualityAssessment: OutputProjectQualityAssessment
+    project: ProjectDetailDTO;
+    qualityAssessment: OutputProjectQualityAssessment;
   }>;
 
   qualityCheckForm = this.formBuilder.group({

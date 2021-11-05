@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "src/app/theme/typography";
 
 @mixin custom-form-field-styles() {
@@ -14,7 +15,7 @@
   // These calculations are the same as default material calculations in the
   // 'mat-form-field-typography($config)' mixin int the _theming file
   // so we can have same rules as defined there
-  $line-height: mat-line-height($app-typography, input);
+  $line-height: mat.line-height($app-typography, input);
   $subscript-font-scale: 0.75;
   $subscript-margin-top: 0.5em / $subscript-font-scale;
   $wrapper-padding-bottom: ($subscript-margin-top + $line-height) * $subscript-font-scale;

@@ -9,7 +9,7 @@ export class TranslateBySystemLanguagePipe implements PipeTransform {
   constructor(private languageStore: LanguageStore) {
   }
 
-  transform(translations: Array<InputTranslation> | null, useFallbackLanguage = true): Observable<string> {
+  transform(translations: InputTranslation[] | null, useFallbackLanguage = true): Observable<string> {
     if (translations === null || translations.length === 0) {
       return of('');
     }

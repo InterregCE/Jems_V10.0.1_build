@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import {ProjectPartnerBudgetComponent} from './project-partner-budget.component';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
@@ -19,7 +19,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   let partnerDetailPageStore: ProjectPartnerDetailPageStore;
   let projectPartnerDetailPageStore: ProjectPartnerDetailPageStore;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,

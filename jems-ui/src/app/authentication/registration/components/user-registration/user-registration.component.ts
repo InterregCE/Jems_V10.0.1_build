@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {AbstractForm} from '@common/components/forms/abstract-form';
+import {AbstractFormComponent} from '@common/components/forms/abstract-form.component';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InfoService, UserRegistrationDTO} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
@@ -14,7 +14,7 @@ import {map} from 'rxjs/operators';
   templateUrl: './user-registration.component.html',
   styleUrls: ['./user-registration.component.scss']
 })
-export class UserRegistrationComponent extends AbstractForm implements OnInit {
+export class UserRegistrationComponent extends AbstractFormComponent implements OnInit {
   @Output()
   submitUser: EventEmitter<UserRegistrationDTO> = new EventEmitter<UserRegistrationDTO>();
   @Output()

@@ -19,7 +19,7 @@ export class AuthenticationGuard implements CanActivate {
     return this.authenticationService.getCurrentUser().pipe(
       tap((cu: OutputCurrentUser) => {
         if (!cu || cu.id === -1) {
-          throw {};
+          throw new Error('User not logged in');
         }
       }),
       map(() => true),

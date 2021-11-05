@@ -4,11 +4,11 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {map, tap} from 'rxjs/operators';
 import {ProjectEligibilityDecisionStore} from './project-eligibility-decision-store.service';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {combineLatest} from 'rxjs';
 import {ProjectStepStatus} from '../project-step-status';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
   selector: 'app-project-application-eligibility-decision-page',

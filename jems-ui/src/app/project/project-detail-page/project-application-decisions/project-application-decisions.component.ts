@@ -24,17 +24,17 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
   stepStatus: ProjectStepStatus;
 
   data$: Observable<{
-    projectStatus: ProjectStatusDTO,
-    isProjectLatestVersion: boolean,
-    callHasTwoSteps: boolean,
-    isStep2Now: boolean,
-    decision: ProjectDecisionDTO,
-    fundingDecisionResult: ProjectStatusDTO,
-    isDecisionFinal: boolean,
-    isReturnedNow: boolean,
-    userCanChangeFunding: boolean,
-    preFundingDecision: ProjectStatusDTO,
-    isFundingDecisionPreconditionOk: boolean,
+    projectStatus: ProjectStatusDTO;
+    isProjectLatestVersion: boolean;
+    callHasTwoSteps: boolean;
+    isStep2Now: boolean;
+    decision: ProjectDecisionDTO;
+    fundingDecisionResult: ProjectStatusDTO;
+    isDecisionFinal: boolean;
+    isReturnedNow: boolean;
+    userCanChangeFunding: boolean;
+    preFundingDecision: ProjectStatusDTO;
+    isFundingDecisionPreconditionOk: boolean;
   }>;
 
   constructor(

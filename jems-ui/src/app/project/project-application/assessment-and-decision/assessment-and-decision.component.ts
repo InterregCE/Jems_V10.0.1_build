@@ -5,12 +5,12 @@ import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
 import {catchError, finalize, map, tap} from 'rxjs/operators';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {Alert} from '@common/components/forms/alert';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {AssessmentAndDecisionStore} from '@project/project-application/assessment-and-decision/assessment-and-decision-store.service';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
   selector: 'app-assessment-and-decision',
@@ -27,15 +27,15 @@ export class AssessmentAndDecisionComponent {
   fileManagementSection = {type: FileCategoryTypeEnum.ASSESSMENT} as CategoryInfo;
 
   data$: Observable<{
-    project: ProjectDetailDTO,
-    projectTitle: string,
-    projectStatus: ProjectStatusDTO.StatusEnum,
-    projectId: number,
-    startStepTwoAvailable: boolean,
-    returnToApplicantAvailable: boolean,
-    revertToStatus: string | null,
-    isProjectLatestVersion: boolean,
-    callHasTwoSteps: boolean
+    project: ProjectDetailDTO;
+    projectTitle: string;
+    projectStatus: ProjectStatusDTO.StatusEnum;
+    projectId: number;
+    startStepTwoAvailable: boolean;
+    returnToApplicantAvailable: boolean;
+    revertToStatus: string | null;
+    isProjectLatestVersion: boolean;
+    callHasTwoSteps: boolean;
   }>;
 
   // TODO: create a component

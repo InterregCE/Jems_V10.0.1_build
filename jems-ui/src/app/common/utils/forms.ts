@@ -1,9 +1,9 @@
 import {Observable} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {
-  ConfirmDialogComponent,
-  ConfirmDialogData
+  ConfirmDialogComponent
 } from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 export class Forms {
 

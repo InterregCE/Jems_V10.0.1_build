@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
@@ -23,16 +23,16 @@ import UserStatusEnum = UserDTO.UserStatusEnum;
   styleUrls: ['./user-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserDetailPageComponent extends ViewEditForm {
+export class UserDetailPageComponent extends ViewEditFormComponent {
   PermissionsEnum = PermissionsEnum;
   userStatus = UserDTO.UserStatusEnum;
   passwordIsInEditMode = false;
 
   details$: Observable<{
-    user: UserDTO,
-    currentUser: OutputCurrentUser | null,
-    roles: UserRoleSummaryDTO[],
-    canUpdatePassword: boolean
+    user: UserDTO;
+    currentUser: OutputCurrentUser | null;
+    roles: UserRoleSummaryDTO[];
+    canUpdatePassword: boolean;
   }>;
 
   userForm = this.formBuilder.group({

@@ -2,6 +2,6 @@ import {InputTranslation} from '@cat/api';
 
 export interface CallStateAidDTO {
   id: number;
-  abbreviatedName: Array<InputTranslation>;
+  abbreviatedName: InputTranslation[];
   selected: boolean;
 }

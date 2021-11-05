@@ -31,11 +31,11 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   });
 
   data$: Observable<{
-    activities: WorkPackageActivityDTO[],
-    periods: ProjectPeriodDTO[],
-    partners: ProjectPartner[],
-    workPackageNumber: number,
-    isEditable: boolean,
+    activities: WorkPackageActivityDTO[];
+    periods: ProjectPeriodDTO[];
+    partners: ProjectPartner[];
+    workPackageNumber: number;
+    isEditable: boolean;
   }>;
 
   constructor(public formService: FormService,

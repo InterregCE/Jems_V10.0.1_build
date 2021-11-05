@@ -53,16 +53,16 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
   APPLICATION_FORM = APPLICATION_FORM;
 
   data$: Observable<{
-    financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO,
-    callFunds: Map<number, CallFundRateDTO>,
-    totalBudget: number,
-    publicContributionSubTotal: number,
-    privateContributionSubTotal: number,
-    automaticPublicContributionSubTotal: number,
-    contributionTotal: number,
-    showTotalContributionWarning: boolean,
-    partnerContributionErrorsArgs: ValidationErrors | null,
-    editable: boolean
+    financingAndContribution: ProjectPartnerCoFinancingAndContributionOutputDTO;
+    callFunds: Map<number, CallFundRateDTO>;
+    totalBudget: number;
+    publicContributionSubTotal: number;
+    privateContributionSubTotal: number;
+    automaticPublicContributionSubTotal: number;
+    contributionTotal: number;
+    showTotalContributionWarning: boolean;
+    partnerContributionErrorsArgs: ValidationErrors | null;
+    editable: boolean;
   }>;
 
   coFinancingForm: FormGroup;

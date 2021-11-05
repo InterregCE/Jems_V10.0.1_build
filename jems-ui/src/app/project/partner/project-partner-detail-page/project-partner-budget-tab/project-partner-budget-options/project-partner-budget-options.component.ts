@@ -13,7 +13,7 @@ import {ProjectPartnerBudgetOptionsConstants} from './project-partner-budget-opt
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 import {PartnerBudgetTables} from '../../../../model/budget/partner-budget-tables';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 const flatRateValidator: (control: FormControl) => ValidatorFn = (checkBoxControl: FormControl) => (valueControl: FormControl): ValidationErrors | null => {
   if (checkBoxControl?.value && valueControl === null) {
@@ -37,17 +37,17 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
 
   budgetOptionForm: FormGroup;
   data$: Observable<{
-    callFlatRateSettings: CallFlatRateSetting,
+    callFlatRateSettings: CallFlatRateSetting;
     flatRateErrorsArgs: {
-      staff: { [key: string]: {} }
-      officeOnStaff: { [key: string]: {} }
-      officeOnDirect: { [key: string]: {} }
-      travel: { [key: string]: {} }
-      other: { [key: string]: {} }
-    },
-    isDividerVisible: boolean,
-    isAnyOptionAvailable: boolean,
-    budgets: PartnerBudgetTables
+      staff: { [key: string]: {} };
+      officeOnStaff: { [key: string]: {} };
+      officeOnDirect: { [key: string]: {} };
+      travel: { [key: string]: {} };
+      other: { [key: string]: {} };
+    };
+    isDividerVisible: boolean;
+    isAnyOptionAvailable: boolean;
+    budgets: PartnerBudgetTables;
   }>;
 
   constructor(private formBuilder: FormBuilder,
@@ -301,7 +301,11 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
   }
 
   private setControlsState(isDisabled: boolean, controls: FormControl[]): void {
-    isDisabled ? this.disableControls(controls) : this.enableControls(controls);
+    if (isDisabled) {
+      this.disableControls(controls);
+    } else {
+      this.enableControls(controls);
+    }
   }
 
   private enableControls(controls: FormControl[]): void {

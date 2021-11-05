@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {ProjectApplicationFormIdentificationPageComponent} from './project-application-form-identification-page.component';
 import {TestModule} from '../../../../../common/test-module';
@@ -8,7 +8,7 @@ describe('ProjectApplicationFormIdentificationPageComponent', () => {
   let component: ProjectApplicationFormIdentificationPageComponent;
   let fixture: ComponentFixture<ProjectApplicationFormIdentificationPageComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [TestModule, ProjectModule],
       declarations: [ProjectApplicationFormIdentificationPageComponent]

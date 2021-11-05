@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {InputProgrammeStrategy, OutputProgrammeStrategy} from '@cat/api';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
@@ -19,7 +19,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./programme-strategies.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeStrategiesComponent extends ViewEditForm {
+export class ProgrammeStrategiesComponent extends ViewEditFormComponent {
 
   Permission = Permission;
   @Input()

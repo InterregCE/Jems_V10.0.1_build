@@ -24,14 +24,14 @@ export class CheckAndSubmitComponent {
   private preConditionCheckResult$ = new BehaviorSubject<PreConditionCheckResult | null>(null);
 
   data$: Observable<{
-    projectStatus: ProjectStatusDTO.StatusEnum,
-    projectTitle: string,
-    projectId: number,
-    projectCallEndDate: Date,
-    isThisUserOwner: boolean,
-    hasPreConditionCheckSucceed: boolean,
-    preConditionCheckResults: PreConditionCheckResult | null,
-    isProjectLatestVersion: boolean
+    projectStatus: ProjectStatusDTO.StatusEnum;
+    projectTitle: string;
+    projectId: number;
+    projectCallEndDate: Date;
+    isThisUserOwner: boolean;
+    hasPreConditionCheckSucceed: boolean;
+    preConditionCheckResults: PreConditionCheckResult | null;
+    isProjectLatestVersion: boolean;
   }>;
 
   // TODO: create a component

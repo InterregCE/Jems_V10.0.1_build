@@ -32,9 +32,9 @@ export class ProgrammePriorityDetailPageComponent {
   isProgrammeSetupLocked: boolean;
 
   data$: Observable<{
-    priority: ProgrammePriorityDTO | {},
-    objectives: string[],
-    freePrioritiesWithPolicies: { [key: string]: Array<string>; },
+    priority: ProgrammePriorityDTO | {};
+    objectives: string[];
+    freePrioritiesWithPolicies: { [key: string]: string[] };
   }>;
 
   form = this.formBuilder.group({
@@ -112,13 +112,13 @@ export class ProgrammePriorityDetailPageComponent {
   }
 
   resetForm(priority: ProgrammePriorityDTO,
-            freePrioritiesWithPolicies: { [key: string]: Array<string>; }): void {
+            freePrioritiesWithPolicies: { [key: string]: string[] }): void {
     this.form.patchValue(priority);
     this.changeCurrentObjective(priority?.objective, freePrioritiesWithPolicies, priority.specificObjectives);
   }
 
   cancel(priority: ProgrammePriorityDTO,
-         freePrioritiesWithPolicies: { [key: string]: Array<string>; }): void {
+         freePrioritiesWithPolicies: { [key: string]: string[] }): void {
     if (!this.priorityId) {
       this.programmePageSidenavService.goToPriorities();
       return;
@@ -145,7 +145,7 @@ export class ProgrammePriorityDetailPageComponent {
   }
 
   changeCurrentObjective(objective: ProgrammePriorityDTO.ObjectiveEnum,
-                         freePrioritiesWithPolicies: { [p: string]: Array<string> },
+                         freePrioritiesWithPolicies: { [p: string]: string[] },
                          selectedSpecificObjectives?: ProgrammeSpecificObjectiveDTO[]): void {
     this.specificObjectives.clear();
     selectedSpecificObjectives?.forEach(
@@ -207,7 +207,7 @@ export class ProgrammePriorityDetailPageComponent {
     return of(priority);
   }
 
-  private getAvailableObjectives(currentObjective: string, freeObjectives: { [key: string]: Array<string>; }): string[] {
+  private getAvailableObjectives(currentObjective: string, freeObjectives: { [key: string]: string[] }): string[] {
     const objectives = Object.keys(freeObjectives);
     if (!currentObjective || objectives.find(obj => obj === currentObjective)) {
       return objectives;

@@ -34,8 +34,8 @@ export class UserPageComponent implements OnInit {
   });
 
   data$: Observable<{
-    roles: Map<number, string>,
-    userStatuses: Map<UserSearchRequestDTO.UserStatusesEnum, string>
+    roles: Map<number, string>;
+    userStatuses: Map<UserSearchRequestDTO.UserStatusesEnum, string>;
   }>;
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
