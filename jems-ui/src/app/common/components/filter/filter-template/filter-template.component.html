@@ -1,0 +1,8 @@
+<mat-expansion-panel [expanded]="true" appNoWidthLimit>
+    <mat-expansion-panel-header>
+        <div class="flex-center">{{'common.filters' | translate}}</div>
+        <mat-chip *ngIf="isThereAnyActiveFilter" [removable]="false" [selectable]="false"
+                  class="ml-2">{{'common.filters.active.label' | translate}}</mat-chip>
+    </mat-expansion-panel-header>
+    <ng-content></ng-content>
+</mat-expansion-panel>

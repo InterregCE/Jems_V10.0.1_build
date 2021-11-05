@@ -4,11 +4,11 @@ import {UserPageStore} from './user-page-store.service';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {Router} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
-import {UserDTO, UserRoleDTO, UserRoleSummaryDTO, UserSearchRequestDTO} from '@cat/api';
+import {UserRoleDTO, UserSearchRequestDTO} from '@cat/api';
 import {FormBuilder, FormControl} from '@angular/forms';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {BehaviorSubject} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -24,7 +24,6 @@ export class UserPageComponent implements OnInit {
   PermissionsEnum = PermissionsEnum;
   success = this.router.getCurrentNavigation()?.extras?.state?.success;
   Alert = Alert;
-  userStatus = UserSearchRequestDTO.UserStatusesEnum;
 
   filterForm = this.formBuilder.group({
     name: '',
@@ -33,7 +32,11 @@ export class UserPageComponent implements OnInit {
     roles: [[]],
     userStatuses: [[]]
   });
-  activeFilters$ = new BehaviorSubject<UserSearchRequestDTO>(this.filterForm.value);
+
+  data$: Observable<{
+    roles: Map<number, string>,
+    userStatuses: Map<UserSearchRequestDTO.UserStatusesEnum, string>
+  }>;
 
   tableConfiguration: TableConfiguration = new TableConfiguration({
     routerLink: '/app/system/user/detail',
@@ -78,8 +81,21 @@ export class UserPageComponent implements OnInit {
               private changeDetectorRef: ChangeDetectorRef,
               private formBuilder: FormBuilder,
               private systemPageSidenavService: SystemPageSidenavService) {
+    const userStatuses = new Map<UserSearchRequestDTO.UserStatusesEnum, string>([
+      [UserSearchRequestDTO.UserStatusesEnum.ACTIVE, 'user.status.ACTIVE'],
+      [UserSearchRequestDTO.UserStatusesEnum.INACTIVE, 'user.status.INACTIVE'],
+      [UserSearchRequestDTO.UserStatusesEnum.UNCONFIRMED, 'user.status.UNCONFIRMED']
+    ]);
 
-    this.activeFilters$.pipe(
+    this.data$ = this.userPageStore.roles$
+      .pipe(
+        map(roles => ({
+          roles: new Map(roles.map(role => [role.id, role.name])),
+          userStatuses
+        }))
+      );
+
+    this.filterForm.valueChanges.pipe(
       tap(filters => this.userPageStore.updateUserList(filters)),
       untilDestroyed(this)
     ).subscribe();
@@ -93,84 +109,22 @@ export class UserPageComponent implements OnInit {
     return this.filterForm.get('userStatuses') as FormControl;
   }
 
-  getRoleName(roles: UserRoleSummaryDTO[], roleId: number): string {
-    return roles.find(it => it.id === roleId)?.name || '';
-  }
-
-  removeRoleFromFilters(roleId: number): void {
-    const currentRoles: number[] = this.roles?.value || [];
-    currentRoles.splice(currentRoles.indexOf(roleId), 1);
-    this.roles.setValue([...currentRoles]);
-    this.activeFilters$.next(
-      {...this.activeFilters$.value, roles: this.roles.value} as UserSearchRequestDTO
-    );
-  }
-
-  removeUserStatusFromFilters(status: UserDTO.UserStatusEnum): void {
-    const currentUserStatuses: UserDTO.UserStatusEnum[] = this.userStatuses?.value || [];
-    currentUserStatuses.splice(currentUserStatuses.indexOf(status), 1);
-    this.userStatuses.setValue([...currentUserStatuses]);
-    this.activeFilters$.next(
-      {...this.activeFilters$.value, userStatuses: this.userStatuses.value} as UserSearchRequestDTO
-    );
-  }
-
-  addRoleToFilters(roleId: number): void {
-    const currentRoles: number[] = this.roles?.value || [];
-    if (currentRoles.indexOf(roleId) < 0) {
-      currentRoles.push(roleId);
-      this.roles.setValue([...currentRoles]);
-    }
-    this.activeFilters$.next(
-      {...this.activeFilters$.value, roles: this.roles.value} as UserSearchRequestDTO
-    );
-  }
-
-  addUserStatusToFilters(userStatus: UserSearchRequestDTO.UserStatusesEnum): void {
-    const currentUserStatuses: UserSearchRequestDTO.UserStatusesEnum[] = this.userStatuses?.value || [];
-    if (currentUserStatuses.indexOf(userStatus) < 0) {
-      currentUserStatuses.push(userStatus);
-      this.userStatuses.setValue([...currentUserStatuses]);
-    }
-    this.activeFilters$.next(
-      {...this.activeFilters$.value, userStatuses: this.userStatuses.value} as UserSearchRequestDTO
-    );
-  }
-
-  resetFilter(controlName: string): void {
-    this.filterForm.get(controlName)?.setValue((this.activeFilters$.value as any)[controlName]);
-    this.activeFilters$.next(
-      {...this.activeFilters$.value, [controlName]: undefined} as UserSearchRequestDTO
-    );
-    this.filterForm.get(controlName)?.enable();
-  }
-
-  updateFilter(controlName: string): void {
-    const newValue = this.filterForm.get(controlName)?.value;
-    if (!newValue || !newValue.trim().length) {
-      return;
-    }
-    this.filterForm.get(controlName)?.disable();
-    this.activeFilters$.next(
-      {...this.activeFilters$.value, [controlName]: newValue} as UserSearchRequestDTO
-    );
-    this.filterForm.get(controlName)?.setValue(' ');
-  }
-
   isThereAnyActiveFilter(): boolean {
-    return this.activeFilters$.value.name?.length > 0 ||
-      this.activeFilters$.value.surname?.length > 0 ||
-      this.activeFilters$.value.email?.length > 0 ||
-      this.activeFilters$.value.userStatuses?.length > 0 ||
-      (this.activeFilters$.value.roles && this.activeFilters$.value.roles?.length > 0);
+    return this.filterForm.value.name?.length > 0 ||
+      this.filterForm.value.surname?.length > 0 ||
+      this.filterForm.value.email?.length > 0 ||
+      this.filterForm.value.userStatuses?.length > 0 ||
+      this.filterForm.value.roles?.length;
   }
 
   ngOnInit(): void {
     if (this.success) {
-      setTimeout(() => {
-        this.success = null;
-        this.changeDetectorRef.markForCheck();
-      },         3000);
+      setTimeout(
+        () => {
+          this.success = null;
+          this.changeDetectorRef.markForCheck();
+        },
+        3000);
     }
   }
 }

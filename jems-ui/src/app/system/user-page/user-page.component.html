@@ -15,112 +15,41 @@
         <p *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</p>
     </app-alert>
 
-    <mat-expansion-panel *ngIf="activeFilters$ | async as activeFilters" [expanded]="true" [formGroup]="filterForm"
-                         appNoWidthLimit id="filter-form">
-        <mat-expansion-panel-header>
-            <div class="flex-center">{{'common.filters' | translate}}</div>
-            <mat-chip *ngIf="isThereAnyActiveFilter()" [removable]="false" [selectable]="false"
-                      class="ml-2">{{'common.filters.active.label' | translate}}</mat-chip>
-        </mat-expansion-panel-header>
+    <app-filter-template *ngIf="data$ | async as data"
+                         [formGroup]="filterForm"
+                         [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
         <div alignItems="start" appMultiColumnRow>
-            <mat-form-field>
-                <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
-                <mat-chip-list #nameChip>
-                    <mat-chip *ngIf="activeFilters.name"
-                              [removable]="true"
-                              [selectable]="false">
-                        {{activeFilters.name }}
-                        <mat-icon (click)="resetFilter('name')" matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                    <input (keyup.enter)="updateFilter('name')"
-                           *ngIf="!activeFilters.name"
-                           [matChipInputFor]="nameChip" formControlName="name" matInput name="name">
-                </mat-chip-list>
-            </mat-form-field>
-            <mat-form-field>
-                <mat-label>{{'user.detail.field.surname' | translate}}</mat-label>
-                <mat-chip-list #surnameChip>
-                    <mat-chip *ngIf="activeFilters.surname"
-                              [removable]="true"
-                              [selectable]="false">
-                        {{activeFilters.surname }}
-                        <mat-icon (click)="resetFilter('surname')" matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                    <input (keyup.enter)="updateFilter('surname')"
-                           *ngIf="!activeFilters.surname"
-                           [matChipInputFor]="surnameChip" formControlName="surname" matInput name="surname">
-                </mat-chip-list>
-            </mat-form-field>
-            <mat-form-field>
-                <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
-                <mat-chip-list #emailChip>
-                    <mat-chip
-                            *ngIf="activeFilters.email"
-                            [removable]="true"
-                            [selectable]="false">
-                        {{activeFilters.email }}
-                        <mat-icon (click)="resetFilter('email')" matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                    <input (keyup.enter)="updateFilter('email')"
-                           *ngIf="!activeFilters.email"
-                           [matChipInputFor]="emailChip" formControlName="email" matInput name="email">
-                </mat-chip-list>
-            </mat-form-field>
+            <app-filter-text-input
+                    formControlName="name"
+                    label="user.detail.field.name">
+            </app-filter-text-input>
 
-            <mat-form-field *ngIf="userPageStore.roles$ | async as userRoles" appFormFieldWidth="xx-large"
-                            appearance="fill">
-                <mat-label>{{ 'user.detail.field.role' | translate }}</mat-label>
-                <mat-chip-list #chipList>
-                    <mat-chip
-                            *ngFor="let roleId of this.roles?.value"
-                            [removable]="true"
-                            [selectable]="false">
-                        {{getRoleName(userRoles, roleId)}}
-                        <mat-icon (click)="removeRoleFromFilters(roleId)" matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                    <input
-                      #filterRoles
-                      [matAutocomplete]="auto"
-                      [matChipInputFor]="chipList"
-                      [placeholder]="'user.detail.search.for.roles' | translate">
-                </mat-chip-list>
-                <mat-autocomplete #auto="matAutocomplete"
-                                  (optionSelected)="addRoleToFilters($event.option.value); filterRoles.value = ''; filterRoles.blur()">
-                    <mat-option *ngFor="let role of userRoles | userRoleFilter : this.roles.value :  filterRoles.value"
-                                [value]="role.id">
-                        {{ role.name}}
-                    </mat-option>
-                </mat-autocomplete>
-            </mat-form-field>
-            <mat-form-field>
-                <mat-label>{{'user.detail.field.status' | translate}}</mat-label>
-                <mat-chip-list #userStatusesChip>
-                    <mat-chip *ngFor="let status of userStatuses?.value"
-                              [removable]="true"
-                              [selectable]="false">
-                        {{'user.status.' + status | translate}}
-                        <mat-icon (click)="removeUserStatusFromFilters(status)" matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                    <input #filterUserStatuses
-                           [matAutocomplete]="auto"
-                           [matChipInputFor]="userStatusesChip"
-                           [placeholder]="'user.detail.search.for.status' | translate">
-                    <mat-autocomplete #auto="matAutocomplete"
-                                      (optionSelected)="addUserStatusToFilters($event.option.value); filterUserStatuses.value = ''; filterUserStatuses.blur()">
-                        <mat-option [value]="userStatus.ACTIVE">
-                            {{'user.status.ACTIVE' | translate}}
-                        </mat-option>
-                        <mat-option [value]="userStatus.INACTIVE">
-                            {{'user.status.INACTIVE' | translate}}
-                        </mat-option>
-                        <mat-option [value]="userStatus.UNCONFIRMED">
-                            {{'user.status.UNCONFIRMED' | translate}}
-                        </mat-option>
-                    </mat-autocomplete>
-                </mat-chip-list>
-            </mat-form-field>
+            <app-filter-text-input
+                    formControlName="surname"
+                    label="user.detail.field.surname">
+            </app-filter-text-input>
+
+            <app-filter-text-input
+                    formControlName="email"
+                    label="user.detail.field.email">
+            </app-filter-text-input>
+
+            <app-filter-autocomplete-input
+                    [options]="data.roles"
+                    formControlName="roles"
+                    label="user.detail.field.role"
+                    placeholder="user.detail.search.for.roles">
+            </app-filter-autocomplete-input>
+
+            <app-filter-autocomplete-input
+                    [filterable]="false"
+                    [options]="data.userStatuses"
+                    formControlName="userStatuses"
+                    label="user.detail.field.status"
+                    placeholder="user.detail.search.for.status">
+            </app-filter-autocomplete-input>
         </div>
-    </mat-expansion-panel>
+    </app-filter-template>
 
     <div *ngIf="userPageStore.page$ | async as page">
         <app-table

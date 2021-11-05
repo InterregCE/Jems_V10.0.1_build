@@ -48,6 +48,12 @@ import {HasPermissionDirective} from './directives/has-permission.directive';
 import {HintDirective} from './directives/hint.directive';
 import {TextHintComponent} from '@common/components/forms/text-hint/text-hint.component';
 import {IsMenuActivePipe} from '@common/components/side-nav/is-menu-active.pipe';
+import {ProjectApplicationListUserAssignmentsComponent} from '@common/components/project-application-list-user-assignments/project-application-list-user-assignments.component';
+import {FilterAutocompleteInputComponent} from '@common/components/filter/filter-autocomplete-input/filter-autocomplete-input.component';
+import {FilterTemplateComponent} from '@common/components/filter/filter-template/filter-template.component';
+import {FilterTextInputComponent} from '@common/components/filter/filter-text-input/filter-text-input.component';
+import {FilterListInputComponent} from '@common/components/filter/filter-list-input/filter-list-input.component';
+import {FilterDateInputComponent} from '@common/components/filter/filter-date-input/filter-date-input.component';
 
 const modules = [
   CommonModule,
@@ -102,7 +108,12 @@ const declarations = [
   CustomTranslatePipe,
   HintDirective,
   TextHintComponent,
-  IsMenuActivePipe
+  IsMenuActivePipe,
+  FilterTemplateComponent,
+  FilterTextInputComponent,
+  FilterDateInputComponent,
+  FilterListInputComponent,
+  FilterAutocompleteInputComponent
 ];
 
 const providers = [
