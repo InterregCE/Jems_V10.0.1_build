@@ -40,7 +40,7 @@
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
             <div class="message app-alert-success">
-                <mat-icon>check_circle</mat-icon>
+                <mat-icon class="app-alert-icon">check_circle</mat-icon>
                 <span *ngIf="message.i18nKey">{{message.i18nKey | translate : message.i18nArguments}}</span>
                 <span *ngIf="!message.i18nKey">{{message | translate}}</span>
             </div>
@@ -52,7 +52,7 @@
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
             <div class="message app-alert-danger">
-                <mat-icon>warning_amber</mat-icon>
+                <mat-icon class="app-alert-icon">warning_amber</mat-icon>
                 <div>
                     <div>
                         <span class="mat-body-strong">
