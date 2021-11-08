@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, Input, OnInit} from '@angular/core';
+import {Component, forwardRef, Input} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
 @Component({
@@ -24,6 +24,7 @@ export class FilterListInputComponent implements ControlValueAccessor {
   currentValue: any;
 
   onChange = (value: any) => {
+    // Intentionally left blank
   }
 
   registerOnChange(fn: any): void {
@@ -31,6 +32,7 @@ export class FilterListInputComponent implements ControlValueAccessor {
   }
 
   registerOnTouched(fn: any): void {
+    // Intentionally left blank
   }
 
   writeValue(obj: any[]): void {

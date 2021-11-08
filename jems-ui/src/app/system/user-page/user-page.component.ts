@@ -8,7 +8,7 @@ import {UserRoleDTO, UserSearchRequestDTO} from '@cat/api';
 import {FormBuilder, FormControl} from '@angular/forms';
 import {map, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {combineLatest, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
