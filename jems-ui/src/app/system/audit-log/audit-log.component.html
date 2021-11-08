@@ -3,6 +3,17 @@
     <app-filter-template [formGroup]="filterForm"
                          [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
         <div appMultiColumnRow>
+            <app-filter-date-input
+                    formControlName="timeFrom"
+                    label="audit.start.date">
+            </app-filter-date-input>
+
+            <app-filter-date-input
+                    formControlName="timeTo"
+                    label="audit.end.date">
+            </app-filter-date-input>
+        </div>
+        <div appMultiColumnRow>
             <app-filter-list-input
               #userIdFilter
               formControlName="userIds"
@@ -30,17 +41,6 @@
               placeholder="audit.projectIds"
               type="number">
             </app-filter-list-input>
-        </div>
-        <div appMultiColumnRow>
-            <app-filter-date-input
-                    formControlName="timeFrom"
-                    label="audit.start.date">
-            </app-filter-date-input>
-
-            <app-filter-date-input
-                    formControlName="timeTo"
-                    label="audit.end.date">
-            </app-filter-date-input>
         </div>
     </app-filter-template>
 
