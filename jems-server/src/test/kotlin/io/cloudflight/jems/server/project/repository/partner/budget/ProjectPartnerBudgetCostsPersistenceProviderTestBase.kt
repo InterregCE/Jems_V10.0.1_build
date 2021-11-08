@@ -49,6 +49,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
     private val investmentId = 4L
     private val periodNumber = 2
     private val description = "description"
+    private val comments = "comments"
     private val awardProcedures = "award procedures"
     private val unitType = "unit type"
 
@@ -250,7 +251,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             pricePerUnit = staffCostRow.getPricePerUnit(),
             rowSum = staffCostRow.getRowSum(),
             description = setOf(InputTranslation(staffCostRow.language!!, staffCostRow.getDescription())),
-            comment = setOf(InputTranslation(staffCostRow.language!!, staffCostRow.getComment())),
+            comments = setOf(InputTranslation(staffCostRow.language!!, staffCostRow.getComments())),
             unitType = setOf(InputTranslation(staffCostRow.language!!, staffCostRow.getUnitType())),
             budgetPeriods = mutableSetOf(
                 BudgetPeriod(
@@ -270,7 +271,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         every { mockRow.getUnitCostId() } returns unitCostId
         every { mockRow.getPricePerUnit() } returns BigDecimal.TEN
         every { mockRow.getRowSum() } returns BigDecimal.TEN
-        every { mockRow.getComment() } returns "comment"
+        every { mockRow.getComments() } returns comments
         every { mockRow.getUnitType() } returns unitType
         every { mockRow.getPeriodNumber() } returns periodNumber
         every { mockRow.getAmount() } returns BigDecimal.TEN
@@ -309,6 +310,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             pricePerUnit = travelRow.getPricePerUnit(),
             rowSum = travelRow.getRowSum(),
             description = setOf(InputTranslation(travelRow.language!!, travelRow.getDescription())),
+            comments = setOf(InputTranslation(travelRow.language!!, travelRow.getComments())),
             unitType = setOf(InputTranslation(travelRow.language!!, travelRow.getUnitType())),
             budgetPeriods = mutableSetOf(
                 BudgetPeriod(
@@ -323,6 +325,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         every { mockRow.getId() } returns entityId
         every { mockRow.language } returns SystemLanguage.EN
         every { mockRow.getDescription() } returns description
+        every {mockRow.getComments() } returns comments
         every { mockRow.getPartnerId() } returns partnerId
         every { mockRow.getNumberOfUnits() } returns BigDecimal.ONE
         every { mockRow.getUnitCostId() } returns unitCostId
@@ -392,6 +395,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         every { mockRow.getId() } returns entityId
         every { mockRow.language } returns SystemLanguage.EN
         every { mockRow.getDescription() } returns description
+        every { mockRow.getComments() } returns comments
         every { mockRow.getPartnerId() } returns partnerId
         every { mockRow.getNumberOfUnits() } returns BigDecimal.ONE
         every { mockRow.getUnitCostId() } returns unitCostId
@@ -414,6 +418,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             rowSum = generalRow.getRowSum(),
             investmentId = generalRow.getInvestmentId(),
             description = setOf(InputTranslation(generalRow.language!!, generalRow.getDescription())),
+            comments = setOf(InputTranslation(generalRow.language!!, generalRow.getComments())),
             unitType = setOf(InputTranslation(generalRow.language!!, generalRow.getUnitType())),
             awardProcedures = setOf(InputTranslation(generalRow.language!!, generalRow.getAwardProcedures())),
             budgetPeriods = mutableSetOf(

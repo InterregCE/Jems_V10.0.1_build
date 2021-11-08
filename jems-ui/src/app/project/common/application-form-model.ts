@@ -77,17 +77,19 @@ export const APPLICATION_FORM = {
       PARTNER_BUDGET_PERIODS: 'application.config.project.partner.budget.periods',
       STAFF_COST: {
         STAFF_FUNCTION: 'application.config.project.partner.budget.staff.cost.staff.function',
-        COMMENT: 'application.config.project.partner.budget.staff.cost.comment',
+        COMMENTS: 'application.config.project.partner.budget.staff.cost.comments',
         UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.staff.cost.unit.type.and.number.of.units',
         PRICE_PER_UNIT: 'application.config.project.partner.budget.staff.cost.price.per.unit'
       },
       TRAVEL_AND_ACCOMMODATION: {
         DESCRIPTION: 'application.config.project.partner.budget.travel.and.accommodation.description',
+        COMMENTS: 'application.config.project.partner.budget.travel.and.accommodation.comments',
         UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.travel.and.accommodation.unit.type.and.number.of.units',
         PRICE_PER_UNIT: 'application.config.project.partner.budget.travel.and.accommodation.price.per.unit',
       },
       EXTERNAL_EXPERTISE: {
         DESCRIPTION: 'application.config.project.partner.budget.external.expertise.description',
+        COMMENTS: 'application.config.project.partner.budget.external.expertise.comments',
         AWARD_PROCEDURE: 'application.config.project.partner.budget.external.expertise.award.procedure',
         INVESTMENT: 'application.config.project.partner.budget.external.expertise.investment',
         UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.external.expertise.unit.type.and.number.of.units',
@@ -95,6 +97,7 @@ export const APPLICATION_FORM = {
       },
       EQUIPMENT: {
         DESCRIPTION: 'application.config.project.partner.budget.equipment.description',
+        COMMENTS: 'application.config.project.partner.budget.equipment.comments',
         AWARD_PROCEDURE: 'application.config.project.partner.budget.equipment.award.procedure',
         INVESTMENT: 'application.config.project.partner.budget.equipment.investment',
         UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.equipment.unit.type.and.number.of.units',
@@ -102,6 +105,7 @@ export const APPLICATION_FORM = {
       },
       INFRASTRUCTURE_AND_WORKS: {
         DESCRIPTION: 'application.config.project.partner.budget.infrastructure.and.works.description',
+        COMMENTS: 'application.config.project.partner.budget.infrastructure.and.works.comments',
         AWARD_PROCEDURE: 'application.config.project.partner.budget.infrastructure.and.works.award.procedure',
         INVESTMENT: 'application.config.project.partner.budget.infrastructure.and.works.investment',
         UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.infrastructure.and.works.unit.type.and.number.of.units',

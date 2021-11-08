@@ -87,7 +87,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
       {
         description: [],
         unitType: selectedUnitCost?.type || [],
-        comment: [],
+        comments: [],
         numberOfUnits: 1,
         pricePerUnit: selectedUnitCost?.costPerUnit || 0,
         openForPeriods: 0,
@@ -108,7 +108,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
 
     this.columnsToDisplay = [
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST.STAFF_FUNCTION, ['description']),
-      ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST.COMMENT, ['comment']),
+      ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST.COMMENTS, ['comments']),
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST.UNIT_TYPE_AND_NUMBER_OF_UNITS, ['unitType', 'numberOfUnits']),
       'pricePerUnit', 'total',
       ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods),
@@ -117,7 +117,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
 
     this.tableConfig = [
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST.STAFF_FUNCTION, [{minInRem: 12}]),
-      ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST.COMMENT, [{minInRem: 12}]),
+      ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST.COMMENTS, [{minInRem: 12}]),
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST.UNIT_TYPE_AND_NUMBER_OF_UNITS, [{minInRem: 12}, {
         minInRem: 5,
         maxInRem: 5
@@ -153,7 +153,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
       description: [[]],
       unitType: [[]],
       unitCost: [null, [this.constants.requiredUnitCost(this.allowedBudgetCategory)]],
-      comment: [[]],
+      comments: [[]],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       pricePerUnit: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
       rowSum: [0, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -189,7 +189,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
         description: [item.description],
         unitType: [item.unitType],
         unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId) || null, [this.constants.requiredUnitCost(this.allowedBudgetCategory)]],
-        comment: [item.comment],
+        comments: [item.comments],
         numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
         pricePerUnit: [item.pricePerUnit, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
         rowSum: [item.rowSum, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],

@@ -88,6 +88,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
 
     this.columnsToDisplay = [
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.DESCRIPTION, ['description']),
+      ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.COMMENTS, ['comments']),
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.UNIT_TYPE_AND_NUMBER_OF_UNITS, ['unitType', 'numberOfUnits']),
       'pricePerUnit', 'total',
       ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods),
@@ -96,6 +97,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
 
     this.tableConfig = [
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.DESCRIPTION, [{minInRem: 12}]),
+      ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.COMMENTS, [{minInRem: 12}]),
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.UNIT_TYPE_AND_NUMBER_OF_UNITS, [{minInRem: 12}, {
         minInRem: 5,
         maxInRem: 5
@@ -122,6 +124,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     control.patchValue(
       {
         description: [],
+        comments: [],
         unitType: [],
         numberOfUnits: 1,
         pricePerUnit: selectedUnitCost?.costPerUnit || 0,
@@ -146,6 +149,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     this.items.push(this.formBuilder.group({
       id: null,
       description: [[]],
+      comments: [[]],
       unitType: [[]],
       unitCost: [null, [this.constants.requiredUnitCost(this.allowedBudgetCategory)]],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -181,6 +185,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
       this.items.push(this.formBuilder.group({
         id: [item.id],
         description: [item.description],
+        comments: [item.comments],
         unitType: [item.unitType],
         unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId) || null, [this.constants.requiredUnitCost(this.allowedBudgetCategory)]],
         numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],

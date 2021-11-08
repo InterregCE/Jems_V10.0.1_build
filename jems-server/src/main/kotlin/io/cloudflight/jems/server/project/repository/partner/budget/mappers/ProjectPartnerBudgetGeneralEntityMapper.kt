@@ -11,6 +11,7 @@ fun List<ProjectPartnerBudgetGeneralRow>.toBudgetGeneralCostEntryList() =
         BudgetGeneralCostEntry(
             id = groupedRows.key,
             description = groupedRows.value.extractField { it.getDescription() },
+            comments = groupedRows.value.extractField { it.getComments() },
             awardProcedures = groupedRows.value.extractField { it.getAwardProcedures() },
             unitType = groupedRows.value.extractField { it.getUnitType() },
             budgetPeriods = groupedRows.value.filter { it.getPeriodNumber() != null }
@@ -34,5 +35,6 @@ fun ProjectPartnerBudgetGeneralBase.toBudgetGeneralCostEntry() = BudgetGeneralCo
     unitCostId = unitCostId,
     numberOfUnits = baseProperties.numberOfUnits,
     pricePerUnit = pricePerUnit,
-    rowSum = baseProperties.rowSum
+    rowSum = baseProperties.rowSum,
+    comments = translatedValues.extractField { it.comments },
 )

@@ -11,6 +11,6 @@ data class BudgetStaffCostEntry(
     override val unitCostId: Long?,
     val pricePerUnit: BigDecimal,
     val description: Set<InputTranslation> = emptySet(),
-    val comment: Set<InputTranslation> = emptySet(),
+    val comments: Set<InputTranslation> = emptySet(),
     val unitType: Set<InputTranslation> = emptySet(),
 ) : BaseBudgetEntry

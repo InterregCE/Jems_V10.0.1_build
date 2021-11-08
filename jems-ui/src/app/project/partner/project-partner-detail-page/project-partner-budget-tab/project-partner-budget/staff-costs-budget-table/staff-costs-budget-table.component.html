@@ -64,18 +64,18 @@
                         </mat-footer-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="comment">
+                    <ng-container matColumnDef="comments">
                         <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.staff.comment' | translate}} </mat-header-cell>
+                                *matHeaderCellDef> {{'project.partner.budget.table.staff.comments' | translate}} </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <app-multi-language-form-field
                                     *ngIf="fieldEnabled(control)"
-                                    [formControlName]="constants.FORM_CONTROL_NAMES.comment"
-                                    [maxLength]="constants.MAX_STAFF_COMMENT_TEXT_LENGTH">
+                                    [formControlName]="constants.FORM_CONTROL_NAMES.comments"
+                                    [maxLength]="constants.MAX_STAFF_COMMENTS_TEXT_LENGTH">
                             </app-multi-language-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
-                            <ng-container *ngIf="columnsToDisplay[0]==='comment'">
+                            <ng-container *ngIf="columnsToDisplay[0]==='comments'">
                                 <ng-container *ngTemplateOutlet="addItemButton; context:numberOfItems"></ng-container>
                             </ng-container>
                         </mat-footer-cell>

@@ -382,7 +382,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                     budgetPeriods = mutableSetOf(BudgetPeriod(number = 1, amount = BigDecimal.ONE)),
                     pricePerUnit = BigDecimal.TEN,
                     description = setOf(),
-                    comment = setOf(InputTranslation(SystemLanguage.EN, "comment")),
+                    comments = setOf(InputTranslation(SystemLanguage.EN, "comments")),
                     unitType = setOf(InputTranslation(SystemLanguage.EN, "unitType")),
                     unitCostId = 4L
                 )
@@ -527,7 +527,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 budgetPeriods = mutableSetOf(BudgetPeriod(number = 1, amount = BigDecimal.ONE)),
                 pricePerUnit = BigDecimal.TEN,
                 description = setOf(),
-                comment = setOf(InputTranslation(SystemLanguage.EN, "comment")),
+                comments = setOf(InputTranslation(SystemLanguage.EN, "comments")),
                 unitType = setOf(InputTranslation(SystemLanguage.EN, "unitType")),
                 unitCostId = 4L
             )
@@ -616,7 +616,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                         ),
                                         pricePerUnit = BigDecimal.TEN,
                                         description = setOf(),
-                                        comment = setOf(InputTranslationData(SystemLanguageData.EN, "comment")),
+                                        comments = setOf(InputTranslationData(SystemLanguageData.EN, "comments")),
                                         unitType = setOf(InputTranslationData(SystemLanguageData.EN, "unitType")),
                                         unitCostId = 4L
                                     )

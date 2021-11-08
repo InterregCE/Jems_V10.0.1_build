@@ -10,7 +10,7 @@ export class StaffCostsBudgetTableEntry {
   new?: boolean;
   unitType?: InputTranslation[] = [];
   unitCostId?: number;
-  comment?: InputTranslation[] = [];
+  comments?: InputTranslation[] = [];
   budgetPeriods?: BudgetPeriodDTO[];
 
   constructor(data: Partial<StaffCostsBudgetTableEntry>) {
@@ -22,7 +22,7 @@ export class StaffCostsBudgetTableEntry {
     this.rowSum = data.rowSum;
     this.unitType = data.unitType;
     this.unitCostId = data.unitCostId;
-    this.comment = data.comment;
+    this.comments = data.comments;
     this.budgetPeriods = data.budgetPeriods;
   }
 
