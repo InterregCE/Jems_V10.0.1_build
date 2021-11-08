@@ -251,7 +251,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
     this.finances.clear();
     mainFunds.forEach(fund => this.addAdditionalFund(callFunds, fund));
     if (!mainFunds.length) {
-      this.addAdditionalFund(callFunds, undefined);
+      this.addAdditionalFund(callFunds);
     }
 
     this.financesPercentsChanged(totalBudget);
