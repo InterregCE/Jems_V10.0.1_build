@@ -19,7 +19,7 @@ fun List<ProjectPartnerBudgetStaffCostRow>.toBudgetStaffCostEntryList() =
         BudgetStaffCostEntry(
             id = groupedRows.key,
             description = groupedRows.value.extractField { it.getDescription() },
-            comment = groupedRows.value.extractField { it.getComment() },
+            comments = groupedRows.value.extractField { it.getComments() },
             unitType = groupedRows.value.extractField { it.getUnitType() },
             budgetPeriods = groupedRows.value.filter { it.getPeriodNumber() != null }
                 .mapTo(HashSet()) { BudgetPeriod(it.getPeriodNumber()!!, it.getAmount()) },
@@ -34,7 +34,7 @@ fun List<ProjectPartnerBudgetStaffCostEntity>.toBudgetStaffCostEntries() = this.
 fun ProjectPartnerBudgetStaffCostEntity.toBudgetStaffCostEntry() = BudgetStaffCostEntry(
     id = id,
     description = translatedValues.extractField { it.description },
-    comment = translatedValues.extractField { it.comment },
+    comments = translatedValues.extractField { it.comments },
     unitType = translatedValues.extractField { it.unitType },
     budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
         .toMutableSet(),
@@ -66,10 +66,10 @@ fun BudgetStaffCostEntry.toProjectPartnerBudgetStaffCostEntity(
                 ProjectPartnerBudgetStaffCostTranslEntity(
                     translationId = TranslationId(this, language),
                     description = description.extractTranslation(language),
-                    comment = comment.extractTranslation(language),
+                    comments = comments.extractTranslation(language),
                     unitType = unitType.extractTranslation(language),
                 )
-            }, arrayOf(description, comment, unitType)
+            }, arrayOf(description, comments, unitType)
         )
 
         budgetPeriodEntities.addAll(budgetPeriods.map {

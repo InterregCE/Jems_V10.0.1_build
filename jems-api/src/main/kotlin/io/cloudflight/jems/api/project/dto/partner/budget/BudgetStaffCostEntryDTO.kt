@@ -12,7 +12,7 @@ data class BudgetStaffCostEntryDTO(
     override val budgetPeriods: Set<BudgetPeriodDTO> = emptySet(),
     val pricePerUnit: BigDecimal,
     val description: Set<InputTranslation> = emptySet(),
-    val comment: Set<InputTranslation> = emptySet(),
+    val comments: Set<InputTranslation> = emptySet(),
     val unitType: Set<InputTranslation> = emptySet(),
     val unitCostId: Long? = null
 ) : BaseBudgetEntryDTO

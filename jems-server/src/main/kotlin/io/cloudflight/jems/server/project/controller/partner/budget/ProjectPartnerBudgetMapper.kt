@@ -38,7 +38,7 @@ fun BudgetStaffCostEntry.toBudgetStaffCostEntryDTO() = BudgetStaffCostEntryDTO(
     unitCostId = unitCostId,
     unitType = unitType,
     description = description,
-    comment = comment
+    comments = comments
 )
 
 fun List<BudgetStaffCostEntryDTO>.toBudgetStaffCostEntryList() = this.map { it.toBudgetStaffCostEntry() }
@@ -52,7 +52,7 @@ fun BudgetStaffCostEntryDTO.toBudgetStaffCostEntry() = BudgetStaffCostEntry(
     unitCostId = unitCostId,
     unitType = unitType,
     description = description,
-    comment = comment
+    comments = comments
 )
 
 fun List<BudgetTravelAndAccommodationCostEntry>.toBudgetTravelAndAccommodationCostsEntryDTOList() =
@@ -67,7 +67,8 @@ fun BudgetTravelAndAccommodationCostEntry.toBudgetTravelAndAccommodationCostsEnt
         budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
         unitCostId = unitCostId,
         unitType = unitType,
-        description = description
+        description = description,
+        comments = comments
     )
 
 fun List<BudgetTravelAndAccommodationCostEntryDTO>.toBudgetTravelAndAccommodationCostEntryList() =
@@ -82,7 +83,8 @@ fun BudgetTravelAndAccommodationCostEntryDTO.toBudgetTravelAndAccommodationCostE
         budgetPeriods = budgetPeriods.toBudgetPeriods(),
         unitCostId = unitCostId,
         unitType = unitType,
-        description = description
+        description = description,
+        comments = comments
     )
 
 fun List<BudgetUnitCostEntry>.toBudgetUnitCostEntryDTOList() = this.map { it.toBudgetUnitCostEntryDTO() }
@@ -117,7 +119,8 @@ fun BudgetGeneralCostEntry.toBudgetGeneralCostsEntryDTO() = BudgetGeneralCostEnt
     investmentId = investmentId,
     unitCostId = unitCostId,
     awardProcedures = awardProcedures,
-    description = description
+    description = description,
+    comments = comments
 )
 
 fun List<BudgetGeneralCostEntryDTO>.toBudgetGeneralCostEntryList() = this.map { it.toBudgetGeneralCostEntry() }
@@ -132,7 +135,8 @@ fun BudgetGeneralCostEntryDTO.toBudgetGeneralCostEntry() = BudgetGeneralCostEntr
     investmentId = investmentId,
     unitCostId = unitCostId,
     awardProcedures = awardProcedures,
-    description = description
+    description = description,
+    comments = comments
 )
 
 fun BudgetCosts.toBudgetCostsDTO() = BudgetCostsDTO(

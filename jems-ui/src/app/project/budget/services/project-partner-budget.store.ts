@@ -176,7 +176,7 @@ export class ProjectPartnerBudgetStore {
       description: entry.description as any,
       unitType: entry.unitType as any,
       unitCostId: entry.unitCostId,
-      comment: entry.comment,
+      comments: entry.comments as any,
       numberOfUnits: entry.numberOfUnits as any,
       pricePerUnit: entry.pricePerUnit as any,
       rowSum: entry.rowSum,
@@ -188,6 +188,7 @@ export class ProjectPartnerBudgetStore {
     return table.entries.map(entry => ({
       id: entry.id as any,
       description: entry.description as any,
+      comments: entry.comments as any,
       unitType: entry.unitType as any,
       unitCostId: entry.unitCostId,
       numberOfUnits: entry.numberOfUnits as any,
@@ -211,6 +212,7 @@ export class ProjectPartnerBudgetStore {
     return table.entries.map(entry => ({
       id: entry.id as any,
       description: entry.description as any,
+      comments: entry.comments as any,
       unitType: entry.unitType as any,
       unitCostId: entry.unitCostId,
       awardProcedures: entry.awardProcedures as any,

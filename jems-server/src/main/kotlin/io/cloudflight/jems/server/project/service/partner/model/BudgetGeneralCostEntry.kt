@@ -14,4 +14,5 @@ data class BudgetGeneralCostEntry(
     val unitType: Set<InputTranslation> = emptySet(),
     val awardProcedures: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> = emptySet(),
+    val comments: Set<InputTranslation> = emptySet(),
 ) : BaseBudgetEntry

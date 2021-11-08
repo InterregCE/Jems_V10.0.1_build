@@ -6,4 +6,5 @@ abstract class ProjectPartnerBudgetGeneralTranslBase : TranslationEntity() {
     abstract val awardProcedures: String?
     abstract val unitType: String?
     abstract val description: String?
+    abstract val comments: String?
 }

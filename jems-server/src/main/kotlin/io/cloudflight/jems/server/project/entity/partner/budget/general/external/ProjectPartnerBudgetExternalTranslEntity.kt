@@ -15,6 +15,8 @@ data class ProjectPartnerBudgetExternalTranslEntity(
 
     override val unitType: String? = null,
 
-    override val description: String? = null
+    override val description: String? = null,
+
+    override val comments: String? = null
 
 ) : ProjectPartnerBudgetGeneralTranslBase()
