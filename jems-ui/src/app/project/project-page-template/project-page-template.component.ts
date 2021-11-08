@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, Input, TemplateRef, V
 import {ProjectApplicationFormSidenavService} from '../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Alert} from '@common/components/forms/alert';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectVersionDTO, UserRoleDTO} from '@cat/api';
+import {ProjectStatusDTO, ProjectVersionDTO, UserRoleDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {ProjectPageTemplateStore} from './project-page-template-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -36,12 +36,15 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   versionWarnData$: Observable<{
     current: ProjectVersionDTO | undefined,
     latest: ProjectVersionDTO | undefined,
-    currentIsLatest: boolean
+    currentIsLatest: boolean,
+    versions: ProjectVersionDTO[],
+    projectStatus: ProjectStatusDTO.StatusEnum
   }>;
 
   versionSelectData$: Observable<{
     versions: ProjectVersionDTO[],
     current: ProjectVersionDTO,
+    projectStatus: ProjectStatusDTO.StatusEnum
   }>;
 
   constructor(public projectSidenavService: ProjectApplicationFormSidenavService,
@@ -49,16 +52,19 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
     this.versionWarnData$ = combineLatest([
       this.pageStore.currentVersion$,
       this.pageStore.latestVersion$,
-      this.pageStore.currentVersionIsLatest$
+      this.pageStore.currentVersionIsLatest$,
+      this.pageStore.versions$,
+      this.pageStore.projectStatus$
     ]).pipe(
-      map(([current, latest, currentIsLatest]) => ({current, latest, currentIsLatest}))
+      map(([current, latest, currentIsLatest, versions, status]) => ({current, latest, currentIsLatest, versions, projectStatus: status.status}))
     );
 
     this.versionSelectData$ = combineLatest([
       this.pageStore.versions$,
-      this.pageStore.currentVersion$
+      this.pageStore.currentVersion$,
+      this.pageStore.projectStatus$
     ]).pipe(
-      map(([versions, current]) => ({versions, current})),
+      map(([versions, current, status]) => ({versions, current, projectStatus: status.status})),
     );
   }
 
