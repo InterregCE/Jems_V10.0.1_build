@@ -42,7 +42,7 @@ fun BudgetGeneralCostEntry.toProjectPartnerBudgetEquipmentEntity(
                     unitType = unitType.extractTranslation(language),
                     comments = comments.extractTranslation(language)
                 )
-            }, arrayOf(description, awardProcedures, unitType)
+            }, arrayOf(description, awardProcedures, unitType, comments)
         )
         budgetPeriodEntities.addAll(budgetPeriods.map {
             ProjectPartnerBudgetEquipmentPeriodEntity(

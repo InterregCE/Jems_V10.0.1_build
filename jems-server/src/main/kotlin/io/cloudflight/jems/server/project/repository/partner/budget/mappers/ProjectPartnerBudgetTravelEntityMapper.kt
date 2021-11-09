@@ -71,7 +71,7 @@ fun BudgetTravelAndAccommodationCostEntry.toProjectPartnerBudgetTravelEntity(
                     unitType = unitType.extractTranslation(language),
                     comments = comments.extractTranslation(language)
                 )
-            }, arrayOf(description, unitType)
+            }, arrayOf(description, unitType, comments)
         )
 
         budgetPeriodEntities.addAll(budgetPeriods.map {
