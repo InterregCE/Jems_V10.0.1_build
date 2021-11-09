@@ -23,6 +23,7 @@ export class FilterTextInputComponent implements ControlValueAccessor {
 
   value: any;
   onChange = (value: any) => {
+    // Intentionally left blank
   }
 
   registerOnChange(fn: any): void {
@@ -30,6 +31,7 @@ export class FilterTextInputComponent implements ControlValueAccessor {
   }
 
   registerOnTouched(fn: any): void {
+    // Intentionally left blank
   }
 
   writeValue(obj: any): void {

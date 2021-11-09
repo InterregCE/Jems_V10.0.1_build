@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, forwardRef, Input, OnInit} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, forwardRef} from '@angular/core';
+import {NG_VALUE_ACCESSOR} from '@angular/forms';
 import {FilterTextInputComponent} from '@common/components/filter/filter-text-input/filter-text-input.component';
 
 @Component({

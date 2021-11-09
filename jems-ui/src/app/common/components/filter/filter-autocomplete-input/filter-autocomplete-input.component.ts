@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, Input} from '@angular/core';
 import {FilterListInputComponent} from '@common/components/filter/filter-list-input/filter-list-input.component';
 import {NG_VALUE_ACCESSOR} from '@angular/forms';
 
