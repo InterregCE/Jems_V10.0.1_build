@@ -44,7 +44,8 @@ export class ProjectPageTemplateStore {
 
   changeVersion(versionDTO: ProjectVersionDTO, currentStatus: ProjectStatusDTO.StatusEnum, versions: ProjectVersionDTO[] = []): void {
       const currentVersionIsLatest = versionDTO.version === Tools.first(versions)?.version
-        && currentStatus === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS;
+        && ( currentStatus === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS
+        || currentStatus === ProjectStatusDTO.StatusEnum.CONDITIONSSUBMITTED);
       this.projectVersionStore.changeVersion(versionDTO, currentVersionIsLatest);
   }
 
