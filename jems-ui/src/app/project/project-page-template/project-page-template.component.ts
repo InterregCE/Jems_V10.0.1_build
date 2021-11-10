@@ -38,13 +38,13 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
     latest: ProjectVersionDTO | undefined;
     currentIsLatest: boolean;
     versions: ProjectVersionDTO[];
-    projectStatus: ProjectStatusDTO.StatusEnum
+    projectStatus: ProjectStatusDTO.StatusEnum;
   }>;
 
   versionSelectData$: Observable<{
     versions: ProjectVersionDTO[];
     current: ProjectVersionDTO;
-    projectStatus: ProjectStatusDTO.StatusEnum
+    projectStatus: ProjectStatusDTO.StatusEnum;
   }>;
 
   constructor(public projectSidenavService: ProjectApplicationFormSidenavService,
