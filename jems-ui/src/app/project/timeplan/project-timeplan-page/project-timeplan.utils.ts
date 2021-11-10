@@ -337,8 +337,8 @@ export class Content {
   content: string;
 }
 
-export function getInputTranslations(workPackages: ProjectWorkPackageDTO[]): { [language: string]: Content[]; } {
-  const languages: { [language: string]: Content[]; } = {};
+export function getInputTranslations(workPackages: ProjectWorkPackageDTO[]): { [language: string]: Content[] } {
+  const languages: { [language: string]: Content[] } = {};
   workPackages.forEach(wp => {
     wp.name.forEach(translation => {
       if (!languages[translation.language]) {

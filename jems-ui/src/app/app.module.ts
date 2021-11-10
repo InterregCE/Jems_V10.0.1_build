@@ -38,7 +38,7 @@ import {ThemeService} from './theme/theme.service';
     BrowserAnimationsModule,
     CoreModule,
     HttpClientModule,
-    RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
     NgxPermissionsModule.forRoot(),
     SharedModule,
     OverlayModule,

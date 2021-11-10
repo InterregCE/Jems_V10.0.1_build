@@ -7,7 +7,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {FormState} from '@common/components/forms/form-state';
@@ -29,7 +29,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./programme-unit-cost-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeUnitCostDetailComponent extends ViewEditForm implements OnInit {
+export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent implements OnInit {
 
   MIN_VALUE = 0.01;
   MAX_VALUE =  999999999.99;

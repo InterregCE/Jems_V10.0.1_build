@@ -1,13 +1,16 @@
-import {ChangeDetectorRef, EventEmitter, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Injectable, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormGroup} from '@angular/forms';
-import {AbstractForm} from './abstract-form';
+import {AbstractFormComponent} from './abstract-form.component';
 import {delay, filter, takeUntil} from 'rxjs/operators';
 import {BehaviorSubject} from 'rxjs';
 import {Log} from '../../utils/log';
 import {FormState} from '@common/components/forms/form-state';
 import {TranslateService} from '@ngx-translate/core';
 
-export abstract class ViewEditForm extends AbstractForm implements OnInit {
+@Component({
+  template: ''
+})
+export abstract class ViewEditFormComponent extends AbstractFormComponent implements OnInit {
   FormState = FormState;
 
   @Output()

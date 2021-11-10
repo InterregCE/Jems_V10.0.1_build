@@ -84,10 +84,10 @@ export class ProjectApplicationFormA4Component {
 
     return uniqueRowsWithinGroup
       .map((uniqItem) =>
-        this.getRowSpanPlan(
+        (this.getRowSpanPlan(
           attributesToFollow,
           data.filter((item) => this.getValue(attribute, uniqItem) === this.getValue(attribute, item))
-        )
+        ) as any) // lint fix -> wtf is this code doing anyway?
       )
       .flat(attributes.length);
   }
@@ -111,7 +111,7 @@ export class ProjectApplicationFormA4Component {
       return a.outputIndicatorId - b.outputIndicatorId;
     }
     return 1;
-  }
+  };
 
   /**
    * This function will assign IDs to those indicators or outputs, that do not exist, just

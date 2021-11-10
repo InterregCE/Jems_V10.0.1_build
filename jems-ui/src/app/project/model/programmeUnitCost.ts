@@ -3,21 +3,21 @@ import {InputTranslation} from '@cat/api';
 
 export class ProgrammeUnitCost {
   id: number;
-  name: Array<InputTranslation>;
-  description: Array<InputTranslation>;
-  type: Array<InputTranslation>;
+  name: InputTranslation[];
+  description: InputTranslation[];
+  type: InputTranslation[];
   costPerUnit: number;
   isOneCostCategory: boolean;
-  categories: Array<BudgetCostCategoryEnum>;
+  categories: BudgetCostCategoryEnum[];
 
   constructor(
     id: number,
-    name: Array<InputTranslation>,
-    description: Array<InputTranslation>,
-    type: Array<InputTranslation>,
+    name: InputTranslation[],
+    description: InputTranslation[],
+    type: InputTranslation[],
     costPerUnit: number,
     isOneCostCategory: boolean,
-    categories: Array<BudgetCostCategoryEnum>
+    categories: BudgetCostCategoryEnum[]
   ) {
     this.id = id;
     this.name = name;

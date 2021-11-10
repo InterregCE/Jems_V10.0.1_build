@@ -9,7 +9,7 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ProgrammeLegalStatusDTO, ProgrammeLegalStatusUpdateDTO} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -26,7 +26,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./programme-legal-status-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeLegalStatusListComponent extends ViewEditForm implements OnInit, OnChanges {
+export class ProgrammeLegalStatusListComponent extends ViewEditFormComponent implements OnInit, OnChanges {
   @Input()
   legalStatuses: ProgrammeLegalStatusDTO[];
 

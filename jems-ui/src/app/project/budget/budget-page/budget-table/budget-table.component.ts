@@ -41,7 +41,7 @@ export class BudgetTableComponent implements OnInit, OnChanges {
   total: number;
 
   budget$: Observable<ProjectPartnerBudgetDTO[]>;
-  dataSourceChanged$ = new BehaviorSubject<ProjectPartnerBudgetDTO[]>(this.dataSource);
+  dataSourceChanged$: BehaviorSubject<ProjectPartnerBudgetDTO[]>;
 
   constructor(
     public projectStore: ProjectStore,
@@ -51,6 +51,7 @@ export class BudgetTableComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.dataSourceChanged$ = new BehaviorSubject<ProjectPartnerBudgetDTO[]>(this.dataSource);
     this.budget$ = combineLatest([
       this.dataSourceChanged$,
       this.projectStore.allowedBudgetCategories$,

@@ -7,7 +7,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {
   InputTranslation,
   OutputIndicatorCreateRequestDTO,
@@ -40,7 +40,7 @@ import {LanguageStore} from '../../../../common/services/language-store.service'
   styleUrls: ['./programme-output-indicator-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implements OnInit {
+export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormComponent implements OnInit {
 
   programmeOutputIndicatorConstants = ProgrammeOutputIndicatorConstants;
   isProgrammeSetupLocked: boolean;
@@ -48,7 +48,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditForm implem
   @Input()
   outputIndicator: OutputIndicatorDetailDTO;
   @Input()
-  priorities: Array<ProgrammePriorityDTO>;
+  priorities: ProgrammePriorityDTO[];
   @Input()
   isCreate: boolean;
   @Output()

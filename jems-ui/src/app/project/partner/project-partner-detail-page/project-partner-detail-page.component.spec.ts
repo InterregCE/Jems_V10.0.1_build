@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {TestModule} from '../../../common/test-module';
 import {ProjectModule} from '../../project.module';
 import {ProjectPartnerDetailPageComponent} from './project-partner-detail-page.component';
@@ -10,7 +10,7 @@ describe('ProjectApplicationFormPartnerDetailComponent', () => {
   let fixture: ComponentFixture<ProjectPartnerDetailPageComponent>;
   let httpTestingController: HttpTestingController;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,

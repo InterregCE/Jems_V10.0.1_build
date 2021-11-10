@@ -23,9 +23,9 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   private workPackageInvestmentId: number;
 
   data$: Observable<{
-    investment: WorkPackageInvestmentDTO,
-    workPackageNumber: number,
-    nuts: OutputNuts[]
+    investment: WorkPackageInvestmentDTO;
+    workPackageNumber: number;
+    nuts: OutputNuts[];
   }>;
 
   workPackageInvestmentForm: FormGroup = this.formBuilder.group({

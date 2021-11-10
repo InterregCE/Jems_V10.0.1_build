@@ -25,8 +25,8 @@ export class ProjectApplicationAssessmentsComponent implements OnChanges {
   stepStatus: ProjectStepStatus;
 
   data$: Observable<{
-    isProjectLatestVersion: boolean,
-    callHasTwoSteps: boolean
+    isProjectLatestVersion: boolean;
+    callHasTwoSteps: boolean;
   }>;
 
   constructor(private projectStore: ProjectStore) {

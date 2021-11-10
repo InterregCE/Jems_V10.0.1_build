@@ -4,21 +4,21 @@ import {InputTranslation} from '@cat/api';
 
 export class ProgrammeLumpSum {
   id: number;
-  name: Array<InputTranslation>;
-  description: Array<InputTranslation>;
+  name: InputTranslation[];
+  description: InputTranslation[];
   cost: number;
   isSplittingAllowed: boolean;
   phase: LumpSumPhaseEnum | null;
-  categories: Array<BudgetCostCategoryEnum>;
+  categories: BudgetCostCategoryEnum[];
 
   constructor(
     id: number,
-    name: Array<InputTranslation>,
-    description: Array<InputTranslation>,
+    name: InputTranslation[],
+    description: InputTranslation[],
     cost: number,
     isSplittingAllowed: boolean,
     phase: LumpSumPhaseEnum | null,
-    categories: Array<BudgetCostCategoryEnum>
+    categories: BudgetCostCategoryEnum[]
   ) {
     this.id = id;
     this.name = name;

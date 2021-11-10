@@ -29,11 +29,11 @@ export class ProjectResultsPageComponent implements OnInit {
   });
 
   data$: Observable<{
-    results: ProjectResultDTO[],
-    resultIndicators: ResultIndicatorSummaryDTO[],
-    periods: ProjectPeriodDTO[],
-    projectId: number,
-    projectTitle: string
+    results: ProjectResultDTO[];
+    resultIndicators: ResultIndicatorSummaryDTO[];
+    periods: ProjectPeriodDTO[];
+    projectId: number;
+    projectTitle: string;
   }>;
   Alert = Alert;
 

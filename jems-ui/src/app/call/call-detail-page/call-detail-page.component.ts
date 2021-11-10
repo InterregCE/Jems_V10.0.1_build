@@ -14,7 +14,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallPageSidenavService} from '../services/call-page-sidenav.service';
 import {catchError, map, take, tap, withLatestFrom} from 'rxjs/operators';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import moment from 'moment';
 import {Alert} from '@common/components/forms/alert';
 import {CallDetailPageStore} from './call-detail-page-store.service';
@@ -22,6 +21,7 @@ import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {filter} from 'rxjs/internal/operators';
 import {CallStateAidDTO} from './call-state-aids/CallStateAidDTO';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
   selector: 'app-call-detail-page',
@@ -42,17 +42,17 @@ export class CallDetailPageComponent {
   publishPending = false;
   published = false;
   data$: Observable<{
-    call: CallDetailDTO,
-    userCanApply: boolean,
-    callIsEditable: boolean,
-    priorityCheckboxes: CallPriorityCheckbox[],
-    initialPriorityCheckboxes: CallPriorityCheckbox[],
-    strategies: OutputProgrammeStrategy[],
-    initialStrategies: OutputProgrammeStrategy[],
-    numberOfSelectedStrategies: number,
-    stateAids: CallStateAidDTO[],
-    initialStateAids: CallStateAidDTO[],
-    numberOfSelectedStateAids: number
+    call: CallDetailDTO;
+    userCanApply: boolean;
+    callIsEditable: boolean;
+    priorityCheckboxes: CallPriorityCheckbox[];
+    initialPriorityCheckboxes: CallPriorityCheckbox[];
+    strategies: OutputProgrammeStrategy[];
+    initialStrategies: OutputProgrammeStrategy[];
+    numberOfSelectedStrategies: number;
+    stateAids: CallStateAidDTO[];
+    initialStateAids: CallStateAidDTO[];
+    numberOfSelectedStateAids: number;
   }>;
 
   inputErrorMessages = {

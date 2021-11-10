@@ -41,5 +41,5 @@ export class TranslatableMatPaginatorIntl extends MatPaginatorIntl {
       Math.min(startIndex + pageSize, lengthMax) :
       startIndex + pageSize;
     return `${startIndex + 1} - ${endIndex} ${this.rangeLabel} ${lengthMax}`;
-  }
+  };
 }

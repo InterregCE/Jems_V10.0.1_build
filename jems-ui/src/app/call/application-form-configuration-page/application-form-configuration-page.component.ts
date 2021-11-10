@@ -27,9 +27,9 @@ export class ApplicationFormConfigurationPageComponent {
   displayedColumns: string[];
 
   data$: Observable<{
-    fieldConfigurations: ApplicationFormFieldNode[],
-    callHasTwoSteps: boolean,
-    callIsEditable: boolean
+    fieldConfigurations: ApplicationFormFieldNode[];
+    callHasTwoSteps: boolean;
+    callIsEditable: boolean;
   }>;
 
   form = this.formBuilder.group({

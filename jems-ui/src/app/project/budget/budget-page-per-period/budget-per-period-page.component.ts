@@ -24,10 +24,10 @@ export class BudgetPerPeriodPageComponent {
   projectTitle$ = this.budgetPeriodStore.projectTitle$;
 
   data$: Observable<{
-    projectTitle: string,
-    projectPeriodNumbers: number[],
-    tableConfig: TableConfig[],
-    isAFPeriodsEnabled: boolean
+    projectTitle: string;
+    projectPeriodNumbers: number[];
+    tableConfig: TableConfig[];
+    isAFPeriodsEnabled: boolean;
   }>;
 
   constructor(private budgetPeriodStore: ProjectBudgetPeriodPageStore) {

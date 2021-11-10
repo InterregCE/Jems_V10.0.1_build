@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ProgrammeOutputIndicatorSubmissionPageComponent } from './programme-output-indicator-submission-page.component';
 import {HttpTestingController} from '@angular/common/http/testing';
@@ -11,7 +11,7 @@ describe('ProgrammeFinalIndicatorSubmissionPageComponent', () => {
   let fixture: ComponentFixture<ProgrammeOutputIndicatorSubmissionPageComponent>;
   let httpTestingController: HttpTestingController;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,

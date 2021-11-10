@@ -3,11 +3,8 @@ import {MatTreeNestedDataSource} from '@angular/material/tree';
 import {NestedTreeControl} from '@angular/cdk/tree';
 import {ProgrammeRegionCheckbox} from '../../model/programme-region-checkbox';
 import {BaseComponent} from '@common/components/base-component';
-import {takeUntil, tap} from 'rxjs/operators';
-import {UntilDestroy} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
-@UntilDestroy()
 @Component({
   selector: 'app-programme-regions-tree',
   templateUrl: './programme-regions-tree.component.html',
@@ -30,11 +27,7 @@ export class ProgrammeRegionsTreeComponent extends BaseComponent implements OnIn
   }
 
   ngOnInit(): void {
-    this.dataSource._data
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(data => data.forEach(node => this.expandIfChecked(node)))
-      ).subscribe();
+    this.dataSource.data.forEach(node => this.expandIfChecked(node));
   }
 
   hasChild = (_: number, node: ProgrammeRegionCheckbox) => !!node.children && node.children.length > 0;

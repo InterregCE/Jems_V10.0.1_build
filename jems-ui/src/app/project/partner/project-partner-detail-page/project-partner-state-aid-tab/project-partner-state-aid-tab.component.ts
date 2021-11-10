@@ -35,12 +35,12 @@ export class ProjectPartnerStateAidTabComponent {
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
   data$: Observable<{
-    stateAid: ProjectPartnerStateAidDTO,
-    displayActivities: ActivityIdentificationInformation[],
-    activities: WorkPackageActivitySummaryDTO[],
-    project: ProjectDetailDTO,
-    isEditable: boolean,
-    stateAidsForDropdown: ProgrammeStateAidDTO[],
+    stateAid: ProjectPartnerStateAidDTO;
+    displayActivities: ActivityIdentificationInformation[];
+    activities: WorkPackageActivitySummaryDTO[];
+    project: ProjectDetailDTO;
+    isEditable: boolean;
+    stateAidsForDropdown: ProgrammeStateAidDTO[];
   }>;
 
   form = this.formBuilder.group({

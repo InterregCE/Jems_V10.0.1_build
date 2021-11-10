@@ -25,10 +25,10 @@ export class CallLumpSumsComponent {
   initialSelection = new SelectionModel<ProgrammeLumpSumListDTO>(true, []);
 
   data$: Observable<{
-    callLumpSums: ProgrammeLumpSumListDTO[],
-    programmeLumpSums: ProgrammeLumpSumListDTO[],
-    callIsEditable: boolean,
-    callIsPublished: boolean
+    callLumpSums: ProgrammeLumpSumListDTO[];
+    programmeLumpSums: ProgrammeLumpSumListDTO[];
+    callIsEditable: boolean;
+    callIsPublished: boolean;
   }>;
 
   constructor(private callStore: CallStore,
@@ -82,7 +82,7 @@ export class CallLumpSumsComponent {
     this.formChanged();
   }
 
-  disabled(lumpSum: ProgrammeLumpSumListDTO, data: {callIsEditable: boolean, callIsPublished: boolean}): boolean {
+  disabled(lumpSum: ProgrammeLumpSumListDTO, data: {callIsEditable: boolean; callIsPublished: boolean}): boolean {
     return !data.callIsEditable || (data.callIsPublished && this.initialSelection.isSelected(lumpSum));
   }
 

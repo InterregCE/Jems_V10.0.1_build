@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, EventEmitter, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AbstractForm} from '@common/components/forms/abstract-form';
+import {AbstractFormComponent} from '@common/components/forms/abstract-form.component';
 import {InfoService, LoginRequest} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
 import {ResourceStoreService} from '@common/services/resource-store.service';
@@ -12,7 +12,7 @@ import {Observable} from 'rxjs';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent extends AbstractForm {
+export class LoginComponent extends AbstractFormComponent {
 
   @Output()
   submitLogin: EventEmitter<LoginRequest> = new EventEmitter<LoginRequest>();

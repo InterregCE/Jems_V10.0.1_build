@@ -25,12 +25,12 @@ export class BudgetPagePartnerPerPeriodComponent {
   APPLICATION_FORM = APPLICATION_FORM;
 
   data$: Observable<{
-    projectPartnersBudgetPerPeriods: ProjectPartnerBudgetPerPeriodDTO[],
-    totalEligibleBudget: number,
-    totalPercent: number,
-    periodTotalBudgets: number[],
-    periodTotalBudgetPercentages: number[]
-    periodsAvailable: boolean
+    projectPartnersBudgetPerPeriods: ProjectPartnerBudgetPerPeriodDTO[];
+    totalEligibleBudget: number;
+    totalPercent: number;
+    periodTotalBudgets: number[];
+    periodTotalBudgetPercentages: number[];
+    periodsAvailable: boolean;
   }>;
 
   constructor(
@@ -56,8 +56,8 @@ export class BudgetPagePartnerPerPeriodComponent {
 
   calculateTotalBudgetPerPeriod(periodNumber: number, projectPartnersBudgetPerPeriods: ProjectPartnerBudgetPerPeriodDTO[]): number {
     return NumberService.sum(projectPartnersBudgetPerPeriods.flatMap(partner => partner.periodBudgets
-      .filter((periodBudget: { periodNumber: number; }) => periodBudget.periodNumber === periodNumber)
-      .map((periodBudget: { totalBudgetPerPeriod: any; }) => periodBudget.totalBudgetPerPeriod)));
+      .filter((periodBudget: { periodNumber: number }) => periodBudget.periodNumber === periodNumber)
+      .map((periodBudget: { totalBudgetPerPeriod: any }) => periodBudget.totalBudgetPerPeriod)));
   }
 
   calculateTotalPeriodBudgetPercentages(periodBudgetTotals: number[], totalEligibleBudget: number): number[] {

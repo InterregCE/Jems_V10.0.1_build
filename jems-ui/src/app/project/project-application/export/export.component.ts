@@ -20,12 +20,12 @@ export class ExportComponent {
   selectedCategory$ = this.exportPageStore.selectedCategory$;
 
   data$: Observable<{
-    projectTitle: string,
-    projectId: number,
-    inputLanguages: string[],
-    exportLanguages: string[],
-    versions: ProjectVersionDTO[],
-    categories: CategoryNode
+    projectTitle: string;
+    projectId: number;
+    inputLanguages: string[];
+    exportLanguages: string[];
+    versions: ProjectVersionDTO[];
+    categories: CategoryNode;
   }>;
 
   constructor(private exportPageStore: ExportPageStore, private formBuilder: FormBuilder) {

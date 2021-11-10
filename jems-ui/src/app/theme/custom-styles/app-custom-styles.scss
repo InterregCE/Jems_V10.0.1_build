@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "custom-buttons-styles";
 @import "custom-tooltip-styles";
 @import "custom-tab-group-styles";
@@ -12,40 +13,40 @@
   $is-dark-theme: map-get($theme, is-dark);
 
   $primary-theme: map-get($theme, primary);
-  $primary: mat-color(map-get($theme, primary));
-  $primary-halftone: mat-color(map-get($theme, primary), if($is-dark-theme, darker, lighter));
-  $accent: mat-color(map-get($theme, accent));
-  $warn: mat-color(map-get($theme, warn));
+  $primary: mat.get-color-from-palette(map-get($theme, primary));
+  $primary-halftone: mat.get-color-from-palette(map-get($theme, primary), if($is-dark-theme, darker, lighter));
+  $accent: mat.get-color-from-palette(map-get($theme, accent));
+  $warn: mat.get-color-from-palette(map-get($theme, warn));
 
-  $text: mat-color($foreground-palette, text);
-  $text-secondary: mat-color($foreground-palette, secondary-text);
-  $text-contrast: mat-color($primary-theme, default-contrast);
-  $text-contrast-lighter: mat-color($primary-theme, lighter-contrast);
-  $text-contrast-darker: mat-color($primary-theme, darker-contrast);
+  $text: mat.get-color-from-palette($foreground-palette, text);
+  $text-secondary: mat.get-color-from-palette($foreground-palette, secondary-text);
+  $text-contrast: mat.get-color-from-palette($primary-theme, default-contrast);
+  $text-contrast-lighter: mat.get-color-from-palette($primary-theme, lighter-contrast);
+  $text-contrast-darker: mat.get-color-from-palette($primary-theme, darker-contrast);
   $text-link: if($is-dark-theme, $text, $primary);
-  $underline-color: mat-color($foreground-palette, text, if($is-dark-theme, .7, .42));
+  $underline-color: mat.get-color-from-palette($foreground-palette, text, if($is-dark-theme, .7, .42));
 
-  $background: mat-color($background-palette, background);
-  $background-card: mat-color($background-palette, card);
-  $background-lighter: mat-color($primary-theme, if($is-dark-theme, darker, lighter));
-  $app-bar: mat-color($background-palette, app-bar);
-  $hover: mat-color($background-palette, hover);
-  $outline: mat-color($foreground-palette, divider, if($is-dark-theme, 0.3, 0.12));
+  $background: mat.get-color-from-palette($background-palette, background);
+  $background-card: mat.get-color-from-palette($background-palette, card);
+  $background-lighter: mat.get-color-from-palette($primary-theme, if($is-dark-theme, darker, lighter));
+  $app-bar: mat.get-color-from-palette($background-palette, app-bar);
+  $hover: mat.get-color-from-palette($background-palette, hover);
+  $outline: mat.get-color-from-palette($foreground-palette, divider, if($is-dark-theme, 0.3, 0.12));
 
-  $body-strong-font-size: mat-font-size($app-typography, body-2);
-  $body-strong-font-weight: mat-font-weight($app-typography, body-2);
+  $body-strong-font-size: mat.font-size($app-typography, body-2);
+  $body-strong-font-weight: mat.font-weight($app-typography, body-2);
 
-  --blue-gray: #{mat-color($mat-blue-gray, if($is-dark-theme, 50, 100))};
-  --light-blue-gray: #{mat-color($mat-blue-gray, 100, if($is-dark-theme, 0.25, 0.5))};
-  --pale-blue-gray: #{mat-color($mat-blue-gray, 50, if($is-dark-theme, 0.0625, 0.375))};
+  --blue-gray: #{mat.get-color-from-palette(mat.$blue-gray-palette, if($is-dark-theme, 50, 100))};
+  --light-blue-gray: #{mat.get-color-from-palette(mat.$blue-gray-palette, 100, if($is-dark-theme, 0.25, 0.5))};
+  --pale-blue-gray: #{mat.get-color-from-palette(mat.$blue-gray-palette, 50, if($is-dark-theme, 0.0625, 0.375))};
   --table-backaground-color: #{if($is-dark-theme, $background, white)};
-  --table-highlight-color: #{if($is-dark-theme, lighten($background,2), lighten(mat-color($primary-theme,50),3.5))};
-  --table-hover-color: #{if($is-dark-theme, lighten($background,1), mat-color($mat-gray,100))};
-  --table-border-color: #{if($is-dark-theme, $background, lighten(mat-color($mat-blue-gray,100),1))};
-  --table-header-text-color: #{if($is-dark-theme, mat-color($mat-gray,400), mat-color($mat-gray,600,0.85))};
+  --table-highlight-color: #{if($is-dark-theme, lighten($background,2), lighten(mat.get-color-from-palette($primary-theme,50),3.5))};
+  --table-hover-color: #{if($is-dark-theme, lighten($background,1), mat.get-color-from-palette(mat.$gray-palette,100))};
+  --table-border-color: #{if($is-dark-theme, $background, lighten(mat.get-color-from-palette(mat.$blue-gray-palette,100),1))};
+  --table-header-text-color: #{if($is-dark-theme, mat.get-color-from-palette(mat.$gray-palette,400), mat.get-color-from-palette(mat.$gray-palette,600,0.85))};
 
-  --light-yellow: #{mat-color($mat-yellow, 100)};
-  --pale-yellow: #{mat-color($mat-yellow, 50)};
+  --light-yellow: #{mat.get-color-from-palette(mat.$yellow-palette, 100)};
+  --pale-yellow: #{mat.get-color-from-palette(mat.$yellow-palette, 50)};
 
   --primary-color: #{$primary};
   --primary-halftone-color: #{$primary-halftone};

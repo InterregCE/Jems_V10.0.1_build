@@ -35,8 +35,8 @@ export class ProjectWorkPackagePageComponent implements OnInit {
   tableConfiguration: TableConfiguration;
 
   data$: Observable<{
-    workPackages: OutputWorkPackageSimple[],
-    projectTitle: string
+    workPackages: OutputWorkPackageSimple[];
+    projectTitle: string;
   }>;
   projectEditable$: Observable<boolean>;
 

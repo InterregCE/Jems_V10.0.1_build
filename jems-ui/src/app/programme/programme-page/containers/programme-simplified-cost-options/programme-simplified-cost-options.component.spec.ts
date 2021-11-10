@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { ProgrammeSimplifiedCostOptionsComponent } from './programme-simplified-cost-options.component';
 import {HttpTestingController} from '@angular/common/http/testing';
@@ -11,7 +11,7 @@ describe('ProgrammeSimplifiedCostOptionsComponent', () => {
   let component: ProgrammeSimplifiedCostOptionsComponent;
   let fixture: ComponentFixture<ProgrammeSimplifiedCostOptionsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,

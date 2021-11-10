@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import {ProgrammeFundDTO} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
@@ -11,7 +11,7 @@ describe('ProgrammeFundsComponent', () => {
   let component: ProgrammeFundsComponent;
   let fixture: ComponentFixture<ProgrammeFundsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ProgrammeFundsComponent],
       imports: [

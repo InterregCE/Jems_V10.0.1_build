@@ -54,7 +54,7 @@ export class ProgrammePriorityDetailPageConstants {
       return {required: true} as any;
     }
     return null;
-  }
+  };
 
   public static mustHaveSpecificObjectiveSelected(objectives: FormArray): ValidatorFn | null {
     const oneSelected = objectives.controls.some(

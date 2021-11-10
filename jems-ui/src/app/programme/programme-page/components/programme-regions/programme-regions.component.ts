@@ -7,7 +7,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {FormGroup} from '@angular/forms';
 import {ProgrammeRegionCheckbox} from '../../model/programme-region-checkbox';
 import {FormState} from '@common/components/forms/form-state';
@@ -21,7 +21,7 @@ import {ProgrammeEditableStateStore} from '../../services/programme-editable-sta
   styleUrls: ['./programme-regions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeRegionsComponent extends ViewEditForm implements OnInit {
+export class ProgrammeRegionsComponent extends ViewEditFormComponent implements OnInit {
   @Input()
   selectedRegions: Map<string, ProgrammeRegionCheckbox[]>;
   @Input()

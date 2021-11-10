@@ -34,16 +34,16 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   @Input() descriptionKey: string;
 
   versionWarnData$: Observable<{
-    current: ProjectVersionDTO | undefined,
-    latest: ProjectVersionDTO | undefined,
-    currentIsLatest: boolean,
-    versions: ProjectVersionDTO[],
+    current: ProjectVersionDTO | undefined;
+    latest: ProjectVersionDTO | undefined;
+    currentIsLatest: boolean;
+    versions: ProjectVersionDTO[];
     projectStatus: ProjectStatusDTO.StatusEnum
   }>;
 
   versionSelectData$: Observable<{
-    versions: ProjectVersionDTO[],
-    current: ProjectVersionDTO,
+    versions: ProjectVersionDTO[];
+    current: ProjectVersionDTO;
     projectStatus: ProjectStatusDTO.StatusEnum
   }>;
 

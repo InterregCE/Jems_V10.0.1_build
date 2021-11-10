@@ -41,8 +41,8 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
   filteredNace: Observable<string[]>;
 
   data$: Observable<{
-    partner: ProjectPartnerDetailDTO,
-    partners: ProjectPartner[]
+    partner: ProjectPartnerDetailDTO;
+    partners: ProjectPartner[];
   }>;
 
   partnerForm: FormGroup = this.formBuilder.group({

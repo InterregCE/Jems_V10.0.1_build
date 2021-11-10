@@ -49,7 +49,11 @@ export class MultiLanguageContainerService {
   }
 
   changeLanguage(language: string, useSystemLanguages: boolean): void {
-    useSystemLanguages ? this.multiLanguageGlobalService.setActiveSystemLanguage(language) : this.multiLanguageGlobalService.setActiveInputLanguage(language);
+    if (useSystemLanguages) {
+      this.multiLanguageGlobalService.setActiveSystemLanguage(language);
+    } else {
+      this.multiLanguageGlobalService.setActiveInputLanguage(language);
+    }
   }
 
   didLanguagesChange(savedTranslations: InputTranslation[]): boolean {

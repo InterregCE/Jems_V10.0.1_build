@@ -13,5 +13,5 @@ export class ProgrammeSelectedRegionsComponent {
   selectedRegions: Map<string, ProgrammeRegionCheckbox[]>;
 
   originalOrder = (a: KeyValue<string, ProgrammeRegionCheckbox[]>,
-                   b: KeyValue<string, ProgrammeRegionCheckbox[]>): number => 0
+                   b: KeyValue<string, ProgrammeRegionCheckbox[]>): number => 0;
 }

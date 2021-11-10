@@ -13,8 +13,8 @@ import {map} from 'rxjs/operators';
 export class ProjectDetailPageComponent {
 
   data$: Observable<{
-    project: ProjectDetailDTO,
-    projectTitle: string,
+    project: ProjectDetailDTO;
+    projectTitle: string;
   }>;
 
   constructor(public projectStore: ProjectStore) {

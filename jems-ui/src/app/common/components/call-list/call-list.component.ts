@@ -25,8 +25,8 @@ export class CallListComponent implements OnInit {
   publishedCallsOnly: boolean;
 
   data$: Observable<{
-    page: PageCallDTO,
-    tableConfiguration: TableConfiguration
+    page: PageCallDTO;
+    tableConfiguration: TableConfiguration;
   }>;
 
   constructor(private router: Router,

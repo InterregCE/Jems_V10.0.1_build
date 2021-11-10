@@ -3,11 +3,11 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectAssessmentEligibilityDTO, OutputProjectEligibilityAssessment, ProjectDetailDTO} from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectEligibilityCheckPageStore} from './project-eligibility-check-page-store.service';
 import {map, tap} from 'rxjs/operators';
 import {ProjectStepStatus} from '../project-step-status';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
   selector: 'app-project-application-eligibility-check',
@@ -36,8 +36,8 @@ export class ProjectApplicationEligibilityCheckComponent {
   };
 
   data$: Observable<{
-    project: ProjectDetailDTO,
-    eligibilityAssessment: OutputProjectEligibilityAssessment
+    project: ProjectDetailDTO;
+    eligibilityAssessment: OutputProjectEligibilityAssessment;
   }>;
 
   constructor(private router: Router,

@@ -7,7 +7,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
@@ -29,7 +29,7 @@ import {Forms} from '../../../../common/utils/forms';
   styleUrls: ['./programme-lump-sum-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeLumpSumDetailComponent extends ViewEditForm implements OnInit {
+export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent implements OnInit {
 
   ProgrammeLumpSumDTO = ProgrammeLumpSumDTO;
   isProgrammeSetupLocked: boolean;

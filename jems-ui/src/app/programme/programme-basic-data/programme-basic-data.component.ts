@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
@@ -25,7 +25,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
   styleUrls: ['./programme-basic-data.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeBasicDataComponent extends ViewEditForm implements OnInit {
+export class ProgrammeBasicDataComponent extends ViewEditFormComponent implements OnInit {
   private static readonly DATE_SHOULD_BE_VALID = 'common.date.should.be.valid';
   Permission = Permission;
   tools = Tools;

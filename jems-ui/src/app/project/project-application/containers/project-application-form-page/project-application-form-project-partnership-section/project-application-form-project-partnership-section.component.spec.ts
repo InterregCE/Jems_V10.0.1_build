@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import {InputProjectPartnership} from '@cat/api';
 import {ProjectApplicationFormProjectPartnershipSectionComponent} from './project-application-form-project-partnership-section.component';
 import {HttpTestingController} from '@angular/common/http/testing';
@@ -11,7 +11,7 @@ describe('ProjectApplicationFormProjectPartnershipSectionComponent', () => {
   let fixture: ComponentFixture<ProjectApplicationFormProjectPartnershipSectionComponent>;
   let httpTestingController: HttpTestingController;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,
