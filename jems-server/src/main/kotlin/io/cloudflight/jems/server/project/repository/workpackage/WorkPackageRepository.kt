@@ -104,6 +104,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              deliverable.deliverable_number as deliverableNumber,
              deliverable.start_period as deliverableStartPeriod,
              deliverableTransl.description as deliverableDescription,
+             deliverableTransl.title as deliverableTitle,
              deliverableTransl.language as deliverableLanguage,
 
              output.output_number as outputNumber,

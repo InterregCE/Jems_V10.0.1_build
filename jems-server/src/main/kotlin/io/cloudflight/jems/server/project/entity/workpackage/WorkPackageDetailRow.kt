@@ -28,6 +28,7 @@ interface WorkPackageDetailRow : TranslationView {
     val deliverableStartPeriod: Int?
     //deliverable translation
     val deliverableDescription: String?
+    val deliverableTitle: String?
     val deliverableLanguage: SystemLanguage?
     //output
     val outputNumber: Int?
