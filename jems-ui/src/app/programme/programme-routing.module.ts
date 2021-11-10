@@ -29,6 +29,7 @@ export const routes: Routes = [
       },
       {
         path: 'funds',
+        data: {breadcrumb: 'programme.breadcrumb.funds'},
         component: ProgrammeFundsComponent,
       },
       {
