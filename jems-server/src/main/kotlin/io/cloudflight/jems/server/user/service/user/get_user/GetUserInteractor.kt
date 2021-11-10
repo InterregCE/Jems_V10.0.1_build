@@ -11,10 +11,9 @@ interface GetUserInteractor {
 
     fun getUsers(pageable: Pageable, searchRequest: UserSearchRequest?): Page<UserSummary>
 
-    fun getUsersFilteredByPermissions(
-        needsToHaveAtLeastOneFrom: Set<UserRolePermission>,
-        needsNotToHaveAnyOf: Set<UserRolePermission>,
-    ): List<UserSummary>
+    fun getUsersWithProjectRetrievePermissions(): List<UserSummary>
+
+    fun getMonitorUsers(): List<UserSummary>
 
     fun getUserById(userId: Long): User
 

@@ -1,15 +1,10 @@
 package io.cloudflight.jems.server.user.controller
 
-import io.cloudflight.jems.api.project.dto.UserPermissionFilterDTO
 import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
 import io.cloudflight.jems.api.user.dto.UserDTO
 import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO
-import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectFileApplicationRetrieve
-import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectFormRetrieve
-import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectRetrieve
-import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO.ProjectRetrieveEditUserAssignments
 import io.cloudflight.jems.api.user.dto.UserRoleSummaryDTO
 import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
 import io.cloudflight.jems.api.user.dto.UserStatusDTO.ACTIVE
@@ -215,22 +210,15 @@ class UserControllerTest : UnitTest() {
     }
 
     @Test
-    fun listUsersByPermissions() {
-        val toHaveSlot = slot<Set<UserRolePermission>>()
-        val toNotHaveSlot = slot<Set<UserRolePermission>>()
+    fun getUsersWithProjectRetrievePermissions() {
+        every { getUserInteractor.getUsersWithProjectRetrievePermissions() } returns listOf(userSummary)
+        assertThat(controller.getUsersWithProjectRetrievePermissions()).containsExactly(expectedUserSummary)
+    }
 
-        every { getUserInteractor.getUsersFilteredByPermissions(
-            needsToHaveAtLeastOneFrom = capture(toHaveSlot),
-            needsNotToHaveAnyOf = capture(toNotHaveSlot),
-        ) } returns listOf(userSummary)
-
-        assertThat(controller.listUsersByPermissions(UserPermissionFilterDTO(
-            needsToHaveAtLeastOneFrom = setOf(ProjectFormRetrieve, ProjectFileApplicationRetrieve),
-            needsNotToHaveAnyOf = setOf(ProjectRetrieve, ProjectRetrieveEditUserAssignments),
-        ))).containsExactly(expectedUserSummary)
-
-        assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(UserRolePermission.ProjectFormRetrieve, UserRolePermission.ProjectFileApplicationRetrieve)
-        assertThat(toNotHaveSlot.captured).containsExactlyInAnyOrder(UserRolePermission.ProjectRetrieve, UserRolePermission.ProjectRetrieveEditUserAssignments)
+    @Test
+    fun getMonitorUsers() {
+        every { getUserInteractor.getMonitorUsers() } returns listOf(userSummary)
+        assertThat(controller.getMonitorUsers()).containsExactly(expectedUserSummary)
     }
 
 }

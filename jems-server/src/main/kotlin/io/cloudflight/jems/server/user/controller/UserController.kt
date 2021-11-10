@@ -1,8 +1,6 @@
 package io.cloudflight.jems.server.user.controller
 
-import io.cloudflight.jems.api.project.dto.UserPermissionFilterDTO
 import io.cloudflight.jems.api.user.UserApi
-import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
 import io.cloudflight.jems.api.user.dto.UserDTO
@@ -42,10 +40,10 @@ class UserController(
     override fun changeMyPassword(passwordData: PasswordDTO) =
         updateUserPasswordInteractor.updateMyPassword(passwordData.toModel())
 
-    override fun listUsersByPermissions(userPermissionFilter: UserPermissionFilterDTO): List<UserSummaryDTO> =
-        getUserInteractor.getUsersFilteredByPermissions(
-            needsToHaveAtLeastOneFrom = userPermissionFilter.needsToHaveAtLeastOneFrom.toModel(),
-            needsNotToHaveAnyOf = userPermissionFilter.needsNotToHaveAnyOf.toModel(),
-        ).map { it.toSummaryDto() }
+    override fun getUsersWithProjectRetrievePermissions(): List<UserSummaryDTO> =
+        getUserInteractor.getUsersWithProjectRetrievePermissions().map { it.toSummaryDto() }
+
+    override fun getMonitorUsers(): List<UserSummaryDTO> =
+        getUserInteractor.getMonitorUsers().map { it.toSummaryDto() }
 
 }

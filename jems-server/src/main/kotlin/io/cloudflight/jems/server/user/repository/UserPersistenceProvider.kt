@@ -31,7 +31,7 @@ class UserPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getById(id: Long): UserWithPassword =
         userRepo.getOne(id).let {
-            it.toModelWithPassword(userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
+            it.toModelWithPassword(permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
         }
 
     @Transactional(readOnly = true)
