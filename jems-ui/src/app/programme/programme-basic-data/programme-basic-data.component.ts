@@ -56,7 +56,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
       })
     );
 
-  programme$ = merge(this.programmeById$, this.savedProgramme$).pipe(share());
+  programme$ = merge(this.programmeById$, this.savedProgramme$).pipe(shareReplay(1));
 
   programmeForm = this.formBuilder.group({
     cci: ['', Validators.maxLength(15)],
