@@ -123,7 +123,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   private buildStrategiesToSave(): InputProjectRelevanceStrategy[] {
     return this.projectRelevanceForm.controls.strategies.value
       .map((element: any) => ({
-        strategy: element.strategy !== 'Other' ? element.strategy : null,
+        strategy: element.strategy,
         specification: element.contribution
       }));
   }

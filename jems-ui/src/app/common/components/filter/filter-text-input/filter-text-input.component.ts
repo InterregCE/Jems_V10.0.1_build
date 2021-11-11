@@ -24,7 +24,7 @@ export class FilterTextInputComponent implements ControlValueAccessor {
   value: any;
   onChange = (value: any) => {
     // Intentionally left blank
-  }
+  };
 
   registerOnChange(fn: any): void {
     this.onChange = fn;
