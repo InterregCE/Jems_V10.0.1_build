@@ -53,7 +53,8 @@ class RefuseApplicationInteractorTest : UnitTest() {
         )
         private val actionInfo = ApplicationActionInfo(
             note = "refusing application",
-            date = LocalDate.of(2021, 4, 13)
+            date = LocalDate.of(2021, 4, 13),
+            entryIntoForceDate = LocalDate.of(2021, 4, 13)
         )
     }
 

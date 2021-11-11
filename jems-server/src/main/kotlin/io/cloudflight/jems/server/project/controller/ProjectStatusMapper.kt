@@ -17,8 +17,11 @@ fun ProjectStatus.toDto() = ProjectStatusDTO(
     user = user.toDto(),
     updated = updated,
     decisionDate = decisionDate,
+    entryIntoForceDate = entryIntoForceDate,
     note = note
 )
+
+fun List<ProjectStatus>.toDtos() = map { it.toDto() }
 
 fun ProjectAssessmentQuality.toDto() = OutputProjectQualityAssessment(
     result = result,
@@ -38,4 +41,5 @@ fun ProjectAssessment.toDto() = ProjectDecisionDTO(
     eligibilityDecision = eligibilityDecision?.toDto(),
     preFundingDecision = preFundingDecision?.toDto(),
     finalFundingDecision = fundingDecision?.toDto(),
+    modificationDecision = modificationDecision?.toDto(),
 )

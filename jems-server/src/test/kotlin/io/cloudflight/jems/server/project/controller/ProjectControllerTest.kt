@@ -37,6 +37,7 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing.GetProjectBudgetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.GetProjectCoFinancingOverviewInteractor
 import io.cloudflight.jems.server.project.service.create_project.CreateProjectInteractor
+import io.cloudflight.jems.server.project.service.get_modification_decisions.GetModificationDecisionsInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
@@ -194,6 +195,9 @@ class ProjectControllerTest {
 
     @MockK
     lateinit var getProjectActivitiesInteractor: GetActivityInteractor
+
+    @MockK
+    lateinit var getModificationDecisionsInteractor: GetModificationDecisionsInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectController

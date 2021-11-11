@@ -74,6 +74,10 @@ interface ProjectStatusApi {
     @PutMapping("return-to-applicant")
     fun returnApplicationToApplicant(@PathVariable id: Long): ApplicationStatusDTO
 
+    @ApiOperation("Start the modification process")
+    @PutMapping("start-modification")
+    fun startModification(@PathVariable id: Long): ApplicationStatusDTO
+
     @ApiOperation("Return project application to applicant for conditions")
     @PutMapping("hand-back-to-applicant")
     fun handBackToApplicant(@PathVariable id: Long): ApplicationStatusDTO

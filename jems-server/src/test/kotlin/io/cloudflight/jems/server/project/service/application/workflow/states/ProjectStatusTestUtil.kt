@@ -19,6 +19,7 @@ class ProjectStatusTestUtil {
                 user = ProjectPartnerTestUtil.userSummary,
                 updated = ZonedDateTime.now(),
                 decisionDate = LocalDate.of(2021, 5, 19),
+                entryIntoForceDate = LocalDate.of(2021, 5, 19),
                 note = "example note",
             )
         }

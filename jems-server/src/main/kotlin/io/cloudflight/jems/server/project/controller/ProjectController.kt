@@ -11,14 +11,17 @@ import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingOverviewDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
+import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
 import io.cloudflight.jems.server.project.controller.workpackage.toInvestmentSummaryDTOs
 import io.cloudflight.jems.server.project.controller.workpackage.toSummariesDto
+import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing.GetProjectBudgetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.GetProjectCoFinancingOverviewInteractor
 import io.cloudflight.jems.server.project.service.create_project.CreateProjectInteractor
+import io.cloudflight.jems.server.project.service.get_modification_decisions.GetModificationDecisionsInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toDto
@@ -39,7 +42,8 @@ class ProjectController(
     private val createProjectInteractor: CreateProjectInteractor,
     private val getProjectVersionsInteractor: GetProjectVersionsInteractor,
     private val getProjectInvestmentSummaries: GetProjectInvestmentSummariesInteractor,
-    private val getProjectActivitiesInteractor: GetActivityInteractor
+    private val getProjectActivitiesInteractor: GetActivityInteractor,
+    private val getModificationDecisionsInteractor: GetModificationDecisionsInteractor
 ) : ProjectApi {
 
     override fun getAllProjects(pageable: Pageable): Page<OutputProjectSimple> =
@@ -81,4 +85,8 @@ class ProjectController(
 
     override fun getProjectActivities(projectId: Long, version: String?): List<WorkPackageActivitySummaryDTO> =
         getProjectActivitiesInteractor.getActivitiesForProject(projectId, version).toSummariesDto()
+
+    override fun getModificationDecisions(projectId: Long): List<ProjectStatusDTO> =
+        getModificationDecisionsInteractor.getModificationDecisions(projectId).toDtos()
+
 }

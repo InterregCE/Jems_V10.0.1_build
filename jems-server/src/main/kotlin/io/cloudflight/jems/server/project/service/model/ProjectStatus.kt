@@ -11,5 +11,6 @@ data class ProjectStatus(
     val user: UserSummary,
     val updated: ZonedDateTime,
     val decisionDate: LocalDate? = null,
+    val entryIntoForceDate: LocalDate? = null,
     val note: String? = null
 )

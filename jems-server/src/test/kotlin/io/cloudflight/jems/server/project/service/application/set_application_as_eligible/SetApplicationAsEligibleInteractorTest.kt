@@ -41,6 +41,7 @@ class SetApplicationAsEligibleInteractorTest : UnitTest() {
         private val actionInfo = ApplicationActionInfo(
             note = "note eligible",
             date = LocalDate.of(2021,4, 13),
+            entryIntoForceDate = LocalDate.of(2021,4, 13)
         )
     }
 

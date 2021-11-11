@@ -184,6 +184,28 @@ class ProjectWorkflowPersistenceProvider(
             currentStatus = newStatus
         }.currentStatus.status
 
+
+    @Transactional
+    override fun updateProjectModificationDecision(
+        projectId: Long, userId: Long, status: ApplicationStatus, actionInfo: ApplicationActionInfo
+    ) =
+        projectRepository.getById(projectId).apply {
+            val newStatus = projectStatusHistoryRepository.save(
+                ProjectStatusHistoryEntity(
+                    project = this, status = status, note = actionInfo.note,
+                    decisionDate = actionInfo.date, entryIntoForceDate = actionInfo.entryIntoForceDate,  user = userRepository.getOne(userId)
+                )
+            )
+
+            currentStatus = newStatus
+        }.currentStatus.status
+
+    @Transactional
+    override fun getModificationDecisions(projectId: Long): List<ProjectStatus> =
+        this.projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedDesc(projectId, ApplicationStatus.APPROVED).map {
+            it.toProjectStatus()
+        }
+
     @Transactional
     override fun clearProjectFundingDecision(projectId: Long) {
         projectRepository.getById(projectId).apply {

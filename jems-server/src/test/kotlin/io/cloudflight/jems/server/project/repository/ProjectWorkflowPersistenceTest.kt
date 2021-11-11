@@ -331,7 +331,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 PROJECT_ID,
                 user.id,
                 ApplicationStatus.SUBMITTED,
-                ApplicationActionInfo("note", null)
+                ApplicationActionInfo("note", null, null)
             )
         )
             .isEqualTo(ApplicationStatus.SUBMITTED)
@@ -380,7 +380,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 PROJECT_ID,
                 user.id,
                 ApplicationStatus.APPROVED,
-                ApplicationActionInfo("note", null)
+                ApplicationActionInfo("note", null, null)
             )
         )
             .isEqualTo(ApplicationStatus.APPROVED)
@@ -404,7 +404,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 PROJECT_ID,
                 user.id,
                 ApplicationStatus.APPROVED,
-                ApplicationActionInfo("note", null)
+                ApplicationActionInfo("note", null, null)
             )
         )
             .isEqualTo(ApplicationStatus.APPROVED)

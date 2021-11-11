@@ -10,6 +10,7 @@ import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingOverviewDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
+import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
 import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.swagger.annotations.Api
@@ -111,4 +112,9 @@ interface ProjectApi {
         @PathVariable projectId: Long,
         @RequestParam(required = false) version: String? = null
     ): List<WorkPackageActivitySummaryDTO>
+
+    @GetMapping("/{projectId}/modificationDecisions")
+    fun getModificationDecisions(
+        @PathVariable projectId: Long
+    ): List<ProjectStatusDTO>
 }

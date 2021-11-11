@@ -22,6 +22,7 @@ import io.cloudflight.jems.server.project.service.application.set_application_as
 import io.cloudflight.jems.server.project.service.application.set_application_as_ineligible.SetApplicationAsIneligibleInteractor
 import io.cloudflight.jems.server.project.service.application.set_assessment_eligibility.SetAssessmentEligibilityInteractor
 import io.cloudflight.jems.server.project.service.application.set_assessment_quality.SetAssessmentQualityInteractor
+import io.cloudflight.jems.server.project.service.application.start_modification.StartModificationInteractor
 import io.cloudflight.jems.server.project.service.application.submit_application.SubmitApplicationInteractor
 import org.springframework.web.bind.annotation.RestController
 
@@ -35,6 +36,7 @@ class ProjectStatusController(
     private val approveApplicationWithConditions: ApproveApplicationWithConditionsInteractor,
     private val refuseApplication: RefuseApplicationInteractor,
     private val returnApplicationToApplicant: ReturnApplicationToApplicantInteractor,
+    private val startModification: StartModificationInteractor,
     private val handBackToApplicant: HandBackToApplicantInteractor,
     private val startSecondStep: StartSecondStepInteractor,
     private val getPossibleStatusToRevertTo: GetPossibleStatusToRevertToInteractor,
@@ -69,6 +71,9 @@ class ProjectStatusController(
 
     override fun returnApplicationToApplicant(id: Long) =
         returnApplicationToApplicant.returnToApplicant(id).toDTO()
+
+    override fun startModification(id: Long) =
+        startModification.startModification(id).toDTO()
 
     override fun handBackToApplicant(id: Long) =
         handBackToApplicant.handBackToApplicant(id).toDTO()

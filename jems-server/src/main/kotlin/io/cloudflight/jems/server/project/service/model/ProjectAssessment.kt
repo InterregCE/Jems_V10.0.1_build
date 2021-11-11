@@ -8,5 +8,6 @@ data class ProjectAssessment(
     val assessmentEligibility: ProjectAssessmentEligibility? = null,
     val eligibilityDecision: ProjectStatus? = null,
     val preFundingDecision: ProjectStatus? = null,
-    val fundingDecision: ProjectStatus? = null
+    val fundingDecision: ProjectStatus? = null,
+    val modificationDecision: ProjectStatus? = null
 )
