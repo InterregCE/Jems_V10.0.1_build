@@ -6,19 +6,27 @@ import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieveEditUserAssignments
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCheckApplicationForm
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectAssessmentView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusDecisionRevert
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusReturnToApplicant
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStartStepTwo
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileAssessmentRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -71,6 +79,12 @@ internal class GetUserTest : UnitTest() {
     @InjectMockKs
     lateinit var getUser: GetUser
 
+    @BeforeEach
+    fun reset() {
+        clearMocks(persistence)
+        clearMocks(userRolePersistence)
+    }
+
     @Test
     fun getUsers() {
         every { persistence.findAll(any(), null) } returns PageImpl(listOf(userSummary))
@@ -78,7 +92,7 @@ internal class GetUserTest : UnitTest() {
     }
 
     @Test
-    fun getUsersFilteredByPermissions() {
+    fun getUsersWithProjectRetrievePermissions() {
         val toHaveSlot = slot<Set<UserRolePermission>>()
         val toNotHaveSlot = slot<Set<UserRolePermission>>()
 
@@ -91,15 +105,34 @@ internal class GetUserTest : UnitTest() {
         every { persistence.findAllWithRoleIdIn(capture(roleIdsSlot)) } returns listOf(userSummary)
 
         // TEST
-        assertThat(getUser.getUsersFilteredByPermissions(
-            needsToHaveAtLeastOneFrom = setOf(ProjectFormRetrieve, ProjectFileApplicationRetrieve),
-            needsNotToHaveAnyOf = setOf(ProjectRetrieve, ProjectRetrieveEditUserAssignments),
-        )).containsExactly(userSummary)
+        assertThat(getUser.getUsersWithProjectRetrievePermissions()).containsExactly(userSummary)
 
-        assertThat(toHaveSlot.captured).containsExactly(ProjectFormRetrieve, ProjectFileApplicationRetrieve)
-        assertThat(toNotHaveSlot.captured).containsExactly(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
+        assertThat(toHaveSlot.captured).containsExactly(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
+        assertThat(toNotHaveSlot.captured).isEmpty()
 
         assertThat(roleIdsSlot.captured).containsExactly(841L, 842L, 843L)
+    }
+
+    @Test
+    fun getMonitorUsers() {
+        val toHaveSlot = slot<Set<UserRolePermission>>()
+        val toNotHaveSlot = slot<Set<UserRolePermission>>()
+
+        every { userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
+            needsToHaveAtLeastOneFrom = capture(toHaveSlot),
+            needsNotToHaveAnyOf = capture(toNotHaveSlot),
+        ) } returns setOf(941L, 942L, 943L)
+
+        val roleIdsSlot = slot<Set<Long>>()
+        every { persistence.findAllWithRoleIdIn(capture(roleIdsSlot)) } returns listOf(userSummary)
+
+        // TEST
+        assertThat(getUser.getMonitorUsers()).containsExactly(userSummary)
+
+        assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView, ProjectStatusDecisionRevert, ProjectStatusReturnToApplicant, ProjectStartStepTwo, ProjectFileAssessmentRetrieve)
+        assertThat(toNotHaveSlot.captured).containsExactly(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
+
+        assertThat(roleIdsSlot.captured).containsExactly(941L, 942L, 943L)
     }
 
     @Test

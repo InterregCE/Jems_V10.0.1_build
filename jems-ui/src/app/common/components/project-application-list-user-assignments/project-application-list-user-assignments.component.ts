@@ -6,7 +6,6 @@ import {
   ProjectUserDTO,
   ProjectUserService,
   UpdateProjectUserDTO,
-  UserPermissionFilterDTO,
   UserRoleCreateDTO,
   UserService,
   UserSummaryDTO,
@@ -73,14 +72,8 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     this.formService.init(this.form);
     this.data$ = combineLatest([
       this.projectUserStore.page$,
-      this.userService.listUsersByPermissions({
-        needsToHaveAtLeastOneFrom: this.availableUsersPermissions,
-        needsNotToHaveAnyOf: this.defaultUserPermissions,
-      } as UserPermissionFilterDTO),
-      this.userService.listUsersByPermissions({
-        needsToHaveAtLeastOneFrom: this.defaultUserPermissions,
-        needsNotToHaveAnyOf: [],
-      } as UserPermissionFilterDTO),
+      this.userService.getMonitorUsers(),
+      this.userService.getUsersWithProjectRetrievePermissions(),
     ]).pipe(
       map(([page, availableUsers, defaultUsers]) => {
         const availableUsersIds = availableUsers.map(user => user.id);

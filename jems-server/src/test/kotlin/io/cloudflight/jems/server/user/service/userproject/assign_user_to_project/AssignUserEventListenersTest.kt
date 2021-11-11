@@ -47,7 +47,7 @@ internal class AssignUserEventListenersTest : UnitTest() {
     @Test
     fun `assigning a user triggers an audit log`() {
         val auditSlot = slot<JemsAuditEvent>()
-        val assignUserEvent = AssignUserEvent(AssignUserToProjectTest.project, listOf(user, otherUser))
+        val assignUserEvent = AssignUserEvent(project, listOf(user, otherUser))
 
         assignUserEventListeners.publishJemsAuditEvent(assignUserEvent)
 
@@ -64,7 +64,7 @@ internal class AssignUserEventListenersTest : UnitTest() {
     @Test
     fun `removing assignments triggers an audit log`() {
         val auditSlot = slot<JemsAuditEvent>()
-        val assignUserEvent = AssignUserEvent(AssignUserToProjectTest.project, emptyList())
+        val assignUserEvent = AssignUserEvent(project, emptyList())
 
         assignUserEventListeners.publishJemsAuditEvent(assignUserEvent)
 
