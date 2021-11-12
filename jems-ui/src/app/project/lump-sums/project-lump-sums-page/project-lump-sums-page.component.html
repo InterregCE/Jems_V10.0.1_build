@@ -5,6 +5,7 @@
     <app-form (save)="updateLumpSums()">
         <form appFormLayout [formGroup]="lumpSumsForm">
             <app-alert *ngIf="data.lumpSums.length===0 || data.partners.length===0"
+                       [show]="true"
                        [closable]="false" [type]="Alert.WARNING">
                 <p *ngIf="data.lumpSums.length===0">{{'project.application.form.section.part.e.no.lump.sums.warning' | translate}}</p>
                 <p *ngIf="data.lumpSums.length>0">{{'project.application.form.section.part.e.no.partner.warning' | translate}}</p>

@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @use '~@angular/material' as mat;
 @import "src/app/theme/typography";
 
@@ -17,7 +19,7 @@
   // so we can have same rules as defined there
   $line-height: mat.line-height($app-typography, input);
   $subscript-font-scale: 0.75;
-  $subscript-margin-top: 0.5em / $subscript-font-scale;
+  $subscript-margin-top: math.div(0.5em, $subscript-font-scale);
   $wrapper-padding-bottom: ($subscript-margin-top + $line-height) * $subscript-font-scale;
   ///////////////////////////////////////////////////////////////////////////////////////////////
 

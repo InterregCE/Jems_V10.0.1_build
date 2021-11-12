@@ -1,4 +1,12 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
 import {
   AbstractControl,
   ControlContainer,
@@ -51,7 +59,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
   columnsToDisplay: string[];
   tableConfig: TableConfig[];
 
-  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private budgetTabService: ProjectPartnerBudgetTabService) {
+  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private budgetTabService: ProjectPartnerBudgetTabService, private changeDetectorRef: ChangeDetectorRef) {
     this.budgetForm = this.controlContainer.control as FormGroup;
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
@@ -113,6 +121,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
     }));
     this.budgetTabService.addPeriods(this.items, this.projectPeriods);
     this.formService.setDirty(true);
+    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
   private resetUnitCostFormGroup(unitCostTable: UnitCostsBudgetTable): void {
@@ -132,6 +141,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
       this.warnOpenForPeriods = this.budgetTabService.shouldShowWarningForPeriods(this.projectPeriods, this.items);
     });
     this.formService.resetEditable();
+    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
   private setRowTotal(control: FormGroup): void {

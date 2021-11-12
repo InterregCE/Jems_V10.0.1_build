@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {ProjectPartnerBudgetConstants} from '../project-partner-budget.constants';
 import {
   AbstractControl,
@@ -52,7 +52,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
   columnsToDisplay: string[];
   tableConfig: TableConfig[];
 
-  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private budgetTabService: ProjectPartnerBudgetTabService) {
+  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private budgetTabService: ProjectPartnerBudgetTabService, private changeDetectorRef: ChangeDetectorRef) {
     this.budgetForm = this.controlContainer.control as FormGroup;
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
@@ -161,6 +161,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     }));
     this.budgetTabService.addPeriods(this.items, this.projectPeriods);
     this.formService.setDirty(true);
+    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
   getUnitCost(formGroup: FormGroup): FormControl {
@@ -197,6 +198,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
       this.budgetTabService.addPeriods(this.items, this.projectPeriods, item.budgetPeriods);
     });
     this.formService.resetEditable();
+    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
 }
