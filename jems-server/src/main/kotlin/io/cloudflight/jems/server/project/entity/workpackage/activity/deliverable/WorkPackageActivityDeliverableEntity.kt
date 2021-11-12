@@ -30,6 +30,7 @@ class WorkPackageActivityDeliverableEntity(
         this.translatedValues.resetTranslations(newTranslations
         ) { currentTranslation, newTranslation ->
             currentTranslation.description = newTranslation.description
+            currentTranslation.title = newTranslation.title
         }
     }
 }
