@@ -162,6 +162,7 @@ fun List<WorkPackageActivityDeliverable>.toDeliverableDataModel() = map {
     WorkPackageActivityDeliverableData(
         deliverableNumber = it.deliverableNumber,
         description = it.description.toDataModel(),
+        title = it.title.toDataModel(),
         period = it.period
     )
 }.toList()
