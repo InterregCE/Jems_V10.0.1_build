@@ -77,7 +77,7 @@ export const APPLICATION_FORM = {
       PARTNER_BUDGET_PERIODS: 'application.config.project.partner.budget.periods',
       STAFF_COST: {
         STAFF_FUNCTION: 'application.config.project.partner.budget.staff.cost.staff.function',
-        COMMENTS: 'application.config.project.partner.budget.staff.cost.comments',
+        COMMENTS: 'application.config.project.partner.budget.staff.cost.comment',
         UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.staff.cost.unit.type.and.number.of.units',
         PRICE_PER_UNIT: 'application.config.project.partner.budget.staff.cost.price.per.unit'
       },
