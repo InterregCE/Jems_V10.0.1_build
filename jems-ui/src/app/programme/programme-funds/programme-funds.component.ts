@@ -91,6 +91,7 @@ export class ProgrammeFundsComponent extends ViewEditFormComponent implements On
         if (newState === FormState.VIEW) {
           if (funds) {
             this.resetForm(funds);
+            this.editableFundsForm.disable();
           }
         }
       });
