@@ -138,8 +138,7 @@ import org.mapstruct.Mapping
 import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
 
-// TODO make this working
-fun ProjectFull.toDataModel(tableA3data: ProjectCoFinancingOverview) = pluginDataMapper.map(this)
+fun ProjectFull.toDataModel(tableA3data: ProjectCoFinancingOverview) = pluginDataMapper.map(this, tableA3data)
 
 fun OutputProgrammePriorityPolicySimpleDTO.toDataModel() = pluginDataMapper.map(this)
 
@@ -263,7 +262,11 @@ abstract class PluginDataMapper {
     abstract fun map(outputProgrammePrioritySimple: OutputProgrammePrioritySimple): ProgrammePriorityDataSimple
     abstract fun map(programmeObjectivePolicy: ProgrammeObjectivePolicy): ProgrammeObjectivePolicyData
     abstract fun map(outputProgrammePriorityPolicySimpleDTO: OutputProgrammePriorityPolicySimpleDTO): ProgrammeSpecificObjectiveData
-    abstract fun map(projectFull: ProjectFull): ProjectDataSectionA
+
+    @Mappings(
+        Mapping(target = "tableA3", source = "tableA3data")
+    )
+    abstract fun map(projectFull: ProjectFull, tableA3data: ProjectCoFinancingOverview): ProjectDataSectionA
     abstract fun map(projectHorizontalPrinciples: ProjectHorizontalPrinciples): ProjectHorizontalPrinciplesData
     abstract fun map(programmeStateAidMeasure: ProgrammeStateAidMeasure): ProgrammeStateAidMeasureData
     abstract fun map(workPackageActivitySummary: WorkPackageActivitySummary): WorkPackageActivitySummaryData
