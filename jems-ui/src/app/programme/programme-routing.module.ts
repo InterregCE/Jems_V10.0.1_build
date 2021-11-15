@@ -25,6 +25,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        data: {breadcrumb: 'programme.breadcrumb.basic.data'},
         component: ProgrammeBasicDataComponent,
       },
       {
