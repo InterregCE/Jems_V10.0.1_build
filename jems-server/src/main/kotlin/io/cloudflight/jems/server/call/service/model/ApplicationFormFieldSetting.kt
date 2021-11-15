@@ -181,7 +181,7 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PARTNER_BUDGET_STAFF_COST_COMMENTS(
-        "application.config.project.partner.budget.staff.cost.comments",
+        "application.config.project.partner.budget.staff.cost.comment",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PARTNER_BUDGET_STAFF_COST_UNIT_TYPE_AND_NUMBER_OF_UNITS(
