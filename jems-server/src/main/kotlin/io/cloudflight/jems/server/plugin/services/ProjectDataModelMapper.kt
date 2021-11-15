@@ -87,6 +87,7 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLu
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
@@ -137,7 +138,8 @@ import org.mapstruct.Mapping
 import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
 
-fun ProjectFull.toDataModel() = pluginDataMapper.map(this)
+// TODO make this working
+fun ProjectFull.toDataModel(tableA3data: ProjectCoFinancingOverview) = pluginDataMapper.map(this)
 
 fun OutputProgrammePriorityPolicySimpleDTO.toDataModel() = pluginDataMapper.map(this)
 

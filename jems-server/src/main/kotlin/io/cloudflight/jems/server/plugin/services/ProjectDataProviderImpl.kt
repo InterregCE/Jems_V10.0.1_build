@@ -11,12 +11,16 @@ import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
+import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
+import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.CoFinancingOverviewCalculator
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
+import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
@@ -43,6 +47,8 @@ class ProjectDataProviderImpl(
     private val budgetCostsCalculator: BudgetCostsCalculatorService,
     private val projectLumpSumPersistence: ProjectLumpSumPersistence,
     private val programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence,
+    private val projectBudgetPersistence: ProjectBudgetPersistence,
+    private val getBudgetTotalCost: GetBudgetTotalCost,
 ) : ProjectDataProvider {
 
     companion object {
@@ -52,7 +58,7 @@ class ProjectDataProviderImpl(
     @Transactional(readOnly = true)
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
         val project = projectPersistence.getProject(projectId, version)
-        val sectionA = project.toDataModel()
+        val sectionA = project.toDataModel(tableA3data = getCoFinancingOverview(projectId, version))
         val legalStatuses = programmeLegalStatusPersistence.getMax20Statuses()
 
         val partners = partnerPersistence.findTop30ByProjectId(projectId, version).map { partner ->
@@ -145,6 +151,16 @@ class ProjectDataProviderImpl(
             infrastructureCostTotal,
             travelCostTotal,
             staffCostTotal
+        )
+    }
+
+    private fun getCoFinancingOverview(projectId: Long, version: String?): ProjectCoFinancingOverview {
+        val partnerIds = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).map { it.id!! }
+        return CoFinancingOverviewCalculator.calculateCoFinancingOverview(
+            partnerIds = partnerIds,
+            getBudgetTotalCost = { getBudgetTotalCost.getBudgetTotalCost(it, version) },
+            getCoFinancingAndContributions = { coFinancingPersistence.getCoFinancingAndContributions(it, version) },
+            funds = coFinancingPersistence.getAvailableFunds(partnerIds.first()),
         )
     }
 }
