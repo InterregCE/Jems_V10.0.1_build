@@ -49,6 +49,7 @@ import {BudgetPerPeriodPageComponent} from '@project/budget/budget-page-per-peri
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ProjectOverviewTablesPageComponent} from './project-overview-tables-page/project-overview-tables-page.component';
 import {ExportComponent} from '@project/project-application/export/export.component';
+import {ProjectUnitCostsPageComponent} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-page.component';
 
 export const routes: Routes = [
   {
@@ -330,6 +331,11 @@ export const routes: Routes = [
             path: 'applicationFormLumpSums',
             data: {breadcrumb: 'project.breadcrumb.applicationForm.lump.sums'},
             component: ProjectLumpSumsPageComponent,
+          },
+          {
+            path: 'applicationFormUnitCosts',
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.unit.costs'},
+            component: ProjectUnitCostsPageComponent,
           },
         ]
       },

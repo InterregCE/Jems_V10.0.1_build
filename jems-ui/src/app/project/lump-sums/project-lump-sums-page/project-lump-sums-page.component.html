@@ -1,6 +1,6 @@
 <app-project-page-template *ngIf="(data$ | async) as data"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
-                           subTitleKey="project.application.form.section.part.e">
+                           subTitleKey="project.application.form.section.part.e.subsection.one">
 
     <app-form (save)="updateLumpSums()">
         <form appFormLayout [formGroup]="lumpSumsForm">
@@ -10,8 +10,8 @@
                 <p *ngIf="data.lumpSums.length===0">{{'project.application.form.section.part.e.no.lump.sums.warning' | translate}}</p>
                 <p *ngIf="data.lumpSums.length>0">{{'project.application.form.section.part.e.no.partner.warning' | translate}}</p>
             </app-alert>
-            <h3>{{'project.application.form.section.part.e.table.title' | translate}}</h3>
-            <p>{{'project.application.form.section.part.e.description' | translate}}</p>
+            <h3>{{'project.application.form.section.part.e.subsection.one.table.title' | translate}}</h3>
+            <p>{{'project.application.form.section.part.e.subsection.one.description' | translate}}</p>
             <ng-container *ngIf="data.partners.length>0 && data.lumpSums.length>0">
                 <ng-container *ngIf="!data.showAddButton; else addItemButton">
                     <app-alert

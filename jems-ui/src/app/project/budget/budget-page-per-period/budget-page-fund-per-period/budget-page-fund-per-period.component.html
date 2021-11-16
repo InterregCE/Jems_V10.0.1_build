@@ -10,9 +10,9 @@
                 <span><!--blank cell--></span>
                 <span *ngFor="let periodNumber of projectPeriodNumbers">
                 {{(periodNumber !== PERIOD_PREPARATION && periodNumber !== PERIOD_CLOSURE)
-                    ? (getPeriodTranslation(periodNumber) | translate) + ' ' + periodNumber
-                    : getPeriodTranslation(periodNumber) | translate}}
-            </span>
+                  ? (getPeriodTranslation(periodNumber) | translate) + ' ' + periodNumber
+                  : getPeriodTranslation(periodNumber) | translate}}
+                </span>
                 <span>{{'project.partner.budget.table.total' | translate}}</span>
             </div>
 
@@ -41,12 +41,12 @@
                 </div>
             </ng-container>
 
-        <div class="footer" *ngIf="data.nonEuFundsDetails.length > 0">
-            <span>{{'project.application.form.budgetFundPerPeriod.totalFunds' | translate}}</span>
-            <span><!--blank cell--></span>
-            <span *ngFor="let periodTotalFunds of data.totalFundsPerPeriod"> {{periodTotalFunds | asMoney}}</span>
-            <span>{{data.totalFunds | asMoney}}</span>
-        </div>
+            <div class="footer" *ngIf="data.nonEuFundsDetails.length > 0">
+                <span>{{'project.application.form.budgetFundPerPeriod.totalFunds' | translate}}</span>
+                <span><!--blank cell--></span>
+                <span *ngFor="let periodTotalFunds of data.totalFundsPerPeriod"> {{periodTotalFunds | asMoney}}</span>
+                <span>{{data.totalFunds | asMoney}}</span>
+            </div>
 
         </div>
     </app-multi-language-container>
