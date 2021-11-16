@@ -6,6 +6,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
+import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -41,6 +42,7 @@ class ProjectDataProviderImpl(
     private val getBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
     private val budgetCostsCalculator: BudgetCostsCalculatorService,
     private val projectLumpSumPersistence: ProjectLumpSumPersistence,
+    private val programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence,
 ) : ProjectDataProvider {
 
     companion object {
@@ -51,26 +53,47 @@ class ProjectDataProviderImpl(
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
         val project = projectPersistence.getProject(projectId, version)
         val sectionA = project.toDataModel()
+        val legalStatuses = programmeLegalStatusPersistence.getMax20Statuses()
 
-        val partners = partnerPersistence.findTop30ByProjectId(projectId, version).map {
-            val budgetOptions = budgetOptionsPersistence.getBudgetOptions(it.id, version)
-            val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(it.id, version).toDataModel()
+        val partners = partnerPersistence.findTop30ByProjectId(projectId, version).map { partner ->
+            val budgetOptions = budgetOptionsPersistence.getBudgetOptions(partner.id, version)
+            val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(partner.id, version).toDataModel()
             val budgetCosts = BudgetCosts(
-                staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(it.id, version),
-                travelCosts = getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(it.id, version),
-                externalCosts = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(it.id, version),
-                equipmentCosts = getBudgetCostsPersistence.getBudgetEquipmentCosts(it.id, version),
-                infrastructureCosts = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(it.id, version),
-                unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(it.id, version),
+                staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(partner.id, version),
+                travelCosts = getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partner.id, version),
+                externalCosts = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(
+                    partner.id,
+                    version
+                ),
+                equipmentCosts = getBudgetCostsPersistence.getBudgetEquipmentCosts(partner.id, version),
+                infrastructureCosts = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(
+                    partner.id,
+                    version
+                ),
+                unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(partner.id, version),
             ).toDataModel()
-            val budgetCalculationResult = getBudgetTotalCosts(budgetOptions, it.id, version).toDataModel()
-            val budget = PartnerBudgetData(budgetOptions?.toDataModel(), coFinancing, budgetCosts,budgetCalculationResult.totalCosts, budgetCalculationResult)
-            val stateAid = partnerPersistence.getPartnerStateAid(partnerId = it.id, version)
-            it.toDataModel(stateAid, budget)
+            val budgetCalculationResult = getBudgetTotalCosts(budgetOptions, partner.id, version).toDataModel()
+            val budget = PartnerBudgetData(
+                budgetOptions?.toDataModel(),
+                coFinancing,
+                budgetCosts,
+                budgetCalculationResult.totalCosts,
+                budgetCalculationResult
+            )
+            val stateAid = partnerPersistence.getPartnerStateAid(partnerId = partner.id, version)
+
+            partner.toDataModel(
+                stateAid,
+                budget,
+                legalStatuses.firstOrNull { it.id == partner.legalStatusId }?.description ?: emptySet()
+            )
         }.toSet()
 
         val sectionB =
-            ProjectDataSectionB(partners, associatedOrganizationPersistence.findAllByProjectId(projectId, version).toDataModel())
+            ProjectDataSectionB(
+                partners,
+                associatedOrganizationPersistence.findAllByProjectId(projectId, version).toDataModel()
+            )
 
         val sectionC = projectDescriptionPersistence.getProjectDescription(projectId, version).toDataModel(
             workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, version),
@@ -90,12 +113,18 @@ class ProjectDataProviderImpl(
         )
     }
 
-    private fun getBudgetTotalCosts(budgetOptions: ProjectPartnerBudgetOptions?, partnerId: Long, version: String?): BudgetCostsCalculationResult {
+    private fun getBudgetTotalCosts(
+        budgetOptions: ProjectPartnerBudgetOptions?,
+        partnerId: Long,
+        version: String?
+    ): BudgetCostsCalculationResult {
         val unitCostTotal = getBudgetCostsPersistence.getBudgetUnitCostTotal(partnerId, version)
         val lumpSumsTotal = getBudgetCostsPersistence.getBudgetLumpSumsCostTotal(partnerId, version)
         val equipmentCostTotal = getBudgetCostsPersistence.getBudgetEquipmentCostTotal(partnerId, version)
-        val externalCostTotal = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId, version)
-        val infrastructureCostTotal = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId, version)
+        val externalCostTotal =
+            getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCostTotal(partnerId, version)
+        val infrastructureCostTotal =
+            getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCostTotal(partnerId, version)
 
         val travelCostTotal = if (budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate == null)
             getBudgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId, version)

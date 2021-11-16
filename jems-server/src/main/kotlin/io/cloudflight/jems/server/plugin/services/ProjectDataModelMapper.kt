@@ -186,8 +186,8 @@ fun ProjectPartnerCoFinancingAndContribution.toDataModel() = pluginDataMapper.ma
 fun BudgetCosts.toDataModel() = pluginDataMapper.map(this)
 fun BudgetCostsCalculationResult.toDataModel() = pluginDataMapper.map(this)
 
-fun ProjectPartnerDetail.toDataModel(stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData) =
-    pluginDataMapper.map(this, stateAid, budget)
+fun ProjectPartnerDetail.toDataModel(stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData, legalStatusDescription: Set<InputTranslation>) =
+    pluginDataMapper.map(this, stateAid, budget, legalStatusDescription)
 
 fun Iterable<OutputProjectAssociatedOrganizationDetail>.toDataModel() = map { pluginDataMapper.map(it) }.toSet()
 
@@ -240,6 +240,9 @@ abstract class PluginDataMapper {
     abstract fun map(budgetStaffCostEntry: BudgetStaffCostEntry): BudgetStaffCostEntryData
     abstract fun map(budgetCosts: BudgetCosts): BudgetCostData
     abstract fun map(projectPartnerContributionStatusDTO: ProjectPartnerContributionStatusDTO): ProjectPartnerContributionStatusData
+    @Mappings(
+        Mapping(target = "isPartner", source = "partner")
+    )
     abstract fun map(projectPartnerContribution: ProjectPartnerContribution): ProjectPartnerContributionData
     abstract fun map(projectPartnerCoFinancingFundTypeDTO: ProjectPartnerCoFinancingFundTypeDTO): ProjectPartnerCoFinancingFundTypeData
     abstract fun map(projectPartnerCoFinancing: ProjectPartnerCoFinancing): ProjectPartnerCoFinancingData
@@ -284,9 +287,10 @@ abstract class PluginDataMapper {
     @Mappings(
         Mapping(target = "stateAid", source = "stateAid"),
         Mapping(target = "budget", source = "budget"),
+        Mapping(target = "legalStatusDescription", source = "legalStatusDescription"),
     )
     abstract fun map(
-        projectPartnerDetail: ProjectPartnerDetail, stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData
+        projectPartnerDetail: ProjectPartnerDetail, stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData, legalStatusDescription: Set<InputTranslation>
     ): ProjectPartnerData
 
     fun mapToProjectWorkPackageData(projectWorkPackageFull: List<ProjectWorkPackageFull>) =

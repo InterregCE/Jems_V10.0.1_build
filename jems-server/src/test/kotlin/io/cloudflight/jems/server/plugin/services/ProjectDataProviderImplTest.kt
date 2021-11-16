@@ -68,11 +68,13 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
-import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
+import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -153,6 +155,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     @MockK
     lateinit var projectVersionPersistence: ProjectVersionPersistence
 
+    @MockK
+    lateinit var programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence
+
     @RelaxedMockK
     lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence
 
@@ -209,6 +214,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             stateAids = emptyList(),
             isAdditionalFundAllowed = false,
             applicationFormFieldConfigurations = mutableSetOf()
+        )
+        private val legalStatuse = listOf(
+            ProgrammeLegalStatus(
+                3L, ProgrammeLegalStatusType.PRIVATE, description = emptySet()
+            )
         )
         private val project = ProjectFull(
             id = 1L,
@@ -519,6 +529,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { partnerPersistence.findTop30ByProjectId(id) } returns listOf(projectPartner)
         every { budgetOptionsPersistence.getBudgetOptions(projectPartner.id) } returns partnerBudgetOptions
         every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
+        every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
         every { getBudgetCostsPersistence.getBudgetStaffCosts(projectPartner.id) } returns listOf(
             BudgetStaffCostEntry(
                 id = 3L,
@@ -1015,6 +1026,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { resultPersistence.getResultsForProject(id, null) } returns emptyList()
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns emptyList()
         every { projectLumpSumPersistence.getLumpSums(id) } returns emptyList()
+        every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)

@@ -8,8 +8,7 @@
                            (categorySelected)="onCategoryChanged($event)"
                            [selectedCategory]="selectedCategory"
         ></app-category-tree>
-        <!-- todo ngIf should be removed when we can export application form as well-->
-        <div id="export-config" *ngIf="selectedCategory?.type == 'BUDGET'">
+        <div id="export-config">
             <h3>{{'export.header.' + selectedCategory?.type?.toLowerCase() | translate}}</h3>
             <form appFormLayout [formGroup]="exportForm">
                 <mat-form-field appFormFieldWidth="xx-large">

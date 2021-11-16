@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.notification.mail.send_mail_on_jems_mail_event
 
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.event.JemsMailEvent
 import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.notification.mail.config.MailConfigProperties
@@ -13,26 +14,29 @@ import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersis
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
-class SendMailOnJemsMailEventTest {
+open class SendMailOnJemsMailEventTest : UnitTest() {
 
     @MockK
     lateinit var persistence: MailNotificationPersistence
+
     @MockK
     lateinit var programmeDataPersistence: ProgrammeDataPersistence
+
     @MockK
     lateinit var mailBodyGenerator: MailBodyGeneratorService
+
     @MockK
     lateinit var mailService: MailSenderService
+
     @MockK
     lateinit var configs: MailConfigProperties
-    @MockK
-    lateinit var manager: PlatformTransactionManager
+
 
     @InjectMockKs
     lateinit var sendMailEvent: SendMailOnJemsMailEvent
@@ -49,20 +53,24 @@ class SendMailOnJemsMailEventTest {
         val mailEvent = JemsMailEvent("emailTemplateFileName", info)
         val mailNotification = MailNotification(0, info.subject, "body", info.recipients, info.messageType)
         val programmeName = "programmeName"
+        val callback = slot<(MailNotification) -> Any?>()
+
         every { programmeDataPersistence.getProgrammeName() } returns programmeName
-        every { mailBodyGenerator.generateBodyText(mailEvent, setOf(Variable("programmeName", programmeName))) } returns "body"
+        every {
+            mailBodyGenerator.generateBodyText(mailEvent, setOf(Variable("programmeName", programmeName)))
+        } returns "body"
+        every { persistence.deleteIfExist(mailNotification.id) } returns Unit
         every { persistence.save(mailNotification) } returns mailNotification
-        val deleteMethod: ((MailNotification) -> Any?) = { notification ->
-            persistence.deleteIfExist(notification.id)
+        every { mailService.send(mailNotification, capture(callback)) } answers {
+            callback.captured.invoke(mailNotification).let { }
         }
-        every { mailService.send(mailNotification, deleteMethod) } returnsArgument 0
-        every { manager.commit(any()) } returns mailService.send(mailNotification, deleteMethod)
 
         sendMailEvent.enqueueMail(mailEvent)
+        TransactionSynchronizationManager.getSynchronizations().first().afterCommit()
 
         verify { persistence.save(mailNotification) }
-        verify { mailService.send(mailNotification, deleteMethod) }
-        // verify { persistence.deleteIfExist(0) } // .deleteIfExist(eq(0))) was not called. ?
+        verify { mailService.send(mailNotification, callback.captured) }
+        verify { persistence.deleteIfExist(eq(0)) }
     }
 
 }
