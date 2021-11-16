@@ -14,7 +14,7 @@ class CoFinancingOverviewCalculator {
 
     companion object {
         fun calculateCoFinancingOverview(
-            partnerIds: List<Long>,
+            partnerIds: Set<Long>,
             getBudgetTotalCost: (Long) -> BigDecimal,
             getCoFinancingAndContributions: (Long) -> ProjectPartnerCoFinancingAndContribution,
             funds: Set<ProgrammeFund>,

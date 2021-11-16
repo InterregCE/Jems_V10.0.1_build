@@ -264,7 +264,7 @@ abstract class PluginDataMapper {
     abstract fun map(outputProgrammePriorityPolicySimpleDTO: OutputProgrammePriorityPolicySimpleDTO): ProgrammeSpecificObjectiveData
 
     @Mappings(
-        Mapping(target = "tableA3", source = "tableA3data")
+        Mapping(target = "coFinancingOverview", source = "tableA3data")
     )
     abstract fun map(projectFull: ProjectFull, tableA3data: ProjectCoFinancingOverview): ProjectDataSectionA
     abstract fun map(projectHorizontalPrinciples: ProjectHorizontalPrinciples): ProjectHorizontalPrinciplesData

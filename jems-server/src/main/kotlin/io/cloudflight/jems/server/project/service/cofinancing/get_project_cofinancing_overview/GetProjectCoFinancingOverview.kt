@@ -19,7 +19,7 @@ class GetProjectCoFinancingOverview(
     @Transactional(readOnly = true)
     @CanRetrieveProjectForm
     override fun getProjectCoFinancingOverview(projectId: Long, version: String?): ProjectCoFinancingOverview {
-        val partnerIds = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).map { it.id!! }
+        val partnerIds = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).mapTo(HashSet()) { it.id!! }
         return calculateCoFinancingOverview(
             partnerIds = partnerIds,
             getBudgetTotalCost = { getBudgetTotalCost.getBudgetTotalCost(it, version) },
