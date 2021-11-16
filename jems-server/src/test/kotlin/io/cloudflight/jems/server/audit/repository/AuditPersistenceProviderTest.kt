@@ -19,6 +19,7 @@ import org.elasticsearch.action.search.SearchResponseSections
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.common.bytes.BytesArray
+import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.index.shard.ShardId
 import org.elasticsearch.search.SearchHit
 import org.elasticsearch.search.SearchHits
@@ -56,13 +57,29 @@ internal class AuditPersistenceProviderTest {
             description = "description"
         )
         val indexResponse = IndexResponse(ShardId("shard", "id", 1), "type", "id", 1, 1, 1, false)
-        // WARNING: uses but does not test the mapper!
         val indexSlot = slot<IndexRequest>()
         every { client.index(capture(indexSlot), RequestOptions.DEFAULT) } returns indexResponse
 
         assertThat(persistence.saveAudit(audit)).isEqualTo("id")
-        // replace "audit.toElasticsearchEntity()" by whats expected..
-        val shouldBeResult = IndexRequest(AuditPersistenceProvider.AUDIT_INDEX).source(audit.toElasticsearchEntity())
+
+        val expectedSource = XContentFactory.jsonBuilder()
+            .startObject()
+            .timeField(FIELD_TIMESTAMP, audit.timestamp?.format(DateTimeFormatter.ISO_DATE_TIME))
+            .field(FIELD_ACTION, audit.action!!.name)
+            .field(FIELD_ENTITY_RELATED_ID, audit.entityRelatedId)
+            .field(FIELD_DESCRIPTION, audit.description)
+            .startObject(FIELD_USER)
+            .field(FIELD_USER_ID, audit.user!!.id)
+            .field(FIELD_USER_EMAIL, audit.user!!.email)
+            .endObject()
+            .startObject(FIELD_PROJECT)
+            .field(FIELD_PROJECT_ID, audit.project!!.id)
+            .field(FIELD_PROJECT_CUSTOM_IDENTIFIER, audit.project!!.customIdentifier)
+            .field(FIELD_PROJECT_NAME, audit.project!!.name)
+            .endObject()
+            .endObject()
+
+        val shouldBeResult = IndexRequest(AuditPersistenceProvider.AUDIT_INDEX).source(expectedSource)
         assertThat(indexSlot.captured.source()).isEqualTo(shouldBeResult.source())
     }
 
@@ -79,7 +96,8 @@ internal class AuditPersistenceProviderTest {
                 false,
                 false,
                 null,
-                1),
+                1
+            ),
             "scrollId",
             1,
             1,

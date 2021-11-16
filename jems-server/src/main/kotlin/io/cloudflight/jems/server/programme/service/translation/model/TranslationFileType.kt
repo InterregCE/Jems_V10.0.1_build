@@ -7,6 +7,6 @@ enum class TranslationFileType {
     Application;
 
     fun getFileNameFor(language: SystemLanguage) =
-        this.name.plus("_").plus(language.name.lowercase()).plus(".properties")
+        this.name.plus("_").plus(language.name.toLowerCase()).plus(".properties")
 
 }

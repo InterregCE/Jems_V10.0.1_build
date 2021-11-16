@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
-import {ExportPageStore} from '@project/project-application/export/export-page-store.service';
+import {ExportPageStore} from '@project/project-application/export/export-page-store';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
-import {ExportCategoryTypeEnum} from '@project/project-application/export/export-category-type';
 import {ProjectVersionDTO} from '@cat/api';
 
 @Component({
@@ -50,18 +49,10 @@ export class ExportComponent {
   }
 
   exportData(selectedCategory: CategoryInfo, exportLanguage: string, inputLanguage: string, projectId: number, version: string | null): void {
-    if (selectedCategory && projectId && exportLanguage && inputLanguage) {
-      let url = null;
-      switch (selectedCategory.type) {
-        case ExportCategoryTypeEnum.BUDGET:
-          url = `/api/project/${projectId}/budget/export?exportLanguage=${exportLanguage}&inputLanguage=${inputLanguage}`;
-          break;
-      }
-      url = (url && version) ? url + `&version=${version}` : url;
-
-      if (url) {
-        window.open(url, '_blank');
-      }
+    if (selectedCategory?.type && projectId && exportLanguage && inputLanguage) {
+      let url = `/api/project/${projectId}/export/${selectedCategory.type}?exportLanguage=${exportLanguage}&inputLanguage=${inputLanguage}`;
+      url =  version ? url + `&version=${version}` : url;
+      window.open(url, '_blank');
     }
   }
 

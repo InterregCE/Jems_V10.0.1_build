@@ -20,8 +20,8 @@ const val FIELD_PROJECT = "project"
 const val FIELD_PROJECT_ID = "id"
 const val FIELD_PROJECT_CUSTOM_IDENTIFIER = "customIdentifier"
 const val FIELD_PROJECT_NAME = "name"
-private const val FIELD_ENTITY_RELATED_ID = "entityRelatedId"
-private const val FIELD_DESCRIPTION = "description"
+const val FIELD_ENTITY_RELATED_ID = "entityRelatedId"
+const val FIELD_DESCRIPTION = "description"
 
 fun Audit.toElasticsearchEntity(): XContentBuilder {
     val entityBuilder = XContentFactory
