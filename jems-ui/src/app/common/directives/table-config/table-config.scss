@@ -40,6 +40,10 @@
       @include generate-widths()
 
     }
+
+    > .mat-checkbox {
+      display: flex;
+    }
   }
 
 

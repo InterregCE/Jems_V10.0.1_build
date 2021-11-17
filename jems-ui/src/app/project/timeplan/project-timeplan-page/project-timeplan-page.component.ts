@@ -72,7 +72,7 @@ export class ProjectTimeplanPageComponent {
 
     this.dataAvailable$ = data$
       .pipe(
-        map(data => !!data.timelineGroups.getIds().length)
+        map(data => !!data.workPackages.length),
       );
   }
 
