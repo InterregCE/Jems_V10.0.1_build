@@ -8,7 +8,7 @@
             (downloadNuts)="downloadLatestNuts$.next()">
     </app-programme-nuts-info>
     <app-programme-regions class="margin-before"
-                           *ngIf="regionTreeDataSource.data?.length"
+                           *ngIf="regionsAvailable$ | async"
                            [success$]="regionSaveSuccess$"
                            [dataSource]="regionTreeDataSource"
                            [selectedRegions]="selectedRegions$ | async"
