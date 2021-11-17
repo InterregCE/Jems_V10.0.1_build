@@ -15,8 +15,11 @@ import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
+import io.cloudflight.jems.plugin.contract.models.programme.fund.ProgrammeFundData
+import io.cloudflight.jems.plugin.contract.models.programme.fund.ProgrammeFundTypeData
 import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLumpSumData
 import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLumpSumPhaseData
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
@@ -24,6 +27,8 @@ import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCateg
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverview
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationData
@@ -45,6 +50,8 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerBudgetOptionsData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingFundTypeData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.ProjectDataSectionC
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.longTermPlans.ProjectLongTermPlansData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectCooperationCriteriaData
@@ -72,6 +79,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
@@ -110,6 +119,7 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
@@ -155,8 +165,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     @MockK
     lateinit var projectVersionPersistence: ProjectVersionPersistence
 
-    @MockK
-    lateinit var programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence
+    @RelaxedMockK
+    lateinit var programmeLumpSumPersistence: ProgrammeLumpSumPersistence
 
     @RelaxedMockK
     lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence
@@ -180,16 +190,16 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     lateinit var coFinancingPersistence: ProjectPartnerCoFinancingPersistence
 
     @RelaxedMockK
-    lateinit var projectLumpSumPersistence: ProjectLumpSumPersistence
-
-    @RelaxedMockK
-    lateinit var programmeLumpSumPersistence: ProgrammeLumpSumPersistence
-
-    @RelaxedMockK
     lateinit var getBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence
 
     @RelaxedMockK
     lateinit var budgetCostsCalculator: BudgetCostsCalculatorService
+
+    @RelaxedMockK
+    lateinit var projectLumpSumPersistence: ProjectLumpSumPersistence
+
+    @MockK
+    lateinit var programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence
 
     @InjectMockKs
     lateinit var projectDataProvider: ProjectDataProviderImpl
@@ -378,8 +388,20 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         private val partnerBudgetOptions = ProjectPartnerBudgetOptions(
             partnerId = projectPartner.id
         )
+        private val ERDF_FUND = ProgrammeFund(
+            id = 230L,
+            selected = true,
+            type = ProgrammeFundType.ERDF,
+        )
+
         private val partnerCoFinancing = ProjectPartnerCoFinancingAndContribution(
-            finances = emptyList(),
+            finances = listOf(
+                ProjectPartnerCoFinancing(
+                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                    fund = ERDF_FUND,
+                    percentage = BigDecimal.valueOf(6524, 2),
+                ),
+            ),
             partnerContributions = emptyList(),
             partnerAbbreviation = projectPartner.abbreviation
         )
@@ -565,6 +587,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 answer4 = null,
                 stateAidScheme = null
             )
+        every { coFinancingPersistence.getAvailableFunds(projectPartner.id) } returns setOf(ERDF_FUND)
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)
@@ -577,7 +600,41 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 acronym = project.acronym,
                 duration = project.duration,
                 specificObjective = project.specificObjective?.toDataModel(),
-                programmePriority = project.programmePriority?.toDataModel()
+                programmePriority = project.programmePriority?.toDataModel(),
+                coFinancingOverview = ProjectCoFinancingOverview(
+                    fundOverviews = listOf(
+                        ProjectCoFinancingByFundOverview(
+                            fundType = ProgrammeFundTypeData.ERDF,
+                            fundAbbreviation = emptySet(),
+                            fundingAmount = BigDecimal.valueOf(6_52, 2),
+                            coFinancingRate = BigDecimal.valueOf(100_00, 2),
+                            autoPublicContribution = BigDecimal.ZERO,
+                            otherPublicContribution = BigDecimal.ZERO,
+                            totalPublicContribution = BigDecimal.ZERO,
+                            privateContribution = BigDecimal.ZERO,
+                            totalContribution = BigDecimal.ZERO,
+                            totalFundAndContribution = BigDecimal.valueOf(6_52, 2),
+                        )
+                    ),
+                    totalFundingAmount = BigDecimal.valueOf(6_52, 2),
+                    totalEuFundingAmount = BigDecimal.valueOf(6_52, 2),
+                    averageCoFinancingRate = BigDecimal.valueOf(65_20, 2),
+                    averageEuFinancingRate = BigDecimal.valueOf(100_00, 2),
+
+                    totalAutoPublicContribution = BigDecimal.ZERO,
+                    totalEuAutoPublicContribution = BigDecimal.ZERO,
+                    totalOtherPublicContribution = BigDecimal.ZERO,
+                    totalEuOtherPublicContribution = BigDecimal.ZERO,
+                    totalPublicContribution = BigDecimal.ZERO,
+                    totalEuPublicContribution = BigDecimal.ZERO,
+                    totalPrivateContribution = BigDecimal.ZERO,
+                    totalEuPrivateContribution = BigDecimal.ZERO,
+                    totalContribution = BigDecimal.ZERO,
+                    totalEuContribution = BigDecimal.ZERO,
+
+                    totalFundAndContribution = BigDecimal.TEN,
+                    totalEuFundAndContribution = BigDecimal.valueOf(6_52, 2),
+                ),
             )
         )
         assertThat(projectData.sectionB).isEqualTo(
@@ -609,7 +666,17 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                 travelAndAccommodationOnStaffCostsFlatRate = null
                             ),
                             projectPartnerCoFinancing = ProjectPartnerCoFinancingAndContributionData(
-                                finances = listOf(),
+                                finances = listOf(
+                                    ProjectPartnerCoFinancingData(
+                                        fundType = ProjectPartnerCoFinancingFundTypeData.MainFund,
+                                        fund = ProgrammeFundData(
+                                            id = ERDF_FUND.id,
+                                            selected = true,
+                                            type = ProgrammeFundTypeData.ERDF,
+                                        ),
+                                        percentage = BigDecimal.valueOf(6524, 2),
+                                    )
+                                ),
                                 partnerContributions = listOf(),
                                 partnerAbbreviation = projectPartner.abbreviation
                             ),
@@ -1040,6 +1107,27 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 duration = null,
                 specificObjective = null,
                 programmePriority = null,
+                coFinancingOverview = ProjectCoFinancingOverview(
+                    fundOverviews = emptyList(),
+                    totalFundingAmount = BigDecimal.ZERO,
+                    totalEuFundingAmount = BigDecimal.ZERO,
+                    averageCoFinancingRate = BigDecimal.ZERO,
+                    averageEuFinancingRate = BigDecimal.ZERO,
+
+                    totalAutoPublicContribution = BigDecimal.ZERO,
+                    totalEuAutoPublicContribution = BigDecimal.ZERO,
+                    totalOtherPublicContribution = BigDecimal.ZERO,
+                    totalEuOtherPublicContribution = BigDecimal.ZERO,
+                    totalPublicContribution = BigDecimal.ZERO,
+                    totalEuPublicContribution = BigDecimal.ZERO,
+                    totalPrivateContribution = BigDecimal.ZERO,
+                    totalEuPrivateContribution = BigDecimal.ZERO,
+                    totalContribution = BigDecimal.ZERO,
+                    totalEuContribution = BigDecimal.ZERO,
+
+                    totalFundAndContribution = BigDecimal.ZERO,
+                    totalEuFundAndContribution = BigDecimal.ZERO,
+                ),
             )
         )
         assertThat(projectData.sectionB).isEqualTo(

@@ -87,6 +87,7 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLu
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
@@ -137,7 +138,7 @@ import org.mapstruct.Mapping
 import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
 
-fun ProjectFull.toDataModel() = pluginDataMapper.map(this)
+fun ProjectFull.toDataModel(tableA3data: ProjectCoFinancingOverview) = pluginDataMapper.map(this, tableA3data)
 
 fun OutputProgrammePriorityPolicySimpleDTO.toDataModel() = pluginDataMapper.map(this)
 
@@ -261,7 +262,11 @@ abstract class PluginDataMapper {
     abstract fun map(outputProgrammePrioritySimple: OutputProgrammePrioritySimple): ProgrammePriorityDataSimple
     abstract fun map(programmeObjectivePolicy: ProgrammeObjectivePolicy): ProgrammeObjectivePolicyData
     abstract fun map(outputProgrammePriorityPolicySimpleDTO: OutputProgrammePriorityPolicySimpleDTO): ProgrammeSpecificObjectiveData
-    abstract fun map(projectFull: ProjectFull): ProjectDataSectionA
+
+    @Mappings(
+        Mapping(target = "coFinancingOverview", source = "tableA3data")
+    )
+    abstract fun map(projectFull: ProjectFull, tableA3data: ProjectCoFinancingOverview): ProjectDataSectionA
     abstract fun map(projectHorizontalPrinciples: ProjectHorizontalPrinciples): ProjectHorizontalPrinciplesData
     abstract fun map(programmeStateAidMeasure: ProgrammeStateAidMeasure): ProgrammeStateAidMeasureData
     abstract fun map(workPackageActivitySummary: WorkPackageActivitySummary): WorkPackageActivitySummaryData

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.plugin.services
 import io.cloudflight.jems.plugin.contract.models.project.ProjectData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
@@ -12,6 +13,8 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
+import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.CoFinancingOverviewCalculator
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -25,7 +28,7 @@ import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersist
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
+import java.math.BigDecimal.ZERO
 
 @Service
 class ProjectDataProviderImpl(
@@ -52,7 +55,6 @@ class ProjectDataProviderImpl(
     @Transactional(readOnly = true)
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
         val project = projectPersistence.getProject(projectId, version)
-        val sectionA = project.toDataModel()
         val legalStatuses = programmeLegalStatusPersistence.getMax20Statuses()
 
         val partners = partnerPersistence.findTop30ByProjectId(projectId, version).map { partner ->
@@ -88,6 +90,8 @@ class ProjectDataProviderImpl(
                 legalStatuses.firstOrNull { it.id == partner.legalStatusId }?.description ?: emptySet()
             )
         }.toSet()
+
+        val sectionA = project.toDataModel(tableA3data = getCoFinancingOverview(partners, version))
 
         val sectionB =
             ProjectDataSectionB(
@@ -129,12 +133,12 @@ class ProjectDataProviderImpl(
         val travelCostTotal = if (budgetOptions?.travelAndAccommodationOnStaffCostsFlatRate == null)
             getBudgetCostsPersistence.getBudgetTravelAndAccommodationCostTotal(partnerId, version)
         else
-            BigDecimal.ZERO
+            ZERO
 
         val staffCostTotal = if (budgetOptions?.staffCostsFlatRate == null)
             getBudgetCostsPersistence.getBudgetStaffCostTotal(partnerId, version)
         else
-            BigDecimal.ZERO
+            ZERO
 
         return budgetCostsCalculator.calculateCosts(
             budgetOptions,
@@ -147,4 +151,17 @@ class ProjectDataProviderImpl(
             staffCostTotal
         )
     }
+
+    private fun getCoFinancingOverview(partners: Set<ProjectPartnerData>, version: String?): ProjectCoFinancingOverview {
+        val partnersByIds = partners.associateBy { it.id!! }
+        val funds = if (partnersByIds.keys.isNotEmpty()) coFinancingPersistence.getAvailableFunds(partnersByIds.keys.first()) else emptySet()
+
+        return CoFinancingOverviewCalculator.calculateCoFinancingOverview(
+            partnerIds = partnersByIds.keys,
+            getBudgetTotalCost = { partnerId -> partnersByIds[partnerId]?.budget?.projectBudgetCostsCalculationResult?.totalCosts ?: ZERO },
+            getCoFinancingAndContributions = { coFinancingPersistence.getCoFinancingAndContributions(it, version) },
+            funds = funds,
+        )
+    }
+
 }
