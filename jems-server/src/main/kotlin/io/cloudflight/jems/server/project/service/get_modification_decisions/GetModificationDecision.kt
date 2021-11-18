@@ -14,6 +14,6 @@ class GetModificationDecision(private val persistence: ProjectWorkflowPersistenc
     @Transactional
     @ExceptionWrapper(GetModificationDecisionExceptions::class)
     override fun getModificationDecisions(projectId: Long): List<ProjectStatus> =
-        this.persistence.getModificationDecisions(projectId);
+        this.persistence.getModificationDecisions(projectId)
 
 }

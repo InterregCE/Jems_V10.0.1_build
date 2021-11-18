@@ -108,4 +108,8 @@ interface ProjectStatusApi {
     @PostMapping("revert")
     fun revertApplicationDecision(@PathVariable id: Long): ApplicationStatusDTO
 
+    @ApiOperation("Get list of all modification decisions")
+    @GetMapping("modificationDecisions")
+    fun getModificationDecisions(@PathVariable id: Long): List<ProjectStatusDTO>
+
 }
