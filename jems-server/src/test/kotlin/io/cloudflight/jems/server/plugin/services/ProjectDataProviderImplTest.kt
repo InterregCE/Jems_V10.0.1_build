@@ -29,6 +29,8 @@ import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifec
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverview
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.IndicatorOverviewLine
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationData
@@ -81,6 +83,10 @@ import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumP
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
+import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
+import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
+import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorSummary
+import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndicatorSummary
 import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
@@ -135,6 +141,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
+import io.cloudflight.jems.server.project.service.result.model.OutputRow
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
@@ -197,6 +204,13 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var projectLumpSumPersistence: ProjectLumpSumPersistence
+
+    @RelaxedMockK
+    lateinit var projectResultPersistence: ProjectResultPersistence
+    @RelaxedMockK
+    lateinit var listOutputIndicatorsPersistence: OutputIndicatorPersistence
+    @RelaxedMockK
+    lateinit var listResultIndicatorsPersistence: ResultIndicatorPersistence
 
     @MockK
     lateinit var programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence
@@ -539,6 +553,73 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             phase = ProgrammeLumpSumPhase.Preparation,
             categories = setOf(BudgetCategory.StaffCosts)
         )
+        // data for tableA4/output-result
+        val projectOutputs = listOf(OutputRow(
+            workPackageId = 1,
+            workPackageNumber = 1,
+            outputTitle = setOf(InputTranslation(SystemLanguage.EN, "outputTitle")),
+            outputNumber = 1,
+            outputTargetValue = BigDecimal.TEN,
+            programmeOutputId = 1,
+            programmeResultId = 2
+        ), OutputRow(
+            workPackageId = 1,
+            workPackageNumber = 1,
+            outputTitle = setOf(InputTranslation(SystemLanguage.EN, "outputTitle2")),
+            outputNumber = 2,
+            outputTargetValue = BigDecimal.ONE,
+            programmeOutputId = 2,
+            programmeResultId = 3
+        ))
+        val outputIndicatorSet = setOf(OutputIndicatorSummary(
+            id = 1,
+            identifier = "outputIdentifier",
+            code = "outputCode",
+            name = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorName")),
+            programmePriorityCode = "programmePriorityCode",
+            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorMeasurementUnit"))
+        ), OutputIndicatorSummary(
+            id = 2,
+            identifier = "outputIdentifier2",
+            code = "outputCode",
+            name = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorName2")),
+            programmePriorityCode = "programmePriorityCode",
+            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorMeasurementUnit"))
+        ))
+        val resultIndicatorSet = setOf(ResultIndicatorSummary(
+            id = 2,
+            identifier = "resultIdentifier",
+            code = "resultCode",
+            name = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorName")),
+            programmePriorityCode = "programmePriorityCode",
+            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorMeasurementUnit")),
+            baseline = BigDecimal.ONE
+        ), ResultIndicatorSummary(
+            id = 3,
+            identifier = "resultIdentifier2",
+            code = "resultCode",
+            name = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorName2")),
+            programmePriorityCode = "programmePriorityCode",
+            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorMeasurementUnit")),
+            baseline = BigDecimal.ONE
+        ))
+        val projectResults = listOf(ProjectResult(
+            resultNumber = 4,
+            programmeResultIndicatorId = 2,
+            programmeResultIndicatorIdentifier = "programmeResultIndicatorIdentifier",
+            baseline = BigDecimal.ONE,
+            targetValue = BigDecimal.TEN,
+            periodNumber = 1,
+            description = setOf(InputTranslation(SystemLanguage.EN, "description")),
+        ), ProjectResult(
+            resultNumber = 5,
+            programmeResultIndicatorId = 3,
+            programmeResultIndicatorIdentifier = "programmeResultIndicatorIdentifier",
+            baseline = BigDecimal.ONE,
+            targetValue = BigDecimal.TEN,
+            periodNumber = 1,
+            description = setOf(InputTranslation(SystemLanguage.EN, "description2")),
+        ))
     }
 
     @Test
@@ -588,6 +669,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 stateAidScheme = null
             )
         every { coFinancingPersistence.getAvailableFunds(projectPartner.id) } returns setOf(ERDF_FUND)
+        // data for tableA4/output-result
+        every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id)} returns projectOutputs
+        every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns outputIndicatorSet
+        every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns resultIndicatorSet
+        every { projectResultPersistence.getResultsForProject(id, null) } returns projectResults
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)
@@ -635,6 +721,44 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                     totalFundAndContribution = BigDecimal.TEN,
                     totalEuFundAndContribution = BigDecimal.valueOf(6_52, 2),
                 ),
+                resultIndicatorOverview = ProjectResultIndicatorOverview(
+                    indicatorLines = listOf(
+                        IndicatorOverviewLine(
+                            outputIndicatorId = 1L,
+                            outputIndicatorIdentifier = "outputIdentifier",
+                            outputIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorName")),
+                            outputIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorMeasurementUnit")),
+                            outputIndicatorTargetValueSumUp = BigDecimal.TEN,
+                            projectOutputNumber = "1.1",
+                            projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle")),
+                            projectOutputTargetValue = BigDecimal.TEN,
+                            resultIndicatorId = 2L,
+                            resultIndicatorIdentifier = "resultIdentifier",
+                            resultIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorName")),
+                            resultIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorMeasurementUnit")),
+                            resultIndicatorBaseline = setOf(BigDecimal.ONE),
+                            resultIndicatorTargetValueSumUp = BigDecimal.TEN,
+                            onlyResultWithoutOutputs = false
+                        ),
+                        IndicatorOverviewLine(
+                            outputIndicatorId = 2L,
+                            outputIndicatorIdentifier = "outputIdentifier2",
+                            outputIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorName2")),
+                            outputIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorMeasurementUnit")),
+                            outputIndicatorTargetValueSumUp = BigDecimal.ONE,
+                            projectOutputNumber = "1.2",
+                            projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle2")),
+                            projectOutputTargetValue = BigDecimal.ONE,
+                            resultIndicatorId = 3L,
+                            resultIndicatorIdentifier = "resultIdentifier2",
+                            resultIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorName2")),
+                            resultIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorMeasurementUnit")),
+                            resultIndicatorBaseline = setOf(BigDecimal.ONE),
+                            resultIndicatorTargetValueSumUp = BigDecimal.TEN,
+                            onlyResultWithoutOutputs = false
+                        )
+                    )
+                )
             )
         )
         assertThat(projectData.sectionB).isEqualTo(
@@ -1094,6 +1218,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns emptyList()
         every { projectLumpSumPersistence.getLumpSums(id) } returns emptyList()
         every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
+        // data for tableA4/output-result
+        every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id)} returns emptyList()
+        every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns emptySet()
+        every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns emptySet()
+        every { projectResultPersistence.getResultsForProject(id, null) } returns emptyList()
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)
@@ -1128,6 +1257,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                     totalFundAndContribution = BigDecimal.ZERO,
                     totalEuFundAndContribution = BigDecimal.ZERO,
                 ),
+                resultIndicatorOverview = ProjectResultIndicatorOverview(emptyList())
             )
         )
         assertThat(projectData.sectionB).isEqualTo(
