@@ -62,8 +62,10 @@ Manual deployment using docker compose:
  - execute `gradle clean build` for building the project
  - run the following docker-compose services
    - jems-database (relational database for Jems configuration and input data)
-   - jems-minio (Object storage for files)
-   - audit-database (logging into elastic search, needed for Audit Logs)
+   - jems-minio (Object storage for files) **WE DO NOT RECOMMEND THIS FOR PRODUCTION**, on production you should use
+     [MinIO operator](https://github.com/minio/operator)
+   - audit-database (logging into elastic search, needed for Audit Logs) **WE DO NOT RECOMMEND THIS FOR PRODUCTION**, on
+     production you should use multi-node cluster, see [ES images in Docker in production env](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites)
    - audit-analyzer (Kibana for additional Audit Log access)
    - mailhog (mail server to test sending mail notification)
  - run the jar (jems-server `./build/libs`) as Spring Boot application
@@ -80,13 +82,10 @@ Manual deployment using docker compose:
 application.yaml can be added to root of the full executable jems-server.jar
 the properties specified will override the default ones within resources/application.yaml
 
-## Codestyle
-
-Import `./idea/Cloudflight-codestyle.xml` to your development environment (e.g. IntelliJ) and use it.
 
 ## Additional details
 
-### Database (Store)
+### For developers (how to start)
 This project is now based on
 - [MariaDB](https://mariadb.com/kb/en/installing-and-using-mariadb-via-docker/) for storing all data
 - ElasticSearch for storing "audit logs". Those are tracking specific interactions between users and the system itself.
@@ -103,7 +102,7 @@ in Kibana web interface [localhost:5601](http://localhost:5601)
 [localhost:9000](http://localhost:9000)
 
 There is no need to start anything besides MariaDB, so spring-boot will also start without MinIO and without
-Audit (ES). There is property value `audit-service.enabled` - if you set to `false` audits will be written
+Audit (ES). There is evnironment variable `AUDIT_ENABLED=true` - if you set to `false` audits will be written
 as _info \[LOG\]_ to stdout.
 
 ### API testing
@@ -113,8 +112,8 @@ The generated documentation of the API can be found on the successful started Je
 ### Startup parameters
 
 You can define following startup parameters (see also [application.yaml](jems-server/src/main/resources/application.yaml)):
-- `audit-service.enabled`=[true,false] (or env variable `AUDIT_ENABLED`), if this one is set to true, you need to provide also:
-  - `audit-service.url-and-port` with address of ElasticSearch (or env variable `AUDIT_ELASTICSEARCH_URL_AND_PORT`)
+- `audit-service.enabled`=[true,false] (**we recommend using env variable** `AUDIT_ENABLED`), if this one is set to true, you need to provide also:
+  - `audit-service.url-and-port` with address of ElasticSearch (better use env variable `AUDIT_ELASTICSEARCH_URL_AND_PORT`)
 - `spring.datasource.url` with address of MariaDB (or env variable `SPRING_DATASOURCE_URL`)
   - optional `spring.datasource.username` (by default set to `root`)
   - `spring.datasource.password` (or env variable `SPRING_DATASOURCE_PASSWORD`)
