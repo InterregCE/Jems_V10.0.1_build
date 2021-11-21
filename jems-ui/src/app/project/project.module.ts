@@ -110,6 +110,8 @@ import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-p
 import { ExportComponent } from './project-application/export/export.component';
 import {UsersFilterPipe} from '@common/components/project-application-list-user-assignments/user-filter.pipe';
 import {ProjectApplicationListUserAssignmentsComponent} from '@common/components/project-application-list-user-assignments/project-application-list-user-assignments.component';
+import {ProjectUnitCostsPageComponent} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-page.component';
+import {ProjectUnitCostsStore} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-store.service';
 
 @NgModule({
   declarations: [
@@ -181,6 +183,7 @@ import {ProjectApplicationListUserAssignmentsComponent} from '@common/components
     ProjectPeriodsSelectComponent,
     ProjectResultsPageComponent,
     ProjectLumpSumsPageComponent,
+    ProjectUnitCostsPageComponent,
     BudgetPagePerPartnerComponent,
     ProjectTimeplanPageComponent,
     FilterUnitCostsPipe,
@@ -228,6 +231,7 @@ import {ProjectApplicationListUserAssignmentsComponent} from '@common/components
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,
     ProjectLumpSumsStore,
+    ProjectUnitCostsStore,
     ProjectBudgetPeriodPageStore,
     ProjectPartnerBudgetStore,
     ProjectLumpSumStore,

@@ -286,9 +286,14 @@ export class ProjectApplicationFormSidenavService {
             headline: {i18nKey: 'project.application.form.section.part.e'},
             bullets: [
               {
-                headline: {i18nKey: 'project.application.form.section.part.e'},
+                headline: {i18nKey: 'project.application.form.section.part.e.subsection.one'},
                 route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormLumpSums`,
-              }
+              },
+              ...this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected() ?
+                [{
+                  headline: {i18nKey: 'project.application.form.section.part.e.subsection.two'},
+                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormUnitCosts`,
+                }] : []
             ],
             versionedSection: true
           }
