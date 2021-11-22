@@ -70,8 +70,8 @@ fun Collection<ProjectUnitCostRow>.toProjectUnitCosts() = groupBy { it.id }
     .map { value ->
         ProjectUnitCost(
             costId = value.first().costId,
-            pricePerUnit = value.firstOrNull()?.pricePerUnit ?: 0,
-            numberOfUnits = value.firstOrNull()?.numberOfUnits ?: 0,
+            pricePerUnit = value.firstOrNull()?.pricePerUnit,
+            numberOfUnits = value.firstOrNull()?.numberOfUnits,
             name = value.extractField { unit -> unit.name },
             description = value.extractField { unit -> unit.description },
             unitType = value.extractField { unit -> unit.unitType },
@@ -83,7 +83,7 @@ fun Collection<ProjectUnitCost>.toProjectUnitCostsGrouped() = groupBy { it.costI
     .map { value ->
         ProjectUnitCost(
             costId = value.first().costId,
-            pricePerUnit = value.firstOrNull()?.pricePerUnit ?: 0,
+            pricePerUnit = value.firstOrNull()?.pricePerUnit,
             numberOfUnits = value.sumOf { it.numberOfUnits!! },
             name = value.firstOrNull()?.name ?: emptySet(),
             description = value.firstOrNull()?.description ?: emptySet(),

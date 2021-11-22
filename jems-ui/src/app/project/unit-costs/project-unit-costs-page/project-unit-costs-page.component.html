@@ -9,12 +9,12 @@
         <div appNoWidthLimit
              [appTableConfig]="tableConfig">
             <div>
-                <span>{{'project.application.form.section.part.e.unit.costs.column.title' | translate}}</span>
-                <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS.DESCRIPTION">{{'project.application.form.section.part.e.unit.costs.column.description' | translate}}</span>
-                <span>{{'project.application.form.section.part.e.unit.costs.column.type' | translate}}</span>
-                <span>{{'project.application.form.section.part.e.unit.costs.column.price' | translate}}</span>
-                <span>{{'project.application.form.section.part.e.unit.costs.column.number' | translate}}</span>
-                <span>{{'project.application.form.section.part.e.unit.costs.column.total' | translate}}</span>
+                <span>{{'project.partner.budget.table.unitcosts.selection' | translate}}</span>
+                <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS.DESCRIPTION">{{'project.partner.budget.table.description' | translate}}</span>
+                <span>{{'project.partner.budget.table.unit.type' | translate}}</span>
+                <span>{{'project.partner.budget.table.price.per.unit' | translate}}</span>
+                <span>{{'project.partner.budget.table.number.of.units' | translate}}</span>
+                <span>{{'project.partner.budget.table.total' | translate}}</span>
             </div>
 
             <ng-container *ngFor="let unitCost of data">
@@ -26,7 +26,6 @@
                     <span>{{unitCost.numberOfUnits}}</span>
                     <span>{{unitCost.numberOfUnits * unitCost.pricePerUnit | asMoney}}</span>
                 </div>
-
             </ng-container>
 
         </div>

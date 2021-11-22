@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.controller.budget
 
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetPerPeriodDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPeriodBudgetDTO
+import io.cloudflight.jems.api.project.dto.budget.ProjectUnitCostDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.server.UnitTest
@@ -11,12 +12,13 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.unitcost.get_project_unit_costs.GetProjectUnitCostsInteractor
+import io.cloudflight.jems.server.project.service.unitcost.model.ProjectUnitCost
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import java.math.BigDecimal
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
 
 internal class ProjectBudgetControllerTest : UnitTest() {
 
@@ -38,6 +40,16 @@ internal class ProjectBudgetControllerTest : UnitTest() {
                 isLastPeriod = true
             )),
             totalPartnerBudget = BigDecimal.TEN
+        )
+
+        private val projectUnitCosts = ProjectUnitCost(
+            costId = 1L,
+            name = emptySet(),
+            description = emptySet(),
+            unitType = emptySet(),
+            pricePerUnit = BigDecimal.TEN,
+            numberOfUnits = BigDecimal.TEN,
+            total = 25
         )
     }
 
@@ -75,6 +87,22 @@ internal class ProjectBudgetControllerTest : UnitTest() {
                 totalPartnerBudget = budgetPerPeriod.totalPartnerBudget
             )
         )
+    }
+
+    @Test
+    fun getUnitCosts() {
+        every { getProjectUnitCostsInteractor.getProjectUnitCost(1L) } returns listOf(projectUnitCosts)
+
+        assertThat(controller.getProjectUnitCosts(1L)).isNotEmpty
+        assertThat(controller.getProjectUnitCosts(1L)).containsExactly(ProjectUnitCostDTO(
+            costId = 1L,
+            name = emptySet(),
+            description = emptySet(),
+            unitType = emptySet(),
+            pricePerUnit = BigDecimal.TEN,
+            numberOfUnits = BigDecimal.TEN,
+            total = 25
+        ))
     }
 
 }
