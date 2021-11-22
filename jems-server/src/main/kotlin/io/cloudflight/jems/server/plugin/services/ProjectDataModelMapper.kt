@@ -30,6 +30,7 @@ import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeSt
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.NaceGroupLevelData
@@ -126,6 +127,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.project.service.result.model.IndicatorOverviewLine
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
@@ -138,7 +140,10 @@ import org.mapstruct.Mapping
 import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
 
-fun ProjectFull.toDataModel(tableA3data: ProjectCoFinancingOverview) = pluginDataMapper.map(this, tableA3data)
+fun ProjectFull.toDataModel(
+    tableA3data: ProjectCoFinancingOverview,
+    tableA4data: ProjectResultIndicatorOverview
+) = pluginDataMapper.map(this, tableA3data, tableA4data)
 
 fun OutputProgrammePriorityPolicySimpleDTO.toDataModel() = pluginDataMapper.map(this)
 
@@ -179,6 +184,29 @@ fun List<WorkPackageOutput>.toOutputDataModel() = map {
         title = it.title.toDataModel()
     )
 }.toList()
+
+fun List<IndicatorOverviewLine>.toIndicatorOverviewLines() = map {
+    io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.IndicatorOverviewLine(
+        outputIndicatorId = it.outputIndicator?.id,
+        outputIndicatorIdentifier = it.outputIndicator?.identifier,
+        outputIndicatorName = it.outputIndicator?.name.toDataModel(),
+        outputIndicatorMeasurementUnit = it.outputIndicator?.measurementUnit.toDataModel(),
+        outputIndicatorTargetValueSumUp = it.outputIndicator?.targetValueSumUp,
+
+        projectOutputNumber = it.projectOutput?.projectOutputNumber,
+        projectOutputTitle = it.projectOutput?.projectOutputTitle.toDataModel(),
+        projectOutputTargetValue = it.projectOutput?.projectOutputTargetValue,
+
+        resultIndicatorId = it.resultIndicator?.id,
+        resultIndicatorIdentifier = it.resultIndicator?.identifier,
+        resultIndicatorName = it.resultIndicator?.name.toDataModel(),
+        resultIndicatorMeasurementUnit = it.resultIndicator?.measurementUnit.toDataModel(),
+        resultIndicatorBaseline = it.resultIndicator?.baseline,
+        resultIndicatorTargetValueSumUp = it.resultIndicator?.targetValueSumUp,
+
+        onlyResultWithoutOutputs = it.onlyResultWithoutOutputs,
+    )
+}
 
 fun ProjectPartnerBudgetOptions.toDataModel() = pluginDataMapper.map(this)
 
@@ -264,9 +292,10 @@ abstract class PluginDataMapper {
     abstract fun map(outputProgrammePriorityPolicySimpleDTO: OutputProgrammePriorityPolicySimpleDTO): ProgrammeSpecificObjectiveData
 
     @Mappings(
-        Mapping(target = "coFinancingOverview", source = "tableA3data")
+        Mapping(target = "coFinancingOverview", source = "tableA3data"),
+        Mapping(target = "resultIndicatorOverview", source = "tableA4data")
     )
-    abstract fun map(projectFull: ProjectFull, tableA3data: ProjectCoFinancingOverview): ProjectDataSectionA
+    abstract fun map(projectFull: ProjectFull, tableA3data: ProjectCoFinancingOverview, tableA4data: ProjectResultIndicatorOverview): ProjectDataSectionA
     abstract fun map(projectHorizontalPrinciples: ProjectHorizontalPrinciples): ProjectHorizontalPrinciplesData
     abstract fun map(programmeStateAidMeasure: ProgrammeStateAidMeasure): ProgrammeStateAidMeasureData
     abstract fun map(workPackageActivitySummary: WorkPackageActivitySummary): WorkPackageActivitySummaryData

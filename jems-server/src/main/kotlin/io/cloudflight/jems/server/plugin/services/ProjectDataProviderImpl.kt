@@ -2,11 +2,14 @@ package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.plugin.contract.models.project.ProjectData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
+import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
+import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
 import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -24,6 +27,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
+import io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview.ResultOverviewCalculator
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -46,6 +50,9 @@ class ProjectDataProviderImpl(
     private val budgetCostsCalculator: BudgetCostsCalculatorService,
     private val projectLumpSumPersistence: ProjectLumpSumPersistence,
     private val programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence,
+    private val projectResultPersistence: ProjectResultPersistence,
+    private val listOutputIndicatorsPersistence: OutputIndicatorPersistence,
+    private val listResultIndicatorsPersistence: ResultIndicatorPersistence
 ) : ProjectDataProvider {
 
     companion object {
@@ -91,7 +98,10 @@ class ProjectDataProviderImpl(
             )
         }.toSet()
 
-        val sectionA = project.toDataModel(tableA3data = getCoFinancingOverview(partners, version))
+        val sectionA = project.toDataModel(
+            tableA3data = getCoFinancingOverview(partners, version),
+            tableA4data = getResultIndicatorOverview(projectId, version)
+        )
 
         val sectionB =
             ProjectDataSectionB(
@@ -164,4 +174,19 @@ class ProjectDataProviderImpl(
         )
     }
 
+    private fun getResultIndicatorOverview(projectId: Long, version: String?): ProjectResultIndicatorOverview {
+        return ProjectResultIndicatorOverview(
+            indicatorLines = ResultOverviewCalculator.calculateProjectResultOverview(
+                projectOutputs = workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(projectId, version),
+                programmeOutputIndicatorsById = listOutputIndicatorsPersistence.getTop50OutputIndicators()
+                    .associateBy { it.id },
+                programmeResultIndicatorsById = listResultIndicatorsPersistence.getTop50ResultIndicators()
+                    .associateBy { it.id },
+                projectResultsByIndicatorId = projectResultPersistence.getResultsForProject(projectId, version)
+                    .filter { it.programmeResultIndicatorId != null }
+                    .groupBy { it.programmeResultIndicatorId }
+                    .toMutableMap()
+            ).toIndicatorOverviewLines()
+        )
+    }
 }
