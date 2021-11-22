@@ -44,7 +44,7 @@ export class ProjectPageTemplateStore {
 
   changeVersion(versionDTO: ProjectVersionDTO, currentStatus: ProjectStatusDTO.StatusEnum, versions: ProjectVersionDTO[] = []): void {
       const currentVersionIsLatest = versionDTO.version === Tools.first(versions)?.version
-        && ( currentStatus === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS
+        && ( currentStatus === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS || currentStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING
         || currentStatus === ProjectStatusDTO.StatusEnum.CONDITIONSSUBMITTED);
       this.projectVersionStore.changeVersion(versionDTO, currentVersionIsLatest);
   }
@@ -58,9 +58,9 @@ export class ProjectPageTemplateStore {
     return combineLatest([this.projectVersionStore.versions$, project$])
       .pipe(
         switchMap(([versions, project]) =>
-          project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS
+          project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS || project.projectStatus.status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING
             ? this.projectStatusService.getApplicationPreviousStatus(project.id).pipe(
-            map(lastStatus => ({versions, project, needNewVersion: lastStatus.status !== ProjectStatusDTO.StatusEnum.CONDITIONSSUBMITTED}))
+            map(lastStatus => ({versions, project, needNewVersion: lastStatus.status !== ProjectStatusDTO.StatusEnum.CONDITIONSSUBMITTED && lastStatus.status !== ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED}))
             ) : of({versions, project, needNewVersion: true})
         ),
         map(data =>

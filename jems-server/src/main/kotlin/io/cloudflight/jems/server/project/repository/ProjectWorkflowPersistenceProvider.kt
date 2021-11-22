@@ -187,16 +187,16 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun updateProjectModificationDecision(
-        projectId: Long, userId: Long, status: ApplicationStatus, actionInfo: ApplicationActionInfo
+        projectId: Long, userId: Long, status: ApplicationStatus, actionInfo: ApplicationActionInfo?
     ) =
         projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
                     project = this,
                     status = status,
-                    note = actionInfo.note,
-                    decisionDate = actionInfo.date,
-                    entryIntoForceDate = actionInfo.entryIntoForceDate,
+                    note = actionInfo?.note,
+                    decisionDate = actionInfo?.date,
+                    entryIntoForceDate = actionInfo?.entryIntoForceDate,
                     user = userRepository.getOne(userId)
                 )
             )
@@ -206,7 +206,7 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun getModificationDecisions(projectId: Long): List<ProjectStatus> =
-        this.projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedDesc(
+        this.projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedAsc(
             projectId,
             ApplicationStatus.APPROVED
         ).drop(1) .map { it.toProjectStatus() }

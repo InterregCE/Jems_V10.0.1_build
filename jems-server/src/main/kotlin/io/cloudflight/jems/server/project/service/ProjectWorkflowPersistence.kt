@@ -53,7 +53,7 @@ interface ProjectWorkflowPersistence {
         projectId: Long,
         userId: Long,
         status: ApplicationStatus,
-        actionInfo: ApplicationActionInfo
+        actionInfo: ApplicationActionInfo?
     ): ApplicationStatus
 
     fun clearProjectFundingDecision(projectId: Long)

@@ -152,7 +152,7 @@ export class AssessmentAndDecisionComponent {
       ProjectStatusDTO.StatusEnum.SUBMITTED,
       ProjectStatusDTO.StatusEnum.ELIGIBLE,
       ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS,
-      ProjectStatusDTO.StatusEnum.CONDITIONSSUBMITTED,
+      ProjectStatusDTO.StatusEnum.CONDITIONSSUBMITTED
     ];
 
     if (!isProjectLatestVersion || (callHasTwoSteps && !projectInSecondStep)) {

@@ -424,7 +424,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
         val projectStatus = ProjectStatus(id = 1, ApplicationStatus.APPROVED, userSummary, ZonedDateTime.now(), null, null, null)
         every {
-            projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedDesc(
+            projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedAsc(
                 PROJECT_ID,
                 ApplicationStatus.APPROVED
             )
@@ -435,10 +435,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
     @Test
     fun `get Project modification decision for no data in DB`() {
-        val userSummary = UserSummary(ProjectPartnerTestUtil.user.id, ProjectPartnerTestUtil.user.email, ProjectPartnerTestUtil.user.name, ProjectPartnerTestUtil.user.surname, UserRoleSummary(1L, "ADMIN"), UserStatus.ACTIVE)
-
         every {
-            projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedDesc(
+            projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedAsc(
                 PROJECT_ID,
                 ApplicationStatus.APPROVED
             )
