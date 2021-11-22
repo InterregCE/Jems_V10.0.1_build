@@ -209,7 +209,7 @@ class ProjectWorkflowPersistenceProvider(
         this.projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedAsc(
             projectId,
             ApplicationStatus.APPROVED
-        ).drop(1) .map { it.toProjectStatus() }
+        ).drop(1).map { it.toProjectStatus() }
 
     @Transactional
     override fun clearProjectFundingDecision(projectId: Long) {

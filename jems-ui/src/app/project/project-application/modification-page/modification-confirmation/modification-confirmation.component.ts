@@ -50,9 +50,9 @@ export class ModificationConfirmationComponent implements OnInit {
 
   saveConfirmation(): void {
     const info = {
-      note: this.decisionForm.get('note')?.value as any,
-      date: this.decisionForm.get('decisionDate')?.value?.format('YYYY-MM-DD') as any,
-      entryIntoForceDate: this.decisionForm.get('entryIntoForceDate')?.value?.format('YYYY-MM-DD') as any,
+      note: this.decisionForm.get('note')?.value,
+      date: this.decisionForm.get('decisionDate')?.value?.format('YYYY-MM-DD'),
+      entryIntoForceDate: this.decisionForm.get('entryIntoForceDate')?.value?.format('YYYY-MM-DD'),
     };
     if (this.decisionForm.get('status')?.value === ProjectStatusDTO.StatusEnum.APPROVED) {
       this.pageStore.approveApplication(info)

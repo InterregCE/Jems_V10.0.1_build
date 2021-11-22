@@ -42,11 +42,11 @@ annotation class CanStartSecondStep
 annotation class CanRevertDecision
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectModificationView', #projectId)")
+@PreAuthorize("@hasAuthority('ProjectModificationView')")
 annotation class CanRetrieveProjectModifications
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectOpenModification', #projectId)")
+@PreAuthorize("@hasAuthority('ProjectOpenModification')")
 annotation class CanOpenModification
 
 @Component

@@ -422,15 +422,15 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
          val userSummary = UserSummary(ProjectPartnerTestUtil.user.id, ProjectPartnerTestUtil.user.email, ProjectPartnerTestUtil.user.name, ProjectPartnerTestUtil.user.surname, UserRoleSummary(1L, "ADMIN"), UserStatus.ACTIVE)
 
-        val projectStatus = ProjectStatus(id = 1, ApplicationStatus.APPROVED, userSummary, ZonedDateTime.now(), null, null, null)
+        val expectedStatus = ProjectStatus(id = 1, ApplicationStatus.APPROVED, userSummary, status2.updated, null, null, null)
         every {
             projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedAsc(
                 PROJECT_ID,
                 ApplicationStatus.APPROVED
             )
         } returns listOf(status1, status2)
-        assertThat(persistence.getModificationDecisions(PROJECT_ID))
-            .isEqualTo(listOf(projectStatus))
+
+        assertThat(persistence.getModificationDecisions(PROJECT_ID)).isEqualTo(listOf(expectedStatus))
     }
 
     @Test

@@ -19,6 +19,9 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectS
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusReturnToApplicant
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStartStepTwo
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileAssessmentRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationFileAssessmentRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectOpenModification
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
@@ -135,7 +138,11 @@ internal class AssignUserToProjectTest : UnitTest() {
         assertThat(permisisonsToHave[0]).containsExactlyInAnyOrder(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
         assertThat(permissionsNotToHave[0]).isEmpty()
         // then for monitor users
-        assertThat(permisisonsToHave[1]).containsExactlyInAnyOrder(ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView, ProjectStatusDecisionRevert, ProjectStatusReturnToApplicant, ProjectStartStepTwo, ProjectFileAssessmentRetrieve)
+        assertThat(permisisonsToHave[1]).containsExactlyInAnyOrder(
+            ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView,
+            ProjectStatusDecisionRevert, ProjectStatusReturnToApplicant, ProjectStartStepTwo, ProjectFileAssessmentRetrieve,
+            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve
+        )
         assertThat(permissionsNotToHave[1]).containsExactlyInAnyOrder(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
     }
 
