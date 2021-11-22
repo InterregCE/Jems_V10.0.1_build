@@ -66,6 +66,15 @@ export class Permission {
           state: PermissionState.HIDDEN,
           hideTooltip: 'permission.create.assessment.and.decision'
         },
+        {
+          name: 'project.modification.header',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.HIDDEN,
+          hideTooltip: 'permission.create.modification'
+        },
       ]
     }
   ];
