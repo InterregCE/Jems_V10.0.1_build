@@ -209,9 +209,7 @@ class ProjectWorkflowPersistenceProvider(
         this.projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedDesc(
             projectId,
             ApplicationStatus.APPROVED
-        ).filterIndexed { index, projectStatusHistoryEntity -> index != 0 }.map {
-            it.toProjectStatus()
-        }
+        ).drop(1) .map { it.toProjectStatus() }
 
     @Transactional
     override fun clearProjectFundingDecision(projectId: Long) {

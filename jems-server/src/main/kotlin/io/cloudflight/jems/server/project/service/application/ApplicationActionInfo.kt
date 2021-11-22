@@ -13,17 +13,10 @@ fun ApplicationActionInfo.ifIsValid(generalValidatorService: GeneralValidatorSer
     generalValidatorService.throwIfAnyIsInvalid(
         generalValidatorService.maxLength(note, 10000, "note"),
         generalValidatorService.notNull(date, "decisionDate"),
-        generalValidatorService.notNull(entryIntoForceDate, "entryIntoForceDate"),
         date?.let {
             generalValidatorService.dateNotInFuture(
                 date,
                 "decisionDate"
-            )
-        } ?: mapOf(),
-        entryIntoForceDate?.let {
-            generalValidatorService.dateNotInFuture(
-                entryIntoForceDate,
-                "entryIntoForceDate"
             )
         } ?: mapOf()
     )

@@ -140,6 +140,33 @@ export class Permission {
             },
           ],
         },
+        {
+          name: 'project.modification.header',
+          children: [
+            {
+              name: 'project.modification.panel',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectModificationView],
+              editPermissions: [
+                PermissionsEnum.ProjectStatusDecideModificationApproved,
+                PermissionsEnum.ProjectStatusDecideModificationNotApproved
+              ],
+              editTooltip: 'permission.inspect.modification.panel'
+            },
+            {
+              name: 'project.application.form.section.modification.open.button',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectOpenModification],
+            },
+            {
+              name: 'file.tab.modification',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectModificationFileAssessmentRetrieve],
+              editPermissions: [PermissionsEnum.ProjectModificationFileAssessmentUpdate],
+              editTooltip: 'permission.inspect.modification.files'
+            },
+          ],
+        },
       ]
     }
   ];

@@ -10,6 +10,7 @@ import {PreConditionCheckResult} from '@project/model/plugin/PreConditionCheckRe
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {Router} from '@angular/router';
 import {CheckAndSubmitStore} from '@project/project-application/check-and-submit/check-and-submit-store.service';
+import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
   selector: 'app-check-and-submit',
@@ -21,6 +22,8 @@ export class CheckAndSubmitComponent {
   Alert = Alert;
   PermissionsEnum = UserRoleDTO.PermissionsEnum;
   STATUS = ProjectStatusDTO.StatusEnum;
+  ProjectUtil = ProjectUtil;
+
   private preConditionCheckResult$ = new BehaviorSubject<PreConditionCheckResult | null>(null);
 
   data$: Observable<{

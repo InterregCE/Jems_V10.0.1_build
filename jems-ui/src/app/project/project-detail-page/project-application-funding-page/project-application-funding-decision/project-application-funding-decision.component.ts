@@ -83,7 +83,8 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   private getDecisionAction(): Observable<string> {
     const statusInfo: ApplicationActionInfoDTO = {
       note: this.decisionForm?.controls?.notes?.value,
-      date: this.decisionForm?.controls?.decisionDate?.value?.format('YYYY-MM-DD')
+      date: this.decisionForm?.controls?.decisionDate?.value?.format('YYYY-MM-DD'),
+      entryIntoForceDate: null as any
     };
 
     if (this.decisionForm?.controls?.status?.value === this.stepStatus.approved) {

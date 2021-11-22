@@ -76,7 +76,8 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
     this.actionPending = true;
     const statusInfo: ApplicationActionInfoDTO = {
       note: this.notesForm?.controls?.notes?.value,
-      date: this.notesForm?.controls?.decisionDate?.value.format('YYYY-MM-DD')
+      date: this.notesForm?.controls?.decisionDate?.value.format('YYYY-MM-DD'),
+      entryIntoForceDate: null as any
     };
     (this.notesForm.get('assessment')?.value === this.stepStatus.eligible
       ? this.eligibilityPageStore.setApplicationAsEligible(this.projectId, statusInfo)

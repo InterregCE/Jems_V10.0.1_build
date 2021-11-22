@@ -112,6 +112,8 @@ import {UsersFilterPipe} from '@common/components/project-application-list-user-
 import {ProjectApplicationListUserAssignmentsComponent} from '@common/components/project-application-list-user-assignments/project-application-list-user-assignments.component';
 import {ProjectUnitCostsPageComponent} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-page.component';
 import {ProjectUnitCostsStore} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-store.service';
+import {ModificationPageComponent} from './project-application/modification-page/modification-page.component';
+import {ModificationConfirmationComponent} from './project-application/modification-page/modification-confirmation/modification-confirmation.component';
 
 @NgModule({
   declarations: [
@@ -210,6 +212,8 @@ import {ProjectUnitCostsStore} from '@project/unit-costs/project-unit-costs-page
     ExportComponent,
     UsersFilterPipe,
     ProjectApplicationListUserAssignmentsComponent,
+    ModificationPageComponent,
+    ModificationConfirmationComponent,
   ],
   imports: [
     SharedModule,

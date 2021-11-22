@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.application.start_modificatio
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanReturnApplicationToApplicant
+import io.cloudflight.jems.server.project.authorization.CanOpenModification
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -23,7 +23,7 @@ class StartModification(
     private val auditPublisher: ApplicationEventPublisher,
 ) : StartModificationInteractor {
 
-    @CanReturnApplicationToApplicant
+    @CanOpenModification
     @Transactional
     @ExceptionWrapper(StartModificationExceptions::class)
     override fun startModification(projectId: Long): ApplicationStatus =

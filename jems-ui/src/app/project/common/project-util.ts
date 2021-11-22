@@ -7,18 +7,22 @@ export enum ProjectPaths {
 export class ProjectUtil {
 
   static isDraft(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
-    const status = (statusOrProject as ProjectDetailDTO)?.projectStatus || statusOrProject;
+    const status = this.getStatus(statusOrProject);
+    return status === ProjectStatusDTO.StatusEnum.STEP1DRAFT || status === ProjectStatusDTO.StatusEnum.DRAFT;
+  }
 
-    return status?.status === ProjectStatusDTO.StatusEnum.STEP1DRAFT
-      || status?.status === ProjectStatusDTO.StatusEnum.DRAFT;
+  static isReturnedToApplicant(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+    const status = this.getStatus(statusOrProject);
+    return status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT
+      || status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING;
   }
 
   static isOpenForModifications(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
-    const status = (statusOrProject as ProjectDetailDTO)?.projectStatus || statusOrProject;
+    return ProjectUtil.isDraft(statusOrProject) || ProjectUtil.isReturnedToApplicant(statusOrProject);
+  }
 
-    return status?.status === ProjectStatusDTO.StatusEnum.STEP1DRAFT
-      || status?.status === ProjectStatusDTO.StatusEnum.DRAFT
-      || status?.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT
-      || status?.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS;
+  private static getStatus(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum) {
+    return ((statusOrProject as ProjectDetailDTO)?.projectStatus || statusOrProject)?.status || statusOrProject;
   }
 }

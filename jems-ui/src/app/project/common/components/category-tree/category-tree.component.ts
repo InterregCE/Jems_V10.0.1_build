@@ -47,13 +47,13 @@ export class CategoryTreeComponent implements OnChanges {
       node => node.level, node => node.expandable);
     const treeFlattener = new MatTreeFlattener(
       (node: CategoryNode, level: number) => ({
-        expandable: !!node.children?.length,
+        expandable: !!node?.children?.length,
         level,
         data: node
       }),
       node => node.level,
       node => node.expandable,
-      node => node.children
+      node => node?.children
     );
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, treeFlattener);
   }

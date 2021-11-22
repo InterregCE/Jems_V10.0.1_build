@@ -4,6 +4,7 @@ enum class ProjectFileCategoryType(val parent: ProjectFileCategoryType? = null) 
     ALL,
     ASSESSMENT(ALL),
     APPLICATION(ALL),
+    MODIFICATION(ALL),
     PARTNER(APPLICATION),
     INVESTMENT(APPLICATION),
 }

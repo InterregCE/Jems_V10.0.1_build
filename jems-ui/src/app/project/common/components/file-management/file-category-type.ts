@@ -3,5 +3,6 @@ export enum FileCategoryTypeEnum {
   APPLICATION = 'APPLICATION',
   PARTNER = 'PARTNER',
   INVESTMENT = 'INVESTMENT',
+  MODIFICATION = 'MODIFICATION',
   ALL = 'ALL',
 }

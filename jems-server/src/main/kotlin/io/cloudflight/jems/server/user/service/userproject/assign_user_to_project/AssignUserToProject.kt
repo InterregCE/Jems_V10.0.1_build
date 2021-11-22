@@ -17,6 +17,9 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectS
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusReturnToApplicant
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStartStepTwo
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileAssessmentRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationFileAssessmentRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectOpenModification
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -44,6 +47,9 @@ class AssignUserToProject(
             ProjectStatusReturnToApplicant,
             ProjectStartStepTwo,
             ProjectFileAssessmentRetrieve,
+            ProjectModificationView,
+            ProjectOpenModification,
+            ProjectModificationFileAssessmentRetrieve
         )
     }
 

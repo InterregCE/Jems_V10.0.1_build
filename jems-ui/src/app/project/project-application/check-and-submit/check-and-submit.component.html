@@ -5,14 +5,10 @@
         <div>
             {{'project.application.form.section.check.and.submit.info.line.1' | translate : {projectAcronym: data.projectTitle} }}
         </div>
-        <div>
-            {{'project.application.form.section.check.and.submit.info.line.2' | translate }}
-        </div>
+        <div>{{'project.application.form.section.check.and.submit.info.line.2' | translate }}</div>
 
         <ng-container *hasPermission="[PermissionsEnum.ProjectCheckApplicationForm, PermissionsEnum.ProjectSubmission]; alternativeCondition data.isThisUserOwner">
-
-            <ng-container
-                    *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT  || data.projectStatus === STATUS.RETURNEDTOAPPLICANTFORCONDITIONS">
+            <ng-container *ngIf="data.projectStatus === STATUS.DRAFT || ProjectUtil.isReturnedToApplicant(data.projectStatus)">
                 <h3>{{'project.detail.pre.condition.check.result.title' | translate}}</h3>
                 <p>{{'project.detail.pre.condition.check.result.description' | translate}}</p>
             </ng-container>
@@ -21,7 +17,7 @@
                 <ng-container *hasPermission="PermissionsEnum.ProjectCheckApplicationForm; alternativeCondition data.isThisUserOwner">
                     <app-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.RETURNEDTOAPPLICANT || data.projectStatus === STATUS.RETURNEDTOAPPLICANTFORCONDITIONS"
+                            *ngIf="data.projectStatus === STATUS.DRAFT || ProjectUtil.isReturnedToApplicant(data.projectStatus)"
                             [disabled]="!data.isProjectLatestVersion"
                             [pending]="preConditionCheckInProgress"
                             (clicked)="preConditionCheck(data.projectId)">
@@ -32,7 +28,7 @@
                 <ng-container *hasPermission="PermissionsEnum.ProjectSubmission; alternativeCondition data.isThisUserOwner">
                     <app-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="data.projectStatus === STATUS.DRAFT || data.projectStatus === STATUS.STEP1DRAFT"
+                            *ngIf="ProjectUtil.isDraft(data.projectStatus)"
                             [confirm]="{title: 'project.detail.submit.dialog.title', message: 'project.detail.submit.dialog.message'}"
                             [disabled]="isSubmitDisabled(data.projectCallEndDate, data.hasPreConditionCheckSucceed, data.isProjectLatestVersion, data.projectStatus)"
                             [pending]="actionPending"
@@ -42,7 +38,7 @@
 
                     <app-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT || data.projectStatus==STATUS.RETURNEDTOAPPLICANTFORCONDITIONS"
+                            *ngIf="ProjectUtil.isReturnedToApplicant(data.projectStatus)"
                             [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
                             [disabled]="!data.isProjectLatestVersion || !data.hasPreConditionCheckSucceed"
                             [pending]="actionPending"
@@ -54,8 +50,8 @@
                 <app-project-application-pre-condition-check-result
                         *ngIf="data.preConditionCheckResults"
                         [preConditionCheckResult]="data.preConditionCheckResults"
-                        appNoWidthLimit
-                ></app-project-application-pre-condition-check-result>
+                        appNoWidthLimit>
+                </app-project-application-pre-condition-check-result>
 
             </div>
         </ng-container>
