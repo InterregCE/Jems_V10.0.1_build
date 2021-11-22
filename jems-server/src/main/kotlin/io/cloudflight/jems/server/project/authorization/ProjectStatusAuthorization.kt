@@ -22,16 +22,8 @@ annotation class CanCheckApplicationForm
 annotation class CanReturnApplicationToApplicant
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideApproved', #projectId)")
-annotation class CanApproveApplication
-
-@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideApprovedWithConditions', #projectId)")
 annotation class CanApproveApplicationWithConditions
-
-@Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideNotApproved', #projectId)")
-annotation class CanRefuseApplication
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideEligible', #projectId)")
@@ -48,6 +40,14 @@ annotation class CanStartSecondStep
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecisionRevert', #projectId)")
 annotation class CanRevertDecision
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectModificationView')")
+annotation class CanRetrieveProjectModifications
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectOpenModification')")
+annotation class CanOpenModification
 
 @Component
 class ProjectStatusAuthorization(

@@ -41,6 +41,7 @@ class SetApplicationAsIneligibleInteractorTest : UnitTest() {
         private val actionInfo = ApplicationActionInfo(
             note = "note ineligible",
             date = LocalDate.of(2021,4, 13),
+            entryIntoForceDate = LocalDate.of(2021,4, 13)
         )
     }
 

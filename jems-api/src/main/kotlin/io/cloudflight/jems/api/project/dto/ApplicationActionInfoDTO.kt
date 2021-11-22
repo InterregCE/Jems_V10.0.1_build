@@ -6,5 +6,6 @@ import java.time.LocalDate
 @ApiModel(value = "ApplicationActionInfoDTO")
 data class ApplicationActionInfoDTO(
     val note: String?,
-    val date: LocalDate?
+    val date: LocalDate?,
+    val entryIntoForceDate: LocalDate?
 )

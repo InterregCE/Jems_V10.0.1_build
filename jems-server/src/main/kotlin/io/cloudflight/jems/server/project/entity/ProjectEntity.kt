@@ -78,6 +78,10 @@ data class ProjectEntity(
     @JoinColumn(name = "funding_final_decision_id")
     var decisionFundingStep2: ProjectStatusHistoryEntity? = null,
 
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "modification_decision_id")
+    var modificationDecision: ProjectStatusHistoryEntity? = null,
+
     @Embedded
     val projectData: ProjectData? = null,
 

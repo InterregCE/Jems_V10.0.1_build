@@ -10,6 +10,8 @@ import io.cloudflight.jems.server.project.service.application.workflow.states.Co
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.InEligibleApplicationState
+import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationPrecontractingApplicationState
+import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationPrecontractingSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.NotApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantForConditionsApplicationState
@@ -52,5 +54,7 @@ class ApplicationStateFactory(
             RETURNED_TO_APPLICANT_FOR_CONDITIONS -> ReturnedToApplicantForConditionsApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
             SUBMITTED -> SubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
             CONDITIONS_SUBMITTED ->  ConditionsSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
+            MODIFICATION_PRECONTRACTING ->  ModificationPrecontractingApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
+            MODIFICATION_PRECONTRACTING_SUBMITTED ->  ModificationPrecontractingSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
     }
 }

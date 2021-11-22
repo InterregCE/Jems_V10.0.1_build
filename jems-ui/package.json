@@ -6,7 +6,7 @@
     "serve:local": "ng serve --proxy-config proxy-conf.local.json",
     "serve:ems-dev": "ng serve --proxy-config proxy-conf.ems-dev.json",
     "build": "ng build --configuration production",
-    "build:dev": "ng build --watch",
+    "build:dev": "ng build",
     "test": "ng test --watch=false",
     "lint": "ng lint --fix",
     "e2e": "ng e2e"

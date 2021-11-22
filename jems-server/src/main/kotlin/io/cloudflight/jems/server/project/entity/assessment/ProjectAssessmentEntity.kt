@@ -7,7 +7,8 @@ data class ProjectAssessmentEntity(
     val assessmentEligibility: ProjectAssessmentEligibilityEntity? = null,
     val eligibilityDecision: ProjectStatusHistoryEntity? = null,
     val preFundingDecision: ProjectStatusHistoryEntity? = null,
-    val fundingDecision: ProjectStatusHistoryEntity? = null
+    val fundingDecision: ProjectStatusHistoryEntity? = null,
+    val modificationDecision: ProjectStatusHistoryEntity? = null
 ) {
     fun getOrNull(): ProjectAssessmentEntity? {
         if (assessmentQuality == null
@@ -15,6 +16,7 @@ data class ProjectAssessmentEntity(
             && eligibilityDecision == null
             && preFundingDecision == null
             && fundingDecision == null
+            && modificationDecision == null
         )
             return null
         else

@@ -66,6 +66,15 @@ export class Permission {
           state: PermissionState.HIDDEN,
           hideTooltip: 'permission.create.assessment.and.decision'
         },
+        {
+          name: 'project.modification.header',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.HIDDEN,
+          hideTooltip: 'permission.create.modification'
+        },
       ]
     }
   ];
@@ -137,6 +146,33 @@ export class Permission {
               viewPermissions: [PermissionsEnum.ProjectFileAssessmentRetrieve],
               editPermissions: [PermissionsEnum.ProjectFileAssessmentUpdate],
               editTooltip: 'permission.inspect.annexes'
+            },
+          ],
+        },
+        {
+          name: 'project.modification.header',
+          children: [
+            {
+              name: 'project.modification.panel',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectModificationView],
+              editPermissions: [
+                PermissionsEnum.ProjectStatusDecideModificationApproved,
+                PermissionsEnum.ProjectStatusDecideModificationNotApproved
+              ],
+              editTooltip: 'permission.inspect.modification.panel'
+            },
+            {
+              name: 'project.application.form.section.modification.open.button',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectOpenModification],
+            },
+            {
+              name: 'file.tab.modification',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectModificationFileAssessmentRetrieve],
+              editPermissions: [PermissionsEnum.ProjectModificationFileAssessmentUpdate],
+              editTooltip: 'permission.inspect.modification.files'
             },
           ],
         },

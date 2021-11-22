@@ -1,0 +1,50 @@
+<app-project-page-template *ngIf="data$ | async as data"
+                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
+                           subTitleKey="project.application.form.section.modification">
+    <h3 *ngIf="data.canHandBackModification || data.canOpenModification">
+        {{'project.application.form.section.modification.open' | translate}}
+        <app-pending-button
+                *ngIf="data.canHandBackModification"
+                class="ml-2"
+                [disabled]="!data.currentVersionIsLatest"
+                [pending]="pendingButtonProgress"
+                (clicked)="handBackToApplicant()">
+            {{'project.detail.button.hand.back.applicant' | translate}}
+        </app-pending-button>
+    </h3>
+
+    <app-pending-button
+            *ngIf="data.canOpenModification"
+            class="mr-2 mt-2"
+            [disabled]="!data.currentVersionIsLatest"
+            [pending]="pendingButtonProgress"
+            (clicked)="startModification()">
+        {{'project.application.form.section.modification.open.button' | translate}}
+    </app-pending-button>
+
+    <ng-container *hasPermission="[PermissionsEnum.ProjectStatusDecideModificationApproved, PermissionsEnum.ProjectStatusDecideModificationNotApproved]">
+        <app-modification-confirmation
+                *ngIf="data.projectStatus === ProjectStatus.MODIFICATIONPRECONTRACTINGSUBMITTED"
+                [index]="data.modificationDecisions.length + 1">
+        </app-modification-confirmation>
+    </ng-container>
+
+    <ng-container *ngIf="data.modificationDecisions.length">
+        <h3>{{'project.application.form.section.modification.past' | translate}}</h3>
+
+        <app-modification-confirmation
+                *ngFor="let decision of data.modificationDecisions; let i=index"
+                [index]="data.modificationDecisions.length - i"
+                [decision]="decision">
+        </app-modification-confirmation>
+    </ng-container>
+
+    <ng-container *hasPermission="PermissionsEnum.ProjectModificationFileAssessmentRetrieve">
+        <h3>
+            {{'file.tab.header' | translate}}
+            <app-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></app-context-info>
+        </h3>
+        <app-file-management [section]="fileManagementSection" appNoWidthLimit></app-file-management>
+    </ng-container>
+
+</app-project-page-template>

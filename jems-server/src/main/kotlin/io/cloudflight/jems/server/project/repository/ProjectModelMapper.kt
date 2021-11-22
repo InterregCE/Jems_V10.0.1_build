@@ -196,5 +196,6 @@ fun ProjectStatusHistoryEntity.toProjectStatus() = ProjectStatus(
     user = user.toUserSummary(),
     updated = updated,
     decisionDate = decisionDate,
+    entryIntoForceDate = entryIntoForceDate,
     note = note
 )

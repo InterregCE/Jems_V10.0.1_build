@@ -32,6 +32,14 @@ class ApprovedApplicationState(
             }
         }
 
+    override fun startModification(): ApplicationStatus {
+        return projectWorkflowPersistence.updateProjectCurrentStatus(
+            projectId = projectSummary.id,
+            userId = securityService.getUserIdOrThrow(),
+            status = ApplicationStatus.MODIFICATION_PRECONTRACTING
+        )
+    }
+
     override fun getPossibleStatusToRevertTo() =
         getPossibleStatusToRevertToDefaultImpl(canBeRevertTo)
 

@@ -11,5 +11,6 @@ fun ProjectStatusHistoryEntity.toOutputProjectStatus() = ProjectStatusDTO(
         user = user.toOutputUser(),
         updated = updated,
         decisionDate = decisionDate,
+        entryIntoForceDate = entryIntoForceDate,
         note = note
 )

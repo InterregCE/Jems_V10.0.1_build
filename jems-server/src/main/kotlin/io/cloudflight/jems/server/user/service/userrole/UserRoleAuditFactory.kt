@@ -82,6 +82,33 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
                                 type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
                             ),
                         )
+                    ),
+                    UserRolePermissionNode(
+                        name = "Modification",
+                        type = UserRolePermissionNodeType.SECTION_HEADER,
+                        children = listOf(
+                            UserRolePermissionNode(
+                                name = "Modification panel",
+                                viewPermissions = setOf(UserRolePermission.ProjectModificationView),
+                                editPermissions = setOf(
+                                    UserRolePermission.ProjectStatusDecideModificationApproved,
+                                    UserRolePermission.ProjectStatusDecideModificationNotApproved
+                                ),
+                                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                            ),
+
+                            UserRolePermissionNode(
+                                name = "Open modification",
+                                editPermissions = setOf(UserRolePermission.ProjectOpenModification),
+                                type = UserRolePermissionNodeType.TOGGLE_EDIT,
+                            ),
+                            UserRolePermissionNode(
+                                name = "Modification files",
+                                viewPermissions = setOf(UserRolePermission.ProjectModificationFileAssessmentRetrieve),
+                                editPermissions = setOf(UserRolePermission.ProjectModificationFileAssessmentUpdate),
+                                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                            ),
+                        )
                     )
                 )
             )

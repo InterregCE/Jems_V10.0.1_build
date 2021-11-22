@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -51,6 +52,7 @@ class ApproveApplicationInteractorTest : UnitTest() {
         private val actionInfo = ApplicationActionInfo(
             note = "make approval",
             date = LocalDate.of(2021, 4, 13),
+            entryIntoForceDate = LocalDate.of(2021, 4, 13),
         )
     }
 
@@ -65,6 +67,9 @@ class ApproveApplicationInteractorTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var generalValidatorService: GeneralValidatorService
+
+    @RelaxedMockK
+    lateinit var projectAuthorization: ProjectAuthorization
 
     @InjectMockKs
     private lateinit var approveApplication: ApproveApplication

@@ -58,26 +58,45 @@ class SubmitApplication(
             }
         else submitApplication(projectSummary)
 
+    private fun saveProjectVersion(projectSummary: ProjectSummary, nextStatus: ApplicationStatus) {
+        val statusesWithoutNewVersion =
+            arrayOf(ApplicationStatus.CONDITIONS_SUBMITTED, ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
+
+        if (!statusesWithoutNewVersion.contains(projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).status)) {
+            saveProjectVersion.createNewVersion(
+                projectId = projectSummary.id,
+                status = nextStatus
+            )
+        } else {
+            saveProjectVersion.updateLastVersion(projectSummary.id)
+        }
+    }
+
+    private fun createNewVersionBasedOnStatus(projectSummary: ProjectSummary) {
+
+        when (projectSummary.status) {
+            ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS -> saveProjectVersion(
+                projectSummary,
+                ApplicationStatus.CONDITIONS_SUBMITTED
+            )
+            ApplicationStatus.MODIFICATION_PRECONTRACTING -> saveProjectVersion(
+                projectSummary,
+                ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED
+            )
+            else -> saveProjectVersion.createNewVersion(
+                projectId = projectSummary.id,
+                status = projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
+                    projectSummary.id,
+                    ApplicationStatus.RETURNED_TO_APPLICANT
+                )
+            )
+        }
+    }
+
     private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus {
-        var createNewVersion = true
-
-        val nextStatus = if (projectSummary.status == ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS) {
-            createNewVersion = projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).status !== ApplicationStatus.CONDITIONS_SUBMITTED
-            ApplicationStatus.CONDITIONS_SUBMITTED
-        } else projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(projectSummary.id, ApplicationStatus.RETURNED_TO_APPLICANT)
-
-
+        createNewVersionBasedOnStatus(projectSummary)
         return applicationStateFactory.getInstance(projectSummary).submit().also {
             auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
-
-            if (createNewVersion) {
-                saveProjectVersion.createNewVersion(
-                    projectId = projectSummary.id,
-                    status = nextStatus
-                )
-            } else {
-                saveProjectVersion.updateLastVersion(projectSummary.id)
-            }
         }
     }
 

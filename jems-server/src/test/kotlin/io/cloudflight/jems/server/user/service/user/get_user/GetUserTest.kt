@@ -16,6 +16,10 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectS
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusReturnToApplicant
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStartStepTwo
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileAssessmentRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationFileAssessmentRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectOpenModification
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSubmission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
@@ -39,7 +43,7 @@ internal class GetUserTest : UnitTest() {
         private val userRole = UserRole(
             id = 9L,
             name = "maintainer",
-            permissions = setOf(UserRolePermission.ProjectSubmission)
+            permissions = setOf(ProjectSubmission)
         )
 
         private val user = User(
@@ -129,7 +133,11 @@ internal class GetUserTest : UnitTest() {
         // TEST
         assertThat(getUser.getMonitorUsers()).containsExactly(userSummary)
 
-        assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView, ProjectStatusDecisionRevert, ProjectStatusReturnToApplicant, ProjectStartStepTwo, ProjectFileAssessmentRetrieve)
+        assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(
+            ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView,
+            ProjectStatusDecisionRevert, ProjectStatusReturnToApplicant, ProjectStartStepTwo, ProjectFileAssessmentRetrieve,
+            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve
+        )
         assertThat(toNotHaveSlot.captured).containsExactly(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
 
         assertThat(roleIdsSlot.captured).containsExactly(941L, 942L, 943L)

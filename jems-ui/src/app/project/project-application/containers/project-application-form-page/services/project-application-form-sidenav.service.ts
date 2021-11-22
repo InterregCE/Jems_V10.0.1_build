@@ -28,6 +28,7 @@ import {ProjectPartnerStore} from '@project/project-application/containers/proje
 import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
+import {B} from '@angular/cdk/keycodes';
 
 @Injectable()
 @UntilDestroy()
@@ -62,6 +63,24 @@ export class ProjectApplicationFormSidenavService {
   ]).pipe(
     map(([projectStatus, hasPermission, isOwner]) =>
       (hasPermission || isOwner) && ProjectUtil.isOpenForModifications(projectStatus)
+    ),
+  );
+
+  private canSeeModificationSection$: Observable<boolean> = combineLatest([
+    this.projectStore.projectStatus$,
+    this.permissionService.hasPermission(PermissionsEnum.ProjectModificationView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectOpenModification),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentRetrieve)
+  ]).pipe(
+    map(([projectStatus, canSeeSection, canOpenModification, canSeeModificationFiles]) => {
+      const modificationStatus = projectStatus.status === StatusEnum.APPROVED
+        || projectStatus.status === StatusEnum.NOTAPPROVED
+        || projectStatus.status === StatusEnum.MODIFICATIONPRECONTRACTING
+        || projectStatus.status === StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+      const hasViewPermission = canSeeSection || canOpenModification || canSeeModificationFiles;
+
+      return modificationStatus && hasViewPermission;
+      }
     ),
   );
 
@@ -156,12 +175,17 @@ export class ProjectApplicationFormSidenavService {
       this.packages$,
       this.versionSelectTemplate$,
       this.canSeeProjectForm$,
+      this.canSeeModificationSection$
     ])
       .pipe(
         debounceTime(50), // there's race condition with SidenavService.resetOnLeave
         filter(([project]) => !!project),
-        tap(([project, canSeeAssessments, canSubmitApplication, canCheckApplication, canReadApplicationFiles, partners, packages, versionTemplate, canSeeProjectForm]: any) => {
-          this.setHeadlines(canSeeAssessments, canSubmitApplication, canCheckApplication, canSeeProjectForm, canReadApplicationFiles, project, partners, packages, versionTemplate);
+        tap(([project, canSeeAssessments, canSubmitApplication, canCheckApplication, canReadApplicationFiles, partners, packages, versionTemplate, canSeeProjectForm, canSeeModificationSection]: any) => {
+          this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
+            this.getProjectOverviewHeadline(project.id),
+            this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles, canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
+            ...canSeeProjectForm ? this.getExportHeadline(project.id) : []
+          ]);
         }),
         catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
       );
@@ -181,45 +205,30 @@ export class ProjectApplicationFormSidenavService {
     this.fetchPackages$.next(projectId);
   }
 
-  private setHeadlines(showAssessment: boolean,
-                       canSubmitApplication: boolean,
-                       canCheckApplication: boolean,
-                       showProjectForm: boolean,
-                       showApplicationAnnexes: boolean,
-                       project: ProjectDetailDTO,
-                       partners: HeadlineRoute[],
-                       packages: HeadlineRoute[],
-                       versionTemplate: TemplateRef<any>): void {
-    this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
-      this.getProjectOverviewHeadline(project),
-      this.getApplicationFormHeadline(project, partners, packages, versionTemplate, showApplicationAnnexes, showAssessment, canSubmitApplication || canCheckApplication, showProjectForm),
-      ...showProjectForm ? this.getExportHeadline(project.id) : []
-    ]);
-  }
-
-  private getProjectOverviewHeadline(project: ProjectDetailDTO): HeadlineRoute {
+  private getProjectOverviewHeadline(projectId: number): HeadlineRoute {
     return {
       headline: {i18nKey: 'project.application.form.tree.title'},
-      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}`,
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}`,
       scrollToTop: true,
       scrollRoute: '',
       icon: 'home'
     };
   }
 
-  private getApplicationFormHeadline(project: ProjectDetailDTO, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>, showApplicationAnnexes: boolean, showAssessment: boolean, canCheckOrSubmitApplication: boolean, showProjectForm: boolean): HeadlineRoute {
+  private getApplicationFormHeadline(projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>, showApplicationAnnexes: boolean, showAssessment: boolean, canCheckOrSubmitApplication: boolean, showProjectForm: boolean, canSeeModificationSection: boolean): HeadlineRoute {
     return {
       headline: {i18nKey: 'project.application.form.title'},
       bullets: [
-        ...showProjectForm ? this.getApplicationFormVersionedSections(project, partners, packages, versionTemplate) : [],
-        ...showApplicationAnnexes ? this.getApplicationAnnexesHeadline(project.id) : [],
-        ...canCheckOrSubmitApplication ? this.getCheckAndSubmitHeadline(project.id) : [],
-        ...showAssessment ? this.getAssessmentAndDecisionHeadline(project.id) : []
+        ...showProjectForm ? this.getApplicationFormVersionedSections(projectId, partners, packages, versionTemplate) : [],
+        ...showApplicationAnnexes ? this.getApplicationAnnexesHeadline(projectId) : [],
+        ...canCheckOrSubmitApplication ? this.getCheckAndSubmitHeadline(projectId) : [],
+        ...showAssessment ? this.getAssessmentAndDecisionHeadline(projectId) : [],
+        ...canSeeModificationSection ? this.getModificationHeadline(projectId) : []
       ]
     };
   }
 
-  private getApplicationFormVersionedSections(project: ProjectDetailDTO, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>): HeadlineRoute[] {
+  private getApplicationFormVersionedSections(projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>): HeadlineRoute[] {
     return [
       {
         headlineTemplate: versionTemplate,
@@ -230,12 +239,12 @@ export class ProjectApplicationFormSidenavService {
         bullets: [
           {
             headline: {i18nKey: 'project.application.form.section.part.a'},
-            route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormIdentification`,
+            route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormIdentification`,
           },
           ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES) ?
             [{
               headline: {i18nKey: 'project.application.form.section.part.a.overview.tables'},
-              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormOverviewTables`,
+              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormOverviewTables`,
             }] : [],
         ],
         versionedSection: true
@@ -245,20 +254,20 @@ export class ProjectApplicationFormSidenavService {
         bullets: [
           {
             headline: {i18nKey: 'project.application.form.section.part.b.partners'},
-            route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormPartner`,
+            route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormPartner`,
             bullets: [...partners],
           },
           ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.PARTNER_ASSOCIATED_ORGANIZATIONS) ?
             [{
               headline: {i18nKey: 'project.application.form.section.part.b.associatedOrganizations'},
-              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormAssociatedOrganization`,
+              route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormAssociatedOrganization`,
             }] : []
         ],
         versionedSection: true
       },
       {
         headline: {i18nKey: 'project.application.form.section.part.c'},
-        bullets: this.getSectionCHeadlines(project, packages),
+        bullets: this.getSectionCHeadlines(projectId, packages),
         versionedSection: true
       },
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) ?
@@ -268,16 +277,16 @@ export class ProjectApplicationFormSidenavService {
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.d.subsection.one'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudgetPerPartner`,
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudgetPerPartner`,
               },
               {
                 headline: {i18nKey: 'project.application.form.section.part.d.subsection.two'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudget`,
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudget`,
               },
               ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ?
                 [{
                   headline: {i18nKey: 'project.application.form.section.part.d.subsection.three'},
-                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormBudgetPerPeriod`,
+                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormBudgetPerPeriod`,
                 }] : [],
             ],
             versionedSection: true
@@ -287,12 +296,12 @@ export class ProjectApplicationFormSidenavService {
             bullets: [
               {
                 headline: {i18nKey: 'project.application.form.section.part.e.subsection.one'},
-                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormLumpSums`,
+                route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormLumpSums`,
               },
               ...this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected() ?
                 [{
                   headline: {i18nKey: 'project.application.form.section.part.e.subsection.two'},
-                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormUnitCosts`,
+                  route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormUnitCosts`,
                 }] : []
             ],
             versionedSection: true
@@ -301,46 +310,46 @@ export class ProjectApplicationFormSidenavService {
     ];
   }
 
-  private getSectionCHeadlines(project: ProjectDetailDTO, packages: HeadlineRoute[]): HeadlineRoute[] {
+  private getSectionCHeadlines(projectId: number, packages: HeadlineRoute[]): HeadlineRoute[] {
     return [
       {
         headline: {i18nKey: 'project.application.form.section.part.c.subsection.one'},
-        route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormOverallObjective`,
+        route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormOverallObjective`,
       },
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.two'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormRelevanceAndContext`,
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormRelevanceAndContext`,
         }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_PARTNERSHIP) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.three'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormPartnership`,
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormPartnership`,
         }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.four'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormWorkPackage`,
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormWorkPackage`,
           bullets: [...packages],
         }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_RESULT) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.five'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormResults`,
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormResults`,
         }] : [],
       {
         headline: {i18nKey: 'project.application.form.section.part.c.subsection.six'},
-        route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationTimePlan`,
+        route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationTimePlan`,
       },
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.seven'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormManagement`,
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormManagement`,
         }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.eight'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${project.id}/applicationFormFuturePlans`,
+          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormFuturePlans`,
         }] : []
     ];
   }
@@ -375,6 +384,15 @@ export class ProjectApplicationFormSidenavService {
     }];
   }
 
+  private getModificationHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.form.section.modification'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/modification`,
+      scrollToTop: true,
+      scrollRoute: '',
+      icon: 'autorenew'
+    }];
+  }
 
   private getExportHeadline(projectId: number): HeadlineRoute[] {
     return [{

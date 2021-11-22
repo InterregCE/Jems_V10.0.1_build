@@ -41,6 +41,13 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     ProjectStatusDecisionRevert("ProjectStatusDecisionRevert", true),
     ProjectStartStepTwo("ProjectStartStepTwo", true),
 
+    ProjectModificationView("ProjectModificationView", true),
+    ProjectStatusDecideModificationApproved("ProjectStatusDecideModificationApproved", true),
+    ProjectStatusDecideModificationNotApproved("ProjectStatusDecideModificationNotApproved", true),
+    ProjectOpenModification("ProjectOpenModification", true),
+    ProjectModificationFileAssessmentRetrieve("ProjectModificationFileAssessmentRetrieve", true),
+    ProjectModificationFileAssessmentUpdate("ProjectModificationFileAssessmentUpdate", true),
+
     // Module SYSTEM
     AuditRetrieve("AuditRetrieve"),
 

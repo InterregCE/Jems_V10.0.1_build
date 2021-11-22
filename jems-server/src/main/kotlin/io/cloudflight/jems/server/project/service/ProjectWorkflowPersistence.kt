@@ -49,7 +49,16 @@ interface ProjectWorkflowPersistence {
         actionInfo: ApplicationActionInfo
     ): ApplicationStatus
 
+    fun updateProjectModificationDecision(
+        projectId: Long,
+        userId: Long,
+        status: ApplicationStatus,
+        actionInfo: ApplicationActionInfo?
+    ): ApplicationStatus
+
     fun clearProjectFundingDecision(projectId: Long)
 
     fun resetProjectFundingDecisionToCurrentStatus(projectId: Long): ApplicationStatus
+
+    fun getModificationDecisions(projectId: Long): List<ProjectStatus>
 }

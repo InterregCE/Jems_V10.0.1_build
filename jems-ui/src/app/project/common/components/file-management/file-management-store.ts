@@ -145,11 +145,15 @@ export class FileManagementStore {
       this.projectStatus$,
       this.canChangeAssessmentFile$,
       this.canChangeApplicationFile$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentUpdate),
       this.userIsProjectOwner$,
     ]).pipe(
-      map(([selectedCategory, projectStatus, canUploadAssessmentFile, canUploadApplicationFile, userIsProjectOwner]) => {
+      map(([selectedCategory, projectStatus, canUploadAssessmentFile, canUploadApplicationFile, canUploadModificationFile, userIsProjectOwner]) => {
         if (selectedCategory?.type === FileCategoryTypeEnum.ASSESSMENT) {
           return canUploadAssessmentFile;
+        }
+        if (selectedCategory?.type === FileCategoryTypeEnum.MODIFICATION) {
+          return canUploadModificationFile;
         }
         if (!ProjectUtil.isOpenForModifications(projectStatus)) {
           return false;
@@ -256,9 +260,15 @@ export class FileManagementStore {
     if (canReadAssessmentFiles) {
       fullTree.children?.push({
         name: {i18nKey: 'file.tree.type.assessment'},
-        info: {type: FileCategoryTypeEnum.ASSESSMENT}
+        info: {type: FileCategoryTypeEnum.ASSESSMENT},
+        children: []
       });
     }
+    fullTree.children?.push({
+      name: {i18nKey: 'file.tree.type.modification'},
+      info: {type: FileCategoryTypeEnum.MODIFICATION},
+      children: []
+    });
     return this.findRootForSection(fullTree, section) || {};
   }
 
@@ -266,7 +276,7 @@ export class FileManagementStore {
     if (root.info?.type === section.type && root.info?.id === section.id) {
       return root;
     }
-    if (root.children) {
+    if (root?.children) {
       for (const child of root.children) {
         const potentialRoot = this.findRootForSection(child, section);
         if (potentialRoot != null) {

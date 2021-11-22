@@ -37,6 +37,7 @@ class ApproveApplicationWithConditionsInteractorTest : UnitTest() {
         private val actionInfo = ApplicationActionInfo(
             note = "make approval with conditions",
             date = LocalDate.of(2021, 4, 13),
+            entryIntoForceDate = LocalDate.of(2021, 4, 13),
         )
     }
 

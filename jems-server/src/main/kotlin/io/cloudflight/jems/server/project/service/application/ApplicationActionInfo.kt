@@ -5,7 +5,8 @@ import java.time.LocalDate
 
 data class ApplicationActionInfo(
     val note: String?,
-    val date: LocalDate?
+    val date: LocalDate?,
+    val entryIntoForceDate: LocalDate?
 )
 
 fun ApplicationActionInfo.ifIsValid(generalValidatorService: GeneralValidatorService) {

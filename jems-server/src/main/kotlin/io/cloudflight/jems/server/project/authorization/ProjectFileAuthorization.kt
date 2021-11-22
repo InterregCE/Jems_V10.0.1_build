@@ -5,10 +5,13 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationUpdate
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileAssessmentRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileAssessmentUpdate
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationFileAssessmentRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationFileAssessmentUpdate
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -43,9 +46,9 @@ class ProjectFileAuthorization(
 
     private fun canUpdateFileInCategory(projectId: Long, fileCategoryTypeSet: Set<ProjectFileCategoryType>) =
         with(fileCategoryTypeSet) {
-            fileBelongsToAssessmentCategory(this) && canUpdateAssessmentAttachments(projectId = projectId)
-                ||
-                fileBelongsToApplicationCategory(this) && canUpdateApplicationAttachments(projectId)
+            fileBelongsToModificationCategory(this) && canUpdateModificationAttachments(projectId)
+                || fileBelongsToAssessmentCategory(this) && canUpdateAssessmentAttachments(projectId = projectId)
+                || fileBelongsToApplicationCategory(this) && canUpdateApplicationAttachments(projectId)
         }
 
     fun canRetrieveFileFromCategory(projectId: Long, fileId: Long): Boolean =
@@ -53,6 +56,8 @@ class ProjectFileAuthorization(
 
     fun getRetrievableCategories(projectId: Long): Set<ProjectFileCategoryType> =
         mutableSetOf<ProjectFileCategoryType>().also {
+            if (canRetrieveModificationAttachments(projectId = projectId))
+                it.add(ProjectFileCategoryType.MODIFICATION)
             if (canRetrieveAssessmentAttachments(projectId = projectId))
                 it.add(ProjectFileCategoryType.ASSESSMENT)
             if (canRetrieveApplicationAttachments(projectId, false))
@@ -70,6 +75,7 @@ class ProjectFileAuthorization(
         fileCategoryTypeSet: Set<ProjectFileCategoryType>
     ): Boolean =
         with(fileCategoryTypeSet) {
+            fileBelongsToModificationCategory(this) && canRetrieveModificationAttachments(projectId) ||
             fileBelongsToAssessmentCategory(this) && canRetrieveAssessmentAttachments(projectId = projectId) ||
                 fileBelongsToApplicationCategory(this) && canRetrieveApplicationAttachments(projectId)
         }
@@ -81,6 +87,9 @@ class ProjectFileAuthorization(
             ProjectFileCategoryType.INVESTMENT,
             ProjectFileCategoryType.PARTNER
         )
+
+    private fun fileBelongsToModificationCategory(fileCategories: Set<ProjectFileCategoryType>)
+        = containsAny(fileCategories, ProjectFileCategoryType.MODIFICATION)
 
     private fun fileBelongsToAssessmentCategory(fileCategories: Set<ProjectFileCategoryType>) =
         containsAny(fileCategories, ProjectFileCategoryType.ASSESSMENT)
@@ -96,6 +105,12 @@ class ProjectFileAuthorization(
 
     private fun canUpdateAssessmentAttachments(projectId: Long) =
         hasPermissionForProject(ProjectFileAssessmentUpdate, projectId)
+
+    private fun canRetrieveModificationAttachments(projectId: Long) =
+        hasPermissionForProject(ProjectModificationFileAssessmentRetrieve, projectId)
+
+    private fun canUpdateModificationAttachments(projectId: Long) =
+        hasPermissionForProject(ProjectModificationFileAssessmentUpdate, projectId)
 
     private fun canRetrieveApplicationAttachments(projectId: Long, throwException: Boolean = true) =
         runCatching {

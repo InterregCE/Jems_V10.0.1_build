@@ -17,14 +17,17 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostB
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
-import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
+import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.states.ProjectStatusTestUtil.Companion.userSummary
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -36,7 +39,7 @@ import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.Optional
+import java.util.*
 
 internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
@@ -331,7 +334,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 PROJECT_ID,
                 user.id,
                 ApplicationStatus.SUBMITTED,
-                ApplicationActionInfo("note", null)
+                ApplicationActionInfo("note", null, null)
             )
         )
             .isEqualTo(ApplicationStatus.SUBMITTED)
@@ -380,7 +383,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 PROJECT_ID,
                 user.id,
                 ApplicationStatus.APPROVED,
-                ApplicationActionInfo("note", null)
+                ApplicationActionInfo("note", null, null)
             )
         )
             .isEqualTo(ApplicationStatus.APPROVED)
@@ -404,10 +407,42 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 PROJECT_ID,
                 user.id,
                 ApplicationStatus.APPROVED,
-                ApplicationActionInfo("note", null)
+                ApplicationActionInfo("note", null, null)
             )
         )
             .isEqualTo(ApplicationStatus.APPROVED)
+    }
+
+    @Test
+    fun `get Project modification decision`() {
+        val status1 =
+            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.APPROVED, user = ProjectPartnerTestUtil.user)
+        val status2 =
+            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.APPROVED, user = ProjectPartnerTestUtil.user)
+
+         val userSummary = UserSummary(ProjectPartnerTestUtil.user.id, ProjectPartnerTestUtil.user.email, ProjectPartnerTestUtil.user.name, ProjectPartnerTestUtil.user.surname, UserRoleSummary(1L, "ADMIN"), UserStatus.ACTIVE)
+
+        val expectedStatus = ProjectStatus(id = 1, ApplicationStatus.APPROVED, userSummary, status2.updated, null, null, null)
+        every {
+            projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedAsc(
+                PROJECT_ID,
+                ApplicationStatus.APPROVED
+            )
+        } returns listOf(status1, status2)
+
+        assertThat(persistence.getModificationDecisions(PROJECT_ID)).isEqualTo(listOf(expectedStatus))
+    }
+
+    @Test
+    fun `get Project modification decision for no data in DB`() {
+        every {
+            projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedAsc(
+                PROJECT_ID,
+                ApplicationStatus.APPROVED
+            )
+        } returns emptyList()
+        assertThat(persistence.getModificationDecisions(PROJECT_ID))
+            .isEqualTo(emptyList<ProjectStatus>())
     }
 
 }

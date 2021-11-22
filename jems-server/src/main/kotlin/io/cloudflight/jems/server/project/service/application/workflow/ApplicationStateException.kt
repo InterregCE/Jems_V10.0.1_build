@@ -110,3 +110,11 @@ class HandBackToApplicantIsNotAllowedException(status: ApplicationStatus) : Appl
         mapOf("status" to status.name)
     )
 )
+
+class StartingModificationIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-015",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.starting.modification.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)

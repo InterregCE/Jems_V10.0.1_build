@@ -29,7 +29,7 @@ export class FormVisibilityStatusService {
   }
 
   shouldBeVisibleIfUnitCostsSelected(): boolean {
-    return this.projectStore.currentProject.callSettings.unitCosts.filter(cost => !cost.oneCostCategory).length !== 0
+    return this.projectStore.currentProject.callSettings.unitCosts.filter(cost => !cost.oneCostCategory).length !== 0;
   }
 
   private shouldBeVisible(fieldIds: string | ApplicationFormModel, applicationFormFieldConfigurations: ApplicationFormFieldConfigurationDTO[], hasCallTwoSteps: boolean, isProjectInStepTwo: boolean): boolean {

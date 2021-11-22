@@ -68,6 +68,11 @@ abstract class ApplicationState(
             projectSummary.status
         )
 
+    open fun startModification(): ApplicationStatus =
+        throw StartingModificationIsNotAllowedException(
+            projectSummary.status
+        )
+
     open fun getPossibleStatusToRevertTo(): ApplicationStatus? =
         null
 
@@ -126,6 +131,15 @@ abstract class ApplicationState(
                 actionInfo
             )
         }
+
+    protected fun updateModificationDecision(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
+            projectWorkflowPersistence.updateProjectModificationDecision(
+                projectSummary.id,
+                securityService.getUserIdOrThrow(),
+                targetStatus,
+                actionInfo
+            )
+
 
     protected fun isCallStep1Open() =
         projectPersistence.getProjectCallSettings(projectSummary.id).also { projectCallSettings ->

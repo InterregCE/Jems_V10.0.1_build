@@ -37,6 +37,13 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectStatusDecisionRevert("ProjectStatusDecisionRevert"),
     ProjectStartStepTwo("ProjectStartStepTwo"),
 
+    ProjectModificationView("ProjectModificationView"),
+    ProjectStatusDecideModificationApproved("ProjectStatusDecideModificationApproved"),
+    ProjectStatusDecideModificationNotApproved("ProjectStatusDecideModificationNotApproved"),
+    ProjectOpenModification("ProjectOpenModification"),
+    ProjectModificationFileAssessmentRetrieve("ProjectModificationFileAssessmentRetrieve"),
+    ProjectModificationFileAssessmentUpdate("ProjectModificationFileAssessmentUpdate"),
+
     AuditRetrieve("AuditRetrieve"),
 
     RoleRetrieve("RoleRetrieve"),
