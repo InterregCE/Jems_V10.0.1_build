@@ -10,7 +10,7 @@
                 <p>{{'project.application.form.work.package.output.delivery.period.required' | translate}}</p>
             </app-alert>
             <app-alert [closable]="false" [type]="Alert.WARNING"
-                       [show]="(dataAvailable$ | async) === false">
+                       [show]="workPackagesUnavailable$ | async">
                 <p>{{'project.application.form.section.part.c.subsection.six.no.data' | translate}}</p>
             </app-alert>
         <div appNoWidthLimit>
