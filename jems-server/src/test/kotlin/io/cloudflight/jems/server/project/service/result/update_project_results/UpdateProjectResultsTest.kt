@@ -103,8 +103,8 @@ class UpdateProjectResultsTest : UnitTest() {
             updateProjectResult.updateResultsForProject(12L, listOf(result1, result2))
         }
 
-        verify(exactly = 1) { generalValidator.maxLength(result1.description, 500, "description") }
-        verify(exactly = 1) { generalValidator.maxLength(result2.description, 500, "description") }
+        verify(exactly = 1) { generalValidator.maxLength(result1.description, 1000, "description") }
+        verify(exactly = 1) { generalValidator.maxLength(result2.description, 1000, "description") }
         verify(exactly = 1) {
             generalValidator.numberBetween(
                 result1.targetValue, BigDecimal.ZERO, BigDecimal.valueOf(999_999_999_99, 2), "targetValue"
