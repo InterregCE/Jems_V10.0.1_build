@@ -23,8 +23,8 @@
                     <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS.DESCRIPTION">{{unitCost.description | translateByInputLanguage | async}}</span>
                     <span>{{unitCost.unitType | translateByInputLanguage | async}}</span>
                     <span>{{unitCost.pricePerUnit | asMoney}}</span>
-                    <span>{{unitCost.numberOfUnits}}</span>
-                    <span>{{unitCost.numberOfUnits * unitCost.pricePerUnit | asMoney}}</span>
+                    <span>{{unitCost.numberOfUnits | asMoney}}</span>
+                    <span>{{unitCost.total | asMoney}}</span>
                 </div>
             </ng-container>
 

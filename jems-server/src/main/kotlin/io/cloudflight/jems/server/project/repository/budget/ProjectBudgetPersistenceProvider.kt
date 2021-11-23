@@ -171,15 +171,22 @@ class ProjectBudgetPersistenceProvider(
             }) ?: emptyMap()
 
     @Transactional(readOnly = true)
-    override fun getProjectUnitCosts(projectId: Long, version: String?): List<ProjectUnitCost> {
-        val partners = projectPartnerRepository.findTop30ByProjectId(projectId).map { it.id }.toSet()
-        return projectVersionUtils.fetch(version, projectId,
+    override fun getProjectUnitCosts(projectId: Long, version: String?): List<ProjectUnitCost> =
+        projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                budgetUnitCostRepository.findProjectUnitCosts(partners).toProjectUnitCosts().toProjectUnitCostsGrouped()
+                budgetUnitCostRepository.findProjectUnitCosts(
+                    projectPartnerRepository.findTop30ByProjectId(projectId).map { it.id }.toSet()
+                ).toProjectUnitCosts().toProjectUnitCostsGrouped()
             },
             previousVersionFetcher = { timestamp ->
-                budgetUnitCostRepository.findProjectUnitCostsAsOfTimestamp(partners, timestamp).toProjectUnitCosts().toProjectUnitCostsGrouped()
+                budgetUnitCostRepository.findProjectUnitCostsAsOfTimestamp(
+                    projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+                        projectId,
+                        timestamp
+                    ).map { it.id }.toSet(), timestamp
+                ).toProjectUnitCosts()
+                    .toProjectUnitCostsGrouped()
             }
         ) ?: emptyList()
-    }
+
 }

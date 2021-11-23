@@ -49,7 +49,7 @@ internal class ProjectBudgetControllerTest : UnitTest() {
             unitType = emptySet(),
             pricePerUnit = BigDecimal.TEN,
             numberOfUnits = BigDecimal.TEN,
-            total = 25
+            total = BigDecimal(100)
         )
     }
 
@@ -101,7 +101,7 @@ internal class ProjectBudgetControllerTest : UnitTest() {
             unitType = emptySet(),
             pricePerUnit = BigDecimal.TEN,
             numberOfUnits = BigDecimal.TEN,
-            total = 25
+            total = BigDecimal(100)
         ))
     }
 
