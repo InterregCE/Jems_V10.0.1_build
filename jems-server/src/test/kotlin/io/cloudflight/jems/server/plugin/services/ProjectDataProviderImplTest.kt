@@ -518,9 +518,13 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             resultNumber = 1,
             programmeResultIndicatorId = 2L,
             programmeResultIndicatorIdentifier = "ID01",
+            programmeResultName = setOf(InputTranslation(language = SystemLanguage.EN, translation = "ID01 name")),
+            programmeResultMeasurementUnit = setOf(InputTranslation(language = SystemLanguage.EN, translation = "ID01 measurement unit")),
             baseline = BigDecimal.ZERO,
             targetValue = BigDecimal.ONE,
             periodNumber = 2,
+            periodStartMonth = 4,
+            periodEndMonth = 6,
             description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description"))
         )
         private val workPackage = ProjectWorkPackageFull(
@@ -1044,9 +1048,13 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         resultNumber = projectResult.resultNumber,
                         programmeResultIndicatorId = projectResult.programmeResultIndicatorId,
                         programmeResultIndicatorIdentifier = projectResult.programmeResultIndicatorIdentifier,
+                        programmeResultName = setOf(InputTranslationData(SystemLanguageData.EN, "ID01 name")),
+                        programmeResultMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "ID01 measurement unit")),
                         baseline = BigDecimal.ZERO,
                         targetValue = projectResult.targetValue,
                         periodNumber = projectResult.periodNumber,
+                        periodStartMonth = projectResult.periodStartMonth,
+                        periodEndMonth = projectResult.periodEndMonth,
                         description = projectResult.description.toDataModel()
                     )
                 ),
