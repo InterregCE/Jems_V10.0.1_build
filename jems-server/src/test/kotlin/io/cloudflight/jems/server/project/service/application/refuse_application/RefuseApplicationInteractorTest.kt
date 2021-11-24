@@ -11,10 +11,8 @@ import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.ELIGIBLE
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.NOT_APPROVED
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_ELIGIBLE
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_NOT_APPROVED
 import io.cloudflight.jems.server.project.service.application.approve_application.ApproveApplicationInteractorTest
@@ -25,6 +23,7 @@ import io.cloudflight.jems.server.project.service.application.workflow.states.fi
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -147,6 +146,23 @@ class RefuseApplicationInteractorTest : UnitTest() {
             assessmentStep2 = ProjectAssessment(assessmentQuality = null),
         )
         assertThrows<QualityAssessmentMissing> { refuseApplication.refuse(PROJECT_ID, actionInfo) }
+    }
+
+    @Test
+    fun `refuse when submitted precontracted checks modification permission`() {
+        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(
+            PROJECT_ID,
+            status = ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
+            .copy(
+                assessmentStep2 = ProjectAssessment(assessmentQuality = ProjectAssessmentQuality(
+                    PROJECT_ID, 2,
+                    ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING
+                ))
+            )
+
+        refuseApplication.refuse(PROJECT_ID, actionInfo)
+
+        verify(exactly = 1) { projectAuthorization.hasPermission(UserRolePermission.ProjectStatusDecideModificationNotApproved, PROJECT_ID) }
     }
 
 }
