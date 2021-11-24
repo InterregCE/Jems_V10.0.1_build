@@ -88,5 +88,6 @@ fun Collection<ProjectUnitCost>.toProjectUnitCostsGrouped() = groupBy { it.costI
             name = value.firstOrNull()?.name ?: emptySet(),
             description = value.firstOrNull()?.description ?: emptySet(),
             unitType = value.firstOrNull()?.unitType ?: emptySet(),
+            total = value.sumOf { it.numberOfUnits!! }.multiply(value.firstOrNull()?.pricePerUnit)
         )
     }

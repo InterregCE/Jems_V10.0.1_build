@@ -10,5 +10,5 @@ data class ProjectUnitCost(
     val unitType: Set<InputTranslation> = emptySet(),
     val pricePerUnit: BigDecimal? = null,
     val numberOfUnits: BigDecimal? = null,
-    val total: Long? = 0
+    val total: BigDecimal? = null
 )

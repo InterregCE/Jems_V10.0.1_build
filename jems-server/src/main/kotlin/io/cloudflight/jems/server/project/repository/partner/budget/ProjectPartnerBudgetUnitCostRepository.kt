@@ -63,5 +63,5 @@ interface ProjectPartnerBudgetUnitCostRepository :
         """,
         nativeQuery = true
     )
-    fun findProjectUnitCostsAsOfTimestamp(partnerIds: Set<Long>, timestamp: Timestamp): List<ProjectUnitCostRow>
+    fun findProjectUnitCostsAsOfTimestamp(partnerIds: Set<Long?>, timestamp: Timestamp): List<ProjectUnitCostRow>
 }
