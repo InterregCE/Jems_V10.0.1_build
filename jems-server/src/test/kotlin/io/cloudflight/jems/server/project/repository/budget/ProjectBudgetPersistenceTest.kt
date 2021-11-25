@@ -42,6 +42,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import org.assertj.core.api.Assertions.assertThat
@@ -459,7 +460,7 @@ class ProjectBudgetPersistenceTest {
                 unitType = setOf(InputTranslation(language = SystemLanguage.EN, translation = "unitType")),
                 pricePerUnit = BigDecimal.TEN,
                 numberOfUnits = BigDecimal.TEN,
-                total = BigDecimal(100)
+                total = BigDecimal(100.00).setScale(2, RoundingMode.DOWN)
             )
         )
     }
@@ -526,7 +527,7 @@ class ProjectBudgetPersistenceTest {
                 unitType = setOf(InputTranslation(language = SystemLanguage.EN, translation = "unitType")),
                 pricePerUnit = BigDecimal.TEN,
                 numberOfUnits = BigDecimal.TEN,
-                total = BigDecimal(100)
+                total = BigDecimal(100).setScale(2, RoundingMode.DOWN)
             )
         )
     }

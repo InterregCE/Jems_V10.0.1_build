@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.entity.partner.budget.unit_cost.Projec
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import io.cloudflight.jems.server.project.service.unitcost.model.ProjectUnitCost
+import java.math.RoundingMode
 
 fun List<ProjectPartnerBudgetUnitCostRow>.toBudgetUnitCostEntryList() =
     this.groupBy { it.getId() }.map { groupedRows ->
@@ -88,6 +89,8 @@ fun Collection<ProjectUnitCost>.toProjectUnitCostsGrouped() = groupBy { it.costI
             name = value.firstOrNull()?.name ?: emptySet(),
             description = value.firstOrNull()?.description ?: emptySet(),
             unitType = value.firstOrNull()?.unitType ?: emptySet(),
-            total = value.sumOf { it.numberOfUnits!! }.multiply(value.firstOrNull()?.pricePerUnit)
+            total = value.sumOf {
+                it.numberOfUnits!!.multiply(value.firstOrNull()?.pricePerUnit).setScale(2, RoundingMode.DOWN)
+            }
         )
     }
