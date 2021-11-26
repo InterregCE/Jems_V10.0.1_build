@@ -1,3 +1,9 @@
 .mat-list-base .mat-list-item{
   font-size: inherit;
 }
+.mat-form-field:not(.mat-focused) mat-hint {
+   display: none;
+}
+mat-checkbox {
+  margin-right: 0.5em;
+}
