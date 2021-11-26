@@ -36,7 +36,7 @@ class UpdateProjectResults(
             throw MaxNumberOrResultPerProjectException(20)
 
         generalValidatorService.throwIfAnyIsInvalid(
-            *projectResults.map { generalValidatorService.maxLength(it.description, 500, "description") }
+            *projectResults.map { generalValidatorService.maxLength(it.description, 1000, "description") }
                 .toTypedArray(),
             *projectResults.map {
                 generalValidatorService.numberBetween(

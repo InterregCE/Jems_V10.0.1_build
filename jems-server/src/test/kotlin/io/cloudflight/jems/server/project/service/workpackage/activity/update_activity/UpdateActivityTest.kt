@@ -149,7 +149,7 @@ internal class UpdateActivityTest {
     fun `update activities when description is too long`() {
         val description = setOf(InputTranslation(
             language = SK,
-            translation = getStringOfLength(501)
+            translation = getStringOfLength(1001)
         ))
         val toBeSaved = listOf(WorkPackageActivity(1L, 8L, description = description))
         val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 8L, toBeSaved) }
