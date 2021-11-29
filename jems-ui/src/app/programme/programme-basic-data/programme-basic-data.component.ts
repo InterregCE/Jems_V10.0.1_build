@@ -3,7 +3,7 @@ import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.com
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
-import {catchError, filter, map, mergeMap, share, shareReplay, startWith, take, tap} from 'rxjs/operators';
+import {catchError, filter, map, mergeMap, shareReplay, startWith, take, tap} from 'rxjs/operators';
 import {OutputProgrammeData, ProgrammeDataService} from '@cat/api';
 import {Tools} from '@common/utils/tools';
 import {TranslateService} from '@ngx-translate/core';
