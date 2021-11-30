@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus.
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.ELIGIBLE
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_ELIGIBLE
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusDecideModificationApproved
 import io.cloudflight.jems.server.project.service.application.projectWithId
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
@@ -56,10 +57,10 @@ class ApproveApplicationInteractorTest : UnitTest() {
         )
     }
 
-    @MockK
+    @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
 
-    @MockK
+    @RelaxedMockK
     lateinit var applicationStateFactory: ApplicationStateFactory
 
     @RelaxedMockK
@@ -144,6 +145,20 @@ class ApproveApplicationInteractorTest : UnitTest() {
             assessmentStep2 = ProjectAssessment(assessmentQuality = null),
         )
         assertThrows<QualityAssessmentMissing> { approveApplication.approve(PROJECT_ID, actionInfo) }
+    }
+
+    @Test
+    fun `approve when submitted precontracted checks modification permission`() {
+        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(
+            PROJECT_ID,
+            status = ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
+            .copy(
+                assessmentStep2 = ProjectAssessment(assessmentQuality = ProjectAssessmentQuality(PROJECT_ID, 2, RECOMMENDED_FOR_FUNDING))
+            )
+
+        approveApplication.approve(PROJECT_ID, actionInfo)
+
+        verify(exactly = 1) { projectAuthorization.hasPermission(ProjectStatusDecideModificationApproved, PROJECT_ID) }
     }
 
 }

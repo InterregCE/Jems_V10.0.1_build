@@ -58,9 +58,11 @@
 
                         <app-multi-language-container
                                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DESCRIPTION">
-                            <app-multi-language-form-field [label]="'project.work.package.tab.activity.description'"
-                                                           [formControlName]="constants.DESCRIPTION.name"
-                                                           [maxLength]="constants.DESCRIPTION.maxLength">
+                            <app-multi-language-form-field
+                                    type="textarea"
+                                    [label]="'project.work.package.tab.activity.description'"
+                                    [formControlName]="constants.DESCRIPTION.name"
+                                    [maxLength]="constants.DESCRIPTION.maxLength">
                             </app-multi-language-form-field>
                         </app-multi-language-container>
 
@@ -85,7 +87,9 @@
                             </mat-chip-list>
                             <mat-autocomplete #auto="matAutocomplete"
                                               (optionSelected)="addPartner(i, $event.option.value, data.partners); filterPartners.value = ''; filterPartners.blur()">
-                                <mat-option *ngFor="let partner of getPartnersWithoutSelected(data.partners, i) | filterPartner: filterPartners.value" [value]="partner.id">
+                                <mat-option
+                                        *ngFor="let partner of getPartnersWithoutSelected(data.partners, i) | filterPartner: filterPartners.value"
+                                        [value]="partner.id">
                                     {{ partner.toPartnerNumberString()}} {{partner.abbreviation}}
                                 </mat-option>
                             </mat-autocomplete>

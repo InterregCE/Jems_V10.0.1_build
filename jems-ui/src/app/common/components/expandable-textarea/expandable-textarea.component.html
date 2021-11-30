@@ -1,8 +1,7 @@
-<mat-form-field [floatLabel]="label? 'auto' : 'never'" class="field" [appearance]="customStyle">
+<mat-form-field>
     <mat-label *ngIf="label">{{label | translate}}</mat-label>
     <textarea [formControl]="control" matInput
               [cdkTextareaAutosize]
-              [placeholder]="placeholder | translate"
               [cdkAutosizeMinRows]="minRows"
               [cdkAutosizeMaxRows]="maxRows"
               (ngModelChange)="changed.emit()"

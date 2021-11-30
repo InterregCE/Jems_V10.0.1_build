@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.repository.budget
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.partnerWithId
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -13,6 +15,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRowImpl
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetRow
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetView
+import io.cloudflight.jems.server.project.entity.partner.budget.unit_cost.ProjectUnitCostRow
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
@@ -30,6 +33,7 @@ import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.unitcost.model.ProjectUnitCost
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.MockKAnnotations
@@ -37,12 +41,13 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
-import java.sql.Timestamp
-import java.time.LocalDateTime
 
 class ProjectBudgetPersistenceTest {
 
@@ -120,7 +125,9 @@ class ProjectBudgetPersistenceTest {
     @Test
     fun getStaffCostsHistoric() {
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
-        every { budgetStaffCostRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(mockPBRow)
+        every { budgetStaffCostRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(
+            mockPBRow
+        )
 
         assertThat(projectBudgetPersistence.getStaffCosts(PARTNER_IDS, 1L, version))
             .containsExactlyInAnyOrder(expectedBudget)
@@ -136,7 +143,12 @@ class ProjectBudgetPersistenceTest {
     @Test
     fun getTravelCostsHistoric() {
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
-        every { budgetTravelRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(mockPBRow)
+        every {
+            budgetTravelRepository.sumForAllPartnersAsOfTimestamp(
+                PARTNER_IDS,
+                timestamp
+            )
+        } returns listOf(mockPBRow)
 
         assertThat(projectBudgetPersistence.getTravelCosts(PARTNER_IDS, 1L, version))
             .containsExactlyInAnyOrder(expectedBudget)
@@ -152,7 +164,9 @@ class ProjectBudgetPersistenceTest {
     @Test
     fun getExternalCostsHistoric() {
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
-        every { budgetExternalRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(mockPBRow)
+        every { budgetExternalRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(
+            mockPBRow
+        )
 
         assertThat(projectBudgetPersistence.getExternalCosts(PARTNER_IDS, 1L, version))
             .containsExactlyInAnyOrder(expectedBudget)
@@ -168,7 +182,9 @@ class ProjectBudgetPersistenceTest {
     @Test
     fun getEquipmentCostsHistoric() {
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
-        every { budgetEquipmentRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(mockPBRow)
+        every { budgetEquipmentRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(
+            mockPBRow
+        )
 
         assertThat(projectBudgetPersistence.getEquipmentCosts(PARTNER_IDS, 1L, version))
             .containsExactlyInAnyOrder(expectedBudget)
@@ -184,7 +200,9 @@ class ProjectBudgetPersistenceTest {
     @Test
     fun getInfrastructureHistoric() {
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
-        every { budgetInfrastructureRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(mockPBRow)
+        every { budgetInfrastructureRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(
+            mockPBRow
+        )
 
         assertThat(projectBudgetPersistence.getInfrastructureCosts(PARTNER_IDS, 1L, version))
             .containsExactlyInAnyOrder(expectedBudget)
@@ -204,10 +222,12 @@ class ProjectBudgetPersistenceTest {
                 pic = "034",
                 otherIdentifierNumber = "id-12",
                 sortNumber = 1,
-                addresses = setOf(ProjectPartnerAddressEntity(
-                    addressId = ProjectPartnerAddressId(5, ProjectPartnerAddressType.Organization),
-                    address = AddressEntity(country = "SK")
-                ))
+                addresses = setOf(
+                    ProjectPartnerAddressEntity(
+                        addressId = ProjectPartnerAddressId(5, ProjectPartnerAddressType.Organization),
+                        address = AddressEntity(country = "SK")
+                    )
+                )
             )
         )
         every { projectPartnerRepository.findTop30ByProjectId(eq(1), any()) } returns partners
@@ -233,17 +253,24 @@ class ProjectBudgetPersistenceTest {
         every { mockPRow.country } returns "AT"
         every { mockPRow.region } returns "nutsRegion3"
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
-        every { projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(1L, timestamp) } returns listOf(mockPRow)
+        every {
+            projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+                1L,
+                timestamp
+            )
+        } returns listOf(mockPRow)
 
         assertThat(projectBudgetPersistence.getPartnersForProjectId(1L, version))
-            .containsExactly(ProjectPartnerSummary(
-                id = PARTNER_ID,
-                abbreviation = "abbreviation",
-                role = ProjectPartnerRole.LEAD_PARTNER,
-                sortNumber = 1,
-                country = "AT",
-                region = "nutsRegion3"
-            ))
+            .containsExactly(
+                ProjectPartnerSummary(
+                    id = PARTNER_ID,
+                    abbreviation = "abbreviation",
+                    role = ProjectPartnerRole.LEAD_PARTNER,
+                    sortNumber = 1,
+                    country = "AT",
+                    region = "nutsRegion3"
+                )
+            )
     }
 
     @Test
@@ -254,7 +281,12 @@ class ProjectBudgetPersistenceTest {
                 sum = BigDecimal.TEN,
             ),
         )
-        assertThat(projectBudgetPersistence.getLumpSumContributionPerPartner(setOf(PARTNER_ID), 1L)).containsExactlyInAnyOrderEntriesOf(
+        assertThat(
+            projectBudgetPersistence.getLumpSumContributionPerPartner(
+                setOf(PARTNER_ID),
+                1L
+            )
+        ).containsExactlyInAnyOrderEntriesOf(
             mapOf(
                 PARTNER_ID to BigDecimal.TEN
             )
@@ -267,12 +299,19 @@ class ProjectBudgetPersistenceTest {
         every { mockLSRow.partnerId } returns PARTNER_ID
         every { mockLSRow.sum } returns BigDecimal.TEN
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
-        every { projectPartnerLumpSumRepository.sumLumpSumsPerPartnerAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(mockLSRow)
+        every {
+            projectPartnerLumpSumRepository.sumLumpSumsPerPartnerAsOfTimestamp(
+                PARTNER_IDS,
+                timestamp
+            )
+        } returns listOf(mockLSRow)
 
         assertThat(projectBudgetPersistence.getLumpSumContributionPerPartner(PARTNER_IDS, 1L, version))
-            .containsExactlyInAnyOrderEntriesOf(mapOf(
-                PARTNER_ID to BigDecimal.TEN
-            ))
+            .containsExactlyInAnyOrderEntriesOf(
+                mapOf(
+                    PARTNER_ID to BigDecimal.TEN
+                )
+            )
     }
 
     @Test
@@ -294,12 +333,19 @@ class ProjectBudgetPersistenceTest {
     @Test
     fun getBudgetUnitCostsPerPartnerHistoric() {
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
-        every { projectPartnerUnitCostRepository.sumForAllPartnersAsOfTimestamp(PARTNER_IDS, timestamp) } returns listOf(mockPBRow)
+        every {
+            projectPartnerUnitCostRepository.sumForAllPartnersAsOfTimestamp(
+                PARTNER_IDS,
+                timestamp
+            )
+        } returns listOf(mockPBRow)
 
         assertThat(projectBudgetPersistence.getUnitCostsPerPartner(PARTNER_IDS, 1L, version))
-            .containsExactlyInAnyOrderEntriesOf(mapOf(
-                PARTNER_ID to BigDecimal.TEN
-            ))
+            .containsExactlyInAnyOrderEntriesOf(
+                mapOf(
+                    PARTNER_ID to BigDecimal.TEN
+                )
+            )
     }
 
     @Test
@@ -319,16 +365,18 @@ class ProjectBudgetPersistenceTest {
         every { projectPartnerRepository.getAllBudgetsByIds(setOf(partnerId)) } returns listOf(ppBudgetRow)
 
         assertThat(projectBudgetPersistence.getBudgetPerPartner(setOf(partnerId), projectId))
-            .containsExactly(ProjectPartnerBudget(
-                id = partnerId,
-                periodNumber = 1,
-                staffCostsPerPeriod = 10.toScaledBigDecimal(),
-                travelAndAccommodationCostsPerPeriod = 20.toScaledBigDecimal(),
-                equipmentCostsPerPeriod = 30.toScaledBigDecimal(),
-                externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
-                infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
-                unitCostsPerPeriod = 60.toScaledBigDecimal(),
-            ))
+            .containsExactly(
+                ProjectPartnerBudget(
+                    id = partnerId,
+                    periodNumber = 1,
+                    staffCostsPerPeriod = 10.toScaledBigDecimal(),
+                    travelAndAccommodationCostsPerPeriod = 20.toScaledBigDecimal(),
+                    equipmentCostsPerPeriod = 30.toScaledBigDecimal(),
+                    externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
+                    infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
+                    unitCostsPerPeriod = 60.toScaledBigDecimal(),
+                )
+            )
     }
 
     @Test
@@ -346,19 +394,143 @@ class ProjectBudgetPersistenceTest {
             infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
             unitCostsPerPeriod = 60.toScaledBigDecimal()
         )
-        every { projectPartnerRepository.getAllBudgetsByPartnerIdsAsOfTimestamp(setOf(partnerId), timestamp) } returns listOf(ppBudgetRow)
+        every {
+            projectPartnerRepository.getAllBudgetsByPartnerIdsAsOfTimestamp(
+                setOf(partnerId),
+                timestamp
+            )
+        } returns listOf(ppBudgetRow)
 
         assertThat(projectBudgetPersistence.getBudgetPerPartner(setOf(partnerId), projectId, version))
-            .containsExactly(ProjectPartnerBudget(
-                id = partnerId,
-                periodNumber = 1,
-                staffCostsPerPeriod = 10.toScaledBigDecimal(),
-                travelAndAccommodationCostsPerPeriod = 20.toScaledBigDecimal(),
-                equipmentCostsPerPeriod = 30.toScaledBigDecimal(),
-                externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
-                infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
-                unitCostsPerPeriod = 60.toScaledBigDecimal(),
-            ))
+            .containsExactly(
+                ProjectPartnerBudget(
+                    id = partnerId,
+                    periodNumber = 1,
+                    staffCostsPerPeriod = 10.toScaledBigDecimal(),
+                    travelAndAccommodationCostsPerPeriod = 20.toScaledBigDecimal(),
+                    equipmentCostsPerPeriod = 30.toScaledBigDecimal(),
+                    externalExpertiseAndServicesCostsPerPeriod = 40.toScaledBigDecimal(),
+                    infrastructureAndWorksCostsPerPeriod = 50.toScaledBigDecimal(),
+                    unitCostsPerPeriod = 60.toScaledBigDecimal(),
+                )
+            )
     }
+
+    @Test
+    fun getProjectUnitCosts() {
+        val mockPRow: ProjectUnitCostRow = mockk()
+        every { mockPRow.id } returns 1L
+        every { mockPRow.costId } returns 1L
+        every { mockPRow.pricePerUnit } returns BigDecimal.TEN
+        every { mockPRow.numberOfUnits } returns BigDecimal.TEN
+        every { mockPRow.name } returns "name"
+        every { mockPRow.description } returns "description"
+        every { mockPRow.unitType } returns "unitType"
+        every { mockPRow.language } returns SystemLanguage.EN
+        val partners = listOf(
+            ProjectPartnerEntity(
+                id = 5L,
+                project = ProjectPartnerTestUtil.project,
+                abbreviation = "partner",
+                role = ProjectPartnerRole.LEAD_PARTNER,
+                legalStatus = ProgrammeLegalStatusEntity(1),
+                partnerSubType = PartnerSubType.LARGE_ENTERPRISE,
+                nace = NaceGroupLevel.A,
+                pic = "034",
+                otherIdentifierNumber = "id-12",
+                sortNumber = 1,
+                addresses = setOf(
+                    ProjectPartnerAddressEntity(
+                        addressId = ProjectPartnerAddressId(5L, ProjectPartnerAddressType.Organization),
+                        address = AddressEntity(country = "SK")
+                    )
+                )
+            )
+        )
+        val partnerIds = partners.map { it.id }.toSet()
+
+        every { projectPartnerRepository.findTop30ByProjectId(1L) } returns partners
+        every { projectPartnerUnitCostRepository.findProjectUnitCosts(partnerIds) } returns listOf(mockPRow)
+
+        assertThat(projectBudgetPersistence.getProjectUnitCosts(1L)).containsExactly(
+            ProjectUnitCost(
+                costId = 1L,
+                name = setOf(InputTranslation(language = SystemLanguage.EN, translation = "name")),
+                description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description")),
+                unitType = setOf(InputTranslation(language = SystemLanguage.EN, translation = "unitType")),
+                pricePerUnit = BigDecimal.TEN,
+                numberOfUnits = BigDecimal.TEN,
+                total = BigDecimal(100.00).setScale(2, RoundingMode.DOWN)
+            )
+        )
+    }
+
+    @Test
+    fun getProjectUnitCostsHistoric() {
+        val mockPRow: ProjectUnitCostRow = mockk()
+        every { mockPRow.id } returns 1L
+        every { mockPRow.costId } returns 1L
+        every { mockPRow.pricePerUnit } returns BigDecimal.TEN
+        every { mockPRow.numberOfUnits } returns BigDecimal.TEN
+        every { mockPRow.name } returns "name"
+        every { mockPRow.description } returns "description"
+        every { mockPRow.unitType } returns "unitType"
+        every { mockPRow.language } returns SystemLanguage.EN
+
+        val mockPartRow: PartnerSimpleRow = mockk()
+        every { mockPartRow.id } returns PARTNER_ID
+        every { mockPartRow.abbreviation } returns "abbreviation"
+        every { mockPartRow.role } returns ProjectPartnerRole.LEAD_PARTNER
+        every { mockPartRow.sortNumber } returns 1
+        every { mockPartRow.country } returns "AT"
+        every { mockPartRow.region } returns "nutsRegion3"
+
+        val partners = listOf(
+            ProjectPartnerEntity(
+                id = 5L,
+                project = ProjectPartnerTestUtil.project,
+                abbreviation = "partner",
+                role = ProjectPartnerRole.LEAD_PARTNER,
+                legalStatus = ProgrammeLegalStatusEntity(1),
+                partnerSubType = PartnerSubType.LARGE_ENTERPRISE,
+                nace = NaceGroupLevel.A,
+                pic = "034",
+                otherIdentifierNumber = "id-12",
+                sortNumber = 1,
+                addresses = setOf(
+                    ProjectPartnerAddressEntity(
+                        addressId = ProjectPartnerAddressId(5L, ProjectPartnerAddressType.Organization),
+                        address = AddressEntity(country = "SK")
+                    )
+                )
+            )
+        )
+        val partnerIds = partners.map { it.id }.toSet()
+
+        every { projectVersionRepo.findTimestampByVersion(any(), version) } returns timestamp
+        every { projectPartnerRepository.findTop30ByProjectId(1L) } returns partners
+        every {
+            projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+                any(),
+                timestamp
+            )
+        } returns listOf(mockPartRow)
+        every { projectPartnerUnitCostRepository.findProjectUnitCostsAsOfTimestamp(any(), timestamp) } returns listOf(
+            mockPRow
+        )
+
+        assertThat(projectBudgetPersistence.getProjectUnitCosts(1L, version)).containsExactly(
+            ProjectUnitCost(
+                costId = 1L,
+                name = setOf(InputTranslation(language = SystemLanguage.EN, translation = "name")),
+                description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description")),
+                unitType = setOf(InputTranslation(language = SystemLanguage.EN, translation = "unitType")),
+                pricePerUnit = BigDecimal.TEN,
+                numberOfUnits = BigDecimal.TEN,
+                total = BigDecimal(100).setScale(2, RoundingMode.DOWN)
+            )
+        )
+    }
+
 
 }

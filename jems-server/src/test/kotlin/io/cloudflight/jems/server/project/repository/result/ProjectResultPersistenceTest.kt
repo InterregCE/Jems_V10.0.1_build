@@ -7,13 +7,16 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
+import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorTranslEntity
 import io.cloudflight.jems.server.programme.repository.indicator.ResultIndicatorRepository
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
+import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.TranslationResultId
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultId
@@ -56,16 +59,24 @@ class ProjectResultPersistenceTest: UnitTest() {
             id = INDICATOR_ID,
             identifier = "IND05",
             programmePriorityPolicyEntity = ProgrammeSpecificObjectiveEntity(ProgrammeObjectivePolicy.AdvancedTechnologies, ""),
-            translatedValues = mutableSetOf()
-        )
+            translatedValues = mutableSetOf(),
+        ).apply {
+            translatedValues.addAll(listOf(
+                ResultIndicatorTranslEntity(TranslationId(this, BE), "IND05 name", "IND05 measurement unit", "IND05 source"),
+            ))
+        }
 
         val result1_model = ProjectResult(
             resultNumber = 1,
             programmeResultIndicatorId = INDICATOR_ID,
             programmeResultIndicatorIdentifier = "IND05",
+            programmeResultName = setOf(InputTranslation(language = BE, translation = "IND05 name")),
+            programmeResultMeasurementUnit = setOf(InputTranslation(language = BE, translation = "IND05 measurement unit")),
             baseline = BigDecimal.ZERO,
             targetValue = BigDecimal.ONE,
             periodNumber = 10,
+            periodStartMonth = 21,
+            periodEndMonth = 22,
             description = setOf(
                 InputTranslation(language = BE, translation = "BE desc")
             )
@@ -150,7 +161,8 @@ class ProjectResultPersistenceTest: UnitTest() {
     @Test
     fun `project results are correctly mapped and sorted`() {
         every { projectRepository.findById(eq(1L)) } returns Optional.of(project.copy(
-            results = setOf(result2, result1)
+            results = setOf(result2, result1),
+            periods = listOf(ProjectPeriodEntity(ProjectPeriodId(1L, 10), start = 21, end = 22)),
         ))
         assertThat(persistence.getResultsForProject(1L, null)).containsExactly(
             result1_model, result2_model,
@@ -167,12 +179,16 @@ class ProjectResultPersistenceTest: UnitTest() {
         every { mockPRRow.baseline } returns result1_model.baseline
         every { mockPRRow.programmeResultIndicatorId } returns result1_model.programmeResultIndicatorId
         every { mockPRRow.programmeResultIndicatorIdentifier } returns result1_model.programmeResultIndicatorIdentifier
+        every { mockPRRow.programmeResultIndicatorLanguage } returns BE
+        every { mockPRRow.programmeResultIndicatorName } returns "IND05 name"
+        every { mockPRRow.programmeResultIndicatorMeasurementUnit } returns "IND05 measurement unit"
         every { mockPRRow.targetValue } returns result1_model.targetValue
         every { mockPRRow.periodNumber } returns result1_model.periodNumber
         every { mockPRRow.language } returns BE
         every { mockPRRow.description } returns "BE desc"
 
         every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp
+        every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp) } returns listOf(Period(10, 21, 22))
         every { projectResultRepository.getProjectResultsByProjectId(projectId, timestamp) } returns listOf(mockPRRow)
 
         assertThat(persistence.getResultsForProject(projectId, version)).containsExactly(
@@ -217,3 +233,9 @@ class ProjectResultPersistenceTest: UnitTest() {
     }
 
 }
+
+internal data class Period(
+    override val periodNumber: Int?,
+    override val periodStart: Int?,
+    override val periodEnd: Int?,
+) : ProjectPeriodRow

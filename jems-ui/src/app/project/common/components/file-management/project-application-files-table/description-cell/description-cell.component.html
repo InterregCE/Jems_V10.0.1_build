@@ -4,6 +4,7 @@
     </label>
     <app-expandable-textarea
             *ngIf="editable"
+            label="file.table.column.name.description"
             [control]="descriptionForm.controls.description"
             [errors]="descriptionForm.controls.description.errors"
             characterLimit="100">
