@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicator
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
+import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityPartnerRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
@@ -54,7 +55,8 @@ class WorkPackagePersistenceProvider(
     private val workPackageOutputRepository: WorkPackageOutputRepository,
     private val workPackageInvestmentRepository: WorkPackageInvestmentRepository,
     private val outputIndicatorRepository: OutputIndicatorRepository,
-    private val projectVersionUtils: ProjectVersionUtils
+    private val projectVersionUtils: ProjectVersionUtils,
+    private val projectRepository: ProjectRepository,
 ) : WorkPackagePersistence {
 
     @Transactional(readOnly = true)
@@ -98,11 +100,14 @@ class WorkPackagePersistenceProvider(
                         getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
                         getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
                         getInvestmentsForWorkPackageId = { id -> investmentsByWorkPackages[id] },
+                        periods = projectRepository.findById(projectId).get().periods,
                     )
                 }
             } ,
             previousVersionFetcher = { timestamp ->
-                workPackageRepository.findWorkPackagesByProjectIdAsOfTimestamp(projectId, timestamp).toModel()
+                workPackageRepository.findWorkPackagesByProjectIdAsOfTimestamp(projectId, timestamp).toModel(
+                    periods = projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp)
+                )
             }
         ) ?: emptyList()
 

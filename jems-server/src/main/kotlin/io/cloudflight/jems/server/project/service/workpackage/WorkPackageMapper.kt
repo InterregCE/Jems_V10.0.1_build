@@ -10,12 +10,15 @@ import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.project.entity.ProjectEntity
+import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
+import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageDetailRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputRow
 import io.cloudflight.jems.server.project.service.model.Address
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
@@ -136,7 +139,7 @@ fun List<WorkPackageOutputRow>.toTimePlanWorkPackageOutputHistoricalData() =
             description = groupedRows.value.extractField { it.description }
         )
     }
-fun List<WorkPackageDetailRow>.toModel()=
+fun List<WorkPackageDetailRow>.toModel(periods: List<ProjectPeriodRow>)=
     groupBy { it.id }.map { groupedRows ->
         ProjectWorkPackageFull(
             id = groupedRows.key,
@@ -172,8 +175,12 @@ fun List<WorkPackageDetailRow>.toModel()=
                     outputNumber = groupedOutputRows.value.first().outputNumber!!,
                     programmeOutputIndicatorId = groupedOutputRows.value.first().programmeOutputIndicatorId,
                     programmeOutputIndicatorIdentifier = groupedOutputRows.value.first().programmeOutputIndicatorIdentifier,
+                    programmeOutputIndicatorName = groupedRows.value.extractField({ it.programmeOutputIndicatorLanguage }) { it.programmeOutputIndicatorName },
+                    programmeOutputIndicatorMeasurementUnit = groupedRows.value.extractField({ it.programmeOutputIndicatorLanguage }) { it.programmeOutputIndicatorMeasurementUnit },
                     targetValue = groupedOutputRows.value.first().targetValue,
                     periodNumber = groupedOutputRows.value.first().outputPeriodNumber,
+                    periodStartMonth = periods.find { period -> period.periodNumber == groupedRows.value.first().outputPeriodNumber }?.periodStart,
+                    periodEndMonth = periods.find { period -> period.periodNumber == groupedRows.value.first().outputPeriodNumber }?.periodEnd,
                     title = groupedOutputRows.value.extractField ({it.outputLanguage}){ it.outputTitle },
                     description = groupedOutputRows.value.extractField ({it.outputLanguage}){ it.outputDescription }
                 )
