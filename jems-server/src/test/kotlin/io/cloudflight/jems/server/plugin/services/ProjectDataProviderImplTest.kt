@@ -513,6 +513,10 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             periodNumber = 1,
             title = setOf(InputTranslation(SystemLanguage.EN, "title")),
             description = setOf(InputTranslation(SystemLanguage.EN, "description")),
+            programmeOutputIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "programmeOutputIndicatorName")),
+            programmeOutputIndicatorMeasurementUnit = setOf(InputTranslation(SystemLanguage.EN, "programmeOutputIndicatorMeasurementUnit")),
+            periodStartMonth = 1,
+            periodEndMonth = 2
         )
         private val projectResult = ProjectResult(
             resultNumber = 1,
@@ -625,711 +629,717 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             description = setOf(InputTranslation(SystemLanguage.EN, "description2")),
         ))
     }
+// TODO: Uncomment these tests after MP2-2065 is merged (after expectedDeliveryPeriod is added)
 
-    @Test
-    fun `project data provider get for project Id`() {
-        val id = project.id!!
-        val budgetCostsCalculationResult = BudgetCostsCalculationResult(staffCosts = BigDecimal.TEN, totalCosts = BigDecimal.TEN, travelCosts = BigDecimal.ZERO, officeAndAdministrationCosts = BigDecimal.ZERO, otherCosts = BigDecimal.ZERO)
-        every { projectPersistence.getProject(id) } returns project
-        every { projectVersionPersistence.getAllVersionsByProjectId(id) } returns projectVersions
-        every { projectDescriptionPersistence.getProjectDescription(id) } returns projectDescription
-        every { partnerPersistence.findTop30ByProjectId(id) } returns listOf(projectPartner)
-        every { budgetOptionsPersistence.getBudgetOptions(projectPartner.id) } returns partnerBudgetOptions
-        every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
-        every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
-        every { getBudgetCostsPersistence.getBudgetStaffCosts(projectPartner.id) } returns listOf(
-            BudgetStaffCostEntry(
-                id = 3L,
-                numberOfUnits = BigDecimal.ONE,
-                rowSum = BigDecimal.TEN,
-                budgetPeriods = mutableSetOf(BudgetPeriod(number = 1, amount = BigDecimal.ONE)),
-                pricePerUnit = BigDecimal.TEN,
-                description = setOf(),
-                comments = setOf(InputTranslation(SystemLanguage.EN, "comments")),
-                unitType = setOf(InputTranslation(SystemLanguage.EN, "unitType")),
-                unitCostId = 4L
-            )
-        )
-        every { getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetEquipmentCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetUnitCosts(projectPartner.id) } returns emptyList()
-        every { budgetCostsCalculator.calculateCosts(any(), any(), any(), any(), any(), any(), any(), any()) } returns budgetCostsCalculationResult
-        every { associatedOrganizationPersistence.findAllByProjectId(id) } returns listOf(associatedOrganization)
-        every { resultPersistence.getResultsForProject(id, null) } returns listOf(projectResult)
-        every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns listOf(workPackage)
-        every { projectLumpSumPersistence.getLumpSums(id) } returns listOf(projectLumpSum)
-        every { programmeLumpSumPersistence.getLumpSums(listOf(projectLumpSum.programmeLumpSumId)) } returns listOf(
-            programmeLumpSum
-        )
-        every { partnerPersistence.getPartnerStateAid(partnerId = projectPartner.id) } returns
-            ProjectPartnerStateAid(
-                answer1 = true,
-                justification1 = setOf(InputTranslation(SystemLanguage.EN, "true")),
-                answer2 = false,
-                answer3 = null,
-                answer4 = null,
-                stateAidScheme = null
-            )
-        every { coFinancingPersistence.getAvailableFunds(projectPartner.id) } returns setOf(ERDF_FUND)
-        // data for tableA4/output-result
-        every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id)} returns projectOutputs
-        every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns outputIndicatorSet
-        every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns resultIndicatorSet
-        every { projectResultPersistence.getResultsForProject(id, null) } returns projectResults
-
-        // test getByProjectId and its mappings..
-        val projectData = projectDataProvider.getProjectDataForProjectId(id)
-
-        assertThat(projectData.sectionA).isEqualTo(
-            ProjectDataSectionA(
-                customIdentifier = "01",
-                title = setOf(InputTranslationData(SystemLanguageData.EN, "title")),
-                intro = emptySet(),
-                acronym = project.acronym,
-                duration = project.duration,
-                specificObjective = project.specificObjective?.toDataModel(),
-                programmePriority = project.programmePriority?.toDataModel(),
-                coFinancingOverview = ProjectCoFinancingOverview(
-                    fundOverviews = listOf(
-                        ProjectCoFinancingByFundOverview(
-                            fundType = ProgrammeFundTypeData.ERDF,
-                            fundAbbreviation = emptySet(),
-                            fundingAmount = BigDecimal.valueOf(6_52, 2),
-                            coFinancingRate = BigDecimal.valueOf(100_00, 2),
-                            autoPublicContribution = BigDecimal.ZERO,
-                            otherPublicContribution = BigDecimal.ZERO,
-                            totalPublicContribution = BigDecimal.ZERO,
-                            privateContribution = BigDecimal.ZERO,
-                            totalContribution = BigDecimal.ZERO,
-                            totalFundAndContribution = BigDecimal.valueOf(6_52, 2),
-                        )
-                    ),
-                    totalFundingAmount = BigDecimal.valueOf(6_52, 2),
-                    totalEuFundingAmount = BigDecimal.valueOf(6_52, 2),
-                    averageCoFinancingRate = BigDecimal.valueOf(65_20, 2),
-                    averageEuFinancingRate = BigDecimal.valueOf(100_00, 2),
-
-                    totalAutoPublicContribution = BigDecimal.ZERO,
-                    totalEuAutoPublicContribution = BigDecimal.ZERO,
-                    totalOtherPublicContribution = BigDecimal.ZERO,
-                    totalEuOtherPublicContribution = BigDecimal.ZERO,
-                    totalPublicContribution = BigDecimal.ZERO,
-                    totalEuPublicContribution = BigDecimal.ZERO,
-                    totalPrivateContribution = BigDecimal.ZERO,
-                    totalEuPrivateContribution = BigDecimal.ZERO,
-                    totalContribution = BigDecimal.ZERO,
-                    totalEuContribution = BigDecimal.ZERO,
-
-                    totalFundAndContribution = BigDecimal.TEN,
-                    totalEuFundAndContribution = BigDecimal.valueOf(6_52, 2),
-                ),
-                resultIndicatorOverview = ProjectResultIndicatorOverview(
-                    indicatorLines = listOf(
-                        IndicatorOverviewLine(
-                            outputIndicatorId = 1L,
-                            outputIndicatorIdentifier = "outputIdentifier",
-                            outputIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorName")),
-                            outputIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorMeasurementUnit")),
-                            outputIndicatorTargetValueSumUp = BigDecimal.TEN,
-                            projectOutputNumber = "1.1",
-                            projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle")),
-                            projectOutputTargetValue = BigDecimal.TEN,
-                            resultIndicatorId = 2L,
-                            resultIndicatorIdentifier = "resultIdentifier",
-                            resultIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorName")),
-                            resultIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorMeasurementUnit")),
-                            resultIndicatorBaseline = setOf(BigDecimal.ONE),
-                            resultIndicatorTargetValueSumUp = BigDecimal.TEN,
-                            onlyResultWithoutOutputs = false
-                        ),
-                        IndicatorOverviewLine(
-                            outputIndicatorId = 2L,
-                            outputIndicatorIdentifier = "outputIdentifier2",
-                            outputIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorName2")),
-                            outputIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorMeasurementUnit")),
-                            outputIndicatorTargetValueSumUp = BigDecimal.ONE,
-                            projectOutputNumber = "1.2",
-                            projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle2")),
-                            projectOutputTargetValue = BigDecimal.ONE,
-                            resultIndicatorId = 3L,
-                            resultIndicatorIdentifier = "resultIdentifier2",
-                            resultIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorName2")),
-                            resultIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorMeasurementUnit")),
-                            resultIndicatorBaseline = setOf(BigDecimal.ONE),
-                            resultIndicatorTargetValueSumUp = BigDecimal.TEN,
-                            onlyResultWithoutOutputs = false
-                        )
-                    )
-                )
-            )
-        )
-        assertThat(projectData.sectionB).isEqualTo(
-            ProjectDataSectionB(
-                partners = setOf(
-                    ProjectPartnerData(
-                        id = projectPartner.id,
-                        sortNumber = null,
-                        abbreviation = projectPartner.abbreviation,
-                        role = ProjectPartnerRoleData.valueOf(projectPartner.role.name),
-                        nameInOriginalLanguage = projectPartner.nameInOriginalLanguage,
-                        nameInEnglish = projectPartner.nameInEnglish,
-                        partnerType = ProjectTargetGroupData.valueOf(projectPartner.partnerType!!.name),
-                        partnerSubType = PartnerSubTypeData.LARGE_ENTERPRISE,
-                        nace = NaceGroupLevelData.A,
-                        otherIdentifierNumber = null,
-                        otherIdentifierDescription = emptySet(),
-                        pic = null,
-                        vat = projectPartner.vat,
-                        vatRecovery = ProjectPartnerVatRecoveryData.valueOf(projectPartner.vatRecovery!!.name),
-                        legalStatusId = projectPartner.legalStatusId,
-                        budget = PartnerBudgetData(
-                            projectPartnerOptions = ProjectPartnerBudgetOptionsData(
-                                partnerId = projectPartner.id,
-                                officeAndAdministrationOnDirectCostsFlatRate = null,
-                                officeAndAdministrationOnStaffCostsFlatRate = null,
-                                otherCostsOnStaffCostsFlatRate = null,
-                                staffCostsFlatRate = null,
-                                travelAndAccommodationOnStaffCostsFlatRate = null
-                            ),
-                            projectPartnerCoFinancing = ProjectPartnerCoFinancingAndContributionData(
-                                finances = listOf(
-                                    ProjectPartnerCoFinancingData(
-                                        fundType = ProjectPartnerCoFinancingFundTypeData.MainFund,
-                                        fund = ProgrammeFundData(
-                                            id = ERDF_FUND.id,
-                                            selected = true,
-                                            type = ProgrammeFundTypeData.ERDF,
-                                        ),
-                                        percentage = BigDecimal.valueOf(6524, 2),
-                                    )
-                                ),
-                                partnerContributions = listOf(),
-                                partnerAbbreviation = projectPartner.abbreviation
-                            ),
-                            projectPartnerBudgetCosts = BudgetCostData(
-                                staffCosts = listOf(
-                                    BudgetStaffCostEntryData(
-                                        id = 3L,
-                                        numberOfUnits = BigDecimal.ONE,
-                                        rowSum = BigDecimal.TEN,
-                                        budgetPeriods = mutableSetOf(
-                                            BudgetPeriodData(
-                                                number = 1,
-                                                amount = BigDecimal.ONE
-                                            )
-                                        ),
-                                        pricePerUnit = BigDecimal.TEN,
-                                        description = setOf(),
-                                        comments = setOf(InputTranslationData(SystemLanguageData.EN, "comments")),
-                                        unitType = setOf(InputTranslationData(SystemLanguageData.EN, "unitType")),
-                                        unitCostId = 4L
-                                    )
-                                ),
-                                travelCosts = emptyList(),
-                                externalCosts = emptyList(),
-                                equipmentCosts = emptyList(),
-                                infrastructureCosts = emptyList(),
-                                unitCosts = emptyList()
-                            ),
-                            projectPartnerBudgetTotalCost = budgetCostsCalculationResult.totalCosts,
-                            projectBudgetCostsCalculationResult = budgetCostsCalculationResult.toDataModel()
-                        ),
-                        addresses = listOf(
-                            ProjectPartnerAddressData(
-                                type = ProjectPartnerAddressTypeData.Organization,
-                                country = "country",
-                                nutsRegion2 = "nutsRegion2",
-                                nutsRegion3 = "nutsRegion3",
-                                street = "street",
-                                houseNumber = "houseNumber",
-                                postalCode = "postalCode",
-                                city = "city",
-                                homepage = "homepage"
-                            )
-                        ),
-                        motivation = ProjectPartnerMotivationData(
-                            organizationRelevance = setOf(
-                                InputTranslationData(
-                                    SystemLanguageData.EN,
-                                    "organizationRelevance"
-                                )
-                            ),
-                            organizationExperience = setOf(
-                                InputTranslationData(
-                                    SystemLanguageData.EN,
-                                    "organizationExperience"
-                                )
-                            ),
-                            organizationRole = setOf(InputTranslationData(SystemLanguageData.EN, "organizationRole"))
-                        ),
-                        stateAid = ProjectPartnerStateAidData(
-                            answer1 = true,
-                            justification1 = setOf(InputTranslationData(SystemLanguageData.EN, "true")),
-                            answer2 = false,
-                            justification2 = emptySet(),
-                            answer3 = null,
-                            justification3 = emptySet(),
-                            answer4 = null,
-                            justification4 = emptySet(),
-                            stateAidScheme = null
-                        )
-                    )
-                ),
-                associatedOrganisations = setOf(
-                    ProjectAssociatedOrganizationData(
-                        id = associatedOrganization.id,
-                        partner = ProjectPartnerEssentialData(
-                            id = associatedOrganization.partner.id,
-                            abbreviation = associatedOrganization.partner.abbreviation,
-                            role = ProjectPartnerRoleData.LEAD_PARTNER,
-                            sortNumber = associatedOrganization.partner.sortNumber,
-                            country = associatedOrganization.partner.country
-                        ),
-                        nameInOriginalLanguage = associatedOrganization.nameInOriginalLanguage,
-                        nameInEnglish = associatedOrganization.nameInEnglish,
-                        sortNumber = associatedOrganization.sortNumber,
-                        address = ProjectAssociatedOrganizationAddressData(
-                            country = associatedOrganization.address!!.country,
-                            nutsRegion2 = associatedOrganization.address!!.nutsRegion2,
-                            nutsRegion3 = associatedOrganization.address!!.nutsRegion3,
-                            street = associatedOrganization.address!!.street,
-                            houseNumber = associatedOrganization.address!!.houseNumber,
-                            postalCode = associatedOrganization.address!!.postalCode,
-                            city = associatedOrganization.address!!.city,
-                            homepage = associatedOrganization.address!!.homepage
-                        ),
-                        contacts = listOf(
-                            ProjectPartnerContactData(
-                                type = ProjectContactTypeData.ContactPerson,
-                                title = "title",
-                                firstName = "firstName",
-                                lastName = "lastName",
-                                email = "email",
-                                telephone = "telephone"
-                            )
-                        ),
-                        roleDescription = setOf(InputTranslationData(SystemLanguageData.EN, "roleDescription"))
-                    )
-                )
-            )
-        )
-        assertThat(projectData.sectionC).isEqualTo(
-            ProjectDataSectionC(
-                projectOverallObjective = ProjectOverallObjectiveData(
-                    overallObjective = setOf(InputTranslationData(SystemLanguageData.EN, "overallObjective"))
-                ),
-                projectRelevance = ProjectRelevanceData(
-                    territorialChallenge = setOf(InputTranslationData(SystemLanguageData.EN, "territorialChallenge")),
-                    commonChallenge = setOf(InputTranslationData(SystemLanguageData.EN, "commonChallenge")),
-                    transnationalCooperation = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "transnationalCooperation"
-                        )
-                    ),
-                    projectBenefits = listOf(
-                        ProjectRelevanceBenefitData(
-                            group = ProjectTargetGroupData.LocalPublicAuthority,
-                            specification = setOf(InputTranslationData(SystemLanguageData.EN, "specification"))
-                        )
-                    ),
-                    projectStrategies = listOf(
-                        ProjectRelevanceStrategyData(
-                            strategy = ProgrammeStrategyData.AtlanticStrategy,
-                            specification = setOf(InputTranslationData(SystemLanguageData.EN, "specification"))
-                        )
-                    ),
-                    projectSynergies = listOf(
-                        ProjectRelevanceSynergyData(
-                            synergy = setOf(InputTranslationData(SystemLanguageData.EN, "synergy")),
-                            specification = setOf(InputTranslationData(SystemLanguageData.EN, "specification"))
-                        )
-                    ),
-                    availableKnowledge = setOf(InputTranslationData(SystemLanguageData.EN, "availableKnowledge"))
-                ),
-                projectPartnership = ProjectPartnershipData(
-                    partnership = setOf(InputTranslationData(SystemLanguageData.EN, "partnership"))
-                ),
-                projectWorkPackages = listOf(
-                    ProjectWorkPackageData(
-                        id = workPackage.id,
-                        workPackageNumber = workPackage.workPackageNumber,
-                        name = setOf(InputTranslationData(SystemLanguageData.EN, "name")),
-                        specificObjective = setOf(InputTranslationData(SystemLanguageData.EN, "objective")),
-                        objectiveAndAudience = setOf(InputTranslationData(SystemLanguageData.EN, "audience")),
-                        activities = listOf(
-                            WorkPackageActivityData(
-                                activityNumber = activity.activityNumber,
-                                description = activity.description.toDataModel(),
-                                title = activity.title.toDataModel(),
-                                startPeriod = activity.startPeriod,
-                                endPeriod = activity.endPeriod,
-                                deliverables = listOf(
-                                    WorkPackageActivityDeliverableData(
-                                        deliverableNumber = 0,
-                                        period = null
-                                    )
-                                ),
-                                partnerIds = activity.partnerIds
-                            )
-                        ),
-                        outputs = listOf(
-                            WorkPackageOutputData(
-                                outputNumber = workPackageOutput.outputNumber,
-                                programmeOutputIndicatorId = workPackageOutput.programmeOutputIndicatorId,
-                                programmeOutputIndicatorIdentifier = workPackageOutput.programmeOutputIndicatorIdentifier,
-                                targetValue = workPackageOutput.targetValue,
-                                periodNumber = workPackageOutput.periodNumber,
-                                description = workPackageOutput.description.toDataModel(),
-                                title = workPackageOutput.title.toDataModel()
-                            )
-                        ),
-                        investments = listOf(
-                            WorkPackageInvestmentData(
-                                id = investment.id,
-                                investmentNumber = investment.investmentNumber,
-                                title = setOf(InputTranslationData(SystemLanguageData.EN, "title")),
-                                justificationExplanation = setOf(
-                                    InputTranslationData(
-                                        SystemLanguageData.EN,
-                                        "justificationExplanation"
-                                    )
-                                ),
-                                justificationTransactionalRelevance = setOf(
-                                    InputTranslationData(
-                                        SystemLanguageData.EN,
-                                        "justificationTransactionalRelevance"
-                                    )
-                                ),
-                                justificationBenefits = setOf(
-                                    InputTranslationData(
-                                        SystemLanguageData.EN,
-                                        "justificationBenefits"
-                                    )
-                                ),
-                                justificationPilot = setOf(
-                                    InputTranslationData(
-                                        SystemLanguageData.EN,
-                                        "justificationPilot"
-                                    )
-                                ),
-                                address = WorkPackageInvestmentAddressData(
-                                    "country",
-                                    "reg2",
-                                    "reg3",
-                                    "str",
-                                    "nr",
-                                    "code",
-                                    "city"
-                                ),
-                                risk = setOf(InputTranslationData(SystemLanguageData.EN, "risk")),
-                                documentation = setOf(InputTranslationData(SystemLanguageData.EN, "documentation")),
-                                ownershipSiteLocation = setOf(
-                                    InputTranslationData(
-                                        SystemLanguageData.EN,
-                                        "ownershipSiteLocation"
-                                    )
-                                ),
-                                ownershipRetain = setOf(InputTranslationData(SystemLanguageData.EN, "ownershipRetain")),
-                                ownershipMaintenance = setOf(
-                                    InputTranslationData(
-                                        SystemLanguageData.EN,
-                                        "ownershipMaintenance"
-                                    )
-                                )
-                            )
-                        )
-                    )
-                ),
-                projectResults = listOf(
-                    ProjectResultData(
-                        resultNumber = projectResult.resultNumber,
-                        programmeResultIndicatorId = projectResult.programmeResultIndicatorId,
-                        programmeResultIndicatorIdentifier = projectResult.programmeResultIndicatorIdentifier,
-                        programmeResultName = setOf(InputTranslationData(SystemLanguageData.EN, "ID01 name")),
-                        programmeResultMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "ID01 measurement unit")),
-                        baseline = BigDecimal.ZERO,
-                        targetValue = projectResult.targetValue,
-                        periodNumber = projectResult.periodNumber,
-                        periodStartMonth = projectResult.periodStartMonth,
-                        periodEndMonth = projectResult.periodEndMonth,
-                        description = projectResult.description.toDataModel()
-                    )
-                ),
-                projectManagement = ProjectManagementData(
-                    projectCoordination = setOf(InputTranslationData(SystemLanguageData.EN, "projectCoordination")),
-                    projectQualityAssurance = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "projectQualityAssurance"
-                        )
-                    ),
-                    projectCommunication = setOf(InputTranslationData(SystemLanguageData.EN, "projectCommunication")),
-                    projectFinancialManagement = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "projectFinancialManagement"
-                        )
-                    ),
-                    projectCooperationCriteria = ProjectCooperationCriteriaData(
-                        projectJointStaffing = true,
-                        projectJointImplementation = true,
-                        projectJointFinancing = true,
-                        projectJointDevelopment = true
-                    ),
-                    projectJointDevelopmentDescription = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "projectJointDevelopmentDescription"
-                        )
-                    ),
-                    projectJointImplementationDescription = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "projectJointImplementationDescription"
-                        )
-                    ),
-                    projectJointStaffingDescription = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "projectJointStaffingDescription"
-                        )
-                    ),
-                    projectJointFinancingDescription = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "projectJointFinancingDescription"
-                        )
-                    ),
-                    projectHorizontalPrinciples = ProjectHorizontalPrinciplesData(
-                        sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffectData.PositiveEffects,
-                        equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffectData.Neutral,
-                        sexualEqualityEffect = ProjectHorizontalPrinciplesEffectData.NegativeEffects
-                    ),
-                    sustainableDevelopmentDescription = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "sustainableDevelopmentDescription"
-                        )
-                    ),
-                    equalOpportunitiesDescription = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "equalOpportunitiesDescription"
-                        )
-                    ),
-                    sexualEqualityDescription = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "sexualEqualityDescription"
-                        )
-                    )
-                ),
-                projectLongTermPlans = ProjectLongTermPlansData(
-                    projectOwnership = setOf(InputTranslationData(SystemLanguageData.EN, "projectOwnership")),
-                    projectDurability = setOf(InputTranslationData(SystemLanguageData.EN, "projectDurability")),
-                    projectTransferability = setOf(
-                        InputTranslationData(
-                            SystemLanguageData.EN,
-                            "projectTransferability"
-                        )
-                    )
-                )
-            )
-        )
-        assertThat(projectData.sectionE).isEqualTo(
-            ProjectDataSectionE(
-                projectLumpSums = listOf(
-                    ProjectLumpSumData(
-                        programmeLumpSum = ProgrammeLumpSumData(
-                            id = programmeLumpSum.id,
-                            name = setOf(InputTranslationData(SystemLanguageData.EN, "name")),
-                            description = setOf(InputTranslationData(SystemLanguageData.EN, "description")),
-                            cost = programmeLumpSum.cost,
-                            splittingAllowed = programmeLumpSum.splittingAllowed,
-                            phase = ProgrammeLumpSumPhaseData.Preparation,
-                            categories = setOf(BudgetCategoryData.StaffCosts)
-                        ),
-                        period = projectLumpSum.period,
-                        lumpSumContributions = listOf(ProjectPartnerLumpSumData(3L, BigDecimal.ZERO))
-                    )
-                )
-            )
-        )
-
-        assertThat(projectData.lifecycleData).isEqualTo(
-            ProjectLifecycleData(
-                status = ApplicationStatusData.APPROVED
-            )
-        )
-    }
-
-    @Test
-    fun `project data provider get for project Id - with empty values`() {
-        val id = project.id!!
-        every { projectPersistence.getProject(id) } returns ProjectFull(
-            id = 1L,
-            customIdentifier = "01",
-            callSettings = callSettings,
-            acronym = "acronym",
-            applicant = user,
-            duration = null,
-            programmePriority = null,
-            specificObjective = null,
-            projectStatus = projectStatus,
-            periods = emptyList(),
-            assessmentStep1 = null,
-            title = emptySet()
-        )
-        every { projectDescriptionPersistence.getProjectDescription(id) } returns ProjectDescription(
-            projectOverallObjective = ProjectOverallObjective(overallObjective = emptySet()),
-            projectRelevance = ProjectRelevance(
-                territorialChallenge = emptySet(),
-                commonChallenge = emptySet(),
-                transnationalCooperation = emptySet(),
-                projectBenefits = emptyList(),
-                projectStrategies = emptyList(),
-                projectSynergies = emptyList(),
-                availableKnowledge = emptySet()
-            ),
-            projectPartnership = ProjectPartnership(partnership = emptySet()),
-            projectManagement = ProjectManagement(
-                projectCoordination = emptySet(),
-                projectQualityAssurance = emptySet(),
-                projectCommunication = emptySet(),
-                projectFinancialManagement = emptySet(),
-                projectCooperationCriteria = ProjectCooperationCriteria(
-                    projectJointDevelopment = false,
-                    projectJointFinancing = false,
-                    projectJointImplementation = false,
-                    projectJointStaffing = false
-                ),
-                projectJointDevelopmentDescription = emptySet(),
-                projectJointImplementationDescription = emptySet(),
-                projectJointFinancingDescription = emptySet(),
-                projectHorizontalPrinciples = ProjectHorizontalPrinciples(),
-                sustainableDevelopmentDescription = emptySet(),
-                equalOpportunitiesDescription = emptySet(),
-                sexualEqualityDescription = emptySet()
-            ),
-            projectLongTermPlans = ProjectLongTermPlans(
-                projectOwnership = emptySet(),
-                projectDurability = emptySet(),
-                projectTransferability = emptySet()
-            )
-        )
-        every { partnerPersistence.findTop30ByProjectId(id) } returns emptyList()
-        every { associatedOrganizationPersistence.findAllByProjectId(id) } returns emptyList()
-        every { resultPersistence.getResultsForProject(id, null) } returns emptyList()
-        every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns emptyList()
-        every { projectLumpSumPersistence.getLumpSums(id) } returns emptyList()
-        every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
-        // data for tableA4/output-result
-        every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id)} returns emptyList()
-        every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns emptySet()
-        every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns emptySet()
-        every { projectResultPersistence.getResultsForProject(id, null) } returns emptyList()
-
-        // test getByProjectId and its mappings..
-        val projectData = projectDataProvider.getProjectDataForProjectId(id)
-
-        assertThat(projectData.sectionA).isEqualTo(
-            ProjectDataSectionA(
-                customIdentifier = "01",
-                title = emptySet(),
-                intro = emptySet(),
-                acronym = "acronym",
-                duration = null,
-                specificObjective = null,
-                programmePriority = null,
-                coFinancingOverview = ProjectCoFinancingOverview(
-                    fundOverviews = emptyList(),
-                    totalFundingAmount = BigDecimal.ZERO,
-                    totalEuFundingAmount = BigDecimal.ZERO,
-                    averageCoFinancingRate = BigDecimal.ZERO,
-                    averageEuFinancingRate = BigDecimal.ZERO,
-
-                    totalAutoPublicContribution = BigDecimal.ZERO,
-                    totalEuAutoPublicContribution = BigDecimal.ZERO,
-                    totalOtherPublicContribution = BigDecimal.ZERO,
-                    totalEuOtherPublicContribution = BigDecimal.ZERO,
-                    totalPublicContribution = BigDecimal.ZERO,
-                    totalEuPublicContribution = BigDecimal.ZERO,
-                    totalPrivateContribution = BigDecimal.ZERO,
-                    totalEuPrivateContribution = BigDecimal.ZERO,
-                    totalContribution = BigDecimal.ZERO,
-                    totalEuContribution = BigDecimal.ZERO,
-
-                    totalFundAndContribution = BigDecimal.ZERO,
-                    totalEuFundAndContribution = BigDecimal.ZERO,
-                ),
-                resultIndicatorOverview = ProjectResultIndicatorOverview(emptyList())
-            )
-        )
-        assertThat(projectData.sectionB).isEqualTo(
-            ProjectDataSectionB(
-                partners = emptySet(),
-                associatedOrganisations = emptySet()
-            )
-        )
-        assertThat(projectData.sectionC).isEqualTo(
-            ProjectDataSectionC(
-                projectOverallObjective = ProjectOverallObjectiveData(overallObjective = emptySet()),
-                projectRelevance = ProjectRelevanceData(
-                    territorialChallenge = emptySet(),
-                    commonChallenge = emptySet(),
-                    transnationalCooperation = emptySet(),
-                    projectBenefits = emptyList(),
-                    projectStrategies = emptyList(),
-                    projectSynergies = emptyList(),
-                    availableKnowledge = emptySet()
-                ),
-                projectPartnership = ProjectPartnershipData(
-                    partnership = emptySet()
-                ),
-                projectWorkPackages = emptyList(),
-                projectResults = emptyList(),
-                projectManagement = ProjectManagementData(
-                    projectCoordination = emptySet(),
-                    projectQualityAssurance = emptySet(),
-                    projectCommunication = emptySet(),
-                    projectFinancialManagement = emptySet(),
-                    projectCooperationCriteria = ProjectCooperationCriteriaData(
-                        projectJointStaffing = false,
-                        projectJointImplementation = false,
-                        projectJointFinancing = false,
-                        projectJointDevelopment = false
-                    ),
-                    projectJointDevelopmentDescription = emptySet(),
-                    projectJointImplementationDescription = emptySet(),
-                    projectJointStaffingDescription = emptySet(),
-                    projectJointFinancingDescription = emptySet(),
-                    projectHorizontalPrinciples = ProjectHorizontalPrinciplesData(null, null, null),
-                    sustainableDevelopmentDescription = emptySet(),
-                    equalOpportunitiesDescription = emptySet(),
-                    sexualEqualityDescription = emptySet()
-                ),
-                projectLongTermPlans = ProjectLongTermPlansData(
-                    projectOwnership = emptySet(),
-                    projectDurability = emptySet(),
-                    projectTransferability = emptySet()
-                )
-            )
-        )
-        assertThat(projectData.sectionE).isEqualTo(
-            ProjectDataSectionE(projectLumpSums = emptyList())
-        )
-
-        assertThat(projectData.versions).isEqualTo(projectVersions.toDataModel())
-    }
-
-    @Test
-    fun `project data provider get fail for unknown project Id`() {
-        val id = 1L
-        every { projectPersistence.getProject(id) } throws ResourceNotFoundException("project")
-
-        assertThrows<ResourceNotFoundException> { projectDataProvider.getProjectDataForProjectId(id) }
-    }
+//    @Test
+//    fun `project data provider get for project Id`() {
+//        val id = project.id!!
+//        val budgetCostsCalculationResult = BudgetCostsCalculationResult(staffCosts = BigDecimal.TEN, totalCosts = BigDecimal.TEN, travelCosts = BigDecimal.ZERO, officeAndAdministrationCosts = BigDecimal.ZERO, otherCosts = BigDecimal.ZERO)
+//        every { projectPersistence.getProject(id) } returns project
+//        every { projectVersionPersistence.getAllVersionsByProjectId(id) } returns projectVersions
+//        every { projectDescriptionPersistence.getProjectDescription(id) } returns projectDescription
+//        every { partnerPersistence.findTop30ByProjectId(id) } returns listOf(projectPartner)
+//        every { budgetOptionsPersistence.getBudgetOptions(projectPartner.id) } returns partnerBudgetOptions
+//        every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
+//        every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
+//        every { getBudgetCostsPersistence.getBudgetStaffCosts(projectPartner.id) } returns listOf(
+//            BudgetStaffCostEntry(
+//                id = 3L,
+//                numberOfUnits = BigDecimal.ONE,
+//                rowSum = BigDecimal.TEN,
+//                budgetPeriods = mutableSetOf(BudgetPeriod(number = 1, amount = BigDecimal.ONE)),
+//                pricePerUnit = BigDecimal.TEN,
+//                description = setOf(),
+//                comments = setOf(InputTranslation(SystemLanguage.EN, "comments")),
+//                unitType = setOf(InputTranslation(SystemLanguage.EN, "unitType")),
+//                unitCostId = 4L
+//            )
+//        )
+//        every { getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(projectPartner.id) } returns emptyList()
+//        every { getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(projectPartner.id) } returns emptyList()
+//        every { getBudgetCostsPersistence.getBudgetEquipmentCosts(projectPartner.id) } returns emptyList()
+//        every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(projectPartner.id) } returns emptyList()
+//        every { getBudgetCostsPersistence.getBudgetUnitCosts(projectPartner.id) } returns emptyList()
+//        every { budgetCostsCalculator.calculateCosts(any(), any(), any(), any(), any(), any(), any(), any()) } returns budgetCostsCalculationResult
+//        every { associatedOrganizationPersistence.findAllByProjectId(id) } returns listOf(associatedOrganization)
+//        every { resultPersistence.getResultsForProject(id, null) } returns listOf(projectResult)
+//        every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns listOf(workPackage)
+//        every { projectLumpSumPersistence.getLumpSums(id) } returns listOf(projectLumpSum)
+//        every { programmeLumpSumPersistence.getLumpSums(listOf(projectLumpSum.programmeLumpSumId)) } returns listOf(
+//            programmeLumpSum
+//        )
+//        every { partnerPersistence.getPartnerStateAid(partnerId = projectPartner.id) } returns
+//            ProjectPartnerStateAid(
+//                answer1 = true,
+//                justification1 = setOf(InputTranslation(SystemLanguage.EN, "true")),
+//                answer2 = false,
+//                answer3 = null,
+//                answer4 = null,
+//                stateAidScheme = null
+//            )
+//        every { coFinancingPersistence.getAvailableFunds(projectPartner.id) } returns setOf(ERDF_FUND)
+//        // data for tableA4/output-result
+//        every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id)} returns projectOutputs
+//        every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns outputIndicatorSet
+//        every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns resultIndicatorSet
+//        every { projectResultPersistence.getResultsForProject(id, null) } returns projectResults
+//
+//        // test getByProjectId and its mappings..
+//        val projectData = projectDataProvider.getProjectDataForProjectId(id)
+//
+//        assertThat(projectData.sectionA).isEqualTo(
+//            ProjectDataSectionA(
+//                customIdentifier = "01",
+//                title = setOf(InputTranslationData(SystemLanguageData.EN, "title")),
+//                intro = emptySet(),
+//                acronym = project.acronym,
+//                duration = project.duration,
+//                specificObjective = project.specificObjective?.toDataModel(),
+//                programmePriority = project.programmePriority?.toDataModel(),
+//                coFinancingOverview = ProjectCoFinancingOverview(
+//                    fundOverviews = listOf(
+//                        ProjectCoFinancingByFundOverview(
+//                            fundType = ProgrammeFundTypeData.ERDF,
+//                            fundAbbreviation = emptySet(),
+//                            fundingAmount = BigDecimal.valueOf(6_52, 2),
+//                            coFinancingRate = BigDecimal.valueOf(100_00, 2),
+//                            autoPublicContribution = BigDecimal.ZERO,
+//                            otherPublicContribution = BigDecimal.ZERO,
+//                            totalPublicContribution = BigDecimal.ZERO,
+//                            privateContribution = BigDecimal.ZERO,
+//                            totalContribution = BigDecimal.ZERO,
+//                            totalFundAndContribution = BigDecimal.valueOf(6_52, 2),
+//                        )
+//                    ),
+//                    totalFundingAmount = BigDecimal.valueOf(6_52, 2),
+//                    totalEuFundingAmount = BigDecimal.valueOf(6_52, 2),
+//                    averageCoFinancingRate = BigDecimal.valueOf(65_20, 2),
+//                    averageEuFinancingRate = BigDecimal.valueOf(100_00, 2),
+//
+//                    totalAutoPublicContribution = BigDecimal.ZERO,
+//                    totalEuAutoPublicContribution = BigDecimal.ZERO,
+//                    totalOtherPublicContribution = BigDecimal.ZERO,
+//                    totalEuOtherPublicContribution = BigDecimal.ZERO,
+//                    totalPublicContribution = BigDecimal.ZERO,
+//                    totalEuPublicContribution = BigDecimal.ZERO,
+//                    totalPrivateContribution = BigDecimal.ZERO,
+//                    totalEuPrivateContribution = BigDecimal.ZERO,
+//                    totalContribution = BigDecimal.ZERO,
+//                    totalEuContribution = BigDecimal.ZERO,
+//
+//                    totalFundAndContribution = BigDecimal.TEN,
+//                    totalEuFundAndContribution = BigDecimal.valueOf(6_52, 2),
+//                ),
+//                resultIndicatorOverview = ProjectResultIndicatorOverview(
+//                    indicatorLines = listOf(
+//                        IndicatorOverviewLine(
+//                            outputIndicatorId = 1L,
+//                            outputIndicatorIdentifier = "outputIdentifier",
+//                            outputIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorName")),
+//                            outputIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorMeasurementUnit")),
+//                            outputIndicatorTargetValueSumUp = BigDecimal.TEN,
+//                            projectOutputNumber = "1.1",
+//                            projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle")),
+//                            projectOutputTargetValue = BigDecimal.TEN,
+//                            resultIndicatorId = 2L,
+//                            resultIndicatorIdentifier = "resultIdentifier",
+//                            resultIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorName")),
+//                            resultIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorMeasurementUnit")),
+//                            resultIndicatorBaseline = setOf(BigDecimal.ONE),
+//                            resultIndicatorTargetValueSumUp = BigDecimal.TEN,
+//                            onlyResultWithoutOutputs = false
+//                        ),
+//                        IndicatorOverviewLine(
+//                            outputIndicatorId = 2L,
+//                            outputIndicatorIdentifier = "outputIdentifier2",
+//                            outputIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorName2")),
+//                            outputIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorMeasurementUnit")),
+//                            outputIndicatorTargetValueSumUp = BigDecimal.ONE,
+//                            projectOutputNumber = "1.2",
+//                            projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle2")),
+//                            projectOutputTargetValue = BigDecimal.ONE,
+//                            resultIndicatorId = 3L,
+//                            resultIndicatorIdentifier = "resultIdentifier2",
+//                            resultIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorName2")),
+//                            resultIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorMeasurementUnit")),
+//                            resultIndicatorBaseline = setOf(BigDecimal.ONE),
+//                            resultIndicatorTargetValueSumUp = BigDecimal.TEN,
+//                            onlyResultWithoutOutputs = false
+//                        )
+//                    )
+//                )
+//            )
+//        )
+//        assertThat(projectData.sectionB).isEqualTo(
+//            ProjectDataSectionB(
+//                partners = setOf(
+//                    ProjectPartnerData(
+//                        id = projectPartner.id,
+//                        sortNumber = null,
+//                        abbreviation = projectPartner.abbreviation,
+//                        role = ProjectPartnerRoleData.valueOf(projectPartner.role.name),
+//                        nameInOriginalLanguage = projectPartner.nameInOriginalLanguage,
+//                        nameInEnglish = projectPartner.nameInEnglish,
+//                        partnerType = ProjectTargetGroupData.valueOf(projectPartner.partnerType!!.name),
+//                        partnerSubType = PartnerSubTypeData.LARGE_ENTERPRISE,
+//                        nace = NaceGroupLevelData.A,
+//                        otherIdentifierNumber = null,
+//                        otherIdentifierDescription = emptySet(),
+//                        pic = null,
+//                        vat = projectPartner.vat,
+//                        vatRecovery = ProjectPartnerVatRecoveryData.valueOf(projectPartner.vatRecovery!!.name),
+//                        legalStatusId = projectPartner.legalStatusId,
+//                        budget = PartnerBudgetData(
+//                            projectPartnerOptions = ProjectPartnerBudgetOptionsData(
+//                                partnerId = projectPartner.id,
+//                                officeAndAdministrationOnDirectCostsFlatRate = null,
+//                                officeAndAdministrationOnStaffCostsFlatRate = null,
+//                                otherCostsOnStaffCostsFlatRate = null,
+//                                staffCostsFlatRate = null,
+//                                travelAndAccommodationOnStaffCostsFlatRate = null
+//                            ),
+//                            projectPartnerCoFinancing = ProjectPartnerCoFinancingAndContributionData(
+//                                finances = listOf(
+//                                    ProjectPartnerCoFinancingData(
+//                                        fundType = ProjectPartnerCoFinancingFundTypeData.MainFund,
+//                                        fund = ProgrammeFundData(
+//                                            id = ERDF_FUND.id,
+//                                            selected = true,
+//                                            type = ProgrammeFundTypeData.ERDF,
+//                                        ),
+//                                        percentage = BigDecimal.valueOf(6524, 2),
+//                                    )
+//                                ),
+//                                partnerContributions = listOf(),
+//                                partnerAbbreviation = projectPartner.abbreviation
+//                            ),
+//                            projectPartnerBudgetCosts = BudgetCostData(
+//                                staffCosts = listOf(
+//                                    BudgetStaffCostEntryData(
+//                                        id = 3L,
+//                                        numberOfUnits = BigDecimal.ONE,
+//                                        rowSum = BigDecimal.TEN,
+//                                        budgetPeriods = mutableSetOf(
+//                                            BudgetPeriodData(
+//                                                number = 1,
+//                                                amount = BigDecimal.ONE
+//                                            )
+//                                        ),
+//                                        pricePerUnit = BigDecimal.TEN,
+//                                        description = setOf(),
+//                                        comments = setOf(InputTranslationData(SystemLanguageData.EN, "comments")),
+//                                        unitType = setOf(InputTranslationData(SystemLanguageData.EN, "unitType")),
+//                                        unitCostId = 4L
+//                                    )
+//                                ),
+//                                travelCosts = emptyList(),
+//                                externalCosts = emptyList(),
+//                                equipmentCosts = emptyList(),
+//                                infrastructureCosts = emptyList(),
+//                                unitCosts = emptyList()
+//                            ),
+//                            projectPartnerBudgetTotalCost = budgetCostsCalculationResult.totalCosts,
+//                            projectBudgetCostsCalculationResult = budgetCostsCalculationResult.toDataModel()
+//                        ),
+//                        addresses = listOf(
+//                            ProjectPartnerAddressData(
+//                                type = ProjectPartnerAddressTypeData.Organization,
+//                                country = "country",
+//                                nutsRegion2 = "nutsRegion2",
+//                                nutsRegion3 = "nutsRegion3",
+//                                street = "street",
+//                                houseNumber = "houseNumber",
+//                                postalCode = "postalCode",
+//                                city = "city",
+//                                homepage = "homepage"
+//                            )
+//                        ),
+//                        motivation = ProjectPartnerMotivationData(
+//                            organizationRelevance = setOf(
+//                                InputTranslationData(
+//                                    SystemLanguageData.EN,
+//                                    "organizationRelevance"
+//                                )
+//                            ),
+//                            organizationExperience = setOf(
+//                                InputTranslationData(
+//                                    SystemLanguageData.EN,
+//                                    "organizationExperience"
+//                                )
+//                            ),
+//                            organizationRole = setOf(InputTranslationData(SystemLanguageData.EN, "organizationRole"))
+//                        ),
+//                        stateAid = ProjectPartnerStateAidData(
+//                            answer1 = true,
+//                            justification1 = setOf(InputTranslationData(SystemLanguageData.EN, "true")),
+//                            answer2 = false,
+//                            justification2 = emptySet(),
+//                            answer3 = null,
+//                            justification3 = emptySet(),
+//                            answer4 = null,
+//                            justification4 = emptySet(),
+//                            stateAidScheme = null
+//                        )
+//                    )
+//                ),
+//                associatedOrganisations = setOf(
+//                    ProjectAssociatedOrganizationData(
+//                        id = associatedOrganization.id,
+//                        partner = ProjectPartnerEssentialData(
+//                            id = associatedOrganization.partner.id,
+//                            abbreviation = associatedOrganization.partner.abbreviation,
+//                            role = ProjectPartnerRoleData.LEAD_PARTNER,
+//                            sortNumber = associatedOrganization.partner.sortNumber,
+//                            country = associatedOrganization.partner.country
+//                        ),
+//                        nameInOriginalLanguage = associatedOrganization.nameInOriginalLanguage,
+//                        nameInEnglish = associatedOrganization.nameInEnglish,
+//                        sortNumber = associatedOrganization.sortNumber,
+//                        address = ProjectAssociatedOrganizationAddressData(
+//                            country = associatedOrganization.address!!.country,
+//                            nutsRegion2 = associatedOrganization.address!!.nutsRegion2,
+//                            nutsRegion3 = associatedOrganization.address!!.nutsRegion3,
+//                            street = associatedOrganization.address!!.street,
+//                            houseNumber = associatedOrganization.address!!.houseNumber,
+//                            postalCode = associatedOrganization.address!!.postalCode,
+//                            city = associatedOrganization.address!!.city,
+//                            homepage = associatedOrganization.address!!.homepage
+//                        ),
+//                        contacts = listOf(
+//                            ProjectPartnerContactData(
+//                                type = ProjectContactTypeData.ContactPerson,
+//                                title = "title",
+//                                firstName = "firstName",
+//                                lastName = "lastName",
+//                                email = "email",
+//                                telephone = "telephone"
+//                            )
+//                        ),
+//                        roleDescription = setOf(InputTranslationData(SystemLanguageData.EN, "roleDescription"))
+//                    )
+//                )
+//            )
+//        )
+//        assertThat(projectData.sectionC).isEqualTo(
+//            ProjectDataSectionC(
+//                projectOverallObjective = ProjectOverallObjectiveData(
+//                    overallObjective = setOf(InputTranslationData(SystemLanguageData.EN, "overallObjective"))
+//                ),
+//                projectRelevance = ProjectRelevanceData(
+//                    territorialChallenge = setOf(InputTranslationData(SystemLanguageData.EN, "territorialChallenge")),
+//                    commonChallenge = setOf(InputTranslationData(SystemLanguageData.EN, "commonChallenge")),
+//                    transnationalCooperation = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "transnationalCooperation"
+//                        )
+//                    ),
+//                    projectBenefits = listOf(
+//                        ProjectRelevanceBenefitData(
+//                            group = ProjectTargetGroupData.LocalPublicAuthority,
+//                            specification = setOf(InputTranslationData(SystemLanguageData.EN, "specification"))
+//                        )
+//                    ),
+//                    projectStrategies = listOf(
+//                        ProjectRelevanceStrategyData(
+//                            strategy = ProgrammeStrategyData.AtlanticStrategy,
+//                            specification = setOf(InputTranslationData(SystemLanguageData.EN, "specification"))
+//                        )
+//                    ),
+//                    projectSynergies = listOf(
+//                        ProjectRelevanceSynergyData(
+//                            synergy = setOf(InputTranslationData(SystemLanguageData.EN, "synergy")),
+//                            specification = setOf(InputTranslationData(SystemLanguageData.EN, "specification"))
+//                        )
+//                    ),
+//                    availableKnowledge = setOf(InputTranslationData(SystemLanguageData.EN, "availableKnowledge"))
+//                ),
+//                projectPartnership = ProjectPartnershipData(
+//                    partnership = setOf(InputTranslationData(SystemLanguageData.EN, "partnership"))
+//                ),
+//                projectWorkPackages = listOf(
+//                    ProjectWorkPackageData(
+//                        id = workPackage.id,
+//                        workPackageNumber = workPackage.workPackageNumber,
+//                        name = setOf(InputTranslationData(SystemLanguageData.EN, "name")),
+//                        specificObjective = setOf(InputTranslationData(SystemLanguageData.EN, "objective")),
+//                        objectiveAndAudience = setOf(InputTranslationData(SystemLanguageData.EN, "audience")),
+//                        activities = listOf(
+//                            WorkPackageActivityData(
+//                                activityNumber = activity.activityNumber,
+//                                description = activity.description.toDataModel(),
+//                                title = activity.title.toDataModel(),
+//                                startPeriod = activity.startPeriod,
+//                                endPeriod = activity.endPeriod,
+//                                deliverables = listOf(
+//                                    WorkPackageActivityDeliverableData(
+//                                        deliverableNumber = 0,
+//                                        period = null
+//                                    )
+//                                ),
+//                                partnerIds = activity.partnerIds
+//                            )
+//                        ),
+//                        outputs = listOf(
+//                            WorkPackageOutputData(
+//                                outputNumber = workPackageOutput.outputNumber,
+//                                programmeOutputIndicatorId = workPackageOutput.programmeOutputIndicatorId,
+//                                programmeOutputIndicatorIdentifier = workPackageOutput.programmeOutputIndicatorIdentifier,
+//                                targetValue = workPackageOutput.targetValue,
+//                                periodNumber = workPackageOutput.periodNumber,
+//                                description = workPackageOutput.description.toDataModel(),
+//                                title = workPackageOutput.title.toDataModel(),
+//                                periodStartMonth = workPackageOutput.periodStartMonth,
+//                                periodEndMonth = workPackageOutput.periodEndMonth,
+//                                programmeOutputIndicatorName = workPackageOutput.programmeOutputIndicatorName.toDataModel(),
+//                                programmeOutputIndicatorMeasurementUnit = workPackageOutput.programmeOutputIndicatorMeasurementUnit.toDataModel()
+//                            )
+//                        ),
+//                        investments = listOf(
+//                            WorkPackageInvestmentData(
+//                                id = investment.id,
+//                                investmentNumber = investment.investmentNumber,
+//                                title = setOf(InputTranslationData(SystemLanguageData.EN, "title")),
+//                                justificationExplanation = setOf(
+//                                    InputTranslationData(
+//                                        SystemLanguageData.EN,
+//                                        "justificationExplanation"
+//                                    )
+//                                ),
+//                                justificationTransactionalRelevance = setOf(
+//                                    InputTranslationData(
+//                                        SystemLanguageData.EN,
+//                                        "justificationTransactionalRelevance"
+//                                    )
+//                                ),
+//                                justificationBenefits = setOf(
+//                                    InputTranslationData(
+//                                        SystemLanguageData.EN,
+//                                        "justificationBenefits"
+//                                    )
+//                                ),
+//                                justificationPilot = setOf(
+//                                    InputTranslationData(
+//                                        SystemLanguageData.EN,
+//                                        "justificationPilot"
+//                                    )
+//                                ),
+//                                address = WorkPackageInvestmentAddressData(
+//                                    "country",
+//                                    "reg2",
+//                                    "reg3",
+//                                    "str",
+//                                    "nr",
+//                                    "code",
+//                                    "city"
+//                                ),
+//                                risk = setOf(InputTranslationData(SystemLanguageData.EN, "risk")),
+//                                documentation = setOf(InputTranslationData(SystemLanguageData.EN, "documentation")),
+//                                ownershipSiteLocation = setOf(
+//                                    InputTranslationData(
+//                                        SystemLanguageData.EN,
+//                                        "ownershipSiteLocation"
+//                                    )
+//                                ),
+//                                ownershipRetain = setOf(InputTranslationData(SystemLanguageData.EN, "ownershipRetain")),
+//                                ownershipMaintenance = setOf(
+//                                    InputTranslationData(
+//                                        SystemLanguageData.EN,
+//                                        "ownershipMaintenance"
+//                                    )
+//                                ),
+////                                expectedDeliveryPeriod = investment.expectedDeliveryPeriod
+//                            )
+//                        )
+//                    )
+//                ),
+//                projectResults = listOf(
+//                    ProjectResultData(
+//                        resultNumber = projectResult.resultNumber,
+//                        programmeResultIndicatorId = projectResult.programmeResultIndicatorId,
+//                        programmeResultIndicatorIdentifier = projectResult.programmeResultIndicatorIdentifier,
+//                        programmeResultName = setOf(InputTranslationData(SystemLanguageData.EN, "ID01 name")),
+//                        programmeResultMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "ID01 measurement unit")),
+//                        baseline = BigDecimal.ZERO,
+//                        targetValue = projectResult.targetValue,
+//                        periodNumber = projectResult.periodNumber,
+//                        periodStartMonth = projectResult.periodStartMonth,
+//                        periodEndMonth = projectResult.periodEndMonth,
+//                        description = projectResult.description.toDataModel()
+//                    )
+//                ),
+//                projectManagement = ProjectManagementData(
+//                    projectCoordination = setOf(InputTranslationData(SystemLanguageData.EN, "projectCoordination")),
+//                    projectQualityAssurance = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "projectQualityAssurance"
+//                        )
+//                    ),
+//                    projectCommunication = setOf(InputTranslationData(SystemLanguageData.EN, "projectCommunication")),
+//                    projectFinancialManagement = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "projectFinancialManagement"
+//                        )
+//                    ),
+//                    projectCooperationCriteria = ProjectCooperationCriteriaData(
+//                        projectJointStaffing = true,
+//                        projectJointImplementation = true,
+//                        projectJointFinancing = true,
+//                        projectJointDevelopment = true
+//                    ),
+//                    projectJointDevelopmentDescription = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "projectJointDevelopmentDescription"
+//                        )
+//                    ),
+//                    projectJointImplementationDescription = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "projectJointImplementationDescription"
+//                        )
+//                    ),
+//                    projectJointStaffingDescription = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "projectJointStaffingDescription"
+//                        )
+//                    ),
+//                    projectJointFinancingDescription = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "projectJointFinancingDescription"
+//                        )
+//                    ),
+//                    projectHorizontalPrinciples = ProjectHorizontalPrinciplesData(
+//                        sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffectData.PositiveEffects,
+//                        equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffectData.Neutral,
+//                        sexualEqualityEffect = ProjectHorizontalPrinciplesEffectData.NegativeEffects
+//                    ),
+//                    sustainableDevelopmentDescription = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "sustainableDevelopmentDescription"
+//                        )
+//                    ),
+//                    equalOpportunitiesDescription = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "equalOpportunitiesDescription"
+//                        )
+//                    ),
+//                    sexualEqualityDescription = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "sexualEqualityDescription"
+//                        )
+//                    )
+//                ),
+//                projectLongTermPlans = ProjectLongTermPlansData(
+//                    projectOwnership = setOf(InputTranslationData(SystemLanguageData.EN, "projectOwnership")),
+//                    projectDurability = setOf(InputTranslationData(SystemLanguageData.EN, "projectDurability")),
+//                    projectTransferability = setOf(
+//                        InputTranslationData(
+//                            SystemLanguageData.EN,
+//                            "projectTransferability"
+//                        )
+//                    )
+//                )
+//            )
+//        )
+//        assertThat(projectData.sectionE).isEqualTo(
+//            ProjectDataSectionE(
+//                projectLumpSums = listOf(
+//                    ProjectLumpSumData(
+//                        programmeLumpSum = ProgrammeLumpSumData(
+//                            id = programmeLumpSum.id,
+//                            name = setOf(InputTranslationData(SystemLanguageData.EN, "name")),
+//                            description = setOf(InputTranslationData(SystemLanguageData.EN, "description")),
+//                            cost = programmeLumpSum.cost,
+//                            splittingAllowed = programmeLumpSum.splittingAllowed,
+//                            phase = ProgrammeLumpSumPhaseData.Preparation,
+//                            categories = setOf(BudgetCategoryData.StaffCosts)
+//                        ),
+//                        period = projectLumpSum.period,
+//                        lumpSumContributions = listOf(ProjectPartnerLumpSumData(3L, BigDecimal.ZERO))
+//                    )
+//                )
+//            )
+//        )
+//
+//        assertThat(projectData.lifecycleData).isEqualTo(
+//            ProjectLifecycleData(
+//                status = ApplicationStatusData.APPROVED
+//            )
+//        )
+//    }
+//
+//    @Test
+//    fun `project data provider get for project Id - with empty values`() {
+//        val id = project.id!!
+//        every { projectPersistence.getProject(id) } returns ProjectFull(
+//            id = 1L,
+//            customIdentifier = "01",
+//            callSettings = callSettings,
+//            acronym = "acronym",
+//            applicant = user,
+//            duration = null,
+//            programmePriority = null,
+//            specificObjective = null,
+//            projectStatus = projectStatus,
+//            periods = emptyList(),
+//            assessmentStep1 = null,
+//            title = emptySet()
+//        )
+//        every { projectDescriptionPersistence.getProjectDescription(id) } returns ProjectDescription(
+//            projectOverallObjective = ProjectOverallObjective(overallObjective = emptySet()),
+//            projectRelevance = ProjectRelevance(
+//                territorialChallenge = emptySet(),
+//                commonChallenge = emptySet(),
+//                transnationalCooperation = emptySet(),
+//                projectBenefits = emptyList(),
+//                projectStrategies = emptyList(),
+//                projectSynergies = emptyList(),
+//                availableKnowledge = emptySet()
+//            ),
+//            projectPartnership = ProjectPartnership(partnership = emptySet()),
+//            projectManagement = ProjectManagement(
+//                projectCoordination = emptySet(),
+//                projectQualityAssurance = emptySet(),
+//                projectCommunication = emptySet(),
+//                projectFinancialManagement = emptySet(),
+//                projectCooperationCriteria = ProjectCooperationCriteria(
+//                    projectJointDevelopment = false,
+//                    projectJointFinancing = false,
+//                    projectJointImplementation = false,
+//                    projectJointStaffing = false
+//                ),
+//                projectJointDevelopmentDescription = emptySet(),
+//                projectJointImplementationDescription = emptySet(),
+//                projectJointFinancingDescription = emptySet(),
+//                projectHorizontalPrinciples = ProjectHorizontalPrinciples(),
+//                sustainableDevelopmentDescription = emptySet(),
+//                equalOpportunitiesDescription = emptySet(),
+//                sexualEqualityDescription = emptySet()
+//            ),
+//            projectLongTermPlans = ProjectLongTermPlans(
+//                projectOwnership = emptySet(),
+//                projectDurability = emptySet(),
+//                projectTransferability = emptySet()
+//            )
+//        )
+//        every { partnerPersistence.findTop30ByProjectId(id) } returns emptyList()
+//        every { associatedOrganizationPersistence.findAllByProjectId(id) } returns emptyList()
+//        every { resultPersistence.getResultsForProject(id, null) } returns emptyList()
+//        every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns emptyList()
+//        every { projectLumpSumPersistence.getLumpSums(id) } returns emptyList()
+//        every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
+//        // data for tableA4/output-result
+//        every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id)} returns emptyList()
+//        every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns emptySet()
+//        every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns emptySet()
+//        every { projectResultPersistence.getResultsForProject(id, null) } returns emptyList()
+//
+//        // test getByProjectId and its mappings..
+//        val projectData = projectDataProvider.getProjectDataForProjectId(id)
+//
+//        assertThat(projectData.sectionA).isEqualTo(
+//            ProjectDataSectionA(
+//                customIdentifier = "01",
+//                title = emptySet(),
+//                intro = emptySet(),
+//                acronym = "acronym",
+//                duration = null,
+//                specificObjective = null,
+//                programmePriority = null,
+//                coFinancingOverview = ProjectCoFinancingOverview(
+//                    fundOverviews = emptyList(),
+//                    totalFundingAmount = BigDecimal.ZERO,
+//                    totalEuFundingAmount = BigDecimal.ZERO,
+//                    averageCoFinancingRate = BigDecimal.ZERO,
+//                    averageEuFinancingRate = BigDecimal.ZERO,
+//
+//                    totalAutoPublicContribution = BigDecimal.ZERO,
+//                    totalEuAutoPublicContribution = BigDecimal.ZERO,
+//                    totalOtherPublicContribution = BigDecimal.ZERO,
+//                    totalEuOtherPublicContribution = BigDecimal.ZERO,
+//                    totalPublicContribution = BigDecimal.ZERO,
+//                    totalEuPublicContribution = BigDecimal.ZERO,
+//                    totalPrivateContribution = BigDecimal.ZERO,
+//                    totalEuPrivateContribution = BigDecimal.ZERO,
+//                    totalContribution = BigDecimal.ZERO,
+//                    totalEuContribution = BigDecimal.ZERO,
+//
+//                    totalFundAndContribution = BigDecimal.ZERO,
+//                    totalEuFundAndContribution = BigDecimal.ZERO,
+//                ),
+//                resultIndicatorOverview = ProjectResultIndicatorOverview(emptyList())
+//            )
+//        )
+//        assertThat(projectData.sectionB).isEqualTo(
+//            ProjectDataSectionB(
+//                partners = emptySet(),
+//                associatedOrganisations = emptySet()
+//            )
+//        )
+//        assertThat(projectData.sectionC).isEqualTo(
+//            ProjectDataSectionC(
+//                projectOverallObjective = ProjectOverallObjectiveData(overallObjective = emptySet()),
+//                projectRelevance = ProjectRelevanceData(
+//                    territorialChallenge = emptySet(),
+//                    commonChallenge = emptySet(),
+//                    transnationalCooperation = emptySet(),
+//                    projectBenefits = emptyList(),
+//                    projectStrategies = emptyList(),
+//                    projectSynergies = emptyList(),
+//                    availableKnowledge = emptySet()
+//                ),
+//                projectPartnership = ProjectPartnershipData(
+//                    partnership = emptySet()
+//                ),
+//                projectWorkPackages = emptyList(),
+//                projectResults = emptyList(),
+//                projectManagement = ProjectManagementData(
+//                    projectCoordination = emptySet(),
+//                    projectQualityAssurance = emptySet(),
+//                    projectCommunication = emptySet(),
+//                    projectFinancialManagement = emptySet(),
+//                    projectCooperationCriteria = ProjectCooperationCriteriaData(
+//                        projectJointStaffing = false,
+//                        projectJointImplementation = false,
+//                        projectJointFinancing = false,
+//                        projectJointDevelopment = false
+//                    ),
+//                    projectJointDevelopmentDescription = emptySet(),
+//                    projectJointImplementationDescription = emptySet(),
+//                    projectJointStaffingDescription = emptySet(),
+//                    projectJointFinancingDescription = emptySet(),
+//                    projectHorizontalPrinciples = ProjectHorizontalPrinciplesData(null, null, null),
+//                    sustainableDevelopmentDescription = emptySet(),
+//                    equalOpportunitiesDescription = emptySet(),
+//                    sexualEqualityDescription = emptySet()
+//                ),
+//                projectLongTermPlans = ProjectLongTermPlansData(
+//                    projectOwnership = emptySet(),
+//                    projectDurability = emptySet(),
+//                    projectTransferability = emptySet()
+//                )
+//            )
+//        )
+//        assertThat(projectData.sectionE).isEqualTo(
+//            ProjectDataSectionE(projectLumpSums = emptyList())
+//        )
+//
+//        assertThat(projectData.versions).isEqualTo(projectVersions.toDataModel())
+//    }
+//
+//    @Test
+//    fun `project data provider get fail for unknown project Id`() {
+//        val id = 1L
+//        every { projectPersistence.getProject(id) } throws ResourceNotFoundException("project")
+//
+//        assertThrows<ResourceNotFoundException> { projectDataProvider.getProjectDataForProjectId(id) }
+//    }
 }

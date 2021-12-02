@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.output.OutputRowWit
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputRow
+import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityPartnerRepository
@@ -321,6 +322,9 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
+    @MockK
+    lateinit var projectRepository: ProjectRepository
+
     private lateinit var projectVersionUtils: ProjectVersionUtils
 
     private lateinit var persistence: WorkPackagePersistenceProvider
@@ -336,7 +340,8 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
             repositoryOutput,
             investmentRepository,
             outputIndicatorRepository,
-            projectVersionUtils
+            projectVersionUtils,
+            projectRepository
         )
     }
 
@@ -760,6 +765,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
 
     @Test
     fun getWorkPackagesWithAllDataByProjectId() {
+        every { projectRepository.findById(PROJECT_ID).get().periods } returns emptyList()
         every { repository.findAllByProjectId(PROJECT_ID, Sort.by(Sort.Direction.ASC, "id")) } returns listOf(workPackageWithActivities)
         val workPackageIds = setOf(WORK_PACKAGE_ID)
         every { repositoryActivity.findAllByWorkPackageIdIn(workPackageIds) } returns listOf(activityEntity)
@@ -795,6 +801,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
     fun `should return work packages with all the details for the specified version of the project when there is no problem`() {
         val timestamp = Timestamp.valueOf(LocalDateTime.of(2020, 8, 15, 6, 0))
         val version = "1.0"
+        every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns emptyList()
         every { repository.findWorkPackagesByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns getWorkPackageDetailRows()
         every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
 
@@ -952,6 +959,9 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 override val ownershipRetain: String? = null
                 override val ownershipMaintenance: String? = null
                 override val investmentLanguage: SystemLanguage? = null
+                override val programmeOutputIndicatorLanguage: SystemLanguage? = null
+                override val programmeOutputIndicatorMeasurementUnit: String? = null
+                override val programmeOutputIndicatorName: String? = null
             }
         )
     }
