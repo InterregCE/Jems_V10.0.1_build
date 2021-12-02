@@ -14,6 +14,7 @@ data class WorkPackageInvestment(
     val address: Address?,
     val risk: Set<InputTranslation> = emptySet(),
     val documentation: Set<InputTranslation> = emptySet(),
+    val documentationExpectedImpacts: Set<InputTranslation> = emptySet(),
     val ownershipSiteLocation: Set<InputTranslation> = emptySet(),
     val ownershipRetain: Set<InputTranslation> = emptySet(),
     val ownershipMaintenance: Set<InputTranslation> = emptySet(),

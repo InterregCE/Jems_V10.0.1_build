@@ -178,8 +178,12 @@ fun List<WorkPackageOutput>.toOutputDataModel() = map {
         outputNumber = it.outputNumber,
         programmeOutputIndicatorId = it.programmeOutputIndicatorId,
         programmeOutputIndicatorIdentifier = it.programmeOutputIndicatorIdentifier,
+        programmeOutputIndicatorName = it.programmeOutputIndicatorName.toDataModel(),
+        programmeOutputIndicatorMeasurementUnit = it.programmeOutputIndicatorMeasurementUnit.toDataModel(),
         targetValue = it.targetValue,
         periodNumber = it.periodNumber,
+        periodStartMonth = it.periodStartMonth,
+        periodEndMonth = it.periodEndMonth,
         description = it.description.toDataModel(),
         title = it.title.toDataModel()
     )

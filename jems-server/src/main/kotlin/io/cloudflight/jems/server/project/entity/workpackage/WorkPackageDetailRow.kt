@@ -34,6 +34,9 @@ interface WorkPackageDetailRow : TranslationView {
     val outputNumber: Int?
     val programmeOutputIndicatorId: Long?
     val programmeOutputIndicatorIdentifier: String?
+    val programmeOutputIndicatorLanguage: SystemLanguage?
+    val programmeOutputIndicatorName: String?
+    val programmeOutputIndicatorMeasurementUnit: String?
     val targetValue: BigDecimal?
     val outputPeriodNumber: Int?
     //output translation

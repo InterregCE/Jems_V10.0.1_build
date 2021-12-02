@@ -60,18 +60,21 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
 
     @Query(
         value ="""
-             SELECT
-             entity.work_package_id AS workPackageId,
-             entity.output_number AS outputNumber,
-             entity.indicator_output_id as programmeOutputIndicatorId,
-             (SELECT identifier
-             FROM programme_indicator_output
-             WHERE programme_indicator_output.id = entity.indicator_output_id) as programmeOutputIndicatorIdentifier,
-             entity.target_value as targetValue,
-             CONVERT(entity.period_number, INT) as periodNumber,
-             workPackageOutputTransl.*
+            SELECT
+                entity.work_package_id AS workPackageId,
+                entity.output_number AS outputNumber,
+                entity.indicator_output_id as programmeOutputIndicatorId,
+                programmeOutputIndicatorIdentifier.identifier as programmeOutputIndicatorIdentifier,
+                programmeOutputIndicatorIdentifierTransl.language as programmeOutputIndicatorLanguage,
+                programmeOutputIndicatorIdentifierTransl.name as programmeOutputIndicatorName,
+                programmeOutputIndicatorIdentifierTransl.measurement_unit as programmeOutputIndicatorMeasurementUnit,
+                entity.target_value as targetValue,
+                CONVERT(entity.period_number, INT) as periodNumber,
+                workPackageOutputTransl.*
              FROM #{#entityName}_output FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_output_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageOutputTransl ON entity.work_package_id = workPackageOutputTransl.work_package_id AND entity.output_number = workPackageOutputTransl.output_number
+             LEFT JOIN programme_indicator_output AS programmeOutputIndicatorIdentifier ON entity.indicator_output_id = programmeOutputIndicatorIdentifier.id
+             LEFT JOIN programme_indicator_output_transl AS programmeOutputIndicatorIdentifierTransl ON programmeOutputIndicatorIdentifier.id = programmeOutputIndicatorIdentifierTransl.source_entity_id
              WHERE entity.work_package_id = :workPackageId
              ORDER BY entity.output_number
              """,
@@ -115,6 +118,9 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              outputTransl.title as outputTitle,
              outputTransl.description as outputDescription,
              programmeOutput.identifier as programmeOutputIndicatorIdentifier,
+             programmeOutputTransl.language as programmeOutputIndicatorLanguage,
+             programmeOutputTransl.name as programmeOutputIndicatorName,
+             programmeOutputTransl.measurement_unit as programmeOutputIndicatorMeasurementUnit,
 
              investment.id as investmentId,
              investment.investment_number as investmentNumber,
@@ -149,6 +155,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              LEFT JOIN #{#entityName}_output FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS output ON entity.id = output.work_package_id
              LEFT JOIN #{#entityName}_output_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS outputTransl ON output.work_package_id = outputTransl.work_package_id AND output.output_number = outputTransl.output_number
              LEFT JOIN programme_indicator_output AS programmeOutput ON output.indicator_output_id = programmeOutput.id
+             LEFT JOIN programme_indicator_output_transl AS programmeOutputTransl ON programmeOutput.id = programmeOutputTransl.source_entity_id
 
              LEFT JOIN #{#entityName}_investment FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS investment ON entity.id = investment.work_package_id
              LEFT JOIN #{#entityName}_investment_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS investmentTransl ON investment.id = investmentTransl.investment_id
