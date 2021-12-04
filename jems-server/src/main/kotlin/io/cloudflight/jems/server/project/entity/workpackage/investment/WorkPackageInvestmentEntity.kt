@@ -32,6 +32,8 @@ data class WorkPackageInvestmentEntity(
     @Embedded
     var address: AddressEntity?,
 
+    var expectedDeliveryPeriod: Int? = null,
+
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "investmentTranslation.investment")
     val translatedValues: MutableSet<WorkPackageInvestmentTransl> = mutableSetOf()
 ) {

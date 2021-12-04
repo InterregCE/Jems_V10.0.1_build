@@ -31,6 +31,9 @@ data class WorkPackageInvestmentTransl(
     var documentation: String? = null,
 
     @Column
+    var documentationExpectedImpacts: String? = null,
+
+    @Column
     var ownershipSiteLocation: String? = null,
 
     @Column

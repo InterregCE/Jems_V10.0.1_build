@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 data class WorkPackageInvestmentDTO(
     val id: Long?,
     val investmentNumber: Int,
+    val expectedDeliveryPeriod: Int? = null,
     val title: Set<InputTranslation> = emptySet(),
     val justificationExplanation: Set<InputTranslation> = emptySet(),
     val justificationTransactionalRelevance: Set<InputTranslation> = emptySet(),
@@ -14,6 +15,7 @@ data class WorkPackageInvestmentDTO(
     val address: AddressDTO?,
     val risk: Set<InputTranslation> = emptySet(),
     val documentation: Set<InputTranslation> = emptySet(),
+    val documentationExpectedImpacts: Set<InputTranslation> = emptySet(),
     val ownershipSiteLocation: Set<InputTranslation> = emptySet(),
     val ownershipRetain: Set<InputTranslation> = emptySet(),
     val ownershipMaintenance: Set<InputTranslation> = emptySet()

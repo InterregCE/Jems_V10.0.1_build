@@ -26,7 +26,16 @@
                 </app-multi-language-form-field>
             </app-multi-language-container>
 
-            <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION">
+            <app-project-periods-select
+                    *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.EXPECTED_DELIVERY_PERIOD"
+                    [periods]="data.periods"
+                    [control]="workPackageInvestmentForm.get(constants.EXPECTED_DELIVERY_PERIOD.name)"
+                    label='project.application.form.workpackage.investment.expected.delivery.period'
+                    (selectionChanged)="formService.setDirty(true)">
+            </app-project-periods-select>
+
+            <ng-container
+                    *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION">
 
                 <h4>{{'project.application.form.workpackage.investment.justification' | translate}}</h4>
 
@@ -115,16 +124,31 @@
                     *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.DOCUMENTATION">
                 <h4>{{'project.application.form.workpackage.investment.documentation' | translate}}</h4>
 
-                <p>{{'project.application.form.workpackage.investment.documentation.description.line.1' | translate}}</p>
-                <p>{{'project.application.form.workpackage.investment.documentation.description.line.2' | translate}}</p>
-                <app-multi-language-container>
-                    <app-multi-language-form-field
-                            type="textarea"
-                            [label]="'common.textarea.enter.text'"
-                            [formControlName]="constants.DOCUMENTATION.name"
-                            [maxLength]="constants.DOCUMENTATION.maxLength">
-                    </app-multi-language-form-field>
-                </app-multi-language-container>
+                <ng-container
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.DOCUMENTATION.DOCUMENTATION_TECHNICAL_REQUIREMENTS_AND_PERMISSIONS">
+                    <p>{{'project.application.form.workpackage.investment.documentation.description.line.1' | translate}}</p>
+                    <app-multi-language-container>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="constants.DOCUMENTATION.name"
+                                [maxLength]="constants.DOCUMENTATION.maxLength">
+                        </app-multi-language-form-field>
+                    </app-multi-language-container>
+                </ng-container>
+
+                <ng-container
+                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.DOCUMENTATION.DOCUMENTATION_EXPECTED_IMPACTS">
+                    <p>{{'project.application.form.workpackage.investment.documentation.description.line.2' | translate}}</p>
+                    <app-multi-language-container>
+                        <app-multi-language-form-field
+                                type="textarea"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="constants.DOCUMENTATION_EXPECTED_IMPACTS.name"
+                                [maxLength]="constants.DOCUMENTATION_EXPECTED_IMPACTS.maxLength">
+                        </app-multi-language-form-field>
+                    </app-multi-language-container>
+                </ng-container>
             </ng-container>
 
             <ng-container

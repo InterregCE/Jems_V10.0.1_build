@@ -149,6 +149,7 @@ export const APPLICATION_FORM = {
       },
       INVESTMENTS: {
         TITLE: 'application.config.project.investment.title',
+        EXPECTED_DELIVERY_PERIOD: 'application.config.project.investment.expected.delivery.period',
         JUSTIFICATION: {
           WHY_IS_INVESTMENT_NEEDED: 'application.config.project.investment.why.is.investment.needed',
           CROSS_BORDER_TRANSNATIONAL_RELEVANCE_OF_INVESTMENT: 'application.config.project.investment.cross.border.transnational.relevance.of.investment',
@@ -163,7 +164,10 @@ export const APPLICATION_FORM = {
           CITY: 'application.config.project.investment.city'
         },
         RISK: 'application.config.project.investment.risk',
-        DOCUMENTATION: 'application.config.project.investment.documentation',
+        DOCUMENTATION: {
+          DOCUMENTATION_TECHNICAL_REQUIREMENTS_AND_PERMISSIONS: 'application.config.project.investment.documentation',
+          DOCUMENTATION_EXPECTED_IMPACTS: 'application.config.project.investment.documentation.expected.impacts',
+        },
         OWNERSHIP: {
           WHO_OWNS_THE_INVESTMENT_SITE: 'application.config.project.investment.who.owns.the.investment.site',
           OWNERSHIP_AFTER_END_OF_PROJECT: 'application.config.project.investment.ownership.after.end.of.project',

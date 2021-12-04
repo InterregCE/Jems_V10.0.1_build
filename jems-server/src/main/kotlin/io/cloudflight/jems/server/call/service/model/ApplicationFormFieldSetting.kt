@@ -370,6 +370,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.investment.title",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PROJECT_INVESTMENT_PERIOD(
+        "application.config.project.investment.expected.delivery.period",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PROJECT_INVESTMENT_WHY_IS_INVESTMENT_NEEDED(
         "application.config.project.investment.why.is.investment.needed",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -412,6 +416,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     ),
     PROJECT_INVESTMENT_DOCUMENTATION(
         "application.config.project.investment.documentation",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_DOCUMENTATION_EXPECTED_IMPACTS(
+        "application.config.project.investment.documentation.expected.impacts",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_INVESTMENT_WHO_OWNS_THE_INVESTMENT_SITE(
