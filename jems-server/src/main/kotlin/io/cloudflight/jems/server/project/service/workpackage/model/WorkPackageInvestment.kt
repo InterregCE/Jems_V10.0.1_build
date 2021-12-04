@@ -7,6 +7,7 @@ data class WorkPackageInvestment(
     val id: Long?,
     val investmentNumber: Int,
     val title: Set<InputTranslation> = emptySet(),
+    val expectedDeliveryPeriod: Int? = null,
     val justificationExplanation: Set<InputTranslation> = emptySet(),
     val justificationTransactionalRelevance: Set<InputTranslation> = emptySet(),
     val justificationBenefits: Set<InputTranslation> = emptySet(),

@@ -30,6 +30,7 @@ fun Iterable<WorkPackageInvestmentEntity>.toModel() =  map { it.toWorkPackageInv
 fun WorkPackageInvestmentEntity.toWorkPackageInvestment() = WorkPackageInvestment(
     id = id,
     investmentNumber = investmentNumber,
+    expectedDeliveryPeriod = expectedDeliveryPeriod,
     title = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.investmentTranslation.language, it.title)
     },
@@ -52,6 +53,9 @@ fun WorkPackageInvestmentEntity.toWorkPackageInvestment() = WorkPackageInvestmen
     documentation = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.investmentTranslation.language, it.documentation)
     },
+    documentationExpectedImpacts = translatedValues.mapTo(HashSet()) {
+        InputTranslation(it.investmentTranslation.language, it.documentationExpectedImpacts)
+    },
     ownershipSiteLocation = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.investmentTranslation.language, it.ownershipSiteLocation)
     },
@@ -67,6 +71,7 @@ fun WorkPackageInvestment.toWorkPackageInvestmentEntity(workPackageEntity: WorkP
     WorkPackageInvestmentEntity(
         workPackage = workPackageEntity,
         investmentNumber = investmentNumber,
+        expectedDeliveryPeriod = expectedDeliveryPeriod,
         address = address?.toAddressEntity(),
         id = id ?: 0L
     ).apply {
@@ -77,6 +82,7 @@ fun WorkPackageInvestment.toWorkPackageInvestmentEntity(workPackageEntity: WorkP
                 .plus(justificationPilot)
                 .plus(risk)
                 .plus(documentation)
+                .plus(documentationExpectedImpacts)
                 .plus(ownershipSiteLocation)
                 .plus(ownershipMaintenance)
                 .plus(ownershipRetain)
@@ -95,6 +101,7 @@ fun WorkPackageInvestment.toWorkPackageInvestmentEntity(workPackageEntity: WorkP
                             ?: "",
                         risk = risk.firstOrNull { it.language === language }?.translation ?: "",
                         documentation = documentation.firstOrNull { it.language === language }?.translation ?: "",
+                        documentationExpectedImpacts = documentationExpectedImpacts.firstOrNull { it.language === language }?.translation ?: "",
                         ownershipSiteLocation = ownershipSiteLocation.firstOrNull { it.language === language }?.translation
                             ?: "",
                         ownershipMaintenance = ownershipMaintenance.firstOrNull { it.language === language }?.translation
@@ -123,6 +130,7 @@ fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalData() =
         id = groupedRows.value.first().id,
         investmentNumber = groupedRows.value.first().investmentNumber,
         title = groupedRows.value.extractField { it.title },
+        expectedDeliveryPeriod = groupedRows.value.firstOrNull()?.expectedDeliveryPeriod,
         justificationExplanation = groupedRows.value.extractField { it.justificationExplanation },
         justificationTransactionalRelevance = groupedRows.value.extractField { it.justificationTransactionalRelevance },
         justificationBenefits = groupedRows.value.extractField { it.justificationBenefits },
@@ -138,6 +146,7 @@ fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalData() =
         ),
         risk = groupedRows.value.extractField { it.risk },
         documentation = groupedRows.value.extractField { it.documentation },
+        documentationExpectedImpacts = groupedRows.value.extractField { it.documentationExpectedImpacts },
         ownershipSiteLocation = groupedRows.value.extractField { it.ownershipSiteLocation },
         ownershipRetain = groupedRows.value.extractField { it.ownershipRetain },
         ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance }
@@ -163,6 +172,7 @@ fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalList() =
         ),
         risk = groupedRows.value.extractField { it.risk },
         documentation = groupedRows.value.extractField { it.documentation },
+        documentationExpectedImpacts = groupedRows.value.extractField { it.documentationExpectedImpacts },
         ownershipSiteLocation = groupedRows.value.extractField { it.ownershipSiteLocation },
         ownershipRetain = groupedRows.value.extractField { it.ownershipRetain },
         ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance }

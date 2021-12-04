@@ -97,10 +97,11 @@ export class ApplicationFormConfigurationPageStore {
           this.addSectionNodes('application.config.project.section.c.4.objectives', 2, APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES, callPublished, configs),
           this.addParentNode('application.config.project.section.c.4.investments', 2, [
             this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE, 2, callPublished, configs),
+            this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.EXPECTED_DELIVERY_PERIOD, 2, callPublished, configs),
             ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION, 2, callPublished, configs),
             ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS, 2, callPublished, configs),
             this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.RISK, 2, callPublished, configs),
-            this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.DOCUMENTATION, 2, callPublished, configs),
+            ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.DOCUMENTATION, 2, callPublished, configs),
             ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.OWNERSHIP, 2, callPublished, configs),
           ]),
           this.addSectionNodes('application.config.project.section.c.4.activities', 2, APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES, callPublished, configs),

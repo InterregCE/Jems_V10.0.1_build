@@ -9,6 +9,10 @@ export class ProjectWorkPackageInvestmentDetailPageConstants {
     validators: [Validators.maxLength(50)]
   };
 
+  public static EXPECTED_DELIVERY_PERIOD: AppControl = {
+    name: 'expectedDeliveryPeriod'
+  }
+
   public static JUSTIFICATION_EXPLANATION: AppControl = {
     name: 'justificationExplanation',
     maxLength: 2000,
@@ -41,6 +45,12 @@ export class ProjectWorkPackageInvestmentDetailPageConstants {
 
   public static DOCUMENTATION: AppControl = {
     name: 'documentation',
+    maxLength: 2000,
+    validators: [Validators.maxLength(2000)]
+  };
+
+  public static DOCUMENTATION_EXPECTED_IMPACTS: AppControl = {
+    name: 'documentationExpectedImpacts',
     maxLength: 2000,
     validators: [Validators.maxLength(2000)]
   };
