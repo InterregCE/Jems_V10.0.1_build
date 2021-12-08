@@ -31,10 +31,13 @@ class Authorization(
         permission.projectRelated && hasAuthority(permission) &&
             (getUser().assignedProjects.contains(projectId) || hasAuthority(ProjectRetrieve))
 
-    private fun hasAuthority(permission: UserRolePermission): Boolean =
+    /**
+     * will ignore project-user assignment rules
+     */
+    fun hasAuthority(permission: UserRolePermission): Boolean =
         securityService.currentUser?.hasPermission(permission)!!
 
-    protected fun isActiveUserIdEqualTo(userId: Long): Boolean =
-        userId == securityService.getUserIdOrThrow()
+    protected fun isActiveUserIdEqualToOneOf(userIds: Set<Long>): Boolean =
+        userIds.contains(securityService.getUserIdOrThrow())
 
 }

@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.authorization.CanAssignUsersToProjects
-import io.cloudflight.jems.server.user.service.model.UpdateProjectUser
+import io.cloudflight.jems.server.user.service.model.assignment.UpdateProjectUser
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieveEditUserAssignments
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve

@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component
 
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.hasPermissionOrIsOwner('ProjectSubmission', #projectId)")
+@PreAuthorize("@projectStatusAuthorization.hasPermissionOrIsViewCollaborator('ProjectSubmission', #projectId)")
 annotation class CanSubmitApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.hasPermissionOrIsOwner('ProjectCheckApplicationForm', #projectId)")
+@PreAuthorize("@projectStatusAuthorization.hasPermissionOrIsViewCollaborator('ProjectCheckApplicationForm', #projectId)")
 annotation class CanCheckApplicationForm
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -71,9 +71,9 @@ class ProjectStatusAuthorization(
     val projectPersistence: ProjectPersistence,
 ) : Authorization(securityService) {
 
-    fun hasPermissionOrIsOwner(permission: UserRolePermission, projectId: Long): Boolean {
+    fun hasPermissionOrIsViewCollaborator(permission: UserRolePermission, projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val isOwner = isActiveUserIdEqualTo(userId = project.applicantId)
+        val isOwner = isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
 
         if (isOwner || hasPermissionForProject(permission, projectId))
             return true

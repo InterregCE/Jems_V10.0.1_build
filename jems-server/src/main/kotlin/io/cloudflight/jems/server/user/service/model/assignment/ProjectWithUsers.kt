@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.user.service.model
+package io.cloudflight.jems.server.user.service.model.assignment
 
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 

@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.user.service.UserProjectCollaboratorPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -56,6 +57,9 @@ internal class GetProjectTest : UnitTest() {
     lateinit var persistence: ProjectPersistence
 
     @MockK
+    lateinit var collaboratorPersistence: UserProjectCollaboratorPersistence
+
+    @MockK
     lateinit var securityService: SecurityService
 
     @InjectMockKs
@@ -75,9 +79,10 @@ internal class GetProjectTest : UnitTest() {
         every { persistence.getProjectsOfUserPlusExtra(Pageable.unpaged(), 44L, capture(extraProjectIds)) } returns PageImpl(listOf(dummyProject))
         every { securityService.currentUser } returns user
         every { securityService.getUserIdOrThrow() } returns user.user.id
+        every { collaboratorPersistence.getProjectIdsForUser(44L) } returns setOf(11L, 12L)
 
         assertThat(getProject.getMyProjects(Pageable.unpaged()).content).containsExactly(dummyProject)
-        assertThat(extraProjectIds.captured).containsExactlyInAnyOrder(10L, 11L)
+        assertThat(extraProjectIds.captured).containsExactlyInAnyOrder(10L, 11L, 12L)
     }
 
 }

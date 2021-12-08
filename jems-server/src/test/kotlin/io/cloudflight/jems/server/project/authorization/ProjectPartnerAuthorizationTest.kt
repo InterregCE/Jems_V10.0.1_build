@@ -69,7 +69,13 @@ internal class ProjectPartnerAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { securityService.currentUser } returns user
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = 1178L, projectStatus = status)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = 1178L,
+                projectStatus = status,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
 
         // verify test setup
         assertThat(user.user.assignedProjects).isEmpty()
@@ -86,7 +92,13 @@ internal class ProjectPartnerAuthorizationTest : UnitTest() {
         every { mockStatus.canBeModified() } returns isOpen
 
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = user.user.id, projectStatus = mockStatus)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = user.user.id,
+                projectStatus = mockStatus,
+                collaboratorManageIds = setOf(user.user.id),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { securityService.currentUser } returns user
 
@@ -107,7 +119,13 @@ internal class ProjectPartnerAuthorizationTest : UnitTest() {
         every { mockStatus.canBeModified() } returns isOpen
 
         every { securityService.currentUser } returns user
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns ProjectApplicantAndStatus(PROJECT_ID, applicantId = 2698L, projectStatus = mockStatus)
+        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns ProjectApplicantAndStatus(PROJECT_ID,
+            applicantId = 2698L,
+            projectStatus = mockStatus,
+            collaboratorManageIds = emptySet(),
+            collaboratorEditIds = emptySet(),
+            collaboratorViewIds = emptySet(),
+        )
 
         // verify test setup
         assertThat(user.user.assignedProjects).contains(PROJECT_ID)
@@ -130,7 +148,13 @@ internal class ProjectPartnerAuthorizationTest : UnitTest() {
 
         every { securityService.currentUser } returns user
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = 2698L, projectStatus = mockStatus)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = 2698L,
+                projectStatus = mockStatus,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
 
         // verify test setup
         assertThat(user.user.assignedProjects).isEmpty()
@@ -152,7 +176,13 @@ internal class ProjectPartnerAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { securityService.currentUser } returns user
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = 1178L, projectStatus = status)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = 1178L,
+                projectStatus = status,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
 
         // verify test setup
         assertThat(user.user.assignedProjects).isEmpty()
@@ -167,7 +197,13 @@ internal class ProjectPartnerAuthorizationTest : UnitTest() {
         val user = applicantUser
 
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = user.user.id, projectStatus = mockStatus)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = user.user.id,
+                projectStatus = mockStatus,
+                collaboratorManageIds = setOf(user.user.id),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { securityService.currentUser } returns user
 
@@ -186,7 +222,13 @@ internal class ProjectPartnerAuthorizationTest : UnitTest() {
             AuthorizationUtil.userApplicant.copy(assignedProjects = setOf(PROJECT_ID)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectFormRetrieve.name)))
 
         every { securityService.currentUser } returns user
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns ProjectApplicantAndStatus(PROJECT_ID, applicantId = 2698L, projectStatus = mockStatus)
+        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns ProjectApplicantAndStatus(PROJECT_ID,
+            applicantId = 2698L,
+            projectStatus = mockStatus,
+            collaboratorManageIds = emptySet(),
+            collaboratorEditIds = emptySet(),
+            collaboratorViewIds = emptySet(),
+        )
 
         // verify test setup
         assertThat(user.user.assignedProjects).contains(PROJECT_ID)
@@ -207,7 +249,13 @@ internal class ProjectPartnerAuthorizationTest : UnitTest() {
 
         every { securityService.currentUser } returns user
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = 2698L, projectStatus = mockStatus)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = 2698L,
+                projectStatus = mockStatus,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
 
         // verify test setup
         assertThat(user.user.assignedProjects).isEmpty()

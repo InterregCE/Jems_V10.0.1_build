@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.user.service.userproject.get_users_assigned_t
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
 
-private const val GET_USERS_WITH_PROJECT_ERROR_CODE_PREFIX = "S-GUWP"
+private const val GET_USERS_WITH_PROJECT_ERROR_CODE_PREFIX = "S-GUP"
 private const val GET_USERS_WITH_PROJECT_ERROR_KEY_PREFIX = "use.case.get.users.with.project"
 
 class GetUsersAssignedToProjectsException(cause: Throwable) : ApplicationException(

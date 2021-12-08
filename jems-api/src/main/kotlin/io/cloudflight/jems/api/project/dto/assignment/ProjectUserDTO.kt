@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.dto
+package io.cloudflight.jems.api.project.dto.assignment
 
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 

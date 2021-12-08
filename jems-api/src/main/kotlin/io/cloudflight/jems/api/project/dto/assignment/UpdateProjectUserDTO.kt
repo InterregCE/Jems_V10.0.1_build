@@ -1,7 +1,7 @@
-package io.cloudflight.jems.server.user.service.model
+package io.cloudflight.jems.api.project.dto.assignment
 
-data class UpdateProjectUser(
+data class UpdateProjectUserDTO(
     val projectId: Long,
     val userIdsToAdd: Set<Long>,
     val userIdsToRemove: Set<Long> = emptySet()
-)
+ )

@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationUpdate
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileAssessmentRetrieve
@@ -115,7 +114,7 @@ class ProjectFileAuthorization(
     private fun canRetrieveApplicationAttachments(projectId: Long, throwException: Boolean = true) =
         runCatching {
             hasPermissionForProject(ProjectFileApplicationRetrieve, projectId) ||
-                projectAuthorization.isUserOwnerOrThrow(projectId)
+                projectAuthorization.isUserViewCollaboratorForProjectOrThrow(projectId)
         }.onFailure { if (throwException) throw it else Unit }.getOrDefault(false)
 
     private fun canUpdateApplicationAttachments(projectId: Long) =

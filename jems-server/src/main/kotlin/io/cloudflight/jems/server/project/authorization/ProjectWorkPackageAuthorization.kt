@@ -34,7 +34,7 @@ annotation class CanRetrieveProjectWorkPackageInvestment
 @Retention(AnnotationRetention.RUNTIME)
 // ProjectFileApplicationRetrieve is temporary hack because of broken File Upload screen,
 // where people needs to see partners even when they cannot see project
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || @projectAuthorization.isUserOwnerOrThrow(#projectId)")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || @projectAuthorization.userOwnerOrViewCollaboratorOrThrow(#projectId)")
 annotation class CanRetrieveProjectWorkPackageInvestmentSummaries
 
 @Component
@@ -47,7 +47,8 @@ class ProjectWorkPackageAuthorization(
 
     fun canUpdateProjectWorkPackage(workPackageId: Long): Boolean {
         val project = getProjectFromWorkPackageId(workPackageId)
-        val canSeeWorkPackage = hasPermissionForProject(UserRolePermission.ProjectFormUpdate, projectId = project.projectId) || isActiveUserIdEqualTo(project.applicantId)
+        val canSeeWorkPackage = hasPermissionForProject(UserRolePermission.ProjectFormUpdate, projectId = project.projectId)
+            || isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
         if (canSeeWorkPackage)
             return project.projectStatus.canBeModified()
         throw ResourceNotFoundException("project")
@@ -55,12 +56,14 @@ class ProjectWorkPackageAuthorization(
 
     fun canRetrieveProjectWorkPackage(projectId: Long, workPackageId: Long, version: String? = null): Boolean {
         val project = getProject(projectId, workPackageId, version)
-        return hasPermissionForProject(UserRolePermission.ProjectFormRetrieve, projectId = project.projectId) || isActiveUserIdEqualTo(project.applicantId)
+        return hasPermissionForProject(UserRolePermission.ProjectFormRetrieve, projectId = project.projectId)
+            || isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
     }
 
     fun canRetrieveProjectWorkPackageInvestment(projectId: Long, investmentId: Long, version: String? = null): Boolean {
         val project = workPackagePersistence.getProjectFromWorkPackageInvestment(investmentId)
-        return hasPermissionForProject(UserRolePermission.ProjectFormRetrieve, projectId = project.projectId) || isActiveUserIdEqualTo(project.applicantId)
+        return hasPermissionForProject(UserRolePermission.ProjectFormRetrieve, projectId = project.projectId)
+            || isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
     }
 
     private fun getProject(projectId: Long, workPackageId: Long, version: String?): ProjectApplicantAndStatus =
@@ -72,7 +75,8 @@ class ProjectWorkPackageAuthorization(
 
     fun canUpdateProjectWorkPackageInvestment(investmentId: Long): Boolean {
         val project = getProjectFromInvestmentId(investmentId)
-        val canSeeInvestment = hasPermissionForProject(UserRolePermission.ProjectFormUpdate, projectId = project.projectId) || isActiveUserIdEqualTo(project.applicantId)
+        val canSeeInvestment = hasPermissionForProject(UserRolePermission.ProjectFormUpdate, projectId = project.projectId)
+            || isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
         if (canSeeInvestment)
             return project.projectStatus.canBeModified()
         throw ResourceNotFoundException("project")

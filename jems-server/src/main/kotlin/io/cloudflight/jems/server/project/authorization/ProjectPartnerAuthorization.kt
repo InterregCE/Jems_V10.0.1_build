@@ -22,7 +22,7 @@ annotation class CanRetrieveProjectPartner
 @Retention(AnnotationRetention.RUNTIME)
 // ProjectFileApplicationRetrieve is temporary hack because of broken File Upload screen,
 // where people needs to see partners even when they cannot see project
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || @projectAuthorization.isUserOwnerOrThrow(#projectId)")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || @projectAuthorization.userOwnerOrViewCollaboratorOrThrow(#projectId)")
 annotation class CanRetrieveProjectPartnerSummaries
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -38,7 +38,8 @@ class ProjectPartnerAuthorization(
 
     fun canUpdatePartner(partnerId: Long): Boolean {
         val project = getProjectFromPartnerId(partnerId)
-        val canUpdatePartner = hasPermissionForProject(ProjectFormUpdate, projectId = project.projectId) || isActiveUserIdEqualTo(project.applicantId)
+        val canUpdatePartner = hasPermissionForProject(ProjectFormUpdate, projectId = project.projectId)
+            || isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
         if (canUpdatePartner)
             return project.projectStatus.canBeModified()
         throw ResourceNotFoundException("partner")
@@ -46,7 +47,8 @@ class ProjectPartnerAuthorization(
 
     fun canRetrievePartner(partnerId: Long, version: String? = null) : Boolean {
         val project = getProjectFromPartnerId(partnerId, version)
-        val canRetrievePartner = hasPermissionForProject(ProjectFormRetrieve, projectId = project.projectId) || isActiveUserIdEqualTo(project.applicantId)
+        val canRetrievePartner = hasPermissionForProject(ProjectFormRetrieve, projectId = project.projectId)
+            || isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
         if (canRetrievePartner)
             return true
         throw ResourceNotFoundException("partner")

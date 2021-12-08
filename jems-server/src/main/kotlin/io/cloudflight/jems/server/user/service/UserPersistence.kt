@@ -20,6 +20,8 @@ interface UserPersistence {
 
     fun findAllWithRoleIdIn(roleIds: Set<Long>): List<UserSummary>
 
+    fun findAllByEmails(emails: Collection<String>): List<UserSummary>
+
     fun findAllByIds(ids: Iterable<Long>): List<UserSummary>
 
     fun create(user: UserChange, passwordEncoded: String): User

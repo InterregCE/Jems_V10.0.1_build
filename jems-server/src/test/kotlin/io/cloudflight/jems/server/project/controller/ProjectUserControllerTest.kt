@@ -1,12 +1,12 @@
 package io.cloudflight.jems.server.project.controller
 
-import io.cloudflight.jems.api.project.dto.ProjectUserDTO
-import io.cloudflight.jems.api.project.dto.UpdateProjectUserDTO
+import io.cloudflight.jems.api.project.dto.assignment.ProjectUserDTO
+import io.cloudflight.jems.api.project.dto.assignment.UpdateProjectUserDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.user.service.model.ProjectWithUsers
-import io.cloudflight.jems.server.user.service.model.UpdateProjectUser
+import io.cloudflight.jems.server.user.service.model.assignment.ProjectWithUsers
+import io.cloudflight.jems.server.user.service.model.assignment.UpdateProjectUser
 import io.cloudflight.jems.server.user.service.userproject.assign_user_to_project.AssignUserToProjectInteractor
 import io.cloudflight.jems.server.user.service.userproject.get_users_assigned_to_projects.GetUsersAssignedToProjectsInteractor
 import io.mockk.clearMocks

@@ -1,11 +1,10 @@
 package io.cloudflight.jems.server.user.service.userproject.get_users_assigned_to_projects
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.controller.toDTO
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.service.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.authorization.CanAssignUsersToProjects
-import io.cloudflight.jems.server.user.service.model.ProjectWithUsers
+import io.cloudflight.jems.server.user.service.model.assignment.ProjectWithUsers
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
