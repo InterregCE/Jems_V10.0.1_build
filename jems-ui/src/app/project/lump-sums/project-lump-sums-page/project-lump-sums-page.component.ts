@@ -47,6 +47,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   ) {
   }
 
+  APPLICATION_FORM = APPLICATION_FORM;
   PREPARATION_PERIOD = 0;
   CLOSURE_PERIOD = 255;
 
@@ -94,7 +95,10 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ? ['period'] : [],
       'isSplittingLumpSumAllowed', 'lumpSumCost',
       ...partners?.map(partner => partner.toPartnerNumberString()),
-      'rowSum', 'gap', 'description', 'actions'
+      'rowSum',
+      'gap',
+      ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_E.PROJECT_LUMP_SUMS_AND_UNIT_COSTS.PROJECT_LUMP_SUMS.DESCRIPTION) ? ['description'] : [],
+      'actions'
     ];
   }
 
@@ -106,7 +110,10 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       ...partners?.map(() => {
         return {minInRem: 8};
       }),
-      {minInRem: 8}, {minInRem: 8}, {minInRem: 12}, {minInRem: 3}
+      {minInRem: 8},
+      {minInRem: 8},
+      ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_E.PROJECT_LUMP_SUMS_AND_UNIT_COSTS.PROJECT_LUMP_SUMS.DESCRIPTION) ? [{minInRem: 12}] : [],
+      {minInRem: 3}
     ];
   }
 

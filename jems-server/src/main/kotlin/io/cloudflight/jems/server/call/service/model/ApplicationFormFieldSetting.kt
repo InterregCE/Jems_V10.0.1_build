@@ -533,6 +533,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     PROJECT_TRANSFERABILITY(
         "application.config.project.transferability",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_LUMP_SUMS_DESCRIPTION(
+        "application.config.project.lump.sums.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     );
 
     companion object {

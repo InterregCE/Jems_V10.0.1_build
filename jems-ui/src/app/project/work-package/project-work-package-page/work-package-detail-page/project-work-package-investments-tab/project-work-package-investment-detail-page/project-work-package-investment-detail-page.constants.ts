@@ -11,7 +11,7 @@ export class ProjectWorkPackageInvestmentDetailPageConstants {
 
   public static EXPECTED_DELIVERY_PERIOD: AppControl = {
     name: 'expectedDeliveryPeriod'
-  }
+  };
 
   public static JUSTIFICATION_EXPLANATION: AppControl = {
     name: 'justificationExplanation',
