@@ -28,7 +28,7 @@
                                  [customStyle]="'outline'">
         </app-expandable-textarea>
         <div appMultiColumnRow *ngIf="!data.qualityAssessment">
-            <button mat-stroked-button
+            <button appText mat-stroked-button
                     (click)="onCancel()">{{'project.assessment.qualityCheck.dialog.button.cancel' | translate}}
             </button>
 

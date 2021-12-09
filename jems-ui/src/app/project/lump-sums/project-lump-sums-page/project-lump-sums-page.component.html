@@ -187,7 +187,7 @@
                                 <ng-container stickyEnd matColumnDef="actions">
                                     <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                     <mat-cell *matCellDef="let control;let index=index">
-                                        <button *ngIf="lumpSumsForm.enabled" class="delete-button"
+                                        <button appText *ngIf="lumpSumsForm.enabled" class="delete-button"
                                                 type="button"
                                                 tabindex="-1" mat-icon-button color="accent"
                                                 matTooltip="{{'common.delete.entry.tooltip' | translate}}"
@@ -206,7 +206,7 @@
                             </mat-table>
                         </app-multi-language-container>
                     </div>
-                    <button *ngIf="lumpSumsForm.enabled" mat-stroked-button type="button" class="mt-2"
+                    <button appText *ngIf="lumpSumsForm.enabled" mat-stroked-button type="button" class="mt-2"
                             [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
                             (click)="addNewItem(data.partners)">
                         <mat-icon>add</mat-icon>
@@ -225,7 +225,7 @@
 
     <ng-template #addItemButton>
         <ng-container *ngIf="lumpSumsForm.enabled">
-            <button mat-stroked-button
+            <button appText mat-stroked-button
                     (click)="addNewItem(data.partners)">+ {{'common.button.add' | translate}}
             </button>
         </ng-container>

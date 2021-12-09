@@ -1,6 +1,6 @@
 <div>
     <h3>{{'programme.area.nuts.explorer.header' | translate}}
-        <button mat-raised-button color="primary"
+        <button appText mat-raised-button color="primary"
                 *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
@@ -27,11 +27,11 @@
         </div>
     </div>
     <div  *ngIf="formState === FormState.EDIT && (programmeEditableStateStore.hasEditPermission$ | async)" class="mt-3">
-        <button mat-stroked-button class="mr-3"
+        <button appText mat-stroked-button class="mr-3"
                 (click)="onCancel()">
             {{'common.cancel.label' | translate}}
         </button>
-        <button mat-raised-button color="primary"
+        <button appText mat-raised-button color="primary"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
         </button>

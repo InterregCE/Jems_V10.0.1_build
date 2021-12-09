@@ -5,7 +5,7 @@
     <h3>{{'project.application.form.section.part.b.associatedOrganizations' | translate}}</h3>
 
     <ng-container *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button *ngIf="(projectStore.projectEditable$ | async) === true" mat-stroked-button
+        <button appText *ngIf="(projectStore.projectEditable$ | async) === true" mat-stroked-button
                 [routerLink]="'/app/project/detail/' + projectId + '/applicationFormAssociatedOrganization/create'">
             + {{'project.application.form.associatedOrganization.add' | translate}}
         </button>

@@ -49,7 +49,7 @@
                                        matTreeNodePadding
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
-                                <button mat-icon-button disabled></button>
+                                <button appText mat-icon-button disabled></button>
                                 <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
 
                                 <div class="controls">
@@ -101,7 +101,7 @@
                                        matTreeNodePadding
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
-                                <button mat-icon-button matTreeNodeToggle
+                                <button appText mat-icon-button matTreeNodeToggle
                                         [attr.aria-label]="'Toggle ' + node.name">
                                     <mat-icon class="mat-icon-rtl-mirror">
                                         {{treeControlCreateAndCollaborate.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
@@ -139,7 +139,7 @@
                                        matTreeNodePadding
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
-                                <button mat-icon-button disabled></button>
+                                <button appText mat-icon-button disabled></button>
                                 <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
 
                                 <div class="controls">
@@ -201,7 +201,7 @@
                                        matTreeNodePadding
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
-                                <button mat-icon-button matTreeNodeToggle
+                                <button appText mat-icon-button matTreeNodeToggle
                                         [attr.aria-label]="'Toggle ' + node.name">
                                     <mat-icon class="mat-icon-rtl-mirror">
                                         {{treeControlInspect.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
@@ -233,7 +233,7 @@
                                        matTreeNodePadding
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
-                                <button mat-icon-button disabled></button>
+                                <button appText mat-icon-button disabled></button>
                                 <mat-icon class="mr-1 mb-1">{{icon(node.form)?.value}}</mat-icon>
                                 <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
 
@@ -296,7 +296,7 @@
                                        matTreeNodePadding
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
-                                <button mat-icon-button matTreeNodeToggle
+                                <button appText mat-icon-button matTreeNodeToggle
                                         [attr.aria-label]="'Toggle ' + node.name">
                                     <mat-icon class="mat-icon-rtl-mirror">
                                         {{treeControlTopNavigation.isExpanded(node) ? 'expand_more' : 'chevron_right'}}

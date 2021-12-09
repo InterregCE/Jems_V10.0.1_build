@@ -174,7 +174,7 @@
     </app-form>
 
     <mat-card-footer *ngIf="published && data.userCanApply && isOpen(data.call)" class="footer">
-        <button (click)="applyToCall(data.call.id)" class="action-button"
+        <button appText (click)="applyToCall(data.call.id)" class="action-button"
                 color="primary"
                 mat-raised-button>
             {{'call.table.column.action.apply' | translate}}

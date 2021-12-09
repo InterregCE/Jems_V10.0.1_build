@@ -59,7 +59,7 @@
 </ng-template>
 
 <ng-template #callActionsCell let-project>
-    <button mat-icon-button color="primary"
+    <button appText mat-icon-button color="primary"
             matTooltip="{{'project.table.column.action.clear.tooltip' | translate}}"
             (click)="clearUserProjectAssignments(project.index)">
         <mat-icon>highlight_off</mat-icon>

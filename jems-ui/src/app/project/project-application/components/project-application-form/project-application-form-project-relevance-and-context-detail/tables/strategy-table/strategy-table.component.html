@@ -34,7 +34,7 @@
                         </div>
 
                         <div>
-                            <button *ngIf="editable" type="button" (click)="deleteEntry(i)" mat-icon-button color="accent">
+                            <button appText *ngIf="editable" type="button" (click)="deleteEntry(i)" mat-icon-button color="accent">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>
@@ -43,7 +43,7 @@
             </div>
         </div>
     </app-multi-language-container>
-    <button *ngIf="editable && strategiesForm.controls?.length < 20" mat-stroked-button type="button"
+    <button appText *ngIf="editable && strategiesForm.controls?.length < 20" mat-stroked-button type="button"
             (click)="addNewStrategy()">
         <mat-icon>add</mat-icon>
     </button>

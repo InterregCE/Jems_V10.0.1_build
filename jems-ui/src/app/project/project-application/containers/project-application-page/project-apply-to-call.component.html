@@ -41,13 +41,13 @@
         </mat-form-field>
 
         <div appMultiColumnRow>
-            <button *ngxPermissionsOnly="Permission.APPLICANT_USER"
+            <button appText *ngxPermissionsOnly="Permission.APPLICANT_USER"
                     mat-stroked-button
                     type="button"
                     (click)="onCancel()">
                 {{'project.detail.new.button.cancel' | translate}}
             </button>
-            <button mat-raised-button
+            <button appText mat-raised-button
                     color="primary"
                     type="submit"
                     [disabled]="submissionForm.invalid"

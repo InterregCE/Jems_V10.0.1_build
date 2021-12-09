@@ -11,7 +11,7 @@
                     [totalElements]="priorities.length">
             </app-table>
         </ng-container>
-        <button mat-stroked-button
+        <button appText mat-stroked-button
                 *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                 routerLink="/app/programme/priorities/create">
             <mat-icon>add</mat-icon>&nbsp;{{'programme.priority.button.add' | translate}}

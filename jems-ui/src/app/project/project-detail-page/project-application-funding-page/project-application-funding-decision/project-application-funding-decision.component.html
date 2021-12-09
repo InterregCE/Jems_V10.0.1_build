@@ -35,7 +35,7 @@
     </mat-form-field>
     <ng-container *ngIf="!status">
         <div appMultiColumnRow *hasPermission="[PermissionsEnum.ProjectStatusDecideApproved, PermissionsEnum.ProjectStatusDecideApprovedWithConditions, PermissionsEnum.ProjectStatusDecideNotApproved]">
-            <button mat-stroked-button
+            <button appText mat-stroked-button
                     (click)="redirectToAssessmentAndDecisions()">
                 {{'project.assessment.fundingDecision.dialog.button.cancel' | translate}}
             </button>

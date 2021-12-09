@@ -1,7 +1,7 @@
 <app-main-page-template [needsCard]="true"
                         subTitleKey="users.table.title.label"
                         titleKey="topbar.main.user.user.management">
-    <button *hasPermission="PermissionsEnum.UserCreate"
+    <button appText *hasPermission="PermissionsEnum.UserCreate"
             class="mb-3"
             color="primary"
             mat-raised-button
