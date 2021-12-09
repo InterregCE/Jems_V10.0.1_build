@@ -1,7 +1,7 @@
 <app-main-page-template [needsCard]="true"
                         titleKey="topbar.main.user.role.management"
                         subTitleKey="userRole.breadcrumb.list">
-    <button *hasPermission="PermissionsEnum.RoleCreate"
+    <button appText *hasPermission="PermissionsEnum.RoleCreate"
             mat-raised-button
             class="mb-3 put-into-paginator"
             color="primary"

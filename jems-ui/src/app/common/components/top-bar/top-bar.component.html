@@ -4,7 +4,7 @@
         <img class="img" src="assets/logos/InteractProgrammeLogo_48.png" alt="">
     </ng-template>
     <!--Hamburger Menu-->
-    <button mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
+    <button appText mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
             data-toggle="collapse"
             data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
@@ -63,7 +63,7 @@
 
             <!-- Logout -->
             <li class="nav-item" *ngIf="currentUser">
-                <button mat-flat-button class="logout-button" color="primary"
+                <button appText mat-flat-button class="logout-button" color="primary"
                         (click)="logout()" [ngClass]="{'not-collapsed': !isNavBarCollapsed}">
                     {{'topbar.main.button.logout' | translate}}
                 </button>

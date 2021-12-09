@@ -4,7 +4,7 @@
     <form appFormLayout [formGroup]="form">
         <div page-sub-title appMultiColumnRow>
             <h2 class="mb-0">{{'programme.priority.add.title' | translate}}</h2>
-            <button color="primary" mat-raised-button
+            <button appText color="primary" mat-raised-button
                     *ngIf="form.disabled && (programmeEditableStateStore.hasEditPermission$ | async)"
                     (click)="form.enable(); resetForm(data.priority, data.freePrioritiesWithPolicies)">
                 {{'common.edit.label' | translate}}

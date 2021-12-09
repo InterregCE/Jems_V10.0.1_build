@@ -70,7 +70,7 @@
             <app-file-management [section]="fileManagementSection" appNoWidthLimit></app-file-management>
         </ng-container>
         <ng-template #revertNotPossible>
-            <button class="mr-2 mt-2" *hasPermission="PermissionsEnum.ProjectStatusDecisionRevert"
+            <button appText class="mr-2 mt-2" *hasPermission="PermissionsEnum.ProjectStatusDecisionRevert"
                     mat-raised-button disabled
                     (click)="revertProjectStatus(data.projectId)">
                 {{ 'project.application.revert.decision.impossible.button.label' | translate }}

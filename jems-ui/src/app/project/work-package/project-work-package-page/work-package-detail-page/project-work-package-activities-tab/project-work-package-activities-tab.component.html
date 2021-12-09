@@ -14,7 +14,7 @@
                                       class="text-overflow-ellipsis">{{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                             </h4>
 
-                            <button *ngIf="form.enabled"
+                            <button appText *ngIf="form.enabled"
                                     type="button" mat-icon-button color="accent"
                                     (click)="removeActivity(i)">
                                 <mat-icon>delete</mat-icon>
@@ -133,7 +133,7 @@
                                                 </app-project-periods-select>
 
                                                 <div>
-                                                    <button *ngIf="form.enabled"
+                                                    <button appText *ngIf="form.enabled"
                                                             type="button"
                                                             (click)="removeDeliverable(i, j)"
                                                             mat-icon-button
@@ -146,7 +146,7 @@
                                     </div>
                                 </div>
                             </app-multi-language-container>
-                            <button *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
+                            <button appText *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
                                     (click)="addNewDeliverable(i)">
                                 <mat-icon>add</mat-icon>
                             </button>
@@ -154,7 +154,7 @@
                     </div>
                 </ng-container>
             </div>
-            <button *ngIf="addActivityVisible()" mat-stroked-button (click)="addNewActivity()">
+            <button appText *ngIf="addActivityVisible()" mat-stroked-button (click)="addNewActivity()">
                 + {{'project.work.package.tab.activity.add' | translate}}
             </button>
         </form>

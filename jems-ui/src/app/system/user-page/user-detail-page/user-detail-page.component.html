@@ -5,7 +5,7 @@
         <div appMultiColumnRow>
             <h2 class="inline-block">{{'user.detail.page.title' | translate}}</h2>
             <ng-container *hasPermission="PermissionsEnum.UserUpdate">
-                <button (click)="changeFormState$.next(FormState.EDIT)"
+                <button appText (click)="changeFormState$.next(FormState.EDIT)"
                         *ngIf="details.user?.id && formState === FormState.VIEW" [disabled]="passwordIsInEditMode"
                         color="primary"
                         mat-raised-button>
@@ -69,12 +69,12 @@
         </div>
 
         <div *ngIf="formState === FormState.EDIT" appMultiColumnRow>
-            <button (click)="discard(details.user)"
+            <button appText (click)="discard(details.user)"
                     mat-stroked-button
                     type="button">
                 {{'common.cancel.label' | translate}}
             </button>
-            <button (click)="onSubmit(details.user)"
+            <button appText (click)="onSubmit(details.user)"
                     [disabled]="userForm.invalid || submitted"
                     color="primary"
                     mat-raised-button

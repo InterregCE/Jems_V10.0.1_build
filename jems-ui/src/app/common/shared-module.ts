@@ -53,6 +53,7 @@ import {FilterTemplateComponent} from '@common/components/filter/filter-template
 import {FilterTextInputComponent} from '@common/components/filter/filter-text-input/filter-text-input.component';
 import {FilterListInputComponent} from '@common/components/filter/filter-list-input/filter-list-input.component';
 import {FilterDateInputComponent} from '@common/components/filter/filter-date-input/filter-date-input.component';
+import {TextDirective} from '@common/directives/text.directive';
 
 const modules = [
   CommonModule,
@@ -101,6 +102,7 @@ const declarations = [
   MultiColumnRowDirective,
   NoWidthLimitDirective,
   LabelDirective,
+  TextDirective,
   MainPageTemplateComponent,
   ApiErrorContentComponent,
   InlineEditableFieldComponent,

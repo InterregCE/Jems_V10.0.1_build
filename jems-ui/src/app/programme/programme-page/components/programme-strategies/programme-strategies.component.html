@@ -1,7 +1,7 @@
 <form appFormLayout [formGroup]="programmeStrategyForm">
     <div appMultiColumnRow>
         <h3 class="mb-0">{{'programme.strategy.title' | translate}}</h3>
-        <button mat-raised-button color="primary"
+        <button appText mat-raised-button color="primary"
                 *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'programme.strategy.button.edit' | translate}}
@@ -19,12 +19,12 @@
         </div>
     </div>
     <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
-        <button mat-stroked-button
+        <button appText mat-stroked-button
                 type="button"
                 (click)="onCancel()">
             {{'programme.strategy.button.cancel' | translate}}
         </button>
-        <button mat-raised-button
+        <button appText mat-raised-button
                 color="primary"
                 type="button"
                 [disabled]="submitted"

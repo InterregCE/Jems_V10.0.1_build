@@ -20,7 +20,7 @@
 
 <ng-template #saveDiscard>
     <mat-card-footer [@slideInOut] class="footer">
-        <button [disabled]="(formService.pending$ | async) === true"
+        <button appText [disabled]="(formService.pending$ | async) === true"
                 mat-stroked-button class="action-button discard" type="button"
                 (click)="formService.setDirty(false); this.discard.emit(); formService.reset()">
             <mat-icon>cancel</mat-icon>&nbsp;{{'common.cancel.label' | translate}}

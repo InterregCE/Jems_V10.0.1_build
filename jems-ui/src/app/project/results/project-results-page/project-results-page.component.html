@@ -11,7 +11,7 @@
                     <div class="result-container" appFormLayout [formGroupName]="i">
                         <div class="result-header" appNoWidthLimit appMultiColumnRow justifyContent="space-between">
                             <h4 class="mb-0">{{('project.results.result.title' | translate) + ' ' + (i + 1) }}</h4>
-                            <button *ngIf="form.enabled" type="button"
+                            <button appText *ngIf="form.enabled" type="button"
                                     (click)="removeResult(i)" mat-icon-button color="accent">
                                 <mat-icon>delete</mat-icon>
                             </button>
@@ -86,7 +86,7 @@
                     </div>
                 </ng-container>
             </div>
-            <button *ngIf="addResultVisible()" mat-stroked-button (click)="addNewResult()">
+            <button appText *ngIf="addResultVisible()" mat-stroked-button (click)="addNewResult()">
                 + {{'project.results.result.add' | translate}}
             </button>
         </form>

@@ -22,7 +22,7 @@
                     {{data.current?.version}}, {{data.current?.status}}
                     ({{data.current?.createdAt | localeDate: 'L' : 'LT'}})
                 </span>
-                <button id="switch-to-current" mat-raised-button
+                <button appText id="switch-to-current" mat-raised-button
                         (click)="pageStore.changeVersion(data.latest, data.projectStatus, data.versions)">
                     {{'project.versions.warn.switch' | translate}}
                 </button>

@@ -10,13 +10,13 @@
             characterLimit="100">
     </app-expandable-textarea>
     <div class="mb-2 mt-2">
-        <button (click)="onCancel()"
+        <button appText (click)="onCancel()"
                 *ngIf="editable"
                 class="button"
                 mat-stroked-button>{{'project.file.description.button.cancel' | translate}}
         </button>
 
-        <button (click)="onSubmit()"
+        <button appText (click)="onSubmit()"
                 *ngIf="editable" [disabled]="descriptionForm.invalid" class="ml-2" color="primary"
                 mat-raised-button
                 type="submit">{{'project.file.description.button.save' | translate}}
