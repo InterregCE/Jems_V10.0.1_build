@@ -210,5 +210,12 @@ export const APPLICATION_FORM = {
       DURABILITY: 'application.config.project.durability',
       TRANSFERABILITY: 'application.config.project.transferability',
     }
+  },
+  SECTION_E: {
+    PROJECT_LUMP_SUMS_AND_UNIT_COSTS: {
+      PROJECT_LUMP_SUMS: {
+        DESCRIPTION: 'application.config.project.lump.sums.description'
+      }
+    }
   }
 };

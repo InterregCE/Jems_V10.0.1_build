@@ -111,6 +111,9 @@ export class ApplicationFormConfigurationPageStore {
         this.addSectionNodes('application.config.project.section.c.5', 2, APPLICATION_FORM.SECTION_C.PROJECT_RESULT, callPublished, configs),
         this.addSectionNodes('application.config.project.section.c.7', 2, APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT, callPublished, configs),
         this.addSectionNodes('application.config.project.section.c.8', 2, APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS, callPublished, configs)
+      ]),
+      this.addParentNode('application.config.project.section.e', 2, [
+        this.addSectionNodes('application.config.project.section.e.1', 2, APPLICATION_FORM.SECTION_E.PROJECT_LUMP_SUMS_AND_UNIT_COSTS.PROJECT_LUMP_SUMS, callPublished, configs, false)
       ])
     ];
   }
