@@ -28,7 +28,7 @@
 <ng-template #deletionCell let-workPackage>
     <input #workPackageName type="hidden"
            [value]="(workPackage.name | translateContainerLessInputsBySystemLanguage | async)"/>
-    <button appText *ngIf="projectEditable$ | async" mat-icon-button color="accent"
+    <button *ngIf="projectEditable$ | async" mat-icon-button color="accent"
             (click)="$event.stopPropagation(); delete(workPackage, workPackageName.value)"
             matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
         <mat-icon>delete</mat-icon>

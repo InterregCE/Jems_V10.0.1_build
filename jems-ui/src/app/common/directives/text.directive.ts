@@ -17,9 +17,8 @@ export class TextDirective implements OnInit {
     this.el.nativeElement.style.maxWidth = '100%';
     this.el.nativeElement.classList.add('text-overflow-ellipsis');
     new ResizeObserver(res => {
-      const maxSize = Math.min(TextDirective.MAX_TEXT_WIDTH, this.el.nativeElement.parentElement.getBoundingClientRect().width);
-      if (this.el.nativeElement.getBoundingClientRect().width > maxSize) {
-        this.el.nativeElement.style.width = `${maxSize}px`;
+      if (this.el.nativeElement.getBoundingClientRect().width > TextDirective.MAX_TEXT_WIDTH) {
+        this.el.nativeElement.style.width = `${TextDirective.MAX_TEXT_WIDTH}px`;
       }
       this.setTitle();
     }).observe(this.el.nativeElement);

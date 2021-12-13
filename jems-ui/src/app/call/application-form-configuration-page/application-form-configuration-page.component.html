@@ -16,7 +16,7 @@
                     </th>
                     <td mat-cell *matCellDef="let node"
                         [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
-                        <button appText mat-icon-button
+                        <button mat-icon-button
                                 [style.visibility]="!node.expandable ? 'hidden' : ''"
                                 [style.marginLeft.rem]="node.level"
                                 (click)="treeControl.toggle(node)">

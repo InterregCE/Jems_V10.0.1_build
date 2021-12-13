@@ -43,7 +43,7 @@
                                 <div class="pl-1" matSuffix>%</div>
                             </mat-form-field>
                             <div>
-                                <button appText (click)="deleteAdditionalFund(i, data.totalBudget)"
+                                <button (click)="deleteAdditionalFund(i, data.totalBudget)"
                                         *ngIf="data.editable && !first" color="accent" mat-icon-button type="button">
                                     <mat-icon>delete</mat-icon>
                                 </button>
@@ -59,7 +59,7 @@
                         </app-form-field-errors>
                     </mat-error>
                 </div>
-                <button appText (click)="addAdditionalFund(data.callFunds, undefined)"
+                <button (click)="addAdditionalFund(data.callFunds, undefined)"
                         *ngIf="canAddFund(data.callFunds, data.editable)" class="mt-2 co-financing-button"
                         mat-icon-button type="button">
                     <mat-icon>add</mat-icon>
@@ -149,7 +149,7 @@
                                 {{partnerContribution.value.amount  | percentage: data.totalBudget : 2 | asMoney}} %
                             </div>
                             <div>
-                                <button appText (click)="deletePartnerContribution(i)"
+                                <button (click)="deletePartnerContribution(i)"
                                         *ngIf="!partnerContribution.value.partner && coFinancingForm.enabled"
                                         color="accent"
                                         mat-icon-button
