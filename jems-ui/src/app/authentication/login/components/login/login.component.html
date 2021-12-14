@@ -38,16 +38,15 @@
                     {{'user.terms.login.firstText' | translate}} <span class="terms-link"><a [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} </a></span>
                 </div>
 
-                <button mat-raised-button
+                <button appText mat-raised-button
                         color="primary"
                         type="submit"
                         [disabled]="!loginForm.valid || submitted">
                     {{'user.login.button' | translate}}
                 </button>
-                <div appMultiColumnRow class="mt-3">
+                <div class="mt-3">
                     <span>{{'authentication.create.account.copy' | translate}}&nbsp;</span>
-                    <button mat-stroked-button
-                            type="button"
+                    <button appText mat-stroked-button
                             [routerLink]="registerLink">
                         {{'user.login.button.create' | translate}}
                     </button>

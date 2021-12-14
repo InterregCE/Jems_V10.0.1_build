@@ -1,12 +1,12 @@
 <form id="stateAids" appFormLayout [formGroup]="stateAidForm">
     <div>
         <h3 class="mb-2">{{'programme.state.aid.list.title' | translate}}</h3>
-        <button color="primary" mat-raised-button
+        <button appText color="primary" mat-raised-button
                 *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length > 0"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>
-        <button mat-stroked-button
+        <button appText mat-stroked-button
                 *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length == 0"
                 (click)="addNewStateAidAndChangeFormState()">
             <mat-icon>add</mat-icon>&nbsp;{{ 'programme.state.aid.add' | translate }}

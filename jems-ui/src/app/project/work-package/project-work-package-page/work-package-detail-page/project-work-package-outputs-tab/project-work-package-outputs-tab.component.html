@@ -13,7 +13,7 @@
                             <span
                                   *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">{{output.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                         </h4>
-                        <button appText *ngIf="form.enabled" type="button" mat-icon-button color="accent"
+                        <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
                                 matTooltip="{{'project.application.form.work.package.output.table.action.delete.tooltip' | translate}}"
                                 (click)="removeOutput(i)">
                             <mat-icon>delete</mat-icon>

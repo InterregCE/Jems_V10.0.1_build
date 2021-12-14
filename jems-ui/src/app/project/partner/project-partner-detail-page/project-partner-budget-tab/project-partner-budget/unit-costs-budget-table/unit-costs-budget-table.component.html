@@ -130,7 +130,7 @@
                     <ng-container stickyEnd matColumnDef="action">
                         <mat-header-cell *matHeaderCellDef></mat-header-cell>
                         <mat-cell class="justify-end" *matCellDef="let control;let index=index">
-                            <button appText *ngIf="editable" class="delete-button"
+                            <button *ngIf="editable" class="delete-button"
                                     type="button"
                                     tabindex="-1" mat-icon-button color="accent"
                                     matTooltip="{{'common.delete.entry.tooltip' | translate}}"
@@ -165,7 +165,7 @@
     </p>
 </ng-template>
 <ng-template #addItemButton let-numberOfItems>
-    <button appText *ngIf="editable" mat-icon-button type="button"
+    <button *ngIf="editable" mat-icon-button type="button"
             [disabled]="numberOfItems  >= constants.MAX_NUMBER_OF_ITEMS"
             (click)="addNewItem()">
         <mat-icon>add</mat-icon>

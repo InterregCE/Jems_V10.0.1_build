@@ -23,7 +23,7 @@
         <div class="page-content-container" *ngIf="!needsCard" appNoWidthLimit>
             <ng-container [ngTemplateOutlet]="content"></ng-container>
         </div>
-        <button appText *ngIf="isScrollButtonVisible" id="scroll-button" mat-icon-button (click)="scrollToTop()">
+        <button *ngIf="isScrollButtonVisible" id="scroll-button" mat-icon-button (click)="scrollToTop()">
             <mat-icon>keyboard_arrow_up</mat-icon>
         </button>
 

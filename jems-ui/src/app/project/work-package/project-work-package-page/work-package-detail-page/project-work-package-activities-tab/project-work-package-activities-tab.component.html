@@ -14,7 +14,7 @@
                                       class="text-overflow-ellipsis">{{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                             </h4>
 
-                            <button appText *ngIf="form.enabled"
+                            <button *ngIf="form.enabled"
                                     type="button" mat-icon-button color="accent"
                                     (click)="removeActivity(i)">
                                 <mat-icon>delete</mat-icon>
@@ -133,7 +133,7 @@
                                                 </app-project-periods-select>
 
                                                 <div>
-                                                    <button appText *ngIf="form.enabled"
+                                                    <button *ngIf="form.enabled"
                                                             type="button"
                                                             (click)="removeDeliverable(i, j)"
                                                             mat-icon-button
