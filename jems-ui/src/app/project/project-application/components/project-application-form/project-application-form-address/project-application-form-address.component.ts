@@ -26,6 +26,7 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
     POSTAL_CODE: string;
     CITY: string;
     HOMEPAGE?: string;
+    PARTNER_ASSOCIATED_ORGANIZATIONS?: string;
   };
 
   selectedCountry: OutputNuts | undefined;
