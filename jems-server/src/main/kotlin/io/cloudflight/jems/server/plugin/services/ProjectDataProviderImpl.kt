@@ -6,7 +6,9 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.Proje
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
+import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectDataSectionD
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
 import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
@@ -17,13 +19,16 @@ import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.CoFinancingOverviewCalculator
+import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
+import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
@@ -36,6 +41,7 @@ import java.math.BigDecimal.ZERO
 
 @Service
 class ProjectDataProviderImpl(
+    private val callPersistence: CallPersistence,
     private val projectPersistence: ProjectPersistence,
     private val projectVersionPersistence: ProjectVersionPersistence,
     private val programmeLumpSumPersistence: ProgrammeLumpSumPersistence,
@@ -48,6 +54,7 @@ class ProjectDataProviderImpl(
     private val coFinancingPersistence: ProjectPartnerCoFinancingPersistence,
     private val getBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
     private val budgetCostsCalculator: BudgetCostsCalculatorService,
+    private val partnerBudgetPerFundCalculator: PartnerBudgetPerFundCalculatorService,
     private val projectLumpSumPersistence: ProjectLumpSumPersistence,
     private val programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence,
     private val projectResultPersistence: ProjectResultPersistence,
@@ -63,10 +70,14 @@ class ProjectDataProviderImpl(
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
         val project = projectPersistence.getProject(projectId, version)
         val legalStatuses = programmeLegalStatusPersistence.getMax20Statuses()
-
+        val budgetCoFinancingAndContributions: MutableMap<Long, ProjectPartnerCoFinancingAndContribution> =
+            mutableMapOf()
         val partners = partnerPersistence.findTop30ByProjectId(projectId, version).map { partner ->
             val budgetOptions = budgetOptionsPersistence.getBudgetOptions(partner.id, version)
-            val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(partner.id, version).toDataModel()
+            val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(partner.id, version).also {
+                budgetCoFinancingAndContributions[partner.id] = it
+            }.toDataModel()
+
             val budgetCosts = BudgetCosts(
                 staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(partner.id, version),
                 travelCosts = getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partner.id, version),
@@ -113,6 +124,22 @@ class ProjectDataProviderImpl(
             workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, version),
             results = resultPersistence.getResultsForProject(projectId, version)
         )
+        val sectionD = ProjectDataSectionD(
+            projectPartnerBudgetPerFundData = partners.toProjectPartnerSummary().let { partnerSummaries ->
+                partnerBudgetPerFundCalculator.calculate(
+                    partners = partnerSummaries,
+                    projectFunds = callPersistence.getCallByProjectId(projectId).funds.map { it.programmeFund },
+                    coFinancing = partners.map { partner ->
+                        PartnerBudgetCoFinancing(
+                            partner = partnerSummaries.first { it.id == partner.id },
+                            budgetCoFinancingAndContributions[partner.id],
+                            total = partner.budget.projectBudgetCostsCalculationResult.totalCosts
+                        )
+                    }
+
+                ).toProjectPartnerBudgetPerFundData()
+            }
+        )
 
         val sectionE = with(projectLumpSumPersistence.getLumpSums(projectId, version)) {
             this.toDataModel(programmeLumpSumPersistence.getLumpSums(this.map { it.programmeLumpSumId }))
@@ -121,7 +148,7 @@ class ProjectDataProviderImpl(
         logger.info("Retrieved project data for project id=$projectId via plugin.")
 
         return ProjectData(
-            sectionA, sectionB, sectionC, sectionE,
+            sectionA, sectionB, sectionC, sectionD, sectionE,
             lifecycleData = ProjectLifecycleData(status = project.projectStatus.status.toDataModel()),
             versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel()
         )

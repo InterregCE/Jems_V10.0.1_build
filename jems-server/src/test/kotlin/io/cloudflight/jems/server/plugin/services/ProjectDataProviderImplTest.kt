@@ -79,6 +79,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -98,6 +99,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
+import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -166,6 +168,8 @@ import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 internal class ProjectDataProviderImplTest : UnitTest() {
+    @RelaxedMockK
+    lateinit var callPersistence: CallPersistence
 
     @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
@@ -212,6 +216,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     lateinit var listOutputIndicatorsPersistence: OutputIndicatorPersistence
     @RelaxedMockK
     lateinit var listResultIndicatorsPersistence: ResultIndicatorPersistence
+    @RelaxedMockK
+    lateinit var partnerBudgetPerFundCalculator: PartnerBudgetPerFundCalculatorService
 
     @MockK
     lateinit var programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence

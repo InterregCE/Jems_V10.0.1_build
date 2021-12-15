@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.budget.ProjectUnitCostDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundInteractor
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
@@ -58,6 +59,9 @@ internal class ProjectBudgetControllerTest : UnitTest() {
 
     @MockK
     private lateinit var getProjectUnitCostsInteractor: GetProjectUnitCostsInteractor
+
+    @MockK
+    private lateinit var getPartnerBudgetPerFundInteractor: GetPartnerBudgetPerFundInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectBudgetController

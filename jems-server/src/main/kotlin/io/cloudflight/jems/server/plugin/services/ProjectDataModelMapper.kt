@@ -80,6 +80,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentAddressData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputData
+import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectPartnerBudgetPerFundData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
@@ -100,6 +101,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrincip
 import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
 import io.cloudflight.jems.server.project.service.model.ProjectManagement
 import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
@@ -126,6 +128,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.result.model.IndicatorOverviewLine
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
@@ -235,6 +238,12 @@ fun List<ProjectVersion>.toDataModel() =
 fun Set<InputTranslation>?.toDataModel() =
     this?.map { InputTranslationData(it.language.toDataModel(), it.translation) }?.toSet() ?: emptySet()
 
+fun Set<ProjectPartnerData>.toProjectPartnerSummary() =
+    map { pluginDataMapper.map(it) }
+
+fun List<ProjectPartnerBudgetPerFund>.toProjectPartnerBudgetPerFundData() =
+    this.map { pluginDataMapper.map(it) }
+
 fun SystemLanguage.toDataModel() =
     SystemLanguageData.valueOf(this.name)
 
@@ -308,6 +317,7 @@ abstract class PluginDataMapper {
     abstract fun map(projectResult: ProjectResult): ProjectResultData
     abstract fun map(budgetCostsCalculationResult: BudgetCostsCalculationResult): BudgetCostsCalculationResultData
     abstract fun map(projectVersion: ProjectVersion): ProjectVersionData
+    abstract fun map(projectPartnerBudgetPerFund: ProjectPartnerBudgetPerFund): ProjectPartnerBudgetPerFundData
 
     @Mappings(
         Mapping(target = "programmeLumpSum", source = "lumpSumsDetail")
@@ -372,4 +382,15 @@ abstract class PluginDataMapper {
 
     fun map(projectOverallObjective: ProjectOverallObjective?): ProjectOverallObjectiveData =
         ProjectOverallObjectiveData(projectOverallObjective?.overallObjective.toDataModel())
+
+    fun map(projectPartnerData: ProjectPartnerData): ProjectPartnerSummary =
+        ProjectPartnerSummary(
+            projectPartnerData.id,
+            projectPartnerData.abbreviation,
+            ProjectPartnerRole.valueOf(projectPartnerData.role.name),
+            projectPartnerData.sortNumber,
+            projectPartnerData.addresses.firstOrNull { it.type == ProjectPartnerAddressTypeData.Organization }?.country,
+            projectPartnerData.addresses.firstOrNull { it.type == ProjectPartnerAddressTypeData.Organization }?.nutsRegion2
+        )
+
 }
