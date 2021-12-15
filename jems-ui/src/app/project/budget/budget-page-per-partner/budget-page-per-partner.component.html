@@ -2,118 +2,77 @@
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
                            subTitleKey="project.application.form.section.part.d">
     <h3>{{'project.application.form.budgetPerPartner.title' | translate}}</h3>
-    <mat-table *ngIf="budgets$ | async" id="budget-table-per-partner"
-               [dataSource]="budgetColumns">
 
-        <ng-container matColumnDef="partner">
-            <mat-header-cell class="m-1"
-                             *matHeaderCellDef>{{ 'project.breadcrumb.partnerName' | translate }}</mat-header-cell>
-            <mat-cell class="m-1" *matCellDef="let budget">
-                {{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | translate : {partner: budget.partnerSortNumber} }}
-            </mat-cell>
-            <mat-footer-cell class="m-1" *matFooterCellDef>
-                {{ 'project.partner.budget.table.total' | translate }}
+    <div appNoWidthLimit
+         [appTableConfig]="tableConfig"
+         *ngIf="budgets$ | async as budgets">
+        <div>
+            <span>{{ 'project.breadcrumb.partnerName' | translate}}</span>
+            <span>{{'project.partner.main-address.country' | translate}}</span>
+            <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
+                 <span class="justify-end">
+                    {{ fund.abbreviation | translateBySystemLanguage | async }}
+                </span>
+                <span class="justify-end">
+                    {{ (fund.abbreviation | translateBySystemLanguage | async) + ' ' + ('project.partner.percentage'| translate) }}
+                </span>
+            </ng-container>
+            <span class="justify-end">{{ 'project.partner.public.contribution' | translate }}</span>
+            <span class="justify-end">{{ 'project.partner.auto.public.contribution' | translate }}</span>
+            <span class="justify-end">{{ 'project.partner.private.contribution' | translate }}</span>
+            <span class="justify-end">{{ 'project.partner.total.contribution' | translate }}</span>
+            <span class="justify-end">{{ 'project.partner.total.eligible.budget' | translate }}</span>
+            <span class="justify-end">{{ 'project.partner.percent.total.budget' | translate }}
+                <app-context-info    infoText="{{ 'project.partner.percent.total.budget.contextinfo' | translate }}"
+                                     infoPosition="right">
+                </app-context-info>
+            </span>
+        </div>
+
+        <ng-container *ngFor="let budget of budgetColumns; let index = index;">
+            <div *ngIf="index < budgetColumns.length - 1">
+                <span>{{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | translate : {partner: budget.partnerSortNumber} }}</span>
+                <span>{{ budget.partnerCountry }}</span>
+                <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
+                    <div class="justify-end percentage-of-total-container">
+                        <div>{{ getBudgetAmountForFund(fund, budget.budgets) | asMoney }}</div>
+                        <div *ngIf="getBudgetPercentageByFund(fund, budget.budgets) > 0" class="font-color-grey mat-small">{{getBudgetPercentageByFund(fund, budget.budgets)}} % of total</div>
+                    </div>
+                    <span class="justify-end"> {{getPercentageAmountForFund(fund, budget.budgets) | asMoney}}
+                        <div matSuffix class="pl-1">%</div>
+                    </span>
+                </ng-container>
+                <span class="justify-end">{{ budget.publicContribution | asMoney }}</span>
+                <span class="justify-end">{{ budget.autoPublicContribution | asMoney }}</span>
+                <span class="justify-end">{{ budget.privateContribution | asMoney }}</span>
+                <span class="justify-end">{{ budget.totalContribution | asMoney }}</span>
+                <span class="justify-end">{{ budget.totalEligibleBudget | asMoney }}</span>
+                <span class="justify-end">{{budget.percentOfTotalBudget | asMoney}}
+                    <div matSuffix class="pl-1">%</div>
+                </span>
+            </div>
+        </ng-container>
+
+        <div class="footer" *ngIf="budgetColumns[budgetColumns.length - 1] as total">
+            <span> {{ 'project.partner.budget.table.total' | translate }}
                 <app-context-info
                         infoText="{{ 'project.partner.percent.total.partner.contextinfo' | translate }}"
                         infoPosition="right">
                 </app-context-info>
-            </mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="country">
-            <mat-header-cell class="m-1"
-                             *matHeaderCellDef>{{ 'project.partner.main-address.country' | translate }}</mat-header-cell>
-            <mat-cell class="m-1" *matCellDef="let budget">{{ budget.partnerCountry }}</mat-cell>
-            <mat-footer-cell class="m-1" *matFooterCellDef></mat-footer-cell>
-        </ng-container>
-
-        <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
-            <ng-container matColumnDef="{{'budget' + fund.id}}">
-                <mat-header-cell *matHeaderCellDef
-                                 class="justify-end m-1">{{ fund.abbreviation | translateBySystemLanguage | async }}</mat-header-cell>
-                <mat-cell *matCellDef="let budget"
-                          class="justify-end m-1">{{ getBudgetAmountForFund(fund, budget.budgets) | asMoney }}</mat-cell>
-                <mat-footer-cell *matFooterCellDef
-                                 class="justify-end m-1">{{ getTotalBudgetAmountForFund(fund) | asMoney }}</mat-footer-cell>
+            </span>
+            <span><!--blank cell--></span>
+            <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
+                <span class="justify-end">{{ getBudgetAmountForFund(fund, total.budgets) | asMoney }}</span>
+                <span class="justify-end">{{getTotalBudgetPercentageByFund(fund, total.budgets) | asMoney}} %</span>
             </ng-container>
-            <ng-container matColumnDef="{{'percentage' + fund.id}}">
-                <mat-header-cell *matHeaderCellDef
-                                 class="justify-end m-1">{{ (fund.abbreviation | translateBySystemLanguage | async) + ' ' + ('project.partner.percentage'| translate) }}</mat-header-cell>
-                <mat-cell *matCellDef="let budget" class="justify-end m-1">
-                    {{getPercentageAmountForFund(fund, budget.budgets) | asMoney}}
-                    <div matSuffix class="pl-1">%</div>
-                </mat-cell>
-                <mat-footer-cell *matFooterCellDef class="justify-end m-1">
-                    {{getTotalPercentageRounded(fund, totalEligibleBudget) | asMoney}} %
-                </mat-footer-cell>
-            </ng-container>
-        </ng-container>
-
-        <ng-container matColumnDef="publicContribution">
-            <mat-header-cell *matHeaderCellDef
-                             class="justify-end m-1">{{ 'project.partner.public.contribution' | translate }}</mat-header-cell>
-            <mat-cell *matCellDef="let budget"
-                      class="justify-end m-1">{{ budget.publicContribution | asMoney }}</mat-cell>
-            <mat-footer-cell *matFooterCellDef
-                             class="justify-end m-1">{{ totalPublicContribution | asMoney }}</mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="autoPublicContribution">
-            <mat-header-cell *matHeaderCellDef
-                             class="justify-end m-1">{{ 'project.partner.auto.public.contribution' | translate }}</mat-header-cell>
-            <mat-cell *matCellDef="let budget"
-                      class="justify-end m-1">{{ budget.autoPublicContribution | asMoney }}</mat-cell>
-            <mat-footer-cell *matFooterCellDef
-                             class="justify-end m-1">{{ totalAutoPublicContribution | asMoney }}</mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="privateContribution">
-            <mat-header-cell *matHeaderCellDef
-                             class="justify-end m-1">{{ 'project.partner.private.contribution' | translate }}</mat-header-cell>
-            <mat-cell *matCellDef="let budget"
-                      class="justify-end m-1">{{ budget.privateContribution | asMoney }}</mat-cell>
-            <mat-footer-cell *matFooterCellDef
-                             class="justify-end m-1">{{ totalPrivateContribution | asMoney }}</mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="totalContribution">
-            <mat-header-cell *matHeaderCellDef
-                             class="justify-end m-1">{{ 'project.partner.total.contribution' | translate }}</mat-header-cell>
-            <mat-cell *matCellDef="let budget"
-                      class="justify-end m-1">{{ budget.totalContribution | asMoney }}</mat-cell>
-            <mat-footer-cell *matFooterCellDef
-                             class="justify-end m-1">{{ totalPartnerContribution | asMoney }}</mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="totalEligibleBudget">
-            <mat-header-cell *matHeaderCellDef
-                             class="justify-end m-1">{{ 'project.partner.total.eligible.budget' | translate }}</mat-header-cell>
-            <mat-cell *matCellDef="let budget"
-                      class="justify-end m-1">{{ budget.totalEligibleBudget | asMoney }}</mat-cell>
-            <mat-footer-cell *matFooterCellDef
-                             class="justify-end m-1">{{ totalEligibleBudget | asMoney }}</mat-footer-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="percentOfTotalBudget">
-            <mat-header-cell *matHeaderCellDef class="justify-end m-1">
-                {{ 'project.partner.percent.total.budget' | translate }}
-                <app-context-info
-                        infoText="{{ 'project.partner.percent.total.budget.contextinfo' | translate }}"
-                        infoPosition="right">
-                </app-context-info>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let budget" class="justify-end m-1">
-                {{budget.percentOfTotalBudget | asMoney}}
+            <span class="justify-end">{{ totalPublicContribution | asMoney }}</span>
+            <span class="justify-end">{{ totalAutoPublicContribution | asMoney }}</span>
+            <span class="justify-end">{{ totalPrivateContribution | asMoney }}</span>
+            <span class="justify-end">{{ totalPartnerContribution | asMoney }}</span>
+            <span class="justify-end">{{ totalEligibleBudget | asMoney }}</span>
+            <span class="justify-end"> {{totalPercentage | asMoney}}
                 <div matSuffix class="pl-1">%</div>
-            </mat-cell>
-            <mat-footer-cell *matFooterCellDef class="justify-end m-1">
-                {{totalPercentage | asMoney}}
-                <div matSuffix class="pl-1">%</div>
-            </mat-footer-cell>
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
-    </mat-table>
+            </span>
+        </div>
+    </div>
 </app-project-page-template>
