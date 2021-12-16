@@ -51,6 +51,7 @@ import {ProjectOverviewTablesPageComponent} from './project-overview-tables-page
 import {ExportComponent} from '@project/project-application/export/export.component';
 import {ModificationPageComponent} from './project-application/modification-page/modification-page.component';
 import {ProjectUnitCostsPageComponent} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-page.component';
+import {PrivilegesPageComponent} from './project-application/privileges-page/privileges-page.component';
 
 export const routes: Routes = [
   {
@@ -136,6 +137,11 @@ export const routes: Routes = [
             path: 'export',
             component: ExportComponent,
             data: {breadcrumb: 'project.breadcrumb.applicationForm.export'},
+          },
+          {
+            path: 'privileges',
+            component: PrivilegesPageComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.privileges'},
           },
           {
             path: 'applicationFormIdentification',

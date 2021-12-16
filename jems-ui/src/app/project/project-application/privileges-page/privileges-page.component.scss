@@ -1,0 +1,19 @@
+@import "../../../theme/custom-styles/custom-buttons-styles";
+
+#collaborators-panel {
+  ::ng-deep {
+    .small-toggle-group {
+      overflow: visible;
+      @include customize-toggle-button-size('small');
+
+      mat-icon {
+        vertical-align: middle;
+        font-size: 1.375em;
+        height: 1.25rem;
+      }
+    }
+    //mat-panel-title {
+    //  height: auto!important;
+    //}
+  }
+}

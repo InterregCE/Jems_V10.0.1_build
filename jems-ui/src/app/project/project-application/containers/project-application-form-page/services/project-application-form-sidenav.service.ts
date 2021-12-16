@@ -183,7 +183,8 @@ export class ProjectApplicationFormSidenavService {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
             this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles, canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
-            ...canSeeProjectForm ? this.getExportHeadline(project.id) : []
+            ...canSeeProjectForm ? this.getExportHeadline(project.id) : [],
+            this.getProjectPrivilegesHeadline(project.id),
           ]);
         }),
         catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
@@ -403,4 +404,13 @@ export class ProjectApplicationFormSidenavService {
     }];
   }
 
+  private getProjectPrivilegesHeadline(projectId: string): HeadlineRoute {
+    return {
+      headline: {i18nKey: 'project.application.form.section.privileges'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/privileges`,
+      scrollToTop: true,
+      scrollRoute: '',
+      icon: 'manage_accounts'
+    };
+  }
 }

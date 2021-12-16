@@ -1,0 +1,78 @@
+<app-project-page-template *ngIf="data$ | async as data"
+                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
+                           subTitleKey="project.application.form.section.privileges">
+    <app-alert [show]="true"
+               [closable]="false"
+               [type]="Alert.WARNING">
+        <p>{{'project.application.form.section.privileges.warning' | translate}}</p>
+    </app-alert>
+    <mat-expansion-panel [expanded]="true" id="collaborators-panel">
+        <mat-expansion-panel-header>
+            <mat-panel-title class="mt-2">
+                {{'project.application.form.section.privileges.lead' | translate }}
+                <app-context-info infoText="{{'project.application.form.section.privileges.lead.tooltip' | translate}}"
+                                  infoPosition="right">
+                </app-context-info>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-form (save)="saveCollaborators()"
+                  (discard)="resetForm(data.projectCollaborators)">
+            <form appFormLayout [formGroup]="form">
+                <div *ngFor="let collaborator of projectCollaborators.controls;let i=index">
+                    <ng-container formArrayName="projectCollaborators">
+                        <div appMultiColumnRow justifyContent="space-between" [formGroupName]="i">
+
+                            <mat-form-field appFormFieldWidth="x-large" appearance="fill">
+                                <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
+                                <input formControlName="userEmail" matInput required>
+                                <mat-error>
+                                    <app-form-field-errors
+                                            [errors]="collaborator.get('userEmail').errors">
+                                    </app-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-button-toggle-group [disabled]="form.disabled"
+                                                     formControlName="level"
+                                                     class="small-toggle-group">
+                                <mat-button-toggle [value]="LEVEL.VIEW">
+                                    <span>
+                                        <mat-icon>visibility</mat-icon>
+                                        {{'common.permission.view' | translate}}
+                                    </span>
+                                </mat-button-toggle>
+                                <mat-button-toggle [value]="LEVEL.EDIT">
+                                    <span>
+                                        <mat-icon>edit</mat-icon>
+                                        {{'common.permission.edit' | translate}}
+                                    </span>
+                                </mat-button-toggle>
+                                <mat-button-toggle [value]="LEVEL.MANAGE">
+                                    <span>
+                                        <mat-icon>settings</mat-icon>
+                                        {{'common.permission.manage' | translate}}
+                                    </span>
+                                </mat-button-toggle>
+                            </mat-button-toggle-group>
+
+                            <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
+                                    (click)="projectCollaborators.removeAt(i); formService.setDirty(true)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </ng-container>
+                </div>
+                <mat-error>
+                    <app-form-field-errors [errors]="projectCollaborators.errors"
+                                           [messages]="errorMessages">
+                    </app-form-field-errors>
+                </mat-error>
+            </form>
+            <button appText *ngIf="form.enabled" mat-stroked-button class="mt-2"
+                    (click)="addCollaborator(); formService.setDirty(true)">
+                +
+            </button>
+        </app-form>
+    </mat-expansion-panel>
+</app-project-page-template>
