@@ -60,7 +60,7 @@ dependencies {
         implementation('org.mariadb.jdbc:mariadb-java-client:2.7.2')
         implementation('io.springfox:springfox-swagger-ui:2.9.2')
         implementation('io.springfox:springfox-swagger2:2.9.2')
-        implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:7.10.2')
+        implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:7.16.1')
         implementation("io.cloudflight.jems.plugin.contract:jems-plugin-contract:$jemsPluginContractVersion")
         toDownload("io.cloudflight.jems.plugin.standard:jems-standard-plugin:$jemsStandardPluginVersion")
     }
