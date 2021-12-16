@@ -48,8 +48,10 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     ProjectModificationFileAssessmentRetrieve("ProjectModificationFileAssessmentRetrieve", true),
     ProjectModificationFileAssessmentUpdate("ProjectModificationFileAssessmentUpdate", true),
 
-    ProjectCollaboratorsRetrieve("ProjectCollaboratorsRetrieve", true),
-    ProjectCollaboratorsUpdate("ProjectCollaboratorsUpdate", true),
+    ProjectCreatorCollaboratorsRetrieve("ProjectCreatorCollaboratorsRetrieve", false),
+    ProjectCreatorCollaboratorsUpdate("ProjectCreatorCollaboratorsUpdate", false),
+    ProjectMonitorCollaboratorsRetrieve("ProjectMonitorCollaboratorsRetrieve", true),
+    ProjectMonitorCollaboratorsUpdate("ProjectMonitorCollaboratorsUpdate", true),
 
     // Module SYSTEM
     AuditRetrieve("AuditRetrieve"),

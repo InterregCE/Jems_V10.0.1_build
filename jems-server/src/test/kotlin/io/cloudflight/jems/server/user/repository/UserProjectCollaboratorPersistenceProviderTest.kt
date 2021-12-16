@@ -11,6 +11,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class UserProjectCollaboratorPersistenceProviderTest : UnitTest() {
 
@@ -39,6 +40,20 @@ internal class UserProjectCollaboratorPersistenceProviderTest : UnitTest() {
         )
         every { collaboratorRepository.findAllByProjectId(20L) } returns result
         assertThat(persistence.getUserIdsForProject(20L)).containsExactlyElementsOf(result)
+    }
+
+    @Test
+    fun `getLevelForProjectAndUser - existing`() {
+        every { collaboratorRepository.findById(UserProjectId(400L, 25L)) } returns Optional.of(
+            UserProjectCollaboratorEntity(UserProjectId(400L, 25L), CollaboratorLevel.VIEW)
+        )
+        assertThat(persistence.getLevelForProjectAndUser(25L, 400L)).isEqualTo(CollaboratorLevel.VIEW)
+    }
+
+    @Test
+    fun `getLevelForProjectAndUser - not-existing`() {
+        every { collaboratorRepository.findById(UserProjectId(401L, 26L)) } returns Optional.empty()
+        assertThat(persistence.getLevelForProjectAndUser(26L, 401L)).isNull()
     }
 
     @Test

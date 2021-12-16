@@ -9,6 +9,8 @@ interface UserProjectCollaboratorPersistence {
 
     fun getUserIdsForProject(projectId: Long): List<CollaboratorAssignedToProject>
 
+    fun getLevelForProjectAndUser(projectId: Long, userId: Long): CollaboratorLevel?
+
     fun changeUsersAssignedToProject(
         projectId: Long,
         usersToPersist: Map<Long, CollaboratorLevel>,

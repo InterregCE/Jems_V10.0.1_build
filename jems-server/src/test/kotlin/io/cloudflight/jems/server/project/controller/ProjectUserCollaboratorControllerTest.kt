@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.user.entity.CollaboratorLevel
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.cloudflight.jems.server.user.service.userproject.assign_user_collaborator_to_project.AssignUserCollaboratorToProjectInteractor
+import io.cloudflight.jems.server.user.service.userproject.get_my_collaborator_level.GetMyCollaboratorLevelInteractor
 import io.cloudflight.jems.server.user.service.userproject.get_user_collaborators_assigned_to_projects.GetUserCollaboratorsAssignedToProjectsInteractor
 import io.mockk.clearMocks
 import io.mockk.every
@@ -24,6 +25,9 @@ class ProjectUserCollaboratorControllerTest : UnitTest() {
 
     @MockK
     lateinit var getUserCollaboratorsAssignedToProjects: GetUserCollaboratorsAssignedToProjectsInteractor
+
+    @MockK
+    lateinit var getMyCollaboratorLevel: GetMyCollaboratorLevelInteractor
 
     @InjectMockKs
     lateinit var controller: ProjectUserCollaboratorController
@@ -69,6 +73,18 @@ class ProjectUserCollaboratorControllerTest : UnitTest() {
         assertThat(dataSlot.captured).containsExactly(
             Pair("email", CollaboratorLevel.MANAGE)
         )
+    }
+
+    @Test
+    fun `checkUserPermissions - existing`() {
+        every { getMyCollaboratorLevel.getMyCollaboratorLevel(45L) } returns CollaboratorLevel.MANAGE
+        assertThat(controller.checkMyProjectLevel(45L)).isEqualTo(CollaboratorLevelDTO.MANAGE)
+    }
+
+    @Test
+    fun `checkUserPermissions - not-existing`() {
+        every { getMyCollaboratorLevel.getMyCollaboratorLevel(-1L) } returns null
+        assertThat(controller.checkMyProjectLevel(-1L)).isNull()
     }
 
 }

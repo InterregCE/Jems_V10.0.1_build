@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.user.service.userproject.assign_user_to_project
+package io.cloudflight.jems.server.user.service.userproject.assign_user_collaborator_to_project
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.user.entity.CollaboratorLevel
@@ -10,9 +10,6 @@ import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
-import io.cloudflight.jems.server.user.service.userproject.assign_user_collaborator_to_project.AssignUserCollaboratorToProject
-import io.cloudflight.jems.server.user.service.userproject.assign_user_collaborator_to_project.MinOneManagingCollaboratorRequiredException
-import io.cloudflight.jems.server.user.service.userproject.assign_user_collaborator_to_project.UsersAreNotValid
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -27,15 +24,10 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
         private const val PROJECT_ID = 1L
 
         private const val USER_ADMIN_ID = 22L
-        private const val USER_PROGRAMME_ID = 23L
-        private const val USER_MONITOR_ID_1 = 24L
-        private const val USER_MONITOR_ID_2 = 25L
         private const val USER_APPLICANT_ID = 26L
 
         private const val APPLICANT_ROLE_ID = 455L
-        private const val MONITOR_ROLE_ID = 456L
         private const val ADMIN_ROLE_ID = 457L
-        private const val PROGRAMME_ROLE_ID = 458L
 
         private fun user(id: Long, email: String, roleId: Long) = UserSummary(
             id = id,
@@ -78,7 +70,8 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
         )
         every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(userData)) } returns expectedResult
 
-        assertThat(assignUser.updateUserAssignmentsOnProject(PROJECT_ID, setOf(
+        assertThat(assignUser.updateUserAssignmentsOnProject(
+            PROJECT_ID, setOf(
             Pair("admin1", CollaboratorLevel.EDIT),
             Pair("applicant1", CollaboratorLevel.MANAGE),
         ))).containsExactlyElementsOf(expectedResult)

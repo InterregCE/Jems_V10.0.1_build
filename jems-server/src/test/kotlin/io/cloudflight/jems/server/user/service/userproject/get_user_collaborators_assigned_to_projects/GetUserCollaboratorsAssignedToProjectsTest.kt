@@ -1,10 +1,9 @@
-package io.cloudflight.jems.server.user.service.userproject.assign_user_to_project
+package io.cloudflight.jems.server.user.service.userproject.get_user_collaborators_assigned_to_projects
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.user.entity.CollaboratorLevel
 import io.cloudflight.jems.server.user.service.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
-import io.cloudflight.jems.server.user.service.userproject.get_user_collaborators_assigned_to_projects.GetUserCollaboratorsAssignedToProjects
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

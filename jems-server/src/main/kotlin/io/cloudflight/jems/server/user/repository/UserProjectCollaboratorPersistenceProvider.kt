@@ -21,6 +21,10 @@ class UserProjectCollaboratorPersistenceProvider(
     override fun getUserIdsForProject(projectId: Long): List<CollaboratorAssignedToProject> =
         collaboratorRepository.findAllByProjectId(projectId)
 
+    @Transactional(readOnly = true)
+    override fun getLevelForProjectAndUser(projectId: Long, userId: Long): CollaboratorLevel? =
+        collaboratorRepository.findById(UserProjectId(userId = userId, projectId = projectId)).orElse(null)?.level
+
     @Transactional
     override fun changeUsersAssignedToProject(
         projectId: Long,

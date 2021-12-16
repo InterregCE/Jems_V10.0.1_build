@@ -3,9 +3,9 @@ package io.cloudflight.jems.server.user.service.authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCollaboratorsRetrieve
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCollaboratorsUpdate
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreate
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreatorCollaboratorsRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreatorCollaboratorsUpdate
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectMonitorCollaboratorsRetrieve
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -51,11 +51,11 @@ class UserAuthorization(
         securityService.currentUser?.user?.id == userId
 
     fun hasViewProjectPrivilegesPermission(projectId: Long) =
-        (hasPermission(ProjectCreate) && hasAuthority(ProjectCollaboratorsRetrieve) && isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithViewLevel()))
+        (hasPermission(ProjectCreatorCollaboratorsRetrieve) && isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithViewLevel()))
             ||
-            (hasPermissionForProject(ProjectCollaboratorsRetrieve, projectId))
+        hasPermissionForProject(ProjectMonitorCollaboratorsRetrieve, projectId)
 
     fun hasManageProjectPrivilegesPermission(projectId: Long) =
-        hasPermission(ProjectCreate) && hasAuthority(ProjectCollaboratorsUpdate) && isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithManageLevel())
+        hasPermission(ProjectCreatorCollaboratorsUpdate) && isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithManageLevel())
 
 }

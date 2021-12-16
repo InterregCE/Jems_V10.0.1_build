@@ -176,6 +176,12 @@ export class Permission {
             },
           ],
         },
+        {
+          name: 'project.privileges.header',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectMonitorCollaboratorsRetrieve],
+          editPermissions: [PermissionsEnum.ProjectMonitorCollaboratorsUpdate],
+        },
       ]
     }
   ];
