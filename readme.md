@@ -33,7 +33,7 @@ The following are example properties:
 
 Synchronize or import the Gradle project.
 To run the server successfully, it is needed to at least have an instance of MariaDB available.
-This is configured by the property `SPRING_DATASOURCE_URL` or the default `jdbc:mariadb://localhost:3306/jemsdb`.
+This is configured by the property `SPRING_DATASOURCE_URL` or the default `jdbc:mariadb://localhost:3306/jems`.
 To simplify the startup of Jems, a docker compose file is available (docker-compose.yml).
 The following commands are used for development:
 
@@ -105,13 +105,6 @@ There is no need to start anything besides MariaDB, so spring-boot will also sta
 Audit (ES). There is evnironment variable `AUDIT_ENABLED=true` - if you set to `false` audits will be written
 as _info \[LOG\]_ to stdout.
 
-#### Logo Setup
-To exchange the current default Logos used by Jems Minio has to be used directly. There the bucket
-`jems-logo-file-bucket` has to be added. The following files are currently used:
-- JemsLogo_48.png
-- JemsLogo_96.png
-- favlogo.png
-
 ### API testing
 For testing the API, the module [jems-rest-test](jems-rest-test) was introduced.
 The generated documentation of the API can be found on the successful started Jems server [7].
@@ -165,7 +158,7 @@ if the main translation files need to be exchanged, instead of the `classpath:/m
 1. [Cloudflight Platform](https://git.internal.cloudflight.io/cloudflight/libs/cloudflight-platform)
 2. [Cloudflight Gradle Plugin](https://git.internal.cloudflight.io/cloudflight/gradle/cloudflight-gradle-plugin)
 3. https://artifacts.cloudflight.io/repository/plugins-maven
-4. https://jems-dev.internal.cloudflight.dev
-5. http://jems1.interact-eu.net
+4. https://jems-dev.internal.cloudflight.dev/
+5. https://jems-test.cloudflight.dev/
 6. [Teamcity](https://teamcity.internal.cloudflight.io/)
 7. [Generated Swagger API documentation](https://jems-test.cloudflight.dev/swagger-ui.html#/)
