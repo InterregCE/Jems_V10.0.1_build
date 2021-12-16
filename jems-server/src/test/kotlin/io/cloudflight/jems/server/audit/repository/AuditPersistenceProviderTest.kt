@@ -19,7 +19,7 @@ import org.elasticsearch.action.search.SearchResponseSections
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.common.bytes.BytesArray
-import org.elasticsearch.xcontent.XContentFactory
+import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.index.shard.ShardId
 import org.elasticsearch.search.SearchHit
 import org.elasticsearch.search.SearchHits
