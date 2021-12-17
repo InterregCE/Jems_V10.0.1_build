@@ -158,11 +158,13 @@ internal class UpdateActivityTest {
 
     @Test
     fun `update activity deliverables when description is too long`() {
-        val descreption = InputTranslation(
+        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
+        every { persistence.updateWorkPackageActivities(any(), any()) } returnsArgument 1
+        val description = InputTranslation(
             language = EN,
-            translation = getStringOfLength(201)
+            translation = getStringOfLength(1001)
         )
-        val toBeSaved = listOf(WorkPackageActivity(1L, 9L, deliverables = listOf(WorkPackageActivityDeliverable(description = setOf(descreption)))))
+        val toBeSaved = listOf(WorkPackageActivity(1L, 9L, deliverables = listOf(WorkPackageActivityDeliverable(description = setOf(description)))))
         val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 9L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.deliverable.description.size.too.long")
     }
