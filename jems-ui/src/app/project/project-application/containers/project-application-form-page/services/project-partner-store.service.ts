@@ -43,7 +43,7 @@ export class ProjectPartnerStore {
     this.partnerSummariesForFiles$ = this.partnerSummariesForFiles();
     this.partners$ = combineLatest([
       this.projectStore.project$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.partnerUpdateEvent$
     ]).pipe(
       switchMap(([project, version]) => this.partnerService.getProjectPartnersForDropdown(project.id, ['sortNumber'], version)),
@@ -116,7 +116,7 @@ export class ProjectPartnerStore {
     const initialPartner$ = combineLatest([
       this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$
+      this.projectVersionStore.selectedVersionParam$
     ]).pipe(
       tap(([partnerId, projectId]) => {
         this.partnerId = Number(partnerId);
@@ -142,7 +142,7 @@ export class ProjectPartnerStore {
   }
 
   private partnerSummaries(): Observable<ProjectPartnerSummaryDTO[]> {
-    return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$, this.partnerUpdateEvent$])
+    return combineLatest([this.projectStore.projectId$, this.projectVersionStore.selectedVersionParam$, this.partnerUpdateEvent$])
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
       );

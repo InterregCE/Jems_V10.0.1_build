@@ -28,7 +28,7 @@ export class ProjectTimeplanPageStore {
   }
 
   private workPackages(): Observable<any> {
-    return combineLatest([this.projectId$, this.projectVersionStore.currentRouteVersion$])
+    return combineLatest([this.projectId$, this.projectVersionStore.selectedVersionParam$])
       .pipe(
         filter(([id]) => !!id),
         switchMap(([id, version]) => this.workPackageService.getWorkPackagesForTimePlanByProjectId(id, version)),
@@ -44,7 +44,7 @@ export class ProjectTimeplanPageStore {
   }
 
   private projectResults(): Observable<any> {
-    return combineLatest([this.projectId$, this.projectVersionStore.currentRouteVersion$])
+    return combineLatest([this.projectId$, this.projectVersionStore.selectedVersionParam$])
       .pipe(
         filter(([id]) => !!id),
         switchMap(([id, version]) => this.projectResultService.getProjectResults(id, version)),

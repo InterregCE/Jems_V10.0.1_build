@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.service.application.workflow.Applicati
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationWithConditionsState
 import io.cloudflight.jems.server.project.service.application.workflow.states.SubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -58,6 +59,9 @@ class ReturnApplicationToApplicantInteractorTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var projectAuthorization: ProjectAuthorization
+
+    @RelaxedMockK
+    lateinit var createNewProjectVersion: CreateNewProjectVersionInteractor
 
     @InjectMockKs
     private lateinit var returnApplicationToApplicant: ReturnApplicationToApplicant

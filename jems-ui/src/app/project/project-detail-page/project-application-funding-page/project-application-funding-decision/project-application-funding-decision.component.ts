@@ -20,9 +20,9 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   PermissionsEnum = PermissionsEnum;
 
   @Input()
-  project: ProjectDetailDTO;
+  currentVersionOfProject: ProjectDetailDTO;
   @Input()
-  status: ProjectStatusDTO;
+  currentVersionOfProjectStatus: ProjectStatusDTO;
   @Input()
   userCanChangeFunding = false;
   @Input()
@@ -58,10 +58,10 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.decisionForm.controls.status.setValue(this.status?.status);
-    this.decisionForm.controls.notes.setValue(this.status?.note);
-    this.decisionForm.controls.decisionDate.setValue(this.status?.decisionDate);
-    if (this.project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT) {
+    this.decisionForm.controls.status.setValue(this.currentVersionOfProjectStatus?.status);
+    this.decisionForm.controls.notes.setValue(this.currentVersionOfProjectStatus?.note);
+    this.decisionForm.controls.decisionDate.setValue(this.currentVersionOfProjectStatus?.decisionDate);
+    if (this.currentVersionOfProject.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT) {
       this.decisionForm.disable();
     }
   }
@@ -77,7 +77,7 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   }
 
   redirectToAssessmentAndDecisions(): void {
-    this.router.navigate(['app', 'project', 'detail', this.project.id, 'assessmentAndDecision']);
+    this.router.navigate(['app', 'project', 'detail', this.currentVersionOfProject.id, 'assessmentAndDecision']);
   }
 
   private getDecisionAction(): Observable<string> {
@@ -88,11 +88,11 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
     };
 
     if (this.decisionForm?.controls?.status?.value === this.stepStatus.approved) {
-      return this.fundingDecisionStore.approveApplication(this.project.id, statusInfo);
+      return this.fundingDecisionStore.approveApplication(this.currentVersionOfProject.id, statusInfo);
     } else if (this.decisionForm?.controls?.status?.value === this.stepStatus.approvedWithConditions) {
-      return this.fundingDecisionStore.approveApplicationWithCondition(this.project.id, statusInfo);
+      return this.fundingDecisionStore.approveApplicationWithCondition(this.currentVersionOfProject.id, statusInfo);
     }
-    return this.fundingDecisionStore.refuseApplication(this.project.id, statusInfo);
+    return this.fundingDecisionStore.refuseApplication(this.currentVersionOfProject.id, statusInfo);
   }
 
   getFundingConfirmation(): ConfirmDialogData {

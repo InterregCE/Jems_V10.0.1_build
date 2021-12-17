@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.application.workflow.states.first_step
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.service.ProjectAssessmentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
@@ -9,12 +10,13 @@ import io.cloudflight.jems.server.project.service.application.workflow.Applicati
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.context.ApplicationEventPublisher
 
-class FirstStepEligibleApplicationState (
+class FirstStepEligibleApplicationState(
     override val projectSummary: ProjectSummary,
     override val projectWorkflowPersistence: ProjectWorkflowPersistence,
     override val auditPublisher: ApplicationEventPublisher,
     override val securityService: SecurityService,
-    override val projectPersistence: ProjectPersistence
+    override val projectPersistence: ProjectPersistence,
+    private val projectAssessmentPersistence: ProjectAssessmentPersistence
 ) : ApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence) {
 
     private val canBeRevertTo = setOf(ApplicationStatus.STEP1_SUBMITTED)
@@ -28,12 +30,18 @@ class FirstStepEligibleApplicationState (
         getPossibleStatusToRevertToDefaultImpl(canBeRevertTo)
 
     override fun approve(actionInfo: ApplicationActionInfo): ApplicationStatus =
-        updateFundingDecision(ApplicationStatus.STEP1_APPROVED, actionInfo)
+        throwIfQualityAssessmentIsMissing(projectAssessmentPersistence, projectSummary.id, projectSummary.status).let {
+            updateFundingDecision(ApplicationStatus.STEP1_APPROVED, actionInfo)
+        }
 
     override fun approveWithConditions(actionInfo: ApplicationActionInfo): ApplicationStatus =
-        updateFundingDecision(ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS, actionInfo)
+        throwIfQualityAssessmentIsMissing(projectAssessmentPersistence, projectSummary.id, projectSummary.status).let {
+            updateFundingDecision(ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS, actionInfo)
+        }
 
     override fun refuse(actionInfo: ApplicationActionInfo): ApplicationStatus =
-        updateFundingDecision(ApplicationStatus.STEP1_NOT_APPROVED, actionInfo)
+        throwIfQualityAssessmentIsMissing(projectAssessmentPersistence, projectSummary.id, projectSummary.status).let {
+            updateFundingDecision(ApplicationStatus.STEP1_NOT_APPROVED, actionInfo)
+        }
 
 }

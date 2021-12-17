@@ -1,11 +1,10 @@
 <app-project-page-template [needsCard]="true" *ngIf="details$ | async as details"
-                           titleKey="project.assessment.and.decision.header">
+                           titleKey="project.assessment.and.decision.header"
+                           [isVersionedData]="false">
 
     <div page-sub-title appNoWidthLimit appFormLayout>
-        <h2>{{details.project.acronym}}</h2>
-        <app-project-application-information
-                appNoWidthLimit
-                [project]="details.project">
+        <h2>{{details.currentVersionOfProjectTitle}}</h2>
+        <app-project-application-information appNoWidthLimit [project]="details.currentVersionOfProject">
         </app-project-application-information>
     </div>
 
@@ -14,8 +13,8 @@
         <app-project-application-funding-decision
                 appNoWidthLimit
                 *ngIf="details.showSecondDecision"
-                [project]="details.project"
-                [status]="details.finalFundingDecision"
+                [currentVersionOfProject]="details.currentVersionOfProject"
+                [currentVersionOfProjectStatus]="details.finalFundingDecision"
                 [userCanChangeFunding]="details.userCanChangeFunding"
                 [stepStatus]="stepStatus"
                 [fundingDecision]="details.finalFundingDecision"
@@ -25,8 +24,8 @@
         </app-project-application-funding-decision>
         <app-project-application-funding-decision
                 appNoWidthLimit
-                [project]="details.project"
-                [status]="step === '2' ? (details.preFundingDecision || details.finalFundingDecision) : details.finalFundingDecision"
+                [currentVersionOfProject]="details.currentVersionOfProject"
+                [currentVersionOfProjectStatus]="step === '2' ? (details.preFundingDecision || details.finalFundingDecision) : details.finalFundingDecision"
                 [userCanChangeFunding]="details.userCanChangeFunding"
                 [stepStatus]="stepStatus"
                 [fundingDecision]="step === '2' ? (details.preFundingDecision || details.finalFundingDecision) : details.finalFundingDecision"

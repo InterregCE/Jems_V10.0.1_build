@@ -118,3 +118,19 @@ class StartingModificationIsNotAllowedException(status: ApplicationStatus) : App
         mapOf("status" to status.name)
     )
 )
+
+class ApproveModificationIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-016",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.approve.modification.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)
+
+class RejectModificationIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-017",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.reject.modification.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)

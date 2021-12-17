@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectBudgetService, ProjectUnitCostDTO} from '@cat/api';
-import {shareReplay, switchMap} from 'rxjs/operators';
+import {switchMap} from 'rxjs/operators';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
@@ -19,7 +19,7 @@ export class ProjectUnitCostsStore {
   private projectUnitCosts(): Observable<ProjectUnitCostDTO[]> {
     return combineLatest([
       this.projectStore.project$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
     ])
       .pipe(
         switchMap(([project, version]) =>

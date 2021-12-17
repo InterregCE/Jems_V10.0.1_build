@@ -11,20 +11,18 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 export class ModificationPageStore {
 
   modificationDecisions$: Observable<ProjectStatusDTO[]>;
-  currentStatus$: Observable<ProjectStatusDTO.StatusEnum>;
-  projectTitle$: Observable<string>;
-  currentVersionIsLatest$: Observable<boolean>;
+  currentVersionOfProjectStatus$: Observable<ProjectStatusDTO.StatusEnum>;
+  currentVersionOfProjectTitle$: Observable<string>;
   hasOpenPermission$: Observable<boolean>;
 
-  private modificationSubmitted$ = new Subject<void>();
+  private modificationDecisionSubmitted$ = new Subject<void>();
 
   constructor(private projectStore: ProjectStore,
               private projectStatusService: ProjectStatusService,
               private permissionService: PermissionService) {
     this.modificationDecisions$ = this.modificationDecisions();
-    this.projectTitle$ = this.projectStore.projectTitle$;
-    this.currentVersionIsLatest$ = this.projectStore.currentVersionIsLatest$;
-    this.currentStatus$ = this.projectStore.projectStatus$
+    this.currentVersionOfProjectTitle$ = this.projectStore.currentVersionOfProjectTitle$;
+    this.currentVersionOfProjectStatus$ = this.projectStore.currentVersionOfProjectStatus$
       .pipe(
         map(status => status.status),
       );
@@ -51,13 +49,24 @@ export class ModificationPageStore {
       );
   }
 
-  approveApplication(info: ApplicationActionInfoDTO): Observable<string> {
+  approveModification(info: ApplicationActionInfoDTO): Observable<string> {
     return this.projectStore.projectId$
       .pipe(
         take(1),
-        switchMap(projectId => this.projectStatusService.approveApplication(projectId, info)),
+        switchMap(projectId => this.projectStatusService.approveModification(projectId, info)),
         tap(() => this.projectStore.projectStatusChanged$.next()),
-        tap(() => this.modificationSubmitted$.next()),
+        tap(() => this.modificationDecisionSubmitted$.next()),
+        tap(status => Log.info('Changed status for project', this, status))
+      );
+  }
+
+  rejectModification(info: ApplicationActionInfoDTO): Observable<string> {
+    return this.projectStore.projectId$
+      .pipe(
+        take(1),
+        switchMap(projectId => this.projectStatusService.rejectModification(projectId, info)),
+        tap(() => this.projectStore.projectStatusChanged$.next()),
+        tap(() => this.modificationDecisionSubmitted$.next()),
         tap(status => Log.info('Changed status for project', this, status))
       );
   }
@@ -66,7 +75,7 @@ export class ModificationPageStore {
     return combineLatest([
       this.permissionService.hasPermission(PermissionsEnum.ProjectModificationView),
       this.projectStore.projectId$,
-      this.modificationSubmitted$.pipe(startWith(null))
+      this.modificationDecisionSubmitted$.pipe(startWith(null))
     ]).pipe(
       switchMap(([hasOpenPermission, projectId]) =>
         hasOpenPermission ? this.projectStatusService.getModificationDecisions(projectId) : of([])

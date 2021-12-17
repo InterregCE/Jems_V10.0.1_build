@@ -1,8 +1,8 @@
-<app-main-page-template
+<app-project-page-template
         [needsCard]="true"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.application.annexes"
->
+        [isVersionedData]="false">
     <div appFormLayout>
         <h3>
             {{'file.tab.header' | translate}}
@@ -10,4 +10,4 @@
         </h3>
         <app-file-management [section]="fileManagementSection" appNoWidthLimit></app-file-management>
     </div>
-</app-main-page-template>
+</app-project-page-template>

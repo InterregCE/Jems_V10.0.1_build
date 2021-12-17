@@ -15,7 +15,6 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus.
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.ELIGIBLE
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_ELIGIBLE
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusDecideModificationApproved
 import io.cloudflight.jems.server.project.service.application.projectWithId
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
@@ -133,32 +132,22 @@ class ApproveApplicationInteractorTest : UnitTest() {
     @ParameterizedTest(name = "assessment null when in status {0}")
     @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "STEP1_ELIGIBLE"])
     fun `quality assessment null`(status: ApplicationStatus) {
-        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID, status = status)
-        assertThrows<QualityAssessmentMissing> { approveApplication.approve(PROJECT_ID, actionInfo) }
-    }
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary(status = status)
+        every { applicationStateFactory.getInstance(any()) } returns eligibleState
+        every { eligibleState.approve(actionInfo) } throws QualityAssessmentMissing()
 
-    @ParameterizedTest(name = "missing quality assessment when in status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "STEP1_ELIGIBLE"])
-    fun `quality assessment empty`(status: ApplicationStatus) {
-        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID, status = status).copy(
-            assessmentStep1 = ProjectAssessment(assessmentQuality = null),
-            assessmentStep2 = ProjectAssessment(assessmentQuality = null),
-        )
         assertThrows<QualityAssessmentMissing> { approveApplication.approve(PROJECT_ID, actionInfo) }
     }
 
     @Test
     fun `approve when submitted precontracted checks modification permission`() {
-        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(
-            PROJECT_ID,
-            status = ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
-            .copy(
-                assessmentStep2 = ProjectAssessment(assessmentQuality = ProjectAssessmentQuality(PROJECT_ID, 2, RECOMMENDED_FOR_FUNDING))
-            )
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
+        every { applicationStateFactory.getInstance(any()) } returns eligibleState
+        every { eligibleState.approve(actionInfo) } returns APPROVED
 
-        approveApplication.approve(PROJECT_ID, actionInfo)
+        assertThat(approveApplication.approve(PROJECT_ID, actionInfo)).isEqualTo(APPROVED)
 
-        verify(exactly = 1) { projectAuthorization.hasPermission(ProjectStatusDecideModificationApproved, PROJECT_ID) }
+        // verify CanApproveApplication annotation
     }
 
 }

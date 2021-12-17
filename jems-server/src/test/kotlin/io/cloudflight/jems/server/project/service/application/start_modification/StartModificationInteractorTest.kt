@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -54,6 +55,9 @@ class StartModificationInteractorTest: UnitTest() {
 
     @RelaxedMockK
     lateinit var securityService: SecurityService
+
+    @RelaxedMockK
+    lateinit var createNewProjectVersion: CreateNewProjectVersionInteractor
 
     @InjectMockKs
     private lateinit var startModification: StartModification

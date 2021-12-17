@@ -36,7 +36,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
         {
           provide: ProjectVersionStore,
           useValue: {
-            currentRouteVersion$: of('1.0')
+            selectedVersionParam$: of('1.0')
           }
         },
         {
@@ -73,6 +73,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
 
   it('should fetch and save budgets', fakeAsync(() => {
     partnerDetailPageStore.budgetOptions$ = of({} as any);
+    httpTestingController.expectOne({method: 'GET', url: `//api/auth/current`});
 
     httpTestingController.expectOne({
       method: 'GET',

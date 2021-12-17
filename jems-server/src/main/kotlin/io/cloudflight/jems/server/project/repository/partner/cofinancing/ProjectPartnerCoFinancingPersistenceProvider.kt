@@ -4,6 +4,8 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.repository.ProjectNotFoundException
+import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
@@ -21,14 +23,17 @@ import java.sql.Timestamp
 class ProjectPartnerCoFinancingPersistenceProvider(
     private val projectPartnerRepository: ProjectPartnerRepository,
     private val projectPartnerCoFinancingRepository: ProjectPartnerCoFinancingRepository,
-    private val projectVersionUtils: ProjectVersionUtils
+    private val projectVersionUtils: ProjectVersionUtils,
+    private val projectRepository: ProjectRepository
 ) : ProjectPartnerCoFinancingPersistence {
 
     @Transactional(readOnly = true)
     override fun getAvailableFunds(partnerId: Long): Set<ProgrammeFund> =
-        getPartnerOrThrow(partnerId).project.call.funds
-            .map { it.setupId.programmeFund.toModel() }
-            .toSet()
+       projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId)?.let { projectId ->
+            projectRepository.getById(projectId)
+                .call.funds.map { it.setupId.programmeFund.toModel() }
+                .toSet()
+        } ?: throw ProjectNotFoundException()
 
     @Transactional(readOnly = true)
     override fun getCoFinancingAndContributions(

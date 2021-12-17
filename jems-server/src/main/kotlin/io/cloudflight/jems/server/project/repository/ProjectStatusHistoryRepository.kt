@@ -15,5 +15,5 @@ interface ProjectStatusHistoryRepository : PagingAndSortingRepository<ProjectSta
 
     fun findTop2ByProjectIdOrderByUpdatedDesc(projectId: Long): List<ProjectStatusHistoryEntity>
 
-    fun findAllByProjectIdAndStatusOrderByUpdatedAsc(projectId: Long, statuses: ApplicationStatus): List<ProjectStatusHistoryEntity>
+    fun findAllByProjectIdAndStatusInOrderByUpdatedDesc(projectId: Long, statuses: List<ApplicationStatus>): List<ProjectStatusHistoryEntity>
 }

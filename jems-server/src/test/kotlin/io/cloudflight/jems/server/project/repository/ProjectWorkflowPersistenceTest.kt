@@ -39,7 +39,7 @@ import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
@@ -127,7 +127,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                     status = status,
                     user = call.creator
                 ),
-            );
+            )
             val firstStepDecision = ProjectAssessmentEntity(
                 eligibilityDecision = ProjectStatusHistoryEntity(
                     id = 2,
@@ -141,7 +141,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                     user = call.creator,
                     decisionDate = endDate.toLocalDate()
                 ),
-            );
+            )
             val secondStepDecision = ProjectAssessmentEntity(
                 eligibilityDecision = ProjectStatusHistoryEntity(
                     id = 2,
@@ -172,6 +172,12 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
     @MockK
     lateinit var projectStatusHistoryRepository: ProjectStatusHistoryRepository
+
+    @MockK
+    lateinit var projectVersionRepository: ProjectVersionRepository
+
+    @MockK
+    lateinit var restoreProjectUtils: RestoreProjectUtils
 
     @InjectMockKs
     private lateinit var persistence: ProjectWorkflowPersistenceProvider
@@ -260,19 +266,6 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         assertThrows<PreviousApplicationStatusNotFoundException> { persistence.getApplicationPreviousStatus(PROJECT_ID) }
     }
 
-    @Test
-    fun `get latest Application Status NotEqual`() {
-        val status =
-            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.SUBMITTED, user = ProjectPartnerTestUtil.user)
-        every {
-            projectStatusHistoryRepository.findFirstByProjectIdAndStatusNotOrderByUpdatedDesc(
-                PROJECT_ID,
-                ApplicationStatus.APPROVED
-            )
-        } returns status
-        assertThat(persistence.getLatestApplicationStatusNotEqualTo(PROJECT_ID, ApplicationStatus.APPROVED))
-            .isEqualTo(ApplicationStatus.SUBMITTED)
-    }
 
     @Test
     fun `update Application first Submission`() {
@@ -322,8 +315,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
     fun `update Project current Status`() {
         val user = ProjectPartnerTestUtil.user
         val project = dummyProject()
-        every { projectRepository.getOne(PROJECT_ID) } returns project
-        every { userRepository.getOne(user.id) } returns user
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { userRepository.getById(user.id) } returns user
         val status =
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.SUBMITTED, user = user, updated = endDate)
         // any because of auto set updated timestamp
@@ -415,30 +408,38 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
     @Test
     fun `get Project modification decision`() {
-        val status1 =
-            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.APPROVED, user = ProjectPartnerTestUtil.user)
         val status2 =
-            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.APPROVED, user = ProjectPartnerTestUtil.user)
+            ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.APPROVED, user = ProjectPartnerTestUtil.user)
+        val status1 =
+            ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED, user = ProjectPartnerTestUtil.user)
 
          val userSummary = UserSummary(ProjectPartnerTestUtil.user.id, ProjectPartnerTestUtil.user.email, ProjectPartnerTestUtil.user.name, ProjectPartnerTestUtil.user.surname, UserRoleSummary(1L, "ADMIN"), UserStatus.ACTIVE)
 
-        val expectedStatus = ProjectStatus(id = 1, ApplicationStatus.APPROVED, userSummary, status2.updated, null, null, null)
+        val expectedStatus = ProjectStatus(id = 2, ApplicationStatus.APPROVED, userSummary, status2.updated, null, null, null)
         every {
-            projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedAsc(
+            projectStatusHistoryRepository.findAllByProjectIdAndStatusInOrderByUpdatedDesc(
                 PROJECT_ID,
-                ApplicationStatus.APPROVED
+                listOf(
+                    ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
+                    ApplicationStatus.MODIFICATION_REJECTED,
+                    ApplicationStatus.APPROVED
+                )
             )
-        } returns listOf(status1, status2)
+        } returns listOf(status2, status1)
 
-        assertThat(persistence.getModificationDecisions(PROJECT_ID)).isEqualTo(listOf(expectedStatus))
+        assertThat(persistence.getModificationDecisions(PROJECT_ID)).containsExactly(expectedStatus)
     }
 
     @Test
     fun `get Project modification decision for no data in DB`() {
         every {
-            projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedAsc(
+            projectStatusHistoryRepository.findAllByProjectIdAndStatusInOrderByUpdatedDesc(
                 PROJECT_ID,
-                ApplicationStatus.APPROVED
+                listOf(
+                    ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
+                    ApplicationStatus.MODIFICATION_REJECTED,
+                    ApplicationStatus.APPROVED
+                )
             )
         } returns emptyList()
         assertThat(persistence.getModificationDecisions(PROJECT_ID))

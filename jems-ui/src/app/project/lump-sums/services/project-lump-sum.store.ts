@@ -22,7 +22,7 @@ export class ProjectLumpSumStore {
   private partnerTotalLumpSum(): Observable<number> {
     return combineLatest([
       this.partnerStore.partner$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.projectStore.projectId$,
       this.projectPartnerBudgetStore.updateBudgetOptionsEvent$.pipe(startWith(null))
     ])

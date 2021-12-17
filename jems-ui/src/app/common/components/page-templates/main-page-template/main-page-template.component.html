@@ -1,7 +1,9 @@
 <div id="main-page-container">
     <app-breadcrumb></app-breadcrumb>
     <div appFormLayout (scroll)="onScroll()" #container id="main-page-content">
-        <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
+        <ng-container *ngIf="headerTemplate != null">
+            <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
+        </ng-container>
 
         <h1 *ngIf="titleText">{{titleText}}</h1>
         <h1 *ngIf="titleKey && !titleText">{{titleKey | translate}}</h1>

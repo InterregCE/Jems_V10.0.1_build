@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus

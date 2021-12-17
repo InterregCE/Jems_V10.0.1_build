@@ -8,14 +8,14 @@
               (discard)="decisionForm.reset()">
         <form appFormLayout [formGroup]="decisionForm">
             <div appLabel class="mat-required-marker"
-                 [ngClass]="{'empty': !approvedToggle.checked && !notApprovedToggle.checked}">
+                 [ngClass]="{'empty': !approvedToggle.checked && !rejectedToggle.checked}">
                 {{'project.application.form.section.modification.decision' | translate}}
             </div>
             <mat-button-toggle-group formControlName="status">
                 <mat-button-toggle #approvedToggle [value]="ProjectStatus.APPROVED">
                     {{'project.application.form.section.modification.approve' | translate}}
                 </mat-button-toggle>
-                <mat-button-toggle #notApprovedToggle [value]="ProjectStatus.NOTAPPROVED" disabled>
+                <mat-button-toggle #rejectedToggle [value]="ProjectStatus.MODIFICATIONREJECTED">
                     {{'project.application.form.section.modification.reject' | translate}}
                 </mat-button-toggle>
             </mat-button-toggle-group>

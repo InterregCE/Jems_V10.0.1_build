@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   CallService,
   InputProjectData,
@@ -15,15 +15,13 @@ import {
   ProjectService,
   ProjectStatusDTO,
   ProjectStatusService,
-  ProjectVersionDTO,
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
 import {
-  distinctUntilChanged,
   filter,
   map,
-  mergeMap,
+  share,
   shareReplay,
   startWith,
   switchMap,
@@ -57,11 +55,14 @@ export class ProjectStore {
   projectId$ = new ReplaySubject<number>(1);
   projectStatusChanged$ = new Subject();
 
+  currentVersionOfProject$: Observable<ProjectDetailDTO>;
+  currentVersionOfProjectTitle$: Observable<string>;
+  currentVersionOfProjectStatus$: Observable<ProjectStatusDTO>;
+
   projectStatus$: Observable<ProjectStatusDTO>;
   project$: Observable<ProjectDetailDTO>;
   projectForm$: Observable<ProjectDetailFormDTO>;
-  currentProject: ProjectDetailDTO;
-  currentVersionIsLatest$: Observable<boolean>;
+  project: ProjectDetailDTO;
   projectEditable$: Observable<boolean>;
   projectTitle$: Observable<string>;
   callHasTwoSteps$: Observable<boolean>;
@@ -87,16 +88,20 @@ export class ProjectStore {
   private changedEligibilityAssessment$ = this.newEligibilityAssessment$
     .pipe(
       withLatestFrom(this.projectId$),
-      mergeMap(([assessment, id]) => this.projectStatusService.setEligibilityAssessment(id, assessment)),
+      switchMap(([assessment, id]) => this.projectStatusService.setEligibilityAssessment(id, assessment)),
+      tap(() => this.projectStatusChanged$.next()),
       tap(saved => Log.info('Updated project eligibility assessment:', this, saved)),
+      share(),
       tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id, 'assessmentAndDecision']))
     );
 
   private changedQualityAssessment$ = this.newQualityAssessment$
     .pipe(
       withLatestFrom(this.projectId$),
-      mergeMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
+      switchMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
+      tap(() => this.projectStatusChanged$.next()),
       tap(saved => Log.info('Updated project quality assessment:', this, saved)),
+      share(),
       tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id, 'assessmentAndDecision']))
     );
 
@@ -113,12 +118,17 @@ export class ProjectStore {
         tap(id => this.projectId$.next(id as number))
       ).subscribe();
 
-    this.project$ = this.project();
+    this.project$ = this.setProject(true);
+    this.currentVersionOfProject$ = this.setProject(false);
     this.projectForm$ = this.projectForm();
-    this.currentVersionIsLatest$ = this.currentVersionIsLatest();
     this.projectEditable$ = this.projectEditable();
-    this.projectStatus$ = this.projectStatus();
+    this.projectStatus$ = this.projectStatus(this.project$);
+    this.currentVersionOfProjectStatus$ = this.projectStatus(this.currentVersionOfProject$);
     this.projectCall$ = this.projectCallSettings();
+    this.currentVersionOfProjectTitle$ = this.currentVersionOfProject$
+      .pipe(
+        map(project => `${project.customIdentifier} – ${project.acronym}`)
+      );
     this.projectTitle$ = this.project$
       .pipe(
         map(project => `${project.customIdentifier} – ${project.acronym}`)
@@ -135,10 +145,6 @@ export class ProjectStore {
     );
   }
 
-  private static latestVersion(versions?: ProjectVersionDTO[]): number {
-    return versions?.length ? Number(versions[0].version) : 1;
-  }
-
   updateProjectData(data: InputProjectData): Observable<ProjectDetailFormDTO> {
     return this.projectId$
       .pipe(
@@ -150,7 +156,7 @@ export class ProjectStore {
   }
 
   getProjectCoFinancing(): Observable<ProjectPartnerBudgetCoFinancingDTO[]> {
-    return combineLatest([this.projectId$, this.projectVersionStore.currentRouteVersion$])
+    return combineLatest([this.projectId$, this.projectVersionStore.selectedVersionParam$])
       .pipe(
         switchMap(([id, version]) => this.projectService.getProjectCoFinancing(id, version)),
         tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => Log.info('Fetched project co-financing:', this, data))
@@ -172,16 +178,16 @@ export class ProjectStore {
       );
   }
 
-  private projectStatus(): Observable<ProjectStatusDTO> {
-    return this.project$
+  private projectStatus(project: Observable<ProjectDetailDTO>): Observable<ProjectStatusDTO> {
+    return project
       .pipe(
-        map(project => project.projectStatus),
+        map(it => it.projectStatus),
         shareReplay(1)
       );
   }
 
-  private project(): Observable<ProjectDetailDTO> {
-    const byId$ = combineLatest([this.projectId$, this.projectVersionStore.currentRouteVersion$])
+  private setProject(withVersioning: boolean): Observable<ProjectDetailDTO> {
+    const byId$ = combineLatest([this.projectId$, withVersioning ? this.projectVersionStore.selectedVersionParam$ : of(undefined)])
       .pipe(
         filter(([id]) => !!id),
         switchMap(([id, version]) => this.projectService.getProjectById(id, version)),
@@ -192,6 +198,7 @@ export class ProjectStore {
       .pipe(
         withLatestFrom(this.projectId$),
         switchMap(([, id]) => this.projectService.getProjectById(id)),
+        tap(() => this.projectVersionStore.refreshVersions()),
         tap(project => Log.info('Fetched project byStatus:', this, project))
       );
 
@@ -211,13 +218,13 @@ export class ProjectStore {
     )
       .pipe(
         tap(project => this.projectAcronym$.next(project?.acronym)),
-        tap(project => this.currentProject = project),
+        tap(project => this.project = project),
         shareReplay(1)
       );
   }
 
   private projectForm(): Observable<ProjectDetailFormDTO> {
-    const formById$ = combineLatest([this.projectId$, this.projectVersionStore.currentRouteVersion$])
+    const formById$ = combineLatest([this.projectId$, this.projectVersionStore.selectedVersionParam$])
       .pipe(
         filter(([id]) => !!id),
         switchMap(([id, version]) => this.projectService.getProjectFormById(id, version)),
@@ -239,11 +246,11 @@ export class ProjectStore {
       this.project$,
       this.permissionService.permissionsChanged(),
       this.securityService.currentUser,
-      this.currentVersionIsLatest$
+      this.projectVersionStore.isSelectedVersionCurrent$
     ])
       .pipe(
-        map(([project, permissions, currentUser, currentVersionIsLatest]) => {
-          if (!currentVersionIsLatest) {
+        map(([project, permissions, currentUser, isSelectedVersionCurrent]) => {
+          if (!isSelectedVersionCurrent) {
             return false;
           }
           if (!ProjectUtil.isOpenForModifications(project)) {
@@ -327,34 +334,11 @@ export class ProjectStore {
       );
   }
 
-  private currentVersionIsLatest(): Observable<boolean> {
-    return combineLatest([
-      this.projectVersionStore.currentRouteVersion$,
-      this.projectVersionStore.versions$,
-      this.project$.pipe(
-        distinctUntilChanged((o, n) => o.projectStatus.status === n.projectStatus.status)
-      )
-    ])
-      .pipe(
-        map(([currentVersion, versions, project]) => {
-            if (!currentVersion) {
-              return true;
-            }
-            const latest = ProjectStore.latestVersion(versions);
-            const current = Number(currentVersion);
-
-            // if project is editable the current version is the next one
-            return ProjectUtil.isOpenForModifications(project) ? latest < current : latest === current;
-          }
-        ),
-        shareReplay(1)
-      );
-  }
 
   private investmentSummaries(): Observable<InvestmentSummary[]> {
     return combineLatest([
       this.project$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.investmentChangeEvent$.pipe(startWith(null))])
       .pipe(
         switchMap(([project, version]) => this.projectService.getProjectInvestmentSummaries(project.id, version)),

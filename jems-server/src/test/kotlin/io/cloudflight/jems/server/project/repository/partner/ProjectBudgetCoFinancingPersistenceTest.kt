@@ -14,6 +14,8 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
+import io.cloudflight.jems.server.project.repository.ProjectNotFoundException
+import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
@@ -25,6 +27,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.utils.partner.PROJECT_ID
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -86,6 +89,9 @@ class ProjectBudgetCoFinancingPersistenceTest {
     @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
 
+    @RelaxedMockK
+    lateinit var projectRepository: ProjectRepository
+
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
@@ -100,21 +106,22 @@ class ProjectBudgetCoFinancingPersistenceTest {
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
             projectPartnerRepository,
             projectPartnerCoFinancingRepository,
-            projectVersionUtils
+            projectVersionUtils,
+            projectRepository
         )
     }
 
     @Test
     fun `get available fund ids`() {
-        every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(dummyPartner)
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(PARTNER_ID) } returns PROJECT_ID
+        every { projectRepository.getById(PROJECT_ID) } returns dummyProject()
         assertThat(persistence.getAvailableFunds(PARTNER_ID).map { it.id }).containsExactlyInAnyOrder(10, 11)
     }
 
     @Test
     fun `get available fund ids not existing`() {
-        every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getAvailableFunds(PARTNER_ID) }
-        assertThat(ex.entity).isEqualTo("projectPartner")
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(PARTNER_ID) } returns null
+        assertThrows<ProjectNotFoundException> { persistence.getAvailableFunds(PARTNER_ID) }
     }
 
     @Test

@@ -17,16 +17,15 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class ModificationPageComponent {
   PermissionsEnum = UserRoleDTO.PermissionsEnum;
-  ProjectStatus = ProjectStatusDTO.StatusEnum;
+  ProjectStatusEnum = ProjectStatusDTO.StatusEnum;
 
   fileManagementSection = {type: FileCategoryTypeEnum.MODIFICATION} as CategoryInfo;
   pendingButtonProgress: boolean;
 
   data$: Observable<{
-    projectTitle: string;
-    projectStatus: ProjectStatusDTO.StatusEnum;
+    currentVersionOfProjectTitle: string;
+    currentVersionOfProjectStatus: ProjectStatusDTO.StatusEnum;
     modificationDecisions: ProjectStatusDTO[];
-    currentVersionIsLatest: boolean;
     canOpenModification: boolean;
     canHandBackModification: boolean;
   }>;
@@ -35,19 +34,17 @@ export class ModificationPageComponent {
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute) {
     this.data$ = combineLatest([
-      this.pageStore.projectTitle$,
-      this.pageStore.currentStatus$,
+      this.pageStore.currentVersionOfProjectTitle$,
+      this.pageStore.currentVersionOfProjectStatus$,
       this.pageStore.modificationDecisions$,
-      this.pageStore.currentVersionIsLatest$,
       this.pageStore.hasOpenPermission$,
     ]).pipe(
-        map(([projectTitle, projectStatus, modificationDecisions, currentVersionIsLatest, hasOpenPermission]) => ({
-          projectTitle,
-          projectStatus,
+        map(([currentVersionOfProjectTitle, currentVersionOfProjectStatus, modificationDecisions, hasOpenPermission]) => ({
+          currentVersionOfProjectTitle,
+          currentVersionOfProjectStatus,
           modificationDecisions,
-          currentVersionIsLatest,
-          canOpenModification: this.canOpenModification(projectStatus, hasOpenPermission),
-          canHandBackModification: this.canHandBackModification(projectStatus, hasOpenPermission)
+          canOpenModification: this.canOpenModification(currentVersionOfProjectStatus, hasOpenPermission),
+          canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission)
         }))
       );
   }
@@ -72,10 +69,10 @@ export class ModificationPageComponent {
 
   private canOpenModification(projectStatus: ProjectStatusDTO.StatusEnum, hasOpenPermission: boolean): boolean {
     return hasOpenPermission
-      && (projectStatus === this.ProjectStatus.APPROVED || projectStatus === this.ProjectStatus.NOTAPPROVED);
+      && (projectStatus === this.ProjectStatusEnum.APPROVED || projectStatus === this.ProjectStatusEnum.NOTAPPROVED);
   }
 
   private canHandBackModification(projectStatus: ProjectStatusDTO.StatusEnum, hasOpenPermission: boolean): boolean {
-    return hasOpenPermission && projectStatus === this.ProjectStatus.MODIFICATIONPRECONTRACTINGSUBMITTED;
+    return hasOpenPermission && projectStatus === this.ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
   }
 }

@@ -41,14 +41,16 @@ internal class SaveProjectVersionTest : UnitTest() {
         projectId,
         createdAt = ZonedDateTime.now(),
         user,
-        ApplicationStatus.RETURNED_TO_APPLICANT
+        ApplicationStatus.RETURNED_TO_APPLICANT,
+        current = false
     )
     private val newProjectVersion = ProjectVersion(
         "2.0",
         projectId,
         createdAt = ZonedDateTime.now(),
         user,
-        ApplicationStatus.SUBMITTED
+        ApplicationStatus.SUBMITTED,
+        current = true
     )
 
     private val projectSummary = ProjectSummary(
@@ -72,17 +74,17 @@ internal class SaveProjectVersionTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
-    lateinit var saveProjectVersion: SaveProjectVersion
+    lateinit var saveProjectVersion: CreateNewProjectVersion
 
     @Test
     fun `should create a new version for the project when there is no problem`() {
         every { securityService.getUserIdOrThrow() } returns userId
-        every { projectVersionPersistence.getLatestVersionOrNull(projectId) } returns currentProjectVersion
+        every { projectVersionPersistence.getLatestVersionOrNull(projectId) } returns currentProjectVersion.version
         every {
             projectVersionPersistence.createNewVersion(
                 projectId,
+                currentProjectVersion.status,
                 ProjectVersionUtils.increaseMajor(currentProjectVersion.version),
-                ApplicationStatus.SUBMITTED,
                 userId
             )
         } returns newProjectVersion
@@ -90,7 +92,7 @@ internal class SaveProjectVersionTest : UnitTest() {
         val auditEventSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditEventSlot)) } returns Unit
 
-        val createdProjectVersion = saveProjectVersion.createNewVersion(projectId, ApplicationStatus.SUBMITTED)
+        val createdProjectVersion = saveProjectVersion.create(projectId, currentProjectVersion.status)
 
         verify(exactly = 1) { auditPublisher.publishEvent(auditEventSlot.captured) }
 

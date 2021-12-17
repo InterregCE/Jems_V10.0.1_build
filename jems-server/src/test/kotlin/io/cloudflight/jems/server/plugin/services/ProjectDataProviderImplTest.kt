@@ -273,7 +273,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             ),
             title = setOf(InputTranslation(SystemLanguage.EN, "title"))
         )
-        private val projectVersions = listOf(ProjectVersion("1.0", project.id!!, ZonedDateTime.now(), userEntity, ApplicationStatus.SUBMITTED))
+        private val projectVersions = listOf(ProjectVersion("1.0", project.id!!, ZonedDateTime.now(), userEntity, ApplicationStatus.SUBMITTED, true))
         private val projectDescription = ProjectDescription(
             projectOverallObjective = ProjectOverallObjective(
                 overallObjective = setOf(InputTranslation(SystemLanguage.EN, "overallObjective"))

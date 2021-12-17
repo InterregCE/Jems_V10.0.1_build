@@ -39,7 +39,7 @@ export class ProjectLumpSumsStore {
   private projectLumpSums(): Observable<ProjectLumpSum[]> {
     return combineLatest([
       this.projectStore.project$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.updateProjectLumpSumsEvent$.pipe(startWith(null))
     ]).pipe(
       switchMap(([project, version]) =>

@@ -7,15 +7,17 @@ import io.cloudflight.jems.server.project.service.application.ApplicationActionI
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.user.repository.user.UserRepository
-import java.time.LocalDate
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Repository
 class ProjectWorkflowPersistenceProvider(
     private val projectStatusHistoryRepository: ProjectStatusHistoryRepository,
     private val projectRepository: ProjectRepository,
     private val userRepository: UserRepository,
+    private val projectVersionRepository: ProjectVersionRepository,
+    private val restoreProjectUtils: RestoreProjectUtils
 ) : ProjectWorkflowPersistence {
 
     @Transactional(readOnly = true)
@@ -30,14 +32,6 @@ class ProjectWorkflowPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getApplicationPreviousStatus(projectId: Long): ProjectStatus =
         getPreviousHistoryStatusOrThrow(projectId).toProjectStatus()
-
-    @Transactional(readOnly = true)
-    override fun getLatestApplicationStatusNotEqualTo(
-        projectId: Long, statusToIgnore: ApplicationStatus
-    ): ApplicationStatus =
-        projectStatusHistoryRepository.findFirstByProjectIdAndStatusNotOrderByUpdatedDesc(
-            projectId, statusToIgnore
-        )?.status ?: throw ApplicationStatusNotFoundException()
 
     @Transactional
     override fun updateApplicationFirstSubmission(projectId: Long, userId: Long, status: ApplicationStatus) =
@@ -87,10 +81,10 @@ class ProjectWorkflowPersistenceProvider(
         status: ApplicationStatus,
         actionInfo: ApplicationActionInfo?
     ) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             currentStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = status, user = userRepository.getOne(userId),
+                    project = this, status = status, user = userRepository.getById(userId),
                     decisionDate = actionInfo?.date,
                     note = actionInfo?.note
                 )
@@ -206,10 +200,30 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun getModificationDecisions(projectId: Long): List<ProjectStatus> =
-        this.projectStatusHistoryRepository.findAllByProjectIdAndStatusOrderByUpdatedAsc(
+        this.projectStatusHistoryRepository.findAllByProjectIdAndStatusInOrderByUpdatedDesc(
             projectId,
-            ApplicationStatus.APPROVED
-        ).drop(1).map { it.toProjectStatus() }
+            listOf(
+                ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
+                ApplicationStatus.MODIFICATION_REJECTED,
+                ApplicationStatus.APPROVED
+            )
+        ).zipWithNext()
+            .filter {
+                it.second.status == ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED && listOf(
+                    ApplicationStatus.MODIFICATION_REJECTED,
+                    ApplicationStatus.APPROVED
+                ).contains(it.first.status)
+            }.map { it.first.toProjectStatus() }
+
+    @Transactional
+    override fun restoreProjectToLastVersionByStatus(projectId: Long, status: ApplicationStatus) {
+        projectVersionRepository.findLastTimestampByStatus(projectId, status.name).let { restoreTimestamp ->
+            if (restoreTimestamp == null) throw ProjectRestoreTimestampNotFoundException()
+            projectVersionRepository.endCurrentVersion(projectId)
+            projectVersionRepository.setVersionAsCurrent(projectId, restoreTimestamp)
+            restoreProjectUtils.generateAndExecuteProjectRestoreQueries(projectId = projectId, restoreTimestamp = restoreTimestamp)
+        }
+    }
 
     @Transactional
     override fun clearProjectFundingDecision(projectId: Long) {

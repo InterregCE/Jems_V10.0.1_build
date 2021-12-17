@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.application.hand_back_to_applicant
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
@@ -11,14 +10,9 @@ import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.projectWithId
-import io.cloudflight.jems.server.project.service.application.workflow.ApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
-import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.userproject.assign_user_to_project.AssignUserEventListenersTest.Companion.project
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -26,8 +20,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.mock
 import org.springframework.context.ApplicationEventPublisher
 
 class HandBackToApplicantInteractorTest : UnitTest() {
@@ -95,8 +89,8 @@ class HandBackToApplicantInteractorTest : UnitTest() {
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns project
         every { applicationStateFactory.getInstance(any()).handBackToApplicant() } returns ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED
 
-        handBackToApplicant.handBackToApplicant(PROJECT_ID)
+        assertThat(handBackToApplicant.handBackToApplicant(PROJECT_ID)).isEqualTo(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
 
-        verify(exactly = 1) { projectAuthorization.hasPermission(UserRolePermission.ProjectOpenModification, PROJECT_ID) }
+        // verify - no? annotation
     }
 }

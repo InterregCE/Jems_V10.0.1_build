@@ -55,7 +55,7 @@ export class AssessmentAndDecisionStore {
   }
 
   private revertToStatus(): Observable<string | null> {
-    return combineLatest([this.projectStore.project$, this.permissionService.permissionsChanged()])
+    return combineLatest([this.projectStore.currentVersionOfProject$, this.permissionService.permissionsChanged()])
       .pipe(
         switchMap(([project, perms]) =>
           perms.includes(PermissionsEnum.ProjectStatusDecisionRevert)

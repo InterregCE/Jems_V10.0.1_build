@@ -27,14 +27,13 @@ export class CheckAndSubmitComponent {
   private preConditionCheckResult$ = new BehaviorSubject<PreConditionCheckResult | null>(null);
 
   data$: Observable<{
-    projectStatus: ProjectStatusDTO.StatusEnum;
-    projectTitle: string;
+    currentVersionOfProjectStatus: ProjectStatusDTO.StatusEnum;
+    currentVersionOfProjectTitle: string;
     projectId: number;
     projectCallEndDate: Date;
     isThisUserOwner: boolean;
     hasPreConditionCheckSucceed: boolean;
     preConditionCheckResults: PreConditionCheckResult | null;
-    isProjectLatestVersion: boolean;
   }>;
 
   // TODO: create a component
@@ -48,21 +47,19 @@ export class CheckAndSubmitComponent {
               private router: Router
   ) {
     this.data$ = combineLatest([
-      this.projectStore.project$,
-      this.projectStore.projectTitle$,
+      this.projectStore.currentVersionOfProject$,
+      this.projectStore.currentVersionOfProjectTitle$,
       this.projectStore.userIsProjectOwner$,
-      this.preConditionCheckResult$,
-      this.projectStore.currentVersionIsLatest$
+      this.preConditionCheckResult$
     ]).pipe(
-      map(([project, projectTitle, isThisUserOwner, preConditionCheckResults, isProjectLatestVersion]) => ({
-        projectTitle,
-        projectStatus: project.projectStatus.status,
-        projectId: project.id,
-        projectCallEndDate: project.callSettings?.endDate,
+      map(([currentVersionOfProject, currentVersionOfProjectTitle, isThisUserOwner, preConditionCheckResults]) => ({
+        currentVersionOfProjectTitle,
+        currentVersionOfProjectStatus: currentVersionOfProject.projectStatus.status,
+        projectId: currentVersionOfProject.id,
+        projectCallEndDate: currentVersionOfProject.callSettings?.endDate,
         isThisUserOwner,
         hasPreConditionCheckSucceed: preConditionCheckResults?.submissionAllowed || false,
         preConditionCheckResults,
-        isProjectLatestVersion
       }))
     );
   }
@@ -98,10 +95,7 @@ export class CheckAndSubmitComponent {
     this.router.navigate([`/app/project/detail/${projectId}`]);
   }
 
-  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, isProjectLatestVersion: boolean, projectStatus: ProjectStatusDTO.StatusEnum): boolean {
-    if (!isProjectLatestVersion) {
-      return true;
-    }
+  isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, projectStatus: ProjectStatusDTO.StatusEnum): boolean {
     const currentDate = moment(new Date());
     return !(currentDate.isBefore(projectCallEndDate) && (hasPreConditionCheckSucceed || projectStatus === this.STATUS.STEP1DRAFT));
   }

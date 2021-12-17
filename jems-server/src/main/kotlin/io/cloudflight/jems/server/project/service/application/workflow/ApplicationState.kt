@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.project.service.application.workflow
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.service.ProjectAssessmentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.approve_application.QualityAssessmentMissing
 import io.cloudflight.jems.server.project.service.callAlreadyEnded
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.context.ApplicationEventPublisher
@@ -70,6 +72,16 @@ abstract class ApplicationState(
 
     open fun startModification(): ApplicationStatus =
         throw StartingModificationIsNotAllowedException(
+            projectSummary.status
+        )
+
+    open fun approveModification(actionInfo: ApplicationActionInfo): ApplicationStatus =
+        throw ApproveModificationIsNotAllowedException(
+            projectSummary.status
+        )
+
+    open fun rejectModification(actionInfo: ApplicationActionInfo): ApplicationStatus =
+        throw RejectModificationIsNotAllowedException(
             projectSummary.status
         )
 
@@ -154,8 +166,12 @@ abstract class ApplicationState(
         projectPersistence.getProjectCallSettings(projectSummary.id).also { projectCallSettings ->
             if (projectCallSettings.isCallStep2Closed()) {
                 auditPublisher.publishEvent(callAlreadyEnded(this, projectCallSettings))
-
                 throw CallIsNotOpenException()
             }
         }
+
+    protected fun throwIfQualityAssessmentIsMissing(projectAssessmentPersistence : ProjectAssessmentPersistence, projectId: Long, projectStatus: ApplicationStatus) {
+        if (!projectAssessmentPersistence.qualityForStepExists(projectId, if (projectStatus.isInStep2()) 2 else 1))
+            throw QualityAssessmentMissing()
+    }
 }

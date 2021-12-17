@@ -36,7 +36,8 @@ export class ProjectApplicationEligibilityCheckComponent {
   };
 
   data$: Observable<{
-    project: ProjectDetailDTO;
+    currentVersionOfProject: ProjectDetailDTO;
+    currentVersionOfProjectTitle: string;
     eligibilityAssessment: OutputProjectEligibilityAssessment;
   }>;
 
@@ -47,17 +48,18 @@ export class ProjectApplicationEligibilityCheckComponent {
               private pageStore: ProjectEligibilityCheckPageStore,
               protected changeDetectorRef: ChangeDetectorRef) {
     this.data$ = combineLatest([
-      this.pageStore.project$,
+      this.pageStore.currentVersionOfProject$,
+      this.pageStore.currentVersionOfProjectTitle$,
       this.pageStore.eligibilityAssessment(this.step)
     ])
       .pipe(
-        tap(([project, eligibilityAssessment]) => {
+        tap(([currentVersionOfProject, currentVersionOfProjectTitle, eligibilityAssessment]) => {
           if (eligibilityAssessment) {
             this.setEligibilityCheckValue(eligibilityAssessment);
             this.notesForm.controls.notes.setValue(eligibilityAssessment.note);
           }
         }),
-        map(([project, eligibilityAssessment]) => ({project, eligibilityAssessment}))
+        map(([currentVersionOfProject,currentVersionOfProjectTitle,  eligibilityAssessment]) => ({currentVersionOfProject,currentVersionOfProjectTitle, eligibilityAssessment}))
       );
   }
 
