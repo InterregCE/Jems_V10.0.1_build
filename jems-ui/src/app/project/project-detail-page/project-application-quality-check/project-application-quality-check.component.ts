@@ -24,7 +24,7 @@ export class ProjectApplicationQualityCheckComponent {
   options: string[] = [this.assessment.RECOMMENDEDFORFUNDING, this.assessment.RECOMMENDEDWITHCONDITIONS, this.assessment.NOTRECOMMENDED];
 
   data$: Observable<{
-    project: ProjectDetailDTO;
+    currentVersionOfProject: ProjectDetailDTO;
     qualityAssessment: OutputProjectQualityAssessment;
   }>;
 
@@ -45,17 +45,18 @@ export class ProjectApplicationQualityCheckComponent {
               private pageStore: ProjectQualityCheckPageStore,
               private projectStore: ProjectStore) {
     this.data$ = combineLatest([
-      this.pageStore.project$,
+      this.pageStore.currentVersionOfProject$,
+      this.pageStore.currentVersionOfProjectTitle$,
       this.pageStore.qualityAssessment(this.step)]
     )
       .pipe(
-        tap(([project, qualityAssessment]) => {
+        tap(([currentVersionOfProject,currentVersionOfProjectTitle, qualityAssessment]) => {
           if (qualityAssessment) {
             this.qualityCheckForm.controls.result.setValue(qualityAssessment.result);
             this.qualityCheckForm.controls.note.setValue(qualityAssessment.note);
           }
         }),
-        map(([project, qualityAssessment]) => ({project, qualityAssessment}))
+        map(([currentVersionOfProject,currentVersionOfProjectTitle, qualityAssessment]) => ({currentVersionOfProject,currentVersionOfProjectTitle, qualityAssessment}))
       );
   }
 

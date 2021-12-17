@@ -7,10 +7,12 @@ import {ProjectStore} from '../../project-application/containers/project-applica
 @Injectable()
 export class ProjectQualityCheckPageStore {
 
-  project$: Observable<ProjectDetailDTO>;
+  currentVersionOfProject$: Observable<ProjectDetailDTO>;
+  currentVersionOfProjectTitle$: Observable<string>;
 
   constructor(private projectStore: ProjectStore) {
-    this.project$ = this.projectStore.project$;
+    this.currentVersionOfProject$ = this.projectStore.currentVersionOfProject$;
+    this.currentVersionOfProjectTitle$ = this.projectStore.currentVersionOfProjectTitle$;
   }
 
   qualityAssessment(step: number | undefined): Observable<OutputProjectQualityAssessment> {

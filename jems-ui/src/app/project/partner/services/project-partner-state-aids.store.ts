@@ -29,7 +29,7 @@ export class ProjectPartnerStateAidsStore {
   private stateAid(): Observable<ProjectPartnerStateAidDTO> {
     const initialStateAid$ = combineLatest([
       this.partnerStore.partner$,
-      this.projectVersionStore.currentRouteVersion$
+      this.projectVersionStore.selectedVersionParam$
     ])
       .pipe(
         filter(([partner]) => !!partner.id),

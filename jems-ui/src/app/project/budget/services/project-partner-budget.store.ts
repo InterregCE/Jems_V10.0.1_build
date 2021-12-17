@@ -66,7 +66,7 @@ export class ProjectPartnerBudgetStore {
   private budgets(): Observable<PartnerBudgetTables> {
     return combineLatest([
       this.partnerStore.partner$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.updateBudgetEvent$.pipe(startWith(null)),
       this.updateBudgetOptionsEvent$.pipe(startWith(null))
     ])
@@ -89,7 +89,7 @@ export class ProjectPartnerBudgetStore {
   private budgetOptions(): Observable<BudgetOptions> {
     return combineLatest([
       this.partnerStore.partner$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.updateBudgetOptionsEvent$.pipe(startWith(null))
     ])
       .pipe(
@@ -129,7 +129,7 @@ export class ProjectPartnerBudgetStore {
   private totalBudget(): Observable<number> {
     return combineLatest([
       this.partnerStore.partner$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.updateBudgetOptionsEvent$.pipe(startWith(null)),
       this.updateBudgetEvent$.pipe(startWith(null))
     ])

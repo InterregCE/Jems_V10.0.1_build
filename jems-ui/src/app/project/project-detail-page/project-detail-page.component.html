@@ -1,9 +1,10 @@
 <app-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
                            titleKey="project.application.form.tree.title"
-                           [subTitleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle}">
+                           [subTitleText]="'project.application.form.acronym' | translate : {projectTitle: data.currentVersionOfProjectTitle}"
+                           [isVersionedData]="false">
 
     <div appFormLayout appNoWidthLimit>
-        <app-project-application-information [project]="data.project" appNoWidthLimit>
+        <app-project-application-information [project]="data.currentVersionOfProject" appNoWidthLimit>
         </app-project-application-information>
     </div>
 

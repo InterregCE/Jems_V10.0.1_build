@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.context.ApplicationEventPublisher
 
-class ModificationPrecontractingApplicationState(
+class ModificationPreContractingApplicationState(
     override val projectSummary: ProjectSummary,
     override val projectWorkflowPersistence: ProjectWorkflowPersistence,
     override val auditPublisher: ApplicationEventPublisher,

@@ -1,14 +1,15 @@
 <app-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
-                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
-                           subTitleKey="project.application.form.section.check.and.submit">
+                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.currentVersionOfProjectTitle} "
+                           subTitleKey="project.application.form.section.check.and.submit"
+                           [isVersionedData]="false">
     <div appFormLayout>
         <div>
-            {{'project.application.form.section.check.and.submit.info.line.1' | translate : {projectAcronym: data.projectTitle} }}
+            {{'project.application.form.section.check.and.submit.info.line.1' | translate : {projectAcronym: data.currentVersionOfProjectTitle} }}
         </div>
         <div>{{'project.application.form.section.check.and.submit.info.line.2' | translate }}</div>
 
         <ng-container *hasPermission="[PermissionsEnum.ProjectCheckApplicationForm, PermissionsEnum.ProjectSubmission]; alternativeCondition data.isThisUserOwner">
-            <ng-container *ngIf="data.projectStatus === STATUS.DRAFT || ProjectUtil.isReturnedToApplicant(data.projectStatus)">
+            <ng-container *ngIf="data.currentVersionOfProjectStatus === STATUS.DRAFT || ProjectUtil.isReturnedToApplicant(data.currentVersionOfProjectStatus)">
                 <h3>{{'project.detail.pre.condition.check.result.title' | translate}}</h3>
                 <p>{{'project.detail.pre.condition.check.result.description' | translate}}</p>
             </ng-container>
@@ -17,8 +18,7 @@
                 <ng-container *hasPermission="PermissionsEnum.ProjectCheckApplicationForm; alternativeCondition data.isThisUserOwner">
                     <app-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="data.projectStatus === STATUS.DRAFT || ProjectUtil.isReturnedToApplicant(data.projectStatus)"
-                            [disabled]="!data.isProjectLatestVersion"
+                            *ngIf="data.currentVersionOfProjectStatus === STATUS.DRAFT || ProjectUtil.isReturnedToApplicant(data.currentVersionOfProjectStatus)"
                             [pending]="preConditionCheckInProgress"
                             (clicked)="preConditionCheck(data.projectId)">
                         {{'project.detail.button.pre.condition.check' | translate}}
@@ -28,9 +28,9 @@
                 <ng-container *hasPermission="PermissionsEnum.ProjectSubmission; alternativeCondition data.isThisUserOwner">
                     <app-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="ProjectUtil.isDraft(data.projectStatus)"
+                            *ngIf="ProjectUtil.isDraft(data.currentVersionOfProjectStatus)"
                             [confirm]="{title: 'project.detail.submit.dialog.title', message: 'project.detail.submit.dialog.message'}"
-                            [disabled]="isSubmitDisabled(data.projectCallEndDate, data.hasPreConditionCheckSucceed, data.isProjectLatestVersion, data.projectStatus)"
+                            [disabled]="isSubmitDisabled(data.projectCallEndDate, data.hasPreConditionCheckSucceed, data.currentVersionOfProjectStatus)"
                             [pending]="actionPending"
                             (clicked)="submitProject(data.projectId)">
                         {{'project.detail.button.submit' | translate}}
@@ -38,9 +38,9 @@
 
                     <app-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="ProjectUtil.isReturnedToApplicant(data.projectStatus)"
+                            *ngIf="ProjectUtil.isReturnedToApplicant(data.currentVersionOfProjectStatus)"
                             [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
-                            [disabled]="!data.isProjectLatestVersion || !data.hasPreConditionCheckSucceed"
+                            [disabled]="!data.hasPreConditionCheckSucceed"
                             [pending]="actionPending"
                             (clicked)="submitProject(data.projectId)">
                         {{'project.detail.button.resubmit' | translate}}

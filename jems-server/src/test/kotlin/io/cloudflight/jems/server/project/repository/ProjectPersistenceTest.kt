@@ -74,7 +74,9 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.sql.Timestamp
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.Optional
 
@@ -187,7 +189,10 @@ internal class ProjectPersistenceTest : UnitTest() {
                 currentStatus = ProjectStatusHistoryEntity(
                     id = 1,
                     status = ApplicationStatus.DRAFT,
-                    user = call.creator
+                    user = call.creator,
+                    decisionDate = LocalDate.now(),
+                    entryIntoForceDate = LocalDate.now(),
+                    note = "note"
                 ),
                 periods = listOf(
                     ProjectPeriodEntity(
@@ -496,6 +501,19 @@ internal class ProjectPersistenceTest : UnitTest() {
         every { mockRow.duration } returns 12
         every { mockRow.title } returns "title"
         every { mockRow.intro } returns "intro"
+        every { mockRow.statusId } returns 1L
+        every { mockRow.status } returns ApplicationStatus.DRAFT
+        every { mockRow.updated } returns Timestamp.from(project.currentStatus.updated.toInstant()) // missing timezone
+        every { mockRow.decisionDate } returns project.currentStatus.decisionDate!!
+        every { mockRow.entryIntoForceDate } returns project.currentStatus.entryIntoForceDate!!
+        every { mockRow.note } returns project.currentStatus.note!!
+        every { mockRow.userId } returns 1L
+        every { mockRow.email } returns "admin@admin.dev"
+        every { mockRow.name } returns "Name"
+        every { mockRow.surname } returns "Surname"
+        every { mockRow.userStatus } returns UserStatus.ACTIVE
+        every { mockRow.roleId } returns 1L
+        every { mockRow.roleName } returns "ADMIN"
         every { mockPeriodRow.periodNumber } returns 1
         every { mockPeriodRow.periodStart } returns 1
         every { mockPeriodRow.periodEnd } returns 12
@@ -530,7 +548,11 @@ internal class ProjectPersistenceTest : UnitTest() {
                         )
                     ),
                     applicant = project.applicant.toUserSummary(),
-                    projectStatus = project.currentStatus.toProjectStatus(),
+                    projectStatus = ProjectStatus(
+                        mockRow.statusId, mockRow.status,
+                    UserSummary(mockRow.userId, mockRow.email, mockRow.name, mockRow.surname, UserRoleSummary(mockRow.roleId, mockRow.roleName), mockRow.userStatus),
+                        ZonedDateTime.of(mockRow.updated.toLocalDateTime(), ZoneOffset.UTC), mockRow.decisionDate, mockRow.entryIntoForceDate, mockRow.note
+                    ),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
                     callSettings = project.call.toSettingsModel(

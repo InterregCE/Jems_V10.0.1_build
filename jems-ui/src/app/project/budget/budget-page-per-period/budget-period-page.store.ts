@@ -39,21 +39,21 @@ export class ProjectBudgetPeriodPageStore {
   private projectBudgetFundsPerPeriod(): Observable<ProjectPartnerFundsPerPeriodDTO[]> {
     return combineLatest([
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.projectPartnerBudgetStore.budgets$.pipe(startWith(null)),
       this.projectPartnerStore.partner$,
       this.projectPartnerStore.partnerSummaries$,
       this.projectLumpSumsPageStore.projectLumpSums$,
       this.projectPartnerCoFinancingStore.financingAndContribution$.pipe(startWith(null))
     ]).pipe(
-      switchMap(([projectId, currentVersion]: any) => this.projectFundsService.getProjectPartnerFundsPerPeriod(projectId, currentVersion))
+      switchMap(([projectId, selectedVersion]: any) => this.projectFundsService.getProjectPartnerFundsPerPeriod(projectId, selectedVersion))
     );
   }
 
   private projectPartnersBudgetPerPeriods(): Observable<ProjectPartnerBudgetPerPeriodDTO[]> {
     return combineLatest([
       this.projectStore.project$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.projectPartnerBudgetStore.budgets$.pipe(startWith(null)),
       this.projectPartnerStore.partner$,
       this.projectPartnerStore.partnerSummaries$,

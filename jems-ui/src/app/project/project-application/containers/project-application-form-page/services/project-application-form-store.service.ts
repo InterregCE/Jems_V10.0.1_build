@@ -9,7 +9,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 export class ProjectApplicationFormStore {
   private projectId$ = new ReplaySubject<number>(1);
 
-  projectDescription$ = combineLatest([this.projectId$, this.projectVersionStore.currentRouteVersion$])
+  projectDescription$ = combineLatest([this.projectId$, this.projectVersionStore.selectedVersionParam$])
     .pipe(
       mergeMap(([id, version]) => this.projectDescriptionService.getProjectDescription(id, version)),
       tap(desc => Log.info('Fetched project description', this, desc)),

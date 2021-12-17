@@ -35,7 +35,7 @@ export class ProjectPartnerCoFinancingStore {
   private financingAndContribution(): Observable<ProjectPartnerCoFinancingAndContributionOutputDTO> {
     return combineLatest([
       this.partnerStore.partner$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.updateFinancingAndContributionEvent.pipe(startWith(null))
     ])
       .pipe(

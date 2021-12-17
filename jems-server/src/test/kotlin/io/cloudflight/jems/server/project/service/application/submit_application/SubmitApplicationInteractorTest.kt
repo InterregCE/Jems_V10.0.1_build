@@ -20,7 +20,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantForConditionsApplicationState
-import io.cloudflight.jems.server.project.service.save_project_version.SaveProjectVersionInteractor
+import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.clearAllMocks
@@ -64,7 +64,7 @@ class SubmitApplicationInteractorTest : UnitTest() {
     lateinit var jemsPluginRegistry: JemsPluginRegistry
 
     @RelaxedMockK
-    lateinit var saveProjectVersionInteractor: SaveProjectVersionInteractor
+    lateinit var createNewProjectVersionInteractor: CreateNewProjectVersionInteractor
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
@@ -99,13 +99,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwo
         every { applicationStateFactory.getInstance(any()) } returns draftState
         every { draftState.submit() } returns ApplicationStatus.SUBMITTED
-        every {
-            projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
-                projectId,
-                ApplicationStatus.RETURNED_TO_APPLICANT
-            )
-        } returns ApplicationStatus.SUBMITTED
-
 
         assertThat(submitApplication.submit(projectId)).isEqualTo(ApplicationStatus.SUBMITTED)
 
@@ -143,12 +136,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectCallSettings(projectId) } returns oneStepCallSetting
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwo
         every { applicationStateFactory.getInstance(any()) } returns draftState
-        every {
-            projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
-                projectId,
-                ApplicationStatus.RETURNED_TO_APPLICANT
-            )
-        } returns ApplicationStatus.SUBMITTED
         every { applicationStateFactory.getInstance(any()) } returns draftState
         every { draftState.submit() } returns ApplicationStatus.SUBMITTED
 
@@ -160,12 +147,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
     fun `should not execute pre condition check when application belongs to two-step call and application is not in step two`() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepOne
         every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
-        every {
-            projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
-                projectId,
-                ApplicationStatus.RETURNED_TO_APPLICANT
-            )
-        } returns ApplicationStatus.SUBMITTED
         every { applicationStateFactory.getInstance(any()) } returns draftState
         every { draftState.submit() } returns ApplicationStatus.SUBMITTED
 
@@ -183,17 +164,8 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwoReturnedForConditions
         every { applicationStateFactory.getInstance(any()) } returns returnToApplicantForConditionsState
         every { returnToApplicantForConditionsState.submit() } returns ApplicationStatus.CONDITIONS_SUBMITTED
-        every {
-            projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
-                projectId,
-                ApplicationStatus.RETURNED_TO_APPLICANT
-            )
-        } returns ApplicationStatus.APPROVED_WITH_CONDITIONS
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(projectId).status } returns ApplicationStatus.APPROVED_WITH_CONDITIONS
-
 
         assertThat(submitApplication.submit(projectId)).isEqualTo(ApplicationStatus.CONDITIONS_SUBMITTED)
-        verify(exactly = 1) { saveProjectVersionInteractor.createNewVersion(any(), any()) }
 
         val slotAudit = mutableListOf<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
@@ -216,17 +188,11 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwoReturnedForConditions
         every { applicationStateFactory.getInstance(any()) } returns returnToApplicantForConditionsState
         every { returnToApplicantForConditionsState.submit() } returns ApplicationStatus.CONDITIONS_SUBMITTED
-        every {
-            projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
-                projectId,
-                ApplicationStatus.RETURNED_TO_APPLICANT
-            )
-        } returns ApplicationStatus.CONDITIONS_SUBMITTED
         every { projectWorkflowPersistence.getApplicationPreviousStatus(projectId).status } returns ApplicationStatus.CONDITIONS_SUBMITTED
 
 
         assertThat(submitApplication.submit(projectId)).isEqualTo(ApplicationStatus.CONDITIONS_SUBMITTED)
-        verify(exactly = 1) { saveProjectVersionInteractor.updateLastVersion(projectId) }
+//        verify(exactly = 1) { saveProjectVersionInteractor.updateLastVersion(projectId) }
 
         val slotAudit = mutableListOf<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }

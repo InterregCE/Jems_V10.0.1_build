@@ -12,19 +12,20 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class SaveProjectVersion(
+class CreateNewProjectVersion(
     private val projectPersistence: ProjectPersistence,
     private val projectVersionPersistence: ProjectVersionPersistence,
     private val securityService: SecurityService,
     private val auditPublisher: ApplicationEventPublisher
-) : SaveProjectVersionInteractor {
+) : CreateNewProjectVersionInteractor {
 
     @Transactional
-    override fun createNewVersion(projectId: Long, status: ApplicationStatus): ProjectVersion =
-        projectVersionPersistence.getLatestVersionOrNull(projectId).let { latestProjectVersion ->
+    override fun create(projectId: Long, status: ApplicationStatus): ProjectVersion =
+        projectVersionPersistence.getLatestVersionOrNull(projectId).let { lastVersionOrNull ->
             projectVersionPersistence.createNewVersion(
-                projectId = projectId, status = status,
-                version = ProjectVersionUtils.increaseMajor(latestProjectVersion?.version),
+                projectId = projectId,
+                status = status,
+                version = ProjectVersionUtils.increaseMajor(lastVersionOrNull),
                 userId = securityService.getUserIdOrThrow()
             ).also {
                 auditPublisher.publishEvent(
@@ -32,8 +33,4 @@ class SaveProjectVersion(
                 )
             }
         }
-
-    @Transactional
-    override fun updateLastVersion(projectId: Long) =
-        projectVersionPersistence.updateProjectLastVersion(projectId)
 }

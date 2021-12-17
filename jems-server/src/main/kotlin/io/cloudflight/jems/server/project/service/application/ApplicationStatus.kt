@@ -19,6 +19,7 @@ enum class ApplicationStatus {
     APPROVED_WITH_CONDITIONS,
     MODIFICATION_PRECONTRACTING,
     MODIFICATION_PRECONTRACTING_SUBMITTED,
+    MODIFICATION_REJECTED,
     NOT_APPROVED;
 
     fun canBeModified() =
@@ -37,6 +38,7 @@ enum class ApplicationStatus {
             || this == APPROVED || this == APPROVED_WITH_CONDITIONS || this == NOT_APPROVED
             || this == SUBMITTED || this == CONDITIONS_SUBMITTED || this == MODIFICATION_PRECONTRACTING_SUBMITTED
             || this == MODIFICATION_PRECONTRACTING
+            || this == MODIFICATION_REJECTED
 
     fun isEligible() = this == STEP1_ELIGIBLE || this == ELIGIBLE
 

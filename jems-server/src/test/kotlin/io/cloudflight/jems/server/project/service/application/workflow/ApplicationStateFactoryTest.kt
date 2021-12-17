@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.project.service.application.workflow
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
+import io.cloudflight.jems.server.project.service.ProjectAssessmentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -51,6 +53,12 @@ class ApplicationStateFactoryTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var projectWorkflowPersistence: ProjectWorkflowPersistence
+
+    @RelaxedMockK
+    lateinit var projectAuthorization: ProjectAuthorization
+
+    @RelaxedMockK
+    lateinit var projectAssessmentPersistence: ProjectAssessmentPersistence
 
     @InjectMockKs
     private lateinit var applicationStateFactory: ApplicationStateFactory

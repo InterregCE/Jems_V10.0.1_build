@@ -25,7 +25,7 @@ export class ProjectOverviewTablesPageStore {
   private indicatorOverviewLines(): Observable<IndicatorOverviewLineDTO[]> {
     return combineLatest([
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
     ]).pipe(
       switchMap(([projectId, version]) =>
         this.projectResultService.getProjectResultIndicatorOverview(projectId, version)
@@ -36,7 +36,7 @@ export class ProjectOverviewTablesPageStore {
   private projectCoFinancingOverview(): Observable<ProjectCoFinancingOverviewDTO> {
     return combineLatest([
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
     ]).pipe(
       switchMap(([projectId, version]) =>
         this.projectService.getProjectCoFinancingOverview(projectId, version)

@@ -31,6 +31,7 @@ internal class GetProjectVersionsTest : UnitTest() {
                 userStatus = UserStatus.ACTIVE
             ),
             status = ApplicationStatus.APPROVED,
+            current = true
         )
     )
 

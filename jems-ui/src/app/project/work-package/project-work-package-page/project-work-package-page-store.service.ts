@@ -45,7 +45,7 @@ export class ProjectWorkPackagePageStore {
   private workPackages(): Observable<OutputWorkPackageSimple[]> {
     return combineLatest([
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.refreshPackages$.pipe(startWith(null))
     ]).pipe(
       filter(([projectId, version]) => !!projectId),

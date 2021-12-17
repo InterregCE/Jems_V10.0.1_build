@@ -1,6 +1,7 @@
-<app-main-page-template *ngIf="data$ | async as data" [needsCard]="true"
+<app-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
-                           subTitleKey="project.application.form.section.export">
+                           subTitleKey="project.application.form.section.export"
+                           [isVersionedData]="false">
 
     <div id="export-container" *ngIf="selectedCategory$ | async as selectedCategory">
         <app-category-tree id="export-category-tree" class="mr-3"
@@ -14,12 +15,12 @@
                 <mat-form-field appFormFieldWidth="xx-large">
                     <mat-label>{{'export.label.project.version' | translate}}</mat-label>
                     <mat-select formControlName="version">
-                        <mat-option *ngFor="let version of data.versions; let first = first" [value]="version.version" role="option">
-                            <ng-container *ngIf="first">
-                                {{'project.versions.select.format.first' | translate : {version: version.version} }}
+                        <mat-option *ngFor="let projectVersion of data.versions" [value]="projectVersion.version" role="option">
+                            <ng-container *ngIf="projectVersion.current">
+                                {{'project.versions.select.format.current' | translate : {version: projectVersion.version} }}
                             </ng-container>
-                            <ng-container *ngIf="!first">
-                                {{'project.versions.select.format' | translate : {version: version.version} }}
+                            <ng-container *ngIf="!projectVersion.current">
+                                {{'project.versions.select.format' | translate : {version: projectVersion.version} }}
                             </ng-container>
                         </mat-option>
                     </mat-select>
@@ -52,4 +53,4 @@
             </button>
         </div>
     </div>
-</app-main-page-template>
+</app-project-page-template>

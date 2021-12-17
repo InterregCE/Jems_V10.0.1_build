@@ -5,7 +5,9 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 import {ModificationPageStore} from '@project/project-application/modification-page/modification-page-store.service';
 import {catchError} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-modification-confirmation',
   templateUrl: './modification-confirmation.component.html',
@@ -55,8 +57,16 @@ export class ModificationConfirmationComponent implements OnInit {
       entryIntoForceDate: this.decisionForm.get('entryIntoForceDate')?.value?.format('YYYY-MM-DD'),
     };
     if (this.decisionForm.get('status')?.value === ProjectStatusDTO.StatusEnum.APPROVED) {
-      this.pageStore.approveApplication(info)
-        .pipe(catchError(err => this.formService.setError(err)))
+      this.pageStore.approveModification(info)
+        .pipe(
+          untilDestroyed(this),
+          catchError(err => this.formService.setError(err)))
+        .subscribe();
+    } else if (this.decisionForm.get('status')?.value === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED) {
+      this.pageStore.rejectModification(info)
+        .pipe(
+          untilDestroyed(this),
+          catchError(err => this.formService.setError(err)))
         .subscribe();
     }
   }

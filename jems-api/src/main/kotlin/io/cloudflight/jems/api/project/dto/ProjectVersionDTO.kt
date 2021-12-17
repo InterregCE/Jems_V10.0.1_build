@@ -7,4 +7,5 @@ data class ProjectVersionDTO(
     val version: String,
     val createdAt: ZonedDateTime,
     val status: ApplicationStatusDTO,
+    val current: Boolean
 )

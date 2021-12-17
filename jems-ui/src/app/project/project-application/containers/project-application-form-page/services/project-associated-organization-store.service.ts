@@ -65,7 +65,7 @@ export class ProjectAssociatedOrganizationStore {
     const organizationById$ = combineLatest([
       this.router.routeParameterChanges(ProjectAssociatedOrganizationStore.ORGANIZATION_DETAIL_PATH, 'associatedOrganizationId'),
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$
+      this.projectVersionStore.selectedVersionParam$
     ]).pipe(
       tap(([organizationId, projectId]) => {
         this.projectId = Number(projectId);

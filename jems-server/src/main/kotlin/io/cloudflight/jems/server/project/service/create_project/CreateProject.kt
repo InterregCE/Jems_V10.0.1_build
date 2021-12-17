@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.projectApplicationCreated
 import io.cloudflight.jems.server.project.service.projectVersionRecorded
+import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,7 +27,8 @@ class CreateProject(
     private val auditPublisher: ApplicationEventPublisher,
     private val securityService: SecurityService,
     private val programmeService: ProgrammeDataService,
-) : CreateProjectInteractor {
+    private val createNewProjectVersion: CreateNewProjectVersionInteractor
+    ) : CreateProjectInteractor {
 
     @CanCreateProject
     @Transactional
@@ -53,6 +55,8 @@ class CreateProject(
         persistence.updateProjectCustomIdentifier(project.id, customIdentifier)
 
         auditPublisher.publishEvent(projectApplicationCreated(this, project))
+
+        createNewProjectVersion.create(project.id, status)
         auditPublisher.publishEvent(
             projectVersionRecorded(
                 context = this,

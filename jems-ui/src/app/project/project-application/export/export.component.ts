@@ -60,7 +60,7 @@ export class ExportComponent {
     this.exportForm = this.formBuilder.group({
       inputLanguage: [this.exportPageStore.fallBackLanguage],
       exportLanguage: [this.exportPageStore.fallBackLanguage],
-      version: [versions[0].version],
+      version: [versions.find(it=>it.current)?.version || versions[0].version],
     });
   }
 

@@ -25,13 +25,14 @@ export class ProjectApplicationEligibilityDecisionPageComponent {
   stepStatus = new ProjectStepStatus(this.step);
 
   data$ = combineLatest([
-    this.eligibilityPageStore.project$,
+    this.eligibilityPageStore.currentVersionOfProject$,
+    this.eligibilityPageStore.currentVersionOfProjectTitle$,
     this.eligibilityPageStore.eligibilityDecision(this.step),
     this.permissionService.hasPermission([PermissionsEnum.ProjectStatusDecideEligible, PermissionsEnum.ProjectStatusDecideIneligible]),
   ])
     .pipe(
-      tap(([project, eligibilityDecision, canSetEligibleDecision]) => this.resetForm(project, eligibilityDecision)),
-      map(([project, eligibilityDecision, canSetEligibleDecision]) => ({project, eligibilityDecision, canSetEligibleDecision}))
+      tap(([currentVersionOfProject,currentVersionOfProjectTitle, eligibilityDecision, canSetEligibleDecision]) => this.resetForm(currentVersionOfProject, eligibilityDecision)),
+      map(([currentVersionOfProject, currentVersionOfProjectTitle, eligibilityDecision, canSetEligibleDecision]) => ({currentVersionOfProject,currentVersionOfProjectTitle, eligibilityDecision, canSetEligibleDecision}))
     );
 
   options: string[] = [this.stepStatus.eligible, this.stepStatus.ineligible];

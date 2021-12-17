@@ -29,12 +29,6 @@ interface ProjectStatusApi {
     @PutMapping("submit")
     fun submitApplication(@PathVariable id: Long): ApplicationStatusDTO
 
-    @ApiOperation("Retrieve the previous status of the project application")
-    @GetMapping("previousStatus")
-    fun getApplicationPreviousStatus(
-        @PathVariable id: Long,
-    ): ProjectStatusDTO
-
     @ApiOperation("Set project application as eligible")
     @PutMapping("set-as-eligible", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setApplicationAsEligible(
@@ -112,4 +106,15 @@ interface ProjectStatusApi {
     @GetMapping("modificationDecisions")
     fun getModificationDecisions(@PathVariable id: Long): List<ProjectStatusDTO>
 
+    @ApiOperation("approve application modification")
+    @PutMapping("approve modification", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun approveModification(
+        @PathVariable id: Long, @RequestBody actionInfo: ApplicationActionInfoDTO
+    ): ApplicationStatusDTO
+
+    @ApiOperation("reject application modification")
+    @PutMapping("reject", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun rejectModification(
+        @PathVariable id: Long, @RequestBody actionInfo: ApplicationActionInfoDTO
+    ): ApplicationStatusDTO
 }

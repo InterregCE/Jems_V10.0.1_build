@@ -10,4 +10,5 @@ data class ProjectVersion(
     val createdAt: ZonedDateTime,
     val user: UserEntity,
     val status: ApplicationStatus,
+    val current: Boolean,
 )

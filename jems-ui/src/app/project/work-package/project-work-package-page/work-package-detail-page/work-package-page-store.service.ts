@@ -96,7 +96,7 @@ export class WorkPackagePageStore {
     const initialPackage$ = combineLatest([
       this.routingService.routeParameterChanges(WorkPackagePageStore.WORK_PACKAGE_DETAIL_PATH, 'workPackageId'),
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
     ]).pipe(
       tap(([workPackageId, projectId]) => {
         this.workPackageId = Number(workPackageId);
@@ -126,7 +126,7 @@ export class WorkPackagePageStore {
     const initialActivities$ = combineLatest([
       this.workPackage$,
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$
+      this.projectVersionStore.selectedVersionParam$
     ])
       .pipe(
         filter(([workPackage]) => !!workPackage?.id),
@@ -146,7 +146,7 @@ export class WorkPackagePageStore {
     const initialOutputs$ = combineLatest([
       this.workPackage$,
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$
+      this.projectVersionStore.selectedVersionParam$
     ])
       .pipe(
         filter(([workPackage]) => !!workPackage?.id),
@@ -174,7 +174,7 @@ export class WorkPackagePageStore {
   private investments(): Observable<WorkPackageInvestmentDTO[]> {
     return combineLatest([
         this.projectStore.projectId$,
-        this.projectVersionStore.currentRouteVersion$,
+        this.projectVersionStore.selectedVersionParam$,
         this.workPackage$,
         this.investmentsChanged$.pipe(startWith(null))
       ])

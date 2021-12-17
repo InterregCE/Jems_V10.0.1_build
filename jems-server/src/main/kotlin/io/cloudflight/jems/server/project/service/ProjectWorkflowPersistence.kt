@@ -11,8 +11,6 @@ interface ProjectWorkflowPersistence {
 
     fun getApplicationPreviousStatus(projectId: Long): ProjectStatus
 
-    fun getLatestApplicationStatusNotEqualTo(projectId: Long, statusToIgnore: ApplicationStatus): ApplicationStatus
-
     fun updateApplicationFirstSubmission(projectId: Long, userId: Long, status: ApplicationStatus): ApplicationStatus
 
     fun updateProjectLastResubmission(projectId: Long, userId: Long, status: ProjectStatus): ApplicationStatus
@@ -61,4 +59,6 @@ interface ProjectWorkflowPersistence {
     fun resetProjectFundingDecisionToCurrentStatus(projectId: Long): ApplicationStatus
 
     fun getModificationDecisions(projectId: Long): List<ProjectStatus>
+
+    fun restoreProjectToLastVersionByStatus(projectId: Long, status: ApplicationStatus)
 }

@@ -34,7 +34,7 @@ export class ProjectApplicationFormAssociatedOrgPageComponent {
         map(sort => sort?.direction ? sort : {active: 'sortNumber', direction: 'asc'}),
         map(sort => `${sort.active},${sort.direction}`)
       ),
-      this.projectVersionStore.currentRouteVersion$
+      this.projectVersionStore.selectedVersionParam$
     ])
       .pipe(
         mergeMap(([pageIndex, pageSize, sort, version]) =>

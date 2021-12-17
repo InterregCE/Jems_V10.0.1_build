@@ -1,5 +1,5 @@
 <ng-container *ngIf="data$ | async as data">
-<div id="applicationFormLifecycleAssessment" *ngIf="isPanelVisible(data.projectStatus, data.callHasTwoSteps)">
+<div id="applicationFormLifecycleAssessment" *ngIf="isPanelVisible(data.currentVersionOfProjectStatus, data.callHasTwoSteps)">
     <h3 class="mt-3" *ngIf="!data.callHasTwoSteps">{{'project.assessment.header' | translate}}</h3>
     <h3 class="mt-3" *ngIf="data.callHasTwoSteps">
         {{'project.assessment.header.with.step' | translate : {step: step} }}
@@ -20,7 +20,7 @@
                     {{data.decision?.eligibilityDecision.decisionDate | localeDate}}
                 </span>
             </div>
-            <ng-container *ngIf="isDecisionEditable(data.projectStatus, data.decision?.eligibilityDecision, data.isProjectLatestVersion)">
+            <ng-container *ngIf="isDecisionEditable(data.currentVersionOfProjectStatus, data.decision?.eligibilityDecision)">
                 <a *hasPermission="[Permissions.ProjectStatusDecideEligible, Permissions.ProjectStatusDecideIneligible]"
                    mat-stroked-button appFormFieldWidth="x-large"
                    [disabled]="!data.decision?.eligibilityAssessment"
@@ -28,7 +28,7 @@
                     {{'project.assessment.eligibilityDecision.assessment' | translate}}
                 </a>
             </ng-container>
-            <ng-container *ngIf="!isDecisionEditable(data.projectStatus, data.decision?.eligibilityDecision, data.isProjectLatestVersion)">
+            <ng-container *ngIf="!isDecisionEditable(data.currentVersionOfProjectStatus, data.decision?.eligibilityDecision)">
                 <a *hasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!data.decision?.eligibilityDecision"
                    mat-stroked-button appFormFieldWidth="x-large"
@@ -56,13 +56,13 @@
                     {{'project.assessment.fundingDecision.assessment.view' | translate}}
                 </a>
             </ng-container>
-            <ng-container  *ngIf="data.isProjectLatestVersion && !data.isDecisionFinal && !data.isReturnedNow">
+            <ng-container  *ngIf="!data.isDecisionFinal && !data.isReturnedNow">
                 <a *hasPermission="[Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideApprovedWithConditions, Permissions.ProjectStatusDecideNotApproved]"
                    mat-stroked-button appFormFieldWidth="x-large"
                    [disabled]="!data.isFundingDecisionPreconditionOk"
-                   [color]="data.projectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
+                   [color]="data.currentVersionOfProjectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
                    [routerLink]="data.isFundingDecisionPreconditionOk ? ['./assessment/fundingDecision', step] : []" queryParamsHandling="merge">
-                    {{ (data.projectStatus.status === STATUS.APPROVEDWITHCONDITIONS || data.projectStatus.status === STATUS.CONDITIONSSUBMITTED ? 'project.assessment.fundingDecision.assessment.update' : 'project.assessment.fundingDecision.assessment') | translate}}
+                    {{ (data.currentVersionOfProjectStatus.status === STATUS.APPROVEDWITHCONDITIONS || data.currentVersionOfProjectStatus.status === STATUS.CONDITIONSSUBMITTED ? 'project.assessment.fundingDecision.assessment.update' : 'project.assessment.fundingDecision.assessment') | translate}}
                 </a>
             </ng-container>
         </div>

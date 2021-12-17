@@ -16,7 +16,7 @@ export class BudgetPageComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
   dataSource$: Observable<ProjectPartnerBudgetDTO[]> =
-    this.projectVersionStore.currentRouteVersion$
+    this.projectVersionStore.selectedVersionParam$
       .pipe(
         switchMap(version => this.projectService.getProjectBudget(this.projectId, version))
       );

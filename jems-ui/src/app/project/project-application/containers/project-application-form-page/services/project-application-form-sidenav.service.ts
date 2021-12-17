@@ -11,7 +11,7 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators';
-import {ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
+import {ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '@common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
@@ -28,7 +28,6 @@ import {ProjectPartnerStore} from '@project/project-application/containers/proje
 import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
-import {B} from '@angular/cdk/keycodes';
 
 @Injectable()
 @UntilDestroy()
@@ -67,16 +66,16 @@ export class ProjectApplicationFormSidenavService {
   );
 
   private canSeeModificationSection$: Observable<boolean> = combineLatest([
-    this.projectStore.projectStatus$,
+    this.projectStore.currentVersionOfProjectStatus$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectModificationView),
     this.permissionService.hasPermission(PermissionsEnum.ProjectOpenModification),
     this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentRetrieve)
   ]).pipe(
-    map(([projectStatus, canSeeSection, canOpenModification, canSeeModificationFiles]) => {
-      const modificationStatus = projectStatus.status === StatusEnum.APPROVED
-        || projectStatus.status === StatusEnum.NOTAPPROVED
-        || projectStatus.status === StatusEnum.MODIFICATIONPRECONTRACTING
-        || projectStatus.status === StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+    map(([currentVersionOfProjectStatus, canSeeSection, canOpenModification, canSeeModificationFiles]) => {
+      const modificationStatus = currentVersionOfProjectStatus.status === StatusEnum.APPROVED
+        || currentVersionOfProjectStatus.status === StatusEnum.NOTAPPROVED
+        || currentVersionOfProjectStatus.status === StatusEnum.MODIFICATIONPRECONTRACTING
+        || currentVersionOfProjectStatus.status === StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
       const hasViewPermission = canSeeSection || canOpenModification || canSeeModificationFiles;
 
       return modificationStatus && hasViewPermission;
@@ -127,7 +126,7 @@ export class ProjectApplicationFormSidenavService {
     this.canSeeProjectForm$.pipe(
       switchMap(canSeeProject => {
         return canSeeProject ?
-          combineLatest([merge(this.projectStore.projectId$, this.fetchPackages$), this.projectVersionStore.currentRouteVersion$])
+          combineLatest([merge(this.projectStore.projectId$, this.fetchPackages$), this.projectVersionStore.selectedVersionParam$])
             .pipe(
               mergeMap(([projectId, version]) => forkJoin([
                   of(projectId),

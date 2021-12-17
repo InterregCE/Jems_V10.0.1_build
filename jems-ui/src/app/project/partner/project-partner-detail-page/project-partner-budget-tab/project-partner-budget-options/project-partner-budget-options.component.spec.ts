@@ -40,7 +40,7 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
         {
           provide: ProjectVersionStore,
           useValue: {
-            currentRouteVersion$: of('1.0')
+            selectedVersionParam$: of('1.0')
           }
         },
         {
