@@ -15,6 +15,8 @@ import {
   ProjectService,
   ProjectStatusDTO,
   ProjectStatusService,
+  ProjectUserCollaboratorDTO,
+  ProjectUserCollaboratorService,
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
@@ -73,6 +75,7 @@ export class ProjectStore {
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
   activities$: Observable<WorkPackageActivitySummaryDTO[]>;
   projectPeriods$: Observable<ProjectPeriodDTO[]>;
+  collaboratorLevel$: Observable<ProjectUserCollaboratorDTO.LevelEnum>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -111,7 +114,8 @@ export class ProjectStore {
               private securityService: SecurityService,
               private permissionService: PermissionService,
               private projectVersionStore: ProjectVersionStore,
-              private callService: CallService) {
+              private callService: CallService,
+              private projectUserCollaboratorService: ProjectUserCollaboratorService) {
     this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
@@ -121,6 +125,7 @@ export class ProjectStore {
     this.project$ = this.setProject(true);
     this.currentVersionOfProject$ = this.setProject(false);
     this.projectForm$ = this.projectForm();
+    this.collaboratorLevel$ = this.collaboratorLevel();
     this.projectEditable$ = this.projectEditable();
     this.projectStatus$ = this.projectStatus(this.project$);
     this.currentVersionOfProjectStatus$ = this.projectStatus(this.currentVersionOfProject$);
@@ -241,22 +246,35 @@ export class ProjectStore {
       );
   }
 
+  collaboratorLevel(): Observable<ProjectUserCollaboratorDTO.LevelEnum> {
+    return this.projectId$
+      .pipe(
+        switchMap(id => this.projectUserCollaboratorService.checkMyProjectLevel(id)),
+        map(level => level as ProjectUserCollaboratorDTO.LevelEnum),
+        tap(level => Log.info('Fetched collaborator level:', this, level)),
+        shareReplay(1),
+      );
+  }
+
   private projectEditable(): Observable<boolean> {
     return combineLatest([
       this.project$,
       this.permissionService.permissionsChanged(),
       this.securityService.currentUser,
-      this.projectVersionStore.isSelectedVersionCurrent$
+      this.projectVersionStore.isSelectedVersionCurrent$,
+      this.collaboratorLevel$,
     ])
       .pipe(
-        map(([project, permissions, currentUser, isSelectedVersionCurrent]) => {
+        map(([project, permissions, currentUser, isSelectedVersionCurrent, collaboratorLevel]) => {
           if (!isSelectedVersionCurrent) {
             return false;
           }
           if (!ProjectUtil.isOpenForModifications(project)) {
             return false;
           }
-          return permissions.includes(PermissionsEnum.ProjectFormUpdate) || currentUser?.id === project.applicant.id;
+          return permissions.includes(PermissionsEnum.ProjectFormUpdate) ||
+            collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.EDIT ||
+            collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE;
         }),
         shareReplay(1)
       );
@@ -358,9 +376,13 @@ export class ProjectStore {
   }
 
   private userIsProjectOwner(): Observable<boolean> {
-    return combineLatest([this.project$, this.securityService.currentUser])
+    return combineLatest([
+      this.project$,
+      this.securityService.currentUser,
+      this.collaboratorLevel$,
+    ])
       .pipe(
-        map(([project, currentUser]) => project?.applicant?.id === currentUser?.id)
+        map(([project, currentUser, collaboratorLevel]) => project?.applicant?.id === currentUser?.id || !!collaboratorLevel)
       );
   }
 

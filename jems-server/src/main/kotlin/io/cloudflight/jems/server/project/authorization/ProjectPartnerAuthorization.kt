@@ -22,7 +22,7 @@ annotation class CanRetrieveProjectPartner
 @Retention(AnnotationRetention.RUNTIME)
 // ProjectFileApplicationRetrieve is temporary hack because of broken File Upload screen,
 // where people needs to see partners even when they cannot see project
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || @projectAuthorization.userOwnerOrViewCollaboratorOrThrow(#projectId)")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")
 annotation class CanRetrieveProjectPartnerSummaries
 
 @Retention(AnnotationRetention.RUNTIME)

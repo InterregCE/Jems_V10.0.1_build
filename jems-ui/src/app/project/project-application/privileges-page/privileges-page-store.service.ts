@@ -1,27 +1,32 @@
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {merge, Observable, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
   ProjectUserCollaboratorDTO,
-  ProjectUserCollaboratorService
+  ProjectUserCollaboratorService, UserRoleDTO
 } from '@cat/api';
-import {switchMap, take, tap} from 'rxjs/operators';
+import {map, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 
 import {Injectable} from '@angular/core';
+import {PermissionService} from '../../../security/permissions/permission.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable()
 export class PrivilegesPageStore {
 
   projectCollaborators$: Observable<ProjectUserCollaboratorDTO[]>;
   projectTitle$: Observable<string>;
+  projectCollaboratorsEditable$: Observable<boolean>;
 
   private savedProjectCollaborators = new Subject<ProjectUserCollaboratorDTO[]>();
 
 
   constructor(private projectStore: ProjectStore,
-              private projectUserCollaboratorService: ProjectUserCollaboratorService) {
+              private projectUserCollaboratorService: ProjectUserCollaboratorService,
+              private permissionService: PermissionService) {
     this.projectCollaborators$ = this.projectCollaborators();
     this.projectTitle$ = this.projectStore.projectTitle$;
+    this.projectCollaboratorsEditable$ = this.projectCollaboratorsEditable();
   }
 
   saveProjectCollaborators(collaborators: ProjectUserCollaboratorDTO[]): Observable<ProjectUserCollaboratorDTO[]> {
@@ -41,4 +46,17 @@ export class PrivilegesPageStore {
       );
     return merge(initialCollaborators$, this.savedProjectCollaborators);
   }
+
+  projectCollaboratorsEditable(): Observable<boolean> {
+    return combineLatest([
+      this.projectStore.collaboratorLevel$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorCollaboratorsUpdate),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorCollaboratorsUpdate),
+    ]).pipe(
+      map(([collaboratorLevel, canUpdateProjectCreatorCollaborators, canUpdateProjectMonitorCollaborators]) =>
+         collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE && (canUpdateProjectCreatorCollaborators || canUpdateProjectMonitorCollaborators)
+      )
+    );
+  }
+
 }

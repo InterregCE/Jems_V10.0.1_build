@@ -56,9 +56,10 @@ export class PrivilegesPageComponent {
           projectTitle,
           projectCollaborators
         })),
-        tap(data => this.resetForm(data.projectCollaborators))
+        tap(data => this.resetForm(data.projectCollaborators)),
+        tap(() => this.formService.resetEditable())
       );
-    this.formService.init(this.form);
+    this.formService.init(this.form, this.pageStore.projectCollaboratorsEditable$);
   }
 
   saveCollaborators(): void {
