@@ -24,7 +24,7 @@ fun validateWorkPackageActivities(workPackageActivities: Collection<WorkPackageA
     if (!workPackageActivities.all { it.description.all { (it.translation?.length ?: 0) <= 1000 } })
         throw I18nValidationException(i18nKey = "workPackage.activity.description.size.too.long")
 
-    if (!workPackageActivities.all { it.deliverables.all { it.description.all { (it.translation?.length ?: 0) <= 200 } } })
+    if (!workPackageActivities.all { it.deliverables.all { it.description.all { (it.translation?.length ?: 0) <= 300 } } })
         throw I18nValidationException(i18nKey = "workPackage.activity.deliverable.description.size.too.long")
 }
 
