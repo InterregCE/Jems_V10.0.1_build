@@ -41,7 +41,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
-import io.cloudflight.jems.server.user.repository.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.utils.partner.activityEntity
 import io.mockk.MockKAnnotations

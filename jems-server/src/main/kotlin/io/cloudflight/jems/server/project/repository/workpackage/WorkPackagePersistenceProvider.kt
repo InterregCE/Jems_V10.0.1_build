@@ -42,10 +42,10 @@ import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackag
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageOutputHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
-import io.cloudflight.jems.server.user.entity.CollaboratorLevel.EDIT
-import io.cloudflight.jems.server.user.entity.CollaboratorLevel.MANAGE
-import io.cloudflight.jems.server.user.entity.CollaboratorLevel.VIEW
-import io.cloudflight.jems.server.user.repository.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.EDIT
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

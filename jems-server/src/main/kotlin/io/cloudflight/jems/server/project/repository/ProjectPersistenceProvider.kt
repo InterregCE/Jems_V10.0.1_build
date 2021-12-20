@@ -20,10 +20,10 @@ import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
-import io.cloudflight.jems.server.user.entity.CollaboratorLevel.EDIT
-import io.cloudflight.jems.server.user.entity.CollaboratorLevel.MANAGE
-import io.cloudflight.jems.server.user.entity.CollaboratorLevel.VIEW
-import io.cloudflight.jems.server.user.repository.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.EDIT
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

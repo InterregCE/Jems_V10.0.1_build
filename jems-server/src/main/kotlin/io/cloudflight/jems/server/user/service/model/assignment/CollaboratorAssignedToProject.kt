@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.user.service.model.assignment
 
-import io.cloudflight.jems.server.user.entity.CollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
 
 data class CollaboratorAssignedToProject(
     val userId: Long,

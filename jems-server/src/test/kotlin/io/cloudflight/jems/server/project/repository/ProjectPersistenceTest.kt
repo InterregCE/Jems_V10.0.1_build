@@ -57,7 +57,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
-import io.cloudflight.jems.server.user.repository.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary

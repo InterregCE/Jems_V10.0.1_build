@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.user.service.userproject.assign_user_to_project.AssignUserEventListenersTest.Companion.project
+import io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project.AssignUserEventListenersTest.Companion.project
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

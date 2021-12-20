@@ -27,10 +27,10 @@ import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
-import io.cloudflight.jems.server.user.entity.CollaboratorLevel
-import io.cloudflight.jems.server.user.entity.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
-import io.cloudflight.jems.server.user.service.UserProjectCollaboratorPersistence
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearMocks
 import io.mockk.every

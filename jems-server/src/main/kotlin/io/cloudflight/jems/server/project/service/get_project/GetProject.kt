@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.project.service.getProjectWithoutFormData
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.user.service.UserProjectCollaboratorPersistence
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

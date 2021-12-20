@@ -14,8 +14,8 @@ import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.projectApplicationCreated
 import io.cloudflight.jems.server.project.service.projectVersionRecorded
 import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
-import io.cloudflight.jems.server.user.entity.CollaboratorLevel.MANAGE
-import io.cloudflight.jems.server.user.service.UserProjectCollaboratorPersistence
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
