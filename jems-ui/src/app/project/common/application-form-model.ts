@@ -75,6 +75,7 @@ export const APPLICATION_FORM = {
       PARTNER_BUDGET_AND_CO_FINANCING: 'application.config.project.partner.budget.and.co.financing',
       PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN: 'application.config.project.partner.co.financing.add.new.contribution.origin',
       PARTNER_BUDGET_PERIODS: 'application.config.project.partner.budget.periods',
+      PROJECT_LUMP_SUMS_DESCRIPTION: 'application.config.project.lump.sums.description',
       STAFF_COST: {
         STAFF_FUNCTION: 'application.config.project.partner.budget.staff.cost.staff.function',
         COMMENTS: 'application.config.project.partner.budget.staff.cost.comment',
@@ -209,13 +210,6 @@ export const APPLICATION_FORM = {
       OWNERSHIP: 'application.config.project.ownership',
       DURABILITY: 'application.config.project.durability',
       TRANSFERABILITY: 'application.config.project.transferability',
-    }
-  },
-  SECTION_E: {
-    PROJECT_LUMP_SUMS_AND_UNIT_COSTS: {
-      PROJECT_LUMP_SUMS: {
-        DESCRIPTION: 'application.config.project.lump.sums.description'
-      }
     }
   }
 };
