@@ -27,7 +27,7 @@ interface ProjectPersistence {
 
     fun getProjects(pageable: Pageable): Page<ProjectSummary>
 
-    fun getProjectsOfUserPlusExtra(pageable: Pageable, userId: Long, extraProjectIds: Collection<Long>): Page<ProjectSummary>
+    fun getProjectsOfUserPlusExtra(pageable: Pageable, extraProjectIds: Collection<Long>): Page<ProjectSummary>
 
     fun getProjectUnitCosts(projectId: Long): List<ProgrammeUnitCost>
 

@@ -76,7 +76,7 @@ internal class GetProjectTest : UnitTest() {
         val user = LocalCurrentUser(userApplicant.copy(id = 44L, assignedProjects = setOf(10L, 11L)), "hash_pass", emptySet())
 
         val extraProjectIds = slot<Set<Long>>()
-        every { persistence.getProjectsOfUserPlusExtra(Pageable.unpaged(), 44L, capture(extraProjectIds)) } returns PageImpl(listOf(dummyProject))
+        every { persistence.getProjectsOfUserPlusExtra(Pageable.unpaged(), capture(extraProjectIds)) } returns PageImpl(listOf(dummyProject))
         every { securityService.currentUser } returns user
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { collaboratorPersistence.getProjectIdsForUser(44L) } returns setOf(11L, 12L)

@@ -120,9 +120,8 @@ class ProjectPersistenceProvider(
         projectRepository.findAll(pageable).toModel()
 
     @Transactional(readOnly = true)
-    override fun getProjectsOfUserPlusExtra(pageable: Pageable, userId: Long, extraProjectIds: Collection<Long>): Page<ProjectSummary> =
-        projectRepository.findAllByApplicantIdOrIdIn(
-            applicantId = userId,
+    override fun getProjectsOfUserPlusExtra(pageable: Pageable, extraProjectIds: Collection<Long>): Page<ProjectSummary> =
+        projectRepository.findAllByIdIn(
             projectIds = extraProjectIds,
             pageable = pageable,
         ).toModel()

@@ -56,7 +56,7 @@ internal class AssignUserEventListenersTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.PROJECT_USER_ASSIGNMENT,
                 project = AuditProject(project.id.toString(), project.customIdentifier, project.acronym),
-                description = "Users can access: ${user.email}, ${otherUser.email}"
+                description = "Project can be accessed by: ${user.email}, ${otherUser.email}"
             )
         )
     }
@@ -73,7 +73,7 @@ internal class AssignUserEventListenersTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.PROJECT_USER_ASSIGNMENT,
                 project = AuditProject(project.id.toString(), project.customIdentifier, project.acronym),
-                description = "Users can access: "
+                description = "Project can be accessed by: "
             )
         )
     }

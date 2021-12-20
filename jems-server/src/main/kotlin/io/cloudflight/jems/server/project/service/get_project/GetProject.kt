@@ -56,7 +56,6 @@ class GetProject(
     override fun getMyProjects(pageable: Pageable): Page<ProjectSummary> =
         persistence.getProjectsOfUserPlusExtra(
             pageable = pageable,
-            userId = securityService.getUserIdOrThrow(),
             extraProjectIds = getAssignedProjectIdsForMonitorUsers() union getProjectIdsForCollaborators(),
         )
 
