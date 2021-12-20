@@ -42,8 +42,7 @@ export class ProjectApplicationQualityCheckComponent {
   constructor(private router: Router,
               private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder,
-              private pageStore: ProjectQualityCheckPageStore,
-              private projectStore: ProjectStore) {
+              private pageStore: ProjectQualityCheckPageStore) {
     this.data$ = combineLatest([
       this.pageStore.currentVersionOfProject$,
       this.pageStore.currentVersionOfProjectTitle$,
@@ -70,7 +69,7 @@ export class ProjectApplicationQualityCheckComponent {
 
   private confirmQualityAssessment(): void {
     this.actionPending = true;
-    this.projectStore.setQualityAssessment(this.qualityCheckForm.value);
+    this.pageStore.setQualityAssessment(this.qualityCheckForm.value).subscribe();
     this.actionPending = false;
   }
 

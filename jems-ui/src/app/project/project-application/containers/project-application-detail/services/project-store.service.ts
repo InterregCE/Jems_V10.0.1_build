@@ -4,8 +4,6 @@ import {
   CallService,
   InputProjectData,
   InvestmentSummaryDTO,
-  ProjectAssessmentEligibilityDTO,
-  ProjectAssessmentQualityDTO,
   ProjectCallSettingsDTO,
   ProjectDecisionDTO,
   ProjectDetailDTO,
@@ -14,7 +12,6 @@ import {
   ProjectPeriodDTO,
   ProjectService,
   ProjectStatusDTO,
-  ProjectStatusService,
   ProjectUserCollaboratorDTO,
   ProjectUserCollaboratorService,
   UserRoleCreateDTO,
@@ -23,7 +20,6 @@ import {
 import {
   filter,
   map,
-  share,
   shareReplay,
   startWith,
   switchMap,
@@ -83,33 +79,10 @@ export class ProjectStore {
   investmentChangeEvent$ = new Subject<void>();
 
   private projectAcronym$ = new ReplaySubject<string>(1);
-  private newEligibilityAssessment$ = new Subject<ProjectAssessmentEligibilityDTO>();
-  private newQualityAssessment$ = new Subject<ProjectAssessmentQualityDTO>();
   private updatedProjectData$ = new Subject<void>();
   private updatedProjectForm$ = new Subject<ProjectDetailFormDTO>();
 
-  private changedEligibilityAssessment$ = this.newEligibilityAssessment$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      switchMap(([assessment, id]) => this.projectStatusService.setEligibilityAssessment(id, assessment)),
-      tap(() => this.projectStatusChanged$.next()),
-      tap(saved => Log.info('Updated project eligibility assessment:', this, saved)),
-      share(),
-      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id, 'assessmentAndDecision']))
-    );
-
-  private changedQualityAssessment$ = this.newQualityAssessment$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      switchMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
-      tap(() => this.projectStatusChanged$.next()),
-      tap(saved => Log.info('Updated project quality assessment:', this, saved)),
-      share(),
-      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id, 'assessmentAndDecision']))
-    );
-
   constructor(private projectService: ProjectService,
-              private projectStatusService: ProjectStatusService,
               private router: RoutingService,
               private securityService: SecurityService,
               private permissionService: PermissionService,
@@ -168,14 +141,6 @@ export class ProjectStore {
       );
   }
 
-  setEligibilityAssessment(assessment: ProjectAssessmentEligibilityDTO): void {
-    this.newEligibilityAssessment$.next(assessment);
-  }
-
-  setQualityAssessment(assessment: ProjectAssessmentQualityDTO): void {
-    this.newQualityAssessment$.next(assessment);
-  }
-
   projectDecisions(step: number | undefined): Observable<ProjectDecisionDTO> {
     return this.project$
       .pipe(
@@ -217,8 +182,6 @@ export class ProjectStore {
     return merge(
       byId$,
       byStatusChanged$,
-      this.changedEligibilityAssessment$,
-      this.changedQualityAssessment$,
       byProjectDataChanged$
     )
       .pipe(

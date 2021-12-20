@@ -3,7 +3,6 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectAssessmentEligibilityDTO, OutputProjectEligibilityAssessment, ProjectDetailDTO} from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectEligibilityCheckPageStore} from './project-eligibility-check-page-store.service';
 import {map, tap} from 'rxjs/operators';
 import {ProjectStepStatus} from '../project-step-status';
@@ -44,7 +43,6 @@ export class ProjectApplicationEligibilityCheckComponent {
   constructor(private router: Router,
               private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder,
-              private projectStore: ProjectStore,
               private pageStore: ProjectEligibilityCheckPageStore,
               protected changeDetectorRef: ChangeDetectorRef) {
     this.data$ = combineLatest([
@@ -73,10 +71,10 @@ export class ProjectApplicationEligibilityCheckComponent {
 
   confirmEligibilityAssessment(): void {
     this.actionPending = true;
-    this.projectStore.setEligibilityAssessment({
+    this.pageStore.setEligibilityAssessment({
       result: this.getEligibilityCheckValue(),
       note: this.notesForm?.controls?.notes?.value,
-    });
+    }).subscribe();
     this.actionPending = false;
   }
 

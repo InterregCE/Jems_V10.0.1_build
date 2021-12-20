@@ -19,7 +19,7 @@ class Authorization(
     fun hasPermission(permission: UserRolePermission, projectId: Long? = null): Boolean {
         if (projectId == null) {
             if (!permission.projectRelated)
-                return hasAuthority(permission)
+                return hasNonProjectAuthority(permission)
             else
                 throw IllegalArgumentException("Permission is related to project, but project has not been provided.")
         }
@@ -28,13 +28,13 @@ class Authorization(
     }
 
     fun hasPermissionForProject(permission: UserRolePermission, projectId: Long) =
-        permission.projectRelated && hasAuthority(permission) &&
-            (getUser().assignedProjects.contains(projectId) || hasAuthority(ProjectRetrieve))
+        permission.projectRelated && hasNonProjectAuthority(permission) &&
+            (getUser().assignedProjects.contains(projectId) || hasNonProjectAuthority(ProjectRetrieve))
 
     /**
      * will ignore project-user assignment rules
      */
-    fun hasAuthority(permission: UserRolePermission): Boolean =
+    fun hasNonProjectAuthority(permission: UserRolePermission): Boolean =
         securityService.currentUser?.hasPermission(permission)!!
 
     protected fun isActiveUserIdEqualToOneOf(userIds: Set<Long>): Boolean =
