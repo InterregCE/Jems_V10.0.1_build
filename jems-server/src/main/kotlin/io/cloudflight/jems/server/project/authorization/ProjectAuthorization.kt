@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component
 @Retention(AnnotationRetention.RUNTIME)
 // we need ProjectFormRetrieve here because otherwise user without ProjectRetrieve will
 // not be able to see other project details than form
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectRetrieve') || @projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserOwnerOrThrow(#projectId)")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectRetrieve') || @projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")
 annotation class CanRetrieveProject
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectRetrieve') || @projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserOwnerOrThrow(#projectId)")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectRetrieve') || @projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")
 annotation class CanRetrieveProjectVersion
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -31,7 +31,7 @@ annotation class CanRetrieveProjectsWithOwnership
 annotation class CanCreateProject
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserOwnerOrThrow(#projectId)")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")
 annotation class CanRetrieveProjectForm
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -44,8 +44,9 @@ class ProjectAuthorization(
     val projectPersistence: ProjectPersistence,
 ) : Authorization(securityService) {
 
-    fun isUserOwnerOrThrow(projectId: Long): Boolean {
-        val isOwner = isActiveUserIdEqualTo(userId = projectPersistence.getApplicantAndStatusById(projectId).applicantId)
+    fun isUserViewCollaboratorForProjectOrThrow(projectId: Long): Boolean {
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+        val isOwner = isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
         if (isOwner)
             return true
         throw ResourceNotFoundException("project") // should be same exception as if entity not found
@@ -53,7 +54,8 @@ class ProjectAuthorization(
 
     fun canUpdateProject(projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val canSeeProject = hasPermission(UserRolePermission.ProjectFormUpdate, projectId) || isActiveUserIdEqualTo(project.applicantId)
+        val canSeeProject = hasPermission(UserRolePermission.ProjectFormUpdate, projectId)
+            || isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
         if (canSeeProject)
             return project.projectStatus.canBeModified()
         throw ResourceNotFoundException("project") // should be same exception as if entity not found

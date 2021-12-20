@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -108,6 +109,9 @@ class WorkPackageServiceTest {
     @MockK
     lateinit var projectRepository: ProjectRepository
 
+    @MockK
+    lateinit var collaboratorRepository: UserProjectCollaboratorRepository
+
     lateinit var workPackageService: WorkPackageService
 
     @BeforeEach
@@ -115,7 +119,8 @@ class WorkPackageServiceTest {
         MockKAnnotations.init(this)
         workPackageService = WorkPackageServiceImpl(
             workPackageRepository,
-            projectRepository
+            projectRepository,
+            collaboratorRepository,
         )
     }
 

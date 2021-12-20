@@ -55,18 +55,30 @@ internal class ProjectAuthorizationTest : UnitTest() {
     fun `user is owner`() {
         every { securityService.getUserIdOrThrow() } returns adminUser.user.id
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = adminUser.user.id, projectStatus = SUBMITTED)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = adminUser.user.id,
+                projectStatus = SUBMITTED,
+                collaboratorManageIds = setOf(adminUser.user.id),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
 
-        assertThat(projectAuthorization.isUserOwnerOrThrow(PROJECT_ID)).isTrue
+        assertThat(projectAuthorization.isUserViewCollaboratorForProjectOrThrow(PROJECT_ID)).isTrue
     }
 
     @Test
     fun `user is not owner`() {
         every { securityService.getUserIdOrThrow() } returns adminUser.user.id
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = 3658L, projectStatus = SUBMITTED)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = 3658L,
+                projectStatus = SUBMITTED,
+                collaboratorManageIds = setOf(9896L),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
 
-        assertThrows<ResourceNotFoundException> { projectAuthorization.isUserOwnerOrThrow(PROJECT_ID) }
+        assertThrows<ResourceNotFoundException> { projectAuthorization.isUserViewCollaboratorForProjectOrThrow(PROJECT_ID) }
     }
 
     @ParameterizedTest(name = "can update project - no permissions and no owner (status {0})")
@@ -76,7 +88,13 @@ internal class ProjectAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { securityService.currentUser } returns user
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = 2478L, projectStatus = status)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = 2478L,
+                projectStatus = status,
+                collaboratorManageIds = setOf(2478L),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
 
         // verify test setup
         assertThat(user.user.assignedProjects).isEmpty()
@@ -94,7 +112,13 @@ internal class ProjectAuthorizationTest : UnitTest() {
         every { mockStatus.canBeModified() } returns isOpen
 
         every { projectPersistence.getApplicantAndStatusById(projectId) } returns
-            ProjectApplicantAndStatus(projectId, applicantId = user.user.id, projectStatus = mockStatus)
+            ProjectApplicantAndStatus(projectId,
+                applicantId = user.user.id,
+                projectStatus = mockStatus,
+                collaboratorManageIds = setOf(user.user.id),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { securityService.currentUser } returns user
 
@@ -114,7 +138,13 @@ internal class ProjectAuthorizationTest : UnitTest() {
 
         every { securityService.currentUser } returns user
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = 2698L, projectStatus = mockStatus)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = 2698L,
+                projectStatus = mockStatus,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
 
         // verify test setup
         assertThat(user.user.assignedProjects).contains(PROJECT_ID)
@@ -137,7 +167,13 @@ internal class ProjectAuthorizationTest : UnitTest() {
 
         every { securityService.currentUser } returns user
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = 2698L, projectStatus = mockStatus)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = 2698L,
+                projectStatus = mockStatus,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
 
         // verify test setup
         assertThat(user.user.assignedProjects).isEmpty()

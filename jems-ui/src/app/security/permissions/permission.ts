@@ -75,6 +75,12 @@ export class Permission {
           state: PermissionState.HIDDEN,
           hideTooltip: 'permission.create.modification'
         },
+        {
+          name: 'project.privileges.header',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectCreatorCollaboratorsRetrieve],
+          editPermissions: [PermissionsEnum.ProjectCreatorCollaboratorsUpdate],
+        },
       ]
     }
   ];
@@ -175,6 +181,12 @@ export class Permission {
               editTooltip: 'permission.inspect.modification.files'
             },
           ],
+        },
+        {
+          name: 'project.privileges.header',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectMonitorCollaboratorsRetrieve],
+          editPermissions: [PermissionsEnum.ProjectMonitorCollaboratorsUpdate],
         },
       ]
     }

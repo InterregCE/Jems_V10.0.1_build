@@ -27,7 +27,10 @@ import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearMocks
 import io.mockk.every
@@ -147,6 +150,9 @@ internal class CreateProjectTest : UnitTest() {
     @MockK
     lateinit var callPersistence: CallPersistence
 
+    @MockK
+    lateinit var collaboratorPersistence: UserProjectCollaboratorPersistence
+
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
 
@@ -169,6 +175,7 @@ internal class CreateProjectTest : UnitTest() {
     fun reset() {
         clearMocks(auditPublisher)
         clearMocks(projectPersistence)
+        clearMocks(collaboratorPersistence)
     }
 
     @Test
@@ -183,6 +190,9 @@ internal class CreateProjectTest : UnitTest() {
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
+
+        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
 
         val result = createProject.createProject("test application", CALL_ID)
 
@@ -209,6 +219,9 @@ internal class CreateProjectTest : UnitTest() {
             )
         )
         assertThat(slot[1].auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
+
+        verify(exactly = 1) { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, any()) }
+        assertThat(usersToPersistSlot.captured).containsExactlyEntriesOf(mapOf(USER_ID to MANAGE))
     }
 
     @Test
@@ -224,6 +237,9 @@ internal class CreateProjectTest : UnitTest() {
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
+
+        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
 
         val result = createProject.createProject(acronym, CALL_ID)
 
@@ -250,6 +266,9 @@ internal class CreateProjectTest : UnitTest() {
             )
         )
         assertThat(slot[1].auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
+
+        verify(exactly = 1) { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, any()) }
+        assertThat(usersToPersistSlot.captured).containsExactlyEntriesOf(mapOf(USER_ID to MANAGE))
     }
 
     @Test
@@ -264,8 +283,14 @@ internal class CreateProjectTest : UnitTest() {
         every { createNewProjectVersion.create(PROJECT_ID, STEP1_DRAFT) } returns projectVersion(STEP1_DRAFT)
         every { auditPublisher.publishEvent(any()) } answers { }
 
+        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
+
         createProject.createProject(acronym, CALL_ID)
         verify(exactly = 1) { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "00029") }
+
+        verify(exactly = 1) { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, any()) }
+        assertThat(usersToPersistSlot.captured).containsExactlyEntriesOf(mapOf(USER_ID to MANAGE))
     }
 
     @Test

@@ -4,8 +4,6 @@ import {
   CallService,
   InputProjectData,
   InvestmentSummaryDTO,
-  ProjectAssessmentEligibilityDTO,
-  ProjectAssessmentQualityDTO,
   ProjectCallSettingsDTO,
   ProjectDecisionDTO,
   ProjectDetailDTO,
@@ -14,14 +12,14 @@ import {
   ProjectPeriodDTO,
   ProjectService,
   ProjectStatusDTO,
-  ProjectStatusService,
+  ProjectUserCollaboratorDTO,
+  ProjectUserCollaboratorService,
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
 import {
   filter,
   map,
-  share,
   shareReplay,
   startWith,
   switchMap,
@@ -73,6 +71,7 @@ export class ProjectStore {
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
   activities$: Observable<WorkPackageActivitySummaryDTO[]>;
   projectPeriods$: Observable<ProjectPeriodDTO[]>;
+  collaboratorLevel$: Observable<ProjectUserCollaboratorDTO.LevelEnum>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -80,38 +79,16 @@ export class ProjectStore {
   investmentChangeEvent$ = new Subject<void>();
 
   private projectAcronym$ = new ReplaySubject<string>(1);
-  private newEligibilityAssessment$ = new Subject<ProjectAssessmentEligibilityDTO>();
-  private newQualityAssessment$ = new Subject<ProjectAssessmentQualityDTO>();
   private updatedProjectData$ = new Subject<void>();
   private updatedProjectForm$ = new Subject<ProjectDetailFormDTO>();
 
-  private changedEligibilityAssessment$ = this.newEligibilityAssessment$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      switchMap(([assessment, id]) => this.projectStatusService.setEligibilityAssessment(id, assessment)),
-      tap(() => this.projectStatusChanged$.next()),
-      tap(saved => Log.info('Updated project eligibility assessment:', this, saved)),
-      share(),
-      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id, 'assessmentAndDecision']))
-    );
-
-  private changedQualityAssessment$ = this.newQualityAssessment$
-    .pipe(
-      withLatestFrom(this.projectId$),
-      switchMap(([assessment, id]) => this.projectStatusService.setQualityAssessment(id, assessment)),
-      tap(() => this.projectStatusChanged$.next()),
-      tap(saved => Log.info('Updated project quality assessment:', this, saved)),
-      share(),
-      tap(saved => this.router.navigate(['app', 'project', 'detail', saved.id, 'assessmentAndDecision']))
-    );
-
   constructor(private projectService: ProjectService,
-              private projectStatusService: ProjectStatusService,
               private router: RoutingService,
               private securityService: SecurityService,
               private permissionService: PermissionService,
               private projectVersionStore: ProjectVersionStore,
-              private callService: CallService) {
+              private callService: CallService,
+              private projectUserCollaboratorService: ProjectUserCollaboratorService) {
     this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
@@ -121,6 +98,7 @@ export class ProjectStore {
     this.project$ = this.setProject(true);
     this.currentVersionOfProject$ = this.setProject(false);
     this.projectForm$ = this.projectForm();
+    this.collaboratorLevel$ = this.collaboratorLevel();
     this.projectEditable$ = this.projectEditable();
     this.projectStatus$ = this.projectStatus(this.project$);
     this.currentVersionOfProjectStatus$ = this.projectStatus(this.currentVersionOfProject$);
@@ -161,14 +139,6 @@ export class ProjectStore {
         switchMap(([id, version]) => this.projectService.getProjectCoFinancing(id, version)),
         tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => Log.info('Fetched project co-financing:', this, data))
       );
-  }
-
-  setEligibilityAssessment(assessment: ProjectAssessmentEligibilityDTO): void {
-    this.newEligibilityAssessment$.next(assessment);
-  }
-
-  setQualityAssessment(assessment: ProjectAssessmentQualityDTO): void {
-    this.newQualityAssessment$.next(assessment);
   }
 
   projectDecisions(step: number | undefined): Observable<ProjectDecisionDTO> {
@@ -212,8 +182,6 @@ export class ProjectStore {
     return merge(
       byId$,
       byStatusChanged$,
-      this.changedEligibilityAssessment$,
-      this.changedQualityAssessment$,
       byProjectDataChanged$
     )
       .pipe(
@@ -241,22 +209,35 @@ export class ProjectStore {
       );
   }
 
+  collaboratorLevel(): Observable<ProjectUserCollaboratorDTO.LevelEnum> {
+    return this.projectId$
+      .pipe(
+        switchMap(id => this.projectUserCollaboratorService.checkMyProjectLevel(id)),
+        map(level => level as ProjectUserCollaboratorDTO.LevelEnum),
+        tap(level => Log.info('Fetched collaborator level:', this, level)),
+        shareReplay(1),
+      );
+  }
+
   private projectEditable(): Observable<boolean> {
     return combineLatest([
       this.project$,
       this.permissionService.permissionsChanged(),
       this.securityService.currentUser,
-      this.projectVersionStore.isSelectedVersionCurrent$
+      this.projectVersionStore.isSelectedVersionCurrent$,
+      this.collaboratorLevel$,
     ])
       .pipe(
-        map(([project, permissions, currentUser, isSelectedVersionCurrent]) => {
+        map(([project, permissions, currentUser, isSelectedVersionCurrent, collaboratorLevel]) => {
           if (!isSelectedVersionCurrent) {
             return false;
           }
           if (!ProjectUtil.isOpenForModifications(project)) {
             return false;
           }
-          return permissions.includes(PermissionsEnum.ProjectFormUpdate) || currentUser?.id === project.applicant.id;
+          return permissions.includes(PermissionsEnum.ProjectFormUpdate) ||
+            collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.EDIT ||
+            collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE;
         }),
         shareReplay(1)
       );
@@ -358,9 +339,13 @@ export class ProjectStore {
   }
 
   private userIsProjectOwner(): Observable<boolean> {
-    return combineLatest([this.project$, this.securityService.currentUser])
+    return combineLatest([
+      this.project$,
+      this.securityService.currentUser,
+      this.collaboratorLevel$,
+    ])
       .pipe(
-        map(([project, currentUser]) => project?.applicant?.id === currentUser?.id)
+        map(([project, currentUser, collaboratorLevel]) => project?.applicant?.id === currentUser?.id || !!collaboratorLevel)
       );
   }
 

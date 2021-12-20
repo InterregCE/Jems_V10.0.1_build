@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project
 
-import io.cloudflight.jems.api.project.dto.ProjectUserDTO
-import io.cloudflight.jems.api.project.dto.UpdateProjectUserDTO
+import io.cloudflight.jems.api.project.dto.assignment.ProjectUserDTO
+import io.cloudflight.jems.api.project.dto.assignment.UpdateProjectUserDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams

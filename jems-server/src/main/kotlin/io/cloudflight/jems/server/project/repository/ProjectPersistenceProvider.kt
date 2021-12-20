@@ -20,6 +20,10 @@ import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.EDIT
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -31,6 +35,7 @@ import java.sql.Timestamp
 class ProjectPersistenceProvider(
     private val projectVersionUtils: ProjectVersionUtils,
     private val projectRepository: ProjectRepository,
+    private val collaboratorRepository: UserProjectCollaboratorRepository,
     private val projectAssessmentQualityRepository: ProjectAssessmentQualityRepository,
     private val projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository,
     private val projectStatusHistoryRepo: ProjectStatusHistoryRepository,
@@ -84,8 +89,14 @@ class ProjectPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus =
-        projectRepository.getOne(id).toApplicantAndStatus()
+    override fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus {
+        val collaboratorsByLevel = collaboratorRepository.findAllByIdProjectId(id).groupBy { it.level }
+        return projectRepository.getById(id).toApplicantAndStatus(
+            collaboratorViewIds = collaboratorsByLevel[VIEW] ?: emptySet(),
+            collaboratorEditIds = collaboratorsByLevel[EDIT] ?: emptySet(),
+            collaboratorManageIds = collaboratorsByLevel[MANAGE] ?: emptySet(),
+        )
+    }
 
     @Transactional(readOnly = true)
     override fun getProjectSummary(projectId: Long): ProjectSummary =

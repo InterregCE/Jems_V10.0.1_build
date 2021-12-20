@@ -10,10 +10,18 @@ import io.cloudflight.jems.server.project.entity.TranslationId
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.entity.projectuser.UserProjectCollaboratorEntity
 
-fun ProjectEntity.toApplicantAndStatus() = ProjectApplicantAndStatus(
-    applicantId = applicant.id,
+fun ProjectEntity.toApplicantAndStatus(
+    collaboratorViewIds: Iterable<UserProjectCollaboratorEntity>,
+    collaboratorEditIds: Iterable<UserProjectCollaboratorEntity>,
+    collaboratorManageIds: Iterable<UserProjectCollaboratorEntity>,
+) = ProjectApplicantAndStatus(
     projectId = id,
+    applicantId = applicant.id,
+    collaboratorViewIds = collaboratorViewIds.mapTo(HashSet()) { it.id.userId },
+    collaboratorEditIds = collaboratorEditIds.mapTo(HashSet()) { it.id.userId },
+    collaboratorManageIds = collaboratorManageIds.mapTo(HashSet()) { it.id.userId },
     projectStatus = currentStatus.status,
 )
 

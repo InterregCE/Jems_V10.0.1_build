@@ -42,6 +42,10 @@ import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackag
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageOutputHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.EDIT
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -57,6 +61,7 @@ class WorkPackagePersistenceProvider(
     private val outputIndicatorRepository: OutputIndicatorRepository,
     private val projectVersionUtils: ProjectVersionUtils,
     private val projectRepository: ProjectRepository,
+    private val collaboratorRepository: UserProjectCollaboratorRepository,
 ) : WorkPackagePersistence {
 
     @Transactional(readOnly = true)
@@ -306,7 +311,14 @@ class WorkPackagePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectFromWorkPackageInvestment(workPackageInvestmentId: Long): ProjectApplicantAndStatus =
-        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.toApplicantAndStatus()
+        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.let {
+            val collaboratorsByLevel = collaboratorRepository.findAllByIdProjectId(it.id).groupBy { it.level }
+            return it.toApplicantAndStatus(
+                collaboratorViewIds = collaboratorsByLevel[VIEW] ?: emptySet(),
+                collaboratorEditIds = collaboratorsByLevel[EDIT] ?: emptySet(),
+                collaboratorManageIds = collaboratorsByLevel[MANAGE] ?: emptySet(),
+            )
+        }
 
     @Transactional(readOnly = true)
     override fun getAllOutputsForProjectIdSortedByNumbers(projectId: Long, version: String?): List<OutputRow> =

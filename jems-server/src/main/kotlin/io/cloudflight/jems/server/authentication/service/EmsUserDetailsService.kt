@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.authentication.service;
 
 import io.cloudflight.jems.server.user.service.UserPersistence
-import io.cloudflight.jems.server.user.service.UserProjectPersistence
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.toLocalCurrentUser
 import org.springframework.security.authentication.BadCredentialsException

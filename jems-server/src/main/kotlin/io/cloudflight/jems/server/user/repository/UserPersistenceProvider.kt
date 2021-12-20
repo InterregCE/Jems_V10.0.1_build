@@ -61,6 +61,10 @@ class UserPersistenceProvider(
             .map { it.toUserSummary() }
 
     @Transactional(readOnly = true)
+    override fun findAllByEmails(emails: Collection<String>): List<UserSummary> =
+        userRepo.findAllByEmailInOrderByEmail(emails).map { it.toUserSummary() }
+
+    @Transactional(readOnly = true)
     override fun findAllByIds(ids: Iterable<Long>): List<UserSummary> =
         userRepo.findAllById(ids).map { it.toUserSummary() }
 

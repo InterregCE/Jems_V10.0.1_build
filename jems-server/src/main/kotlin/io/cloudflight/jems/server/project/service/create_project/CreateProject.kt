@@ -14,6 +14,8 @@ import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.projectApplicationCreated
 import io.cloudflight.jems.server.project.service.projectVersionRecorded
 import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,6 +25,7 @@ import java.time.ZonedDateTime
 class CreateProject(
     private val persistence: ProjectPersistence,
     private val callPersistence: CallPersistence,
+    private val collaboratorPersistence: UserProjectCollaboratorPersistence,
     private val generalValidator: GeneralValidatorService,
     private val auditPublisher: ApplicationEventPublisher,
     private val securityService: SecurityService,
@@ -49,9 +52,11 @@ class CreateProject(
         val userId = securityService.currentUser?.user?.id!!
         val status = if (call.is2StepCall()) ApplicationStatus.STEP1_DRAFT else ApplicationStatus.DRAFT
         val project = persistence.createProjectWithStatus(acronym = acronym, status = status, userId = userId, callId = callId)
+        // create default collaborator from applicant
+        collaboratorPersistence.changeUsersAssignedToProject(project.id!!, mapOf(userId to MANAGE))
 
         val projectIdPrefix = getProjectIdPrefix(callId = callId)
-        val customIdentifier = getCustomIdentifierForProjectId(prefix = projectIdPrefix, project.id!!)
+        val customIdentifier = getCustomIdentifierForProjectId(prefix = projectIdPrefix, project.id)
         persistence.updateProjectCustomIdentifier(project.id, customIdentifier)
 
         auditPublisher.publishEvent(projectApplicationCreated(this, project))

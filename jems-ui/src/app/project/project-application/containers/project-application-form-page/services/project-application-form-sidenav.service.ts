@@ -83,6 +83,15 @@ export class ProjectApplicationFormSidenavService {
     ),
   );
 
+  private canSeePrivilegesSection$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorCollaboratorsRetrieve),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorCollaboratorsUpdate),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorCollaboratorsRetrieve),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorCollaboratorsUpdate),
+  ]).pipe(
+    map(perms => perms.some(perm => perm)),
+  );
+
   private canSeeAssessments$: Observable<boolean> = combineLatest([
     this.projectStore.projectStatus$.pipe(map(it => it.status)),
     this.projectStore.callHasTwoSteps$,
@@ -174,16 +183,30 @@ export class ProjectApplicationFormSidenavService {
       this.packages$,
       this.versionSelectTemplate$,
       this.canSeeProjectForm$,
-      this.canSeeModificationSection$
+      this.canSeeModificationSection$,
+      this.canSeePrivilegesSection$
     ])
       .pipe(
         debounceTime(50), // there's race condition with SidenavService.resetOnLeave
         filter(([project]) => !!project),
-        tap(([project, canSeeAssessments, canSubmitApplication, canCheckApplication, canReadApplicationFiles, partners, packages, versionTemplate, canSeeProjectForm, canSeeModificationSection]: any) => {
+        tap(([
+               project,
+               canSeeAssessments,
+               canSubmitApplication,
+               canCheckApplication,
+               canReadApplicationFiles,
+               partners,
+               packages,
+               versionTemplate,
+               canSeeProjectForm,
+               canSeeModificationSection,
+               canSeePrivilegesSection,
+             ]: any) => {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
             this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles, canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
-            ...canSeeProjectForm ? this.getExportHeadline(project.id) : []
+            ...canSeeProjectForm ? this.getExportHeadline(project.id) : [],
+            ...canSeePrivilegesSection ? this.getProjectPrivilegesHeadline(project.id) : [],
           ]);
         }),
         catchError(() => of(null)) // ignore errors to keep the sidelines observable alive
@@ -403,4 +426,13 @@ export class ProjectApplicationFormSidenavService {
     }];
   }
 
+  private getProjectPrivilegesHeadline(projectId: string): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.form.section.privileges'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/privileges`,
+      scrollToTop: true,
+      scrollRoute: '',
+      icon: 'manage_accounts'
+    }];
+  }
 }

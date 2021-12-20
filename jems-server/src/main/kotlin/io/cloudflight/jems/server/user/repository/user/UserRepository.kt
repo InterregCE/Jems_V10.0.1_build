@@ -41,4 +41,6 @@ interface UserRepository : JpaRepository<UserEntity, Long>, QuerydslPredicateExe
 
     fun findAllByUserRoleIdInOrderByEmail(userRoleIds: Set<Long>): Iterable<UserEntity>
 
+    fun findAllByEmailInOrderByEmail(emails: Collection<String>): Iterable<UserEntity>
+
 }

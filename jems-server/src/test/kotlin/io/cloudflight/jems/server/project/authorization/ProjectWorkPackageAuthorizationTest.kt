@@ -64,7 +64,13 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
         every { mockStatus.canBeModified() } returns isOpen
 
         every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = user.user.id, projectStatus = mockStatus)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = user.user.id,
+                projectStatus = mockStatus,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = setOf(user.user.id),
+                collaboratorViewIds = emptySet(),
+            )
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { securityService.currentUser } returns user
 
@@ -82,7 +88,13 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
         every { mockStatus.canBeModified() } returns isOpen
 
         every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns
-            ProjectApplicantAndStatus(PROJECT_ID, applicantId = user.user.id, projectStatus = mockStatus)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = user.user.id,
+                projectStatus = mockStatus,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
         every { securityService.currentUser } returns user
 
         // verify test setup
@@ -98,7 +110,13 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
     fun `user NOT owner, without permission, cannot submit, he does NOT have Retrieve also`() {
         val user = applicantUser
 
-        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns ProjectApplicantAndStatus(PROJECT_ID, applicantId = 3482L, projectStatus = mockStatus)
+        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns ProjectApplicantAndStatus(PROJECT_ID,
+            applicantId = 3482L,
+            projectStatus = mockStatus,
+            collaboratorManageIds = emptySet(),
+            collaboratorEditIds = emptySet(),
+            collaboratorViewIds = emptySet(),
+        )
         every { securityService.currentUser } returns user
         every { securityService.getUserIdOrThrow() } returns user.user.id
 
@@ -113,7 +131,13 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
     fun `project LATEST version, user HAS permissions, can retrieve workPackage`() {
         val user = LocalCurrentUser(userApplicant.copy(assignedProjects = setOf(12L)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectFormRetrieve.name)))
 
-        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns ProjectApplicantAndStatus(12L, applicantId = 3210L, projectStatus = mockStatus)
+        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns ProjectApplicantAndStatus(12L,
+            applicantId = 3210L,
+            projectStatus = mockStatus,
+            collaboratorManageIds = emptySet(),
+            collaboratorEditIds = emptySet(),
+            collaboratorViewIds = emptySet(),
+        )
         every { securityService.currentUser } returns user
 
         // verify test setup
@@ -129,7 +153,13 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
     fun `project HISTORIC version, user HAS NOT permissions, he is OWNER, can retrieve workPackage`() {
         val user = applicantUser
 
-        every { projectPersistence.getApplicantAndStatusById(13L) } returns ProjectApplicantAndStatus(13L, applicantId = user.user.id, projectStatus = mockStatus)
+        every { projectPersistence.getApplicantAndStatusById(13L) } returns ProjectApplicantAndStatus(13L,
+            applicantId = user.user.id,
+            projectStatus = mockStatus,
+            collaboratorManageIds = emptySet(),
+            collaboratorEditIds = emptySet(),
+            collaboratorViewIds = setOf(user.user.id),
+        )
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { securityService.currentUser } returns user
 
@@ -144,7 +174,13 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
     fun `project HISTORIC version, user HAS NOT permissions, and he is NOT an OWNER, CANNOT retrieve workPackage`() {
         val user = applicantUser
 
-        every { projectPersistence.getApplicantAndStatusById(13L) } returns ProjectApplicantAndStatus(13L, applicantId = 2056L, projectStatus = mockStatus)
+        every { projectPersistence.getApplicantAndStatusById(13L) } returns ProjectApplicantAndStatus(13L,
+            applicantId = 2056L,
+            projectStatus = mockStatus,
+            collaboratorManageIds = emptySet(),
+            collaboratorEditIds = emptySet(),
+            collaboratorViewIds = emptySet(),
+        )
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { securityService.currentUser } returns user
 

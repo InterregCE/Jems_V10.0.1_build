@@ -44,6 +44,11 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectModificationFileAssessmentRetrieve("ProjectModificationFileAssessmentRetrieve"),
     ProjectModificationFileAssessmentUpdate("ProjectModificationFileAssessmentUpdate"),
 
+    ProjectCreatorCollaboratorsRetrieve("ProjectCreatorCollaboratorsRetrieve"),
+    ProjectCreatorCollaboratorsUpdate("ProjectCreatorCollaboratorsUpdate"),
+    ProjectMonitorCollaboratorsRetrieve("ProjectMonitorCollaboratorsRetrieve"),
+    ProjectMonitorCollaboratorsUpdate("ProjectMonitorCollaboratorsUpdate"),
+
     AuditRetrieve("AuditRetrieve"),
 
     RoleRetrieve("RoleRetrieve"),

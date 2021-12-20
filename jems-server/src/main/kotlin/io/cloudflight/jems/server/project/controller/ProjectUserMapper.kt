@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.controller
 
-import io.cloudflight.jems.api.project.dto.ProjectUserDTO
-import io.cloudflight.jems.api.project.dto.UpdateProjectUserDTO
-import io.cloudflight.jems.server.user.service.model.ProjectWithUsers
-import io.cloudflight.jems.server.user.service.model.UpdateProjectUser
+import io.cloudflight.jems.api.project.dto.assignment.ProjectUserDTO
+import io.cloudflight.jems.api.project.dto.assignment.UpdateProjectUserDTO
+import io.cloudflight.jems.server.user.service.model.assignment.ProjectWithUsers
+import io.cloudflight.jems.server.user.service.model.assignment.UpdateProjectUser
 import org.springframework.data.domain.Page
 
 fun ProjectWithUsers.toDto() = ProjectUserDTO(
