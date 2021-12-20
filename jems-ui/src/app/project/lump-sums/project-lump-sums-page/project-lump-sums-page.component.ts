@@ -97,7 +97,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       ...partners?.map(partner => partner.toPartnerNumberString()),
       'rowSum',
       'gap',
-      ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_E.PROJECT_LUMP_SUMS_AND_UNIT_COSTS.PROJECT_LUMP_SUMS.DESCRIPTION) ? ['description'] : [],
+      ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION) ? ['description'] : [],
       'actions'
     ];
   }
@@ -112,7 +112,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       }),
       {minInRem: 8},
       {minInRem: 8},
-      ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_E.PROJECT_LUMP_SUMS_AND_UNIT_COSTS.PROJECT_LUMP_SUMS.DESCRIPTION) ? [{minInRem: 12}] : [],
+      ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION) ? [{minInRem: 12}] : [],
       {minInRem: 3}
     ];
   }

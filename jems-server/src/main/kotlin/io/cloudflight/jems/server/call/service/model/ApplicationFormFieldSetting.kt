@@ -176,6 +176,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.partner.budget.periods",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PROJECT_LUMP_SUMS_DESCRIPTION(
+    "application.config.project.lump.sums.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PARTNER_BUDGET_STAFF_COST_STAFF_FUNCTION(
         "application.config.project.partner.budget.staff.cost.staff.function",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -533,10 +537,6 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     PROJECT_TRANSFERABILITY(
         "application.config.project.transferability",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
-    ),
-    PROJECT_LUMP_SUMS_DESCRIPTION(
-        "application.config.project.lump.sums.description",
-        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     );
 
     companion object {
@@ -559,6 +559,7 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
             setOf(
                 PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id,
                 PARTNER_BUDGET_PERIODS.id,
+                PROJECT_LUMP_SUMS_DESCRIPTION.id,
                 PARTNER_BUDGET_STAFF_COST_STAFF_FUNCTION.id,
                 PARTNER_BUDGET_STAFF_COST_COMMENTS.id,
                 PARTNER_BUDGET_STAFF_COST_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,

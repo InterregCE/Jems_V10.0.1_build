@@ -78,6 +78,7 @@ export class ApplicationFormConfigurationPageStore {
           this.addConfigurableParentNode('application.config.project.partner.budget.and.co.financing', 1, callPublished, configs, [
             this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS, 1, callPublished, configs, false),
             this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN, 1, callPublished, configs, false),
+            this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION, 1, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.staff.cost', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.travel.and.accommodation', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.external.expertise.and.services', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.EXTERNAL_EXPERTISE, callPublished, configs, false),
@@ -111,9 +112,6 @@ export class ApplicationFormConfigurationPageStore {
         this.addSectionNodes('application.config.project.section.c.5', 2, APPLICATION_FORM.SECTION_C.PROJECT_RESULT, callPublished, configs),
         this.addSectionNodes('application.config.project.section.c.7', 2, APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT, callPublished, configs),
         this.addSectionNodes('application.config.project.section.c.8', 2, APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS, callPublished, configs)
-      ]),
-      this.addParentNode('application.config.project.section.e', 2, [
-        this.addSectionNodes('application.config.project.section.e.1', 2, APPLICATION_FORM.SECTION_E.PROJECT_LUMP_SUMS_AND_UNIT_COSTS.PROJECT_LUMP_SUMS, callPublished, configs, false)
       ])
     ];
   }
