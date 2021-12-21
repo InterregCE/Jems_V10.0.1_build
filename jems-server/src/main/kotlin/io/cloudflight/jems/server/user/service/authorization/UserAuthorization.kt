@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreatorCollaboratorsRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreatorCollaboratorsUpdate
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectMonitorCollaboratorsRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectMonitorCollaboratorsUpdate
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -56,6 +57,8 @@ class UserAuthorization(
         hasPermissionForProject(ProjectMonitorCollaboratorsRetrieve, projectId)
 
     fun hasManageProjectPrivilegesPermission(projectId: Long) =
-        hasPermission(ProjectCreatorCollaboratorsUpdate) && isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithManageLevel())
+        (hasPermission(ProjectCreatorCollaboratorsUpdate) || hasPermission(ProjectMonitorCollaboratorsUpdate, projectId))
+            &&
+            isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithManageLevel())
 
 }

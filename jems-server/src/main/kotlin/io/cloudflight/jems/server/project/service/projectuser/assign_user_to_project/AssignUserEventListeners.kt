@@ -23,7 +23,7 @@ data class AssignUserEventListeners(
             JemsAuditEvent(
                 auditCandidate = AuditBuilder(AuditAction.PROJECT_USER_ASSIGNMENT)
                     .project(event.project)
-                    .description("Users can access: ${emailAddresses(event.users)}")
+                    .description("Project can be accessed by: ${emailAddresses(event.users)}")
                     .build()
             )
         )

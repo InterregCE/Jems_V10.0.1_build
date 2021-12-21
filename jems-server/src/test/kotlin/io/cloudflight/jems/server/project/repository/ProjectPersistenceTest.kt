@@ -605,14 +605,13 @@ internal class ProjectPersistenceTest : UnitTest() {
     @Test
     fun `getProjects - owner`() {
         every {
-            projectRepository.findAllByApplicantIdOrIdIn(
+            projectRepository.findAllByIdIn(
                 pageable = Pageable.unpaged(),
-                applicantId = 487L,
                 projectIds = setOf(45L, 32L),
             )
         } returns PageImpl(listOf(dummyProject()))
 
-        val result = persistence.getProjectsOfUserPlusExtra(Pageable.unpaged(), 487L, extraProjectIds = setOf(45L, 32L))
+        val result = persistence.getProjectsOfUserPlusExtra(Pageable.unpaged(), extraProjectIds = setOf(45L, 32L))
 
         assertThat(result.numberOfElements).isEqualTo(1)
         assertThat(result.elementAt(0)).isEqualTo(

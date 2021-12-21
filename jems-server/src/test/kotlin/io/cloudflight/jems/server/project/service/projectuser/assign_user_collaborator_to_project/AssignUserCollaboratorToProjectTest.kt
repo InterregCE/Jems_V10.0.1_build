@@ -2,6 +2,9 @@ package io.cloudflight.jems.server.project.service.projectuser.assign_user_colla
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
@@ -10,13 +13,18 @@ import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 
 internal class AssignUserCollaboratorToProjectTest : UnitTest() {
 
@@ -37,6 +45,14 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
             userRole = UserRoleSummary(roleId, "", false),
             userStatus = UserStatus.ACTIVE,
         )
+
+        private val projectSummary = ProjectSummary(
+            id = PROJECT_ID,
+            customIdentifier = "01",
+            callName = "",
+            acronym = "project acronym",
+            status = ApplicationStatus.DRAFT,
+        )
     }
 
     @MockK
@@ -48,8 +64,19 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
     @MockK
     lateinit var collaboratorPersistence: UserProjectCollaboratorPersistence
 
+    @MockK
+    lateinit var projectPersistence: ProjectPersistence
+
+    @RelaxedMockK
+    lateinit var eventPublisher: ApplicationEventPublisher
+
     @InjectMockKs
     lateinit var assignUser: AssignUserCollaboratorToProject
+
+    @BeforeEach
+    fun resetAuditService() {
+        clearMocks(eventPublisher)
+    }
 
     @Test
     fun updateUserAssignmentsOnProject() {
@@ -62,6 +89,7 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
             user(USER_ADMIN_ID, "admin1", ADMIN_ROLE_ID),
             user(USER_APPLICANT_ID, "applicant1", APPLICANT_ROLE_ID),
         )
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
 
         val userData = slot<Map<Long, CollaboratorLevel>>()
         val expectedResult = listOf(
@@ -81,6 +109,11 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
             USER_ADMIN_ID to CollaboratorLevel.EDIT,
             USER_APPLICANT_ID to CollaboratorLevel.MANAGE,
         ))
+
+        verify(exactly = 1) { eventPublisher.publishEvent(AssignUserCollaboratorEvent(
+            project = projectSummary,
+            collaborators = expectedResult,
+        )) }
     }
 
     @Test
