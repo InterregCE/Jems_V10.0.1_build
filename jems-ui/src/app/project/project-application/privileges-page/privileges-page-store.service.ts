@@ -51,10 +51,11 @@ export class PrivilegesPageStore {
     return combineLatest([
       this.projectStore.collaboratorLevel$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorCollaboratorsUpdate),
+      // we expect, that if user can open this page, he is assigned to the project already, or he has ProjectRetrieve global permission
       this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorCollaboratorsUpdate),
     ]).pipe(
       map(([collaboratorLevel, canUpdateProjectCreatorCollaborators, canUpdateProjectMonitorCollaborators]) =>
-         collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE && (canUpdateProjectCreatorCollaborators || canUpdateProjectMonitorCollaborators)
+        (collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE && canUpdateProjectCreatorCollaborators) || canUpdateProjectMonitorCollaborators
       )
     );
   }

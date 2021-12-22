@@ -57,8 +57,7 @@ class UserAuthorization(
         hasPermissionForProject(ProjectMonitorCollaboratorsRetrieve, projectId)
 
     fun hasManageProjectPrivilegesPermission(projectId: Long) =
-        (hasPermission(ProjectCreatorCollaboratorsUpdate) || hasPermission(ProjectMonitorCollaboratorsUpdate, projectId))
-            &&
-            isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithManageLevel())
+        (hasPermission(ProjectCreatorCollaboratorsUpdate) && isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithManageLevel()))
+            || hasPermission(ProjectMonitorCollaboratorsUpdate, projectId)
 
 }
