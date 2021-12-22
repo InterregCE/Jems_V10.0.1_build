@@ -48,7 +48,7 @@ class CreateResultIndicator(
         generalValidator.throwIfAnyIsInvalid(
             generalValidator.nullOrZero(resultIndicator.id, "id"),
             generalValidator.notBlank(resultIndicator.identifier, "identifier"),
-            generalValidator.maxLength(resultIndicator.identifier, 5, "identifier"),
+            generalValidator.maxLength(resultIndicator.identifier, 10, "identifier"),
             generalValidator.maxLength(resultIndicator.code, 6, "indicatorCode"),
             generalValidator.maxLength(resultIndicator.name, 255, "indicatorName"),
             generalValidator.maxLength(resultIndicator.measurementUnit, 255, "measurementUnit"),

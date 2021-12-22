@@ -67,7 +67,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
   filteredResultIndicators$: Observable<ResultIndicatorDetailDTO[]>;
 
   outputIndicatorForm = this.formBuilder.group({
-    identifier: ['', [Validators.required, Validators.maxLength(5)]],
+    identifier: ['', [Validators.required, Validators.maxLength(10)]],
     indicatorCode: ['', Validators.maxLength(6)],
     indicatorName: [[]],
     specificObjective: ['', Validators.required],
