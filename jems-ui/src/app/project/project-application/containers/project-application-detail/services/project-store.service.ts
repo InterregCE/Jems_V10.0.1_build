@@ -3,12 +3,12 @@ import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs
 import {
   CallService,
   InputProjectData,
-  InvestmentSummaryDTO,
+  InvestmentSummaryDTO, ProjectBudgetService,
   ProjectCallSettingsDTO,
   ProjectDecisionDTO,
   ProjectDetailDTO,
   ProjectDetailFormDTO,
-  ProjectPartnerBudgetCoFinancingDTO,
+  ProjectPartnerBudgetCoFinancingDTO, ProjectPartnerBudgetPerFundDTO,
   ProjectPeriodDTO,
   ProjectService,
   ProjectStatusDTO,
@@ -88,7 +88,8 @@ export class ProjectStore {
               private permissionService: PermissionService,
               private projectVersionStore: ProjectVersionStore,
               private callService: CallService,
-              private projectUserCollaboratorService: ProjectUserCollaboratorService) {
+              private projectUserCollaboratorService: ProjectUserCollaboratorService,
+              private projectBudgetService: ProjectBudgetService) {
     this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
@@ -133,11 +134,11 @@ export class ProjectStore {
       );
   }
 
-  getProjectCoFinancing(): Observable<ProjectPartnerBudgetCoFinancingDTO[]> {
+  getProjectBudgetPerFund(): Observable<ProjectPartnerBudgetPerFundDTO[]> {
     return combineLatest([this.projectId$, this.projectVersionStore.selectedVersionParam$])
       .pipe(
-        switchMap(([id, version]) => this.projectService.getProjectCoFinancing(id, version)),
-        tap((data: ProjectPartnerBudgetCoFinancingDTO[]) => Log.info('Fetched project co-financing:', this, data))
+        switchMap(([id, version]) => this.projectBudgetService.getProjectPartnerBudgetPerFund(id, version)),
+        tap((data: ProjectPartnerBudgetPerFundDTO[]) => Log.info('Fetched project budget per fund:', this, data))
       );
   }
 
