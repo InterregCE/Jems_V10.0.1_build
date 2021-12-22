@@ -1,8 +1,13 @@
 package io.cloudflight.jems.server.project.controller.budget
 
+import io.cloudflight.jems.api.project.dto.budget.PartnerBudgetPerFundDTO
+import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetPerFundDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetPerPeriodDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPeriodBudgetDTO
+import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.project.controller.partner.toDto
+import io.cloudflight.jems.server.project.service.model.PartnerBudgetPerFund
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 
@@ -18,4 +23,22 @@ fun ProjectPeriodBudget.toDto() = ProjectPeriodBudgetDTO(
     periodEnd = this.periodEnd,
     totalBudgetPerPeriod = this.totalBudgetPerPeriod,
     isLastPeriod = this.isLastPeriod
+)
+
+fun ProjectPartnerBudgetPerFund.toDto() = ProjectPartnerBudgetPerFundDTO(
+    partner = this.partner?.toDto(),
+    budgetPerFund = this.budgetPerFund.map { it.toDto() }.toSet(),
+    publicContribution = this.publicContribution,
+    autoPublicContribution = this.autoPublicContribution,
+    privateContribution = this.privateContribution,
+    totalPartnerContribution = this.totalPartnerContribution,
+    totalEligibleBudget = this.totalEligibleBudget,
+    percentageOfTotalEligibleBudget = this.percentageOfTotalEligibleBudget
+)
+
+fun PartnerBudgetPerFund.toDto() = PartnerBudgetPerFundDTO(
+    fund = this.fund?.toDto(),
+    percentage = this.percentage,
+    percentageOfTotal = this.percentageOfTotal,
+    value = this.value
 )

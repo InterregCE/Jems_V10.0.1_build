@@ -251,7 +251,7 @@ class ProjectBudgetPersistenceTest {
         every { mockPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPRow.sortNumber } returns 1
         every { mockPRow.country } returns "AT"
-        every { mockPRow.region } returns "nutsRegion3"
+        every { mockPRow.nutsRegion2 } returns "nutsRegion3"
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
         every {
             projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
@@ -483,7 +483,7 @@ class ProjectBudgetPersistenceTest {
         every { mockPartRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPartRow.sortNumber } returns 1
         every { mockPartRow.country } returns "AT"
-        every { mockPartRow.region } returns "nutsRegion3"
+        every { mockPartRow.nutsRegion2 } returns "nutsRegion3"
 
         val partners = listOf(
             ProjectPartnerEntity(

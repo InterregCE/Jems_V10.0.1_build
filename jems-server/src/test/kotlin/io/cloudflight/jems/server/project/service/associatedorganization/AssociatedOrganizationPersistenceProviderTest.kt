@@ -188,7 +188,7 @@ class AssociatedOrganizationPersistenceProviderTest {
         every { mockPPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPPRow.sortNumber } returns 1
         every { mockPPRow.country } returns "country"
-        every { mockPPRow.region } returns "nutsRegion3"
+        every { mockPPRow.nutsRegion2 } returns "nutsRegion3"
         val mockAOARow: AssociatedOrganizationAddressRow = mockk()
         every { mockAOARow.id } returns projectAssociatedOrganization.id
         every { mockAOARow.country } returns "country"
