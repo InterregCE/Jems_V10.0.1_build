@@ -13,7 +13,7 @@
                 <ng-container [formGroupName]="i">
                     <mat-checkbox
                             formControlName="selected">
-                        {{fund.get('programmeFund')?.value?.abbreviation[0].translation}}
+                        {{ fund.get('programmeFund')?.value?.abbreviation | translateBySystemLanguage: true | async }}
                     </mat-checkbox>
 
                     <div></div>
