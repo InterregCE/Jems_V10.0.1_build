@@ -97,7 +97,7 @@
 
                         <ng-container
                                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DELIVERABLES">
-                            <h4>{{'Deliverables' | translate}}</h4>
+                            <h4>{{'project.work.package.tab.deliverables' | translate}}</h4>
                             <p>{{'project.work.package.tab.deliverables.intro' | translate}}</p>
                             <app-multi-language-container appNoWidthLimit *ngIf="deliverables(i).controls?.length">
                                 <div [appTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:15},{minInRem:10},{maxInRem:2}]">
