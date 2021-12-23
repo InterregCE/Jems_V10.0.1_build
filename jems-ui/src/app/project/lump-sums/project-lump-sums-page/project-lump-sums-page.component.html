@@ -20,7 +20,12 @@
                             [type]="Alert.WARNING">
                         {{'project.application.form.section.part.e.gap.warning' | translate}}
                     </app-alert>
-
+                    <app-alert *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS"
+                            [type]="Alert.WARNING"
+                            [show]="!data.periods?.length"
+                            [closable]="false">
+                        <span>{{'project.application.form.section.part.e.period.warning' | translate}}</span>
+                    </app-alert>
                     <div id="loading-container" appNoWidthLimit *ngIf="data.loading">
                         {{'common.loading' | translate}}
                         <mat-spinner class="ml-2" [diameter]="32" [strokeWidth]="3"></mat-spinner>
