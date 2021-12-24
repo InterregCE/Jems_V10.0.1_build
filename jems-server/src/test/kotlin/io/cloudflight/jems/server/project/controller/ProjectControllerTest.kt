@@ -96,6 +96,7 @@ class ProjectControllerTest {
 
         private val partner1 = ProjectPartnerSummary(
             id = 2,
+            active = true,
             abbreviation = "Partner 1",
             role = ProjectPartnerRole.LEAD_PARTNER,
             sortNumber = 1,
@@ -105,6 +106,7 @@ class ProjectControllerTest {
         private val partner2 = ProjectPartnerSummary(
             id = 1,
             abbreviation = "Partner 2",
+            active = true,
             role = ProjectPartnerRole.PARTNER,
             sortNumber = 2,
             country = "CZ",

@@ -32,9 +32,9 @@ interface PartnerPersistence {
     // used for authorization
     fun getProjectIdForPartnerId(id: Long, version: String? = null): Long
 
-    fun create(projectId: Long, projectPartner: ProjectPartner): ProjectPartnerDetail
+    fun create(projectId: Long, projectPartner: ProjectPartner, resortByRole: Boolean): ProjectPartnerDetail
 
-    fun update(projectPartner: ProjectPartner): ProjectPartnerDetail
+    fun update(projectPartner: ProjectPartner, resortByRole: Boolean): ProjectPartnerDetail
 
     fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddress>): ProjectPartnerDetail
 
@@ -47,4 +47,6 @@ interface PartnerPersistence {
     fun updatePartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAid): ProjectPartnerStateAid
 
     fun deletePartner(partnerId: Long)
+
+    fun deactivatePartner(partnerId: Long)
 }

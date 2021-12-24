@@ -2,6 +2,11 @@
         *ngIf="data$ | async as data"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
         subTitleKey="project.application.form.section.part.b">
+     <app-alert [type]="Alert.WARNING"
+                [closable]="false"
+                [show]="!data.organization.active">
+         <div>{{'project.application.form.section.part.b.associatedOrganizations.deactivated.warning' | translate}}</div>
+     </app-alert>
     <app-form (save)="onSubmit()"
               (discard)="onCancel(data.organization)">
         <form appFormLayout [formGroup]="associatedOrganizationForm">

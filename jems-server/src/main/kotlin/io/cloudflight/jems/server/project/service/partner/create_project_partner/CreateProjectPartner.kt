@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.create_project_partne
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
@@ -14,6 +15,7 @@ const val MAX_NUMBER_OF_PROJECT_PARTNERS = 30
 @Service
 class CreateProjectPartner(
     private val persistence: PartnerPersistence,
+    private val projectPersistence: ProjectPersistence,
     private val generalValidator: GeneralValidatorService
 ) : CreateProjectPartnerInteractor {
 
@@ -31,7 +33,7 @@ class CreateProjectPartner(
 
             persistence.throwIfPartnerAbbreviationAlreadyExists(projectId, projectPartner.abbreviation!!)
 
-            persistence.create(projectId, projectPartner)
+            persistence.create(projectId, projectPartner, shouldResortPartnersByRole(projectId))
         }
 
 
@@ -50,4 +52,9 @@ class CreateProjectPartner(
             generalValidator.onlyDigits(partner.pic, "pic"),
             generalValidator.maxLength(partner.vat, 50, "vat"),
         )
+
+    private fun shouldResortPartnersByRole(projectId: Long) =
+        projectPersistence.getProjectSummary(projectId).let { projectSummary ->
+            projectSummary.status.isModifiableStatusBeforeApproved()
+        }
 }

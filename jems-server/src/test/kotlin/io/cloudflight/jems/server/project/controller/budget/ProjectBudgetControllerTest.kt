@@ -27,6 +27,7 @@ internal class ProjectBudgetControllerTest : UnitTest() {
         private val budgetPerPeriod = ProjectPartnerBudgetPerPeriod(
             partner = ProjectPartnerSummary(
                 id = 2L,
+                active = true,
                 abbreviation = "partner",
                 role = ProjectPartnerRole.LEAD_PARTNER,
                 sortNumber = 3,
@@ -75,6 +76,7 @@ internal class ProjectBudgetControllerTest : UnitTest() {
             ProjectPartnerBudgetPerPeriodDTO(
                 partner = ProjectPartnerSummaryDTO(
                     id = budgetPerPeriod.partner.id,
+                    active = true,
                     abbreviation = budgetPerPeriod.partner.abbreviation,
                     role = ProjectPartnerRoleDTO.LEAD_PARTNER,
                     sortNumber = budgetPerPeriod.partner.sortNumber,

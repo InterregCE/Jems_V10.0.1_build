@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVa
 
 interface PartnerIdentityRow : TranslationView {
     val id: Long
+    val active: Boolean
     val projectId: Long
     val abbreviation: String
     val role: ProjectPartnerRole

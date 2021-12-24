@@ -235,6 +235,7 @@ class ProjectBudgetPersistenceTest {
             .containsExactlyInAnyOrder(
                 ProjectPartnerSummary(
                     id = 5,
+                    active = true,
                     abbreviation = "partner",
                     role = ProjectPartnerRole.LEAD_PARTNER,
                     sortNumber = 1,
@@ -247,6 +248,7 @@ class ProjectBudgetPersistenceTest {
     fun getPartnersForProjectIdHistoric() {
         val mockPRow: PartnerSimpleRow = mockk()
         every { mockPRow.id } returns PARTNER_ID
+        every { mockPRow.active } returns true
         every { mockPRow.abbreviation } returns "abbreviation"
         every { mockPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPRow.sortNumber } returns 1
@@ -264,6 +266,7 @@ class ProjectBudgetPersistenceTest {
             .containsExactly(
                 ProjectPartnerSummary(
                     id = PARTNER_ID,
+                    active = true,
                     abbreviation = "abbreviation",
                     role = ProjectPartnerRole.LEAD_PARTNER,
                     sortNumber = 1,
@@ -479,6 +482,7 @@ class ProjectBudgetPersistenceTest {
 
         val mockPartRow: PartnerSimpleRow = mockk()
         every { mockPartRow.id } returns PARTNER_ID
+        every { mockPartRow.active } returns true
         every { mockPartRow.abbreviation } returns "abbreviation"
         every { mockPartRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPartRow.sortNumber } returns 1

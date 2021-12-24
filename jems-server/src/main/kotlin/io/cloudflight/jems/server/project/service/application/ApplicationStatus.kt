@@ -23,9 +23,14 @@ enum class ApplicationStatus {
     NOT_APPROVED;
 
     fun canBeModified() =
+        isModifiableStatusBeforeApproved() || isModifiableStatusAfterApproved()
+
+    fun isModifiableStatusBeforeApproved() =
         this == DRAFT || this == STEP1_DRAFT
             || this == RETURNED_TO_APPLICANT || this == RETURNED_TO_APPLICANT_FOR_CONDITIONS
-            || this == MODIFICATION_PRECONTRACTING
+
+    fun isModifiableStatusAfterApproved() =
+        this == MODIFICATION_PRECONTRACTING
 
     fun isSubmitted() = this == SUBMITTED || this == STEP1_SUBMITTED
 

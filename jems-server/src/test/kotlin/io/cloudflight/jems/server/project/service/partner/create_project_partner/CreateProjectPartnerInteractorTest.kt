@@ -2,26 +2,35 @@ package io.cloudflight.jems.server.project.service.partner.create_project_partne
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.utils.partner.PROJECT_ID
 import io.cloudflight.jems.server.utils.partner.projectPartner
 import io.cloudflight.jems.server.utils.partner.projectPartnerDetail
+import io.cloudflight.jems.server.utils.partner.projectSummary
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
 
 internal class CreateProjectPartnerInteractorTest : UnitTest() {
     @MockK
     lateinit var persistence: PartnerPersistence
+
+    @MockK
+    lateinit var projectPersistence: ProjectPersistence
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
@@ -39,9 +48,10 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
 
     @Test
     fun `should validate input when creating the partner`() {
-        every { persistence.create(PROJECT_ID, projectPartner) } returns this.projectPartnerDetail
+        every { persistence.create(PROJECT_ID, projectPartner, true) } returns this.projectPartnerDetail
         every { persistence.countByProjectId(PROJECT_ID) } returns 0
         every { persistence.changeRoleOfLeadPartnerToPartnerIfItExists(PROJECT_ID) } returns Unit
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
         every {
             persistence.throwIfPartnerAbbreviationAlreadyExists(PROJECT_ID, projectPartner.abbreviation!!)
         } returns Unit
@@ -71,11 +81,12 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
     @Test
     fun `should create a new partner for the project when there is no problem`() {
         val projectPartner = projectPartner(role = ProjectPartnerRole.PARTNER)
-        every { persistence.create(PROJECT_ID, projectPartner) } returns projectPartnerDetail
+        every { persistence.create(PROJECT_ID, projectPartner, true) } returns projectPartnerDetail
         every { persistence.countByProjectId(PROJECT_ID) } returns 0
-        every {
-            persistence.throwIfPartnerAbbreviationAlreadyExists(PROJECT_ID, projectPartner.abbreviation!!)
-        } returns Unit
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
+            every {
+                persistence.throwIfPartnerAbbreviationAlreadyExists(PROJECT_ID, projectPartner.abbreviation!!)
+            } returns Unit
 
         assertThat(createProjectPartner.create(PROJECT_ID, projectPartner)).isEqualTo(projectPartnerDetail)
 
@@ -89,13 +100,14 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
 
         every { persistence.countByProjectId(PROJECT_ID) } returns 1
         every { persistence.changeRoleOfLeadPartnerToPartnerIfItExists(PROJECT_ID) } returns Unit
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
         every {
             persistence.throwIfPartnerAbbreviationAlreadyExists(
                 PROJECT_ID,
                 projectPartner.abbreviation!!
             )
         } returns Unit
-        every { persistence.create(PROJECT_ID, projectPartner) } returns projectPartnerDetail
+        every { persistence.create(PROJECT_ID, projectPartner, true) } returns projectPartnerDetail
 
         createProjectPartner.create(PROJECT_ID, projectPartner)
 
@@ -112,4 +124,62 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
         assertThat(ex.i18nMessage.i18nKey).isEqualTo("use.case.create.project.partner.max.allowed.count.reached")
         assertThat(ex.httpStatus).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
     }
+
+    @TestFactory
+    fun `should not resort partners when project is not in a modifiable status before Approved`() =
+        listOf(
+            *ApplicationStatus.values().filterNot {
+                listOf(
+                    ApplicationStatus.STEP1_DRAFT,
+                    ApplicationStatus.DRAFT,
+                    ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS,
+                    ApplicationStatus.RETURNED_TO_APPLICANT
+                ).contains(it)
+            }.toTypedArray()
+        ).map { status ->
+            DynamicTest.dynamicTest(
+                "should not resort partners when project is in '$status' status"
+            ) {
+                val projectPartner = projectPartner(role = ProjectPartnerRole.PARTNER)
+                val shouldResortPartnersSlot = slot<Boolean>()
+                every { persistence.create(PROJECT_ID,projectPartner, capture(shouldResortPartnersSlot)) } returns projectPartnerDetail
+                every { persistence.countByProjectId(PROJECT_ID) } returns 0
+                every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary(status)
+                every {
+                    persistence.throwIfPartnerAbbreviationAlreadyExists(PROJECT_ID, projectPartner.abbreviation!!)
+                } returns Unit
+
+                createProjectPartner.create(PROJECT_ID, projectPartner)
+
+                assertThat(shouldResortPartnersSlot.captured).isFalse()
+            }
+        }
+
+
+    @TestFactory
+    fun `should resort partners when project is in a modifiable status before Approved`() =
+        listOf(
+            ApplicationStatus.STEP1_DRAFT,
+            ApplicationStatus.DRAFT,
+            ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS,
+            ApplicationStatus.RETURNED_TO_APPLICANT,
+        ).map { status ->
+            DynamicTest.dynamicTest(
+                "should resort partners when project is in '$status' status"
+            ) {
+                val projectPartner = projectPartner(role = ProjectPartnerRole.PARTNER)
+                val shouldResortPartnersSlot = slot<Boolean>()
+                every { persistence.create(PROJECT_ID,projectPartner, capture(shouldResortPartnersSlot)) } returns projectPartnerDetail
+                every { persistence.countByProjectId(PROJECT_ID) } returns 0
+                every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary(status)
+                every {
+                    persistence.throwIfPartnerAbbreviationAlreadyExists(PROJECT_ID, projectPartner.abbreviation!!)
+                } returns Unit
+
+                createProjectPartner.create(PROJECT_ID, projectPartner)
+
+                assertThat(shouldResortPartnersSlot.captured).isTrue()
+            }
+        }
+
 }

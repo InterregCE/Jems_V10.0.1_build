@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectContactType
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
@@ -51,6 +52,14 @@ import java.time.ZonedDateTime
 
 const val PROJECT_ID = 1L
 const val PARTNER_ID = 2L
+
+fun projectSummary(status: ApplicationStatus = ApplicationStatus.DRAFT) = ProjectSummary(
+    id = PROJECT_ID,
+    customIdentifier = "01",
+    callName = "",
+    acronym = "project acronym",
+    status = status
+)
 
 fun projectPartner(
     id: Long = PARTNER_ID,
@@ -84,9 +93,10 @@ fun projectPartnerSummary(
 ) =
     ProjectPartnerSummary(
         id = id,
+        active = true,
         abbreviation = abbreviation,
         role = role,
-        sortNumber,
+        sortNumber = sortNumber,
         country = "AT"
     )
 
@@ -107,6 +117,7 @@ fun projectPartnerDetail(
 ) =
     ProjectPartnerDetail(
         id = id,
+        active = true,
         abbreviation = abbreviation,
         role = role,
         nameInOriginalLanguage = "test",
@@ -174,6 +185,7 @@ fun partnerDetailRows(): List<PartnerDetailRow> =
                 override val id = PARTNER_ID
                 override val projectId = PROJECT_ID
                 override val abbreviation = "partner"
+                override val active = true
                 override val role = ProjectPartnerRole.LEAD_PARTNER
                 override val sortNumber = 0
                 override val nameInOriginalLanguage = "test"

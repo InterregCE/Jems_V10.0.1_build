@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectContactType
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
@@ -14,21 +16,28 @@ import io.cloudflight.jems.server.utils.partner.PARTNER_ID
 import io.cloudflight.jems.server.utils.partner.PROJECT_ID
 import io.cloudflight.jems.server.utils.partner.projectPartner
 import io.cloudflight.jems.server.utils.partner.projectPartnerDetail
+import io.cloudflight.jems.server.utils.partner.projectSummary
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 
 internal class UpdateProjectPartnerInteractorTest : UnitTest() {
     @MockK
     lateinit var persistence: PartnerPersistence
+
+    @MockK
+    lateinit var projectPersistence: ProjectPersistence
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
@@ -49,7 +58,9 @@ internal class UpdateProjectPartnerInteractorTest : UnitTest() {
         @Test
         fun `should validate input when creating the partner`() {
             every { persistence.getById(PARTNER_ID) } returns projectPartnerDetail
-            every { persistence.update(projectPartner) } returns projectPartnerDetail
+            every { persistence.update(projectPartner, true) } returns projectPartnerDetail
+            every { persistence.getProjectIdForPartnerId(projectPartner.id!!) } returns PROJECT_ID
+            every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
 
             updateProjectPartner.update(projectPartner)
 
@@ -81,7 +92,9 @@ internal class UpdateProjectPartnerInteractorTest : UnitTest() {
             val olProjectPartner = projectPartnerDetail(PARTNER_ID)
             val updatedProjectPartner = projectPartnerDetail(PARTNER_ID, role = ProjectPartnerRole.PARTNER)
             every { persistence.getById(PARTNER_ID) } returns olProjectPartner
-            every { persistence.update(projectPartnerUpdate) } returns updatedProjectPartner
+            every { persistence.getProjectIdForPartnerId(projectPartner.id!!) } returns PROJECT_ID
+            every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
+            every { persistence.update(projectPartnerUpdate, true) } returns updatedProjectPartner
 
             assertThat(updateProjectPartner.update(projectPartnerUpdate))
                 .isEqualTo(updatedProjectPartner)
@@ -93,8 +106,10 @@ internal class UpdateProjectPartnerInteractorTest : UnitTest() {
             val olProjectPartner = projectPartnerDetail(PARTNER_ID, role = ProjectPartnerRole.PARTNER)
             val updatedProjectPartner = projectPartnerDetail(PARTNER_ID)
             every { persistence.getById(PARTNER_ID) } returns olProjectPartner
+            every { persistence.getProjectIdForPartnerId(projectPartner.id!!) } returns PROJECT_ID
+            every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
             every { persistence.changeRoleOfLeadPartnerToPartnerIfItExists(PROJECT_ID) } returns Unit
-            every { persistence.update(projectPartnerUpdate) } returns updatedProjectPartner
+            every { persistence.update(projectPartnerUpdate, true) } returns updatedProjectPartner
 
             updateProjectPartner.update(projectPartnerUpdate)
 
@@ -107,10 +122,12 @@ internal class UpdateProjectPartnerInteractorTest : UnitTest() {
             val olProjectPartner = projectPartnerDetail(PARTNER_ID, abbreviation = "old")
             val updatedProjectPartner = projectPartnerDetail(PARTNER_ID)
             every { persistence.getById(PARTNER_ID) } returns olProjectPartner
+            every { persistence.getProjectIdForPartnerId(projectPartner.id!!) } returns PROJECT_ID
+            every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
             every {
                 persistence.throwIfPartnerAbbreviationAlreadyExists(PROJECT_ID, projectPartnerUpdate.abbreviation!!)
             } returns Unit
-            every { persistence.update(projectPartnerUpdate) } returns updatedProjectPartner
+            every { persistence.update(projectPartnerUpdate, true) } returns updatedProjectPartner
 
             updateProjectPartner.update(projectPartnerUpdate)
 
@@ -185,4 +202,58 @@ internal class UpdateProjectPartnerInteractorTest : UnitTest() {
         assertThat(exception.entity).isEqualTo("projectPartner")
     }
 
+    @TestFactory
+    fun `should not resort partners when project is not in a modifiable status before Approved`() =
+        listOf(
+            *ApplicationStatus.values().filterNot {
+                listOf(
+                    ApplicationStatus.STEP1_DRAFT,
+                    ApplicationStatus.DRAFT,
+                    ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS,
+                    ApplicationStatus.RETURNED_TO_APPLICANT
+                ).contains(it)
+            }.toTypedArray()
+        ).map { status ->
+            DynamicTest.dynamicTest(
+                "should not resort partners when project is in '$status' status"
+            ) {
+                val shouldResortPartnersSlot = slot<Boolean>()
+                val projectPartnerUpdate = projectPartner(PARTNER_ID, role = ProjectPartnerRole.PARTNER)
+                val olProjectPartner = projectPartnerDetail(PARTNER_ID)
+                val updatedProjectPartner = projectPartnerDetail(PARTNER_ID, role = ProjectPartnerRole.PARTNER)
+                every { persistence.getById(PARTNER_ID) } returns olProjectPartner
+                every { persistence.getProjectIdForPartnerId(projectPartner.id!!) } returns PROJECT_ID
+                every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary(status)
+                every { persistence.update(projectPartnerUpdate, capture(shouldResortPartnersSlot)) } returns updatedProjectPartner
+                updateProjectPartner.update(projectPartnerUpdate)
+
+                assertThat(shouldResortPartnersSlot.captured).isFalse()
+            }
+        }
+
+
+    @TestFactory
+    fun `should resort partners when project is in a modifiable status before Approved`() =
+        listOf(
+            ApplicationStatus.STEP1_DRAFT,
+            ApplicationStatus.DRAFT,
+            ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS,
+            ApplicationStatus.RETURNED_TO_APPLICANT,
+        ).map { status ->
+            DynamicTest.dynamicTest(
+                "should resort partners when project is in '$status' status"
+            ) {
+                val shouldResortPartnersSlot = slot<Boolean>()
+                val projectPartnerUpdate = projectPartner(PARTNER_ID, role = ProjectPartnerRole.PARTNER)
+                val olProjectPartner = projectPartnerDetail(PARTNER_ID)
+                val updatedProjectPartner = projectPartnerDetail(PARTNER_ID, role = ProjectPartnerRole.PARTNER)
+                every { persistence.getById(PARTNER_ID) } returns olProjectPartner
+                every { persistence.getProjectIdForPartnerId(projectPartner.id!!) } returns PROJECT_ID
+                every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary(status)
+                every { persistence.update(projectPartnerUpdate, capture(shouldResortPartnersSlot)) } returns updatedProjectPartner
+                updateProjectPartner.update(projectPartnerUpdate)
+
+                assertThat(shouldResortPartnersSlot.captured).isTrue()
+            }
+        }
 }

@@ -9,10 +9,35 @@
            (sortRows)="newSort.emit($event)">
 </app-table>
 
+<ng-template #statusCell let-associatedOrganization>
+    <mat-chip-list>
+        <mat-chip  [removable]="false" [selectable]="false">
+            <ng-container *ngIf="associatedOrganization.active">
+                <mat-icon>person</mat-icon>
+                <span>{{'project.application.form.associatedOrganization.table.status.active' | translate}}</span>
+            </ng-container>
+
+            <ng-container *ngIf="!associatedOrganization.active">
+                <mat-icon>person_off</mat-icon>
+                <span>{{'project.application.form.associatedOrganization.table.status.inactive' | translate}}</span>
+            </ng-container>
+        </mat-chip>
+    </mat-chip-list>
+</ng-template>
+
 <ng-template #deletionCellAssociatedOrganization let-associatedOrganization>
     <button *ngIf="editable" mat-icon-button color="accent"
             (click)="delete(associatedOrganization);$event.stopPropagation();"
             matTooltip="{{'project.application.form.associatedOrganization.table.action.delete.tooltip' | translate}}">
         <mat-icon>delete</mat-icon>
+    </button>
+</ng-template>
+
+<ng-template #deactivationCellAssociatedOrganization let-associatedOrganization>
+    <button class="ml-auto" mat-stroked-button
+            (click)="deactivate(associatedOrganization);$event.stopPropagation();"
+            [disabled]="!editable || !associatedOrganization.active">
+        <mat-icon>person_off</mat-icon>
+        <span class="ml-1">{{'project.application.form.associatedOrganization.table.action.deactivate.label' | translate}}</span>
     </button>
 </ng-template>

@@ -106,6 +106,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
     private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
+        active = true,
         abbreviation = projectPartner.abbreviation,
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
@@ -129,6 +130,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
     ) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
+            active = true,
             partner = partner,
             nameInOriginalLanguage = name,
             nameInEnglish = name,

@@ -374,6 +374,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         private val projectPartner = ProjectPartnerDetail(
             projectId = 1,
             id = 2L,
+            active = true,
             abbreviation = "partner",
             role = ProjectPartnerRole.LEAD_PARTNER,
             nameInOriginalLanguage = "test",
@@ -448,8 +449,10 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         )
         private val associatedOrganization = OutputProjectAssociatedOrganizationDetail(
             id = 2L,
+            active = true,
             partner = ProjectPartnerSummaryDTO(
                 id = projectPartner.id,
+                active = true,
                 abbreviation = projectPartner.abbreviation,
                 role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name),
                 sortNumber = projectPartner.sortNumber,
@@ -782,6 +785,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 partners = setOf(
                     ProjectPartnerData(
                         id = projectPartner.id,
+                        active = true,
                         sortNumber = null,
                         abbreviation = projectPartner.abbreviation,
                         role = ProjectPartnerRoleData.valueOf(projectPartner.role.name),
@@ -892,8 +896,10 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 associatedOrganisations = setOf(
                     ProjectAssociatedOrganizationData(
                         id = associatedOrganization.id,
+                        active = true,
                         partner = ProjectPartnerEssentialData(
                             id = associatedOrganization.partner.id,
+                            active = true,
                             abbreviation = associatedOrganization.partner.abbreviation,
                             role = ProjectPartnerRoleData.LEAD_PARTNER,
                             sortNumber = associatedOrganization.partner.sortNumber,

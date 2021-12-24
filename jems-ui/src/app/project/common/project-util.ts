@@ -22,6 +22,17 @@ export class ProjectUtil {
     return ProjectUtil.isDraft(statusOrProject) || ProjectUtil.isReturnedToApplicant(statusOrProject);
   }
 
+  static isInModifiableStatusAfterApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+    return this.getStatus(statusOrProject) === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING;
+  }
+  static isInModifiableStatusBeforeApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+    const status = this.getStatus(statusOrProject);
+    return status === ProjectStatusDTO.StatusEnum.STEP1DRAFT
+      || status === ProjectStatusDTO.StatusEnum.DRAFT
+      || status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT
+      || status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS;
+  }
+
   private static getStatus(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum) {
     return ((statusOrProject as ProjectDetailDTO)?.projectStatus || statusOrProject)?.status || statusOrProject;
   }

@@ -51,6 +51,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     protected class PreviousVersionOfPartner(
         override val language: SystemLanguage?,
         override val id: Long,
+        override val active: Boolean,
         override val projectId: Long,
         override val abbreviation: String,
         override val role: ProjectPartnerRole,
@@ -224,6 +225,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     private val previousProjectPartner = PreviousVersionOfPartner(
         language = SystemLanguage.EN,
         id = 1,
+        active = true,
         projectId = 1,
         abbreviation = "previous partner",
         role = ProjectPartnerRole.LEAD_PARTNER,

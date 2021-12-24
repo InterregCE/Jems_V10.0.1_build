@@ -14,6 +14,8 @@
                   matColumnDef="{{column.displayedColumn}}">
         <ng-container *ngIf="column.sortProperty; else noSort">
             <mat-header-cell *matHeaderCellDef
+                             [class.wide-column-width]="column.columnWidth === ColumnWidth.WideColumn"
+                             [class.extra-wide-column-width]="column.columnWidth === ColumnWidth.extraWideColumn"
                              [class.id-column-width]="column.columnWidth === ColumnWidth.IdColumn"
                              [class.date-column-width]="column.columnWidth === ColumnWidth.DateColumn"
                              [mat-sort-header]="column.sortProperty"
@@ -25,6 +27,8 @@
 
         <ng-template #noSort>
             <mat-header-cell
+                    [class.wide-column-width]="column.columnWidth === ColumnWidth.WideColumn"
+                    [class.extra-wide-column-width]="column.columnWidth === ColumnWidth.extraWideColumn"
                     [class.id-column-width]="column.columnWidth === ColumnWidth.IdColumn"
                     [class.date-column-width]="column.columnWidth === ColumnWidth.DateColumn"
                     *matHeaderCellDef class="cell">{{column.displayedColumn | translate}}</mat-header-cell>
@@ -32,6 +36,8 @@
 
         <mat-cell *matCellDef="let row"
                   [class.justify-end]="column.columnType === ColumnType.Decimal"
+                  [class.wide-column-width]="column.columnWidth === ColumnWidth.WideColumn"
+                  [class.extra-wide-column-width]="column.columnWidth === ColumnWidth.extraWideColumn"
                   [class.id-column-width]="column.columnWidth === ColumnWidth.IdColumn"
                   [class.date-column-width]="column.columnWidth === ColumnWidth.DateColumn"
                   class="cell">
