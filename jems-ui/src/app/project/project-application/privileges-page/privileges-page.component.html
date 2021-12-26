@@ -19,12 +19,12 @@
         <app-form (save)="saveCollaborators()"
                   (discard)="resetForm(data.projectCollaborators)">
             <form appFormLayout [formGroup]="form">
-                <div *ngFor="let collaborator of projectCollaborators.controls;let i=index">
-                    <ng-container formArrayName="projectCollaborators">
+                <div formArrayName="projectCollaborators" id="collaborators-table">
+                    <div *ngFor="let collaborator of projectCollaborators.controls;let i=index">
                         <div appMultiColumnRow justifyContent="space-between" [formGroupName]="i">
 
-                            <mat-form-field appFormFieldWidth="x-large" appearance="fill">
-                                <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
+                            <mat-form-field appFormFieldWidth="xx-large" appearance="fill">
+                                <mat-label>{{'project.application.form.section.privileges.email' | translate}}</mat-label>
                                 <input formControlName="userEmail" matInput required>
                                 <mat-error>
                                     <app-form-field-errors
@@ -61,7 +61,7 @@
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>
-                    </ng-container>
+                    </div>
                 </div>
                 <mat-error>
                     <app-form-field-errors [errors]="projectCollaborators.errors"
