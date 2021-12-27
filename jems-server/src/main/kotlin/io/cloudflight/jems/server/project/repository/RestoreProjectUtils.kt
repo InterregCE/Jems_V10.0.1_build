@@ -32,8 +32,13 @@ class RestoreProjectUtils(private val entityManager: EntityManager) {
         queries.filter { it.isNotBlank() }.forEach { query ->
             entityManager.createNativeQuery(query)
                 .setParameter(projectIdParam, projectId)
-                .resultStream.toList()
+                .executeUpdate()
         }
+        // here we're flushing & clearing the persistence context
+        // so that further queries would not use data from its cache but instead would get them from DB
+        // (since here we have native queries and their results are not accessible through the cache for further queries)
+        entityManager.flush()
+        entityManager.clear()
         enableForeignKeyConstraints()
 
     }
