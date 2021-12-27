@@ -8,7 +8,7 @@ import {
   ProjectDecisionDTO,
   ProjectDetailDTO,
   ProjectDetailFormDTO,
-  ProjectPartnerBudgetCoFinancingDTO, ProjectPartnerBudgetPerFundDTO,
+  ProjectPartnerBudgetPerFundDTO,
   ProjectPeriodDTO,
   ProjectService,
   ProjectStatusDTO,
@@ -193,7 +193,7 @@ export class ProjectStore {
   }
 
   private projectForm(): Observable<ProjectDetailFormDTO> {
-    const formById$ = combineLatest([this.projectId$, this.projectVersionStore.selectedVersionParam$])
+    const formById$ = combineLatest([this.projectId$, this.projectVersionStore.selectedVersionParam$, this.projectVersionStore.currentVersion$])
       .pipe(
         filter(([id]) => !!id),
         switchMap(([id, version]) => this.projectService.getProjectFormById(id, version)),

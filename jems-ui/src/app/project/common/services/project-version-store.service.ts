@@ -27,7 +27,10 @@ export class ProjectVersionStore {
     this.selectedVersionParam$ = this.selectedVersionParam();
     this.selectedVersion$ = this.selectedProjectVersion();
     this.isSelectedVersionCurrent$ = this.isSelectedVersionCurrent();
-    this.currentVersion$ = this.versions$.pipe(map(it => it.find(version => version.current)));
+    this.currentVersion$ = this.versions$.pipe(
+      map(it => it.find(version => version.current)),
+      distinctUntilChanged((o, n) => o?.version === n?.version),
+    );
     this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         tap(id => this.projectId$.next(id as number))
