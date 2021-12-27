@@ -28,6 +28,9 @@ class ProjectPartnerEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
+    @field:NotNull
+    var active: Boolean = true,
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     @field:NotNull

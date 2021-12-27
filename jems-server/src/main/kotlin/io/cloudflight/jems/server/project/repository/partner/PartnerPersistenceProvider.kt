@@ -136,24 +136,24 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional
-    override fun create(projectId: Long, projectPartner: ProjectPartner): ProjectPartnerDetail =
+    override fun create(projectId: Long, projectPartner: ProjectPartner, resortByRole: Boolean): ProjectPartnerDetail =
         projectPartnerRepository.save(
             projectPartner.toEntity(
                 project = projectRepo.getById(projectId),
                 legalStatus = legalStatusRepo.getById(projectPartner.legalStatusId!!)
             )
-        ).also { updateSortByRole(projectId) }.toProjectPartnerDetail()
+        ).also { if(resortByRole) updateSortByRole(projectId) }.toProjectPartnerDetail()
 
 
     @Transactional
-    override fun update(projectPartner: ProjectPartner): ProjectPartnerDetail =
+    override fun update(projectPartner: ProjectPartner, resortByRole: Boolean): ProjectPartnerDetail =
         getPartnerOrThrow(projectPartner.id!!).let { entity ->
             projectPartnerRepository.save(
                 entity.copy(
                     projectPartner = projectPartner,
                     legalStatusRef = projectPartner.legalStatusId?.let { legalStatusRepo.getById(it) },
                 )
-            ).also { updateSortByRole(entity.project.id) }
+            ).also { if (resortByRole) updateSortByRole(entity.project.id) }
         }.toProjectPartnerDetail()
 
 
@@ -215,6 +215,13 @@ class PartnerPersistenceProvider(
         projectPartnerRepository.deleteById(partnerId)
         updateSortByRole(projectId)
         projectAssociatedOrganizationService.refreshSortNumbers(projectId)
+    }
+
+    @Transactional
+    override fun deactivatePartner(partnerId: Long) {
+        projectPartnerRepository.getById(partnerId).apply {
+            active = false
+        }
     }
 
     /**

@@ -38,9 +38,11 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -50,6 +52,7 @@ class AssociatedOrganizationPersistenceProviderTest {
 
     companion object {
         private const val projectId = 2L
+        private const val associatedOrganizationId = 2L
 
         private val project = ProjectEntity(
             id = 1,
@@ -82,7 +85,7 @@ class AssociatedOrganizationPersistenceProviderTest {
         )
 
         private val projectAssociatedOrganization = ProjectAssociatedOrganization(
-            id = 2L,
+            id = associatedOrganizationId,
             project = project,
             partner = projectPartner,
             nameInOriginalLanguage = "nameInOriginalLanguage",
@@ -108,9 +111,11 @@ class AssociatedOrganizationPersistenceProviderTest {
             ))
         )
         private val projectAssociatedOrganizationOutput = OutputProjectAssociatedOrganizationDetail(
-            id = 2L,
+            id = associatedOrganizationId,
+            active = true,
             partner = ProjectPartnerSummaryDTO(
                 id = projectPartner.id,
+                active = true,
                 abbreviation = projectPartner.abbreviation,
                 role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name),
                 sortNumber = projectPartner.sortNumber,
@@ -184,6 +189,7 @@ class AssociatedOrganizationPersistenceProviderTest {
         val aoId = 1L
         val mockPPRow: PartnerSimpleRow = mockk()
         every { mockPPRow.id } returns projectPartner.id
+        every { mockPPRow.active } returns true
         every { mockPPRow.abbreviation } returns "abbreviation"
         every { mockPPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPPRow.sortNumber } returns 1
@@ -208,6 +214,7 @@ class AssociatedOrganizationPersistenceProviderTest {
         every { mockAOCRow.telephone } returns "telephone"
         val mockAORow: ProjectAssociatedOrganizationRow = mockk()
         every { mockAORow.id } returns projectAssociatedOrganization.id
+        every { mockAORow.active } returns projectAssociatedOrganization.active
         every { mockAORow.nameInOriginalLanguage } returns projectAssociatedOrganization.nameInOriginalLanguage
         every { mockAORow.nameInEnglish } returns projectAssociatedOrganization.nameInEnglish
         every { mockAORow.sortNumber } returns projectAssociatedOrganization.sortNumber
@@ -260,10 +267,20 @@ class AssociatedOrganizationPersistenceProviderTest {
         )
     }
 
+    @Test
+    fun `should deactivate association organization when there is no problem`() {
+        val projectAssociatedOrganization = mockk<ProjectAssociatedOrganization>()
+        every { projectAssociatedOrganization.active = false } returns Unit
+        every { projectAssociatedOrganizationRepo.getById(associatedOrganizationId) } returns projectAssociatedOrganization
+        assertDoesNotThrow {(persistence.deactivate(associatedOrganizationId))}
+        verify(exactly = 1) { projectAssociatedOrganization.active = false  }
+    }
+
     private fun getAssociatedOrganizationDetailRows(): List<AssociatedOrganizationDetailRow> {
         return listOf(
             object : AssociatedOrganizationDetailRow {
                 override val id = 2L
+                override val active = true
                 override val nameInOriginalLanguage = "nameInOriginalLanguage"
                 override val nameInEnglish = "nameInEnglish"
                 override val sortNumber = 1
@@ -272,6 +289,7 @@ class AssociatedOrganizationPersistenceProviderTest {
                 override val roleDescription = "roleDescription"
 
                 override val partnerId = projectPartner.id
+                override val partnerActive = true
                 override val abbreviation = projectPartner.abbreviation
                 override val role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name)
                 override val partnerSortNumber = projectPartner.sortNumber
@@ -296,6 +314,7 @@ class AssociatedOrganizationPersistenceProviderTest {
             },
             object : AssociatedOrganizationDetailRow {
                 override val id = 2L
+                override val active = true
                 override val nameInOriginalLanguage = "nameInOriginalLanguage"
                 override val nameInEnglish = "nameInEnglish"
                 override val sortNumber = 1
@@ -304,6 +323,7 @@ class AssociatedOrganizationPersistenceProviderTest {
                 override val roleDescription = "roleDescription"
 
                 override val partnerId = projectPartner.id
+                override val partnerActive = true
                 override val abbreviation = projectPartner.abbreviation
                 override val role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name)
                 override val partnerSortNumber = projectPartner.sortNumber

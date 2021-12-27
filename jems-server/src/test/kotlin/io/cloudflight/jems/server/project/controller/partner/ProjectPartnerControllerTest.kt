@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
 import io.cloudflight.jems.server.project.service.partner.create_project_partner.CreateProjectPartnerInteractor
+import io.cloudflight.jems.server.project.service.partner.deactivate_project_partner.DeactivateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.delete_project_partner.DeleteProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.get_project_partner.GetProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
@@ -60,6 +61,8 @@ class ProjectPartnerControllerTest {
     lateinit var updateProjectPartnerStateAidInteractor: UpdateProjectPartnerStateAidInteractor
     @MockK
     lateinit var deleteProjectPartnerInteractor: DeleteProjectPartnerInteractor
+    @MockK
+    lateinit var deactivateProjectPartner: DeactivateProjectPartnerInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerController

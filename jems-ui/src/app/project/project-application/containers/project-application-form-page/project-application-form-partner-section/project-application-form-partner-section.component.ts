@@ -4,13 +4,14 @@ import {MatSort} from '@angular/material/sort';
 import {map, mergeMap, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';
-import {ProjectPartnerService} from '@cat/api';
+import {ProjectBudgetPartnerSummaryDTO, ProjectPartnerService} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import { Alert } from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-project-application-form-partner-section',
@@ -20,12 +21,15 @@ import {ProjectPartnerStore} from '@project/project-application/containers/proje
 })
 export class ProjectApplicationFormPartnerSectionComponent {
   Permission = Permission;
+  Alert = Alert;
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
+
+  showSuccessMessage$ = new Subject<string | null >();
 
   partnerPage$ =
     combineLatest([
@@ -63,7 +67,19 @@ export class ProjectApplicationFormPartnerSectionComponent {
       .pipe(
         take(1),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-        tap(() => Log.info('Deleted partner: ', this, partnerId)),
+        tap(() => this.projectApplicationFormSidenavService.refreshPartners(this.projectId)),
+      ).subscribe();
+  }
+
+  deactivatePartner(partnerId: number, partners: ProjectBudgetPartnerSummaryDTO[]): void {
+    this.partnerStore.deactivatePartner(partnerId)
+      .pipe(
+        take(1),
+        tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+        tap(() => {
+          this.showSuccessMessage$.next(partners.find(it => it.partnerSummary.id === partnerId)?.partnerSummary.abbreviation);
+          setTimeout(() => this.showSuccessMessage$.next(null), 4000);
+        }),
         tap(() => this.projectApplicationFormSidenavService.refreshPartners(this.projectId)),
       ).subscribe();
   }

@@ -33,3 +33,10 @@ mat-footer-cell {
 .date-column-width {
   max-width: 8rem;
 }
+
+.wide-column-width {
+  min-width: 12rem;
+}
+.extra-wide-column-width {
+  min-width: 20rem;
+}

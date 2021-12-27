@@ -120,6 +120,7 @@ export class ProjectApplicationFormSidenavService {
                     i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
                     i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
                   },
+                  icon: partner.active ? '' : 'person_off',
                   route: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}/identity`,
                   baseRoute: `/app/project/detail/${projectId}/applicationFormPartner/${partner.id}`,
                 }

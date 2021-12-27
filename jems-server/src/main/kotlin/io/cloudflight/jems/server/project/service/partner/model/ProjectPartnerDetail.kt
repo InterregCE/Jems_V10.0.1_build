@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 data class ProjectPartnerDetail(
     val projectId: Long,
     val id: Long,
+    val active: Boolean,
     val abbreviation: String,
     val role: ProjectPartnerRole,
     val sortNumber: Int? = null,

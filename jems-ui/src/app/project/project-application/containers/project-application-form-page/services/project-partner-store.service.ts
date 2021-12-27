@@ -111,6 +111,13 @@ export class ProjectPartnerStore {
       );
   }
 
+  deactivatePartner(partnerId: number): Observable<void> {
+    return this.partnerService.deactivate(partnerId)
+      .pipe(
+        tap(() => this.partnerUpdateEvent$.next(null)),
+        tap(() => Log.info('Partner deactivated:', this, partnerId))
+      );
+  }
 
   private partner(): Observable<ProjectPartnerDetailDTO> {
     const initialPartner$ = combineLatest([

@@ -387,6 +387,7 @@ abstract class PluginDataMapper {
         ProjectPartnerSummary(
             projectPartnerData.id,
             projectPartnerData.abbreviation,
+            projectPartnerData.active,
             ProjectPartnerRole.valueOf(projectPartnerData.role.name),
             projectPartnerData.sortNumber,
             projectPartnerData.addresses.firstOrNull { it.type == ProjectPartnerAddressTypeData.Organization }?.country,

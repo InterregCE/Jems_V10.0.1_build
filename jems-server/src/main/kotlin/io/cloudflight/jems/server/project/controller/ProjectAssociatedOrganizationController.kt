@@ -7,16 +7,17 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectA
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
+import io.cloudflight.jems.server.project.service.associatedorganization.deactivate_associated_organization.DeactivateAssociatedOrganizationInteractor
 import io.cloudflight.jems.server.project.service.associatedorganization.get_associated_organization.GetAssociatedOrganizationInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProjectAssociatedOrganizationController(
     private val associatedOrganizationService: ProjectAssociatedOrganizationService,
-    private val getAssociatedOrganizationInteractor: GetAssociatedOrganizationInteractor
+    private val getAssociatedOrganization: GetAssociatedOrganizationInteractor,
+    private val deactivateAssociatedOrganization: DeactivateAssociatedOrganizationInteractor
 ) : ProjectAssociatedOrganizationApi {
 
     @CanRetrieveProjectForm
@@ -25,7 +26,7 @@ class ProjectAssociatedOrganizationController(
         pageable: Pageable,
         version: String?
     ): Page<OutputProjectAssociatedOrganization> {
-        return getAssociatedOrganizationInteractor.findAllByProjectId(projectId, pageable, version)
+        return getAssociatedOrganization.findAllByProjectId(projectId, pageable, version)
     }
 
     @CanRetrieveProjectForm
@@ -34,7 +35,7 @@ class ProjectAssociatedOrganizationController(
         id: Long,
         version: String?
     ): OutputProjectAssociatedOrganizationDetail? {
-        return getAssociatedOrganizationInteractor.getById(projectId, id, version)
+        return getAssociatedOrganization.getById(projectId, id, version)
     }
 
     @CanUpdateProjectForm
@@ -60,4 +61,9 @@ class ProjectAssociatedOrganizationController(
     override fun deleteAssociatedOrganization(projectId: Long, id: Long) {
         return associatedOrganizationService.delete(projectId, id);
     }
+
+    override fun deactivateAssociatedOrganization(projectId: Long, id: Long) {
+        deactivateAssociatedOrganization.deactivate(projectId, id)
+    }
+
 }

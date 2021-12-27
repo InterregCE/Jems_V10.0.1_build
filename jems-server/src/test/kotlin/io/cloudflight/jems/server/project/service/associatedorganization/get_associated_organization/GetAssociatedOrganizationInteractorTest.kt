@@ -90,6 +90,7 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
 
     private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
+        active = true,
         abbreviation = projectPartner.abbreviation,
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
@@ -108,6 +109,7 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
     private fun outputOrganization(id: Long, partnerAbbr: String, name: String, sortNr: Int? = null) =
         OutputProjectAssociatedOrganization(
             id = id,
+            active = true,
             partnerAbbreviation = partnerAbbr,
             nameInOriginalLanguage = name,
             nameInEnglish = name,
@@ -122,6 +124,7 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
     ) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
+            active = true,
             partner = partner,
             nameInOriginalLanguage = name,
             nameInEnglish = name,

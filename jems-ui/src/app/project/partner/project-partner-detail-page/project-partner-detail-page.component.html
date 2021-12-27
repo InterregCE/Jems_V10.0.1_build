@@ -4,6 +4,12 @@
         <h2>{{'common.label.project.partner.role.' + partner.role | translate}} {{partner.abbreviation}}</h2>
     </ng-container>
 
+    <app-alert [type]="Alert.WARNING"
+               [closable]="false"
+               [show]="!partner.active">
+        <div>{{'project.application.form.section.part.b.deactivated.partner.warning' | translate}}</div>
+    </app-alert>
+
     <nav mat-tab-nav-bar>
         <a [active]="activeTab('identity')" mat-tab-link
            (click)="routeTo('identity')">

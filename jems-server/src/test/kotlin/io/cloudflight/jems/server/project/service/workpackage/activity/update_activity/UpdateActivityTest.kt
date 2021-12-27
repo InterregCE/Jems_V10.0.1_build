@@ -51,8 +51,8 @@ internal class UpdateActivityTest {
         )
 
         val projectPartnerIds = listOf(
-            ProjectPartnerSummary(id = 3, abbreviation = "lp1", role = ProjectPartnerRole.LEAD_PARTNER),
-            ProjectPartnerSummary(id = 5, abbreviation = "p2", role = ProjectPartnerRole.PARTNER)
+            ProjectPartnerSummary(id = 3, abbreviation = "lp1", role = ProjectPartnerRole.LEAD_PARTNER, active = true,),
+            ProjectPartnerSummary(id = 5, abbreviation = "p2", role = ProjectPartnerRole.PARTNER, active = true)
         )
     }
 

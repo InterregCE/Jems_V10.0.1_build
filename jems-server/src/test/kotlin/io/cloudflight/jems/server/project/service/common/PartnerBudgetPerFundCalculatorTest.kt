@@ -22,9 +22,9 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
     private val partnerId1 = 1L
     private val partnerId2 = 2L
     private val partnerId3 = 3L
-    private val partner1 = ProjectPartnerSummary(id = partnerId1, abbreviation = "LP 1", role = ProjectPartnerRole.LEAD_PARTNER)
-    private val partner2 = ProjectPartnerSummary(id = partnerId2, abbreviation = "PP 2", role = ProjectPartnerRole.PARTNER)
-    private val partner3 = ProjectPartnerSummary(id = partnerId3, abbreviation = "PP 3", role = ProjectPartnerRole.PARTNER)
+    private val partner1 = ProjectPartnerSummary(id = partnerId1, abbreviation = "LP 1", role = ProjectPartnerRole.LEAD_PARTNER, active = true)
+    private val partner2 = ProjectPartnerSummary(id = partnerId2, abbreviation = "PP 2", role = ProjectPartnerRole.PARTNER, active = true)
+    private val partner3 = ProjectPartnerSummary(id = partnerId3, abbreviation = "PP 3", role = ProjectPartnerRole.PARTNER, active = true)
     private val fund1 = ProgrammeFund(id = 1L, selected = true, type = ProgrammeFundType.ERDF)
     private val fund2 = ProgrammeFund(id = 2L, selected = true, type = ProgrammeFundType.IPA_III)
     private val fund3 = ProgrammeFund(id = 3L, selected = true, type = ProgrammeFundType.OTHER)

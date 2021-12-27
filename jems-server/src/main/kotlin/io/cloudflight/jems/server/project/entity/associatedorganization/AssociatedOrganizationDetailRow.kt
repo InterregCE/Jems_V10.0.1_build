@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.common.entity.TranslationView
 interface AssociatedOrganizationDetailRow : TranslationView {
     //associated organization
     val id: Long
+    val active: Boolean
     val nameInOriginalLanguage: String?
     val nameInEnglish: String?
     val sortNumber: Int?
@@ -14,6 +15,7 @@ interface AssociatedOrganizationDetailRow : TranslationView {
     val roleDescription: String?
     // partner
     val partnerId: Long
+    val partnerActive: Boolean
     val abbreviation: String
     val role: ProjectPartnerRoleDTO
     val partnerSortNumber: Int?

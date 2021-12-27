@@ -15,6 +15,7 @@ import {take} from 'rxjs/internal/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Permission} from '../../../../../../security/permissions/permission';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import { Alert } from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-project-application-form-associated-org-detail',
@@ -27,6 +28,7 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
   Permission = Permission;
   LANGUAGE = InputTranslation.LanguageEnum;
   APPLICATION_FORM = APPLICATION_FORM;
+  Alert = Alert;
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   associatedOrganizationId = this.activatedRoute?.snapshot?.params?.associatedOrganizationId;

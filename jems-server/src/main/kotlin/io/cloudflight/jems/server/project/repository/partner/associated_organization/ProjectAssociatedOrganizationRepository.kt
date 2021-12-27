@@ -134,6 +134,7 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
         """
             SELECT
              entity.id,
+             entity.active,
              entity.name_in_original_language as nameInOriginalLanguage,
              entity.name_in_english as nameInEnglish,
              entity.sort_number as sortNumber,
@@ -156,6 +157,7 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
              contact.telephone,
 
              partner.id as partnerId,
+             partner.active as partnerActive,
              partner.abbreviation,
              partner.role,
              partner.sort_number as partnerSortNumber,

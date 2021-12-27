@@ -268,11 +268,12 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     @Query(
         value = """
              SELECT
-             entity.id as id,
-             entity.abbreviation as abbreviation,
-             entity.role as role,
+             entity.id,
+             entity.active,
+             entity.abbreviation,
+             entity.role,
              entity.sort_number as sortNumber,
-             addresses.country as country
+             addresses.country
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses ON entity.id = addresses.partner_id
              WHERE entity.project_id = :projectId AND (addresses.type = 'Organization' || addresses.type IS NULL)

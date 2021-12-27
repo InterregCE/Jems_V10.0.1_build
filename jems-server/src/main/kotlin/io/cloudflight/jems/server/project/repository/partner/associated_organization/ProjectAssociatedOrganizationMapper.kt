@@ -78,6 +78,7 @@ fun InputProjectAssociatedOrganizationAddress?.toEntity(organizationId: Long): M
 
 fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganization() = OutputProjectAssociatedOrganization(
     id = id,
+    active = active,
     partnerAbbreviation = partner.abbreviation,
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
@@ -86,6 +87,7 @@ fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganization() = Outp
 
 fun ProjectAssociatedOrganization.toOutputProjectAssociatedOrganizationDetail() = OutputProjectAssociatedOrganizationDetail(
     id = id,
+    active = active,
     partner = partner.toModel().toDto(),
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
@@ -134,6 +136,7 @@ fun List<ProjectAssociatedOrganizationRow>.toAssociatedOrganizationDetailHistori
     contacts: List<ProjectPartnerContactDTO>) =
     this.groupBy { it.id }.map { groupedRows -> OutputProjectAssociatedOrganizationDetail(
         id = groupedRows.value.first().id,
+        active = groupedRows.value.first().active,
         partner = partner.toDto(),
         nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
         nameInEnglish = groupedRows.value.first().nameInEnglish,
@@ -159,6 +162,7 @@ fun List<AssociatedOrganizationAddressRow>.toProjectAssociatedOrganizationAddres
 
 fun AssociatedOrganizationSimpleRow.toOutputAssociatedOrganizationHistoricalData() = OutputProjectAssociatedOrganization(
     id = id,
+    active = active,
     partnerAbbreviation = partnerAbbreviation,
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
@@ -180,8 +184,10 @@ fun List<AssociatedOrganizationDetailRow>.toModel() =
     groupBy { it.id }.map { groupedRows ->
         OutputProjectAssociatedOrganizationDetail(
             id = groupedRows.key,
+            active = groupedRows.value.first().active,
             partner = ProjectPartnerSummaryDTO(
                 id = groupedRows.value.first().partnerId,
+                active = groupedRows.value.first().partnerActive,
                 abbreviation = groupedRows.value.first().abbreviation,
                 role = groupedRows.value.first().role,
                 sortNumber = groupedRows.value.first().partnerSortNumber,

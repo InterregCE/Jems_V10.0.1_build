@@ -88,6 +88,7 @@ fun MutableSet<ProjectPartnerTranslEntity>.addPartnerTranslations(
 fun ProjectPartnerEntity.toProjectPartner() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
+    active = active,
     role = role,
     sortNumber = sortNumber,
     country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country,
@@ -134,6 +135,7 @@ fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartne
 fun ProjectPartnerEntity.toModel() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
+    active = active,
     role = role,
     sortNumber = sortNumber,
     country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country,
@@ -145,6 +147,7 @@ fun Iterable<ProjectPartnerEntity>.toModel() = map { it.toModel() }
 fun ProjectPartnerEntity.toProjectPartnerDetail() = ProjectPartnerDetail(
     projectId = project.id,
     id = id,
+    active = active,
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
@@ -310,6 +313,7 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
     ProjectPartnerDetail(
         projectId = groupedRows.value.first().projectId,
         id = groupedRows.value.first().id,
+        active = groupedRows.value.first().active,
         abbreviation = groupedRows.value.first().abbreviation,
         role = groupedRows.value.first().role,
         sortNumber = groupedRows.value.first().sortNumber,
@@ -334,6 +338,7 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
 fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
+    active = active,
     role = role,
     sortNumber = sortNumber,
     country = country,
@@ -343,6 +348,7 @@ fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartnerSummary(
 fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
+    active = active,
     role = role,
     sortNumber = sortNumber,
     country = country,
@@ -458,6 +464,7 @@ fun List<PartnerDetailRow>.toModel(): List<ProjectPartnerDetail> =
     groupBy { it.id }.map { groupedRows ->
         ProjectPartnerDetail(
             id = groupedRows.key,
+            active = groupedRows.value.first().active,
             projectId = groupedRows.value.first().projectId,
             abbreviation = groupedRows.value.first().abbreviation,
             role = groupedRows.value.first().role,

@@ -66,6 +66,12 @@ class AssociatedOrganizationPersistenceProvider(
             }
         ) ?: emptyList()
 
+    @Transactional
+    override fun deactivate(id: Long) {
+        projectAssociatedOrganizationRepo.getById(id).apply {
+            active = false
+        }
+    }
 
     private fun getAssociatedOrganizationHistoricalDetail(
         id: Long,

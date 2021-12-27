@@ -63,4 +63,11 @@ interface ProjectAssociatedOrganizationApi {
         @PathVariable id: Long
     )
 
+    @ApiOperation("Deactivate an associated organization")
+    @PutMapping("/{id}/deactivate")
+    fun deactivateAssociatedOrganization(
+        @PathVariable projectId: Long,
+        @PathVariable id: Long
+    )
+
 }

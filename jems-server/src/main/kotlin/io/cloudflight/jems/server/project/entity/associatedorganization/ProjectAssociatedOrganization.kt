@@ -20,6 +20,9 @@ data class ProjectAssociatedOrganization(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
+    @field:NotNull
+    var active: Boolean = true,
+
     // consider removal of this in future (transitive dependency through partner -> project)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @field:NotNull
