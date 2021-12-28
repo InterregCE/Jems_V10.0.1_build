@@ -6,6 +6,11 @@
 @import "app/common/directives/multi-column-row/multi-column-row";
 @import "src/app/common/directives/table-config/table-config";
 
+$roboto-font-path: "~roboto-fontface/fonts" !default;
+@import "~roboto-fontface/css/roboto/sass/roboto-fontface";
+$material-icons-font-path: '~material-icons/iconfont/';
+@import '~material-icons/iconfont/material-icons.scss';
+
 
 html {
   scroll-behavior: smooth;
