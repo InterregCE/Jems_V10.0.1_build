@@ -39,6 +39,7 @@ services:
       - '9200:9200'
     environment:
       - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
 
 #
 #  Optional: if you need, you can create mailhog container to test sending mail notifications:
