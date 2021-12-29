@@ -55,6 +55,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingFundTypeData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerSummaryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.ProjectDataSectionC
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.longTermPlans.ProjectLongTermPlansData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectCooperationCriteriaData
@@ -75,6 +76,9 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentAddressData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputData
+import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectBudgetOverviewPerPartnerPerPeriodData
+import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectPartnerBudgetPerPeriodData
+import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectPeriodBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
@@ -97,6 +101,8 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
+import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.PartnerBudgetPerPeriodCalculator
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
@@ -105,6 +111,7 @@ import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
+import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
 import io.cloudflight.jems.server.project.service.model.ProjectDescription
@@ -113,8 +120,10 @@ import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrincip
 import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
 import io.cloudflight.jems.server.project.service.model.ProjectManagement
 import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
@@ -142,6 +151,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.OutputRow
@@ -221,6 +231,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
     @MockK
     lateinit var programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence
+    @MockK
+    lateinit var partnerBudgetPerPeriodCalculator: PartnerBudgetPerPeriodCalculator
+
+    @MockK
+    lateinit var projectBudgetPersistence: ProjectBudgetPersistence
 
     @InjectMockKs
     lateinit var projectDataProvider: ProjectDataProviderImpl
@@ -644,11 +659,25 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     fun `project data provider get for project Id`() {
         val id = project.id!!
         val budgetCostsCalculationResult = BudgetCostsCalculationResult(staffCosts = BigDecimal.TEN, totalCosts = BigDecimal.TEN, travelCosts = BigDecimal.ZERO, officeAndAdministrationCosts = BigDecimal.ZERO, otherCosts = BigDecimal.ZERO)
+        val budgetOverviewPerPartnerPerPeriod =  ProjectBudgetOverviewPerPartnerPerPeriod(
+            partnersBudgetPerPeriod = listOf(
+                ProjectPartnerBudgetPerPeriod(
+                    partner = ProjectPartnerSummary(projectPartner.id, projectPartner.abbreviation, projectPartner.active, projectPartner.role, projectPartner.sortNumber, projectPartner.addresses.first{it.type == ProjectPartnerAddressType.Organization}.country, projectPartner.addresses.first{it.type == ProjectPartnerAddressType.Organization}.nutsRegion2),
+                    periodBudgets = mutableListOf(
+                        ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, false),
+                        ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, true)
+                    ),
+                    totalPartnerBudget = BigDecimal.ZERO
+                )
+            ),
+            totals = listOf(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO),
+            totalsPercentage = listOf(BigDecimal.valueOf(0, 2), BigDecimal.valueOf(0, 2), BigDecimal.valueOf(0, 2))
+        )
         every { projectPersistence.getProject(id) } returns project
         every { projectVersionPersistence.getAllVersionsByProjectId(id) } returns projectVersions
         every { projectDescriptionPersistence.getProjectDescription(id) } returns projectDescription
         every { partnerPersistence.findTop30ByProjectId(id) } returns listOf(projectPartner)
-        every { budgetOptionsPersistence.getBudgetOptions(projectPartner.id) } returns partnerBudgetOptions
+        every { budgetOptionsPersistence.getBudgetOptions(setOf(projectPartner.id) , projectPartner.projectId) } returns listOf(partnerBudgetOptions)
         every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
         every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
         every { getBudgetCostsPersistence.getBudgetStaffCosts(projectPartner.id) } returns listOf(
@@ -670,6 +699,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(projectPartner.id) } returns emptyList()
         every { getBudgetCostsPersistence.getBudgetUnitCosts(projectPartner.id) } returns emptyList()
         every { budgetCostsCalculator.calculateCosts(any(), any(), any(), any(), any(), any(), any(), any()) } returns budgetCostsCalculationResult
+        every { partnerBudgetPerPeriodCalculator.calculate(any(), any(), any(), any(), any(), any()) } returns budgetOverviewPerPartnerPerPeriod
         every { associatedOrganizationPersistence.findAllByProjectId(id) } returns listOf(associatedOrganization)
         every { resultPersistence.getResultsForProject(id, null) } returns listOf(projectResult)
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns listOf(workPackage)
@@ -692,6 +722,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns outputIndicatorSet
         every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns resultIndicatorSet
         every { projectResultPersistence.getResultsForProject(id, null) } returns projectResults
+        every { projectBudgetPersistence.getBudgetPerPartner(setOf(2), id, null) } returns emptyList()
+        every { projectBudgetPersistence.getBudgetTotalForPartners(setOf(2), id, null) } returns emptyMap()
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)
@@ -1182,6 +1214,23 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             )
         )
 
+        assertThat(projectData.sectionD.projectPartnerBudgetPerPeriodData).isEqualTo(
+            ProjectBudgetOverviewPerPartnerPerPeriodData(
+                partnersBudgetPerPeriod = listOf(
+                    ProjectPartnerBudgetPerPeriodData(
+                        partner = ProjectPartnerSummaryData(projectPartner.id, projectPartner.active, projectPartner.abbreviation,ProjectPartnerRoleData.valueOf(projectPartner.role.name), projectPartner.sortNumber, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2),
+                        periodBudgets = mutableListOf(
+                            ProjectPeriodBudgetData(0, 0, 0, BigDecimal.ZERO, false),
+                            ProjectPeriodBudgetData(255, 0, 0, BigDecimal.ZERO, true)
+                        ),
+                        totalPartnerBudget = BigDecimal.ZERO
+                    )
+                ),
+                totals = listOf(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO),
+                totalsPercentage = listOf(BigDecimal.valueOf(0, 2), BigDecimal.valueOf(0, 2), BigDecimal.valueOf(0, 2))
+            )
+        )
+
         assertThat(projectData.lifecycleData).isEqualTo(
             ProjectLifecycleData(
                 status = ApplicationStatusData.APPROVED
@@ -1254,6 +1303,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns emptySet()
         every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns emptySet()
         every { projectResultPersistence.getResultsForProject(id, null) } returns emptyList()
+        every { projectBudgetPersistence.getBudgetPerPartner(emptySet(), id, null) } returns emptyList()
+        every { projectBudgetPersistence.getBudgetTotalForPartners(emptySet(), id, null) } returns emptyMap()
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)

@@ -59,6 +59,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingFundTypeData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerContributionData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerContributionStatusData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerSummaryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.ProjectDataSectionC
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.longTermPlans.ProjectLongTermPlansData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectCooperationCriteriaData
@@ -80,6 +81,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentAddressData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputData
+import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectBudgetOverviewPerPartnerPerPeriodData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectPartnerBudgetPerFundData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
@@ -93,6 +95,7 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFin
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
+import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectContactType
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
 import io.cloudflight.jems.server.project.service.model.ProjectDescription
@@ -238,11 +241,14 @@ fun List<ProjectVersion>.toDataModel() =
 fun Set<InputTranslation>?.toDataModel() =
     this?.map { InputTranslationData(it.language.toDataModel(), it.translation) }?.toSet() ?: emptySet()
 
-fun Set<ProjectPartnerData>.toProjectPartnerSummary() =
+fun Iterable<ProjectPartnerDetail>.toProjectPartnerSummary() =
     map { pluginDataMapper.map(it) }
 
 fun List<ProjectPartnerBudgetPerFund>.toProjectPartnerBudgetPerFundData() =
     this.map { pluginDataMapper.map(it) }
+
+fun ProjectBudgetOverviewPerPartnerPerPeriod.toProjectBudgetOverviewPerPartnerPerPeriod() =
+    pluginDataMapper.map(this)
 
 fun SystemLanguage.toDataModel() =
     SystemLanguageData.valueOf(this.name)
@@ -318,6 +324,7 @@ abstract class PluginDataMapper {
     abstract fun map(budgetCostsCalculationResult: BudgetCostsCalculationResult): BudgetCostsCalculationResultData
     abstract fun map(projectVersion: ProjectVersion): ProjectVersionData
     abstract fun map(projectPartnerBudgetPerFund: ProjectPartnerBudgetPerFund): ProjectPartnerBudgetPerFundData
+    abstract fun map(projectBudgetOverviewPerPartnerPerPeriod: ProjectBudgetOverviewPerPartnerPerPeriod): ProjectBudgetOverviewPerPartnerPerPeriodData
 
     @Mappings(
         Mapping(target = "programmeLumpSum", source = "lumpSumsDetail")
@@ -340,6 +347,11 @@ abstract class PluginDataMapper {
     abstract fun map(
         projectPartnerDetail: ProjectPartnerDetail, stateAid: ProjectPartnerStateAid, budget: PartnerBudgetData, legalStatusDescription: Set<InputTranslation>
     ): ProjectPartnerData
+
+    @Mappings(
+        Mapping(target = "nutsRegion2", source = "region"),
+    )
+    abstract fun map(projectPartnerSummary: ProjectPartnerSummary): ProjectPartnerSummaryData
 
     fun mapToProjectWorkPackageData(projectWorkPackageFull: List<ProjectWorkPackageFull>) =
         projectWorkPackageFull.map {
@@ -383,15 +395,14 @@ abstract class PluginDataMapper {
     fun map(projectOverallObjective: ProjectOverallObjective?): ProjectOverallObjectiveData =
         ProjectOverallObjectiveData(projectOverallObjective?.overallObjective.toDataModel())
 
-    fun map(projectPartnerData: ProjectPartnerData): ProjectPartnerSummary =
+    fun map(projectPartnerDetail: ProjectPartnerDetail): ProjectPartnerSummary =
         ProjectPartnerSummary(
-            projectPartnerData.id,
-            projectPartnerData.abbreviation,
-            projectPartnerData.active,
-            ProjectPartnerRole.valueOf(projectPartnerData.role.name),
-            projectPartnerData.sortNumber,
-            projectPartnerData.addresses.firstOrNull { it.type == ProjectPartnerAddressTypeData.Organization }?.country,
-            projectPartnerData.addresses.firstOrNull { it.type == ProjectPartnerAddressTypeData.Organization }?.nutsRegion2
+            projectPartnerDetail.id,
+            projectPartnerDetail.abbreviation,
+            projectPartnerDetail.active,
+            ProjectPartnerRole.valueOf(projectPartnerDetail.role.name),
+            projectPartnerDetail.sortNumber,
+            projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
+            projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.nutsRegion2
         )
-
 }

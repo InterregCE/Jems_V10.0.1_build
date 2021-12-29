@@ -1,15 +1,23 @@
 package io.cloudflight.jems.server.project.controller.budget
 
 import io.cloudflight.jems.api.project.dto.budget.PartnerBudgetPerFundDTO
+import io.cloudflight.jems.api.project.dto.budget.ProjectBudgetOverviewPerPartnerPerPeriodDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetPerFundDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetPerPeriodDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPeriodBudgetDTO
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.service.model.PartnerBudgetPerFund
+import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
+
+fun ProjectBudgetOverviewPerPartnerPerPeriod.toDto() = ProjectBudgetOverviewPerPartnerPerPeriodDTO(
+    partnersBudgetPerPeriod.map { it.toDto() },
+    totals,
+    totalsPercentage
+)
 
 fun ProjectPartnerBudgetPerPeriod.toDto() = ProjectPartnerBudgetPerPeriodDTO(
     partner = this.partner.toDto(),
@@ -22,7 +30,7 @@ fun ProjectPeriodBudget.toDto() = ProjectPeriodBudgetDTO(
     periodStart = this.periodStart,
     periodEnd = this.periodEnd,
     totalBudgetPerPeriod = this.totalBudgetPerPeriod,
-    isLastPeriod = this.isLastPeriod
+    isLastPeriod = this.lastPeriod
 )
 
 fun ProjectPartnerBudgetPerFund.toDto() = ProjectPartnerBudgetPerFundDTO(

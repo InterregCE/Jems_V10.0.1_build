@@ -19,16 +19,12 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
-import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
-import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.model.project_funds_per_period.ProjectPartnerFundsPerPeriod
 import io.cloudflight.jems.server.project.service.model.project_funds_per_period.ProjectPeriodFund
-import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -163,7 +159,7 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
 
         every { callPersistence.getCallByProjectId(projectId) } returns callDetail
         every { projectPersistence.getProjectPeriods(projectId) } returns listOf()
-        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId) } returns partnerBudgetPerPeriod
+        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId).partnersBudgetPerPeriod } returns partnerBudgetPerPeriod
         every { getCoFinancing.getCoFinancingForPartnerList(listOf(partner1Id), projectId) } returns partnerCoFinancing
 
         Assertions.assertThat(getPartnerFundsPerPeriod.getPartnerFundsPerPeriod(projectId))
@@ -233,7 +229,7 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
             ProjectPeriod(number = 2, start = 7, end = 12),
             ProjectPeriod(number = 3, start = 13, end = 15)
         )
-        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId) } returns partnerBudgetPerPeriod
+        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId).partnersBudgetPerPeriod } returns partnerBudgetPerPeriod
         every { getCoFinancing.getCoFinancingForPartnerList(listOf(partner1Id), projectId) } returns partnerCoFinancing
 
         Assertions.assertThat(getPartnerFundsPerPeriod.getPartnerFundsPerPeriod(projectId))
@@ -352,7 +348,7 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
             ProjectPeriod(number = 8, start = 8, end = 9),
             ProjectPeriod(number = 9, start = 9, end = 9),
         )
-        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version) } returns partnerBudgetPerPeriod
+        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version).partnersBudgetPerPeriod } returns partnerBudgetPerPeriod
         every { getCoFinancing.getCoFinancingForPartnerList(listOf(partner1Id, partner2Id), projectId, version) } returns partnerCoFinancing
 
         Assertions.assertThat(getPartnerFundsPerPeriod.getPartnerFundsPerPeriod(projectId, version))
@@ -488,7 +484,7 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
             ProjectPeriod(number = 8, start = 8, end = 9),
             ProjectPeriod(number = 9, start = 9, end = 9),
         )
-        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId) } returns partnerBudgetPerPeriod
+        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId).partnersBudgetPerPeriod } returns partnerBudgetPerPeriod
         every { getCoFinancing.getCoFinancingForPartnerList(listOf(partner1Id, partner2Id), projectId) } returns partnerCoFinancing
 
         Assertions.assertThat(getPartnerFundsPerPeriod.getPartnerFundsPerPeriod(projectId))
@@ -566,77 +562,77 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
             periodStart = 0,
             periodEnd = 0,
             totalBudgetPerPeriod = preparation,
-            isLastPeriod = false
+            lastPeriod = false
         ),
         ProjectPeriodBudget(
             periodNumber = 1,
             periodStart = 1,
             periodEnd = 2,
             totalBudgetPerPeriod = total1,
-            isLastPeriod = false
+            lastPeriod = false
         ),
         ProjectPeriodBudget(
             periodNumber = 2,
             periodStart = 2,
             periodEnd = 3,
             totalBudgetPerPeriod = total2,
-            isLastPeriod = false
+            lastPeriod = false
         ),
         ProjectPeriodBudget(
             periodNumber = 3,
             periodStart = 3,
             periodEnd = 4,
             totalBudgetPerPeriod = total3,
-            isLastPeriod = false
+            lastPeriod = false
         ),
         ProjectPeriodBudget(
             periodNumber = 4,
             periodStart = 4,
             periodEnd = 5,
             totalBudgetPerPeriod = total4,
-            isLastPeriod = false
+            lastPeriod = false
         ),
         ProjectPeriodBudget(
             periodNumber = 5,
             periodStart = 5,
             periodEnd = 6,
             totalBudgetPerPeriod = total5,
-            isLastPeriod = false
+            lastPeriod = false
         ),
         ProjectPeriodBudget(
             periodNumber = 6,
             periodStart = 6,
             periodEnd = 7,
             totalBudgetPerPeriod = total6,
-            isLastPeriod = false
+            lastPeriod = false
         ),
         ProjectPeriodBudget(
             periodNumber = 7,
             periodStart = 7,
             periodEnd = 8,
             totalBudgetPerPeriod = total7,
-            isLastPeriod = false
+            lastPeriod = false
         ),
         ProjectPeriodBudget(
             periodNumber = 8,
             periodStart = 8,
             periodEnd = 9,
             totalBudgetPerPeriod = total8,
-            isLastPeriod = false
+            lastPeriod = false
         ),
         ProjectPeriodBudget(
             periodNumber = 9,
             periodStart = 9,
             periodEnd = 9,
             totalBudgetPerPeriod = total9,
-            isLastPeriod = false
+            lastPeriod = false
         ),
         ProjectPeriodBudget(
             periodNumber = 255,
             periodStart = 0,
             periodEnd = 0,
             totalBudgetPerPeriod = closure,
-            isLastPeriod = true
+            lastPeriod = true
         )
     )
 }
