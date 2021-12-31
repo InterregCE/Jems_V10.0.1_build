@@ -342,6 +342,9 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              entity.legal_status_id as legalStatusId,
              entity.vat_recovery as vatRecovery,
              entity.other_identifier_number as otherIdentifierNumber,
+             translation.language,
+             translation.department,
+             translation.other_identifier_description as otherIdentifierDescription,
 
              address.type as addressType,
              address.country,
@@ -369,7 +372,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS address ON entity.id = address.partner_id
              LEFT JOIN #{#entityName}_contact FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS contact ON entity.id = contact.partner_id
              LEFT JOIN #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTranslation ON entity.id = motivationTranslation.partner_id
-             WHERE entity.project_id = :projectId AND (address.type = 'Organization' || address.type IS NULL)
+             WHERE entity.project_id = :projectId
              ORDER BY entity.sort_number ASC
              LIMIT 30
              """,
