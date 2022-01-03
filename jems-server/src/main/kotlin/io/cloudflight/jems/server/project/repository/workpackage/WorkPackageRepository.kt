@@ -94,6 +94,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              workPackageTransl.name,
              workPackageTransl.specific_objective AS specificObjective,
              workPackageTransl.objective_and_audience AS objectiveAndAudience,
+             workPackageTransl.language,
 
              activity.id as activityId,
              activity.activity_number as activityNumber,
@@ -131,6 +132,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              investment.house_number as investmentHouseNumber,
              investment.postal_code as investmentPostalCode,
              investment.city as investmentCity,
+             investment.expected_delivery_period as investmentExpectedDeliveryPeriod,
              investmentTransl.title as investmentTitle,
              investmentTransl.justification_explanation as justificationExplanation,
              investmentTransl.justification_transactional_relevance as justificationTransactionalRelevance,
@@ -138,6 +140,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              investmentTransl.justification_pilot as justificationPilot,
              investmentTransl.risk as investmentRisk,
              investmentTransl.documentation as investmentDocumentation,
+             investmentTransl.documentation_expected_impacts as investmentDocumentationExpectedImpacts,
              investmentTransl.ownership_site_location as ownershipSiteLocation,
              investmentTransl.ownership_retain as ownershipRetain,
              investmentTransl.ownership_maintenance as ownershipMaintenance,

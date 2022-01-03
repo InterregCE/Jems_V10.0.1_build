@@ -53,6 +53,7 @@ interface WorkPackageDetailRow : TranslationView {
     val investmentHouseNumber: String?
     val investmentPostalCode: String?
     val investmentCity: String?
+    val investmentExpectedDeliveryPeriod: Int?
     //investment translation
     val investmentTitle: String?
     val justificationExplanation: String?
@@ -61,6 +62,7 @@ interface WorkPackageDetailRow : TranslationView {
     val justificationPilot: String?
     val investmentRisk: String?
     val investmentDocumentation: String?
+    val investmentDocumentationExpectedImpacts: String?
     val ownershipSiteLocation: String?
     val ownershipRetain: String?
     val ownershipMaintenance: String?

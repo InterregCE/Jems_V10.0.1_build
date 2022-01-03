@@ -967,6 +967,8 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 override val programmeOutputIndicatorLanguage: SystemLanguage? = null
                 override val programmeOutputIndicatorMeasurementUnit: String? = null
                 override val programmeOutputIndicatorName: String? = null
+                override val investmentDocumentationExpectedImpacts: String? = null
+                override val investmentExpectedDeliveryPeriod: Int? = null
             }
         )
     }
