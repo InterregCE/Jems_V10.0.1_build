@@ -34,7 +34,7 @@
                 <span>{{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | translate : {partner: budget.partnerSortNumber} }}</span>
                 <span>{{ budget.partnerCountry }}</span>
                 <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
-                    <div class="justify-end percentage-of-total-container">
+                    <div class="justify-end" [ngClass]="getBudgetPercentageByFund(fund, budget.budgets) > 0 ? 'percentage-of-total-container' : ''">
                         <div>{{ getBudgetAmountForFund(fund, budget.budgets) | asMoney }}</div>
                         <div *ngIf="getBudgetPercentageByFund(fund, budget.budgets) > 0" class="font-color-grey mat-small">{{getBudgetPercentageByFund(fund, budget.budgets)}} % of total</div>
                     </div>
