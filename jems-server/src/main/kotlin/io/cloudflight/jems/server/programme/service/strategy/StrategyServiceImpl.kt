@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.service.strategy
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.strategy.InputProgrammeStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.OutputProgrammeStrategy
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
@@ -21,7 +22,10 @@ class StrategyServiceImpl(
     @CanRetrieveProgrammeSetup
     @Transactional(readOnly = true)
     override fun getProgrammeStrategies(): List<OutputProgrammeStrategy> {
-        return strategyRepository.findAll().toDto()
+        // these strategies are duplicated and should not be used. Still keeping in Enum and table for data history/versioning compatibility
+        return strategyRepository.findAll()
+            .filter { it.strategy != ProgrammeStrategy.SeaBasinStrategyAdriaticIonianSea && it.strategy != ProgrammeStrategy.SeaBasinStrategyBalticSea }
+            .toDto()
     }
 
     @CanUpdateProgrammeSetup

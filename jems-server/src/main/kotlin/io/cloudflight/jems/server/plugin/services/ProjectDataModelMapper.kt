@@ -302,7 +302,6 @@ abstract class PluginDataMapper {
     abstract fun map(projectHorizontalPrinciplesEffect: ProjectHorizontalPrinciplesEffect): ProjectHorizontalPrinciplesEffectData
     abstract fun map(projectCooperationCriteria: ProjectCooperationCriteria): ProjectCooperationCriteriaData
     abstract fun map(projectManagement: ProjectManagement): ProjectManagementData
-    abstract fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData
     abstract fun map(projectRelevanceStrategy: ProjectRelevanceStrategy): ProjectRelevanceStrategyData
     abstract fun map(projectRelevanceBenefit: ProjectRelevanceBenefit): ProjectRelevanceBenefitData
     abstract fun map(projectRelevance: ProjectRelevance): ProjectRelevanceData
@@ -405,4 +404,26 @@ abstract class PluginDataMapper {
             projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
             projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.nutsRegion2
         )
+
+    fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData {
+        val programmeStrategyData: ProgrammeStrategyData = when (programmeStrategy) {
+            ProgrammeStrategy.EUStrategyAdriaticIonianRegion -> ProgrammeStrategyData.EUStrategyAdriaticIonianRegion
+            ProgrammeStrategy.EUStrategyAlpineRegion -> ProgrammeStrategyData.EUStrategyAlpineRegion
+            ProgrammeStrategy.EUStrategyBalticSeaRegion -> ProgrammeStrategyData.EUStrategyBalticSeaRegion
+            ProgrammeStrategy.EUStrategyDanubeRegion -> ProgrammeStrategyData.EUStrategyDanubeRegion
+            ProgrammeStrategy.SeaBasinStrategyNorthSea -> ProgrammeStrategyData.SeaBasinStrategyNorthSea
+            ProgrammeStrategy.SeaBasinStrategyBlackSea -> ProgrammeStrategyData.SeaBasinStrategyBlackSea
+            ProgrammeStrategy.SeaBasinStrategyBalticSea -> ProgrammeStrategyData.EUStrategyBalticSeaRegion
+            ProgrammeStrategy.SeaBasinStrategyArcticOcean -> ProgrammeStrategyData.SeaBasinStrategyArcticOcean
+            ProgrammeStrategy.SeaBasinStrategyOutermostRegions -> ProgrammeStrategyData.SeaBasinStrategyOutermostRegions
+            ProgrammeStrategy.SeaBasinStrategyAdriaticIonianSea -> ProgrammeStrategyData.EUStrategyAdriaticIonianRegion
+            ProgrammeStrategy.MediterraneanSeaBasin -> ProgrammeStrategyData.MediterraneanSeaBasin
+            ProgrammeStrategy.AtlanticStrategy -> ProgrammeStrategyData.AtlanticStrategy
+            ProgrammeStrategy.EuropeanGreenDeal -> ProgrammeStrategyData.EuropeanGreenDeal
+            ProgrammeStrategy.TerritorialAgenda2030 -> ProgrammeStrategyData.TerritorialAgenda2030
+            ProgrammeStrategy.Other -> ProgrammeStrategyData.Other
+            else -> throw IllegalArgumentException("Unexpected enum constant: $programmeStrategy")
+        }
+        return programmeStrategyData
+    }
 }
