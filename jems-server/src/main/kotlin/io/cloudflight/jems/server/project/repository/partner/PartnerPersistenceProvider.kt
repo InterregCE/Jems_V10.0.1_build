@@ -142,7 +142,7 @@ class PartnerPersistenceProvider(
                 project = projectRepo.getById(projectId),
                 legalStatus = legalStatusRepo.getById(projectPartner.legalStatusId!!)
             )
-        ).also { if(resortByRole) updateSortByRole(projectId) }.toProjectPartnerDetail()
+        ).also { if(resortByRole) updateSortByRole(projectId) else it.sortNumber = projectPartnerRepository.countByProjectId(projectId).toInt()}.toProjectPartnerDetail()
 
 
     @Transactional

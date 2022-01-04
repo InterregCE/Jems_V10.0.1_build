@@ -256,8 +256,9 @@ class PartnerPersistenceProviderTest {
         every { projectRepository.getById(PROJECT_ID) } returns project
         every { legalStatusRepo.getById(legalStatusEntity.id) } returns legalStatusEntity
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity
+        every { projectPartnerRepository.countByProjectId(any()) } returns 2
 
-        assertThat(persistence.create(PROJECT_ID, projectPartnerRequest, false)).isEqualTo(projectPartnerDetail(sortNumber = 0))
+        assertThat(persistence.create(PROJECT_ID, projectPartnerRequest, false)).isEqualTo(projectPartnerDetail(sortNumber = 2))
         verify (atLeast = 0, atMost = 0) {projectPartnerRepository.findTop30ByProjectId(PROJECT_ID)}
     }
 
