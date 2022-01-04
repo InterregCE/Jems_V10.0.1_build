@@ -16,7 +16,7 @@ class ProjectBudgetController(
 ) : ProjectBudgetApi {
 
     override fun getProjectPartnerBudgetPerPeriod(projectId: Long, version: String?) =
-        this.getPartnerBudgetPerPeriodInteractor.getPartnerBudgetPerPeriod(projectId, version).map { it.toDto() }
+        this.getPartnerBudgetPerPeriodInteractor.getPartnerBudgetPerPeriod(projectId, version).toDto()
 
     override fun getProjectUnitCosts(projectId: Long, version: String?): List<ProjectUnitCostDTO> =
         getProjectUnitCostsInteractor.getProjectUnitCost(projectId, version).toDto()

@@ -5,13 +5,11 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.model.project_funds_per_period.ProjectPartnerFundsPerPeriod
 import io.cloudflight.jems.server.project.service.model.project_funds_per_period.ProjectPeriodFund
-import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import org.springframework.stereotype.Service
@@ -34,7 +32,7 @@ class GetPartnerFundsPerPeriod(
         val callFunds = callPersistence.getCallByProjectId(projectId).funds.map { it.programmeFund }
         val projectPeriods = projectPersistence.getProjectPeriods(projectId, version)
         val partnersBudgetPerPeriod =
-            getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version)
+            getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version).partnersBudgetPerPeriod
             .associateBy({ it.partner.id }, { it.periodBudgets })
 
         val partnersCoFinancing = getCoFinancing.getCoFinancingForPartnerList(partnersBudgetPerPeriod.keys.map { it!! }, projectId, version)

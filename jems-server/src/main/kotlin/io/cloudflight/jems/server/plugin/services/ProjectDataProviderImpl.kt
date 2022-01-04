@@ -17,6 +17,8 @@ import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
+import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.PartnerBudgetPerPeriodCalculator
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.CoFinancingOverviewCalculator
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
@@ -46,6 +48,7 @@ class ProjectDataProviderImpl(
     private val projectVersionPersistence: ProjectVersionPersistence,
     private val programmeLumpSumPersistence: ProgrammeLumpSumPersistence,
     private val projectDescriptionPersistence: ProjectDescriptionPersistence,
+    private val projectBudgetPersistence: ProjectBudgetPersistence,
     private val workPackagePersistence: WorkPackagePersistence,
     private val resultPersistence: ProjectResultPersistence,
     private val partnerPersistence: PartnerPersistence,
@@ -55,6 +58,7 @@ class ProjectDataProviderImpl(
     private val getBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
     private val budgetCostsCalculator: BudgetCostsCalculatorService,
     private val partnerBudgetPerFundCalculator: PartnerBudgetPerFundCalculatorService,
+    private val partnerBudgetPerPeriodCalculator: PartnerBudgetPerPeriodCalculator,
     private val projectLumpSumPersistence: ProjectLumpSumPersistence,
     private val programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence,
     private val projectResultPersistence: ProjectResultPersistence,
@@ -70,10 +74,18 @@ class ProjectDataProviderImpl(
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
         val project = projectPersistence.getProject(projectId, version)
         val legalStatuses = programmeLegalStatusPersistence.getMax20Statuses()
+        val lumpSums = projectLumpSumPersistence.getLumpSums(projectId, version)
+
+        val partners = partnerPersistence.findTop30ByProjectId(projectId, version)
+        val partnersSummary = partners.toProjectPartnerSummary()
+        val partnerIds = partners.mapTo(HashSet()) { it.id }
+        val partnersBudgetOptions = budgetOptionsPersistence.getBudgetOptions(partnerIds, projectId, version)
+
         val budgetCoFinancingAndContributions: MutableMap<Long, ProjectPartnerCoFinancingAndContribution> =
             mutableMapOf()
-        val partners = partnerPersistence.findTop30ByProjectId(projectId, version).map { partner ->
-            val budgetOptions = budgetOptionsPersistence.getBudgetOptions(partner.id, version)
+
+        val partnersData = partners.map { partner ->
+            val budgetOptions = partnersBudgetOptions.firstOrNull() { it.partnerId == partner.id }
             val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(partner.id, version).also {
                 budgetCoFinancingAndContributions[partner.id] = it
             }.toDataModel()
@@ -110,13 +122,13 @@ class ProjectDataProviderImpl(
         }.toSet()
 
         val sectionA = project.toDataModel(
-            tableA3data = getCoFinancingOverview(partners, version),
+            tableA3data = getCoFinancingOverview(partnersData, version),
             tableA4data = getResultIndicatorOverview(projectId, version)
         )
 
         val sectionB =
             ProjectDataSectionB(
-                partners,
+                partnersData,
                 associatedOrganizationPersistence.findAllByProjectId(projectId, version).toDataModel()
             )
 
@@ -125,11 +137,11 @@ class ProjectDataProviderImpl(
             results = resultPersistence.getResultsForProject(projectId, version)
         )
         val sectionD = ProjectDataSectionD(
-            projectPartnerBudgetPerFundData = partners.toProjectPartnerSummary().let { partnerSummaries ->
+            projectPartnerBudgetPerFundData = partnersSummary.let { partnerSummaries ->
                 partnerBudgetPerFundCalculator.calculate(
                     partners = partnerSummaries,
                     projectFunds = callPersistence.getCallByProjectId(projectId).funds.map { it.programmeFund },
-                    coFinancing = partners.map { partner ->
+                    coFinancing = partnersData.map { partner ->
                         PartnerBudgetCoFinancing(
                             partner = partnerSummaries.first { it.id == partner.id },
                             budgetCoFinancingAndContributions[partner.id],
@@ -138,10 +150,18 @@ class ProjectDataProviderImpl(
                     }
 
                 ).toProjectPartnerBudgetPerFundData()
-            }
+            },
+            projectPartnerBudgetPerPeriodData = partnerBudgetPerPeriodCalculator.calculate(
+                partners = partnersSummary,
+                budgetOptions = partnersBudgetOptions,
+                budgetPerPartner = projectBudgetPersistence.getBudgetPerPartner(partnerIds, projectId, version),
+                lumpSums = lumpSums,
+                projectPeriods = projectPersistence.getProjectPeriods(projectId, version),
+                partnerTotalBudget = projectBudgetPersistence.getBudgetTotalForPartners(partnerIds, projectId, version)
+            ).toProjectBudgetOverviewPerPartnerPerPeriod()
         )
 
-        val sectionE = with(projectLumpSumPersistence.getLumpSums(projectId, version)) {
+        val sectionE = with(lumpSums) {
             this.toDataModel(programmeLumpSumPersistence.getLumpSums(this.map { it.programmeLumpSumId }))
         }
 

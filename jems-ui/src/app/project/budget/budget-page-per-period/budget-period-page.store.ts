@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {
+  ProjectBudgetOverviewPerPartnerPerPeriodDTO,
   ProjectBudgetService,
   ProjectFundsService,
-  ProjectPartnerBudgetPerPeriodDTO,
   ProjectPartnerFundsPerPeriodDTO
 } from '@cat/api';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
@@ -19,7 +19,7 @@ import {ProjectPartnerCoFinancingStore} from '@project/partner/project-partner-d
 export class ProjectBudgetPeriodPageStore {
 
   projectBudgetFundsPerPeriod$: Observable<ProjectPartnerFundsPerPeriodDTO[]>;
-  projectPartnersBudgetPerPeriods$ = new Observable<ProjectPartnerBudgetPerPeriodDTO[]>();
+  projectBudgetOverviewPerPartnerPerPeriods$ = new Observable<ProjectBudgetOverviewPerPartnerPerPeriodDTO>();
 
   projectTitle$ = this.projectStore.projectTitle$;
   projectPeriods$ = this.projectStore.projectPeriods$;
@@ -33,7 +33,7 @@ export class ProjectBudgetPeriodPageStore {
               private projectLumpSumsPageStore: ProjectLumpSumsStore,
               private projectPartnerCoFinancingStore: ProjectPartnerCoFinancingStore) {
     this.projectBudgetFundsPerPeriod$ = this.projectBudgetFundsPerPeriod();
-    this.projectPartnersBudgetPerPeriods$ = this.projectPartnersBudgetPerPeriods();
+    this.projectBudgetOverviewPerPartnerPerPeriods$ = this.projectPartnersBudgetPerPeriods();
   }
 
   private projectBudgetFundsPerPeriod(): Observable<ProjectPartnerFundsPerPeriodDTO[]> {
@@ -50,7 +50,7 @@ export class ProjectBudgetPeriodPageStore {
     );
   }
 
-  private projectPartnersBudgetPerPeriods(): Observable<ProjectPartnerBudgetPerPeriodDTO[]> {
+  private projectPartnersBudgetPerPeriods(): Observable<ProjectBudgetOverviewPerPartnerPerPeriodDTO> {
     return combineLatest([
       this.projectStore.project$,
       this.projectVersionStore.selectedVersionParam$,

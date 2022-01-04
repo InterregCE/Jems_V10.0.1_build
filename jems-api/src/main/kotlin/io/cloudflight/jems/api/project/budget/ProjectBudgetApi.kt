@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project.budget
 
+import io.cloudflight.jems.api.project.dto.budget.ProjectBudgetOverviewPerPartnerPerPeriodDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetPerFundDTO
-import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetPerPeriodDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectUnitCostDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -18,7 +18,7 @@ interface ProjectBudgetApi {
     fun getProjectPartnerBudgetPerPeriod(
         @PathVariable projectId: Long,
         @RequestParam(required = false) version: String? = null
-    ): List<ProjectPartnerBudgetPerPeriodDTO>
+    ): ProjectBudgetOverviewPerPartnerPerPeriodDTO
 
     @ApiOperation("Get project unit costs")
     @GetMapping("unitCosts")

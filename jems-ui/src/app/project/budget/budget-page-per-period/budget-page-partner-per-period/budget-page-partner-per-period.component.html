@@ -16,27 +16,25 @@
             <span>{{ 'project.partner.total.eligible.budget' | translate }}</span>
         </div>
 
-        <ng-container *ngFor="let partner of data.projectPartnersBudgetPerPeriods">
+        <ng-container *ngFor="let partnerBudgetPerPeriod of data.partnersBudgetPerPeriod">
             <div>
-                <span> {{ 'common.label.project.partner.role.shortcut.' + partner.partner.role | translate : {partner: partner.partner.sortNumber} }}</span>
-                <span>{{partner.partner.country | translate}}</span>
-                <span *ngFor="let periodBudget of partner.periodBudgets">{{ periodBudget.totalBudgetPerPeriod | asMoney }}</span>
-                <span>{{partner.totalPartnerBudget | asMoney}}</span>
+                <span> {{ 'common.label.project.partner.role.shortcut.' + partnerBudgetPerPeriod.partner.role | translate : {partner: partnerBudgetPerPeriod.partner.sortNumber} }}</span>
+                <span>{{partnerBudgetPerPeriod.partner.country | translate}}</span>
+                <span *ngFor="let periodBudget of partnerBudgetPerPeriod.periodBudgets">{{ periodBudget.totalBudgetPerPeriod | asMoney }}</span>
+                <span>{{partnerBudgetPerPeriod.totalPartnerBudget | asMoney}}</span>
             </div>
         </ng-container>
 
         <div class="footer">
             <span>{{ 'project.partner.budget.table.total' | translate }}</span>
             <span></span>
-            <span *ngFor="let periodNumber of projectPeriodNumbers">{{calculateTotalBudgetPerPeriod(periodNumber, data.projectPartnersBudgetPerPeriods) | asMoney }}</span>
-            <span>{{ data.totalEligibleBudget | asMoney}}</span>
+            <span *ngFor="let total of data.totals">{{ total | asMoney}}</span>
         </div>
 
         <div class="footer">
             <span>{{ 'project.partner.percent.of.total.budget' | translate }}</span>
             <span></span>
-            <span *ngFor="let periodNumber of projectPeriodNumbers; let i = index">{{ data.periodTotalBudgetPercentages[i] | asMoney }} %</span>
-            <span>{{ data.totalPercent | asMoney }} %</span>
+            <span *ngFor="let totalPercent of data.totalsPercentage;">{{ totalPercent | asMoney }} %</span>
         </div>
     </div>
 </ng-container>
