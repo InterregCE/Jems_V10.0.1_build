@@ -2,17 +2,23 @@ package io.cloudflight.jems.server.project.repository
 
 import io.cloudflight.jems.server.project.repository.workpackage.TableRelation
 import org.intellij.lang.annotations.Language
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.sql.Timestamp
 import javax.persistence.EntityManager
+import javax.sql.DataSource
 import kotlin.streams.toList
 
 @Component
-class RestoreProjectUtils(private val entityManager: EntityManager) {
+class RestoreProjectUtils(private val entityManager: EntityManager, private val datasource: DataSource) {
 
     private val projectTableName = "project"
     private val childProjectIdField = "project_id"
     private val projectIdParam = "projectId"
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(RestoreProjectUtils::class.java)
+    }
 
     fun generateAndExecuteProjectRestoreQueries(projectId: Long, restoreTimestamp: Timestamp) {
 
@@ -29,6 +35,7 @@ class RestoreProjectUtils(private val entityManager: EntityManager) {
         }
 
         disableForeignKeyConstraints()
+        logger.info("restoring data to timestamp: `$restoreTimestamp` for project with id `$projectId`")
         queries.filter { it.isNotBlank() }.forEach { query ->
             entityManager.createNativeQuery(query)
                 .setParameter(projectIdParam, projectId)
@@ -71,7 +78,7 @@ class RestoreProjectUtils(private val entityManager: EntityManager) {
                           ON fks.constraint_schema = kcu.table_schema
                               AND fks.table_name = kcu.table_name
                               AND fks.constraint_name = kcu.constraint_name
-            WHERE fks.constraint_schema = 'jemsdb'
+            WHERE fks.constraint_schema = '${datasource.connection.catalog}'
             GROUP BY fks.constraint_schema,
                      fks.table_name,
                      fks.unique_constraint_schema,
