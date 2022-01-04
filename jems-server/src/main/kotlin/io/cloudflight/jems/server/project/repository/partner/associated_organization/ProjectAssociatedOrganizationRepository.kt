@@ -138,6 +138,7 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
              entity.name_in_original_language as nameInOriginalLanguage,
              entity.name_in_english as nameInEnglish,
              entity.sort_number as sortNumber,
+             entityTranslation.language,
              entityTranslation.role_description as roleDescription,
 
              address.country,

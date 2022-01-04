@@ -69,8 +69,8 @@ export class ExportComponent {
   }
 
   getVersion(versions: ProjectVersionDTO[]): string | null {
-    const selectedVersion = this.exportForm.get('version')?.value;
-    return versions.find(it => it.version === selectedVersion)?.createdAt ? selectedVersion : null;
+    const selectedVersion = versions.find(it => it.version === this.exportForm.get('version')?.value);
+    return selectedVersion ? (selectedVersion.current ? null : selectedVersion.version) : null
   }
 
   get inputLanguage(): string {
