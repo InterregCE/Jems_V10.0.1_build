@@ -53,7 +53,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   @Input()
   minRows ? = 3;
   @Input()
-  maxRows ? = 50;
+  maxRows ? = 15;
   @Input()
   contextInfoText?: string;
   @Input()
