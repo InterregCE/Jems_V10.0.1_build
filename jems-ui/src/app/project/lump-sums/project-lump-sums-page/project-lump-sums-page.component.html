@@ -22,7 +22,7 @@
                     </app-alert>
                     <app-alert *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS"
                             [type]="Alert.WARNING"
-                            [show]="!data.periods?.length"
+                            [show]="data.showPeriodMissingWarning"
                             [closable]="false">
                         <span>{{'project.application.form.section.part.e.period.warning' | translate}}</span>
                     </app-alert>
