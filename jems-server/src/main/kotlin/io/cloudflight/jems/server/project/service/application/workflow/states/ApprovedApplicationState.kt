@@ -43,4 +43,10 @@ class ApprovedApplicationState(
     override fun getPossibleStatusToRevertTo() =
         getPossibleStatusToRevertToDefaultImpl(canBeRevertTo)
 
+    override fun setToContracted(): ApplicationStatus =
+        projectWorkflowPersistence.updateProjectCurrentStatus(
+            projectId = projectSummary.id,
+            userId = securityService.getUserIdOrThrow(),
+            status = ApplicationStatus.CONTRACTED
+        )
 }

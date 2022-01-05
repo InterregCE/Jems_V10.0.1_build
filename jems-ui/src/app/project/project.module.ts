@@ -114,6 +114,7 @@ import {ProjectUnitCostsStore} from '@project/unit-costs/project-unit-costs-page
 import {ModificationPageComponent} from './project-application/modification-page/modification-page.component';
 import {ModificationConfirmationComponent} from './project-application/modification-page/modification-confirmation/modification-confirmation.component';
 import {PrivilegesPageComponent} from './project-application/privileges-page/privileges-page.component';
+import { ContractMonitoringComponent } from './project-application/contract-monitoring/contract-monitoring.component';
 
 @NgModule({
   declarations: [
@@ -215,6 +216,7 @@ import {PrivilegesPageComponent} from './project-application/privileges-page/pri
     ModificationPageComponent,
     ModificationConfirmationComponent,
     PrivilegesPageComponent,
+    ContractMonitoringComponent,
   ],
   imports: [
     SharedModule,

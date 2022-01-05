@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus.
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationWithConditionsState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
+import io.cloudflight.jems.server.project.service.application.workflow.states.ContractedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.InEligibleApplicationState
@@ -62,5 +63,6 @@ class ApplicationStateFactory(
             MODIFICATION_PRECONTRACTING ->  ModificationPreContractingApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
             MODIFICATION_PRECONTRACTING_SUBMITTED ->  ModificationPreContractingSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)
             MODIFICATION_REJECTED ->  ModificationRejectedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
+            CONTRACTED -> ContractedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
     }
 }

@@ -134,3 +134,10 @@ class RejectModificationIsNotAllowedException(status: ApplicationStatus) : Appli
         mapOf("status" to status.name)
     )
 )
+    class SetToContractedIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-018",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.set.to.contracted.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)

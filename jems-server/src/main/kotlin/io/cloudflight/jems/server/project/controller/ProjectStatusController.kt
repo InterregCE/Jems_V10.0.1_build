@@ -21,6 +21,8 @@ import io.cloudflight.jems.server.project.service.application.return_application
 import io.cloudflight.jems.server.project.service.application.revert_application_decision.RevertApplicationDecisionInteractor
 import io.cloudflight.jems.server.project.service.application.set_application_as_eligible.SetApplicationAsEligibleInteractor
 import io.cloudflight.jems.server.project.service.application.set_application_as_ineligible.SetApplicationAsIneligibleInteractor
+import io.cloudflight.jems.server.project.service.application.set_application_to_contracted.SetApplicationToContracted
+import io.cloudflight.jems.server.project.service.application.set_application_to_contracted.SetApplicationToContractedInteractor
 import io.cloudflight.jems.server.project.service.application.set_assessment_eligibility.SetAssessmentEligibilityInteractor
 import io.cloudflight.jems.server.project.service.application.set_assessment_quality.SetAssessmentQualityInteractor
 import io.cloudflight.jems.server.project.service.application.start_modification.StartModificationInteractor
@@ -49,6 +51,7 @@ class ProjectStatusController(
     private val setAssessmentEligibilityInteractor: SetAssessmentEligibilityInteractor,
     private val setAssessmentQualityInteractor: SetAssessmentQualityInteractor,
     private val getModificationDecisionsInteractor: GetModificationDecisionsInteractor,
+    private val setApplicationToContracted: SetApplicationToContractedInteractor
 ) : ProjectStatusApi {
     override fun preConditionCheck(id: Long): PreConditionCheckResultDTO =
         executePreConditionCheck.execute(id).toDTO()
@@ -103,4 +106,8 @@ class ProjectStatusController(
 
     override fun rejectModification(id: Long, actionInfo: ApplicationActionInfoDTO): ApplicationStatusDTO =
         rejectModification.reject(id, actionInfo.toModel()).toDTO()
+
+    override fun setToContracted(id: Long): ApplicationStatusDTO =
+        setApplicationToContracted.setApplicationToContracted(id).toDTO()
+
 }

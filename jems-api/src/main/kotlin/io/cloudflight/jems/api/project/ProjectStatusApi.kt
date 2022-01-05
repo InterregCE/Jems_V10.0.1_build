@@ -117,4 +117,9 @@ interface ProjectStatusApi {
     fun rejectModification(
         @PathVariable id: Long, @RequestBody actionInfo: ApplicationActionInfoDTO
     ): ApplicationStatusDTO
+
+    @ApiOperation("set application to contracted")
+    @PutMapping("set-to-contracted")
+    fun setToContracted(@PathVariable id: Long): ApplicationStatusDTO
+
 }

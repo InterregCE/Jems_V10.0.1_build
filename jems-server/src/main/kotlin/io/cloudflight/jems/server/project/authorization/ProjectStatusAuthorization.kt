@@ -54,6 +54,10 @@ annotation class CanRevertDecision
 annotation class CanRetrieveProjectModifications
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectSetToContracted')")
+annotation class CanSetProjectToContracted
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('ProjectOpenModification')")
 annotation class CanOpenModification
 
