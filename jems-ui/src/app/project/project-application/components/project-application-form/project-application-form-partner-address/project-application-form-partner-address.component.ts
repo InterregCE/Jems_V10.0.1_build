@@ -47,7 +47,7 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
   private static isOrganizationDtoEmpty(partnerOrganizationDetails: ProjectPartnerAddressDTO): boolean {
     return !(partnerOrganizationDetails.country || partnerOrganizationDetails.nutsRegion2 || partnerOrganizationDetails.nutsRegion3 ||
       partnerOrganizationDetails.street || partnerOrganizationDetails.houseNumber || partnerOrganizationDetails.postalCode ||
-      partnerOrganizationDetails.city);
+      partnerOrganizationDetails.city || partnerOrganizationDetails.homepage);
   }
 
   private static getValidatedDataToEmit(partnerOrganizationMainAddress: ProjectPartnerAddressDTO,
