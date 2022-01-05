@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service
 
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.TranslationId
@@ -111,7 +112,7 @@ fun List<ProjectRelevanceBenefitRow>.toRelevanceBenefits() =
 fun List<ProjectRelevanceStrategyRow>.toRelevanceStrategies() =
     this.groupBy { it.id }.map { groupedRows ->
         ProjectRelevanceStrategy(
-            strategy = groupedRows.value.first().strategy,
+            strategy = getMappedStrategy(groupedRows.value.first().strategy),
             specification = groupedRows.value.extractField { it.specification }
         )
     }
@@ -170,9 +171,21 @@ fun ProjectRelevanceStrategy.toEntity(): ProjectRelevanceStrategyEntity {
     val id = UUID.randomUUID()
     return ProjectRelevanceStrategyEntity(
         id = id,
-        strategy = strategy,
+        strategy = getMappedStrategy(strategy),
         translatedValues = combineTranslatedValuesStrategy(id, specification)
     )
+}
+
+fun getMappedStrategy(strategy: ProgrammeStrategy?): ProgrammeStrategy? {
+    if (strategy == ProgrammeStrategy.SeaBasinStrategyAdriaticIonianSea) {
+        return ProgrammeStrategy.EUStrategyAdriaticIonianRegion
+    }
+
+    if (strategy == ProgrammeStrategy.SeaBasinStrategyBalticSea) {
+        return ProgrammeStrategy.EUStrategyBalticSeaRegion
+    }
+
+    return strategy
 }
 
 fun combineTranslatedValuesStrategy(uuid: UUID, specification: Set<InputTranslation>): MutableSet<ProjectRelevanceStrategyTransl> {
@@ -188,7 +201,7 @@ fun combineTranslatedValuesStrategy(uuid: UUID, specification: Set<InputTranslat
 }
 
 fun ProjectRelevanceStrategyEntity.toProjectStrategy() = ProjectRelevanceStrategy(
-    strategy = strategy,
+    strategy = getMappedStrategy(strategy),
     specification = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.specification) }
 )
 // endregion Project Relevance Strategy
