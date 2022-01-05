@@ -1,21 +1,18 @@
-package io.cloudflight.jems.server.project.service.application.set_application_as_eligible
+package io.cloudflight.jems.server.project.service.application.reject_modification
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.projectWithId
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
-import io.cloudflight.jems.server.project.service.application.workflow.states.SubmittedApplicationState
-import io.cloudflight.jems.server.project.service.model.ProjectAssessment
+import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationPreContractingSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -24,25 +21,25 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 
-class SetApplicationAsEligibleInteractorTest : UnitTest() {
+class RejectModificationInteractorTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 1L
+        private val dateNow = LocalDate.now()
         private val summary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
             callName = "",
             acronym = "project acronym",
-            status = ApplicationStatus.SUBMITTED
+            status = ApplicationStatus.MODIFICATION_PRECONTRACTING
         )
         private val actionInfo = ApplicationActionInfo(
-            note = "note eligible",
-            date = LocalDate.of(2021,4, 13),
-            entryIntoForceDate = LocalDate.of(2021,4, 13)
+            note = "note",
+            date = dateNow,
+            entryIntoForceDate = dateNow
         )
     }
 
@@ -52,44 +49,45 @@ class SetApplicationAsEligibleInteractorTest : UnitTest() {
     @MockK
     lateinit var applicationStateFactory: ApplicationStateFactory
 
-    @RelaxedMockK
-    lateinit var generalValidatorService: GeneralValidatorService
+    @MockK
+    lateinit var generalValidator: GeneralValidatorService
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
+    @RelaxedMockK
+    lateinit var securityService: SecurityService
+
     @InjectMockKs
-    private lateinit var setApplicationAsEligible: SetApplicationAsEligible
+    private lateinit var rejectModification: RejectModification
 
     @MockK
-    lateinit var submittedState: SubmittedApplicationState
-
+    lateinit var inModificationState: ModificationPreContractingSubmittedApplicationState
 
     @Test
-    fun setAsEligible() {
-        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID).copy(
-            assessmentStep2 = ProjectAssessment(assessmentEligibility = ProjectAssessmentEligibility(PROJECT_ID, 2, ProjectAssessmentEligibilityResult.PASSED))
-        )
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary
-        every { applicationStateFactory.getInstance(any()) } returns submittedState
-        every { submittedState.setAsEligible(actionInfo) } returns ApplicationStatus.ELIGIBLE
+    fun reject() {
+        every { generalValidator.maxLength(actionInfo.note, 10000, "note") } returns emptyMap()
+        every { generalValidator.notNull(dateNow, "decisionDate") } returns emptyMap()
+        every { generalValidator.dateNotInFuture(dateNow, "decisionDate") } returns emptyMap()
+        every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
 
-        assertThat(setApplicationAsEligible.setAsEligible(PROJECT_ID, actionInfo)).isEqualTo(ApplicationStatus.ELIGIBLE)
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary
+        every { applicationStateFactory.getInstance(any()) } returns inModificationState
+        every { inModificationState.rejectModification(actionInfo) } returns ApplicationStatus.MODIFICATION_REJECTED
 
         val slotAudit = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(slotAudit)) }.returnsMany(Unit)
+
+        assertThat(rejectModification.reject(PROJECT_ID, actionInfo)).isEqualTo(ApplicationStatus.MODIFICATION_REJECTED)
+
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
                 project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
-                description = "Project application status changed from SUBMITTED to ELIGIBLE"
+                description = "Project application status changed from MODIFICATION_PRECONTRACTING to MODIFICATION_REJECTED"
             )
         )
     }
 
-    @Test
-    fun setAsEligibleException() {
-        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID)
-        assertThrows<EligibilityAssessmentMissing> { setApplicationAsEligible.setAsEligible(PROJECT_ID, actionInfo) }
-    }
 }

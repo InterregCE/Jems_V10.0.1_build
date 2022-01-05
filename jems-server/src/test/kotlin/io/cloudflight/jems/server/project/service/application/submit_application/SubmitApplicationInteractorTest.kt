@@ -15,12 +15,10 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLu
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantForConditionsApplicationState
-import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.clearAllMocks
@@ -52,9 +50,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
     lateinit var projectPersistence: ProjectPersistence
 
     @MockK
-    lateinit var projectWorkflowPersistence: ProjectWorkflowPersistence
-
-    @MockK
     lateinit var applicationStateFactory: ApplicationStateFactory
 
     @MockK
@@ -62,9 +57,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
 
     @MockK
     lateinit var jemsPluginRegistry: JemsPluginRegistry
-
-    @RelaxedMockK
-    lateinit var createNewProjectVersionInteractor: CreateNewProjectVersionInteractor
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
@@ -136,7 +128,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectCallSettings(projectId) } returns oneStepCallSetting
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwo
         every { applicationStateFactory.getInstance(any()) } returns draftState
-        every { applicationStateFactory.getInstance(any()) } returns draftState
         every { draftState.submit() } returns ApplicationStatus.SUBMITTED
 
         submitApplication.submit(projectId)
@@ -155,30 +146,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
     }
 
     @Test
-    fun `submit from status RETURNED_TO_APPLICANT_FOR_CONDITIONS - create new version`() {
-        every {
-            jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey)
-        } returns preConditionCheckPlugin
-        every { preConditionCheckPlugin.check(projectId) } returns PreConditionCheckResult(emptyList(), true)
-        every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
-        every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwoReturnedForConditions
-        every { applicationStateFactory.getInstance(any()) } returns returnToApplicantForConditionsState
-        every { returnToApplicantForConditionsState.submit() } returns ApplicationStatus.CONDITIONS_SUBMITTED
-
-        assertThat(submitApplication.submit(projectId)).isEqualTo(ApplicationStatus.CONDITIONS_SUBMITTED)
-
-        val slotAudit = mutableListOf<AuditCandidateEvent>()
-        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit[0].auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = projectId.toString(), customIdentifier = projectId.toString(), name = "project acronym"),
-                description = "Project application status changed from RETURNED_TO_APPLICANT_FOR_CONDITIONS to CONDITIONS_SUBMITTED"
-            )
-        )
-    }
-
-    @Test
     fun `submit from status RETURNED_TO_APPLICANT_FOR_CONDITIONS - update current version`() {
         every {
             jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey)
@@ -188,11 +155,8 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwoReturnedForConditions
         every { applicationStateFactory.getInstance(any()) } returns returnToApplicantForConditionsState
         every { returnToApplicantForConditionsState.submit() } returns ApplicationStatus.CONDITIONS_SUBMITTED
-        every { projectWorkflowPersistence.getApplicationPreviousStatus(projectId).status } returns ApplicationStatus.CONDITIONS_SUBMITTED
-
 
         assertThat(submitApplication.submit(projectId)).isEqualTo(ApplicationStatus.CONDITIONS_SUBMITTED)
-//        verify(exactly = 1) { saveProjectVersionInteractor.updateLastVersion(projectId) }
 
         val slotAudit = mutableListOf<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }

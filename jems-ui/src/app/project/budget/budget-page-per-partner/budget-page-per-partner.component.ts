@@ -1,11 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {
-  PartnerBudgetPerFundDTO,
-  ProgrammeFundDTO, ProjectBudgetService,
-  ProjectPartnerBudgetCoFinancingDTO, ProjectPartnerBudgetPerFundDTO,
-  ProjectPartnerCoFinancingOutputDTO,
-  ProjectPartnerContributionDTO
-} from '@cat/api';
+import {PartnerBudgetPerFundDTO, ProgrammeFundDTO, ProjectPartnerBudgetPerFundDTO} from '@cat/api';
 import {map, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
