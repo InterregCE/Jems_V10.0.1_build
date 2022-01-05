@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.math.MathContext
 import java.math.RoundingMode
 
@@ -184,7 +185,7 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
     }
 
     private fun calculatePercentage(toDivide: BigDecimal, divisor: BigDecimal, roundingMode: RoundingMode): BigDecimal {
-        if (toDivide == BigDecimal.ZERO || divisor == BigDecimal.ZERO) {
+        if (toDivide == BigDecimal.ZERO || divisor == BigDecimal.ZERO || toDivide == BigDecimal(BigInteger("0"), 2) || divisor == BigDecimal(BigInteger("0"), 2)) {
             return BigDecimal.ZERO
         }
 
