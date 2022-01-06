@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.HealthyAgeing
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Healthcare
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SocialInfrastructure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputProjectData
@@ -76,7 +76,7 @@ class ProjectServiceTest : UnitTest() {
         id = 5,
         creator = account,
         name = "call",
-        prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthyAgeing, "HAB")),
+        prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(Healthcare, "HAB")),
         strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
@@ -128,7 +128,7 @@ class ProjectServiceTest : UnitTest() {
         val slot = slot<ProjectEntity>()
         every { projectRepository.save(capture(slot)) } returnsArgument 0
 
-        projectService.update(1, projectData.copy(specificObjective = HealthyAgeing))
+        projectService.update(1, projectData.copy(specificObjective = Healthcare))
 
         assertThat(slot.captured.projectData).isEqualTo(
             ProjectData(
@@ -165,7 +165,7 @@ class ProjectServiceTest : UnitTest() {
             id = 5,
             creator = account,
             name = "call",
-            prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(HealthyAgeing, "HAB")),
+            prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(Healthcare, "HAB")),
             strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
             isAdditionalFundAllowed = false,
             funds = mutableSetOf(),

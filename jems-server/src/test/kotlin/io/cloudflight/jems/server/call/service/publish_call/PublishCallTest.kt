@@ -52,7 +52,7 @@ class PublishCallTest : UnitTest() {
         applicationFormFieldConfigurations = mutableSetOf(),
         strategies = sortedSetOf(ProgrammeStrategy.AtlanticStrategy),
         funds = sortedSetOf(callFundRate(1)),
-        objectives = listOf(ProgrammePriority(code = "code", objective = ProgrammeObjective.ISO1))
+        objectives = listOf(ProgrammePriority(code = "code", objective = ProgrammeObjective.ISO12))
     )
 
     @MockK

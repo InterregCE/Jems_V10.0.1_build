@@ -30,9 +30,15 @@ fun ProgrammePriority.toDto() = ProgrammePriorityDTO(
 fun ProgrammeSpecificObjective.toDto() = ProgrammeSpecificObjectiveDTO(
     code = code,
     programmeObjectivePolicy = programmeObjectivePolicy,
+    officialCode = programmeObjectivePolicy.officialProgrammePolicyCode
 )
 
 fun ProgrammePriorityAvailableSetup.toDto() = ProgrammePriorityAvailableSetupDTO(
-    freePrioritiesWithPolicies = freePrioritiesWithPolicies,
+    freePrioritiesWithPolicies = freePrioritiesWithPolicies.mapValues { entry -> entry.value.map {
+            ProgrammeSpecificObjectiveDTO(
+                it,
+                "",
+                it.officialProgrammePolicyCode)
+        } },
     objectivePoliciesAlreadyInUse = objectivePoliciesAlreadyInUse,
 )

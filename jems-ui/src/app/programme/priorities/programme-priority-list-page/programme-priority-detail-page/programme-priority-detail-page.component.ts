@@ -34,11 +34,12 @@ export class ProgrammePriorityDetailPageComponent {
   data$: Observable<{
     priority: ProgrammePriorityDTO | {};
     objectives: string[];
-    freePrioritiesWithPolicies: { [key: string]: string[] };
+    freePrioritiesWithPolicies: { [key: string]: ProgrammeSpecificObjectiveDTO[] };
   }>;
 
   form = this.formBuilder.group({
     code: this.formBuilder.control('', this.constants.CODE.validators),
+    officialCode: this.formBuilder.control(''),
     title: this.formBuilder.control([], this.constants.TITLE.validators),
     objective: this.formBuilder.control('', this.constants.OBJECTIVE.validators),
     specificObjectives: this.formBuilder.array([], {validators: this.constants.mustHaveSpecificObjectiveSelected})
@@ -112,13 +113,13 @@ export class ProgrammePriorityDetailPageComponent {
   }
 
   resetForm(priority: ProgrammePriorityDTO,
-            freePrioritiesWithPolicies: { [key: string]: string[] }): void {
+            freePrioritiesWithPolicies: { [key: string]: ProgrammeSpecificObjectiveDTO[] }): void {
     this.form.patchValue(priority);
     this.changeCurrentObjective(priority?.objective, freePrioritiesWithPolicies, priority.specificObjectives);
   }
 
   cancel(priority: ProgrammePriorityDTO,
-         freePrioritiesWithPolicies: { [key: string]: string[] }): void {
+         freePrioritiesWithPolicies: { [key: string]: ProgrammeSpecificObjectiveDTO[] }): void {
     if (!this.priorityId) {
       this.programmePageSidenavService.goToPriorities();
       return;
@@ -145,14 +146,14 @@ export class ProgrammePriorityDetailPageComponent {
   }
 
   changeCurrentObjective(objective: ProgrammePriorityDTO.ObjectiveEnum,
-                         freePrioritiesWithPolicies: { [p: string]: string[] },
+                         freePrioritiesWithPolicies: { [p: string]: ProgrammeSpecificObjectiveDTO[] },
                          selectedSpecificObjectives?: ProgrammeSpecificObjectiveDTO[]): void {
     this.specificObjectives.clear();
     selectedSpecificObjectives?.forEach(
-      selected => this.addSpecificObjective(selected.programmeObjectivePolicy, true, selected.code)
+      selected => this.addSpecificObjective(selected.programmeObjectivePolicy, selected.officialCode, true, selected.code)
     );
     const freePolicies = freePrioritiesWithPolicies[objective];
-    freePolicies?.forEach(policy => this.addSpecificObjective(policy, false, ''));
+    freePolicies?.forEach(policy => this.addSpecificObjective(policy.programmeObjectivePolicy, policy.officialCode, false, ''));
   }
 
   setCheckedStatus(specificObjectiveIndex: number, checked: boolean): void {
@@ -173,13 +174,14 @@ export class ProgrammePriorityDetailPageComponent {
     };
   }
 
-  private addSpecificObjective(policy: string, selected: boolean, code: string): void {
+  private addSpecificObjective(policy: string, officialCode: string ,selected: boolean, code: string): void {
     const codeControl = this.formBuilder.control(code);
     const control = this.formBuilder.group(
       {
         selected: this.formBuilder.control(selected),
         code: codeControl,
         programmeObjectivePolicy: this.formBuilder.control(policy),
+        officialCode: this.formBuilder.control(officialCode)
       });
     codeControl.setValidators([this.constants.selectedSpecificObjectiveCodeRequired(control)].concat(this.constants.POLICY_CODE.validators || []));
     if (this.objectivePoliciesAlreadyInUse.find(used => used === policy) || (this.isProgrammeSetupLocked && selected)) {
@@ -207,7 +209,7 @@ export class ProgrammePriorityDetailPageComponent {
     return of(priority);
   }
 
-  private getAvailableObjectives(currentObjective: string, freeObjectives: { [key: string]: string[] }): string[] {
+  private getAvailableObjectives(currentObjective: string, freeObjectives: { [key: string]: ProgrammeSpecificObjectiveDTO[] }): string[] {
     const objectives = Object.keys(freeObjectives);
     if (!currentObjective || objectives.find(obj => obj === currentObjective)) {
       return objectives;

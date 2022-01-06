@@ -214,8 +214,8 @@ class UpdatePriorityInteractorTest {
     @Test
     fun `updatePriority - specific objective does not belong to objective`() {
         every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
-        assertThat(toUpdatePriority.objective).isNotEqualTo(ProgrammeObjective.ISO1)
-        val priority = toUpdatePriority.copy(objective = ProgrammeObjective.ISO1)
+        assertThat(toUpdatePriority.objective).isNotEqualTo(ProgrammeObjective.ISO12)
+        val priority = toUpdatePriority.copy(objective = ProgrammeObjective.ISO12)
         val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priority) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.specificObjectives.should.not.be.of.different.objectives")
     }

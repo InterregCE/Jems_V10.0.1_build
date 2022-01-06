@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.programme.service.priority.create_priority
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.ISO1
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.ISO12
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenInfrastructure
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
@@ -164,8 +164,8 @@ class CreatePriorityInteractorTest {
 
     @Test
     fun `createPriority - specific objective does not belong to objective`() {
-        assertThat(testPriority.objective).isNotEqualTo(ISO1)
-        val priority = testPriority.copy(objective = ISO1)
+        assertThat(testPriority.objective).isNotEqualTo(ISO12)
+        val priority = testPriority.copy(objective = ISO12)
         val ex = assertThrows<I18nValidationException> { createPriority.createPriority(priority) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.specificObjectives.should.not.be.of.different.objectives")
     }

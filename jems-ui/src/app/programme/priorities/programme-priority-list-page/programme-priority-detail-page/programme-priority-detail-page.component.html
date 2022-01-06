@@ -57,11 +57,12 @@
         <ng-container *ngIf="specificObjectives.length">
             <h3>{{'programme.priority.objective.title' | translate}}</h3>
             <div appNoWidthLimit
-                 [appTableConfig]="[{maxInRem: 2},{maxInRem:16},{}]">
+                 [appTableConfig]="[{maxInRem: 2},{maxInRem:16},{},{maxInRem:12}]">
                 <div>
                     <span></span>
-                    <div class="mat-body-strong">{{'programme.priority.objective.table.column.code' | translate}}</div>
+                    <div class="mat-body-strong">{{'programme.priority.objective.table.column.programmeCode' | translate}}</div>
                     <div class="mat-body-strong">{{'programme.priority.objective.table.column.title' | translate}}</div>
+                    <div class="mat-body-strong">{{'programme.priority.objective.table.column.officialCode' | translate}}</div>
                 </div>
                 <div *ngFor="let control of specificObjectives.controls; let i=index"
                      [formArrayName]="constants.SPECIFIC_OBJECTIVES.name">
@@ -88,6 +89,7 @@
 
                     </ng-container>
                     <div>{{'programme.policy.' + control.get(constants.POLICY_OBJECTIVE.name).value | translate}}</div>
+                    <div>{{control.get(constants.POLICY_OFFICIAL_CODE.name).value}}</div>
                 </div>
             </div>
             <mat-error>
