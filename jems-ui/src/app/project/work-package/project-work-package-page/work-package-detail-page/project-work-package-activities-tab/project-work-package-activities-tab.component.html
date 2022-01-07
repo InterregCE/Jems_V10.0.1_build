@@ -154,7 +154,7 @@
                     </div>
                 </ng-container>
             </div>
-            <button appText *ngIf="addActivityVisible()" mat-stroked-button (click)="addNewActivity()">
+            <button  *ngIf="addActivityVisible()" mat-stroked-button (click)="addNewActivity()" type="button">
                 + {{'project.work.package.tab.activity.add' | translate}}
             </button>
         </form>
