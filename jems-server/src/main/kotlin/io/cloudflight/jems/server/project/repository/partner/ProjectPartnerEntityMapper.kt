@@ -112,7 +112,7 @@ fun ProjectPartnerEntity.copy(
     nameInOriginalLanguage = projectPartner?.nameInOriginalLanguage ?: nameInOriginalLanguage,
     nameInEnglish = projectPartner?.nameInEnglish ?: nameInEnglish,
     partnerType = projectPartner?.partnerType ?: partnerType,
-    partnerSubType = projectPartner?.partnerSubType ?: partnerSubType,
+    partnerSubType = projectPartner?.partnerSubType,
     nace = projectPartner?.nace ?: nace,
     otherIdentifierNumber = projectPartner?.otherIdentifierNumber ?: otherIdentifierNumber,
     pic = projectPartner?.pic ?: pic,
