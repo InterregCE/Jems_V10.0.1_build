@@ -1,4 +1,4 @@
-<div *ngIf="canReadFiles$ | async" appNoWidthLimit id="project-files">
+<div *ngIf="canReadFiles$ | async" appNoWidthLimit id="project-files" class="overflow-auto">
     <app-category-tree
             [categories]="fileManagementStore.fileCategories$ | async"
             (categorySelected)="fileManagementStore.selectedCategory$.next($event)"
