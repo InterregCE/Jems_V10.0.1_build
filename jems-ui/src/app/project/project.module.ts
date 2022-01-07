@@ -103,7 +103,6 @@ import {BudgetPageFundPerPeriodComponent} from './budget/budget-page-per-period/
 import {BudgetPerPeriodPageComponent} from './budget/budget-page-per-period/budget-per-period-page.component';
 import {ProjectBudgetPeriodPageStore} from '@project/budget/budget-page-per-period/budget-period-page.store';
 import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
-import {ProjectLumpSumStore} from '@project/lump-sums/services/project-lump-sum.store';
 import {ProjectPartnerCoFinancingStore} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
 import {ProjectPartnerStateAidsStore} from '@project/partner/services/project-partner-state-aids.store';
 import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-per-period/budget-page-partner-per-period/budget-page-partner-per-period.component';
@@ -240,7 +239,6 @@ import {PrivilegesPageComponent} from './project-application/privileges-page/pri
     ProjectUnitCostsStore,
     ProjectBudgetPeriodPageStore,
     ProjectPartnerBudgetStore,
-    ProjectLumpSumStore,
     ProjectPartnerCoFinancingStore,
     ProjectPartnerStateAidsStore
   ]
