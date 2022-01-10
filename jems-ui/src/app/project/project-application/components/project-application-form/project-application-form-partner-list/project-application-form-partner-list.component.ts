@@ -89,7 +89,8 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
             return element === null;
           },
           alternativeValue: 'project.application.form.partner.number.info.auto',
-          sortProperty: 'sortNumber'
+          sortProperty: 'sortNumber',
+          columnWidth : ColumnWidth.NarrowColumn
         },
         {
           displayedColumn: 'project.application.form.partner.table.status',
@@ -121,7 +122,8 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
         [{
           displayedColumn: ' ',
           columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.deletionCell
+          customCellTemplate: this.deletionCell,
+          columnWidth : ColumnWidth.NarrowColumn
         }] : [],
         ...ProjectUtil.isInModifiableStatusAfterApproved(this.projectStatus) ?
           [{
