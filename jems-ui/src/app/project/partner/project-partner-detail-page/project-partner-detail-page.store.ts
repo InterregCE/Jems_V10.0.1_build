@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {BudgetOptions} from '../../model/budget/budget-options';
 import {CallFlatRateSetting} from '../../model/call-flat-rate-setting';
-import {map, shareReplay, switchMap} from 'rxjs/operators';
+import {filter, map, shareReplay, startWith, switchMap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {
   CallFundRateDTO,
@@ -25,14 +25,18 @@ import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
 import {ProjectVersionStore} from '../../common/services/project-version-store.service';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
-import {ProjectLumpSumStore} from '@project/lump-sums/services/project-lump-sum.store';
 import {ProjectPartnerCoFinancingStore} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
 import {ProjectPartnerStateAidsStore} from '@project/partner/services/project-partner-state-aids.store';
+import {PartnerLumpSum} from '@project/model/lump-sums/partnerLumpSum';
+import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
+import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
   callFlatRatesSettings$: Observable<CallFlatRateSetting>;
+  projectCallLumpSums$: Observable<ProgrammeLumpSum[]>;
   budgetOptions$: Observable<BudgetOptions>;
+  partnerLumpSums$: Observable<PartnerLumpSum[]>;
   partnerTotalLumpSum$: Observable<number>;
   budgets$: Observable<PartnerBudgetTables>;
   totalBudget$: Observable<number>;
@@ -56,7 +60,7 @@ export class ProjectPartnerDetailPageStore {
               private projectLumpSumService: ProjectLumpSumService,
               private projectVersionStore: ProjectVersionStore,
               private projectPartnerBudgetStore: ProjectPartnerBudgetStore,
-              private projectLumpSumStore: ProjectLumpSumStore,
+              private projectLumpSumsStore: ProjectLumpSumsStore,
               private projectPartnerCoFinancingStore: ProjectPartnerCoFinancingStore,
               private projectPartnerStateAidsStore: ProjectPartnerStateAidsStore) {
     this.investmentSummaries$ = this.projectStore.investmentSummaries$;
@@ -66,7 +70,6 @@ export class ProjectPartnerDetailPageStore {
     );
     this.budgets$ = this.projectPartnerBudgetStore.budgets$;
     this.budgetOptions$ = this.projectPartnerBudgetStore.budgetOptions$;
-    this.partnerTotalLumpSum$ = this.projectLumpSumStore.partnerTotalLumpSum$;
     this.callFlatRatesSettings$ = this.callFlatRateSettings();
     this.totalBudget$ = this.projectPartnerBudgetStore.totalBudget$;
     this.financingAndContribution$ = this.projectPartnerCoFinancingStore.financingAndContribution$;
@@ -77,6 +80,9 @@ export class ProjectPartnerDetailPageStore {
     this.partner$ = this.partnerStore.partner$;
     this.stateAid$ = this.projectPartnerStateAidsStore.stateAid$;
     this.allowedBudgetCategories$ = this.projectStore.allowedBudgetCategories$;
+    this.projectCallLumpSums$ = this.projectLumpSumsStore.projectCallLumpSums$;
+    this.partnerLumpSums$ = this.partnerLumpSums();
+    this.partnerTotalLumpSum$ = this.partnerTotalLumpSum();
   }
 
   public static calculateOfficeAndAdministrationFlatRateTotal(
@@ -169,4 +175,30 @@ export class ProjectPartnerDetailPageStore {
     );
   }
 
+  private partnerLumpSums(): Observable<PartnerLumpSum[]> {
+    return combineLatest([this.partner$, this.projectLumpSumsStore.projectLumpSums$, this.projectLumpSumsStore.projectCallLumpSums$]).pipe(
+      map(([partner, projectLumpSums, callLumpSums]) =>
+        projectLumpSums.filter(it => it.lumpSumContributions.some(contribution => contribution.partnerId === partner.id && contribution.amount > 0))
+          .map(lumpSum => {
+            const callLumpSum = callLumpSums.find(it => it.id === lumpSum.programmeLumpSumId);
+            return new PartnerLumpSum(callLumpSum?.name || [], callLumpSum?.description || [], callLumpSum?.cost, lumpSum.period, lumpSum.lumpSumContributions.find(it=> it.partnerId === partner.id)?.amount || 0);
+          })
+      ),
+      shareReplay(1)
+    );
+  };
+
+  private partnerTotalLumpSum(): Observable<number> {
+    return combineLatest([
+      this.partnerStore.partner$,
+      this.projectVersionStore.selectedVersionParam$,
+      this.projectStore.projectId$,
+      this.projectPartnerBudgetStore.updateBudgetOptionsEvent$.pipe(startWith(null))
+    ])
+      .pipe(
+        filter(([partner]) => !!partner.id),
+        switchMap(([partner, version, projectId]) => this.projectLumpSumService.getProjectLumpSumsTotalForPartner(partner.id, projectId, version)),
+        shareReplay(1)
+      );
+  }
 }
