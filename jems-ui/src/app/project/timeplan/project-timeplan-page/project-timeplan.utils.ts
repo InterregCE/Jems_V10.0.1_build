@@ -162,14 +162,16 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
     let maxPeriod = 0;
 
     wp.activities.forEach(activity => {
-      items = items.concat({
-        id: getActivityBoxId(wp.workPackageNumber, activity.activityNumber),
-        group: getActivityId(wp.workPackageNumber, activity.activityNumber),
-        start: getStartDateFromPeriod(activity.startPeriod),
-        end: getEndDateFromPeriod(activity.endPeriod),
-        type: 'background',
-        className: getColor(indexWp),
-      });
+      if (activity.startPeriod && activity.endPeriod) {
+        items = items.concat({
+          id: getActivityBoxId(wp.workPackageNumber, activity.activityNumber),
+          group: getActivityId(wp.workPackageNumber, activity.activityNumber),
+          start: getStartDateFromPeriod(activity.startPeriod),
+          end: getEndDateFromPeriod(activity.endPeriod),
+          type: 'background',
+          className: getColor(indexWp),
+        });
+      }
 
       activity.deliverables.forEach(deliverable => {
         items = items.concat({
@@ -181,12 +183,19 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
           content: `D${wp.workPackageNumber}.${activity.activityNumber}.${deliverable.deliverableNumber}`,
           className: getColor(indexWp),
         });
+
+        if (deliverable.period && minPeriod > deliverable.period) {
+          minPeriod = deliverable.period;
+        }
+        if (deliverable.period && maxPeriod < deliverable.period) {
+          maxPeriod = deliverable.period;
+        }
       });
 
-      if (minPeriod > activity.startPeriod) {
+      if (activity.startPeriod && minPeriod > activity.startPeriod) {
         minPeriod = activity.startPeriod;
       }
-      if (maxPeriod < activity.endPeriod) {
+      if (activity.endPeriod && maxPeriod < activity.endPeriod) {
         maxPeriod = activity.endPeriod;
       }
     });
@@ -202,6 +211,12 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
         content: `O${wp.workPackageNumber}.${output.outputNumber}`,
         className: getColor(indexWp),
       });
+      if (minPeriod > output.periodNumber) {
+        minPeriod = output.periodNumber;
+      }
+      if (maxPeriod < output.periodNumber) {
+        maxPeriod = output.periodNumber;
+      }
     });
 
     if (minPeriod !== 999 && maxPeriod !== 0) {
