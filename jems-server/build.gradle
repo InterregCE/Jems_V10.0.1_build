@@ -9,7 +9,7 @@ dependencies {
     implementation('io.cloudflight.jems.plugin.contract:jems-plugin-contract')
     // load for local development (if projects are cloned in same root as jems)
     // implementation files("../../jems-plugin-contract/build/libs/jems-plugin-contract-$jemsPluginContractVersion-SNAPSHOT.jar")
-    // implementation files("../../jems-standard-plugin/build/libs/jems-standard-plugin-$jemsStandardPluginVersion-SNAPSHOT.jar")
+    // implementation files("../../jems-default-plugin/build/libs/jems-standard-plugin-$jemsStandardPluginVersion-SNAPSHOT.jar")
 
     toDownload('io.cloudflight.jems.plugin.standard:jems-standard-plugin')
 
