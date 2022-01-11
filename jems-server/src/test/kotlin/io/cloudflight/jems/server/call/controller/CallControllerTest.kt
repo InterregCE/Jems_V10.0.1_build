@@ -144,8 +144,8 @@ class CallControllerTest : UnitTest() {
                     code = "PRIO_CODE",
                     objective = PO1,
                     specificObjectives = listOf(
-                        ProgrammeSpecificObjectiveDTO(AdvancedTechnologies, "CODE_ADVA"),
-                        ProgrammeSpecificObjectiveDTO(Digitisation, "CODE_DIGI"),
+                        ProgrammeSpecificObjectiveDTO(AdvancedTechnologies, "CODE_ADVA", "RSO1.1"),
+                        ProgrammeSpecificObjectiveDTO(Digitisation, "CODE_DIGI", "RSO1.2"),
                     )
                 )
             ),
