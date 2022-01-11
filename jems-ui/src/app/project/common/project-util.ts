@@ -33,6 +33,15 @@ export class ProjectUtil {
       || status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS;
   }
 
+  static isInApprovedOrAnyStatusAfterApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+    const status = this.getStatus(statusOrProject);
+    return status === ProjectStatusDTO.StatusEnum.APPROVED
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED
+      || status === ProjectStatusDTO.StatusEnum.CONTRACTED;
+  }
+
   private static getStatus(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum) {
     return ((statusOrProject as ProjectDetailDTO)?.projectStatus || statusOrProject)?.status || statusOrProject;
   }

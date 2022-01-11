@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectF
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCheckApplicationForm
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectAssessmentView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectContractingView
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusDecisionRevert
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusReturnToApplicant
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStartStepTwo
@@ -19,6 +20,7 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectF
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationFileAssessmentRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationView
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectOpenModification
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSetToContracted
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSubmission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
@@ -136,7 +138,7 @@ internal class GetUserTest : UnitTest() {
         assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(
             ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView,
             ProjectStatusDecisionRevert, ProjectStatusReturnToApplicant, ProjectStartStepTwo, ProjectFileAssessmentRetrieve,
-            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve
+            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve, ProjectContractingView, ProjectSetToContracted
         )
         assertThat(toNotHaveSlot.captured).containsExactly(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
 

@@ -28,6 +28,20 @@ export class Permission {
 
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
     {
+      name: 'project.application.contracting.title',
+      children: [
+        {
+          name: 'project.application.contract.monitoring.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.HIDDEN,
+          hideTooltip: 'permission.create.contracting'
+        }
+        ]
+    },
+    {
       name: 'project.application.form.title',
       children: [
         {
@@ -86,6 +100,35 @@ export class Permission {
   ];
 
   public static readonly DEFAULT_USER_INSPECT_PERMISSIONS: PermissionNode[] = [
+    {
+      name: 'project.application.contracting.title',
+      children: [
+        {
+          name: 'project.application.contract.monitoring.title',
+          children: [
+            {
+              name: 'project.application.contract.monitoring.title',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectContractingView],
+              editPermissions: [PermissionsEnum.ProjectSetToContracted],
+              editTooltip: 'permission.inspect.contracting'
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'project.application.contracting.title',
+      children: [
+        {
+          name: 'project.application.conntract.monitoring.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectContractingView],
+          editPermissions: [PermissionsEnum.ProjectSetToContracted],
+          editTooltip: 'permission.inspect.contracting'
+        }
+      ]
+    },
     {
       name: 'project.application.form.title',
       children: [

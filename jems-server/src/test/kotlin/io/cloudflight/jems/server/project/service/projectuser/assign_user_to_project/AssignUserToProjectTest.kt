@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectF
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCheckApplicationForm
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectAssessmentView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectContractingView
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusDecisionRevert
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusReturnToApplicant
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStartStepTwo
@@ -22,6 +23,7 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectF
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationFileAssessmentRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationView
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectOpenModification
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSetToContracted
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
@@ -140,7 +142,7 @@ internal class AssignUserToProjectTest : UnitTest() {
         assertThat(permisisonsToHave[1]).containsExactlyInAnyOrder(
             ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView,
             ProjectStatusDecisionRevert, ProjectStatusReturnToApplicant, ProjectStartStepTwo, ProjectFileAssessmentRetrieve,
-            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve
+            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve, ProjectSetToContracted, ProjectContractingView
         )
         assertThat(permissionsNotToHave[1]).containsExactlyInAnyOrder(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
     }

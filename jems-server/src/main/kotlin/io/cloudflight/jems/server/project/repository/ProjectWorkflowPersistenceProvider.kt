@@ -84,7 +84,7 @@ class ProjectWorkflowPersistenceProvider(
         projectRepository.getById(projectId).apply {
             currentStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = status, user = userRepository.getOne(userId),
+                    project = this, status = status, user = userRepository.getById(userId),
                     decisionDate = actionInfo?.date,
                     note = actionInfo?.note
                 )

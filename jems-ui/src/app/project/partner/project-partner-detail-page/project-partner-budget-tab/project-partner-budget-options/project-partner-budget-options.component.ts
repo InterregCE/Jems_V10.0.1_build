@@ -61,7 +61,7 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
     this.initForm();
     this.handleResetForm();
     this.handleBudgetOptionsState();
-    this.formService.reset()
+    this.formService.reset();
 
     this.data$ = combineLatest([
       this.pageStore.callFlatRatesSettings$,

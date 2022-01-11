@@ -52,6 +52,7 @@ import {ExportComponent} from '@project/project-application/export/export.compon
 import {ModificationPageComponent} from './project-application/modification-page/modification-page.component';
 import {ProjectUnitCostsPageComponent} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-page.component';
 import {PrivilegesPageComponent} from './project-application/privileges-page/privileges-page.component';
+import {ContractMonitoringComponent} from '@project/project-application/contract-monitoring/contract-monitoring.component';
 
 export const routes: Routes = [
   {
@@ -77,6 +78,11 @@ export const routes: Routes = [
           {
             path: '',
             component: ProjectDetailPageComponent,
+          },
+          {
+            path: 'contractMonitoring',
+            component: ContractMonitoringComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.contract.monitoring'},
           },
           {
             path: 'annexes',
