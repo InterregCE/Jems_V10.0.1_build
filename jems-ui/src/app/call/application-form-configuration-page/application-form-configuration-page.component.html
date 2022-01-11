@@ -12,7 +12,7 @@
 
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef id="appFormConfigHeaderSection">
-                        {{'call.detail.application.form.config.section' | translate}}
+                        <span appText maxLines="2">{{'call.detail.application.form.config.section' | translate}}</span>
                     </th>
                     <td mat-cell *matCellDef="let node"
                         [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
@@ -30,7 +30,7 @@
 
                 <ng-container matColumnDef="show">
                     <th mat-header-cell *matHeaderCellDef id="appFormConfigHeaderShow">
-                        {{'call.detail.application.form.config.show' | translate}}
+                        <span appText maxLines="2">{{'call.detail.application.form.config.show' | translate}}</span>
                     </th>
                     <td mat-cell *matCellDef="let node"
                         [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
@@ -44,7 +44,7 @@
 
                 <ng-container matColumnDef="step">
                     <th mat-header-cell *matHeaderCellDef id="appFormConfigHeaderStep">
-                        {{'call.detail.application.form.config.step' | translate}}
+                        <span appText maxLines="2">{{'call.detail.application.form.config.step' | translate}}</span>
                     </th>
                     <td mat-cell *matCellDef="let node" class="step-toggle"
                         [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">

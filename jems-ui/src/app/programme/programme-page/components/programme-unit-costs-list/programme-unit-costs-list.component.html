@@ -9,27 +9,31 @@
     <mat-table appNoWidthLimit *ngIf="dataSource?.data.length" [dataSource]="dataSource">
 
         <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef>{{ 'unit.cost.table.column.name.name' | translate }}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>
+                <span appText maxLines="2">{{ 'unit.cost.table.column.name.name' | translate }}</span></mat-header-cell>
             <mat-cell *matCellDef="let element">{{ element?.name | translateByInputLanguage | async }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="type">
-            <mat-header-cell
-                    *matHeaderCellDef>{{ 'unit.cost.table.column.name.unit.type' | translate }}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>
+                <span appText maxLines="2">{{ 'unit.cost.table.column.name.unit.type' | translate }}</span>
+            </mat-header-cell>
             <mat-cell
                     *matCellDef="let element">{{ element?.type | translateByInputLanguage | async }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="category">
-            <mat-header-cell
-                    *matHeaderCellDef>{{ 'unit.cost.table.column.name.unit.category' | translate }}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>
+                <span appText maxLines="2">{{ 'unit.cost.table.column.name.unit.category' | translate }}</span>
+            </mat-header-cell>
             <mat-cell
                     *matCellDef="let element">{{ element?.categories?.length > 1 ? ('unit.cost.cost.category.Multiple' | translate) : ('unit.cost.cost.category.' + element?.categories[0] | translate) }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="costPerUnit">
-            <mat-header-cell *matHeaderCellDef
-                             class="justify-end">{{ 'unit.cost.table.column.name.cost.unit' | translate }}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef class="justify-end">
+                <span appText maxLines="2">{{ 'unit.cost.table.column.name.cost.unit' | translate }}</span>
+            </mat-header-cell>
             <mat-cell *matCellDef="let element" class="justify-end">{{ element?.costPerUnit | asMoney }}</mat-cell>
         </ng-container>
 

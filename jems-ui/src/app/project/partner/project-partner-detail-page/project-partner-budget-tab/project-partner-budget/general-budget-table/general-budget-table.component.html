@@ -11,8 +11,9 @@
                            [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
                            class="budget-table">
                     <ng-container matColumnDef="unitCost" sticky>
-                        <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.unitcosts.selection' | translate}} </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>
+                            <span appText maxLines="2">{{'project.partner.budget.table.unitcosts.selection' | translate}}</span>
+                        </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field appFormFieldWidth="full">
                                 <mat-select
@@ -44,8 +45,9 @@
                     </ng-container>
 
                     <ng-container matColumnDef="description" sticky>
-                        <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.description' | translate}} </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>
+                            <span appText maxLines="2">{{'project.partner.budget.table.description' | translate}}</span>
+                        </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <ng-container *ngIf="fieldEnabled(control)">
                                 <div *ngIf="getUnitCost(control).value"
@@ -64,8 +66,9 @@
                     </ng-container>
 
                     <ng-container matColumnDef="comments">
-                        <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.comments' | translate}} </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>
+                            <span appText maxLines="2">{{'project.partner.budget.table.comments' | translate}}</span>
+                        </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <app-multi-language-form-field
                                     *ngIf="fieldEnabled(control)"
@@ -81,8 +84,9 @@
                     </ng-container>
 
                     <ng-container matColumnDef="awardProcedures">
-                        <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.award.procedures' | translate}} </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>
+                            <span appText maxLines="2">{{'project.partner.budget.table.award.procedures' | translate}}</span>
+                        </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <app-multi-language-form-field
                                     *ngIf="fieldEnabled(control)"
@@ -97,8 +101,9 @@
                         </mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="investment">
-                        <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.investment' | translate}} </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>
+                            <span appText maxLines="2">{{'project.partner.budget.table.investment' | translate}}</span>
+                        </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field *ngIf="fieldEnabled(control)" appFormFieldWidth="full">
                                 <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.investmentId">
@@ -118,8 +123,9 @@
                     </ng-container>
 
                     <ng-container matColumnDef="unitType">
-                        <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.unit.type' | translate}} </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>
+                            <span appText maxLines="2">{{'project.partner.budget.table.unit.type' | translate}}</span>
+                        </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <ng-container *ngIf="fieldEnabled(control)">
                                 <div *ngIf="getUnitCost(control).value" class="text-overflow-ellipsis">
@@ -140,8 +146,9 @@
                     </ng-container>
 
                     <ng-container matColumnDef="numberOfUnits">
-                        <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.number.of.units' | translate}} </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>
+                            <span appText maxLines="2">{{'project.partner.budget.table.number.of.units' | translate}}</span>
+                        </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field *ngIf="fieldEnabled(control)" appFormFieldWidth="full">
                                 <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
@@ -154,8 +161,9 @@
                     </ng-container>
 
                     <ng-container matColumnDef="pricePerUnit">
-                        <mat-header-cell
-                                *matHeaderCellDef> {{'project.partner.budget.table.price.per.unit' | translate}} </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>
+                            <span appText maxLines="2">{{'project.partner.budget.table.price.per.unit' | translate}}</span>
+                        </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field *ngIf="fieldEnabled(control)"
                                             [class.mat-form-field-disabled]="getUnitCost(control).value"
@@ -175,8 +183,9 @@
                     </ng-container>
 
                     <ng-container matColumnDef="total" stickyEnd>
-                        <mat-header-cell *matHeaderCellDef
-                                         class="justify-end"> {{'project.partner.budget.table.total' | translate}} </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef class="justify-end">
+                            <span appText maxLines="2">{{'project.partner.budget.table.total' | translate}}</span>
+                        </mat-header-cell>
                         <mat-cell *matCellDef="let control;"
                                   [class.invalid]="control.get(constants.FORM_CONTROL_NAMES.rowSum).invalid"
                                   class="justify-end">
@@ -194,7 +203,7 @@
                     <ng-container *ngFor="let period of projectPeriods; let j = index"
                                   matColumnDef="{{'period' + period.number}}">
                         <mat-header-cell *matHeaderCellDef class="justify-end">
-                            {{'project.partner.budget.table.period' | translate }} {{period.number}}
+                            <span appText maxLines="2">{{'project.partner.budget.table.period' | translate }} {{period.number}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let k = index" [formArrayName]="k">
                             <mat-form-field *ngIf="fieldEnabled(control)"
@@ -215,8 +224,9 @@
                     </ng-container>
 
                     <ng-container matColumnDef="openForPeriods">
-                        <mat-header-cell *matHeaderCellDef
-                                         class="justify-end"> {{'project.partner.budget.table.gap' | translate}}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef class="justify-end">
+                            <span appText maxLines="2">{{'project.partner.budget.table.gap' | translate}}</span>
+                        </mat-header-cell>
                         <mat-cell *matCellDef="let control; let k = index"
                                   [class.allocation-warn]="openForPeriods(k).value !== 0" [formArrayName]="k"
                                   class="justify-end">
