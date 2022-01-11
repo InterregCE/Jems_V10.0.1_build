@@ -1,7 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import {ProgrammeLanguagesPageComponent} from './programme-languages-page.component';
-import {TestModule} from '../../../../common/test-module';
+import {TestModule} from '@common/test-module';
 import {ProgrammeModule} from '../../../programme.module';
 import {ProgrammeLanguageDTO} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';

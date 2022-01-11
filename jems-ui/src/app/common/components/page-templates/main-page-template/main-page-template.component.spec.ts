@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
-import { MainPageTemplateComponent } from './main-page-template.component';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {MainPageTemplateComponent} from './main-page-template.component';
+import {TestModule} from '@common/test-module';
 
 describe('MainPageTemplateComponent', () => {
   let component: MainPageTemplateComponent;
@@ -8,7 +8,12 @@ describe('MainPageTemplateComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ MainPageTemplateComponent ]
+      imports: [
+        TestModule
+      ],
+      declarations: [
+        MainPageTemplateComponent
+      ]
     })
     .compileComponents();
   }));

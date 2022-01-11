@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {ProjectApplicationComponent} from './project-application.component';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {TestModule} from '../../../../common/test-module';
+import {TestModule} from '@common/test-module';
 import {ProjectModule} from '../../../project.module';
 import {CallModule} from '../../../../call/call.module';
 

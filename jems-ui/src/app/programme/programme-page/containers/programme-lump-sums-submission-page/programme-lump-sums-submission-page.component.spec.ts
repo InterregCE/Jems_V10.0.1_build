@@ -2,7 +2,7 @@ import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/cor
 
 import { ProgrammeLumpSumsSubmissionPageComponent } from './programme-lump-sums-submission-page.component';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {TestModule} from '../../../../common/test-module';
+import {TestModule} from '@common/test-module';
 import {ProgrammeModule} from '../../../programme.module';
 import {ProgrammeLumpSumDTO} from '@cat/api';
 
