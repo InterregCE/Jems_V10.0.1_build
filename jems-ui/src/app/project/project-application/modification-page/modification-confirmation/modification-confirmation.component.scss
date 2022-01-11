@@ -1,0 +1,21 @@
+#status {
+  display: flex;
+  align-items: baseline;
+
+  .mat-chip {
+    color: var(--font-color-primary);
+  }
+
+  .open {
+    //background-color: var(--status-draft);
+    background-color: gray;
+  }
+
+  .approved {
+    background-color: var(--status-approved);
+  }
+
+  .declined {
+    background-color: var(--status-declined);
+  }
+}

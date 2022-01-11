@@ -23,7 +23,7 @@
 
     <ng-container *hasPermission="[PermissionsEnum.ProjectStatusDecideModificationApproved, PermissionsEnum.ProjectStatusDecideModificationNotApproved]">
         <app-modification-confirmation
-                *ngIf="data.currentVersionOfProjectStatus === ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED"
+                *ngIf="data.currentVersionOfProjectStatus === ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED || data.currentVersionOfProjectStatus === ProjectStatusEnum.MODIFICATIONPRECONTRACTING"
                 [index]="data.modificationDecisions.length + 1">
         </app-modification-confirmation>
     </ng-container>
@@ -34,7 +34,8 @@
         <app-modification-confirmation
                 *ngFor="let decision of data.modificationDecisions; let i=index"
                 [index]="data.modificationDecisions.length - i"
-                [decision]="decision">
+                [decision]="decision"
+                [projectStatus]="projectStore.projectStatus$ | async">
         </app-modification-confirmation>
     </ng-container>
 

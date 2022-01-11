@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
+import {ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {combineLatest, Observable} from 'rxjs';
@@ -7,6 +7,7 @@ import {map, take, tap} from 'rxjs/operators';
 import {ModificationPageStore} from '@project/project-application/modification-page/modification-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'app-modification-page',
@@ -23,6 +24,7 @@ export class ModificationPageComponent {
   pendingButtonProgress: boolean;
 
   data$: Observable<{
+    currentVersionOfProject: ProjectDetailDTO,
     currentVersionOfProjectTitle: string;
     currentVersionOfProjectStatus: ProjectStatusDTO.StatusEnum;
     modificationDecisions: ProjectStatusDTO[];
@@ -30,16 +32,19 @@ export class ModificationPageComponent {
     canHandBackModification: boolean;
   }>;
 
-  constructor(private pageStore: ModificationPageStore,
+  constructor(public projectStore: ProjectStore,
+              private pageStore: ModificationPageStore,
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute) {
     this.data$ = combineLatest([
+      this.projectStore.currentVersionOfProject$,
       this.pageStore.currentVersionOfProjectTitle$,
       this.pageStore.currentVersionOfProjectStatus$,
       this.pageStore.modificationDecisions$,
       this.pageStore.hasOpenPermission$,
     ]).pipe(
-        map(([currentVersionOfProjectTitle, currentVersionOfProjectStatus, modificationDecisions, hasOpenPermission]) => ({
+        map(([currentVersionOfProject, currentVersionOfProjectTitle, currentVersionOfProjectStatus, modificationDecisions, hasOpenPermission]) => ({
+          currentVersionOfProject,
           currentVersionOfProjectTitle,
           currentVersionOfProjectStatus,
           modificationDecisions,

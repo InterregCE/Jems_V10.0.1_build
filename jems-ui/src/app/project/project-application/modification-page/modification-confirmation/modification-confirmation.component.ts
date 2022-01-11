@@ -6,6 +6,7 @@ import {of} from 'rxjs';
 import {ModificationPageStore} from '@project/project-application/modification-page/modification-page-store.service';
 import {catchError} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ProjectUtil} from '@project/common/project-util';
 
 @UntilDestroy()
 @Component({
@@ -22,6 +23,8 @@ export class ModificationConfirmationComponent implements OnInit {
   index: number;
   @Input()
   decision: ProjectStatusDTO;
+  @Input()
+  projectStatus: ProjectStatusDTO;
 
   decisionForm = this.formBuilder.group({
     status: ['', Validators.required],
@@ -37,7 +40,8 @@ export class ModificationConfirmationComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              private pageStore: ModificationPageStore) { }
+              private pageStore: ModificationPageStore) {
+  }
 
   ngOnInit(): void {
     this.formService.init(this.decisionForm, of(!this.decision));
@@ -69,5 +73,26 @@ export class ModificationConfirmationComponent implements OnInit {
           catchError(err => this.formService.setError(err)))
         .subscribe();
     }
+  }
+
+  getDecision() {
+    console.log('decision', this.decision);
+    if (this.decision) {
+      if (this.decision.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED) {
+        return 'Rejected';
+      } else return 'Approved';
+    } else return 'Open';
+  }
+
+  hasOpenStatusColor(): boolean {
+    return !this.decision
+  }
+
+  hasDeclinedStatusColor(): boolean {
+    return this.decision?.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
+  }
+
+  hasAcceptedStatusColor(): boolean {
+    return this.decision?.status === ProjectStatusDTO.StatusEnum.APPROVED;
   }
 }
