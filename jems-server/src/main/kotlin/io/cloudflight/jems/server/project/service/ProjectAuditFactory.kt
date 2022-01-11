@@ -65,8 +65,8 @@ fun projectVersionSnapshotCreated(
             .project(projectSummary)
             .description(
                 "New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on " +
-                    "${projectVersion.createdAt.toLocalDateTime().withNano(0)
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}"
+                    projectVersion.createdAt.toLocalDateTime().withNano(0)
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             ).build()
     )
 
@@ -79,7 +79,7 @@ fun projectVersionRecorded(
             .project(projectSummary)
             .description(
                 "New project version \"V.$version\" is recorded by user: $userEmail on " +
-                    "${ZonedDateTime.now(ZoneOffset.UTC).withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}"
+                    ZonedDateTime.now(ZoneOffset.UTC).withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             ).build()
     )
 
