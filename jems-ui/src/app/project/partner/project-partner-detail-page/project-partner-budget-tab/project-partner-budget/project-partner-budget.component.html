@@ -128,6 +128,11 @@
                         [total]="data.otherCostsFlatRateTotal"
                         appNoWidthLimit></app-budget-flat-rate-table>
             </ng-container>
+
+            <ng-container *ngIf="data.lumpSumsDefinedInCall">
+                <h4>{{'project.partner.budget.lump.sums.overview.header' | translate}}</h4>
+                <app-lumpsum-budget-table appNoWidthLimit></app-lumpsum-budget-table>
+            </ng-container>
         </form>
     </app-form>
 </ng-container>

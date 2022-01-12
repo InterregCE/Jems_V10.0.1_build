@@ -3,7 +3,7 @@ import {FormArray, FormBuilder} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerDetailPageStore} from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ActivatedRoute} from '@angular/router';
-import {catchError, map, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {
   OutputWorkPackageSimple,
   ProgrammeStateAidDTO,
@@ -17,12 +17,16 @@ import {WorkPackagePageStore} from '@project/work-package/project-work-package-p
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectWorkPackagePageStore} from '@project/work-package/project-work-package-page/project-work-package-page-store.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {RoutingService} from '@common/services/routing.service';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 
 interface ActivityIdentificationInformation {
   workpackage: OutputWorkPackageSimple;
   activities: WorkPackageActivitySummaryDTO[];
 }
 
+@UntilDestroy()
 @Component({
   selector: 'app-project-partner-state-aid-tab',
   templateUrl: './project-partner-state-aid-tab.component.html',
@@ -62,7 +66,16 @@ export class ProjectPartnerStateAidTabComponent {
               private pageStore: ProjectPartnerDetailPageStore,
               private workPackageStore: WorkPackagePageStore,
               private workPackageProjectStore: ProjectWorkPackagePageStore,
-              private projectStore: ProjectStore) {
+              private projectStore: ProjectStore,
+              private router: RoutingService,
+              private visibilityStatusService: FormVisibilityStatusService
+              ) {
+    visibilityStatusService.isVisible$((APPLICATION_FORM.SECTION_B.STATE_AID)).pipe(
+      untilDestroyed(this),
+      filter(isVisible => !isVisible),
+      tap(() => this.router.navigate(['../identity'], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
+    ).subscribe();
+
     this.formService.init(this.form, this.pageStore.isProjectEditable$);
     this.data$ = combineLatest([
       this.pageStore.stateAid$,

@@ -3,9 +3,14 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/form
 import {OutputNuts, ProjectPartnerAddressDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
-import {catchError, take, tap} from 'rxjs/operators';
+import {catchError, filter, take, tap} from 'rxjs/operators';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ActivatedRoute} from '@angular/router';
+import {RoutingService} from '@common/services/routing.service';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-project-application-form-partner-address',
   templateUrl: './project-application-form-partner-address.component.html',
@@ -64,7 +69,16 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              private partnerStore: ProjectPartnerStore) {
+              private partnerStore: ProjectPartnerStore,
+              private activatedRoute: ActivatedRoute,
+              private router: RoutingService,
+              private visibilityStatusService: FormVisibilityStatusService
+              ) {
+    visibilityStatusService.isVisible$((APPLICATION_FORM.SECTION_B.ADDRESS)).pipe(
+      untilDestroyed(this),
+      filter(isVisible => !isVisible),
+      tap(() => this.router.navigate(['../identity'], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
+    ).subscribe();
   }
 
   ngOnInit(): void {

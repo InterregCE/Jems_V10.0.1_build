@@ -56,6 +56,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
     isTravelAndAccommodationFlatRateActive: boolean;
     isOtherFlatRateBasedOnStaffCostActive: boolean;
     unitCostsWithMultipleCategoriesDefined: boolean;
+    lumpSumsDefinedInCall: boolean;
   };
 
   private otherCostsFlatRateTotal$: Observable<number>;
@@ -144,9 +145,10 @@ export class ProjectPartnerBudgetComponent implements OnInit {
       this.officeAndAdministrationFlatRateTotal$.pipe(distinctUntilChanged()),
       this.travelAndAccommodationTotal$.pipe(distinctUntilChanged()),
       this.otherCostsFlatRateTotal$.pipe(distinctUntilChanged()),
-      this.pageStore.periods$
+      this.pageStore.periods$,
+      this.pageStore.projectCallLumpSums$
     ]).pipe(
-      map(([budgetTables, budgetOptions, investments, unitCosts, staffCostsTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationTotal, otherCostsFlatRateTotal, periods]: any) => {
+      map(([budgetTables, budgetOptions, investments, unitCosts, staffCostsTotal, officeAndAdministrationFlatRateTotal, travelAndAccommodationTotal, otherCostsFlatRateTotal, periods, callLumpSums]: any) => {
         return {
           budgetTables,
           investments,
@@ -161,7 +163,8 @@ export class ProjectPartnerBudgetComponent implements OnInit {
           isOfficeOnDirectFlatRateActive: !!budgetOptions.officeAndAdministrationOnDirectCostsFlatRate,
           isTravelAndAccommodationFlatRateActive: !!budgetOptions.travelAndAccommodationOnStaffCostsFlatRate,
           isOtherFlatRateBasedOnStaffCostActive: !!budgetOptions.otherCostsOnStaffCostsFlatRate,
-          unitCostsWithMultipleCategoriesDefined: unitCosts.some((cost: ProgrammeUnitCost) => !cost.isOneCostCategory)
+          unitCostsWithMultipleCategoriesDefined: unitCosts.some((cost: ProgrammeUnitCost) => !cost.isOneCostCategory),
+          lumpSumsDefinedInCall: callLumpSums.length > 0
         };
       }),
       untilDestroyed(this)
