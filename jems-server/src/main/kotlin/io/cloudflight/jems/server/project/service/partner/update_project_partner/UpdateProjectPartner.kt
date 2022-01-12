@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.partner.update_project_partne
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.nuts.service.NutsService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartnerBase
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -19,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateProjectPartner(
     private val persistence: PartnerPersistence,
     private val projectPersistence: ProjectPersistence,
-    private val generalValidator: GeneralValidatorService
+    private val generalValidator: GeneralValidatorService,
+    private val nutsService: NutsService
 ) : UpdateProjectPartnerInteractor {
 
     @CanUpdateProjectPartnerBase
@@ -43,7 +45,10 @@ class UpdateProjectPartner(
     @Transactional
     @ExceptionWrapper(UpdateProjectPartnerAddressesException::class)
     override fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddress>): ProjectPartnerDetail =
-        persistence.updatePartnerAddresses(partnerId, addresses)
+        addresses.any { !nutsService.validateAddress(it.country, it.nutsRegion2, it.nutsRegion3)}.let { isAnyAddressInvalid ->
+            if(isAnyAddressInvalid) throw InvalidProjectPartnerAddressesException()
+            persistence.updatePartnerAddresses(partnerId, addresses)
+        }
 
     @CanUpdateProjectPartner
     @Transactional

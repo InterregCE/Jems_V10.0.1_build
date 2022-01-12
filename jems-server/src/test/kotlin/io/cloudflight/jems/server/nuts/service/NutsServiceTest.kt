@@ -26,7 +26,9 @@ import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.HttpMethod
@@ -37,6 +39,15 @@ import java.time.LocalDate
 import java.util.Optional
 
 class NutsServiceTest {
+
+    private val region1 = NutsRegion1(id = "CO0", title = "CO0 title", country = NutsCountry("CO", "CO title"))
+    private val region2A = NutsRegion2(id = "CO0A", title = "CO0A title", region1 = region1)
+    private val region2B = NutsRegion2(id = "CO0B", title = "CO0B title", region1 = region1)
+    private val regions = setOf(
+        NutsRegion3("CO0A0", "CO0A0 title", region2 = region2A),
+        NutsRegion3("CO0A1", "CO0A1 title", region2 = region2A),
+        NutsRegion3("CO0B1", "CO0B1 title", region2 = region2B)
+    )
 
     @MockK
     lateinit var restTemplate: RestTemplate
@@ -224,14 +235,6 @@ class NutsServiceTest {
     @Test
     fun `retrieve downloaded nuts`() {
         initMetadata(date = LocalDate.of(2020, 1, 1), title = "2020-01-01")
-        val region1 = NutsRegion1(id = "CO0", title = "CO0 title", country = NutsCountry("CO", "CO title"))
-        val region2A = NutsRegion2(id = "CO0A", title = "CO0A title", region1 = region1)
-        val region2B = NutsRegion2(id = "CO0B", title = "CO0B title", region1 = region1)
-        val regions = setOf(
-            NutsRegion3("CO0A0", "CO0A0 title", region2 = region2A),
-            NutsRegion3("CO0A1", "CO0A1 title", region2 = region2A),
-            NutsRegion3("CO0B1", "CO0B1 title", region2 = region2B)
-        )
         every { nutsRegion3Repository.findAll() } returns regions
 
         assertThat(nutsService.getNuts()).isEqualTo(
@@ -249,4 +252,31 @@ class NutsServiceTest {
         )
     }
 
+    @Test
+    fun `should return true when country and nuts are valid`(){
+        initMetadata(date = LocalDate.of(2020, 1, 1), title = "2020-01-01")
+        every { nutsRegion3Repository.findAll() } returns regions
+      assertThat(nutsService.validateAddress("CO title (CO)", "CO0A title (CO0A)", "CO0A0 title (CO0A0)")).isTrue
+    }
+
+    @TestFactory
+    fun `should return false when country and nuts are not valid`() =
+        listOf(
+            Triple("", "CO0A title (CO0A)", ""),
+            Triple("", "", "CO0A0 title (CO0A0)"),
+            Triple("AAA", "", ""),
+            Triple("CO title (CO)", "", "CO0A0 title (CO0A0)"),
+            Triple("CO title (CO)", "CO0A title (CO0A)", "AA"),
+            Triple("CO title (CO)", "AAA", ""),
+            Triple("AAA", "CO0A title (CO0A)", ""),
+        ).map{ input ->
+                DynamicTest.dynamicTest(
+                    "should return false when country and nuts are not valid county: '${input.first}', nuts: ${input.second} , nuts3: ${input.third}"
+                ) {
+                    initMetadata(date = LocalDate.of(2020, 1, 1), title = "2020-01-01")
+
+                    every { nutsRegion3Repository.findAll() } returns regions
+                    assertThat(nutsService.validateAddress("CO title (CO)", "CO0A title (CO0A)", "CO0A0 title (CO0A0)")).isTrue
+                }
+            }
 }

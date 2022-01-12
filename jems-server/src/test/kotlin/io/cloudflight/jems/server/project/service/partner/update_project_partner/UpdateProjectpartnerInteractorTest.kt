@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.nuts.service.NutsServiceImpl
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectContactType
@@ -38,6 +39,9 @@ internal class UpdateProjectPartnerInteractorTest : UnitTest() {
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
+
+    @MockK
+    lateinit var nutsService: NutsServiceImpl
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
