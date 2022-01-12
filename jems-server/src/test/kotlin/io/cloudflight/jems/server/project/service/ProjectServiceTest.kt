@@ -21,7 +21,12 @@ import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.ProjectTransl
 import io.cloudflight.jems.server.project.entity.TranslationId
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
+import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
+import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
@@ -29,12 +34,14 @@ import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
@@ -87,8 +94,29 @@ class ProjectServiceTest : UnitTest() {
         lengthOfPeriod = 1
     )
 
+    private fun wp(id: Long, project: ProjectEntity) = WorkPackageEntity(id = id, project = project).apply {
+        activities.add(
+            WorkPackageActivityEntity(
+                workPackage = this,
+                activityNumber = 1,
+                startPeriod = 10,
+                endPeriod = 12,
+            ).apply {
+                deliverables.add(
+                    WorkPackageActivityDeliverableEntity(
+                        deliverableNumber = 1,
+                        startPeriod = 11,
+                    )
+                )
+            }
+        )
+    }
+
     @RelaxedMockK
     lateinit var projectRepository: ProjectRepository
+
+    @MockK
+    lateinit var workPackageRepository: WorkPackageRepository
 
     @MockK
     lateinit var getProjectInteractor: GetProjectInteractor
@@ -98,6 +126,11 @@ class ProjectServiceTest : UnitTest() {
 
     @InjectMockKs
     lateinit var projectService: ProjectServiceImpl
+
+    @BeforeEach
+    fun reset() {
+        clearMocks(workPackageRepository)
+    }
 
     private val projectData = InputProjectData(
         acronym = "new acronym",
@@ -128,11 +161,11 @@ class ProjectServiceTest : UnitTest() {
         val slot = slot<ProjectEntity>()
         every { projectRepository.save(capture(slot)) } returnsArgument 0
 
-        projectService.update(1, projectData.copy(specificObjective = Healthcare))
+        projectService.update(1, projectData.copy(specificObjective = Healthcare, duration = null))
 
         assertThat(slot.captured.projectData).isEqualTo(
             ProjectData(
-                duration = projectData.duration,
+                duration = null,
                 translatedValues = setOf(
                     ProjectTransl(TranslationId(1, SystemLanguage.EN), title = "title", intro = "intro"),
                 ),
@@ -154,7 +187,7 @@ class ProjectServiceTest : UnitTest() {
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
 
         val ex = assertThrows<ResourceNotFoundException> {
-            projectService.update(1, projectData.copy(specificObjective = SocialInfrastructure))
+            projectService.update(1, projectData.copy(specificObjective = SocialInfrastructure, duration = null))
         }
         assertThat(ex.entity).isEqualTo("programmeSpecificObjective")
     }
@@ -207,6 +240,8 @@ class ProjectServiceTest : UnitTest() {
             acronym = "acronym",
             duration = 12
         )
+        val workPackage = wp(500L, projectToReturn)
+        every { workPackageRepository.findAllByProjectId(1) } returns listOf(workPackage)
 
         projectService.update(1, projectData)
 
@@ -217,5 +252,9 @@ class ProjectServiceTest : UnitTest() {
             ProjectPeriodEntity(ProjectPeriodId(1, 2), 7, 12),
             ProjectPeriodEntity(ProjectPeriodId(1, 3), 13, 13),
         )
+
+        assertThat(workPackage.activities.all { it.startPeriod == null }).isTrue
+        assertThat(workPackage.activities.all { it.endPeriod == null }).isTrue
+        assertThat(workPackage.activities.first().deliverables.all { it.startPeriod == null }).isTrue
     }
 }

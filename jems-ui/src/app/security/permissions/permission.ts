@@ -105,23 +105,6 @@ export class Permission {
       children: [
         {
           name: 'project.application.contract.monitoring.title',
-          children: [
-            {
-              name: 'project.application.contract.monitoring.title',
-              mode: PermissionMode.HIDDEN_VIEW_EDIT,
-              viewPermissions: [PermissionsEnum.ProjectContractingView],
-              editPermissions: [PermissionsEnum.ProjectSetToContracted],
-              editTooltip: 'permission.inspect.contracting'
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'project.application.contracting.title',
-      children: [
-        {
-          name: 'project.application.conntract.monitoring.title',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [PermissionsEnum.ProjectContractingView],
           editPermissions: [PermissionsEnum.ProjectSetToContracted],
