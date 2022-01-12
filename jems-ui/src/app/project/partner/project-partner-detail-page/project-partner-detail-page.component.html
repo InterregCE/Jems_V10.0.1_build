@@ -13,17 +13,17 @@
     <nav mat-tab-nav-bar>
         <a [active]="activeTab('identity')" mat-tab-link
            (click)="routeTo('identity')">
-            {{'partner.tab.identity' | translate}}
+            <span appText maxWidth="230">{{'partner.tab.identity' | translate}}</span>
         </a>
         <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS"
            [active]="activeTab('region')" mat-tab-link
            (click)="routeTo('region')">
-            {{'partner.tab.address' | translate}}
+            <span appText maxWidth="230">{{'partner.tab.address' | translate}}</span>
         </a>
         <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.CONTACT"
            [active]="activeTab('contact')" mat-tab-link
            (click)="routeTo('contact')">
-            {{'partner.tab.contact' | translate}}
+            <span appText maxWidth="230">{{'partner.tab.contact' | translate}}</span>
         </a>
         <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION"
            [active]="activeTab('motivation')" mat-tab-link
@@ -33,17 +33,17 @@
         <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING">
             <a [active]="activeTab('budget')" mat-tab-link
                (click)="routeTo('budget')">
-                {{'partner.tab.budget' | translate}}
+                <span appText maxWidth="230">{{'partner.tab.budget' | translate}}</span>
             </a>
             <a [active]="activeTab('coFinancing')" mat-tab-link
                (click)="routeTo('coFinancing')">
-                {{'partner.tab.coFinancing' | translate}}
+                <span appText maxWidth="230">{{'partner.tab.coFinancing' | translate}}</span>
             </a>
         </ng-container>
         <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID">
             <a [active]="activeTab('stateAid')" mat-tab-link
                (click)="routeTo('stateAid')">
-                {{'partner.tab.state.aid' | translate}}
+                <span appText maxWidth="230">{{'partner.tab.state.aid' | translate}}</span>
             </a>
         </ng-container>
     </nav>

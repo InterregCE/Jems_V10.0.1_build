@@ -5,16 +5,16 @@
     <mat-button-toggle
             value="PositiveEffects"
             (change)="selected.emit($event.value)">
-        {{'project.application.form.management.principles.table.contribution.type.positive' | translate}}
+        <span appText maxWidth="230">{{'project.application.form.management.principles.table.contribution.type.positive' | translate}}</span>
     </mat-button-toggle>
     <mat-button-toggle
             value="Neutral"
             (change)="selected.emit($event.value)">
-        {{'project.application.form.management.principles.table.contribution.type.neutral' | translate}}
+        <span appText maxWidth="230">{{'project.application.form.management.principles.table.contribution.type.neutral' | translate}}</span>
     </mat-button-toggle>
     <mat-button-toggle
             value="NegativeEffects"
             (change)="selected.emit($event.value)">
-        {{'project.application.form.management.principles.table.contribution.type.negative' | translate}}
+        <span appText maxWidth="230">{{'project.application.form.management.principles.table.contribution.type.negative' | translate}}</span>
     </mat-button-toggle>
 </mat-button-toggle-group>

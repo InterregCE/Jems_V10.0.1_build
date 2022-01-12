@@ -1,7 +1,7 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {TopBarService} from '@common/components/top-bar/top-bar.service';
 import {TestModule} from '../../test-module';
-import {MenuItemConfiguration} from '@common/components/menu/model/menu-item.configuration';
+import {MenuItemConfiguration} from '@common/components/top-bar/menu-item.configuration';
 import {Permission} from '../../../security/permissions/permission';
 import {SecurityService} from '../../../security/security.service';
 import {RouterTestingModule} from '@angular/router/testing';

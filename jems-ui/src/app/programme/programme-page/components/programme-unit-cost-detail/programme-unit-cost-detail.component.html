@@ -54,13 +54,13 @@
                     [value]="true"
                     [checked]="unitCostForm.controls.isOneCostCategory.value === true"
                     (change)="changeAllowedCategories($event.value)">
-                {{'unit.cost.toggle.allow.single' | translate}}
+                <span appText maxWidth="230">{{'unit.cost.toggle.allow.single' | translate}}</span>
             </mat-button-toggle>
             <mat-button-toggle #multiCostToggle
                     [value]="false"
                     [checked]="unitCostForm.controls.isOneCostCategory.value === false"
                     (change)="changeAllowedCategories($event.value)">
-                {{'unit.cost.toggle.allow.multiple' | translate}}
+                <span appText maxWidth="230">{{'unit.cost.toggle.allow.multiple' | translate}}</span>
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>

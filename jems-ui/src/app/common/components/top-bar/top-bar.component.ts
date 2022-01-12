@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable} from 'rxjs';
 import {OutputCurrentUser} from '@cat/api';
-import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
+import {MenuItemConfiguration} from './menu-item.configuration';
 import {TopBarService} from '@common/components/top-bar/top-bar.service';
 import {LanguageStore} from '../../services/language-store.service';
 import {finalize, map, withLatestFrom} from 'rxjs/operators';
