@@ -12,7 +12,6 @@ import {BreadcrumbComponent} from '@common/components/breadcrumb/breadcrumb.comp
 import {AlertComponent} from '@common/components/forms/form-validation/alert.component';
 import {ExpandableTextareaComponent} from '@common/components/expandable-textarea/expandable-textarea.component';
 import {TopBarComponent} from '@common/components/top-bar/top-bar.component';
-import {MenuComponent} from '@common/components/menu/menu.component';
 import {FormFieldErrorsComponent} from '@common/components/forms/form-field-errors/form-field-errors.component';
 import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
@@ -87,7 +86,6 @@ const declarations = [
   AlertComponent,
   ExpandableTextareaComponent,
   TopBarComponent,
-  MenuComponent,
   FormFieldErrorsComponent,
   ConfirmDialogComponent,
   HelpMenuComponent,

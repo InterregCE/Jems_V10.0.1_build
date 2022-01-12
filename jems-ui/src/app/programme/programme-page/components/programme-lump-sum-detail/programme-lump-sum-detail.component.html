@@ -48,13 +48,13 @@
                     value="Yes"
                     [checked]="previousSplitting === 'Yes'"
                     (change)="changeSplitting($event.value)">
-                {{'common.yes' | translate}}
+                <span appText maxWidth="230">{{'common.yes' | translate}}</span>
             </mat-button-toggle>
             <mat-button-toggle
                     value="No"
                     [checked]="previousSplitting === 'No'"
                     (change)="changeSplitting($event.value)">
-                {{'common.no' | translate}}
+                <span appText maxWidth="230">{{'common.no' | translate}}</span>
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
@@ -71,19 +71,19 @@
                     value="{{ProgrammeLumpSumDTO.PhaseEnum.Preparation}}"
                     [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Preparation"
                     (change)="changePhase($event.value)">
-                {{'lump.sum.phase.preparation' | translate}}
+                <span appText maxWidth="230">{{'lump.sum.phase.preparation' | translate}}</span>
             </mat-button-toggle>
             <mat-button-toggle
                     value="{{ProgrammeLumpSumDTO.PhaseEnum.Implementation}}"
                     [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Implementation"
                     (change)="changePhase($event.value)">
-                {{'lump.sum.phase.implementation' | translate}}
+                <span appText maxWidth="230">{{'lump.sum.phase.implementation' | translate}}</span>
             </mat-button-toggle>
             <mat-button-toggle
                     value="{{ProgrammeLumpSumDTO.PhaseEnum.Closure}}"
                     [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Closure"
                     (change)="changePhase($event.value)">
-                {{'lump.sum.phase.closure' | translate}}
+                <span appText maxWidth="230">{{'lump.sum.phase.closure' | translate}}</span>
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>

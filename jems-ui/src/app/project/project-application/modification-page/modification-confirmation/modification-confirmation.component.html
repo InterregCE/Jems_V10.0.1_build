@@ -13,10 +13,10 @@
             </div>
             <mat-button-toggle-group formControlName="status">
                 <mat-button-toggle #approvedToggle [value]="ProjectStatus.APPROVED">
-                    {{'project.application.form.section.modification.approve' | translate}}
+                    <span appText maxWidth="230">{{'project.application.form.section.modification.approve' | translate}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle #rejectedToggle [value]="ProjectStatus.MODIFICATIONREJECTED">
-                    {{'project.application.form.section.modification.reject' | translate}}
+                    <span appText maxWidth="230">{{'project.application.form.section.modification.reject' | translate}}</span>
                 </mat-button-toggle>
             </mat-button-toggle-group>
 

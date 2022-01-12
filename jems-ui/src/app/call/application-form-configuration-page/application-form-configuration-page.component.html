@@ -54,11 +54,11 @@
                                 [formControl]="availableInStep(node.data)">
                             <mat-button-toggle [value]="AvailableInStepEnum.STEPONEANDTWO">
                                 <mat-icon>edit</mat-icon>
-                                {{'call.detail.application.form.config.step.one.and.two' | translate}}
+                                <span appText maxWidth="230">{{'call.detail.application.form.config.step.one.and.two' | translate}}</span>
                             </mat-button-toggle>
                             <mat-button-toggle [value]="AvailableInStepEnum.STEPTWOONLY">
                                 <mat-icon>edit</mat-icon>
-                                {{'call.detail.application.form.config.step.two.only' | translate}}
+                                <span appText maxWidth="230">{{'call.detail.application.form.config.step.two.only' | translate}}</span>
                             </mat-button-toggle>
                         </mat-button-toggle-group>
                     </td>

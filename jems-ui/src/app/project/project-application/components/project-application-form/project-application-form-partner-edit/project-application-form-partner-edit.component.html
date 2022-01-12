@@ -26,10 +26,10 @@
 
                 <mat-button-toggle-group name="partnerToggle" formControlName="role">
                     <mat-button-toggle #togglePartner [value]="RoleEnum.PARTNER">
-                        {{'common.label.project.partner.role.PARTNER' | translate}}
+                        <span appText maxWidth="230">{{'common.label.project.partner.role.PARTNER' | translate}}</span>
                     </mat-button-toggle>
                     <mat-button-toggle #toggleLeadpartner [value]="RoleEnum.LEADPARTNER">
-                        {{'common.label.project.partner.role.LEAD_PARTNER' | translate}}
+                        <span appText maxWidth="230">{{'common.label.project.partner.role.LEAD_PARTNER' | translate}}</span>
                     </mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
@@ -164,13 +164,13 @@
 
             <mat-button-toggle-group formControlName="vatRecovery">
                 <mat-button-toggle [value]="VatRecoveryEnum.Yes">
-                    {{'common.label.project.partner.recoverVat.true' | translate}}
+                    <span appText maxWidth="230">{{'common.label.project.partner.recoverVat.true' | translate}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle [value]="VatRecoveryEnum.Partly">
-                    {{'common.label.project.partner.recoverVat.partly' | translate}}
+                    <span appText maxWidth="230">{{'common.label.project.partner.recoverVat.partly' | translate}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle [value]="VatRecoveryEnum.No">
-                    {{'common.label.project.partner.recoverVat.false' | translate}}
+                    <span appText maxWidth="230">{{'common.label.project.partner.recoverVat.false' | translate}}</span>
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </ng-container>
