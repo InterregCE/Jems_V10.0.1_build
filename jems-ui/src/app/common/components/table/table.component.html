@@ -22,7 +22,7 @@
                              [mat-sort-header]="column.sortProperty"
                              [class.justify-end]="column.columnType === ColumnType.Decimal" class="cell"
                              [arrowPosition]="column.columnType === ColumnType.Decimal ? 'before' : 'after'">
-                {{column.displayedColumn | translate}}
+                <span appText maxLines="2">{{column.displayedColumn | translate}}</span>
             </mat-header-cell>
         </ng-container>
 
@@ -32,8 +32,10 @@
                     [class.extra-wide-column-width]="column.columnWidth === ColumnWidth.extraWideColumn"
                     [class.id-column-width]="column.columnWidth === ColumnWidth.IdColumn"
                     [class.date-column-width]="column.columnWidth === ColumnWidth.DateColumn"
-                    [class.narrow-column-width]="column.columnWidth === ColumnWidth.NarrowColumn"
-                    *matHeaderCellDef class="cell">{{column.displayedColumn | translate}}</mat-header-cell>
+	            [class.narrow-column-width]="column.columnWidth === ColumnWidth.NarrowColumn"
+                    *matHeaderCellDef class="cell">
+                <span appText maxLines="2">{{column.displayedColumn | translate}}</span>
+            </mat-header-cell>
         </ng-template>
 
         <mat-cell *matCellDef="let row"

@@ -3,24 +3,32 @@
                [dataSource]="dataSource" appNoWidthLimit>
 
         <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef>{{'file.table.column.name.name' | translate }}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>
+                <span appText maxLines="2">{{'file.table.column.name.name' | translate }}</span>
+            </mat-header-cell>
             <mat-cell *matCellDef="let file">{{ file?.name }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="uploadDate">
-            <mat-header-cell *matHeaderCellDef>{{'file.table.column.name.timestamp' | translate }}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>
+                <span appText maxLines="2">{{'file.table.column.name.timestamp' | translate }}</span>
+            </mat-header-cell>
             <mat-cell *matCellDef="let file">
                 {{ file?.uploadedAt | localeDate: 'L' : 'LT'}}
             </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="user">
-            <mat-header-cell *matHeaderCellDef>{{'file.table.column.name.username' | translate }}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>
+                <span appText maxLines="2">{{'file.table.column.name.username' | translate }}</span>
+            </mat-header-cell>
             <mat-cell *matCellDef="let file">{{ file?.uploadedBy?.email }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="description">
-            <mat-header-cell *matHeaderCellDef>{{'file.table.column.name.description' | translate }}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>
+                <span appText maxLines="2">{{'file.table.column.name.description' | translate }}</span>
+            </mat-header-cell>
             <mat-cell *matCellDef="let file">
                 <app-description-cell
                         (editFinished)="editableDescriptionFileId = null"
@@ -33,7 +41,7 @@
 
         <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef class="justify-end">
-                {{'file.table.column.name.action' | translate }}
+                <span appText maxLines="2">{{'file.table.column.name.action' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file" class="justify-end">
                 <app-actions-cell

@@ -4,12 +4,13 @@ import {Directive, ElementRef, Input, OnInit} from '@angular/core';
   selector: '[appText]',
 })
 export class TextDirective implements OnInit {
-  private static readonly DEFAULT_MAX_WIDTH = 685;
 
   private title: string;
 
   @Input()
   maxWidth: number;
+  @Input()
+  minWidth: string;
   @Input()
   maxLines: number;
 
@@ -17,7 +18,6 @@ export class TextDirective implements OnInit {
   }
 
   ngOnInit(): void {
-    const width = this.maxWidth || TextDirective.DEFAULT_MAX_WIDTH;
     if (this.maxLines) {
       this.el.nativeElement.style.display = '-webkit-box';
       this.el.nativeElement.style['-webkit-box-orient'] = 'vertical';
@@ -27,11 +27,13 @@ export class TextDirective implements OnInit {
     this.el.nativeElement.style.overflow = 'hidden';
     this.el.nativeElement.style['text-overflow'] = 'ellipsis';
     this.title = this.el.nativeElement.title;
-    this.el.nativeElement.style.minWidth = '5em';
+    if (this.minWidth) {
+      this.el.nativeElement.style.minWidth = '5em';
+    }
     this.el.nativeElement.style.maxWidth = '100%';
     new ResizeObserver(res => {
-      if (this.el.nativeElement.getBoundingClientRect().width > width) {
-        this.el.nativeElement.style.width = `${width}px`;
+      if (this.maxWidth && this.el.nativeElement.getBoundingClientRect().width > this.maxWidth) {
+        this.el.nativeElement.style.width = `${this.maxWidth}px`;
       }
       this.setTitle();
     }).observe(this.el.nativeElement);
