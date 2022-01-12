@@ -73,12 +73,12 @@ export class ProjectTimeplanPageComponent {
 
     this.workPackagesUnavailable$ = data$
       .pipe(
-        map(data => !data.workPackages.length),
+        map(data => !data.workPackages.length && !data.results.length),
       );
 
     this.dataAvailable$ = data$
       .pipe(
-        map(data => !!data.workPackages.length && !!data.periods.length),
+        map(data => (!!data.workPackages.length || !!data.results.length) && !!data.periods.length),
       );
   }
 

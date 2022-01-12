@@ -76,7 +76,7 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.project) {
+    if (changes.project || changes.specificObjective) {
       this.resetForm();
     }
   }

@@ -13,7 +13,7 @@
                        [show]="workPackagesUnavailable$ | async">
                 <p>{{'project.application.form.section.part.c.subsection.six.no.data' | translate}}</p>
             </app-alert>
-        <div appNoWidthLimit>
+        <div appNoWidthLimit [hidden]="workPackagesUnavailable$ | async">
             <app-multi-language-container [switchButtonsVisible]="dataAvailable$ | async">
                 <div #visualization (click)="click($event)"></div>
             </app-multi-language-container>

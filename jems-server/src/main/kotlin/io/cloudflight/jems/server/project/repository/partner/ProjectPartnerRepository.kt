@@ -201,8 +201,11 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              entity.name_in_original_language AS nameInOriginalLanguage,
              entity.name_in_english AS nameInEnglish,
              entity.partner_type AS partnerType,
+             entity.partner_sub_type AS partnerSubType,
+             entity.other_identifier_number AS otherIdentifierNumber,
              entity.vat_recovery AS vatRecovery,
-             translation.*
+             translation.*,
+             translation.other_identifier_description AS otherIdentifierDescription
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.source_entity_id
              WHERE entity.id = :id
