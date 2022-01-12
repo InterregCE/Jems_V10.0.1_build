@@ -2,8 +2,8 @@ import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/cor
 import {InputProjectManagement} from '@cat/api';
 import {ProjectApplicationFormManagementSectionComponent} from './project-application-form-management-section.component';
 import {HttpTestingController} from '@angular/common/http/testing';
-import {TestModule} from '../../../../../common/test-module';
-import {ProjectModule} from '../../../../project.module';
+import {TestModule} from '@common/test-module';
+import {ProjectModule} from '@project/project.module';
 import {ActivatedRoute} from '@angular/router';
 
 describe('ProjectApplicationFormManagementSectionComponent', () => {

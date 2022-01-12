@@ -1,8 +1,8 @@
 import {TestBed} from '@angular/core/testing';
 
 import {ProjectApplicationFormSidenavService} from './project-application-form-sidenav.service';
-import {TestModule} from '../../../../../common/test-module';
-import {ProjectModule} from '../../../../project.module';
+import {TestModule} from '@common/test-module';
+import {ProjectModule} from '@project/project.module';
 
 describe('ProjectApplicationFormSIdenavService', () => {
   let service: ProjectApplicationFormSidenavService;
