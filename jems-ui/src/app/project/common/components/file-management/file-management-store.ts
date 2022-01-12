@@ -23,6 +23,7 @@ import {ProjectPartnerStore} from '@project/project-application/containers/proje
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {DownloadService} from '@common/services/download.service';
 
 @Injectable({
   providedIn: 'root'
@@ -57,7 +58,8 @@ export class FileManagementStore {
               private projectStore: ProjectStore,
               private projectPartnerStore: ProjectPartnerStore,
               private permissionService: PermissionService,
-              private visibilityStatusService: FormVisibilityStatusService
+              private visibilityStatusService: FormVisibilityStatusService,
+              private downloadService: DownloadService
   ) {
     this.projectStatus$ = this.projectStore.projectStatus$;
     this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
@@ -123,10 +125,7 @@ export class FileManagementStore {
       .pipe(
         take(1),
         switchMap(projectId => {
-          window.open(
-            `/api/project/${projectId}/file/download/${fileId}`,
-            '_blank',
-          );
+         this.downloadService.download(`/api/project/${projectId}/file/download/${fileId}`, 'translation.properties');
           return of(null);
         })
       );

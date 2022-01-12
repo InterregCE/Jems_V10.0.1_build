@@ -11,6 +11,7 @@ import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
 import FileTypeEnum = TranslationFileMetaDataDTO.FileTypeEnum;
 import {ProgrammeEditableStateStore} from '../programme-page/services/programme-editable-state-store.service';
+import {DownloadService} from '@common/services/download.service';
 
 @UntilDestroy()
 @Component({
@@ -26,6 +27,8 @@ export class TranslationManagementPageComponent {
   displayedColumns: string[] = ['language', 'fileName', 'lastModified', 'action'];
   applicationTranslationFileDataSource = new MatTableDataSource<TranslationFileMetaDataDTO>();
   systemTranslationFileDataSource = new MatTableDataSource<TranslationFileMetaDataDTO>();
+  isApplicationTranslationDownloadInProgress$ = new BehaviorSubject(false);
+  isSystemTranslationDownloadInProgress$ = new BehaviorSubject(false);
   data$: Observable<{
     error: APIError | null;
     fileNameWarning: string | null;
@@ -47,7 +50,9 @@ export class TranslationManagementPageComponent {
 
   constructor(public translationManagementStore: TranslationManagementStore,
               private programmePageSidenavService: ProgrammePageSidenavService,
-              public programmeEditableStateStore: ProgrammeEditableStateStore) {
+              public programmeEditableStateStore: ProgrammeEditableStateStore,
+              private downloadService: DownloadService
+              ) {
 
     this.data$ = combineLatest([this.inProgressUploads$, this.error$, this.fileNameWarning$, this.translationManagementStore.systemLanguages$, this.translationManagementStore.applicationTranslationFileList$, this.translationManagementStore.systemTranslationFileList$]).pipe(
       map(([inProgressUploads, error, fileNameWarning, systemLanguages, applicationTranslationFiles, systemTranslationFiles]) => {
@@ -100,19 +105,16 @@ export class TranslationManagementPageComponent {
 
   downloadDefaultTranslationFile(fileType: FileTypeEnum): void {
     if (fileType) {
-      window.open(
-        `/api/translationFile/${fileType}`,
-        '_blank',
-      );
+      this.getInProgressSubjectByFileType(fileType).next(true);
+      this.downloadService.download(`/api/translationFile/${fileType}`, 'default-translation.properties').pipe(
+        finalize(() => this.getInProgressSubjectByFileType(fileType).next(false))
+      ).subscribe();
     }
   }
 
   downloadTranslationFile(fileType: FileTypeEnum, language: string): void {
     if (fileType && language) {
-      window.open(
-        `/api/translationFile/${fileType}/${language}/`,
-        '_blank',
-      );
+      this.downloadService.download(`/api/translationFile/${fileType}/${language}/`, 'translation.properties');
     }
   }
 
@@ -122,5 +124,9 @@ export class TranslationManagementPageComponent {
 
   getFileName(fileType: FileTypeEnum, language: string): string {
     return `${fileType}_${language.toLowerCase()}.properties`;
+  }
+
+  getInProgressSubjectByFileType(fileType: FileTypeEnum): BehaviorSubject<Boolean> {
+    return fileType === FileTypeEnum.Application ? this.isApplicationTranslationDownloadInProgress$ : this.isSystemTranslationDownloadInProgress$;
   }
 }
