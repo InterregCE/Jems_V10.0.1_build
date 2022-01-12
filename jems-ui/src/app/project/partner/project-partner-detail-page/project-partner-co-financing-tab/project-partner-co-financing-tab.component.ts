@@ -18,7 +18,7 @@ import {
   ProjectPartnerCoFinancingOutputDTO,
   ProjectPartnerContributionDTO
 } from '@cat/api';
-import {catchError, map, startWith, tap} from 'rxjs/operators';
+import {catchError, filter, map, startWith, tap} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormService} from '@common/components/section/form/form.service';
@@ -28,6 +28,9 @@ import {ProjectPartnerDetailPageStore} from '../project-partner-detail-page.stor
 import {ProjectPartnerCoFinancingTabConstants} from './project-partner-co-financing-tab.constants';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {ActivatedRoute} from '@angular/router';
+import {RoutingService} from '@common/services/routing.service';
 
 
 const totalContributionValidator = (expectedAmount: number): ValidatorFn => (formArray: FormArray) => {
@@ -77,7 +80,16 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
 
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,
-              private pageStore: ProjectPartnerDetailPageStore) {
+              private pageStore: ProjectPartnerDetailPageStore,
+              private router: RoutingService,
+              private activatedRoute: ActivatedRoute,
+              private visibilityStatusService: FormVisibilityStatusService
+              ) {
+    visibilityStatusService.isVisible$((APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING)).pipe(
+      untilDestroyed(this),
+      filter(isVisible => !isVisible),
+      tap(() => this.router.navigate(['../identity'], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
+    ).subscribe();
   }
 
   get partnerAmount(): FormControl {

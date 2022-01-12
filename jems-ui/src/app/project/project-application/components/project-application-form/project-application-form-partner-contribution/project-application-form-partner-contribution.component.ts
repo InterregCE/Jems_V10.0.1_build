@@ -3,10 +3,15 @@ import {FormBuilder} from '@angular/forms';
 import {ProjectPartnerDetailDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
-import {catchError, take, tap} from 'rxjs/operators';
+import {catchError, filter, take, tap} from 'rxjs/operators';
 import { APPLICATION_FORM } from '@project/common/application-form-model';
 import {Observable} from 'rxjs';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {RoutingService} from '@common/services/routing.service';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {ActivatedRoute} from '@angular/router';
 
+@UntilDestroy()
 @Component({
   selector: 'app-project-application-form-partner-contribution',
   templateUrl: './project-application-form-partner-contribution.component.html',
@@ -27,7 +32,16 @@ export class ProjectApplicationFormPartnerContributionComponent {
 
   constructor(private formBuilder: FormBuilder,
               private partnerStore: ProjectPartnerStore,
-              private formService: FormService) {
+              private formService: FormService,
+              private activatedRoute: ActivatedRoute,
+              private router: RoutingService,
+              private visibilityStatusService: FormVisibilityStatusService
+              ) {
+    visibilityStatusService.isVisible$((APPLICATION_FORM.SECTION_B.MOTIVATION)).pipe(
+      untilDestroyed(this),
+      filter(isVisible => !isVisible),
+      tap(() => this.router.navigate(['../identity'], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
+    ).subscribe();
     this.formService.init(this.partnerContributionForm, this.partnerStore.isProjectEditable$);
     this.partner$ = this.partnerStore.partner$
       .pipe(
