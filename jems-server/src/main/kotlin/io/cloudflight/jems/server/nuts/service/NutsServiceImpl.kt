@@ -4,6 +4,7 @@ import com.github.doyaaaaaken.kotlincsv.client.CsvFileReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.nuts.dto.OutputNutsMetadata
+import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.nuts.entity.NutsMetadata
@@ -12,7 +13,6 @@ import io.cloudflight.jems.server.nuts.repository.NutsMetadataRepository
 import io.cloudflight.jems.server.nuts.repository.NutsRegion1Repository
 import io.cloudflight.jems.server.nuts.repository.NutsRegion2Repository
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.programme.authorization.CanRetrieveNuts
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import org.apache.tomcat.util.json.JSONParser
@@ -114,19 +114,47 @@ class NutsServiceImpl(
         return groupNuts(nutsRegion3Repository.findAll()).toOutputNuts()
     }
 
+    override fun validateAddress(
+        countryAndCode: String?, nutsRegion2AndCode: String?, nutsRegion3AndCode: String?
+    ): Boolean =
+        when {
+            countryAndCode.isNullOrBlank() -> {
+                nutsRegion2AndCode.isNullOrBlank() && nutsRegion3AndCode.isNullOrBlank()
+            }
+            nutsRegion2AndCode.isNullOrBlank() -> {
+                getNuts().firstOrNull { formatRegion(it) == countryAndCode } != null && nutsRegion3AndCode.isNullOrBlank()
+            }
+            else -> {
+                getNuts().firstOrNull {
+                    formatRegion(it) == countryAndCode
+                }?.areas?.flatMap { it.areas }?.firstOrNull { formatRegion(it) == nutsRegion2AndCode }?.let { region2 ->
+                    return nutsRegion3AndCode.isNullOrBlank() || region2.areas.firstOrNull {
+                        formatRegion(it) == nutsRegion3AndCode
+                    } != null
+                }
+                false
+            }
+        }
+
     private fun extractNutsFromGiscoDatasets(url: String): LinkedHashMap<String, String> {
-        val datasets = (JSONParser(restTemplate.getForObject(
-            url,
-            String::class.java)).parse()) as LinkedHashMap<String, *>
+        val datasets = (JSONParser(
+            restTemplate.getForObject(
+                url,
+                String::class.java
+            )
+        ).parse()) as LinkedHashMap<String, *>
         val nutsKeys = datasets.keys.distinct()
         val lastNutsKey = nutsKeys.get(nutsKeys.size - 1)
         return datasets[lastNutsKey] as LinkedHashMap<String, String>
     }
 
     private fun getCsvFileName(nutsFile: String): String {
-        val nutFile = (JSONParser(restTemplate.getForObject(
-            "$GISCO_NUTS_URL/$nutsFile",
-            String::class.java)).parse()) as LinkedHashMap<String, *>
+        val nutFile = (JSONParser(
+            restTemplate.getForObject(
+                "$GISCO_NUTS_URL/$nutsFile",
+                String::class.java
+            )
+        ).parse()) as LinkedHashMap<String, *>
 
         return (nutFile["csv"] as LinkedHashMap<String, String>).values.iterator().next()
     }
@@ -158,4 +186,6 @@ class NutsServiceImpl(
         return NutsMetadata(nutsDate = date, nutsTitle = title)
     }
 
+    private fun formatRegion(region: OutputNuts) =
+        "${region.title} (${region.code})"
 }
