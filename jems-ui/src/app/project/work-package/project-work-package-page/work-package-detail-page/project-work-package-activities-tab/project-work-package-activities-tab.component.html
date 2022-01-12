@@ -9,7 +9,7 @@
                         <div class="activity-header" appNoWidthLimit appMultiColumnRow justifyContent="space-between">
                             <h4 appMultiColumnRow class="mb-0">
                                 <span>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
-                                <span appFormFieldWidth="44rem"
+                                <span appFormFieldWidth="full"
                                       *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE"
                                       class="text-overflow-ellipsis">{{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                             </h4>
