@@ -89,7 +89,11 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
 
   resetForm(): void {
     if (this.specificObjective) {
-      this.overallObjectiveForm.controls.projectSpecificObjective.setValue(this.translate.instant('programme.policy.' + this.specificObjective.programmeObjectivePolicy));
+      this.overallObjectiveForm.controls.projectSpecificObjective.setValue(
+        this.specificObjective.code
+          .concat(': ')
+          .concat(this.translate.instant('programme.policy.' + this.specificObjective.programmeObjectivePolicy))
+      );
     }
     this.overallObjectiveForm.get('projectOverallObjective')?.setValue(this.project?.overallObjective || []);
   }

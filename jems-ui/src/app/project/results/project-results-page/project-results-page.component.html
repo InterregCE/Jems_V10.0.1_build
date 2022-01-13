@@ -31,7 +31,7 @@
                                         (selectionChange)="updateBaseLineData($event, data.resultIndicators, i)">
                                 <mat-option *ngFor="let resultIndicator of data.resultIndicators"
                                             [value]="resultIndicator.id">
-                                    {{resultIndicator.name | translateBySystemLanguage | async}}
+                                    {{resultIndicator.identifier + ': '}} {{resultIndicator.name | translateBySystemLanguage | async}}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
