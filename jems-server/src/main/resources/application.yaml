@@ -65,6 +65,7 @@ management:
       enabled: "${AUDIT_ENABLED:true}"
 info:
   helpdesk-url: "https://helpdesk.interact-eu.net"
+  helpdesk-email: "jems@interact-eu.net"
   accessibility-statement-url: ""
   terms-privacy-policy-url: ""
 app:

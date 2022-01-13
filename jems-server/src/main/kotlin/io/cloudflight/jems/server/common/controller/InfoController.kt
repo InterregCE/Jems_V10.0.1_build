@@ -20,6 +20,7 @@ class InfoController(
         commitIdShort = serverModuleIdentification.getIdShort(),
         commitTime = serverModuleIdentification.getTime()?.let { ZonedDateTime.ofInstant(it, ZoneId.systemDefault()) },
         helpdeskUrl = infoEndpoint.info()["helpdesk-url"]?.toString() ?: "",
+        helpdeskEmail = infoEndpoint.info()["helpdesk-email"]?.toString() ?: "",
         accessibilityStatementUrl = infoEndpoint.info()["accessibility-statement-url"]?.toString() ?: "",
         termsAndPrivacyPolicyUrl = infoEndpoint.info()["terms-privacy-policy-url"]?.toString() ?: "",
     )
