@@ -39,7 +39,7 @@
                                     [formControlName]="constants.RESULT_INDICATOR.name">
                             <mat-option *ngFor="let resultIndicator of data.outputIndicators"
                                         [value]="resultIndicator.id">
-                                {{resultIndicator.name | translateBySystemLanguage | async}}
+                                {{resultIndicator.identifier + ': '}} {{resultIndicator.name | translateBySystemLanguage | async}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>

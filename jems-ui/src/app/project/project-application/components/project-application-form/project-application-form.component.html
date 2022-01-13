@@ -115,8 +115,8 @@
                     <mat-radio-button
                             (change)="selectedSpecificObjective= $event.value"
                             *ngFor="let objective of objectivesWithPolicies[currentPriority]"
-                            [value]="objective">
-                        <div>{{'programme.policy.' + objective | translate}}</div>
+                            [value]="objective.programmeObjectivePolicy">
+                        <div>{{objective.code + ': '}} {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}</div>
                     </mat-radio-button>
                 </mat-radio-group>
             </ng-container>
