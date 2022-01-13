@@ -1,11 +1,14 @@
 package io.cloudflight.jems.server.project.repository
 
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
 import io.cloudflight.jems.server.call.repository.toModel
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.repository.costoption.toModel
 import io.cloudflight.jems.server.programme.repository.costoption.toProgrammeUnitCost
@@ -160,7 +163,8 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
     assessmentStep1: ProjectAssessmentEntity,
     assessmentStep2: ProjectAssessmentEntity,
     stateAidEntities: MutableSet<ProjectCallStateAidEntity>,
-    applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>
+    applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>,
+    priority: ProgrammePriorityEntity?
 ) =
     this.groupBy { it.id }.map { groupedRows ->
         ProjectFull(
@@ -171,11 +175,13 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
             intro = groupedRows.value.extractField { it.intro },
             duration = groupedRows.value.first().duration,
             periods = periods,
+            specificObjective = mapOutputProgrammePriorityPolicy(
+                groupedRows.value.first().programmePriorityPolicyObjectivePolicy,
+                groupedRows.value.first().programmePriorityPolicyCode),
             // map non historic data
             callSettings = project.call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities),
             applicant = project.applicant.toUserSummary(),
-            specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy(),
-            programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
+            programmePriority = priority?.toOutputProgrammePrioritySimple(),
             projectStatus = ProjectStatus(
                 groupedRows.value.first().statusId,
                 groupedRows.value.first().status,
@@ -201,6 +207,16 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
             assessmentStep2 = assessmentStep2.toModel(),
         )
     }.first()
+
+fun mapOutputProgrammePriorityPolicy(policy: String?, code: String?): OutputProgrammePriorityPolicySimpleDTO? {
+    if (policy != null && code != null) {
+        return OutputProgrammePriorityPolicySimpleDTO(
+            programmeObjectivePolicy = ProgrammeObjectivePolicy.valueOf(policy),
+            code = code
+        )
+    }
+    return null
+}
 
 fun List<ProjectPeriodRow>.toProjectPeriodHistoricalData() = map {
     ProjectPeriod(it.periodNumber!!, it.periodStart!!, it.periodEnd!!)

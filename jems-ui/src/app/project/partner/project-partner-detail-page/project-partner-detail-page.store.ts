@@ -181,12 +181,18 @@ export class ProjectPartnerDetailPageStore {
         projectLumpSums.filter(it => it.lumpSumContributions.some(contribution => contribution.partnerId === partner.id && contribution.amount > 0))
           .map(lumpSum => {
             const callLumpSum = callLumpSums.find(it => it.id === lumpSum.programmeLumpSumId);
-            return new PartnerLumpSum(callLumpSum?.name || [], callLumpSum?.description || [], callLumpSum?.cost, lumpSum.period, lumpSum.lumpSumContributions.find(it=> it.partnerId === partner.id)?.amount || 0);
+            return new PartnerLumpSum(
+              callLumpSum?.name || [],
+              callLumpSum?.description || [],
+              callLumpSum?.cost,
+              lumpSum.period,
+              lumpSum.lumpSumContributions.find(it=> it.partnerId === partner.id)?.amount || 0
+            );
           })
       ),
       shareReplay(1)
     );
-  };
+  }
 
   private partnerTotalLumpSum(): Observable<number> {
     return combineLatest([

@@ -6,14 +6,12 @@ import io.cloudflight.jems.server.user.service.model.UserStatus
 import java.sql.Timestamp
 import java.time.LocalDate
 
-
 interface ProjectRow: TranslationView {
     val id: Long
     val customIdentifier: String
 
     // NON-historic data
     // call - project_call
-    // priorityPolicy - programme_priority_specific_objective
     // firstSubmission - project_status
     // lastResubmission - project_status
     // applicant - account
@@ -26,6 +24,11 @@ interface ProjectRow: TranslationView {
     // projectData - project_transl
     val title: String?
     val intro: String?
+
+    // priorityPolicy - programme_priority_specific_objective
+    val programmePriorityPolicyObjectivePolicy: String?
+    val programmePriorityPolicyCode: String?
+    val programmePriorityId: Long?
 
     // current Status
     val statusId: Long?

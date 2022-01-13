@@ -23,6 +23,10 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
              entity.custom_identifier as customIdentifier,
              translation.*,
 
+             entity.programme_priority_policy_objective_policy as programmePriorityPolicyObjectivePolicy,
+             programmePrioObj.code as programmePriorityPolicyCode,
+             programmePrioObj.programme_priority_id as programmePriorityId,
+
              ps.id as statusId,
              ps.status,
              ps.updated,
@@ -44,6 +48,7 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
              LEFT JOIN project_status AS ps ON ps.id = entity.project_status_id
              LEFT JOIN account AS account ON account.id = ps.account_id
              LEFT JOIN account_role AS accountRole ON accountRole.id = account.account_role_id
+             LEFT JOIN programme_priority_specific_objective AS programmePrioObj ON entity.programme_priority_policy_objective_policy = programmePrioObj.programme_objective_policy_code
 
              WHERE entity.id = :id
              ORDER BY entity.id

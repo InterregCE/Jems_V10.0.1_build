@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
+import {Observable} from 'rxjs';
 import {ProjectStatusService} from '@cat/api';
 import {shareReplay, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';

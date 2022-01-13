@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -34,6 +35,7 @@ import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEnt
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.toModel
+import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
@@ -112,6 +114,11 @@ internal class ProjectPersistenceTest : UnitTest() {
             ProjectCallStateAidEntity(
                 StateAidSetupId(dummyCall(), stateAidEntity)
             )
+        )
+        val programmePriority = ProgrammePriorityEntity(
+            id = 3L,
+            code = "PO3",
+            objective = ProgrammeObjectivePolicy.AdvancedTechnologies.objective
         )
 
         private fun dummyCall(): CallEntity {
@@ -241,6 +248,9 @@ internal class ProjectPersistenceTest : UnitTest() {
     @MockK
     lateinit var callPersistence: CallPersistenceProvider
 
+    @MockK
+    lateinit var programmePriorityRepository: ProgrammePriorityRepository
+
     private lateinit var persistence: ProjectPersistenceProvider
 
     @BeforeEach
@@ -257,7 +267,8 @@ internal class ProjectPersistenceTest : UnitTest() {
             userRepository,
             callRepository,
             stateAidRepository,
-            applicationFormFieldConfigurationRepository
+            applicationFormFieldConfigurationRepository,
+            programmePriorityRepository
         )
     }
 
@@ -519,6 +530,9 @@ internal class ProjectPersistenceTest : UnitTest() {
         every { mockRow.userStatus } returns UserStatus.ACTIVE
         every { mockRow.roleId } returns 1L
         every { mockRow.roleName } returns "ADMIN"
+        every { mockRow.programmePriorityPolicyObjectivePolicy } returns "AdvancedTechnologies"
+        every { mockRow.programmePriorityPolicyCode } returns "AT1"
+        every { mockRow.programmePriorityId } returns 3L
         every { mockPeriodRow.periodNumber } returns 1
         every { mockPeriodRow.periodStart } returns 1
         every { mockPeriodRow.periodEnd } returns 12
@@ -533,6 +547,7 @@ internal class ProjectPersistenceTest : UnitTest() {
             mockPeriodRow
         )
         every { projectRepository.findByIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+        every { programmePriorityRepository.findById(3L) } returns Optional.of(programmePriority)
         every { stateAidRepository.findAllByIdCallId(project.call.id) } returns stateAidEntities
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
 
@@ -564,8 +579,8 @@ internal class ProjectPersistenceTest : UnitTest() {
                         stateAidEntities,
                         applicationFormFieldConfigurationEntities
                     ),
-                    programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
-                    specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
+                    specificObjective = OutputProgrammePriorityPolicySimpleDTO(ProgrammeObjectivePolicy.AdvancedTechnologies, "AT1"),
+                    programmePriority = programmePriority.toOutputProgrammePrioritySimple()
                 )
             )
     }

@@ -4,6 +4,8 @@ import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurat
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.repository.ProjectCallStateAidRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
+import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
@@ -42,7 +44,8 @@ class ProjectPersistenceProvider(
     private val userRepository: UserRepository,
     private val callRepository: CallRepository,
     private val stateAidRepository: ProjectCallStateAidRepository,
-    private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository
+    private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
+    private val programmePriorityRepository: ProgrammePriorityRepository
 ) : ProjectPersistence {
 
     @Transactional(readOnly = true)
@@ -187,18 +190,21 @@ class ProjectPersistenceProvider(
     ): ProjectFull {
         val periods =
             projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData()
-        return projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
-            .toProjectEntryWithDetailData(
+        val projectRows = projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
+        return projectRows.toProjectEntryWithDetailData(
                 project,
                 periods,
                 assessmentStep1,
                 assessmentStep2,
                 stateAidRepository.findAllByIdCallId(project.call.id),
-                applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id)
+                applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id),
+                priority = getPriority(priorityId = projectRows.firstOrNull()?.programmePriorityId)
             )
     }
 
-    private fun ProjectEntity.idInStep(step: Int) = ProjectAssessmentId(this, step)
+    private fun getPriority(priorityId: Long?): ProgrammePriorityEntity? =
+        priorityId?.let { programmePriorityRepository.findById(it).orElse(null) }
 
+    private fun ProjectEntity.idInStep(step: Int) = ProjectAssessmentId(this, step)
 
 }
