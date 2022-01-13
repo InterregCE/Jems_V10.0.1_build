@@ -13,6 +13,11 @@
         </app-pending-button>
     </h3>
 
+    <app-alert [show]="successMessage"
+               [type]="Alert.SUCCESS">
+        <p>{{'project.application.form.section.modification.open.button.success.message' | translate}}</p>
+    </app-alert>
+
     <app-pending-button
             *ngIf="data.canOpenModification"
             class="mr-2 mt-2"
@@ -21,10 +26,12 @@
         {{'project.application.form.section.modification.open.button' | translate}}
     </app-pending-button>
 
-    <ng-container *hasPermission="[PermissionsEnum.ProjectStatusDecideModificationApproved, PermissionsEnum.ProjectStatusDecideModificationNotApproved]">
+    <ng-container
+            *hasPermission="[PermissionsEnum.ProjectStatusDecideModificationApproved, PermissionsEnum.ProjectStatusDecideModificationNotApproved]">
         <app-modification-confirmation
                 *ngIf="data.currentVersionOfProjectStatus === ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED || data.currentVersionOfProjectStatus === ProjectStatusEnum.MODIFICATIONPRECONTRACTING"
-                [index]="data.modificationDecisions.length + 1">
+                [index]="data.modificationDecisions.length + 1"
+                [projectStatus]="data.currentVersionOfProjectStatus">
         </app-modification-confirmation>
     </ng-container>
 
@@ -36,7 +43,7 @@
                 [index]="data.modificationDecisions.length - i"
                 [decision]="decision"
                 [version]="data.versions ? !data.canOpenModification ? data.versions[i + 1] : data.versions[i] : undefined "
-                [projectStatus]="projectStore.projectStatus$ | async">
+                [projectStatus]="data.currentVersionOfProjectStatus">
         </app-modification-confirmation>
     </ng-container>
 

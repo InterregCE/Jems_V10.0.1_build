@@ -6,7 +6,6 @@ import {of} from 'rxjs';
 import {ModificationPageStore} from '@project/project-application/modification-page/modification-page-store.service';
 import {catchError} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ProjectUtil} from '@project/common/project-util';
 
 @UntilDestroy()
 @Component({
@@ -26,7 +25,7 @@ export class ModificationConfirmationComponent implements OnInit {
   @Input()
   version: ProjectVersionDTO;
   @Input()
-  projectStatus: ProjectStatusDTO;
+  projectStatus: ProjectStatusDTO.StatusEnum;
 
   decisionForm = this.formBuilder.group({
     status: ['', Validators.required],
@@ -46,7 +45,8 @@ export class ModificationConfirmationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formService.init(this.decisionForm, of(!this.decision));
+    this.formService.init(this.decisionForm, of(!this.decision &&
+      this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED));
     if (this.decision) {
       this.decisionForm.patchValue({
         ...this.decision,
@@ -78,23 +78,22 @@ export class ModificationConfirmationComponent implements OnInit {
   }
 
   getDecision() {
-    console.log('decision', this.decision);
     if (this.decision) {
       if (this.decision.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED) {
-        return 'Rejected';
-      } else return 'Approved';
-    } else return 'Open';
+        return ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
+      } else return ProjectStatusDTO.StatusEnum.APPROVED;
+    } else return 'MODIFICATION_OPEN';
   }
 
-  hasOpenStatusColor(): boolean {
-    return !this.decision
+  isStatusOpen(): boolean {
+    return !this.decision;
   }
 
-  hasDeclinedStatusColor(): boolean {
+  isStatusDeclined(): boolean {
     return this.decision?.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
   }
 
-  hasAcceptedStatusColor(): boolean {
+  isStatusAccepted(): boolean {
     return this.decision?.status === ProjectStatusDTO.StatusEnum.APPROVED;
   }
 }

@@ -4,18 +4,18 @@
             <div id="status">
                 <mat-chip-list class="mr-1 ml-1">
                     <mat-chip selected="true"
-                              [class.open]="hasOpenStatusColor()"
-                              [class.approved]="hasAcceptedStatusColor()"
-                              [class.declined]="hasDeclinedStatusColor()"
-
-                    >
-                        <!--                                            {{'common.label.projectapplicationstatus.' + decision?.status | translate}}-->
-                        {{getDecision()}}
+                              [class.open]="isStatusOpen()"
+                              [class.approved]="isStatusAccepted()"
+                              [class.declined]="isStatusDeclined()">
+                        {{'common.label.projectapplicationstatus.' + getDecision() | translate}}
                     </mat-chip>
                 </mat-chip-list>
             </div>
-            {{'project.application.form.section.modification.past.index' | translate : {index: index} }} <span *ngIf="version">- Project
-            Version - {{version.version}}</span>
+            <div class="ml-1 mt-1">
+                {{'project.application.form.section.modification.past.index' | translate : {index: index} }} -
+                <span class="ml-1"
+                      *ngIf="version"> {{'project.application.form.section.modification.version' | translate : {version: version.version} }}</span>
+            </div>
         </mat-panel-title>
     </mat-expansion-panel-header>
 

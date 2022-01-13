@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {ProjectDetailDTO, ProjectStatusDTO, ProjectVersionDTO, UserRoleDTO} from '@cat/api';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
@@ -9,6 +9,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-modification-page',
@@ -18,11 +19,13 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModificationPageComponent {
+  Alert = Alert;
   PermissionsEnum = UserRoleDTO.PermissionsEnum;
   ProjectStatusEnum = ProjectStatusDTO.StatusEnum;
 
   fileManagementSection = {type: FileCategoryTypeEnum.MODIFICATION} as CategoryInfo;
   pendingButtonProgress: boolean;
+  successMessage: boolean;
 
   data$: Observable<{
     currentVersionOfProject: ProjectDetailDTO,
@@ -38,7 +41,8 @@ export class ModificationPageComponent {
               private pageStore: ModificationPageStore,
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
-              private projectVersionStore: ProjectVersionStore) {
+              private projectVersionStore: ProjectVersionStore,
+              private changeDetectorRef: ChangeDetectorRef) {
     this.data$ = combineLatest([
       this.projectStore.currentVersionOfProject$,
       this.pageStore.currentVersionOfProjectTitle$,
@@ -61,7 +65,9 @@ export class ModificationPageComponent {
 
   startModification(): void {
     this.pageStore.startModification()
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        tap( () => this.showSuccessMessage()))
       .subscribe();
   }
 
@@ -84,5 +90,13 @@ export class ModificationPageComponent {
 
   private canHandBackModification(projectStatus: ProjectStatusDTO.StatusEnum, hasOpenPermission: boolean): boolean {
     return hasOpenPermission && projectStatus === this.ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+  }
+
+  private showSuccessMessage(): void {
+    this.successMessage = true;
+    setTimeout(() => {
+      this.successMessage = false;
+      this.changeDetectorRef.markForCheck();
+    },         4000);
   }
 }
