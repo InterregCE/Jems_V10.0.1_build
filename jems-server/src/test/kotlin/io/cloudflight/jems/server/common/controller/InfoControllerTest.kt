@@ -23,6 +23,7 @@ class InfoControllerTest(
         val info = infoApi.getVersionInfo()
         assertThat(info.version).isNotEmpty // e.g. "4.0.0-P-SNAPSHOT" fr local
         assertThat(info.helpdeskUrl).isEqualTo("https://helpdesk.interact-eu.net")
+        assertThat(info.helpdeskEmail).isEqualTo("jems@interact-eu.net")
     }
 
 }

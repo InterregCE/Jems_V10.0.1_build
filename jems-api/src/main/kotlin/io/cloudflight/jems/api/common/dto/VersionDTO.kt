@@ -8,6 +8,7 @@ data class VersionDTO(
     val commitIdShort: String? = null,
     val commitTime: ZonedDateTime? = null,
     val helpdeskUrl: String,
+    val helpdeskEmail: String,
     val accessibilityStatementUrl: String,
     val termsAndPrivacyPolicyUrl: String,
 )
