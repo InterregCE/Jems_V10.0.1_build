@@ -20,6 +20,8 @@ import {ProjectBudgetPartner} from '@project/model/ProjectBudgetPartner';
 import {Observable} from 'rxjs';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ProjectUtil} from '@project/common/project-util';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
   selector: 'app-project-application-form-partner-list',
@@ -69,7 +71,8 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   totalElements = 0;
 
 
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog,
+              private formVisibilityStatusService: FormVisibilityStatusService) {
   }
 
   ngOnInit(): void {
@@ -113,11 +116,12 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
           elementProperty: 'region',
           sortProperty: 'addresses.address.country',
         },
-        {
-          displayedColumn: 'project.partner.coFinancing.total',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.budgetCell
-        },
+        ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) ?
+          [ {
+            displayedColumn: 'project.partner.coFinancing.total',
+            columnType: ColumnType.CustomComponent,
+            customCellTemplate: this.budgetCell,
+          },] : [],
         ...ProjectUtil.isInModifiableStatusBeforeApproved(this.projectStatus) ?
         [{
           displayedColumn: ' ',
