@@ -14,8 +14,8 @@
                     </mat-chip>
                 </mat-chip-list>
             </div>
-            {{'project.application.form.section.modification.past.index' | translate : {index: index} }} - Project
-            Version
+            {{'project.application.form.section.modification.past.index' | translate : {index: index} }} <span *ngIf="version">- Project
+            Version - {{version.version}}</span>
         </mat-panel-title>
     </mat-expansion-panel-header>
 

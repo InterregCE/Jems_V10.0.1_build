@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {ProjectStatusDTO} from '@cat/api';
+import {ProjectStatusDTO, ProjectVersionDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {FormBuilder, Validators} from '@angular/forms';
 import {of} from 'rxjs';
@@ -23,6 +23,8 @@ export class ModificationConfirmationComponent implements OnInit {
   index: number;
   @Input()
   decision: ProjectStatusDTO;
+  @Input()
+  version: ProjectVersionDTO;
   @Input()
   projectStatus: ProjectStatusDTO;
 

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
+import {ProjectDetailDTO, ProjectStatusDTO, ProjectVersionDTO, UserRoleDTO} from '@cat/api';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {combineLatest, Observable} from 'rxjs';
@@ -8,6 +8,7 @@ import {ModificationPageStore} from '@project/project-application/modification-p
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Component({
   selector: 'app-modification-page',
@@ -30,26 +31,30 @@ export class ModificationPageComponent {
     modificationDecisions: ProjectStatusDTO[];
     canOpenModification: boolean;
     canHandBackModification: boolean;
+    versions: ProjectVersionDTO[];
   }>;
 
   constructor(public projectStore: ProjectStore,
               private pageStore: ModificationPageStore,
               private routingService: RoutingService,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private projectVersionStore: ProjectVersionStore) {
     this.data$ = combineLatest([
       this.projectStore.currentVersionOfProject$,
       this.pageStore.currentVersionOfProjectTitle$,
       this.pageStore.currentVersionOfProjectStatus$,
       this.pageStore.modificationDecisions$,
       this.pageStore.hasOpenPermission$,
+      this.projectVersionStore.versions$
     ]).pipe(
-        map(([currentVersionOfProject, currentVersionOfProjectTitle, currentVersionOfProjectStatus, modificationDecisions, hasOpenPermission]) => ({
+        map(([currentVersionOfProject, currentVersionOfProjectTitle, currentVersionOfProjectStatus, modificationDecisions, hasOpenPermission, versions]) => ({
           currentVersionOfProject,
           currentVersionOfProjectTitle,
           currentVersionOfProjectStatus,
           modificationDecisions,
           canOpenModification: this.canOpenModification(currentVersionOfProjectStatus, hasOpenPermission),
-          canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission)
+          canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission),
+          versions
         }))
       );
   }
