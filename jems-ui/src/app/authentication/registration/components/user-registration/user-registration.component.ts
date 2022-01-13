@@ -7,6 +7,7 @@ import {UserPasswordComponent} from '../../../../system/user-page/user-detail-pa
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {ResourceStoreService} from '@common/services/resource-store.service';
 
 
 @Component({
@@ -19,6 +20,8 @@ export class UserRegistrationComponent extends AbstractFormComponent implements 
   submitUser: EventEmitter<UserRegistrationDTO> = new EventEmitter<UserRegistrationDTO>();
   @Output()
   loginRedirect: EventEmitter<null> = new EventEmitter<null>();
+
+  largeLogo$ = this.resourceStore.largeLogo$;
 
   hide = true;
   clearOnSuccess = true;
@@ -62,6 +65,7 @@ export class UserRegistrationComponent extends AbstractFormComponent implements 
   constructor(private formBuilder: FormBuilder,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
+              public resourceStore: ResourceStoreService,
               private router: Router,
               private infoService: InfoService
   ) {

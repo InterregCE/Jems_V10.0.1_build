@@ -4,7 +4,7 @@
 <mat-menu #menu="matMenu">
     <label class="help-category">{{'topbar.help.title' | translate}}</label>
     <ng-container *ngIf="helpdeskUrl">
-        <a mat-menu-item *ngxPermissionsOnly="[Permission.ADMINISTRATOR, Permission.PROGRAMME_USER]"
+        <a mat-menu-item
            [href]="helpdeskUrl" target="_blank">
             {{'topbar.help.legal.helpdesk' | translate}}
         </a>

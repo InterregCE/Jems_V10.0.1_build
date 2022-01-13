@@ -1,96 +1,115 @@
-<mat-card class="py-4 px-4">
-    <mat-card-content>
-        <form appFormLayout [formGroup]="userForm">
-
-            <h1>{{'user.registration.title' | translate}}</h1>
-
-            <mat-form-field>
-                <mat-label>{{'user.registration.field.name' | translate}}</mat-label>
-                <input name="name" formControlName="name" matInput required>
-                <mat-error>
-                    <app-form-field-errors [errors]="userForm?.controls?.name?.errors"></app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-
-            <mat-form-field>
-                <mat-label>{{'user.registration.field.surname' | translate}}</mat-label>
-                <input name="surname" formControlName="surname" matInput required>
-                <mat-error>
-                    <app-form-field-errors [errors]="userForm?.controls?.surname?.errors"></app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-
-            <mat-form-field>
-                <mat-label>
-                    <mat-icon>email</mat-icon>
-                    {{'user.registration.field.email' | translate}}</mat-label>
-                <input name="email" formControlName="email" matInput required>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="userForm?.controls?.email?.errors"
-                            [messages]="emailErrors">
-                    </app-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-
-            <mat-form-field>
-                <mat-label>
-                    <mat-icon>lock</mat-icon>
-                    {{'user.registration.field.password' | translate}}</mat-label>
-                <input [type]="hide ? 'password' : 'text'" name="password" formControlName="password" matInput required>
-                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-                        [attr.aria-pressed]="hide" type="button">
-                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                </button>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="userForm?.controls?.password?.errors"
-                            [messages]="passwordErrors">
-                    </app-form-field-errors>
-                </mat-error>
-                <mat-hint>{{'user.registration.field.password.hint' | translate}}</mat-hint>
-            </mat-form-field>
-
+<div class="background-visual background-floating-stars"></div>
+<div class="double-card-container">
+    <mat-card class="programme-card">
+        <mat-card-content>
+            <div class="authentication-logo px-3">
+                <img *ngIf="largeLogo$ | async as logo; else defaultLogo" class="logo" src="data:image/png;base64,{{logo.value}}" alt="" width="">
+                <ng-template #defaultLogo>
+                    <img class="logo" src="assets/logos/InterregProgrammeLogo_200.png" alt="">
+                </ng-template>
+            </div>
+        </mat-card-content>
+        <mat-card-content>
             <div>
-                <mat-checkbox
-                        formControlName="acceptTerms"
-                        (change)="areTermsAccepted = $event.checked">
-                    {{'user.terms.register.firstText' | translate}}
-                    <span class="terms-link"><a [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} *</a></span>
-                </mat-checkbox>
+                <h1>{{'user.login.programme.headline' | translate}}</h1>
+                <p>{{'user.login.programme.introduction' | translate}}</p>
             </div>
+        </mat-card-content>
+    </mat-card>
+    <mat-card class="form-card">
+        <mat-card-content>
+            <form appFormLayout [formGroup]="userForm" class="px-3">
 
-            <div appMultiColumnRow>
-                <button mat-stroked-button
-                        type="button"
-                        (click)="redirectToLogin()">
-                    {{'user.registration.button.cancel' | translate}}
-                </button>
-                <button mat-raised-button
-                        color="primary"
-                        type="button"
-                        (click)="onSubmit()"
-                        [disabled]="userForm.invalid || submitted">
-                    {{'user.registration.button.register' | translate}}
-                </button>
-            </div>
-            <app-alert
-                    [closable]="false"
-                    [show]="!submitted && (showSuccessMessage$ | async)"
-                    [type]="Alert.SUCCESS">
+                <h1>{{'user.registration.title' | translate}}</h1>
 
-                <p>{{'user.registration.save.success' | translate}}</p>
-                <button mat-stroked-button (click)="redirectToLogin()">
-                    {{'user.registration.save.success.redirect.login' | translate}}
-                </button>
-            </app-alert>
+                <mat-form-field>
+                    <mat-label>{{'user.registration.field.name' | translate}}</mat-label>
+                    <input name="name" formControlName="name" matInput required>
+                    <mat-error>
+                        <app-form-field-errors [errors]="userForm?.controls?.name?.errors"></app-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
 
-            <app-alert *ngIf="error$ | async as error"
-                       [show]="!submitted && !!error.i18nMessage?.i18nKey"
-                       [type]="Alert.ERROR">
-                <app-api-error-content [error]="error"></app-api-error-content>
-            </app-alert>
+                <mat-form-field>
+                    <mat-label>{{'user.registration.field.surname' | translate}}</mat-label>
+                    <input name="surname" formControlName="surname" matInput required>
+                    <mat-error>
+                        <app-form-field-errors [errors]="userForm?.controls?.surname?.errors"></app-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
 
-        </form>
-    </mat-card-content>
-</mat-card>
+                <mat-form-field>
+                    <mat-label>
+                        <mat-icon>email</mat-icon>
+                        {{'user.registration.field.email' | translate}}</mat-label>
+                    <input name="email" formControlName="email" matInput required>
+                    <mat-error>
+                        <app-form-field-errors
+                                [errors]="userForm?.controls?.email?.errors"
+                                [messages]="emailErrors">
+                        </app-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>
+                        <mat-icon>lock</mat-icon>
+                        {{'user.registration.field.password' | translate}}</mat-label>
+                    <input [type]="hide ? 'password' : 'text'" name="password" formControlName="password" matInput required>
+                    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                            [attr.aria-pressed]="hide" type="button">
+                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    </button>
+                    <mat-error>
+                        <app-form-field-errors
+                                [errors]="userForm?.controls?.password?.errors"
+                                [messages]="passwordErrors">
+                        </app-form-field-errors>
+                    </mat-error>
+                    <mat-hint>{{'user.registration.field.password.hint' | translate}}</mat-hint>
+                </mat-form-field>
+
+                <div>
+                    <mat-checkbox
+                            formControlName="acceptTerms"
+                            (change)="areTermsAccepted = $event.checked">
+                        {{'user.terms.register.firstText' | translate}}
+                        <span class="terms-link"><a [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} *</a></span>
+                    </mat-checkbox>
+                </div>
+
+                <div appMultiColumnRow>
+                    <button mat-stroked-button
+                            type="button"
+                            (click)="redirectToLogin()">
+                        {{'user.registration.button.cancel' | translate}}
+                    </button>
+                    <button mat-raised-button
+                            color="primary"
+                            type="button"
+                            (click)="onSubmit()"
+                            [disabled]="userForm.invalid || submitted">
+                        {{'user.registration.button.register' | translate}}
+                    </button>
+                </div>
+                <app-alert
+                        [closable]="false"
+                        [show]="!submitted && (showSuccessMessage$ | async)"
+                        [type]="Alert.SUCCESS">
+
+                    <p>{{'user.registration.save.success' | translate}}</p>
+                    <button mat-stroked-button (click)="redirectToLogin()">
+                        {{'user.registration.save.success.redirect.login' | translate}}
+                    </button>
+                </app-alert>
+
+                <app-alert *ngIf="error$ | async as error"
+                           [show]="!submitted && !!error.i18nMessage?.i18nKey"
+                           [type]="Alert.ERROR">
+                    <app-api-error-content [error]="error"></app-api-error-content>
+                </app-alert>
+
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>

@@ -322,9 +322,11 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     position: relative;
     display: flex;
     flex-wrap: wrap; // allow us to do the line break for collapsing content
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between; // space out brand from logo
-    padding: 0.125rem .5rem;
+    height: 4.5rem;
+    padding: 0.125rem .5rem 0 0.5rem;
+    border-bottom: 1px solid var(--table-border-color);
 
     // Because flex properties aren't inherited, we need to redeclare these first
     // few properties so that content nested within behave properly.
@@ -373,6 +375,7 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     background-color: transparent; // remove default button style
     border: $border-width solid transparent; // remove default button style
     border-radius: .25rem;
+    margin-bottom: 0.5rem;
 
     @include hover-focus() {
       text-decoration: none;
@@ -399,6 +402,7 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     flex-direction: column; // cannot use `inherit` to get the `.navbar`s value
     padding-left: 0;
     margin-bottom: 0;
+    height: 2.75rem;
     list-style: none;
 
     .nav-link {
@@ -523,7 +527,7 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 
 :host {
   display: inline-block;
-  background: linear-gradient(157deg, var(--app-bar) 0%, var(--background-lighter) 100%);
+  background: linear-gradient(157deg, var(--app-bar) 10rem, var(--app-bar-secondary) 95%);
 }
 
 .language-select {
@@ -532,6 +536,37 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 
 .mat-stroked-button {
   padding: 0;
+}
+
+.programme-logo-container {
+  width: 17.5rem;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0.2rem;
+  padding-right: 1rem;
+  margin-right: 1rem;
+  position: relative;
+}
+.logo {
+  object-fit: cover;
+  margin: auto 0;
+  &.fill {
+    width: 100%;
+  }
+  &.half-size {
+    height: 50%;
+    margin-right: auto;
+  }
+}
+
+.vertical-splitter {
+  height: 60%;
+  width: 1px;
+  background: var(--sidebar-background-color);
+  opacity: 0.5;
+  position: absolute;
+  right: 0;
+  top: 20%;
 }
 
 .toolbar {
