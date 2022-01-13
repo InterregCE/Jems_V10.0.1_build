@@ -81,6 +81,7 @@
   --status-approved-with-conditions: #FBB900;
   --status-declined: #E76A4C;
   --status-approved: #86AC63;
+  --status-contracted: #66c3ff;
 
   @include custom-global-styles($is-dark-theme);
 
