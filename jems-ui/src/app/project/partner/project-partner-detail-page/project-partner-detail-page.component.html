@@ -28,7 +28,7 @@
         <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION"
            [active]="activeTab('motivation')" mat-tab-link
            (click)="routeTo('motivation')">
-            {{'partner.tab.motivation' | translate}}
+            <span appText maxWidth="230">{{'partner.tab.motivation' | translate}}</span>
         </a>
         <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING">
             <a [active]="activeTab('budget')" mat-tab-link
