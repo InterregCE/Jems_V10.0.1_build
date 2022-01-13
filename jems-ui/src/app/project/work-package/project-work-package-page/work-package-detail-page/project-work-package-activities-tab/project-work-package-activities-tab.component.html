@@ -114,12 +114,14 @@
                                                 <div>D.{{data.workPackageNumber}}.{{i + 1}}.{{j + 1}}</div>
 
                                                 <app-multi-language-form-field
+                                                        type="textarea"
                                                         [label]="'project.work.package.tab.deliverables.title'"
                                                         [formControlName]="constants.DELIVERABLE_TITLE.name"
                                                         [maxLength]="constants.DELIVERABLE_TITLE.maxLength">
                                                 </app-multi-language-form-field>
 
                                                 <app-multi-language-form-field
+                                                        type="textarea"
                                                         [label]="'project.work.package.tab.deliverables.description'"
                                                         [formControlName]="constants.DELIVERABLE_DESCRIPTION.name"
                                                         [maxLength]="constants.DELIVERABLE_DESCRIPTION.maxLength">
