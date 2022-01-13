@@ -35,7 +35,7 @@ export class FileManagementStore {
   selectedCategoryPath$: Observable<I18nMessage[]>;
 
   projectStatus$: Observable<ProjectStatusDTO>;
-  userIsProjectOwner$: Observable<boolean>;
+  userIsProjectOwnerOrEditCollaborator$: Observable<boolean>;
 
   canUpload$: Observable<boolean>;
   canChangeAssessmentFile$: Observable<boolean>;
@@ -60,7 +60,7 @@ export class FileManagementStore {
               private visibilityStatusService: FormVisibilityStatusService
   ) {
     this.projectStatus$ = this.projectStore.projectStatus$;
-    this.userIsProjectOwner$ = this.projectStore.userIsProjectOwner$;
+    this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
     this.canChangeAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate);
     this.canChangeApplicationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate);
     this.canReadApplicationFile$ = this.canReadApplicationFile();
@@ -146,9 +146,9 @@ export class FileManagementStore {
       this.canChangeAssessmentFile$,
       this.canChangeApplicationFile$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentUpdate),
-      this.userIsProjectOwner$,
+      this.userIsProjectOwnerOrEditCollaborator$,
     ]).pipe(
-      map(([selectedCategory, projectStatus, canUploadAssessmentFile, canUploadApplicationFile, canUploadModificationFile, userIsProjectOwner]) => {
+      map(([selectedCategory, projectStatus, canUploadAssessmentFile, canUploadApplicationFile, canUploadModificationFile, userIsProjectOwnerOrEditCollaborator]) => {
         if (selectedCategory?.type === FileCategoryTypeEnum.ASSESSMENT) {
           return canUploadAssessmentFile;
         }
@@ -159,7 +159,7 @@ export class FileManagementStore {
           return false;
         }
         if (selectedCategory?.type === FileCategoryTypeEnum.APPLICATION || selectedCategory?.id) {
-          return canUploadApplicationFile || userIsProjectOwner;
+          return canUploadApplicationFile || userIsProjectOwnerOrEditCollaborator;
         }
         return false;
       })
@@ -290,7 +290,7 @@ export class FileManagementStore {
   private canReadApplicationFile(): Observable<boolean> {
     return combineLatest([
       this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationRetrieve),
-      this.userIsProjectOwner$
+      this.projectStore.userIsProjectOwner$
     ])
       .pipe(
         map(([canReadApplicationFile, userIsProjectOwner]) => canReadApplicationFile || userIsProjectOwner)

@@ -32,6 +32,7 @@ export class CheckAndSubmitComponent {
     projectId: number;
     projectCallEndDate: Date;
     isThisUserOwner: boolean;
+    userIsProjectOwnerOrEditCollaborator: boolean;
     hasPreConditionCheckSucceed: boolean;
     preConditionCheckResults: PreConditionCheckResult | null;
   }>;
@@ -50,14 +51,16 @@ export class CheckAndSubmitComponent {
       this.projectStore.currentVersionOfProject$,
       this.projectStore.currentVersionOfProjectTitle$,
       this.projectStore.userIsProjectOwner$,
+      this.projectStore.userIsProjectOwnerOrEditCollaborator$,
       this.preConditionCheckResult$
     ]).pipe(
-      map(([currentVersionOfProject, currentVersionOfProjectTitle, isThisUserOwner, preConditionCheckResults]) => ({
+      map(([currentVersionOfProject, currentVersionOfProjectTitle, isThisUserOwner,userIsProjectOwnerOrEditCollaborator, preConditionCheckResults]) => ({
         currentVersionOfProjectTitle,
         currentVersionOfProjectStatus: currentVersionOfProject.projectStatus.status,
         projectId: currentVersionOfProject.id,
         projectCallEndDate: currentVersionOfProject.callSettings?.endDate,
         isThisUserOwner,
+        userIsProjectOwnerOrEditCollaborator,
         hasPreConditionCheckSucceed: preConditionCheckResults?.submissionAllowed || false,
         preConditionCheckResults,
       }))

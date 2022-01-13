@@ -25,7 +25,7 @@
                     </app-pending-button>
                 </ng-container>
 
-                <ng-container *hasPermission="PermissionsEnum.ProjectSubmission; alternativeCondition data.isThisUserOwner">
+                <ng-container *hasPermission="PermissionsEnum.ProjectSubmission; alternativeCondition data.userIsProjectOwnerOrEditCollaborator">
                     <app-pending-button
                             class="mr-2 mt-2"
                             *ngIf="ProjectUtil.isDraft(data.currentVersionOfProjectStatus)"

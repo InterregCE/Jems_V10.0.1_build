@@ -68,6 +68,7 @@ export class ProjectStore {
   investmentSummaries$: Observable<InvestmentSummary[]>;
   investmentSummariesForFiles$: Observable<InvestmentSummary[]>;
   userIsProjectOwner$: Observable<boolean>;
+  userIsProjectOwnerOrEditCollaborator$: Observable<boolean>;
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
   activities$: Observable<WorkPackageActivitySummaryDTO[]>;
   projectPeriods$: Observable<ProjectPeriodDTO[]>;
@@ -117,6 +118,7 @@ export class ProjectStore {
     this.investmentSummaries$ = this.investmentSummaries();
     this.investmentSummariesForFiles$ = this.investmentSummariesForFiles();
     this.userIsProjectOwner$ = this.userIsProjectOwner();
+    this.userIsProjectOwnerOrEditCollaborator$ = this.userIsProjectOwnerOrEditCollaborator();
     this.allowedBudgetCategories$ = this.allowedBudgetCategories();
     this.activities$ = this.projectActivities();
     this.projectPeriods$ = this.projectForm$.pipe(
@@ -347,6 +349,17 @@ export class ProjectStore {
     ])
       .pipe(
         map(([project, currentUser, collaboratorLevel]) => project?.applicant?.id === currentUser?.id || !!collaboratorLevel)
+      );
+  }
+
+  private userIsProjectOwnerOrEditCollaborator(): Observable<boolean> {
+    return combineLatest([
+      this.project$,
+      this.securityService.currentUser,
+      this.collaboratorLevel$,
+    ])
+      .pipe(
+        map(([project, currentUser, collaboratorLevel]) => project?.applicant?.id === currentUser?.id || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.EDIT  || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE)
       );
   }
 

@@ -51,7 +51,7 @@
                         [file]="file"
                         [isAllowedToChangeApplicationFile]="fileManagementStore.canChangeApplicationFile$ | async"
                         [isAllowedToChangeAssessmentFile]="fileManagementStore.canChangeAssessmentFile$ | async"
-                        [isThisUserOwner]="fileManagementStore.userIsProjectOwner$ | async"
+                        [isThisUserOwner]="fileManagementStore.userIsProjectOwnerOrEditCollaborator$ | async"
                         [projectStatus]="data.projectStatus"
                         [type]="data.selectedCategory?.type">
                 </app-actions-cell>

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.hasPermissionOrIsViewCollaborator('ProjectSubmission', #projectId)")
+@PreAuthorize("@projectStatusAuthorization.hasPermissionOrIsEditCollaborator('ProjectSubmission', #projectId)")
 annotation class CanSubmitApplication
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -78,6 +78,15 @@ class ProjectStatusAuthorization(
     fun hasPermissionOrIsViewCollaborator(permission: UserRolePermission, projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
         val isOwner = isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
+
+        if (isOwner || hasPermissionForProject(permission, projectId))
+            return true
+        else
+            throw ResourceNotFoundException("project")
+    }
+    fun hasPermissionOrIsEditCollaborator(permission: UserRolePermission, projectId: Long): Boolean {
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+        val isOwner = isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
 
         if (isOwner || hasPermissionForProject(permission, projectId))
             return true
