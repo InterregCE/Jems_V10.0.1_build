@@ -10482,7 +10482,7 @@
 											"pm.test('address is saved correctly', function() {\r",
 											"    const addr = partner.addresses[0];\r",
 											"    pm.expect(addr.type).to.eql(\"Organization\");\r",
-											"    pm.expect(addr.country).to.eql(\"SK\");\r",
+											"    pm.expect(addr.country).to.eql(\"\");\r",
 											"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
 											"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
 											"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
@@ -10515,7 +10515,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\": \"SK\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\": \"\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -12034,7 +12034,7 @@
 									"    pm.expect(res[0].officeAndAdministrationCosts).to.eql(2200.0);\r",
 									"    pm.expect(res[0].totalSum).to.eql(24200);\r",
 									"\r",
-									"    pm.expect(res[1].partner.country).to.eql('SK');\r",
+									"    pm.expect(res[1].partner.country).to.eql('');\r",
 									"    pm.expect(res[1].totalSum).to.eql(6044);\r",
 									"    pm.expect(res[1].lumpSumContribution).to.eql(6044);\r",
 									"\r",
