@@ -30,7 +30,7 @@ class WorkPackageOutputEntity(
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<WorkPackageOutputTransl> = mutableSetOf(),
 
-    val periodNumber: Int? = null,
+    var periodNumber: Int? = null,
 
     @ManyToOne
     @JoinColumn(name = "indicator_output_id")
