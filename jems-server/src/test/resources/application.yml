@@ -19,5 +19,6 @@ management:
   health:
     elasticsearch:
       enabled: "${AUDIT_ENABLED:false}"
-
-
+info:
+  helpdesk-url: "https://helpdesk.interact-eu.net"
+  helpdesk-email: "jems@interact-eu.net"
