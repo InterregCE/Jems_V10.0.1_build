@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.entity.description
 
-import io.cloudflight.jems.server.project.entity.TranslationUuId
-import javax.persistence.Column
+import io.cloudflight.jems.server.common.entity.TranslationEntity
+import io.cloudflight.jems.server.common.entity.TranslationId
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
@@ -9,12 +9,8 @@ import javax.persistence.Entity
  * C2 strategy lang table
  */
 @Entity(name = "project_description_c2_relevance_strategy_transl")
-data class ProjectRelevanceStrategyTransl(
-
+class ProjectRelevanceStrategyTransl(
     @EmbeddedId
-    val translationId: TranslationUuId,
-
-    @Column
+    override val translationId: TranslationId<ProjectRelevanceStrategyEntity>,
     val specification: String? = null
-
-)
+) : TranslationEntity()
