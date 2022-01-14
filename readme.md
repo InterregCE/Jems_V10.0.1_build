@@ -127,8 +127,8 @@ You can define following startup parameters (see also [application.yaml](jems-se
 - `minio-storage.endpoint` with address of Minio (or env variable `MINIO_URL_AND_PORT`)
   - `minio-storage.accessKey` with access key for Minio (or env variable `MINIO_ACCESS_KEY`)
   - `minio-storage.secretKey` with secret key for Minio (or env variable `MINIO_SECRET_KEY`)
-- `info.helpdesk-url` URL, which is available in the main HELP tooltip
-- `info.helpdesk-email` email, which is available in the main HELP section _to contact_
+- env variable `HELPDESK_URL` a URL, which is available in the main HELP tooltip (will set param `info.helpdesk-url`)
+- env variable `HELPDESK_EMAIL` an email, which is available in the main HELP section _to contact_ (will set param `info.helpdesk-email`)
 - `info.accessibility-statement-url` URL for accessibility statement, which is available in the login page that can be modified by the user
 - `info.terms-privacy-policy-url` URL for the Terms of service and privacy policy page, that is available in the login and register pages and can be modified by the user
 - `app.translations-folder` Path for translations folder that will be uploaded by the users

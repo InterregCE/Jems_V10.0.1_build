@@ -64,8 +64,8 @@ management:
     elasticsearch:
       enabled: "${AUDIT_ENABLED:true}"
 info:
-  helpdesk-url: ""
-  helpdesk-email: ""
+  helpdesk-url: "${HELPDESK_URL:}"
+  helpdesk-email: "${HELPDESK_EMAIL:}"
   accessibility-statement-url: ""
   terms-privacy-policy-url: ""
 app:
