@@ -94,9 +94,9 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
 
   setDisabledState(isDisabled: boolean): void {
     if(isDisabled) {
-     this.inputs.controls.forEach((control) => control.disable({emitEvent: false}));
+     this.inputs.controls.forEach((control) => control.disable({emitEvent: true}));
     } else {
-      this.inputs.controls.forEach((control) => control.enable({emitEvent: false}));
+      this.inputs.controls.forEach((control) => control.enable({emitEvent: true}));
     }
     this.disabled = isDisabled;
   }
