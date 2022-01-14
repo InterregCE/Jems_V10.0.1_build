@@ -34,7 +34,7 @@ export class ModificationPageComponent {
     modificationDecisions: ProjectStatusDTO[];
     canOpenModification: boolean;
     canHandBackModification: boolean;
-    versions: ProjectVersionDTO[];
+    versions: ProjectVersionDTO[] | ProjectVersionDTO | undefined;
   }>;
 
   constructor(public projectStore: ProjectStore,
@@ -58,7 +58,7 @@ export class ModificationPageComponent {
         modificationDecisions,
         canOpenModification: this.canOpenModification(currentVersionOfProjectStatus, hasOpenPermission),
         canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission),
-        versions
+        versions: this.isModificationOpened(currentVersionOfProjectStatus) ? versions.splice(1, versions.length - 1) : versions
       }))
     );
   }
@@ -100,11 +100,8 @@ export class ModificationPageComponent {
     }, 4000);
   }
 
-  getVersion(canOpenModification: boolean, versions: ProjectVersionDTO[], index: number): ProjectVersionDTO {
-    //if a new modification is open, skip the first element of versions which is the current opened modification
-    if (!canOpenModification) {
-      return versions[index + 1];
-    }
-    return versions[index];
+  isModificationOpened(currentStatus: ProjectStatusDTO.StatusEnum) {
+    return currentStatus === ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTING ||
+      currentStatus === ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
   }
 }
