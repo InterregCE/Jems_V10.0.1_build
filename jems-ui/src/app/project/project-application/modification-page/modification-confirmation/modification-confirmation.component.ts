@@ -81,8 +81,12 @@ export class ModificationConfirmationComponent implements OnInit {
     if (this.decision) {
       if (this.decision.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED) {
         return ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
-      } else return ProjectStatusDTO.StatusEnum.APPROVED;
-    } else return 'MODIFICATION_OPEN';
+      } else {
+        return ProjectStatusDTO.StatusEnum.APPROVED;
+      }
+    } else {
+      return 'MODIFICATION_OPEN';
+    }
   }
 
   isStatusOpen(): boolean {

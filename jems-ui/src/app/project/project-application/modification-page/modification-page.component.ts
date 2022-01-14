@@ -28,7 +28,7 @@ export class ModificationPageComponent {
   successMessage: boolean;
 
   data$: Observable<{
-    currentVersionOfProject: ProjectDetailDTO,
+    currentVersionOfProject: ProjectDetailDTO;
     currentVersionOfProjectTitle: string;
     currentVersionOfProjectStatus: ProjectStatusDTO.StatusEnum;
     modificationDecisions: ProjectStatusDTO[];
@@ -51,23 +51,23 @@ export class ModificationPageComponent {
       this.pageStore.hasOpenPermission$,
       this.projectVersionStore.versions$
     ]).pipe(
-        map(([currentVersionOfProject, currentVersionOfProjectTitle, currentVersionOfProjectStatus, modificationDecisions, hasOpenPermission, versions]) => ({
-          currentVersionOfProject,
-          currentVersionOfProjectTitle,
-          currentVersionOfProjectStatus,
-          modificationDecisions,
-          canOpenModification: this.canOpenModification(currentVersionOfProjectStatus, hasOpenPermission),
-          canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission),
-          versions
-        }))
-      );
+      map(([currentVersionOfProject, currentVersionOfProjectTitle, currentVersionOfProjectStatus, modificationDecisions, hasOpenPermission, versions]) => ({
+        currentVersionOfProject,
+        currentVersionOfProjectTitle,
+        currentVersionOfProjectStatus,
+        modificationDecisions,
+        canOpenModification: this.canOpenModification(currentVersionOfProjectStatus, hasOpenPermission),
+        canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission),
+        versions
+      }))
+    );
   }
 
   startModification(): void {
     this.pageStore.startModification()
       .pipe(
         take(1),
-        tap( () => this.showSuccessMessage()))
+        tap(() => this.showSuccessMessage()))
       .subscribe();
   }
 
@@ -97,13 +97,13 @@ export class ModificationPageComponent {
     setTimeout(() => {
       this.successMessage = false;
       this.changeDetectorRef.markForCheck();
-    },         4000);
+    }, 4000);
   }
 
   getVersion(canOpenModification: boolean, versions: ProjectVersionDTO[], index: number): ProjectVersionDTO {
     //if a new modification is open, skip the first element of versions which is the current opened modification
     if (!canOpenModification) {
-      return versions[index+1];
+      return versions[index + 1];
     }
     return versions[index];
   }
