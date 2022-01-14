@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {ProjectStatusDTO} from '@cat/api';
+import {ProjectStatusDTO, ProjectVersionDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {FormBuilder, Validators} from '@angular/forms';
 import {of} from 'rxjs';
@@ -22,6 +22,10 @@ export class ModificationConfirmationComponent implements OnInit {
   index: number;
   @Input()
   decision: ProjectStatusDTO;
+  @Input()
+  version: ProjectVersionDTO;
+  @Input()
+  projectStatus: ProjectStatusDTO.StatusEnum;
 
   decisionForm = this.formBuilder.group({
     status: ['', Validators.required],
@@ -37,10 +41,12 @@ export class ModificationConfirmationComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              private pageStore: ModificationPageStore) { }
+              private pageStore: ModificationPageStore) {
+  }
 
   ngOnInit(): void {
-    this.formService.init(this.decisionForm, of(!this.decision));
+    this.formService.init(this.decisionForm, of(!this.decision &&
+      this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED));
     if (this.decision) {
       this.decisionForm.patchValue({
         ...this.decision,
@@ -69,5 +75,25 @@ export class ModificationConfirmationComponent implements OnInit {
           catchError(err => this.formService.setError(err)))
         .subscribe();
     }
+  }
+
+  getDecision() {
+    if (this.decision) {
+      if (this.decision.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED) {
+        return ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
+      } else return ProjectStatusDTO.StatusEnum.APPROVED;
+    } else return 'MODIFICATION_OPEN';
+  }
+
+  isStatusOpen(): boolean {
+    return !this.decision;
+  }
+
+  isStatusDeclined(): boolean {
+    return this.decision?.status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
+  }
+
+  isStatusAccepted(): boolean {
+    return this.decision?.status === ProjectStatusDTO.StatusEnum.APPROVED;
   }
 }

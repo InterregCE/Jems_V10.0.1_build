@@ -1,6 +1,22 @@
 <mat-expansion-panel [expanded]="!decision" class="mt-4">
     <mat-expansion-panel-header>
-        <mat-panel-title>{{'project.application.form.section.modification.past.index' | translate : {index: index} }}</mat-panel-title>
+        <mat-panel-title>
+            <div id="status">
+                <mat-chip-list class="mr-1 ml-1">
+                    <mat-chip selected="true"
+                              [class.open]="isStatusOpen()"
+                              [class.approved]="isStatusAccepted()"
+                              [class.declined]="isStatusDeclined()">
+                        {{'common.label.projectapplicationstatus.' + getDecision() | translate}}
+                    </mat-chip>
+                </mat-chip-list>
+            </div>
+            <div class="ml-1 mt-1">
+                {{'project.application.form.section.modification.past.index' | translate : {index: index} }} -
+                <span class="ml-1"
+                      *ngIf="version"> {{'project.application.form.section.modification.version' | translate : {version: version.version} }}</span>
+            </div>
+        </mat-panel-title>
     </mat-expansion-panel-header>
 
     <app-form [formGroup]="decisionForm"
@@ -52,11 +68,11 @@
             </div>
 
             <app-expandable-textarea class="mt-2"
-                    [control]="decisionForm?.controls?.note"
-                    [errors]="decisionForm?.controls?.note?.errors"
-                    [characterLimit]="10000"
-                    label="project.assessment.fundingDecision.dialog.field.note"
-                    [customStyle]="'outline'">
+                                     [control]="decisionForm?.controls?.note"
+                                     [errors]="decisionForm?.controls?.note?.errors"
+                                     [characterLimit]="10000"
+                                     label="project.assessment.fundingDecision.dialog.field.note"
+                                     [customStyle]="'outline'">
             </app-expandable-textarea>
         </form>
     </app-form>

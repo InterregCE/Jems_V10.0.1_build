@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProjectStatusDTO, UserRoleDTO} from '@cat/api';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {ProjectDetailDTO, ProjectStatusDTO, ProjectVersionDTO, UserRoleDTO} from '@cat/api';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {combineLatest, Observable} from 'rxjs';
@@ -7,6 +7,9 @@ import {map, take, tap} from 'rxjs/operators';
 import {ModificationPageStore} from '@project/project-application/modification-page/modification-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-modification-page',
@@ -16,42 +19,55 @@ import {ActivatedRoute} from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModificationPageComponent {
+  Alert = Alert;
   PermissionsEnum = UserRoleDTO.PermissionsEnum;
   ProjectStatusEnum = ProjectStatusDTO.StatusEnum;
 
   fileManagementSection = {type: FileCategoryTypeEnum.MODIFICATION} as CategoryInfo;
   pendingButtonProgress: boolean;
+  successMessage: boolean;
 
   data$: Observable<{
+    currentVersionOfProject: ProjectDetailDTO,
     currentVersionOfProjectTitle: string;
     currentVersionOfProjectStatus: ProjectStatusDTO.StatusEnum;
     modificationDecisions: ProjectStatusDTO[];
     canOpenModification: boolean;
     canHandBackModification: boolean;
+    versions: ProjectVersionDTO[];
   }>;
 
-  constructor(private pageStore: ModificationPageStore,
+  constructor(public projectStore: ProjectStore,
+              private pageStore: ModificationPageStore,
               private routingService: RoutingService,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private projectVersionStore: ProjectVersionStore,
+              private changeDetectorRef: ChangeDetectorRef) {
     this.data$ = combineLatest([
+      this.projectStore.currentVersionOfProject$,
       this.pageStore.currentVersionOfProjectTitle$,
       this.pageStore.currentVersionOfProjectStatus$,
       this.pageStore.modificationDecisions$,
       this.pageStore.hasOpenPermission$,
+      this.projectVersionStore.versions$
     ]).pipe(
-        map(([currentVersionOfProjectTitle, currentVersionOfProjectStatus, modificationDecisions, hasOpenPermission]) => ({
+        map(([currentVersionOfProject, currentVersionOfProjectTitle, currentVersionOfProjectStatus, modificationDecisions, hasOpenPermission, versions]) => ({
+          currentVersionOfProject,
           currentVersionOfProjectTitle,
           currentVersionOfProjectStatus,
           modificationDecisions,
           canOpenModification: this.canOpenModification(currentVersionOfProjectStatus, hasOpenPermission),
-          canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission)
+          canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission),
+          versions
         }))
       );
   }
 
   startModification(): void {
     this.pageStore.startModification()
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        tap( () => this.showSuccessMessage()))
       .subscribe();
   }
 
@@ -74,5 +90,21 @@ export class ModificationPageComponent {
 
   private canHandBackModification(projectStatus: ProjectStatusDTO.StatusEnum, hasOpenPermission: boolean): boolean {
     return hasOpenPermission && projectStatus === this.ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+  }
+
+  private showSuccessMessage(): void {
+    this.successMessage = true;
+    setTimeout(() => {
+      this.successMessage = false;
+      this.changeDetectorRef.markForCheck();
+    },         4000);
+  }
+
+  getVersion(canOpenModification: boolean, versions: ProjectVersionDTO[], index: number): ProjectVersionDTO {
+    //if a new modification is open, skip the first element of versions which is the current opened modification
+    if (!canOpenModification) {
+      return versions[index+1];
+    }
+    return versions[index];
   }
 }
