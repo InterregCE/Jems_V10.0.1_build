@@ -46,11 +46,12 @@
                     </mat-select>
                 </mat-form-field>
             </form>
-            <button appText mat-raised-button color="primary"
-                    [disabled]="!selectedCategory || !exportLanguage || !inputLanguage || !data.projectId"
-                    (click)="exportData(selectedCategory, exportLanguage, inputLanguage, data.projectId, getVersion(data.versions))">
+            <app-pending-button appText
+                                [disabled]="!selectedCategory || !exportLanguage || !inputLanguage || !data.projectId"
+                                (click)="exportData(selectedCategory, exportLanguage, inputLanguage, data.projectId, getVersion(data.versions))"
+                                [pending]="isExportingInProgress$ | async">
                 {{'export.label.export.button' | translate}}
-            </button>
+            </app-pending-button>
         </div>
     </div>
 </app-project-page-template>
