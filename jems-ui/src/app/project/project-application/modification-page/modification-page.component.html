@@ -42,7 +42,7 @@
                 *ngFor="let decision of data.modificationDecisions; let i=index"
                 [index]="data.modificationDecisions.length - i"
                 [decision]="decision"
-                [version]="data.versions ? !data.canOpenModification ? data.versions[i + 1] : data.versions[i] : undefined "
+                [version]="getVersion(data.canOpenModification, data.versions, i)"
                 [projectStatus]="data.currentVersionOfProjectStatus">
         </app-modification-confirmation>
     </ng-container>

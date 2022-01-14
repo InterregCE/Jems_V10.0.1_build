@@ -99,4 +99,12 @@ export class ModificationPageComponent {
       this.changeDetectorRef.markForCheck();
     },         4000);
   }
+
+  getVersion(canOpenModification: boolean, versions: ProjectVersionDTO[], index: number): ProjectVersionDTO {
+    //if a new modification is open, skip the first element of versions which is the current opened modification
+    if (!canOpenModification) {
+      return versions[index+1];
+    }
+    return versions[index];
+  }
 }
