@@ -10,7 +10,6 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
@@ -106,7 +105,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
         assertThat(createLumpSum.createLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_LUMP_SUM_ADDED,
-            description = "Programme lump sum (id=0) '[InputTranslation(language=EN, translation=LS1)]' has been added" // null will be real ID from DB sequence
+            description = "Programme lump sum (id=0) '[EN=LS1]' has been added" // null will be real ID from DB sequence
         ))
     }
 
