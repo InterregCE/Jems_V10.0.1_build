@@ -85,7 +85,7 @@ export class ProjectApplicationInformationComponent {
   }
 
   hasContractedStatusColor(): boolean {
-    return this.projectStatus === ProjectStatusDTO.StatusEnum.CONTRACTED
+    return this.projectStatus === ProjectStatusDTO.StatusEnum.CONTRACTED;
   }
 
   private get projectStatus(): ProjectStatusDTO.StatusEnum {

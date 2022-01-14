@@ -12,9 +12,8 @@
                 </mat-chip-list>
             </div>
             <div class="ml-1 mt-1">
-                {{'project.application.form.section.modification.past.index' | translate : {index: index} }} -
-                <span class="ml-1"
-                      *ngIf="version"> {{'project.application.form.section.modification.version' | translate : {version: version.version} }}</span>
+                {{'project.application.form.section.modification.past.index' | translate : {index: index} }}
+                <span *ngIf="version"> - {{'project.application.form.section.modification.version' | translate : {version: version.version} }}</span>
             </div>
         </mat-panel-title>
     </mat-expansion-panel-header>
@@ -29,10 +28,12 @@
             </div>
             <mat-button-toggle-group formControlName="status">
                 <mat-button-toggle #approvedToggle [value]="ProjectStatus.APPROVED">
-                    <span appText maxWidth="230">{{'project.application.form.section.modification.approve' | translate}}</span>
+                    <span appText
+                          maxWidth="230">{{'project.application.form.section.modification.approve' | translate}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle #rejectedToggle [value]="ProjectStatus.MODIFICATIONREJECTED">
-                    <span appText maxWidth="230">{{'project.application.form.section.modification.reject' | translate}}</span>
+                    <span appText
+                          maxWidth="230">{{'project.application.form.section.modification.reject' | translate}}</span>
                 </mat-button-toggle>
             </mat-button-toggle-group>
 
