@@ -59,10 +59,10 @@ export class ProjectApplicationFormSidenavService {
   private canSubmitApplication$: Observable<boolean> = combineLatest([
     this.projectStore.currentVersionOfProjectStatus$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectSubmission),
-    this.projectStore.userIsProjectOwner$,
+    this.projectStore.userIsProjectOwnerOrEditCollaborator$,
   ]).pipe(
-    map(([projectStatus, hasPermission, isOwner]) =>
-      (hasPermission || isOwner) && ProjectUtil.isOpenForModifications(projectStatus)
+    map(([projectStatus, hasPermission, userIsProjectOwnerOrEditCollaborator]) =>
+      (hasPermission || userIsProjectOwnerOrEditCollaborator) && ProjectUtil.isOpenForModifications(projectStatus)
     ),
   );
 

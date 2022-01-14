@@ -63,7 +63,7 @@ internal class ProjectStatusAuthorizationTest: UnitTest() {
         assertThat(user.user.assignedProjects).isEmpty()
         assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectSubmission.name))
 
-        assertThat(projectStatusAuthorization.hasPermissionOrIsViewCollaborator(ProjectSubmission, PROJECT_ID)).isTrue
+        assertThat(projectStatusAuthorization.hasPermissionOrIsEditCollaborator(ProjectSubmission, PROJECT_ID)).isTrue
     }
 
     @Test
@@ -85,7 +85,7 @@ internal class ProjectStatusAuthorizationTest: UnitTest() {
         assertThat(user.user.assignedProjects).contains(PROJECT_ID)
         assertThat(user.authorities).contains(SimpleGrantedAuthority(ProjectCheckApplicationForm.name))
 
-        assertThat(projectStatusAuthorization.hasPermissionOrIsViewCollaborator(ProjectCheckApplicationForm, PROJECT_ID)).isTrue
+        assertThat(projectStatusAuthorization.hasPermissionOrIsEditCollaborator(ProjectCheckApplicationForm, PROJECT_ID)).isTrue
     }
 
     @Test
@@ -107,7 +107,7 @@ internal class ProjectStatusAuthorizationTest: UnitTest() {
         assertThat(user.user.assignedProjects).isEmpty()
         assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectRetrieve.name))
 
-        assertThrows<ResourceNotFoundException> { projectStatusAuthorization.hasPermissionOrIsViewCollaborator(ProjectCheckApplicationForm, PROJECT_ID) }
+        assertThrows<ResourceNotFoundException> { projectStatusAuthorization.hasPermissionOrIsEditCollaborator(ProjectCheckApplicationForm, PROJECT_ID) }
     }
 
 }
