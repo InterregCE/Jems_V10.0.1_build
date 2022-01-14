@@ -145,7 +145,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
         assertThat(createUnitCost.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_ADDED,
-            description = "Programme unit cost (id=0) '[InputTranslation(language=EN, translation=UC1)]' has been added" // null will be real ID from DB sequence
+            description = "Programme unit cost (id=0) '[EN=UC1]' has been added" // null will be real ID from DB sequence
         ))
     }
 
@@ -168,7 +168,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
         assertThat(createUnitCost.createUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_ADDED,
-            description = "Programme unit cost (id=0) '[InputTranslation(language=EN, translation=UC1)]' has been added" // null will be real ID from DB sequence
+            description = "Programme unit cost (id=0) '[EN=UC1]' has been added" // null will be real ID from DB sequence
         ))
     }
 

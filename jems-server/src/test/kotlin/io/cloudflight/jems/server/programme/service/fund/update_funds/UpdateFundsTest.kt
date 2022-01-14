@@ -109,8 +109,8 @@ internal class UpdateFundsTest : UnitTest() {
             assertThat(this.auditCandidate.action).isEqualTo(AuditAction.PROGRAMME_FUNDS_CHANGED)
             assertThat(this.auditCandidate.description).isEqualTo(
                 "Programme funds has been set to:\n" +
-                    "[selected=false, EN=EN to update abbr],\n" +
-                    "[selected=true, EN=EN to create abbr, SK=SK to create abbr]"
+                    "[selected=false, [EN=EN to update abbr]],\n" +
+                    "[selected=true, [EN=EN to create abbr, SK=SK to create abbr]]"
             )
         }
     }

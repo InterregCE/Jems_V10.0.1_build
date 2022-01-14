@@ -105,7 +105,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
         assertThat(updateUnitCost.updateUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_CHANGED,
-            description = "Programme unit cost (id=4) '[InputTranslation(language=EN, translation=UC1)]' has been changed"
+            description = "Programme unit cost (id=4) '[EN=UC1]' has been changed"
         ))
     }
 
@@ -156,7 +156,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
         assertThat(updateUnitCost.updateUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_CHANGED,
-            description = "Programme unit cost (id=4) '[InputTranslation(language=EN, translation=UC1 changed)]' has been changed"
+            description = "Programme unit cost (id=4) '[EN=UC1 changed]' has been changed"
         ))
     }
 

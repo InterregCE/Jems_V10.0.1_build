@@ -152,8 +152,8 @@ class CreateCallTest : UnitTest() {
                 "isAdditionalFundAllowed set to enabled,\n" +
                     "lengthOfPeriod set to 9,\n" +
                     "description set to [\n" +
-                    "  InputTranslation(language=EN, translation=EN desc)\n" +
-                    "  InputTranslation(language=SK, translation=SK desc)\n" +
+                    "  EN=EN desc\n" +
+                    "  SK=SK desc\n" +
                     "],\n" +
                     "objectives set to [\n" +
                     "  AdvancedTechnologies\n" +

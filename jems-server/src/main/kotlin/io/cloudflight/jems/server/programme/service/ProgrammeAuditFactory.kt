@@ -14,7 +14,7 @@ import java.util.stream.Collectors
 
 fun programmePriorityAdded(programmePriority: ProgrammePriority): AuditCandidate {
     return AuditBuilder(AuditAction.PROGRAMME_PRIORITY_ADDED)
-        .description("New programme priority '${programmePriority.code}' '${programmePriority.title}' was created")
+        .description("New programme priority '${programmePriority.code}' '${programmePriority.title}'\nobjective = ${programmePriority.objective}\nspecificObjectives = ${programmePriority.specificObjectives.map { it.programmeObjectivePolicy }.joinToString(",\n")} was created")
         .build()
 }
 
@@ -50,7 +50,7 @@ fun programmeNutsAreaChanged(updatedNuts: Collection<NutsIdentifier>): AuditCand
 
 fun programmeFundsChanged(context: Any, funds: Iterable<ProgrammeFund>): AuditCandidateEvent {
     val fundsAsString = funds.asSequence()
-        .map { fund -> "[selected=${fund.selected}, " + fund.abbreviation.joinToString { "${it.language}=${it.translation}" } + "]" }.joinToString(",\n")
+        .map { fund -> "[selected=${fund.selected}, " + fund.abbreviation + "]" }.joinToString(",\n")
 
     return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_FUNDS_CHANGED)
         .description("Programme funds has been set to:\n$fundsAsString")
@@ -59,7 +59,7 @@ fun programmeFundsChanged(context: Any, funds: Iterable<ProgrammeFund>): AuditCa
 
 fun programmeLegalStatusesChanged(context: Any, statuses: List<ProgrammeLegalStatus>): AuditCandidateEvent {
     val statusesAsString = statuses.asSequence()
-        .map { fund -> "[" + fund.description.joinToString { "${it.language}=${it.translation}" } + "]" }.joinToString(",\n")
+        .map { fund ->  fund.description.toString() }.joinToString(",\n")
 
     return AuditCandidateEvent(context, AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
         .description("Values for partner legal status set to:\n$statusesAsString")
@@ -68,7 +68,7 @@ fun programmeLegalStatusesChanged(context: Any, statuses: List<ProgrammeLegalSta
 
 fun programmeStateAidsChanged(context: Any, stateAids: List<ProgrammeStateAid>): AuditCandidateEvent {
     val stateAidsAsString = stateAids.asSequence()
-        .map { fund -> "[" + fund.name.joinToString { "${it.language}=${it.translation}" } + "]"}.joinToString(",\n")
+        .map { fund -> fund.name.toString()}.joinToString(",\n")
 
     return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_STATE_AID_CHANGED)
         .description("Programme State aid was set to:\n$stateAidsAsString")

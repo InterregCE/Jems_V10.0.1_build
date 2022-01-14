@@ -8,4 +8,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 data class InputTranslation(
     val language: SystemLanguage,
     val translation: String? = null
-)
+){
+    override fun toString(): String =
+        "${this.language}=${this.translation}"
+}
