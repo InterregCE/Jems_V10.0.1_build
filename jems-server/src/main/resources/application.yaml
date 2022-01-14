@@ -64,8 +64,8 @@ management:
     elasticsearch:
       enabled: "${AUDIT_ENABLED:true}"
 info:
-  helpdesk-url: "https://helpdesk.interact-eu.net"
-  helpdesk-email: "jems@interact-eu.net"
+  helpdesk-url: ""
+  helpdesk-email: ""
   accessibility-statement-url: ""
   terms-privacy-policy-url: ""
 app:
