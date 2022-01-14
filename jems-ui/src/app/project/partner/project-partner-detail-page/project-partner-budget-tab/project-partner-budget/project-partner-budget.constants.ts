@@ -8,7 +8,7 @@ export class ProjectPartnerBudgetConstants {
   public static MAX_STAFF_COMMENTS_TEXT_LENGTH = 250;
   public static MAX_UNIT_TYPE_TEXT_LENGTH = 100;
   public static MAX_AWARD_PROCEDURES_TEXT_LENGTH = 250;
-  public static MAX_VALUE = 999_999_999;
+  public static MAX_VALUE = 999_999_999.99;
   public static MIN_VALUE = 0;
   public static FORM_CONTROL_NAMES = {
     staff: 'staff',
