@@ -569,18 +569,21 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   margin-right: 1rem;
 }
 .programme-logo-container {
+  max-width: 17.5rem;
+  max-height: 100%;
   width: 17.5rem;
   height: 100%;
   box-sizing: border-box;
   padding: 0.2rem;
   padding-right: 1rem;
   position: relative;
+  display: flex;
 }
 .logo {
-  object-fit: cover;
-  margin: auto 0;
+  margin: auto;
   &.fill {
-    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
   }
   &.half-size {
     height: 40%;
