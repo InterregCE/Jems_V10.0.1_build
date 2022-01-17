@@ -12,6 +12,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 export class TopBarService {
 
   menuItems$: Observable<MenuItemConfiguration[]>;
+  editUserItem$: Observable<MenuItemConfiguration | null>;
 
   private dashboardItem: MenuItemConfiguration = {
     name: 'topbar.main.dashboard',
@@ -42,6 +43,7 @@ export class TopBarService {
   constructor(private permissionService: PermissionService,
               private securityService: SecurityService) {
     this.menuItems$ = this.menuItems();
+    this.editUserItem$ = this.editUserItem();
   }
 
   logout(): Observable<any> {
@@ -89,9 +91,6 @@ export class TopBarService {
               this.systemItem.route = '/app/system/role';
             }
             menuItems.push(this.systemItem);
-          }
-          if (editUserItem) {
-            menuItems.push(editUserItem);
           }
 
           return menuItems;
