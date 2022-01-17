@@ -1,14 +1,14 @@
 <nav class="navbar navbar-expand-lg">
-    <img *ngIf="smallLogo$ | async as logo; else defaultLogo" class="img" src="data:image/png;base64,{{logo.value}}" alt="">
-    <ng-template #defaultLogo>
         <div class="navbar-logos">
             <div class="programme-logo-container">
-                <img class="logo fill" src="assets/logos/InterregProgrammeLogo_96.png" alt="">
+                <img *ngIf="smallLogo$ | async as logo; else defaultLogo" class="logo fill" src="data:image/png;base64,{{logo.value}}" alt="">
+                <ng-template #defaultLogo>
+                    <img class="logo fill" src="assets/logos/InterregProgrammeLogo_96.png" alt="">
+                </ng-template>
                 <div class="vertical-splitter"></div>
             </div>
             <img class="logo half-size" src="assets/logos/JemsLogo_96.png" alt="">
         </div>
-    </ng-template>
     <!--Hamburger Menu-->
     <button appText mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
             data-toggle="collapse"
