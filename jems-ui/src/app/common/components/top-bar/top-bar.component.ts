@@ -24,6 +24,7 @@ export class TopBarComponent {
   isAuthenticated: boolean;
 
   menuItems$: Observable<MenuItemConfiguration[]>;
+  editUserItem$: Observable<MenuItemConfiguration | null>;
   logoutOngoing = false;
   isNavBarCollapsed = true;
 
@@ -45,6 +46,7 @@ export class TopBarComponent {
               public languageStore: LanguageStore,
               public translate: TranslateService) {
     this.menuItems$ = this.topBarService.menuItems$;
+    this.editUserItem$ = this.topBarService.editUserItem$;
   }
 
   logout(): void {

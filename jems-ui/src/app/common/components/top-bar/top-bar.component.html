@@ -1,11 +1,13 @@
 <nav class="navbar navbar-expand-lg">
     <img *ngIf="smallLogo$ | async as logo; else defaultLogo" class="img" src="data:image/png;base64,{{logo.value}}" alt="">
     <ng-template #defaultLogo>
-        <div class="programme-logo-container">
-            <img class="logo fill" src="assets/logos/InterregProgrammeLogo_96.png" alt="">
-            <div class="vertical-splitter"></div>
+        <div class="navbar-logos">
+            <div class="programme-logo-container">
+                <img class="logo fill" src="assets/logos/InterregProgrammeLogo_96.png" alt="">
+                <div class="vertical-splitter"></div>
+            </div>
+            <img class="logo half-size" src="assets/logos/JemsLogo_96.png" alt="">
         </div>
-        <img class="logo half-size" src="assets/logos/JemsLogo_96.png" alt="">
     </ng-template>
     <!--Hamburger Menu-->
     <button appText mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
@@ -18,7 +20,7 @@
 
     <!-- Content -->
     <div class="navbar-collapse collapse" [ngClass]="{'show': !isNavBarCollapsed}" id="navbarSupportedContent">
-        <ul class="navbar-nav ml-auto left-side-menu">
+        <ul class="navbar-nav left-side-menu">
 
             <ng-container *ngIf="currentUser">
                 <li class="nav-item" *ngFor="let item of menuItems$ | async"
@@ -36,15 +38,28 @@
         </ul>
 
         <ul class="navbar-nav" [ngClass]="{'divide': !isNavBarCollapsed}">
-            <!-- Help -->
-            <li class="nav-item" [ngClass]="{'mt-2': !isNavBarCollapsed}">
-                <app-help-menu></app-help-menu>
+            <!-- Current user -->
+            <li class="nav-item" *ngIf="editUserItem$ | async as item"
+                [ngClass]="{
+                         'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
+                         'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
+                       }">
+                <a class="nav-link"
+                   (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})">
+                    <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
+                    <span class="nav-text" appText maxLines="2">{{item.name | translate}}</span>
+                </a>
             </li>
-
+            <!-- Logout -->
+            <li class="nav-item" *ngIf="currentUser">
+                <button appText mat-flat-button class="logout-button" color="primary"
+                        (click)="logout()" [ngClass]="{'not-collapsed': !isNavBarCollapsed}">
+                    {{'topbar.main.button.logout' | translate}}
+                </button>
+            </li>
             <!-- Language selection -->
             <li class="nav-item language-list ml-2" *ngIf="languageSettings$ | async as languageSettings">
                 <mat-select #langSelect
-                            [ngClass]="{'mt-2': !isNavBarCollapsed}"
                             class="language-select"
                             aria-label="{{'topbar.help.language.select' | translate}}"
                             [value]="translate.currentLang"
@@ -61,14 +76,11 @@
                     </mat-option>
                 </mat-select>
             </li>
-
-            <!-- Logout -->
-            <li class="nav-item" *ngIf="currentUser">
-                <button appText mat-flat-button class="logout-button" color="primary"
-                        (click)="logout()" [ngClass]="{'not-collapsed': !isNavBarCollapsed}">
-                    {{'topbar.main.button.logout' | translate}}
-                </button>
+            <!-- Help -->
+            <li class="nav-item" [ngClass]="{'mt-2': !isNavBarCollapsed}">
+                <app-help-menu></app-help-menu>
             </li>
+
         </ul>
     </div>
 </nav>

@@ -124,6 +124,9 @@
 
   mat-expansion-panel-header {
     height: 2rem !important;
+    &:hover {
+      background: none !important;
+    }
   }
 
   ::ng-deep .mat-elevation-z0 .mat-expansion-panel-body {

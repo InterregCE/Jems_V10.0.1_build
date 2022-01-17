@@ -31,7 +31,7 @@ $container-max-widths: (
 
 $font-size-base: 1rem !default; // Assumes the browser default, typically `16px`
 $line-height-base: 1.5 !default;
-$nav-link-padding-y: .5rem !default;
+$nav-link-padding-y: 0rem !default;
 $link-decoration: none !default;
 $nav-link-padding-x: 1rem !default;
 $font-size-lg: $font-size-base * 1.25 !default;
@@ -46,13 +46,13 @@ $navbar-brand-height: $navbar-brand-font-size * $line-height-base !default;
 $navbar-brand-padding-y: ($nav-link-height - $navbar-brand-height) * 0.5 !default;
 
 
-$navbar-nav-link-padding-x: .5rem !default;
+$navbar-nav-link-padding-x: .75rem !default;
 $grid-breakpoints: (
         xs: 0,
-        sm: 576px,
-        md: 768px,
-        lg: 1400px,
-        xl: 1600px
+        sm: 42rem,
+        md: 60rem,
+        lg: 60rem,
+        xl: 60rem
 ) !default;
 @function breakpoint-next($name, $breakpoints: $grid-breakpoints, $breakpoint-names: map-keys($breakpoints)) {
   $n: index($breakpoint-names, $name);
@@ -310,23 +310,19 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
       display: -ms-flexbox !important;
       display: flex !important;
       -ms-flex-preferred-size: auto;
-      flex-basis: auto;
     }
     .navbar-expand-lg .navbar-toggler {
       display: none;
     }
   }
 
-
   .navbar {
     position: relative;
     display: flex;
     flex-wrap: wrap; // allow us to do the line break for collapsing content
-    align-items: flex-end;
     justify-content: space-between; // space out brand from logo
-    height: 4.5rem;
-    padding: 0.125rem .5rem 0 0.5rem;
-    border-bottom: 1px solid var(--table-border-color);
+    padding: 0.125rem 1rem 0 0.5rem;
+    border-bottom: 1px solid var(--light-blue-gray);
 
     // Because flex properties aren't inherited, we need to redeclare these first
     // few properties so that content nested within behave properly.
@@ -385,14 +381,25 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   .navbar-collapse {
     flex-basis: 100%;
     flex-grow: 1;
+    flex-shrink: 1;
     // For always expanded or extra full navbars, ensure content aligns itself
     // properly vertically. Can be easily overridden with flex utilities.
-    align-items: center;
+    align-items: stretch;
+    justify-content: flex-end;
+    flex-wrap: wrap-reverse;
+    ul {
+      margin-left: auto;
+    }
   }
 
   .collapse {
     &:not(.show) {
       display: none;
+    }
+    &.show {
+      .nav-item {
+        margin: 0.25rem 0;
+      }
     }
   }
 
@@ -400,14 +407,21 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   .navbar-nav {
     display: flex;
     flex-direction: column; // cannot use `inherit` to get the `.navbar`s value
-    padding-left: 0;
-    margin-bottom: 0;
-    height: 2.75rem;
+    padding: 0;
+    margin: 0;
     list-style: none;
+    border-top: none;
+
+    &.left-side-menu {
+      margin: 0 auto;
+    }
 
     .nav-link {
       padding-right: 0;
       padding-left: 0;
+      mat-icon {
+        margin-right: 0.5rem;
+      }
     }
 
     .dropdown-menu {
@@ -416,11 +430,12 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     }
     &.divide {
       border-top: 1px solid var(--font-text-link) !important;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
     }
-  }
-
-  .left-side-menu>.nav-item{
-    height: 2.7rem;
   }
 
   .nav-link {
@@ -471,6 +486,7 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 
           .navbar-nav {
             flex-direction: row;
+            align-items: stretch;
 
             .dropdown-menu {
               position: absolute;
@@ -532,19 +548,32 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 
 .language-select {
   width: 6rem;
+  border: 2px solid var(--font-text-link);
+  border-radius: 0.35rem;
+  padding: 0.35rem;
 }
 
 .mat-stroked-button {
   padding: 0;
 }
-
+.navbar-logos {
+  height: 4.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  flex-grow: 1;
+  flex-basis: 17.5rem;
+  min-width: 17.5rem;
+  max-width: fit-content;
+  overflow-y: hidden;
+  margin-right: 1rem;
+}
 .programme-logo-container {
   width: 17.5rem;
   height: 100%;
   box-sizing: border-box;
   padding: 0.2rem;
   padding-right: 1rem;
-  margin-right: 1rem;
   position: relative;
 }
 .logo {
@@ -554,8 +583,9 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     width: 100%;
   }
   &.half-size {
-    height: 50%;
+    height: 40%;
     margin-right: auto;
+    margin-left: 1rem;
   }
 }
 
@@ -580,10 +610,11 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 .nav-item {
   padding: 0 .2rem;
   border-bottom: .125rem solid transparent;
-  transition: border-bottom-color .2s linear;
+  transition: border-bottom-color .2s ease-out;
   display: flex;
   font-size: .875rem;
   font-weight: 500;
+  align-items: center;
 
   .nav-link {
     display: flex;
@@ -591,20 +622,22 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     cursor: pointer;
     color: var(--font-text-link) !important;
     max-width: 25em;
+    overflow-y: hidden;
     .nav-text {
-      line-height: 1.2rem;
+      line-height: 0.95rem;
     }
   }
 
   &.active-collapsed {
-    border-bottom-color: var(--font-text-link);
+    border: 1px solid rgba(white, 0.25);
+    border-bottom: .125rem solid var(--font-text-link);
+    background: rgba(white, 0.75);
   }
 
   &.active-not-collapsed .nav-text {
     text-decoration: underline;
     font-weight: 600;
   }
-
 }
 
 .mat-select {
@@ -621,7 +654,7 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 
 .logout-button {
   &.not-collapsed {
-    margin: 1rem 0;
+    margin: 0.25rem 0;
   }
 }
 

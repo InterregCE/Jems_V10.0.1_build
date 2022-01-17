@@ -39,6 +39,10 @@ describe('TopBarService', () => {
     service.menuItems$
       .subscribe((items: MenuItemConfiguration[]) => menuItems = items);
 
+    let editUserItem: MenuItemConfiguration = {name:'', route:''};
+    service.editUserItem$
+      .subscribe((item: MenuItemConfiguration) => editUserItem = item);
+
     (securityService as any).myCurrentUser.next({
       name: 'user',
       role: {
@@ -52,19 +56,18 @@ describe('TopBarService', () => {
       }
     });
     tick();
-    expect(menuItems.length).toBe(6);
+    expect(menuItems.length).toBe(5);
     expect(menuItems[0].name).toBe('topbar.main.dashboard');
     expect(menuItems[1].name).toBe('topbar.main.project');
     expect(menuItems[2].name).toBe('topbar.main.call');
     expect(menuItems[3].name).toBe('topbar.main.programme');
     expect(menuItems[4].name).toBe('topbar.main.system');
-    expect(menuItems[5].name).toBe('user (administrator)');
+    expect(editUserItem.name).toBe('user (administrator)');
 
-
-    (securityService as any).myCurrentUser.next({name: 'user', role: {name: Permission.APPLICANT_USER, permissions: []}});
+   (securityService as any).myCurrentUser.next({name: 'user', role: {name: Permission.APPLICANT_USER, permissions: []}});
     tick();
-    expect(menuItems.length).toBe(2);
+    expect(menuItems.length).toBe(1);
     expect(menuItems[0].name).toBe('topbar.main.dashboard');
-    expect(menuItems[1].name).toBe('user (applicant user)');
+    expect(editUserItem.name).toBe('user (applicant user)');
   }));
 });
