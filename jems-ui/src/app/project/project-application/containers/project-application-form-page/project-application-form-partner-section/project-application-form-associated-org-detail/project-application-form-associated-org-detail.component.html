@@ -2,6 +2,11 @@
         *ngIf="data$ | async as data"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
         subTitleKey="project.application.form.section.part.b">
+     <app-alert [type]="Alert.WARNING"
+                [closable]="false"
+                [show]="!data.organization.active">
+         <div>{{'project.application.form.section.part.b.associatedOrganizations.deactivated.warning' | translate}}</div>
+     </app-alert>
     <app-form (save)="onSubmit()"
               (discard)="onCancel(data.organization)">
         <form appFormLayout [formGroup]="associatedOrganizationForm">
@@ -42,6 +47,9 @@
                         {{ 'common.label.project.partner.role.shortcut.' + partner.role | translate : {partner: partner.sortNumber + ' ' + partner.abbreviation} }}
                     </mat-option>
                 </mat-select>
+                <app-context-info
+                        infoText="{{'project.organization.partner.contextinfo' | translate}}">
+                </app-context-info>
                 <mat-error>
                     <app-form-field-errors [errors]="associatedOrganizationForm.controls?.partnerId?.errors">
                     </app-form-field-errors>
@@ -50,7 +58,7 @@
 
             <app-project-application-form-address
                     [addressForm]="associatedOrganizationForm"
-                    [fieldIds]="APPLICATION_FORM.SECTION_B.ADDRESS.MAIN"
+                    [fieldIds]="APPLICATION_FORM.SECTION_B"
                     [nuts]="data.nuts">
             </app-project-application-form-address>
 

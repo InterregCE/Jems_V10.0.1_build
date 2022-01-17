@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 class GetLogosServiceTest : UnitTest() {
 
     private val bucket = "jems-logo-file-bucket"
-    private val logo = "InteractProgrammeLogo_48.png"
+    private val logo = "InterregProgrammeLogo_48.png"
 
     @RelaxedMockK
     lateinit var minioStorage: MinioStorage

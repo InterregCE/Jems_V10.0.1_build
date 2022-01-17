@@ -42,9 +42,9 @@ interface ProjectRelevanceRepository : PagingAndSortingRepository<ProjectRelevan
              translation.language AS language,
              translation.specification AS specification
              FROM #{#entityName}_benefit FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_benefit_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.reference_id
+             LEFT JOIN #{#entityName}_benefit_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.source_entity_id
              WHERE entity.project_relevance_id = :projectId
-             ORDER BY entity.id
+             ORDER BY entity.sort_number
              """,
         nativeQuery = true
     )
@@ -59,9 +59,9 @@ interface ProjectRelevanceRepository : PagingAndSortingRepository<ProjectRelevan
              translation.language AS language,
              translation.specification AS specification
              FROM #{#entityName}_strategy FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_strategy_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.reference_id
+             LEFT JOIN #{#entityName}_strategy_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.source_entity_id
              WHERE entity.project_relevance_id = :projectId
-             ORDER BY entity.id
+             ORDER BY entity.sort_number
              """,
         nativeQuery = true
     )
@@ -76,9 +76,9 @@ interface ProjectRelevanceRepository : PagingAndSortingRepository<ProjectRelevan
              translation.synergy AS synergy,
              translation.specification AS specification
              FROM #{#entityName}_synergy FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_synergy_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.reference_id
+             LEFT JOIN #{#entityName}_synergy_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.source_entity_id
              WHERE entity.project_relevance_id = :projectId
-             ORDER BY entity.id
+             ORDER BY entity.sort_number
              """,
         nativeQuery = true
     )

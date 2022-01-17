@@ -30,7 +30,7 @@ export class ProjectWorkPackageActivitiesTabConstants {
 
   public static DESCRIPTION: AppControl = {
     name: 'description',
-    maxLength: 500,
+    maxLength: 1000
   };
 
   public static DELIVERABLES: AppControl = {
@@ -41,9 +41,14 @@ export class ProjectWorkPackageActivitiesTabConstants {
     name: 'partnerIds'
   };
 
-  public static DELIVERABLE: AppControl = {
+  public static DELIVERABLE_DESCRIPTION: AppControl = {
     name: 'description',
-    maxLength: 200,
+    maxLength: 300,
+  };
+
+  public static DELIVERABLE_TITLE: AppControl = {
+    name: 'title',
+    maxLength: 100,
   };
 
   public static PERIOD: AppControl = {

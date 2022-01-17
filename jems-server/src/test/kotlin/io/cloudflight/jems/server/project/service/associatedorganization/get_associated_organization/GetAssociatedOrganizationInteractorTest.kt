@@ -15,11 +15,12 @@ import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectA
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.AssociatedOrganizationPersistence
-import io.cloudflight.jems.server.project.service.associatedorganization.toOutputProjectAssociatedOrganization
-import io.cloudflight.jems.server.project.service.associatedorganization.toOutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.toOutputProjectAssociatedOrganization
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.toOutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -30,7 +31,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
-internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
+internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
 
     @MockK
     lateinit var persistence: AssociatedOrganizationPersistence
@@ -47,7 +48,8 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
         password = "hash",
         email = "admin@admin.dev",
         surname = "Surname",
-        userRole = userRole
+        userRole = userRole,
+        userStatus = UserStatus.ACTIVE
     )
 
     private val call = CallEntity(
@@ -88,6 +90,7 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
 
     private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
+        active = true,
         abbreviation = projectPartner.abbreviation,
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
@@ -106,15 +109,22 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
     private fun outputOrganization(id: Long, partnerAbbr: String, name: String, sortNr: Int? = null) =
         OutputProjectAssociatedOrganization(
             id = id,
+            active = true,
             partnerAbbreviation = partnerAbbr,
             nameInOriginalLanguage = name,
             nameInEnglish = name,
             sortNumber = sortNr
         )
 
-    private fun outputOrganizationDetail(id: Long, partner: ProjectPartnerSummaryDTO, name: String, sortNr: Int? = null) =
+    private fun outputOrganizationDetail(
+        id: Long,
+        partner: ProjectPartnerSummaryDTO,
+        name: String,
+        sortNr: Int? = null
+    ) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
+            active = true,
             partner = partner,
             nameInOriginalLanguage = name,
             nameInEnglish = name,
@@ -139,7 +149,7 @@ internal class GetAssociatedOrganizationInteractorTest: UnitTest() {
     @Test
     fun findAllByProjectId() {
         every { persistence.findAllByProjectId(1, UNPAGED) } returns
-                PageImpl(listOf(organization(1, projectPartner, "test", 1).toOutputProjectAssociatedOrganization()))
+            PageImpl(listOf(organization(1, projectPartner, "test", 1).toOutputProjectAssociatedOrganization()))
 
         assertThat(getInteractor.findAllByProjectId(1, UNPAGED))
             .containsExactly(outputOrganization(1, projectPartner.abbreviation, "test", 1))

@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPolicySimpleDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -34,6 +35,7 @@ import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEnt
 import io.cloudflight.jems.server.programme.repository.costoption.combineLumpSumTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCostTranslatedValues
 import io.cloudflight.jems.server.programme.repository.costoption.toModel
+import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePriorityPolicy
 import io.cloudflight.jems.server.programme.service.toOutputProgrammePrioritySimple
@@ -57,9 +59,11 @@ import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -73,7 +77,9 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.sql.Timestamp
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.Optional
 
@@ -108,6 +114,11 @@ internal class ProjectPersistenceTest : UnitTest() {
             ProjectCallStateAidEntity(
                 StateAidSetupId(dummyCall(), stateAidEntity)
             )
+        )
+        val programmePriority = ProgrammePriorityEntity(
+            id = 3L,
+            code = "PO3",
+            objective = ProgrammeObjectivePolicy.AdvancedTechnologies.objective
         )
 
         private fun dummyCall(): CallEntity {
@@ -186,7 +197,10 @@ internal class ProjectPersistenceTest : UnitTest() {
                 currentStatus = ProjectStatusHistoryEntity(
                     id = 1,
                     status = ApplicationStatus.DRAFT,
-                    user = call.creator
+                    user = call.creator,
+                    decisionDate = LocalDate.now(),
+                    entryIntoForceDate = LocalDate.now(),
+                    note = "note"
                 ),
                 periods = listOf(
                     ProjectPeriodEntity(
@@ -206,6 +220,9 @@ internal class ProjectPersistenceTest : UnitTest() {
 
     @MockK
     lateinit var projectRepository: ProjectRepository
+
+    @MockK
+    lateinit var collaboratorRepository: UserProjectCollaboratorRepository
 
     @MockK
     lateinit var projectAssessmentQualityRepository: ProjectAssessmentQualityRepository
@@ -231,6 +248,9 @@ internal class ProjectPersistenceTest : UnitTest() {
     @MockK
     lateinit var callPersistence: CallPersistenceProvider
 
+    @MockK
+    lateinit var programmePriorityRepository: ProgrammePriorityRepository
+
     private lateinit var persistence: ProjectPersistenceProvider
 
     @BeforeEach
@@ -240,13 +260,15 @@ internal class ProjectPersistenceTest : UnitTest() {
         persistence = ProjectPersistenceProvider(
             projectVersionUtils,
             projectRepository,
+            collaboratorRepository,
             projectAssessmentQualityRepository,
             projectAssessmentEligibilityRepository,
             projectStatusHistoryRepo,
             userRepository,
             callRepository,
             stateAidRepository,
-            applicationFormFieldConfigurationRepository
+            applicationFormFieldConfigurationRepository,
+            programmePriorityRepository
         )
     }
 
@@ -311,16 +333,18 @@ internal class ProjectPersistenceTest : UnitTest() {
                 flatRates = call.flatRates.toModel(),
                 lumpSums = call.lumpSums.toModel(),
                 unitCosts = call.unitCosts.toModel(),
-                stateAids = listOf(ProgrammeStateAid(
-                    id = stateAidEntity.id,
-                    name = emptySet(),
-                    abbreviatedName = emptySet(),
-                    comments = emptySet(),
-                    measure = stateAidEntity.measure,
-                    schemeNumber = stateAidEntity.schemeNumber,
-                    maxIntensity = stateAidEntity.maxIntensity,
-                    threshold = stateAidEntity.threshold
-                )),
+                stateAids = listOf(
+                    ProgrammeStateAid(
+                        id = stateAidEntity.id,
+                        name = emptySet(),
+                        abbreviatedName = emptySet(),
+                        comments = emptySet(),
+                        measure = stateAidEntity.measure,
+                        schemeNumber = stateAidEntity.schemeNumber,
+                        maxIntensity = stateAidEntity.maxIntensity,
+                        threshold = stateAidEntity.threshold
+                    )
+                ),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
             )
         )
@@ -342,6 +366,27 @@ internal class ProjectPersistenceTest : UnitTest() {
         assertThat(persistence.getProjectPeriods(PROJECT_ID)).isEqualTo(
             project.periods.toProjectPeriods()
         )
+    }
+
+    @Test
+    fun `get Project Periods historic`() {
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val version = "3.0"
+        val project = dummyProject()
+        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
+        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
+        val mockPeriodRow: ProjectPeriodRow = mockk()
+        every { mockPeriodRow.periodNumber } returns 1
+        every { mockPeriodRow.periodStart } returns 1
+        every { mockPeriodRow.periodEnd } returns 12
+        every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockPeriodRow)
+
+        assertThat(persistence.getProjectPeriods(PROJECT_ID, version))
+            .containsExactly(ProjectPeriod(
+                number = 1,
+                start = 1,
+                end = 12
+            ))
     }
 
     @Test
@@ -406,7 +451,10 @@ internal class ProjectPersistenceTest : UnitTest() {
                     projectStatus = project.currentStatus.toProjectStatus(),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
-                    callSettings = project.call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities),
+                    callSettings = project.call.toSettingsModel(
+                        stateAidEntities,
+                        applicationFormFieldConfigurationEntities
+                    ),
                     programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
                     specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy(),
                     assessmentStep1 = ProjectAssessment(
@@ -424,7 +472,8 @@ internal class ProjectPersistenceTest : UnitTest() {
                                 email = user.email,
                                 name = user.name,
                                 surname = user.surname,
-                                userRole = UserRoleSummary(id = 1, name = "ADMIN")
+                                userRole = UserRoleSummary(id = 1, name = "ADMIN"),
+                                userStatus = UserStatus.ACTIVE
                             ),
                             updated = statusChange,
                         )
@@ -444,7 +493,8 @@ internal class ProjectPersistenceTest : UnitTest() {
                                 email = user.email,
                                 name = user.name,
                                 surname = user.surname,
-                                userRole = UserRoleSummary(id = 1, name = "ADMIN")
+                                userRole = UserRoleSummary(id = 1, name = "ADMIN"),
+                                userStatus = UserStatus.ACTIVE
                             ),
                             updated = statusChange,
                         )
@@ -467,6 +517,22 @@ internal class ProjectPersistenceTest : UnitTest() {
         every { mockRow.duration } returns 12
         every { mockRow.title } returns "title"
         every { mockRow.intro } returns "intro"
+        every { mockRow.statusId } returns 1L
+        every { mockRow.status } returns ApplicationStatus.DRAFT
+        every { mockRow.updated } returns Timestamp.from(project.currentStatus.updated.toInstant()) // missing timezone
+        every { mockRow.decisionDate } returns project.currentStatus.decisionDate!!
+        every { mockRow.entryIntoForceDate } returns project.currentStatus.entryIntoForceDate!!
+        every { mockRow.note } returns project.currentStatus.note!!
+        every { mockRow.userId } returns 1L
+        every { mockRow.email } returns "admin@admin.dev"
+        every { mockRow.name } returns "Name"
+        every { mockRow.surname } returns "Surname"
+        every { mockRow.userStatus } returns UserStatus.ACTIVE
+        every { mockRow.roleId } returns 1L
+        every { mockRow.roleName } returns "ADMIN"
+        every { mockRow.programmePriorityPolicyObjectivePolicy } returns "AdvancedTechnologies"
+        every { mockRow.programmePriorityPolicyCode } returns "AT1"
+        every { mockRow.programmePriorityId } returns 3L
         every { mockPeriodRow.periodNumber } returns 1
         every { mockPeriodRow.periodStart } returns 1
         every { mockPeriodRow.periodEnd } returns 12
@@ -481,6 +547,7 @@ internal class ProjectPersistenceTest : UnitTest() {
             mockPeriodRow
         )
         every { projectRepository.findByIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+        every { programmePriorityRepository.findById(3L) } returns Optional.of(programmePriority)
         every { stateAidRepository.findAllByIdCallId(project.call.id) } returns stateAidEntities
         every { applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id) } returns applicationFormFieldConfigurationEntities
 
@@ -501,12 +568,19 @@ internal class ProjectPersistenceTest : UnitTest() {
                         )
                     ),
                     applicant = project.applicant.toUserSummary(),
-                    projectStatus = project.currentStatus.toProjectStatus(),
+                    projectStatus = ProjectStatus(
+                        mockRow.statusId, mockRow.status,
+                    UserSummary(mockRow.userId, mockRow.email, mockRow.name, mockRow.surname, UserRoleSummary(mockRow.roleId, mockRow.roleName), mockRow.userStatus),
+                        ZonedDateTime.of(mockRow.updated.toLocalDateTime(), ZoneOffset.UTC), mockRow.decisionDate, mockRow.entryIntoForceDate, mockRow.note
+                    ),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
-                    callSettings = project.call.toSettingsModel(stateAidEntities, applicationFormFieldConfigurationEntities),
-                    programmePriority = project.priorityPolicy?.programmePriority?.toOutputProgrammePrioritySimple(),
-                    specificObjective = project.priorityPolicy?.toOutputProgrammePriorityPolicy()
+                    callSettings = project.call.toSettingsModel(
+                        stateAidEntities,
+                        applicationFormFieldConfigurationEntities
+                    ),
+                    specificObjective = OutputProgrammePriorityPolicySimpleDTO(ProgrammeObjectivePolicy.AdvancedTechnologies, "AT1"),
+                    programmePriority = programmePriority.toOutputProgrammePrioritySimple()
                 )
             )
     }
@@ -529,7 +603,7 @@ internal class ProjectPersistenceTest : UnitTest() {
     fun `getProjects - not owner`() {
         every { projectRepository.findAll(Pageable.unpaged()) } returns PageImpl(listOf(dummyProject()))
 
-        val result = persistence.getProjects(Pageable.unpaged(), null)
+        val result = persistence.getProjects(Pageable.unpaged())
 
         assertThat(result.numberOfElements).isEqualTo(1)
         assertThat(result.elementAt(0)).isEqualTo(
@@ -546,13 +620,13 @@ internal class ProjectPersistenceTest : UnitTest() {
     @Test
     fun `getProjects - owner`() {
         every {
-            projectRepository.findAllByApplicantId(
-                7006L,
-                Pageable.unpaged()
+            projectRepository.findAllByIdIn(
+                pageable = Pageable.unpaged(),
+                projectIds = setOf(45L, 32L),
             )
         } returns PageImpl(listOf(dummyProject()))
 
-        val result = persistence.getProjects(Pageable.unpaged(), 7006L)
+        val result = persistence.getProjectsOfUserPlusExtra(Pageable.unpaged(), extraProjectIds = setOf(45L, 32L))
 
         assertThat(result.numberOfElements).isEqualTo(1)
         assertThat(result.elementAt(0)).isEqualTo(

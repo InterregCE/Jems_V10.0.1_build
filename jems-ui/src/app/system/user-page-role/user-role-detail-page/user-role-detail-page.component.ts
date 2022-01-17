@@ -40,8 +40,8 @@ export class UserRoleDetailPageComponent {
   PermissionMode = PermissionMode;
   roleId = this.activatedRoute?.snapshot?.params?.roleId;
   data$: Observable<{
-    role: UserRoleDTO,
-    isUpdateAllowed: boolean,
+    role: UserRoleDTO;
+    isUpdateAllowed: boolean;
   }>;
   userRoleForm = this.formBuilder.group({
     name: ['', [
@@ -51,7 +51,8 @@ export class UserRoleDetailPageComponent {
     ]],
     defaultForRegisteredUser: [false, []],
     permissionsInspect: this.formBuilder.array([]),
-    permissionsTopBar: this.formBuilder.array([])
+    permissionsTopBar: this.formBuilder.array([]),
+    permissionsCreateAndCollaborate: this.formBuilder.array([])
   });
 
   roleHasProjectCreate = false;
@@ -116,6 +117,10 @@ export class UserRoleDetailPageComponent {
     return this.userRoleForm.get('permissionsTopBar') as FormArray;
   }
 
+  get permissionsCreateAndCollaborate(): FormArray {
+    return this.userRoleForm.get('permissionsCreateAndCollaborate') as FormArray;
+  }
+
   save(role: UserRoleDTO): void {
     const user: UserRoleDTO = {
       id: role.id,
@@ -157,10 +162,12 @@ export class UserRoleDetailPageComponent {
     this.roleHasProjectCreate = role.permissions ? role.permissions.filter((permission: any) => permission === PermissionsEnum.ProjectCreate).length > 0 : false;
     this.permissionsInspect.clear();
     this.permissionsTopBar.clear();
+    this.permissionsCreateAndCollaborate.clear();
 
     const createAndCollaborateGroups = Permission.DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS.map((perm, index) =>
       this.extractFormPermissionSubGroup(perm, role.permissions, index)
     );
+    createAndCollaborateGroups.forEach((group: FormGroup) => this.permissionsCreateAndCollaborate.push(group));
 
     const inspectGroups = Permission.DEFAULT_USER_INSPECT_PERMISSIONS.map((perm, index) =>
       this.extractFormPermissionSubGroup(perm, role.permissions, index)
@@ -310,12 +317,19 @@ export class UserRoleDetailPageComponent {
         this.extractChildrenPermissions(this.permissionsInspect.at(index), perm)).forEach(permission => permissions.push(permission));
     }
 
+    if (this.roleHasProjectCreate) {
+      permissions.push(PermissionsEnum.ProjectCreate);
+      Permission.DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS
+        .flatMap((perm: PermissionNode, index: number) =>
+          this.extractChildrenPermissions(this.permissionsCreateAndCollaborate.at(index), perm))
+        .forEach(permission => permissions.push(permission));
+    } else {
+      this.permissionsCreateAndCollaborate.clear();
+    }
+
     Permission.TOP_NAVIGATION_PERMISSIONS.flatMap((perm: PermissionNode, index: number) =>
       this.extractChildrenPermissions(this.permissionsTopBar.at(index), perm)).forEach(permission => permissions.push(permission));
 
-    if (this.roleHasProjectCreate) {
-      permissions.push(PermissionsEnum.ProjectCreate);
-    }
 
     return permissions;
   }

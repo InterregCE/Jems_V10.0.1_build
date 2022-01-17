@@ -23,6 +23,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {ProjectStore} from '../../containers/project-application-detail/services/project-store.service';
 import {LanguageStore} from '@common/services/language-store.service';
 import { APPLICATION_FORM } from '@project/common/application-form-model';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-project-application-form',
@@ -32,6 +33,7 @@ import { APPLICATION_FORM } from '@project/common/application-form-model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormComponent extends BaseComponent implements OnInit, OnChanges {
+  Alert = Alert;
   Permission = Permission;
   tools = Tools;
   LANGUAGE = InputTranslation.LanguageEnum;

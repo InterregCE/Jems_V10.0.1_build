@@ -3,7 +3,7 @@ import {NutsImportService, ProgrammeDataService, OutputNuts} from '@cat/api';
 import {combineLatest, merge, ReplaySubject, Subject} from 'rxjs';
 import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
-import {Log} from '../../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammeRegionCheckbox} from '../../model/programme-region-checkbox';
@@ -26,6 +26,8 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
   downloadSuccess$ = new Subject<boolean>();
   downloadError$ = new Subject<I18nValidationError | null>();
   regionSaveSuccess$ = new Subject<boolean>();
+
+  regionsAvailable$ = new Subject<boolean>();
 
   private programmeNuts$ = this.programmeDataService.get()
     .pipe(
@@ -104,7 +106,8 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
           )
         ),
         tap(regions => this.selectionChanged$.next(regions)),
-        tap(regions => this.regionTreeDataSource.data = regions)
+        tap(regions => this.regionTreeDataSource.data = regions),
+        tap(regions => this.regionsAvailable$.next(!!regions?.length))
       ).subscribe();
   }
 

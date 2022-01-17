@@ -6,7 +6,7 @@
     <h3>{{'project.application.form.section.part.c.subsection.four' | translate}}</h3>
 
     <ng-container *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button *ngIf="projectEditable$ | async"
+        <button appText *ngIf="projectEditable$ | async"
                 mat-stroked-button class="mb-3"
                 (click)="createWorkPackage()">
             + {{'project.application.form.add.workpackage' | translate}}
@@ -31,7 +31,7 @@
     <button *ngIf="projectEditable$ | async" mat-icon-button color="accent"
             (click)="$event.stopPropagation(); delete(workPackage, workPackageName.value)"
             matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
-        <em class="fas fa-trash"></em>
+        <mat-icon>delete</mat-icon>
     </button>
 </ng-template>
 

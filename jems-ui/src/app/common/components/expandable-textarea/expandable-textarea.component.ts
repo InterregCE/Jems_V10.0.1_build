@@ -8,8 +8,7 @@ import {FormControl, ValidationErrors} from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExpandableTextareaComponent {
-  @Input()
-  placeholder: string;
+
   @Input()
   label: string;
   @Input()

@@ -1,13 +1,12 @@
 package io.cloudflight.jems.server.project.repository.partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
+import io.cloudflight.jems.server.call.callFundRateEntity
 import io.cloudflight.jems.server.call.callWithId
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -15,7 +14,8 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
-import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
+import io.cloudflight.jems.server.project.repository.ProjectNotFoundException
+import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.utils.partner.PROJECT_ID
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -43,10 +44,10 @@ class ProjectBudgetCoFinancingPersistenceTest {
     companion object {
         private const val PARTNER_ID = 1L
 
-        private val fund1 = ProgrammeFundEntity(id = 10, selected = true)
-        private val fund2 = ProgrammeFundEntity(id = 11, selected = true)
+        private val fund1 = callFundRateEntity(callWithId(10), 10L)
+        private val fund2 = callFundRateEntity(callWithId(10), 11L)
 
-        private val fund1Model = ProgrammeFund(id = fund1.id, selected = true)
+        private val fund1Model = ProgrammeFund(id = fund1.setupId.programmeFund.id, selected = true)
 
         private fun dummyCall(): CallEntity {
             val call = callWithId(10)
@@ -88,6 +89,9 @@ class ProjectBudgetCoFinancingPersistenceTest {
     @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
 
+    @RelaxedMockK
+    lateinit var projectRepository: ProjectRepository
+
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
@@ -102,21 +106,22 @@ class ProjectBudgetCoFinancingPersistenceTest {
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
             projectPartnerRepository,
             projectPartnerCoFinancingRepository,
-            projectVersionUtils
+            projectVersionUtils,
+            projectRepository
         )
     }
 
     @Test
     fun `get available fund ids`() {
-        every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(dummyPartner)
-        assertThat(persistence.getAvailableFundIds(PARTNER_ID)).containsExactlyInAnyOrder(10, 11)
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(PARTNER_ID) } returns PROJECT_ID
+        every { projectRepository.getById(PROJECT_ID) } returns dummyProject()
+        assertThat(persistence.getAvailableFunds(PARTNER_ID).map { it.id }).containsExactlyInAnyOrder(10, 11)
     }
 
     @Test
     fun `get available fund ids not existing`() {
-        every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getAvailableFundIds(PARTNER_ID) }
-        assertThat(ex.entity).isEqualTo("projectPartner")
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(PARTNER_ID) } returns null
+        assertThrows<ProjectNotFoundException> { persistence.getAvailableFunds(PARTNER_ID) }
     }
 
     @Test
@@ -126,7 +131,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
                 coFinancingFundId = ProjectPartnerCoFinancingFundId(
                     partnerId = PARTNER_ID,
                     orderNr = 1,
-                ), percentage = BigDecimal.valueOf(24.5), programmeFund = fund1
+                ), percentage = BigDecimal.valueOf(24.5), programmeFund = fund1.setupId.programmeFund
             ),
             ProjectPartnerCoFinancingEntity(
                 coFinancingFundId = ProjectPartnerCoFinancingFundId(
@@ -149,7 +154,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
                 status = Private,
                 amount = BigDecimal.ONE,
                 isPartner = false,
-                )
+            )
         )
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(
             dummyPartner.copy(
@@ -197,7 +202,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
 
         val toBeSavedFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
-                fundId = fund1.id,
+                fundId = fund1.setupId.programmeFund.id,
                 percentage = BigDecimal.valueOf(29.5)
             ),
             UpdateProjectPartnerCoFinancing(

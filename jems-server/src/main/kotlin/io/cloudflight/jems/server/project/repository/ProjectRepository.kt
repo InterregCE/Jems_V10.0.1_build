@@ -3,39 +3,53 @@ package io.cloudflight.jems.server.project.repository
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.ProjectRow
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.util.Optional
 
-interface CustomProjectRepository {
-    fun getReferenceIfExistsOrThrow(id: Long?): ProjectEntity
-}
-
-open class CustomProjectRepositoryImpl(val repository: ProjectRepository) :
-    CustomProjectRepository {
-    @Transactional(readOnly = true)
-    override fun getReferenceIfExistsOrThrow(id: Long?) : ProjectEntity =
-        runCatching { repository.getOne(id!!) }.onFailure { throw ProjectNotFoundException() }.getOrThrow()
-}
 
 @Repository
-interface ProjectRepository : JpaRepository<ProjectEntity, Long>, CustomProjectRepository {
+interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
 
     @Query(
         """
             SELECT
              entity.*,
              entity.custom_identifier as customIdentifier,
-             translation.*
+             translation.*,
+
+             entity.programme_priority_policy_objective_policy as programmePriorityPolicyObjectivePolicy,
+             programmePrioObj.code as programmePriorityPolicyCode,
+             programmePrioObj.programme_priority_id as programmePriorityId,
+
+             ps.id as statusId,
+             ps.status,
+             ps.updated,
+             ps.decision_date as decisionDate,
+             ps.entry_into_force_date as entryIntoForceDate,
+             ps.note,
+
+             account.name,
+             account.surname,
+             account.email,
+             account.user_status as userStatus,
+             account.id as userId,
+
+             accountRole.id as roleId,
+             accountRole.name as roleName
+
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.project_id
+             LEFT JOIN project_status AS ps ON ps.id = entity.project_status_id
+             LEFT JOIN account AS account ON account.id = ps.account_id
+             LEFT JOIN account_role AS accountRole ON accountRole.id = account.account_role_id
+             LEFT JOIN programme_priority_specific_objective AS programmePrioObj ON entity.programme_priority_policy_objective_policy = programmePrioObj.programme_objective_policy_code
+
              WHERE entity.id = :id
              ORDER BY entity.id
              """,
@@ -79,9 +93,5 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long>, CustomProjectR
     override fun findAll(pageable: Pageable): Page<ProjectEntity>
 
     @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
-    fun findAllByApplicantId(applicantId: Long, pageable: Pageable): Page<ProjectEntity>
-
-    @EntityGraph(attributePaths = ["call", "currentStatus", "priorityPolicy.programmePriority"])
-    fun findAllByCurrentStatusStatusNot(status: ApplicationStatus, pageable: Pageable): Page<ProjectEntity>
-
+    fun findAllByIdIn(projectIds: Collection<Long>, pageable: Pageable): Page<ProjectEntity>
 }

@@ -3,7 +3,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
   selector: 'app-form',

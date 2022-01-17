@@ -112,7 +112,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
                     .toBudgetGeneralEntryList()
             },
             previousVersionFetcher = { timestamp ->
-                budgetExternalRepository.findAllByPartnerIdAsOfTimestamp(
+                budgetEquipmentRepository.findAllByPartnerIdAsOfTimestamp(
                     partnerId, timestamp, ProjectPartnerBudgetGeneralRow::class.java
                 ).toBudgetGeneralCostEntryList()
             }
@@ -132,7 +132,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getBudgetExternalExpertiseAndServicesCostTotal(partnerId: Long, version: String?): BigDecimal =
-        budgetExternalRepository.sumTotalForPartner(partnerId) ?: BigDecimal.ZERO
+        getCostTotal(partnerId, version, budgetExternalRepository)
 
     @Transactional(readOnly = true)
     override fun getBudgetInfrastructureAndWorksCostTotal(partnerId: Long, version: String?): BigDecimal =

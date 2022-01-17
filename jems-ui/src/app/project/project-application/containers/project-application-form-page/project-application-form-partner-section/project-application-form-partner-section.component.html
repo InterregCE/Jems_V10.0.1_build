@@ -15,12 +15,23 @@
     <app-project-application-form-partner-list
             *ngIf="partnerPage$ | async as partnerPage"
             [projectId]="projectId"
+            [projectStatus]="projectStore.projectStatus$ | async"
             [editable]="projectStore.projectEditable$ | async"
-            [partnerPage]="partnerPage"
+            [partnerPage$]="partnerPage$"
             [pageIndex]="newPageIndex$ | async"
             (newPageSize)="newPageSize$.next($event)"
             (newPageIndex)="newPageIndex$.next($event)"
             (newSort)="newSort$.next($event)"
-            (deletePartner)="deletePartner($event)">
+            (deletePartner)="deletePartner($event)"
+            (deactivatePartner) = "deactivatePartner($event, partnerPage.content)">
     </app-project-application-form-partner-list>
+
+    <ng-container *ngIf="showSuccessMessage$ | async as successMessageArg">
+        <app-alert
+                [show]="successMessageArg"
+                [type]="Alert.SUCCESS">
+            <p>{{'project.application.form.section.part.b.partner.deactivated.success.message' | translate : {name:successMessageArg} }}</p>
+        </app-alert>
+    </ng-container>
+
 </app-project-page-template>

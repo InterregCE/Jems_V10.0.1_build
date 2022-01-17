@@ -4,7 +4,7 @@ import {PageProjectFileMetadataDTO, ProjectFileMetadataDTO, ProjectStatusDTO} fr
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {Tables} from '@common/utils/tables';
 import {Alert} from '@common/components/forms/alert';
-import {FileCategoryInfo} from '@project/common/components/file-management/file-category';
+import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {MatTableDataSource} from '@angular/material/table';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {Forms} from '@common/utils/forms';
@@ -29,9 +29,9 @@ export class ProjectApplicationFilesTableComponent {
   fileSizeOverLimitError$ = new Subject<boolean>();
 
   data$: Observable<{
-    files: PageProjectFileMetadataDTO,
-    projectStatus: ProjectStatusDTO,
-    selectedCategory: FileCategoryInfo | undefined,
+    files: PageProjectFileMetadataDTO;
+    projectStatus: ProjectStatusDTO;
+    selectedCategory: CategoryInfo | undefined;
   }>;
 
   editableDescriptionFileId: number | null;
@@ -41,7 +41,7 @@ export class ProjectApplicationFilesTableComponent {
     this.data$ = combineLatest([
       this.fileManagementStore.fileList$,
       this.fileManagementStore.projectStatus$,
-      this.fileManagementStore.selectedCategory$,
+      this.fileManagementStore.selectedCategory$
     ])
       .pipe(
         map(([files, projectStatus, selectedCategory]) => ({

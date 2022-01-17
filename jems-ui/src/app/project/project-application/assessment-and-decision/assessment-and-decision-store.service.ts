@@ -30,6 +30,14 @@ export class AssessmentAndDecisionStore {
       );
   }
 
+  returnApplicationToApplicantForConditions(projectId: number): Observable<string> {
+    return this.projectStatusService.handBackToApplicant(projectId)
+      .pipe(
+        tap(() => this.projectStore.projectStatusChanged$.next()),
+        tap(status => Log.info('Changed status for project', projectId, status))
+      );
+  }
+
   returnApplicationToDraft(projectId: number): Observable<string> {
     return this.projectStatusService.startSecondStep(projectId)
       .pipe(
@@ -47,7 +55,7 @@ export class AssessmentAndDecisionStore {
   }
 
   private revertToStatus(): Observable<string | null> {
-    return combineLatest([this.projectStore.project$, this.permissionService.permissionsChanged()])
+    return combineLatest([this.projectStore.currentVersionOfProject$, this.permissionService.permissionsChanged()])
       .pipe(
         switchMap(([project, perms]) =>
           perms.includes(PermissionsEnum.ProjectStatusDecisionRevert)

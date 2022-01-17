@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.service
 
 import io.cloudflight.jems.api.authentication.dto.LoginRequest
 import io.cloudflight.jems.api.user.dto.UserRoleDTO
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -10,7 +11,8 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.service.AuthenticationServiceImpl
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
-import io.mockk.MockKAnnotations
+import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
@@ -23,7 +25,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import java.util.Collections
 import javax.servlet.http.HttpServletRequest
 
-class AuthenticationServiceTest {
+class AuthenticationServiceTest: UnitTest() {
 
     @RelaxedMockK
     lateinit var securityService: SecurityService
@@ -42,7 +44,7 @@ class AuthenticationServiceTest {
 
     @BeforeEach
     fun setup() {
-        MockKAnnotations.init(this)
+        clearMocks(auditService)
     }
 
     @Test
@@ -50,7 +52,8 @@ class AuthenticationServiceTest {
         every { securityService.currentUser } returns LocalCurrentUser(
             User(
                 1, "admin@test.net", "test", "test",
-                UserRole(1, "Role", emptySet())
+                UserRole(1, "Role", emptySet()),
+                userStatus = UserStatus.ACTIVE
             ), "", Collections.emptyList()
         )
 
@@ -77,7 +80,8 @@ class AuthenticationServiceTest {
         every { securityService.currentUser } returns LocalCurrentUser(
             User(
                 1, "test@test.net", "test", "test",
-                UserRole(1, "Role", emptySet())
+                UserRole(1, "Role", emptySet()),
+                userStatus = UserStatus.ACTIVE
             ), "", Collections.emptyList()
         )
 
@@ -93,6 +97,12 @@ class AuthenticationServiceTest {
         val currentUser = authenticationService.getCurrentUser()
 
         assertThat(currentUser.name).isEqualTo("")
-        assertThat(currentUser.role).isEqualTo(UserRoleDTO(name = "", permissions = emptyList(), defaultForRegisteredUser = false))
+        assertThat(currentUser.role).isEqualTo(
+            UserRoleDTO(
+                name = "",
+                permissions = emptyList(),
+                defaultForRegisteredUser = false
+            )
+        )
     }
 }

@@ -1,4 +1,12 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
 import {ProjectPartnerBudgetConstants} from '../project-partner-budget.constants';
 import {
   AbstractControl,
@@ -28,6 +36,7 @@ import {AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 const FIELD_KEYS =
   {
     DESCRIPTION: 'DESCRIPTION',
+    COMMENTS: 'COMMENTS',
     AWARD_PROCEDURE: 'AWARD_PROCEDURE',
     INVESTMENT: 'INVESTMENT',
     UNIT_TYPE_AND_NUMBER_OF_UNITS: 'UNIT_TYPE_AND_NUMBER_OF_UNITS',
@@ -67,7 +76,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
   columnsToDisplay: string[];
   tableConfig: TableConfig[];
 
-  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private budgetTabService: ProjectPartnerBudgetTabService) {
+  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private budgetTabService: ProjectPartnerBudgetTabService, private changeDetectorRef: ChangeDetectorRef) {
     this.budgetForm = this.controlContainer.control as FormGroup;
   }
 
@@ -92,6 +101,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
 
     this.columnsToDisplay = [
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.DESCRIPTION), ['description']),
+      ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.COMMENTS), ['comments']),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.AWARD_PROCEDURE), ['awardProcedures']),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.INVESTMENT), ['investment']),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.UNIT_TYPE_AND_NUMBER_OF_UNITS), ['unitType', 'numberOfUnits']),
@@ -101,6 +111,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
 
     this.tableConfig = [
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.DESCRIPTION), [{minInRem: 12}]),
+      ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.COMMENTS), [{minInRem: 12}]),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.AWARD_PROCEDURE), [{minInRem: 12}]),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.INVESTMENT), [{minInRem: 5, maxInRem: 5}]),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.UNIT_TYPE_AND_NUMBER_OF_UNITS), [{minInRem: 12}, {
@@ -141,6 +152,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
     control.patchValue(
       {
         description: [],
+        comments: [],
         unitType: [],
         awardProcedures: [],
         investmentId: null,
@@ -163,6 +175,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
     this.items.push(this.formBuilder.group({
       id: null,
       description: [[]],
+      comments: [[]],
       unitType: [[]],
       unitCost: [null, [this.constants.requiredUnitCost(this.allowedBudgetCategory)]],
       awardProcedures: [[]],
@@ -175,6 +188,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
     }));
     this.budgetTabService.addPeriods(this.items, this.projectPeriods);
     this.formService.setDirty(true);
+    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
   getUnitCost(formGroup: FormGroup): FormControl {
@@ -199,6 +213,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       this.items.push(this.formBuilder.group({
         id: [item.id],
         description: [item.description],
+        comments: [item.comments],
         unitType: [item.unitType],
         unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId) || null, [this.constants.requiredUnitCost(this.allowedBudgetCategory)]],
         awardProcedures: [item.awardProcedures],
@@ -212,6 +227,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       this.budgetTabService.addPeriods(this.items, this.projectPeriods, item.budgetPeriods);
     });
     this.formService.resetEditable();
+    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
   private getFieldId(key: string): string {

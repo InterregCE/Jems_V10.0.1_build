@@ -64,7 +64,7 @@ export class ProjectWorkPackageInvestmentDetailPageStore {
       this.projectStore.projectId$,
       this.workPackagePageStore.workPackage$,
       this.routingService.routeParameterChanges(ProjectWorkPackageInvestmentDetailPageStore.INVESTMENT_DETAIL_PATH, 'workPackageInvestmentId'),
-      this.projectVersionStore.currentRouteVersion$
+      this.projectVersionStore.selectedVersionParam$
     ]).pipe(
         switchMap(([projectId, workPackage, investmentId, version]) => investmentId
           ? this.workPackageInvestmentService.getWorkPackageInvestment(Number(investmentId), projectId, workPackage.id, version)

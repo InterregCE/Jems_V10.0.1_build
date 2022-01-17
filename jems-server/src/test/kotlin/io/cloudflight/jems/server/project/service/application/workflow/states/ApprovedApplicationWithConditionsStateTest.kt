@@ -38,7 +38,8 @@ class ApprovedApplicationWithConditionsStateTest {
 
         private val actionInfo = ApplicationActionInfo(
             note = "some dummy note",
-            date = LocalDate.now()
+            date = LocalDate.now(),
+            entryIntoForceDate = LocalDate.now()
         )
     }
 
@@ -135,11 +136,11 @@ class ApprovedApplicationWithConditionsStateTest {
 
     @Test
     fun returnToApplicant() {
-        every { projectWorkflowPersistence.updateProjectCurrentStatus(any(), any(), any()) } returns ApplicationStatus.RETURNED_TO_APPLICANT
-        assertThat(approvedApplicationWithConditionsState.returnToApplicant()).isEqualTo(ApplicationStatus.RETURNED_TO_APPLICANT)
+        every { projectWorkflowPersistence.updateProjectCurrentStatus(any(), any(), any()) } returns ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS
+        assertThat(approvedApplicationWithConditionsState.returnToApplicant()).isEqualTo(ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
 
         verify(exactly = 1) {
-            projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.RETURNED_TO_APPLICANT)
+            projectWorkflowPersistence.updateProjectCurrentStatus(PROJECT_ID, USER_ID, ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
         }
     }
 
@@ -158,6 +159,7 @@ class ApprovedApplicationWithConditionsStateTest {
     @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE"], mode = EnumSource.Mode.EXCLUDE)
     fun revertDecision(status: ApplicationStatus) {
         every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
+        every { projectWorkflowPersistence.clearProjectFundingDecision(PROJECT_ID)} returns Unit
         assertThrows<DecisionReversionIsNotPossibleException> {
             approvedApplicationWithConditionsState.revertDecision()
         }

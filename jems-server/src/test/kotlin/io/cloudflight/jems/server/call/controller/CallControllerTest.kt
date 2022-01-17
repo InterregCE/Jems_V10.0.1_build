@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
+import io.cloudflight.jems.api.call.dto.CallFundRateDTO
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
@@ -23,6 +24,7 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.Atlantic
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
 import io.cloudflight.jems.server.call.service.get_allow_real_costs.GetAllowedRealCostsInteractor
 import io.cloudflight.jems.server.call.service.get_call.GetCallInteractor
@@ -41,7 +43,6 @@ import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallL
 import io.cloudflight.jems.server.call.service.update_call_unit_costs.UpdateCallUnitCostsInteractor
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.mockk.every
@@ -53,6 +54,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 class CallControllerTest : UnitTest() {
@@ -68,6 +70,14 @@ class CallControllerTest : UnitTest() {
             startDate = ZonedDateTime.now().minusDays(1),
             endDate = ZonedDateTime.now().plusDays(1),
             endDateStep1 = null
+        )
+
+        val fundDtos = listOf(
+            CallFundRateDTO(
+                programmeFund = ProgrammeFundDTO(id = 10L, selected = true),
+                rate = BigDecimal.TEN,
+                adjustable = true
+            )
         )
 
         private val callDetail = CallDetail(
@@ -94,9 +104,7 @@ class CallControllerTest : UnitTest() {
                 )
             ),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
-            funds = listOf(
-                ProgrammeFund(id = 10L, selected = true),
-            ),
+            funds = sortedSetOf(callFundRate(10L)),
             flatRates = sortedSetOf(
                 ProjectCallFlatRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 5, adjustable = true),
             ),
@@ -136,15 +144,13 @@ class CallControllerTest : UnitTest() {
                     code = "PRIO_CODE",
                     objective = PO1,
                     specificObjectives = listOf(
-                        ProgrammeSpecificObjectiveDTO(AdvancedTechnologies, "CODE_ADVA"),
-                        ProgrammeSpecificObjectiveDTO(Digitisation, "CODE_DIGI"),
+                        ProgrammeSpecificObjectiveDTO(AdvancedTechnologies, "CODE_ADVA", "RSO1.1"),
+                        ProgrammeSpecificObjectiveDTO(Digitisation, "CODE_DIGI", "RSO1.2"),
                     )
                 )
             ),
             strategies = listOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
-            funds = listOf(
-                ProgrammeFundDTO(id = 10L, selected = true),
-            ),
+            funds = fundDtos,
             flatRates = FlatRateSetupDTO(
                 officeAndAdministrationOnDirectCostsFlatRateSetup = FlatRateDTO(rate = 5, adjustable = true)
             ),
@@ -170,7 +176,7 @@ class CallControllerTest : UnitTest() {
             ),
             priorityPolicies = setOf(AdvancedTechnologies, Digitisation),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
-            fundIds = setOf(10L),
+            funds = fundDtos.toSet()
         )
 
         private val callUpdate = Call(
@@ -187,7 +193,7 @@ class CallControllerTest : UnitTest() {
             ),
             priorityPolicies = setOf(AdvancedTechnologies, Digitisation),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
-            fundIds = setOf(10L),
+            funds = setOf(callFundRate(10L)),
         )
 
     }

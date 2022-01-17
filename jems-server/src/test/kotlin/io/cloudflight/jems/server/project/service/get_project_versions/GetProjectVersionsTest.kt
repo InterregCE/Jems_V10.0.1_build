@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -26,9 +27,11 @@ internal class GetProjectVersionsTest : UnitTest() {
                 password = "hash",
                 email = "admin@admin.dev",
                 surname = "surname",
-                userRole = UserRoleEntity(id = 1, name = "ADMIN")
+                userRole = UserRoleEntity(id = 1, name = "ADMIN"),
+                userStatus = UserStatus.ACTIVE
             ),
             status = ApplicationStatus.APPROVED,
+            current = true
         )
     )
 

@@ -46,7 +46,10 @@
                                     [class.route-active]="(currentUrl$ | async) | IsMenuActive : (subsection.baseRoute || subsection.route) : !subsection.baseRoute"
                                     (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
 
-                                    <span>{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</span>
+                                    <div class="icon-container">
+                                        <mat-icon *ngIf="subsection.icon">{{subsection.icon}}</mat-icon>
+                                        <span>{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</span>
+                                    </div>
 
                                     <mat-chip-list *ngIf="subsection.badgeText" [selectable]="false"
                                                    class="standard-chip-list">

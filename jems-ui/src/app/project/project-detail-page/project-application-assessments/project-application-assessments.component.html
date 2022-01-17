@@ -10,14 +10,14 @@
                     {{'common.label.projecteligibilityassessmentresult.' + decisions?.eligibilityAssessment.result | translate}}
                 </span>
             </div>
-            <ng-container *ngIf="isAssessmentEditable(decisions?.eligibilityAssessment, data.isProjectLatestVersion)">
+            <ng-container *ngIf="isAssessmentEditable(decisions?.eligibilityAssessment)">
                 <a *hasPermission="Permissions.ProjectAssessmentEligibilityEnter"
                    mat-stroked-button
                    [routerLink]="['./assessment/eligibilityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment' | translate}}
                 </a>
             </ng-container>
-            <ng-container *ngIf="!isAssessmentEditable(decisions?.eligibilityAssessment, data.isProjectLatestVersion)">
+            <ng-container *ngIf="!isAssessmentEditable(decisions?.eligibilityAssessment)">
                 <a *hasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!decisions?.eligibilityAssessment"
                    mat-stroked-button
@@ -33,15 +33,15 @@
                     {{'common.label.projectqualityassessmentresult.' + decisions?.qualityAssessment.result | translate}}
                 </span>
             </div>
-            <ng-container *ngIf="isAssessmentEditable(decisions?.qualityAssessment, data.isProjectLatestVersion)">
+            <ng-container *ngIf="isAssessmentEditable(decisions?.qualityAssessment)">
                 <a *hasPermission="Permissions.ProjectAssessmentQualityEnter"
                    mat-stroked-button
-                   [disabled]="projectStatus.status === stepStatus.ineligible"
-                   [routerLink]="projectStatus.status !== stepStatus.ineligible ? ['./assessment/qualityCheck', step] : []" queryParamsHandling="merge">
+                   [disabled]="currentVersionOfProjectStatus.status === stepStatus.ineligible"
+                   [routerLink]="currentVersionOfProjectStatus.status !== stepStatus.ineligible ? ['./assessment/qualityCheck', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment' | translate}}
                 </a>
             </ng-container>
-            <ng-container *ngIf="!isAssessmentEditable(decisions?.qualityAssessment, data.isProjectLatestVersion)">
+            <ng-container *ngIf="!isAssessmentEditable(decisions?.qualityAssessment)">
                 <a *hasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!decisions?.qualityAssessment"
                    mat-stroked-button

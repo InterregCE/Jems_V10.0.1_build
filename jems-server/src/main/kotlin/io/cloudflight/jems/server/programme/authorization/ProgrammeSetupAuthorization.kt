@@ -31,6 +31,6 @@ class ProgrammeSetupAuthorization(
      * currently applicant users need programme setup data as well for filling in the form,
      * that's why this is always true (core logic).
      */
-    fun canReadProgrammeSetup() = hasPermission(UserRolePermission.ProgrammeSetupRetrieve) || true
+    fun canReadProgrammeSetup() = true
 
 }

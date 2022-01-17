@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.project.service.application.workflow
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.service.ProjectAssessmentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.approve_application.QualityAssessmentMissing
 import io.cloudflight.jems.server.project.service.callAlreadyEnded
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.context.ApplicationEventPublisher
@@ -48,6 +50,11 @@ abstract class ApplicationState(
             projectSummary.status
         )
 
+    open fun handBackToApplicant(): ApplicationStatus =
+        throw HandBackToApplicantIsNotAllowedException(
+            projectSummary.status
+        )
+
     open fun startSecondStep(): ApplicationStatus =
         throw StartSecondStepIsNotAllowedException(
             projectSummary.status
@@ -63,20 +70,37 @@ abstract class ApplicationState(
             projectSummary.status
         )
 
+    open fun startModification(): ApplicationStatus =
+        throw StartingModificationIsNotAllowedException(
+            projectSummary.status
+        )
+
+    open fun approveModification(actionInfo: ApplicationActionInfo): ApplicationStatus =
+        throw ApproveModificationIsNotAllowedException(
+            projectSummary.status
+        )
+
+    open fun rejectModification(actionInfo: ApplicationActionInfo): ApplicationStatus =
+        throw RejectModificationIsNotAllowedException(
+            projectSummary.status
+        )
+
     open fun getPossibleStatusToRevertTo(): ApplicationStatus? =
         null
 
+    open fun setToContracted(): ApplicationStatus  =
+        throw SetToContractedIsNotAllowedException(projectSummary.status)
 
     protected fun getPossibleStatusToRevertToDefaultImpl(validRevertStatuses: Set<ApplicationStatus>) =
         projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).let { previousStatus ->
             validRevertStatuses.firstOrNull { it === previousStatus.status }
         }
 
-    protected fun returnToApplicantDefaultImpl(): ApplicationStatus =
+    protected fun returnToApplicantDefaultImpl(nextStatus: ApplicationStatus = ApplicationStatus.RETURNED_TO_APPLICANT) =
         projectWorkflowPersistence.updateProjectCurrentStatus(
             projectId = projectSummary.id,
             userId = securityService.getUserIdOrThrow(),
-            status = ApplicationStatus.RETURNED_TO_APPLICANT
+            status = nextStatus
         )
 
     protected fun startSecondStepDefaultImpl(): ApplicationStatus =
@@ -122,6 +146,15 @@ abstract class ApplicationState(
             )
         }
 
+    protected fun updateModificationDecision(targetStatus: ApplicationStatus, actionInfo: ApplicationActionInfo) =
+            projectWorkflowPersistence.updateProjectModificationDecision(
+                projectSummary.id,
+                securityService.getUserIdOrThrow(),
+                targetStatus,
+                actionInfo
+            )
+
+
     protected fun isCallStep1Open() =
         projectPersistence.getProjectCallSettings(projectSummary.id).also { projectCallSettings ->
             if (projectCallSettings.isCallStep1Closed()) {
@@ -135,8 +168,12 @@ abstract class ApplicationState(
         projectPersistence.getProjectCallSettings(projectSummary.id).also { projectCallSettings ->
             if (projectCallSettings.isCallStep2Closed()) {
                 auditPublisher.publishEvent(callAlreadyEnded(this, projectCallSettings))
-
                 throw CallIsNotOpenException()
             }
         }
+
+    protected fun throwIfQualityAssessmentIsMissing(projectAssessmentPersistence : ProjectAssessmentPersistence, projectId: Long, projectStatus: ApplicationStatus) {
+        if (!projectAssessmentPersistence.qualityForStepExists(projectId, if (projectStatus.isInStep2()) 2 else 1))
+            throw QualityAssessmentMissing()
+    }
 }

@@ -26,12 +26,13 @@ class ApprovedApplicationWithConditionsState(
         updateFundingDecision(ApplicationStatus.NOT_APPROVED, actionInfo)
 
     override fun returnToApplicant(): ApplicationStatus =
-        returnToApplicantDefaultImpl()
+        returnToApplicantDefaultImpl(ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
 
-    override fun revertDecision(): ApplicationStatus =
-        revertCurrentStatusToPreviousStatus(validRevertStatuses = canBeRevertTo).also {
-            projectWorkflowPersistence.clearProjectFundingDecision(projectSummary.id)
-        }
+    override fun revertDecision(): ApplicationStatus {
+        projectWorkflowPersistence.clearProjectFundingDecision(projectSummary.id)
+        return revertCurrentStatusToPreviousStatus(validRevertStatuses = canBeRevertTo)
+    }
+
 
     override fun getPossibleStatusToRevertTo() =
         getPossibleStatusToRevertToDefaultImpl(canBeRevertTo)

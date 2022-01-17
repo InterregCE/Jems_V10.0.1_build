@@ -21,13 +21,9 @@ export class SystemPageSidenavService {
               private routingService: RoutingService,
               private permissionService: PermissionService,
               private roleStore: RoleStore) {
-    const systemPath$ = this.routingService.routeChanges(SystemPageSidenavService.SYSTEM_DETAIL_PATH)
-      .pipe(
-        filter(systemPath => systemPath)
-      );
 
     combineLatest([
-      systemPath$,
+      this.routingService.routeChanges(SystemPageSidenavService.SYSTEM_DETAIL_PATH),
       this.permissionService.permissionsChanged(),
       this.roleStore.roles$
     ]).pipe(

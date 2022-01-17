@@ -4,7 +4,7 @@
             <h3>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h3>
             <div>{{'project.work.package.tab.investment.intro' | translate}}</div>
 
-            <button mat-stroked-button
+            <button appText mat-stroked-button
                     routerLink="create"
                     [disabled]="(projectStore.projectEditable$ | async) === false">
                 + {{'project.application.form.add.workpackage.investment' | translate}}
@@ -36,13 +36,13 @@
                 mat-icon-button color="accent"
                 (click)="$event.stopPropagation();delete(workPackageInvestment, title)"
                 matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
-            <em class="mat-column-delete fas fa-trash"></em>
+            <mat-icon>delete</mat-icon>
         </button>
         <ng-template #noTitle>
             <button mat-icon-button color="accent"
                     (click)="$event.stopPropagation();delete(workPackageInvestment)"
                     matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
-                <em class="mat-column-delete fas fa-trash"></em>
+                <mat-icon>delete</mat-icon>
             </button>
         </ng-template>
     </ng-container>

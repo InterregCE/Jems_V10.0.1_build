@@ -8,7 +8,7 @@ export class PreConditionCheckMessage {
   messageType: PluginMessageType;
   subSectionMessages: PreConditionCheckMessage[];
 
-  constructor(issueCount: number, message: I18nMessage, messageType: PluginMessageType, subSectionMessages: Array<PreConditionCheckMessage>) {
+  constructor(issueCount: number, message: I18nMessage, messageType: PluginMessageType, subSectionMessages: PreConditionCheckMessage[]) {
     this.message = message;
     this.messageType = messageType;
     this.subSectionMessages = subSectionMessages;

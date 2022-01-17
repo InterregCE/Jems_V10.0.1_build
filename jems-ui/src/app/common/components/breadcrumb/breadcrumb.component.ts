@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ActivatedRoute, NavigationExtras, QueryParamsHandling} from '@angular/router';
+import {ActivatedRoute, NavigationExtras} from '@angular/router';
 import {Breadcrumb} from '@common/components/breadcrumb/breadcrumb';
 import {takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';

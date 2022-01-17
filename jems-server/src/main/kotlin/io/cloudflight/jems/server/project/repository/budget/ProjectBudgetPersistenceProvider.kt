@@ -8,11 +8,17 @@ import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartn
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetStaffCostRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetTravelRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.ProjectPartnerBudgetUnitCostRepository
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectUnitCosts
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectUnitCostsGrouped
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartner
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerHistoricalData
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
+import io.cloudflight.jems.server.project.service.unitcost.model.ProjectUnitCost
 import java.math.BigDecimal
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
@@ -38,7 +44,8 @@ class ProjectBudgetPersistenceProvider(
                 budgetStaffCostRepository.sumForAllPartners(partnerIds).toProjectPartnerBudget()
             },
             previousVersionFetcher = { timestamp ->
-                budgetStaffCostRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp).toProjectPartnerBudgetHistoricalData()
+                budgetStaffCostRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp)
+                    .toProjectPartnerBudgetHistoricalData()
             }) ?: emptyList()
 
     @Transactional(readOnly = true)
@@ -48,7 +55,8 @@ class ProjectBudgetPersistenceProvider(
                 budgetTravelRepository.sumForAllPartners(partnerIds).toProjectPartnerBudget()
             },
             previousVersionFetcher = { timestamp ->
-                budgetTravelRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp).toProjectPartnerBudgetHistoricalData()
+                budgetTravelRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp)
+                    .toProjectPartnerBudgetHistoricalData()
             }) ?: emptyList()
 
     @Transactional(readOnly = true)
@@ -58,7 +66,8 @@ class ProjectBudgetPersistenceProvider(
                 budgetExternalRepository.sumForAllPartners(partnerIds).toProjectPartnerBudget()
             },
             previousVersionFetcher = { timestamp ->
-                budgetExternalRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp).toProjectPartnerBudgetHistoricalData()
+                budgetExternalRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp)
+                    .toProjectPartnerBudgetHistoricalData()
             }) ?: emptyList()
 
     @Transactional(readOnly = true)
@@ -68,7 +77,8 @@ class ProjectBudgetPersistenceProvider(
                 budgetEquipmentRepository.sumForAllPartners(partnerIds).toProjectPartnerBudget()
             },
             previousVersionFetcher = { timestamp ->
-                budgetEquipmentRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp).toProjectPartnerBudgetHistoricalData()
+                budgetEquipmentRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp)
+                    .toProjectPartnerBudgetHistoricalData()
             }) ?: emptyList()
 
     @Transactional(readOnly = true)
@@ -82,7 +92,8 @@ class ProjectBudgetPersistenceProvider(
                 budgetInfrastructureRepository.sumForAllPartners(partnerIds).toProjectPartnerBudget()
             },
             previousVersionFetcher = { timestamp ->
-                budgetInfrastructureRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp).toProjectPartnerBudgetHistoricalData()
+                budgetInfrastructureRepository.sumForAllPartnersAsOfTimestamp(partnerIds, timestamp)
+                    .toProjectPartnerBudgetHistoricalData()
             }) ?: emptyList()
 
     @Transactional(readOnly = true)
@@ -126,4 +137,56 @@ class ProjectBudgetPersistenceProvider(
                 projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
                     .map { it.toProjectPartnerHistoricalData() }
             }) ?: emptyList()
+
+    @Transactional(readOnly = true)
+    override fun getBudgetPerPartner(
+        partnerIds: Set<Long>,
+        projectId: Long,
+        version: String?
+    ): List<ProjectPartnerBudget> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectPartnerRepository.getAllBudgetsByIds(partnerIds).toProjectPartnerBudgetPerPeriod()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectPartnerRepository.getAllBudgetsByPartnerIdsAsOfTimestamp(partnerIds, timestamp)
+                    .toProjectPartnerBudgetPerPeriod()
+            }
+        ) ?: emptyList()
+
+    @Transactional(readOnly = true)
+    override fun getBudgetTotalForPartners(
+        partnerIds: Set<Long>,
+        projectId: Long,
+        version: String?
+    ): Map<Long, ProjectPartnerTotalBudget> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectPartnerRepository.getAllPartnerTotalBudgetData(partnerIds)
+                    .associateBy({ it.partnerId }, { it.toModel() })
+            },
+            previousVersionFetcher = { timestamp ->
+                projectPartnerRepository.getAllPartnerTotalBudgetDataAsOfTimestamp(partnerIds, timestamp)
+                    .associateBy({ it.partnerId }, { it.toModel() })
+            }) ?: emptyMap()
+
+    @Transactional(readOnly = true)
+    override fun getProjectUnitCosts(projectId: Long, version: String?): List<ProjectUnitCost> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                budgetUnitCostRepository.findProjectUnitCosts(
+                    projectPartnerRepository.findTop30ByProjectId(projectId).map { it.id }.toSet()
+                ).toProjectUnitCosts().toProjectUnitCostsGrouped()
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetUnitCostRepository.findProjectUnitCostsAsOfTimestamp(
+                    projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+                        projectId,
+                        timestamp
+                    ).map { it.id }.toSet(), timestamp
+                ).toProjectUnitCosts()
+                    .toProjectUnitCostsGrouped()
+            }
+        ) ?: emptyList()
+
 }

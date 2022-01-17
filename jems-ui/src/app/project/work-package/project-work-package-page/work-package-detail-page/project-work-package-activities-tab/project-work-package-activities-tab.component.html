@@ -9,7 +9,7 @@
                         <div class="activity-header" appNoWidthLimit appMultiColumnRow justifyContent="space-between">
                             <h4 appMultiColumnRow class="mb-0">
                                 <span>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
-                                <span appFormFieldWidth="44rem"
+                                <span appFormFieldWidth="full"
                                       *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE"
                                       class="text-overflow-ellipsis">{{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                             </h4>
@@ -58,9 +58,11 @@
 
                         <app-multi-language-container
                                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DESCRIPTION">
-                            <app-multi-language-form-field [label]="'project.work.package.tab.activity.description'"
-                                                           [formControlName]="constants.DESCRIPTION.name"
-                                                           [maxLength]="constants.DESCRIPTION.maxLength">
+                            <app-multi-language-form-field
+                                    type="textarea"
+                                    [label]="'project.work.package.tab.activity.description'"
+                                    [formControlName]="constants.DESCRIPTION.name"
+                                    [maxLength]="constants.DESCRIPTION.maxLength">
                             </app-multi-language-form-field>
                         </app-multi-language-container>
 
@@ -85,7 +87,9 @@
                             </mat-chip-list>
                             <mat-autocomplete #auto="matAutocomplete"
                                               (optionSelected)="addPartner(i, $event.option.value, data.partners); filterPartners.value = ''; filterPartners.blur()">
-                                <mat-option *ngFor="let partner of getPartnersWithoutSelected(data.partners, i) | filterPartner: filterPartners.value" [value]="partner.id">
+                                <mat-option
+                                        *ngFor="let partner of getPartnersWithoutSelected(data.partners, i) | filterPartner: filterPartners.value"
+                                        [value]="partner.id">
                                     {{ partner.toPartnerNumberString()}} {{partner.abbreviation}}
                                 </mat-option>
                             </mat-autocomplete>
@@ -93,13 +97,14 @@
 
                         <ng-container
                                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DELIVERABLES">
-                            <h4>{{'Deliverables' | translate}}</h4>
+                            <h4>{{'project.work.package.tab.deliverables' | translate}}</h4>
                             <p>{{'project.work.package.tab.deliverables.intro' | translate}}</p>
                             <app-multi-language-container appNoWidthLimit *ngIf="deliverables(i).controls?.length">
-                                <div [appTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:10}, {maxInRem:2}]">
+                                <div [appTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:15},{minInRem:10},{maxInRem:2}]">
                                     <div>
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.number' | translate }}</span>
-                                        <span class="mat-body-strong">{{'project.work.package.tab.deliverables.deliverable' | translate }}</span>
+                                        <span class="mat-body-strong">{{'project.work.package.tab.deliverables.title' | translate }}</span>
+                                        <span class="mat-body-strong">{{'project.work.package.tab.deliverables.description' | translate }}</span>
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.period' | translate }}</span>
                                         <div class="mat-body-strong"></div>
                                     </div>
@@ -109,9 +114,17 @@
                                                 <div>D.{{data.workPackageNumber}}.{{i + 1}}.{{j + 1}}</div>
 
                                                 <app-multi-language-form-field
-                                                        [label]="'project.work.package.tab.deliverables.deliverable'"
-                                                        [formControlName]="constants.DELIVERABLE.name"
-                                                        [maxLength]="constants.DELIVERABLE.maxLength">
+                                                        type="textarea"
+                                                        [label]="'project.work.package.tab.deliverables.title'"
+                                                        [formControlName]="constants.DELIVERABLE_TITLE.name"
+                                                        [maxLength]="constants.DELIVERABLE_TITLE.maxLength">
+                                                </app-multi-language-form-field>
+
+                                                <app-multi-language-form-field
+                                                        type="textarea"
+                                                        [label]="'project.work.package.tab.deliverables.description'"
+                                                        [formControlName]="constants.DELIVERABLE_DESCRIPTION.name"
+                                                        [maxLength]="constants.DELIVERABLE_DESCRIPTION.maxLength">
                                                 </app-multi-language-form-field>
 
                                                 <app-project-periods-select
@@ -135,7 +148,7 @@
                                     </div>
                                 </div>
                             </app-multi-language-container>
-                            <button *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
+                            <button appText *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
                                     (click)="addNewDeliverable(i)">
                                 <mat-icon>add</mat-icon>
                             </button>
@@ -143,7 +156,7 @@
                     </div>
                 </ng-container>
             </div>
-            <button *ngIf="addActivityVisible()" mat-stroked-button (click)="addNewActivity()">
+            <button  *ngIf="addActivityVisible()" mat-stroked-button (click)="addNewActivity()" type="button">
                 + {{'project.work.package.tab.activity.add' | translate}}
             </button>
         </form>

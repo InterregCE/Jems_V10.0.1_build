@@ -5,6 +5,7 @@ export class TravelAndAccommodationCostsBudgetTableEntry {
 
   id?: number;
   description?: InputTranslation[] = [];
+  comments?: InputTranslation[] = [];
   unitType?: InputTranslation[] = [];
   unitCostId?: number;
   numberOfUnits?: number;
@@ -16,6 +17,7 @@ export class TravelAndAccommodationCostsBudgetTableEntry {
   constructor(data: Partial<GeneralBudgetTableEntry>) {
     this.id = data.id;
     this.description = data.description;
+    this.comments = data.comments;
     this.unitType = data.unitType;
     this.unitCostId = data.unitCostId;
     this.numberOfUnits = data.numberOfUnits;

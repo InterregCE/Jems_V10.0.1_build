@@ -23,8 +23,15 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus.
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
-import io.cloudflight.jems.server.user.service.model.UserRoleSummary
-import io.cloudflight.jems.server.user.service.model.UserSummary
+import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.user.repository.user.toUserSummary
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -77,7 +84,26 @@ internal class CreateProjectTest : UnitTest() {
             applicationFormFieldConfigurations = mutableSetOf()
         )
 
-        private val user = UserSummary(id = USER_ID, "some@applicant", "", "", UserRoleSummary(0L, ""))
+        private val userEntity = UserEntity(
+            id = USER_ID,
+            email = "some@applicant",
+            name ="",
+            surname = "",
+            userRole = UserRoleEntity(0, "role"),
+            password = "",
+            userStatus = UserStatus.ACTIVE
+        )
+
+        private fun projectVersion(status: ApplicationStatus): ProjectVersion {
+            return ProjectVersion(
+                version = "1.0",
+                projectId = PROJECT_ID,
+                createdAt = ZonedDateTime.now(),
+                user = userEntity,
+                status = status,
+                current = true
+            )
+        }
 
         private fun dummyProjectWithStatus(acronym: String, status: ApplicationStatus): ProjectDetail {
             return ProjectDetail(
@@ -85,8 +111,8 @@ internal class CreateProjectTest : UnitTest() {
                 customIdentifier = "01",
                 callSettings = callSettings,
                 acronym = acronym,
-                applicant = user,
-                projectStatus = ProjectStatus(id = 4587L, status = status, user = user, updated = ZonedDateTime.now()),
+                applicant = userEntity.toUserSummary(),
+                projectStatus = ProjectStatus(id = 4587L, status = status, user = userEntity.toUserSummary(), updated = ZonedDateTime.now()),
                 title = setOf(InputTranslation(SystemLanguage.EN, "title")),
                 specificObjective = null,
                 programmePriority = null
@@ -99,22 +125,23 @@ internal class CreateProjectTest : UnitTest() {
             description = "Attempted unsuccessfully to submit or to apply for call 'call name' (id=54) that is not open.",
         )
 
-        private fun getProgrammeData(projectIdProgrammeAbbreviation: String?, projectIdUseCallId: Boolean) = OutputProgrammeData(
-            "cci",
-            "title",
-            "version",
-            2020,
-            2024,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            projectIdProgrammeAbbreviation = projectIdProgrammeAbbreviation,
-            projectIdUseCallId = projectIdUseCallId,
-            emptyList(),
-        )
+        private fun getProgrammeData(projectIdProgrammeAbbreviation: String?, projectIdUseCallId: Boolean) =
+            OutputProgrammeData(
+                "cci",
+                "title",
+                "version",
+                2020,
+                2024,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                projectIdProgrammeAbbreviation = projectIdProgrammeAbbreviation,
+                projectIdUseCallId = projectIdUseCallId,
+                emptyList(),
+            )
     }
 
     @MockK
@@ -122,6 +149,9 @@ internal class CreateProjectTest : UnitTest() {
 
     @MockK
     lateinit var callPersistence: CallPersistence
+
+    @MockK
+    lateinit var collaboratorPersistence: UserProjectCollaboratorPersistence
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
@@ -135,6 +165,9 @@ internal class CreateProjectTest : UnitTest() {
     @MockK
     lateinit var programmeService: ProgrammeDataService
 
+    @MockK
+    lateinit var createNewProjectVersion: CreateNewProjectVersionInteractor
+
     @InjectMockKs
     lateinit var createProject: CreateProject
 
@@ -142,6 +175,7 @@ internal class CreateProjectTest : UnitTest() {
     fun reset() {
         clearMocks(auditPublisher)
         clearMocks(projectPersistence)
+        clearMocks(collaboratorPersistence)
     }
 
     @Test
@@ -152,27 +186,42 @@ internal class CreateProjectTest : UnitTest() {
             dummyProjectWithStatus(acronym = "test application", status = DRAFT)
         every { programmeService.get() } returns getProgrammeData("SK-AT_", true)
         every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "SK-AT_5400029") } answers {}
+        every { createNewProjectVersion.create(PROJECT_ID, DRAFT) } returns projectVersion(DRAFT)
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
 
+        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
+
         val result = createProject.createProject("test application", CALL_ID)
 
         assertThat(result.projectStatus.status).isEqualTo(DRAFT)
-        assertThat(result.projectStatus.user).isEqualTo(user)
+        assertThat(result.projectStatus.user).isEqualTo(userEntity.toUserSummary())
         assertThat(result.acronym).isEqualTo("test application")
         assertThat(result.applicant.email).isEqualTo("some@applicant")
 
         verify(exactly = 1) { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "SK-AT_5400029") }
         verify(exactly = 2) { auditPublisher.publishEvent(any()) }
-        assertThat(slot[0].auditCandidate).isEqualTo(AuditCandidate(
-            action = APPLICATION_STATUS_CHANGED,
-            project = AuditProject(id = "29", customIdentifier = "01", name = "test application"),
-            description = "Project application created with status DRAFT",
-        ))
+        assertThat(slot[0].auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = APPLICATION_STATUS_CHANGED,
+                project = AuditProject(id = "29", customIdentifier = "01", name = "test application"),
+                description = "Project application created with status DRAFT",
+            )
+        )
         assertThat(slot[1].auditCandidate.action).isEqualTo(APPLICATION_VERSION_RECORDED)
-        assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", customIdentifier = "SK-AT_5400029", name = "test application"))
+        assertThat(slot[1].auditCandidate.project).isEqualTo(
+            AuditProject(
+                id = "29",
+                customIdentifier = "SK-AT_5400029",
+                name = "test application"
+            )
+        )
         assertThat(slot[1].auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
+
+        verify(exactly = 1) { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, any()) }
+        assertThat(usersToPersistSlot.captured).containsExactlyEntriesOf(mapOf(USER_ID to MANAGE))
     }
 
     @Test
@@ -184,27 +233,42 @@ internal class CreateProjectTest : UnitTest() {
             dummyProjectWithStatus(acronym = acronym, status = STEP1_DRAFT)
         every { programmeService.get() } returns getProgrammeData("CZ-DE", false)
         every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "CZ-DE00029") } answers {}
+        every { createNewProjectVersion.create(PROJECT_ID, STEP1_DRAFT) } returns projectVersion(STEP1_DRAFT)
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
 
+        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
+
         val result = createProject.createProject(acronym, CALL_ID)
 
         assertThat(result.projectStatus.status).isEqualTo(STEP1_DRAFT)
-        assertThat(result.projectStatus.user).isEqualTo(user)
+        assertThat(result.projectStatus.user).isEqualTo(userEntity.toUserSummary())
         assertThat(result.acronym).isEqualTo(acronym)
         assertThat(result.applicant.email).isEqualTo("some@applicant")
 
         verify(exactly = 1) { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "CZ-DE00029") }
         verify(exactly = 2) { auditPublisher.publishEvent(any()) }
-        assertThat(slot[0].auditCandidate).isEqualTo(AuditCandidate(
-            action = APPLICATION_STATUS_CHANGED,
-            project = AuditProject(id = "29", customIdentifier = "01", name = acronym),
-            description = "Project application created with status STEP1_DRAFT",
-        ))
+        assertThat(slot[0].auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = APPLICATION_STATUS_CHANGED,
+                project = AuditProject(id = "29", customIdentifier = "01", name = acronym),
+                description = "Project application created with status STEP1_DRAFT",
+            )
+        )
         assertThat(slot[1].auditCandidate.action).isEqualTo(APPLICATION_VERSION_RECORDED)
-        assertThat(slot[1].auditCandidate.project).isEqualTo(AuditProject(id = "29", customIdentifier = "CZ-DE00029", name = acronym))
+        assertThat(slot[1].auditCandidate.project).isEqualTo(
+            AuditProject(
+                id = "29",
+                customIdentifier = "CZ-DE00029",
+                name = acronym
+            )
+        )
         assertThat(slot[1].auditCandidate.description).startsWith("New project version \"V.1.0\" is recorded by user: some@applicant")
+
+        verify(exactly = 1) { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, any()) }
+        assertThat(usersToPersistSlot.captured).containsExactlyEntriesOf(mapOf(USER_ID to MANAGE))
     }
 
     @Test
@@ -216,10 +280,17 @@ internal class CreateProjectTest : UnitTest() {
             dummyProjectWithStatus(acronym = acronym, status = STEP1_DRAFT)
         every { programmeService.get() } returns getProgrammeData(null, false)
         every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, any()) } answers {}
+        every { createNewProjectVersion.create(PROJECT_ID, STEP1_DRAFT) } returns projectVersion(STEP1_DRAFT)
         every { auditPublisher.publishEvent(any()) } answers { }
+
+        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
 
         createProject.createProject(acronym, CALL_ID)
         verify(exactly = 1) { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "00029") }
+
+        verify(exactly = 1) { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, any()) }
+        assertThat(usersToPersistSlot.captured).containsExactlyEntriesOf(mapOf(USER_ID to MANAGE))
     }
 
     @Test
@@ -235,7 +306,9 @@ internal class CreateProjectTest : UnitTest() {
 
     @Test
     fun `createProject - STEP1 mode - call end already happen`() {
-        every { callPersistence.getCallById(CALL_ID) } returns call.copy(endDateStep1 = ZonedDateTime.now().minusDays(5))
+        every { callPersistence.getCallById(CALL_ID) } returns call.copy(
+            endDateStep1 = ZonedDateTime.now().minusDays(5)
+        )
 
         val slot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
@@ -246,7 +319,10 @@ internal class CreateProjectTest : UnitTest() {
 
     @Test
     fun `createProject - STEP2 mode - call end already happen`() {
-        every { callPersistence.getCallById(CALL_ID) } returns call.copy(endDateStep1 = null, endDate = ZonedDateTime.now().minusDays(5))
+        every { callPersistence.getCallById(CALL_ID) } returns call.copy(
+            endDateStep1 = null,
+            endDate = ZonedDateTime.now().minusDays(5)
+        )
 
         val slot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }

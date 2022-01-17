@@ -14,7 +14,7 @@
     <div appFormLayout>
         <ng-container *ngIf="currentOutputIndicatorPage$ | async as outputIndicatorPage">
             <h3>{{'output.indicator.table.title' | translate}}</h3>
-            <button mat-stroked-button
+            <button appText mat-stroked-button
                     *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                     [routerLink]="'/app/programme/indicators/outputIndicator/create'">
                 <mat-icon>add</mat-icon>&nbsp;{{ 'programme.breadcrumb.outputIndicator.create' | translate }}
@@ -32,7 +32,7 @@
 
         <ng-container *ngIf="currentResultIndicatorPage$ | async as resultIndicatorPage">
             <h3>{{'result.indicator.table.title' | translate}}</h3>
-            <button mat-stroked-button
+            <button appText mat-stroked-button
                     *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                     [routerLink]="'/app/programme/indicators/resultIndicator/create'">
                 <mat-icon>add</mat-icon>&nbsp;{{ 'programme.breadcrumb.resultIndicator.create' | translate }}

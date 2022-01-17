@@ -1,5 +1,5 @@
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {TestModule} from '../../../common/test-module';
+import {TestModule} from '@common/test-module';
 import {LoginPageService} from './login-page-service';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {AuthenticationStore} from '../../service/authentication-store.service';

@@ -1,0 +1,109 @@
+    <mat-table id="budget-table"
+               [dataSource]="budget$ | async">
+        <ng-container matColumnDef="partner">
+            <mat-header-cell *matHeaderCellDef>
+                <span appText maxLines="2">{{ 'project.breadcrumb.partnerName' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget">
+                {{ 'common.label.project.partner.role.shortcut.' + budget.partner?.role | translate : {partner: budget.partner?.sortNumber} }}
+            </mat-cell>
+            <mat-footer-cell *matFooterCellDef>{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="country">
+            <mat-header-cell *matHeaderCellDef>
+                <span appText maxLines="2">{{ 'project.partner.main-address.country' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget">{{ budget.partner?.country }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="staffCosts">
+            <mat-header-cell *matHeaderCellDef class="justify-end">
+                <span appText maxLines="2">{{ 'project.partner.budget.staff' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end">{{ budget.staffCosts | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef class="justify-end">{{ totalStaffCosts | asMoney }}</mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="officeAndAdministrationCosts">
+            <mat-header-cell *matHeaderCellDef class="justify-end">
+                <span appText maxLines="2">{{ 'project.partner.budget.office.and.admin.header' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget"
+                      class="justify-end">{{ budget.officeAndAdministrationCosts | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef
+                             class="justify-end">{{ totalOfficeAndAdministrationCosts | asMoney }}</mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="travelCosts">
+            <mat-header-cell *matHeaderCellDef class="justify-end">
+                <span appText maxLines="2">{{ 'project.partner.budget.travel' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end">{{ budget.travelCosts | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef class="justify-end">{{ totalTravelCosts | asMoney }}</mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="externalCosts">
+            <mat-header-cell *matHeaderCellDef class="justify-end">
+                <span appText maxLines="2">{{ 'project.partner.budget.external' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end">{{ budget.externalCosts | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef class="justify-end">{{ totalExternalCosts | asMoney }}</mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="equipmentCosts">
+            <mat-header-cell *matHeaderCellDef class="justify-end">
+                <span appText maxLines="2">{{ 'project.partner.budget.equipment' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end">{{ budget.equipmentCosts | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef class="justify-end">{{ totalEquipmentCosts | asMoney }}</mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="infrastructureCosts">
+            <mat-header-cell *matHeaderCellDef class="justify-end">
+                <span appText maxLines="2">{{ 'project.partner.budget.infrastructure' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end">{{ budget.infrastructureCosts | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef
+                             class="justify-end">{{ totalInfrastructureCosts | asMoney }}</mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="otherCosts">
+            <mat-header-cell *matHeaderCellDef class="justify-end">
+                <span appText maxLines="2">{{ 'project.partner.budget.other' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end">{{ budget.otherCosts | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef class="justify-end">{{ totalOtherCosts | asMoney }}</mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="lumpSums">
+            <mat-header-cell *matHeaderCellDef class="justify-end">
+                <span appText maxLines="2">{{ 'project.partner.budget.lumpSum' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end">{{ budget.lumpSumContribution | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef class="justify-end">{{ totalLumpSums | asMoney }}</mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="unitCosts">
+            <mat-header-cell *matHeaderCellDef class="justify-end">
+                <span appText maxLines="2">{{ 'project.partner.budget.unitCosts' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end">{{ budget.unitCosts | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef class="justify-end">{{ totalUnitCosts | asMoney }}</mat-footer-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="total">
+            <mat-header-cell *matHeaderCellDef class="justify-end mat-body-strong">
+                <span appText maxLines="2">{{ 'project.partner.budget.table.total' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let budget" class="justify-end mat-body-strong">{{ budget.totalSum | asMoney }}</mat-cell>
+            <mat-footer-cell *matFooterCellDef class="justify-end">{{ total | asMoney }}</mat-footer-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        <ng-container *ngIf="!hideFooter">
+            <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+        </ng-container>
+    </mat-table>

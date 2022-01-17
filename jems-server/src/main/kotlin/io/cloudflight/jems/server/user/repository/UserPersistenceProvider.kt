@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.user.repository.user.UserRoleNotFound
 import io.cloudflight.jems.server.user.repository.user.toEntity
 import io.cloudflight.jems.server.user.repository.user.toModel
 import io.cloudflight.jems.server.user.repository.user.toModelWithPassword
+import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.repository.userrole.UserRolePermissionRepository
 import io.cloudflight.jems.server.user.repository.userrole.UserRoleRepository
 import io.cloudflight.jems.server.user.repository.userrole.toModel
@@ -30,7 +31,7 @@ class UserPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getById(id: Long): UserWithPassword =
         userRepo.getOne(id).let {
-            it.toModelWithPassword(userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
+            it.toModelWithPassword(permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
         }
 
     @Transactional(readOnly = true)
@@ -46,16 +47,37 @@ class UserPersistenceProvider(
         }
 
     @Transactional(readOnly = true)
-    override fun findAll(pageable: Pageable, userSearchRequest: UserSearchRequest?): Page<UserSummary> =
-        userRepo.findAll(pageable, userSearchRequest).toModel()
+    override fun findAll(pageable: Pageable, userSearchRequest: UserSearchRequest?): Page<UserSummary> {
+        val searchPredicate = UserRepository.buildSearchPredicate(searchRequest = userSearchRequest)
+        if (searchPredicate == null)
+            return userRepo.findAll(pageable).toModel()
+        else
+            return userRepo.findAll(searchPredicate, pageable).toModel()
+    }
+
+    @Transactional(readOnly = true)
+    override fun findAllWithRoleIdIn(roleIds: Set<Long>): List<UserSummary> =
+        userRepo.findAllByUserRoleIdInOrderByEmail(userRoleIds = roleIds)
+            .map { it.toUserSummary() }
+
+    @Transactional(readOnly = true)
+    override fun findAllByEmails(emails: Collection<String>): List<UserSummary> =
+        userRepo.findAllByEmailInOrderByEmail(emails).map { it.toUserSummary() }
+
+    @Transactional(readOnly = true)
+    override fun findAllByIds(ids: Iterable<Long>): List<UserSummary> =
+        userRepo.findAllById(ids).map { it.toUserSummary() }
 
     @Transactional
     override fun create(user: UserChange, passwordEncoded: String): User =
         userRepo.save(
             user.toEntity(passwordEncoded = passwordEncoded, role = userRoleRepo.getOne(user.userRoleId))
         ).let {
-            it.toModel(permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
+            it.toModel(
+                permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel(),
+            )
         }
+
 
     @Transactional
     override fun update(user: UserChange): User {
@@ -66,9 +88,12 @@ class UserPersistenceProvider(
             existingUser.surname = surname
             if (existingUser.userRole.id != userRoleId)
                 existingUser.userRole = userRoleRepo.findById(userRoleId).orElseThrow { UserRoleNotFound() }
+            existingUser.userStatus = userStatus
         }
         return existingUser.let {
-            it.toModel(permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
+            it.toModel(
+                permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel()
+            )
         }
     }
 

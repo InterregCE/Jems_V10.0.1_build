@@ -2,11 +2,12 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, Input, TemplateRef, V
 import {ProjectApplicationFormSidenavService} from '../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Alert} from '@common/components/forms/alert';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectVersionDTO, UserRoleDTO} from '@cat/api';
+import {ProjectUserDTO, ProjectVersionDTO, UserRoleDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {ProjectPageTemplateStore} from './project-page-template-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import ProjectStatusEnum = ProjectUserDTO.ProjectStatusEnum;
 
 @UntilDestroy()
 @Component({
@@ -18,11 +19,13 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 export class ProjectPageTemplateComponent implements AfterViewInit {
   Alert = Alert;
   PermissionsEnum = PermissionsEnum;
+  ProjectStatusEnum = ProjectStatusEnum;
 
   @ViewChild('sidenavVersionSelect', {static: true})
   sidenavVersionSelect: TemplateRef<any>;
 
   @Input() needsCard = false;
+  @Input() isVersionedData = true;
 
   @Input() titleText: string;
   @Input() titleKey: string;
@@ -34,36 +37,38 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   @Input() descriptionKey: string;
 
   versionWarnData$: Observable<{
-    current: ProjectVersionDTO | undefined,
-    latest: ProjectVersionDTO | undefined,
-    currentIsLatest: boolean
+    selected: ProjectVersionDTO | undefined;
+    current: ProjectVersionDTO | undefined;
+    selectedIsCurrent: boolean;
+    versions: ProjectVersionDTO[];
   }>;
 
   versionSelectData$: Observable<{
-    versions: ProjectVersionDTO[],
-    current: ProjectVersionDTO,
+    versions: ProjectVersionDTO[];
+    selectedVersion: ProjectVersionDTO | undefined;
   }>;
 
   constructor(public projectSidenavService: ProjectApplicationFormSidenavService,
               public pageStore: ProjectPageTemplateStore) {
     this.versionWarnData$ = combineLatest([
+      this.pageStore.selectedVersion$,
       this.pageStore.currentVersion$,
-      this.pageStore.latestVersion$,
-      this.pageStore.currentVersionIsLatest$
+      this.pageStore.isSelectedVersionCurrent$,
+      this.pageStore.versions$
     ]).pipe(
-      map(([current, latest, currentIsLatest]) => ({current, latest, currentIsLatest}))
+      map(([selectedVersion, currentVersion, selectedIsCurrent, versions]) => ({selected: selectedVersion, current: currentVersion, selectedIsCurrent, versions}))
     );
 
     this.versionSelectData$ = combineLatest([
       this.pageStore.versions$,
-      this.pageStore.currentVersion$
+      this.pageStore.selectedVersion$
     ]).pipe(
-      map(([versions, current]) => ({versions, current})),
+      map(([versions, selectedVersion]) => ({versions, selectedVersion})),
     );
   }
 
   ngAfterViewInit(): void {
-    this.pageStore.versionsUpdatedEvent$.pipe(untilDestroyed(this)).subscribe(() =>
+    this.pageStore.versions$.pipe(untilDestroyed(this)).subscribe(() =>
       this.projectSidenavService.versionSelectTemplate$.next(this.sidenavVersionSelect)
     );
   }

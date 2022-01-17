@@ -1,0 +1,14 @@
+// this is needed because of bug in angular material https://github.com/angular/components/issues/9851
+.mat-chip-selected-user {
+  background-color: var(--primary-color) !important;
+  color: var(--font-color-contrast) !important;
+
+  mat-icon {
+    color: inherit !important;
+  }
+}
+
+.mat-option-list-entry {
+  height: 3.5rem;
+  line-height: 1rem;
+}

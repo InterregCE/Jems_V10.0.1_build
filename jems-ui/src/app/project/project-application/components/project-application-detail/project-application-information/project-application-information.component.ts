@@ -56,15 +56,15 @@ export class ProjectApplicationInformationComponent {
   }
 
   hasDraftStatusColor(): boolean {
-    return ProjectUtil.isDraft(this.project)
-      || this.projectStatus === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
+    return ProjectUtil.isDraft(this.project) || ProjectUtil.isReturnedToApplicant(this.project);
   }
 
   hasSubmittedStatusColor(): boolean {
     return this.projectStatus === ProjectStatusDTO.StatusEnum.SUBMITTED
       || this.projectStatus === ProjectStatusDTO.StatusEnum.ELIGIBLE
       || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1SUBMITTED
-      || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1ELIGIBLE;
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1ELIGIBLE
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
   }
 
   hasApprovedStatusColor(): boolean {
@@ -82,6 +82,10 @@ export class ProjectApplicationInformationComponent {
   hasApprovedWithConditionsStatusColor(): boolean {
     return this.projectStatus === ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS
       || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1APPROVEDWITHCONDITIONS;
+  }
+
+  hasContractedStatusColor(): boolean {
+    return this.projectStatus === ProjectStatusDTO.StatusEnum.CONTRACTED;
   }
 
   private get projectStatus(): ProjectStatusDTO.StatusEnum {

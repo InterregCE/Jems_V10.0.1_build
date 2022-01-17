@@ -49,7 +49,7 @@ export class ProjectResultsPageStore {
   private results(): Observable<ProjectResultDTO[]> {
     const initialResults$ = combineLatest([
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$
+      this.projectVersionStore.selectedVersionParam$
     ]).pipe(
       switchMap(([projectId, version]) => this.projectResultService.getProjectResults(projectId, version)),
       tap(results => Log.info('Fetched project results', results)),

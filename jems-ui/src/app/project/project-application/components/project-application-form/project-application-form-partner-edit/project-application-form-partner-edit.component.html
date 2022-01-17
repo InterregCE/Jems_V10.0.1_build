@@ -19,22 +19,21 @@
 
         <ng-container *ngIf="partnerForm.enabled">
             <div *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ROLE">
-                <div appLabel>{{'project.partner.role.label' | translate}} *</div>
-                <mat-button-toggle-group formControlName="role">
-                    <mat-button-toggle [value]="RoleEnum.PARTNER">
-                        {{'common.label.project.partner.role.PARTNER' | translate}}
+                <div appLabel class="mat-required-marker"
+                [ngClass]="{'empty': !togglePartner.checked && !toggleLeadpartner.checked}">
+                    {{'project.partner.role.label' | translate}}
+                </div>
+
+                <mat-button-toggle-group name="partnerToggle" formControlName="role">
+                    <mat-button-toggle #togglePartner [value]="RoleEnum.PARTNER">
+                        <span appText maxWidth="230">{{'common.label.project.partner.role.PARTNER' | translate}}</span>
                     </mat-button-toggle>
-                    <mat-button-toggle [value]="RoleEnum.LEADPARTNER">
-                        {{'common.label.project.partner.role.LEAD_PARTNER' | translate}}
+                    <mat-button-toggle #toggleLeadpartner [value]="RoleEnum.LEADPARTNER">
+                        <span appText maxWidth="230">{{'common.label.project.partner.role.LEAD_PARTNER' | translate}}</span>
                     </mat-button-toggle>
                 </mat-button-toggle-group>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="controls?.role?.errors"
-                            [messages]="roleErrors">
-                    </app-form-field-errors>
-                </mat-error>
             </div>
+            <br>
         </ng-container>
 
         <mat-form-field class="w-100"
@@ -165,13 +164,13 @@
 
             <mat-button-toggle-group formControlName="vatRecovery">
                 <mat-button-toggle [value]="VatRecoveryEnum.Yes">
-                    {{'common.label.project.partner.recoverVat.true' | translate}}
+                    <span appText maxWidth="230">{{'common.label.project.partner.recoverVat.true' | translate}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle [value]="VatRecoveryEnum.Partly">
-                    {{'common.label.project.partner.recoverVat.partly' | translate}}
+                    <span appText maxWidth="230">{{'common.label.project.partner.recoverVat.partly' | translate}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle [value]="VatRecoveryEnum.No">
-                    {{'common.label.project.partner.recoverVat.false' | translate}}
+                    <span appText maxWidth="230">{{'common.label.project.partner.recoverVat.false' | translate}}</span>
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </ng-container>

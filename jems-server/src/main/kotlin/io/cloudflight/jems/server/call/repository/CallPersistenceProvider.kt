@@ -1,14 +1,19 @@
 package io.cloudflight.jems.server.call.repository
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.entity.CallFundRateEntity
+import io.cloudflight.jems.server.call.entity.FundSetupId
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
@@ -68,14 +73,17 @@ class CallPersistenceProvider(
 
         adjustTimeToLastNanoSec(call)
 
-        return callRepo.save(
+        val created = callRepo.save(
             call.toEntity(
                 user = userRepo.getOne(userId),
                 retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getOne(it) },
-                retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() },
-                retrieveFunds = { programmeFundRepo.getTop20ByIdInAndSelectedTrue(it).toSet() },
+                retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() }
             )
-        ).toDetailModel(
+        )
+
+        updateFunds(created, call.funds)
+
+        return created.toDetailModel(
             applicationFormFieldConfigurationRepository.findAllByCallId(call.id),
             projectCallStateAidRepo.findAllByIdCallId(call.id)
         )
@@ -88,7 +96,7 @@ class CallPersistenceProvider(
         adjustTimeToLastNanoSec(call)
 
         // check if the stateAids need to be update when call is updated and do so
-        val existingStateAidsForCall = projectCallStateAidRepo.findAllByIdCallId(call.id).map {it.setupId.stateAid.id}
+        val existingStateAidsForCall = projectCallStateAidRepo.findAllByIdCallId(call.id).map { it.setupId.stateAid.id }
 
         if (call.stateAidIds != existingStateAidsForCall) {
             val stateAidsToDelete = existingStateAidsForCall.filter { !call.stateAidIds.contains(it) }
@@ -98,18 +106,46 @@ class CallPersistenceProvider(
             )
         }
 
+        updateFunds(existingCall, call.funds)
+
         return callRepo.save(
             call.toEntity(
                 user = existingCall.creator,
                 retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getOne(it) },
                 retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() },
-                retrieveFunds = { programmeFundRepo.getTop20ByIdInAndSelectedTrue(it).toSet() },
                 existingEntity = existingCall,
             )
         ).toDetailModel(
             applicationFormFieldConfigurationRepository.findAllByCallId(call.id),
             projectCallStateAidRepo.findAllByIdCallId(call.id)
         )
+    }
+
+    private fun updateFunds(existingCall: CallEntity, newFunds: Set<CallFundRate>) {
+        // remove deselected funds
+        val newFundIds = newFunds.map { it.programmeFund.id }.toSet()
+        existingCall.funds.removeIf { !newFundIds.contains(it.setupId.programmeFund.id) }
+
+        // add or update funds
+        val newFundEntities = programmeFundRepo.getTop20ByIdInAndSelectedTrue(newFundIds)
+            .associateBy { it.id }.toMutableMap()
+
+        newFunds.forEach {
+            val fund =
+                existingCall.funds.find { fundEntity -> fundEntity.setupId.programmeFund.id == it.programmeFund.id }
+            if (fund != null) {
+                fund.rate = it.rate
+                fund.isAdjustable = it.adjustable
+            } else {
+                existingCall.funds.add(
+                    CallFundRateEntity(
+                        setupId = FundSetupId(existingCall, newFundEntities[(it.programmeFund.id)]!!),
+                        rate = it.rate,
+                        isAdjustable = it.adjustable
+                    )
+                )
+            }
+        }
     }
 
     @Transactional
@@ -175,6 +211,10 @@ class CallPersistenceProvider(
         callRepo.existsByStatus(CallStatus.PUBLISHED)
 
     @Transactional(readOnly = true)
+    override fun isCallPublished(callId: Long) =
+        callRepo.existsByidAndStatus(callId, CallStatus.PUBLISHED)
+
+    @Transactional(readOnly = true)
     override fun listCalls(): List<IdNamePair> =
         callRepo.findAll().toIdNamePair()
 
@@ -201,7 +241,9 @@ class CallPersistenceProvider(
     override fun updateProjectCallStateAids(callId: Long, stateAids: Set<Long>): CallDetail {
         val callEntity = callRepo.findById(callId).orElseThrow { CallNotFound() }
 
-        val savedStateAids = projectCallStateAidRepo.saveAll(programmeStateAidRepository.findAllById(stateAids).toMutableSet().toEntities(callEntity)).toMutableSet()
+        val savedStateAids = projectCallStateAidRepo.saveAll(
+            programmeStateAidRepository.findAllById(stateAids).toMutableSet().toEntities(callEntity)
+        ).toMutableSet()
 
         return callEntity.toDetailModel(
             applicationFormFieldConfigurationRepository.findAllByCallId(callId),

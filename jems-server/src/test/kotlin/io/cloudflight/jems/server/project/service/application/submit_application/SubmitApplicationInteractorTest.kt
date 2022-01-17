@@ -15,14 +15,13 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLu
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
-import io.cloudflight.jems.server.project.service.create_new_project_version.CreateNewProjectVersionInteractor
+import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantForConditionsApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.mockk.clearMocks
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -43,14 +42,12 @@ class SubmitApplicationInteractorTest : UnitTest() {
     private val pluginKey = "standard-pre-condition-check-plugin"
     private val projectInStepTwo = buildProjectSummary(status = ApplicationStatus.DRAFT)
     private val projectInStepOne = buildProjectSummary(status = ApplicationStatus.STEP1_DRAFT)
+    private val projectInStepTwoReturnedForConditions = buildProjectSummary(status = ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
     private val twoStepCallSetting = buildCallSetting()
     private val oneStepCallSetting = buildCallSetting(endDateStep1 = null)
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
-
-    @MockK
-    lateinit var projectWorkflowPersistence: ProjectWorkflowPersistence
 
     @MockK
     lateinit var applicationStateFactory: ApplicationStateFactory
@@ -60,9 +57,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
 
     @MockK
     lateinit var jemsPluginRegistry: JemsPluginRegistry
-
-    @RelaxedMockK
-    lateinit var createNewProjectVersionInteractor: CreateNewProjectVersionInteractor
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
@@ -78,9 +72,12 @@ class SubmitApplicationInteractorTest : UnitTest() {
     @MockK
     lateinit var draftState: DraftApplicationState
 
+    @MockK
+    lateinit var returnToApplicantForConditionsState: ReturnedToApplicantForConditionsApplicationState
+
     @BeforeEach
     fun reset() {
-        clearMocks(preConditionCheckPlugin)
+        clearAllMocks()
         every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(PluginStatusEntity(pluginKey, true))
     }
 
@@ -94,13 +91,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwo
         every { applicationStateFactory.getInstance(any()) } returns draftState
         every { draftState.submit() } returns ApplicationStatus.SUBMITTED
-        every {
-            projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
-                projectId,
-                ApplicationStatus.RETURNED_TO_APPLICANT
-            )
-        } returns ApplicationStatus.SUBMITTED
-
 
         assertThat(submitApplication.submit(projectId)).isEqualTo(ApplicationStatus.SUBMITTED)
 
@@ -138,6 +128,7 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectCallSettings(projectId) } returns oneStepCallSetting
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwo
         every { applicationStateFactory.getInstance(any()) } returns draftState
+        every { draftState.submit() } returns ApplicationStatus.SUBMITTED
 
         submitApplication.submit(projectId)
         verify(exactly = 1) { preConditionCheckPlugin.check(projectId) }
@@ -147,10 +138,36 @@ class SubmitApplicationInteractorTest : UnitTest() {
     fun `should not execute pre condition check when application belongs to two-step call and application is not in step two`() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepOne
         every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
+        every { applicationStateFactory.getInstance(any()) } returns draftState
+        every { draftState.submit() } returns ApplicationStatus.SUBMITTED
+
         submitApplication.submit(projectId)
         verify(exactly = 0) { preConditionCheckPlugin.check(projectId) }
     }
 
+    @Test
+    fun `submit from status RETURNED_TO_APPLICANT_FOR_CONDITIONS - update current version`() {
+        every {
+            jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey)
+        } returns preConditionCheckPlugin
+        every { preConditionCheckPlugin.check(projectId) } returns PreConditionCheckResult(emptyList(), true)
+        every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
+        every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwoReturnedForConditions
+        every { applicationStateFactory.getInstance(any()) } returns returnToApplicantForConditionsState
+        every { returnToApplicantForConditionsState.submit() } returns ApplicationStatus.CONDITIONS_SUBMITTED
+
+        assertThat(submitApplication.submit(projectId)).isEqualTo(ApplicationStatus.CONDITIONS_SUBMITTED)
+
+        val slotAudit = mutableListOf<AuditCandidateEvent>()
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
+        assertThat(slotAudit[0].auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.APPLICATION_STATUS_CHANGED,
+                project = AuditProject(id = projectId.toString(), customIdentifier = projectId.toString(), name = "project acronym"),
+                description = "Project application status changed from RETURNED_TO_APPLICANT_FOR_CONDITIONS to CONDITIONS_SUBMITTED"
+            )
+        )
+    }
 
     private fun buildCallSetting(
         callId: Long = 1L,

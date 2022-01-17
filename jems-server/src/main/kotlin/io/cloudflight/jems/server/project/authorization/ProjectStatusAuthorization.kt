@@ -4,53 +4,70 @@ import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS
-import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.canSubmit(#projectId)")
+@PreAuthorize("@projectStatusAuthorization.hasPermissionOrIsEditCollaborator('ProjectSubmission', #projectId)")
 annotation class CanSubmitApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectStatusAuthorization.canCheckApplication(#projectId)")
+@PreAuthorize("@projectStatusAuthorization.hasPermissionOrIsViewCollaborator('ProjectCheckApplicationForm', #projectId)")
 annotation class CanCheckApplicationForm
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectStatusReturnToApplicant')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusReturnToApplicant', #projectId)")
 annotation class CanReturnApplicationToApplicant
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectStatusDecideApproved')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideApproved', #projectId)")
 annotation class CanApproveApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectStatusDecideApprovedWithConditions')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideApprovedWithConditions', #projectId)")
 annotation class CanApproveApplicationWithConditions
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectStatusDecideNotApproved')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideNotApproved', #projectId)")
 annotation class CanRefuseApplication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectStatusDecideEligible')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideEligible', #projectId)")
 annotation class CanSetApplicationAsEligible
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectStatusDecideIneligible')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideIneligible', #projectId)")
 annotation class CanSetApplicationAsIneligible
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectStartStepTwo')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectStartStepTwo', #projectId)")
 annotation class CanStartSecondStep
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectStatusDecisionRevert')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecisionRevert', #projectId)")
 annotation class CanRevertDecision
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectModificationView')")
+annotation class CanRetrieveProjectModifications
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectSetToContracted')")
+annotation class CanSetProjectToContracted
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectOpenModification')")
+annotation class CanOpenModification
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideModificationApproved', #projectId)")
+annotation class CanApproveModification
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectStatusDecideModificationNotApproved', #projectId)")
+annotation class CanRejectModification
 
 @Component
 class ProjectStatusAuthorization(
@@ -58,26 +75,21 @@ class ProjectStatusAuthorization(
     val projectPersistence: ProjectPersistence,
 ) : Authorization(securityService) {
 
-    fun canSubmit(projectId: Long): Boolean {
+    fun hasPermissionOrIsViewCollaborator(permission: UserRolePermission, projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val isOwner = isActiveUserIdEqualTo(userId = project.applicantId)
+        val isOwner = isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
 
-        if (isOwner || hasPermission(UserRolePermission.ProjectSubmission))
-            return project.projectStatus.isDraftOrReturned()
-        else if (hasPermission(UserRolePermission.ProjectRetrieve))
-            return false
+        if (isOwner || hasPermissionForProject(permission, projectId))
+            return true
         else
             throw ResourceNotFoundException("project")
     }
-
-    fun canCheckApplication(projectId: Long): Boolean {
+    fun hasPermissionOrIsEditCollaborator(permission: UserRolePermission, projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val isOwner = isActiveUserIdEqualTo(userId = project.applicantId)
+        val isOwner = isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
 
-        if (isOwner || hasPermission(UserRolePermission.ProjectCheckApplicationForm))
-            return project.projectStatus.isDraftOrReturned()
-        else if (hasPermission(UserRolePermission.ProjectRetrieve))
-            return false
+        if (isOwner || hasPermissionForProject(permission, projectId))
+            return true
         else
             throw ResourceNotFoundException("project")
     }

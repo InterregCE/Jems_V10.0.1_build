@@ -1,10 +1,13 @@
 package io.cloudflight.jems.server.programme.repository.indicator
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
+import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicator
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorDetail
+import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndicator
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -43,10 +46,8 @@ class OutputIndicatorPersistenceProvider(
     override fun saveOutputIndicator(outputIndicator: OutputIndicator) =
         outputIndicatorRepository.save(
             outputIndicator.toOutputIndicatorEntity(
-                programmeSpecificObjectiveRepository.getReferenceIfExistsOrThrow(
-                    outputIndicator.programmeObjectivePolicy
-                ),
-                resultIndicatorRepository.getReferenceIfExistsOrThrow(outputIndicator.resultIndicatorId)
+                outputIndicator.programmeObjectivePolicy?.let { programmeSpecificObjectiveRepository.getById(it) },
+                outputIndicator.getResultIndicatorIfPresent()
             )
         ).toOutputIndicatorDetail()
 
@@ -55,4 +56,10 @@ class OutputIndicatorPersistenceProvider(
         outputIndicatorRepository.findOneByIdentifier(identifier).run {
             !(this == null || this.id == outputIndicatorId)
         }
+
+    private fun OutputIndicator.getResultIndicatorIfPresent(): ResultIndicatorEntity? {
+        if (resultIndicatorId == null || resultIndicatorId == 0L)
+            return null
+        return resultIndicatorRepository.getById(resultIndicatorId)
+    }
 }

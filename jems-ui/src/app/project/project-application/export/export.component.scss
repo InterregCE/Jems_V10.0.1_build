@@ -1,0 +1,12 @@
+#export-container {
+  display: flex;
+
+  #export-category-tree {
+    width: 20rem;
+    border: 1px solid var(--table-border-color);
+  }
+
+  #export-config {
+    flex: auto;
+  }
+}

@@ -11,4 +11,5 @@ interface NutsService {
 
     fun getNuts(): List<OutputNuts>
 
+    fun validateAddress(countryAndCode: String?, nutsRegion2AndCode: String?, nutsRegion3AndCode: String?): Boolean
 }

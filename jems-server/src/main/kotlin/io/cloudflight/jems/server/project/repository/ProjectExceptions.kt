@@ -23,3 +23,8 @@ class ProjectNotFoundException : ApplicationNotFoundException(
     code = "$PROJECT_ERROR_CODE_PREFIX-004",
     i18nMessage = I18nMessage("$PROJECT_ERROR_KEY_PREFIX.not.found")
 )
+
+class ProjectRestoreTimestampNotFoundException : ApplicationNotFoundException(
+    code = "$PROJECT_ERROR_CODE_PREFIX-005",
+    i18nMessage = I18nMessage("$PROJECT_ERROR_KEY_PREFIX.restore.version.not.found")
+)

@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
-import {Log} from '../../../common/utils/log';
-import {Forms} from '../../../common/utils/forms';
+import {Log} from '@common/utils/log';
+import {Forms} from '@common/utils/forms';
 import {take} from 'rxjs/internal/operators';
 import {OutputCurrentUser, UserDTO, UserRoleDTO, UserRoleSummaryDTO} from '@cat/api';
 import {UserDetailPageStore} from './user-detail-page-store.service';
@@ -12,9 +12,10 @@ import {combineLatest, Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
 import {FormState} from '@common/components/forms/form-state';
-import {RoutingService} from '../../../common/services/routing.service';
+import {RoutingService} from '@common/services/routing.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../security/permissions/permission.service';
+import UserStatusEnum = UserDTO.UserStatusEnum;
 
 @Component({
   selector: 'app-user-detail-page',
@@ -22,15 +23,16 @@ import {PermissionService} from '../../../security/permissions/permission.servic
   styleUrls: ['./user-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserDetailPageComponent extends ViewEditForm {
+export class UserDetailPageComponent extends ViewEditFormComponent {
   PermissionsEnum = PermissionsEnum;
+  userStatus = UserDTO.UserStatusEnum;
   passwordIsInEditMode = false;
 
   details$: Observable<{
-    user: UserDTO,
-    currentUser: OutputCurrentUser | null,
-    roles: UserRoleSummaryDTO[],
-    canUpdatePassword: boolean
+    user: UserDTO;
+    currentUser: OutputCurrentUser | null;
+    roles: UserRoleSummaryDTO[];
+    canUpdatePassword: boolean;
   }>;
 
   userForm = this.formBuilder.group({
@@ -49,7 +51,8 @@ export class UserDetailPageComponent extends ViewEditForm {
       Validators.maxLength(255),
       Validators.email,
     ])],
-    userRoleId: ['', Validators.required]
+    userRoleId: ['', Validators.required],
+    userStatus: ['', Validators.required]
   });
 
   emailErrors = {
@@ -73,7 +76,12 @@ export class UserDetailPageComponent extends ViewEditForm {
       this.permissionService.hasPermission(PermissionsEnum.UserUpdate)
     ])
       .pipe(
-        map(([user, currentUser, roles, canUpdateUser]) => ({user, currentUser, roles, canUpdatePassword: canUpdateUser || currentUser?.id === user.id})),
+        map(([user, currentUser, roles, canUpdateUser]) => ({
+          user,
+          currentUser,
+          roles,
+          canUpdatePassword: canUpdateUser || currentUser?.id === user.id
+        })),
         // TODO: remove after new edit
         tap(details => this.resetUser(details.user)),
         tap(details => {
@@ -86,6 +94,10 @@ export class UserDetailPageComponent extends ViewEditForm {
     // TODO: remove after new edit
     this.error$ = this.userStore.userSaveError$;
     this.success$ = this.userStore.userSaveSuccess$;
+  }
+
+  get userRoleId(): AbstractControl {
+    return this.userForm.get('userRoleId') as AbstractControl;
   }
 
   // TODO: remove after new edit
@@ -133,6 +145,9 @@ export class UserDetailPageComponent extends ViewEditForm {
 
   private resetUser(user: UserDTO): void {
     this.userForm.patchValue(user || {});
+    if (!user?.userStatus) {
+      this.userForm.get('userStatus')?.patchValue(UserStatusEnum.UNCONFIRMED);
+    }
     this.userRoleId?.patchValue(user?.userRole?.id);
   }
 
@@ -157,9 +172,5 @@ export class UserDetailPageComponent extends ViewEditForm {
         this.saveUser(user.id);
       }
     });
-  }
-
-  get userRoleId(): AbstractControl {
-    return this.userForm.get('userRoleId') as AbstractControl;
   }
 }

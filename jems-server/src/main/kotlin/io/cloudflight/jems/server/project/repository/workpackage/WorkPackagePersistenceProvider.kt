@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicator
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
+import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityPartnerRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
@@ -23,6 +24,7 @@ import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPack
 import io.cloudflight.jems.server.project.repository.workpackage.output.toIndexedEntity
 import io.cloudflight.jems.server.project.repository.workpackage.output.toModel
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.service.result.model.OutputRow
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
@@ -32,6 +34,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.toModel
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimple
@@ -39,6 +42,10 @@ import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackag
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageOutputHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.EDIT
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -52,7 +59,9 @@ class WorkPackagePersistenceProvider(
     private val workPackageOutputRepository: WorkPackageOutputRepository,
     private val workPackageInvestmentRepository: WorkPackageInvestmentRepository,
     private val outputIndicatorRepository: OutputIndicatorRepository,
-    private val projectVersionUtils: ProjectVersionUtils
+    private val projectVersionUtils: ProjectVersionUtils,
+    private val projectRepository: ProjectRepository,
+    private val collaboratorRepository: UserProjectCollaboratorRepository,
 ) : WorkPackagePersistence {
 
     @Transactional(readOnly = true)
@@ -71,32 +80,42 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getWorkPackagesWithAllDataByProjectId(projectId: Long): List<ProjectWorkPackageFull> {
-        // fetch all work packages in 1 request
-        val sort = Sort.by(Sort.Direction.ASC, "id")
-        val workPackages = workPackageRepository.findAllByProjectId(projectId, sort)
-        val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
+    override fun getWorkPackagesWithAllDataByProjectId(projectId: Long, version: String?): List<ProjectWorkPackageFull> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                // fetch all work packages in 1 request
+                val sort = Sort.by(Sort.Direction.ASC, "id")
+                val workPackages = workPackageRepository.findAllByProjectId(projectId, sort)
+                val workPackageIds = workPackages.mapTo(HashSet()) { it.id }
 
-        // fetch all activities and deliverables in 1 request
-        val activitiesByWorkPackages = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds)
-            .groupBy { it.workPackage.id }
+                // fetch all activities and deliverables in 1 request
+                val activitiesByWorkPackages = workPackageActivityRepository.findAllByWorkPackageIdIn(workPackageIds)
+                    .groupBy { it.workPackage.id }
 
-        // fetch all outputs in 1 request
-        val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
-            .groupBy { it.outputId.workPackageId }
+                // fetch all outputs in 1 request
+                val outputsByWorkPackages = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(workPackageIds)
+                    .groupBy { it.outputId.workPackageId }
 
-        // fetch all investments
-        val investmentsByWorkPackages = workPackageInvestmentRepository.findInvestmentsByProjectId(projectId)
-            .groupBy { it.workPackage.id }
+                // fetch all investments
+                val investmentsByWorkPackages = workPackageInvestmentRepository.findInvestmentsByProjectId(projectId)
+                    .groupBy { it.workPackage.id }
 
-        return workPackages.map { wp ->
-            wp.toModelFull(
-                getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
-                getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
-                getInvestmentsForWorkPackageId = { id -> investmentsByWorkPackages[id] },
-            )
-        }
-    }
+                workPackages.map { wp ->
+                    wp.toModelFull(
+                        getActivitiesForWorkPackageId = { id -> activitiesByWorkPackages[id] },
+                        getOutputsForWorkPackageId = { id -> outputsByWorkPackages[id] },
+                        getInvestmentsForWorkPackageId = { id -> investmentsByWorkPackages[id] },
+                        periods = projectRepository.findById(projectId).get().periods,
+                    )
+                }
+            } ,
+            previousVersionFetcher = { timestamp ->
+                workPackageRepository.findWorkPackagesByProjectIdAsOfTimestamp(projectId, timestamp).toModel(
+                    periods = projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp)
+                )
+            }
+        ) ?: emptyList()
+
 
     @Transactional(readOnly = true)
     override fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple> {
@@ -292,7 +311,25 @@ class WorkPackagePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectFromWorkPackageInvestment(workPackageInvestmentId: Long): ProjectApplicantAndStatus =
-        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.toApplicantAndStatus()
+        getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.let {
+            val collaboratorsByLevel = collaboratorRepository.findAllByIdProjectId(it.id).groupBy { it.level }
+            return it.toApplicantAndStatus(
+                collaboratorViewIds = collaboratorsByLevel[VIEW] ?: emptySet(),
+                collaboratorEditIds = collaboratorsByLevel[EDIT] ?: emptySet(),
+                collaboratorManageIds = collaboratorsByLevel[MANAGE] ?: emptySet(),
+            )
+        }
+
+    @Transactional(readOnly = true)
+    override fun getAllOutputsForProjectIdSortedByNumbers(projectId: Long, version: String?): List<OutputRow> =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                workPackageOutputRepository.findAllByProjectIdOrderedByNumbers(projectId).toModel()
+            },
+            previousVersionFetcher = { timestamp ->
+                workPackageOutputRepository.findAllByProjectIdAsOfTimestampOrderedByNumbers(projectId, timestamp).toModel()
+            }
+        ) ?: emptyList()
 
     private fun getWorkPackageOrThrow(workPackageId: Long): WorkPackageEntity =
         workPackageRepository.findById(workPackageId).orElseThrow { ResourceNotFoundException("workPackage") }

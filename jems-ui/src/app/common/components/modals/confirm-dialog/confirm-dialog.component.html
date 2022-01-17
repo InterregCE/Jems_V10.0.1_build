@@ -13,9 +13,9 @@
 </div>
 
 <div mat-dialog-actions>
-    <button (click)="onDismiss()" cdkFocusInitial mat-dialog-close
+    <button appText (click)="onDismiss()" cdkFocusInitial mat-dialog-close
             mat-stroked-button>{{'common.dialog.dismiss' | translate}}</button>
-    <button (click)="onConfirm()" color="primary" mat-dialog-close
+    <button appText (click)="onConfirm()" color="primary" mat-dialog-close
             mat-raised-button>{{'common.dialog.confirm' | translate}}</button>
 </div>
 

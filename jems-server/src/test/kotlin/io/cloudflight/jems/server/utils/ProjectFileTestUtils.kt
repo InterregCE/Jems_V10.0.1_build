@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -43,14 +44,22 @@ val projectFile = ProjectFile(fileByteArray.inputStream(), FILE_NAME, FILE_SIZE)
 val file = MockMultipartFile(FILE_NAME, FILE_NAME, "text/csv", fileByteArray.inputStream())
 
 val uploadedBy =
-    UserSummary(USER_ID, USER_EMAIL, USER_NAME, USER_SURNAME, UserRoleSummary(USER_ROLE_ID, USER_ROLE_NAME))
+    UserSummary(
+        USER_ID,
+        USER_EMAIL,
+        USER_NAME,
+        USER_SURNAME,
+        UserRoleSummary(USER_ROLE_ID, USER_ROLE_NAME),
+        userStatus = UserStatus.ACTIVE
+    )
 
 val user = User(
     id = USER_ID,
     email = USER_EMAIL,
     name = USER_NAME,
     surname = USER_SURNAME,
-    userRole = UserRole(id = USER_ROLE_ID, name = USER_ROLE_NAME, permissions = emptySet(), isDefault = true)
+    userRole = UserRole(id = USER_ROLE_ID, name = USER_ROLE_NAME, permissions = emptySet(), isDefault = true),
+    userStatus = UserStatus.ACTIVE
 )
 val currentUser = LocalCurrentUser(
     user, "hash_pass", listOf(
@@ -66,7 +75,8 @@ val userEntity = UserEntity(
     password = "hash",
     email = USER_EMAIL,
     surname = USER_SURNAME,
-    userRole = userRole
+    userRole = userRole,
+    userStatus = UserStatus.ACTIVE
 )
 
 val callEntity = CallEntity(

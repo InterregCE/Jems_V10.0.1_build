@@ -28,6 +28,7 @@ export class ProjectPartnerStore {
   partners$: Observable<ProjectPartner[]>;
   leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
   partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerSummariesForFiles$: Observable<ProjectPartnerSummaryDTO[]>;
   private partnerId: number;
   private projectId: number;
   private partnerUpdateEvent$ = new BehaviorSubject(null);
@@ -39,10 +40,10 @@ export class ProjectPartnerStore {
               private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.partnerSummaries$ = this.partnerSummaries();
-
+    this.partnerSummariesForFiles$ = this.partnerSummariesForFiles();
     this.partners$ = combineLatest([
       this.projectStore.project$,
-      this.projectVersionStore.currentRouteVersion$,
+      this.projectVersionStore.selectedVersionParam$,
       this.partnerUpdateEvent$
     ]).pipe(
       switchMap(([project, version]) => this.partnerService.getProjectPartnersForDropdown(project.id, ['sortNumber'], version)),
@@ -74,7 +75,7 @@ export class ProjectPartnerStore {
       .pipe(
         tap(created => this.updatedPartner$.next(created)),
         tap(() => this.partnerUpdateEvent$.next(null)),
-        tap(created => Log.info('Created partner:', this, created)),
+        tap(created => Log.info('Created partner:', this, created))
       );
   }
 
@@ -82,7 +83,7 @@ export class ProjectPartnerStore {
     return this.partnerService.updateProjectPartnerAddress(this.partnerId, addresses)
       .pipe(
         tap(saved => this.updatedPartner$.next(saved)),
-        tap(saved => Log.info('Updated partner addresses:', this, saved)),
+        tap(saved => Log.info('Updated partner addresses:', this, saved))
       );
   }
 
@@ -106,16 +107,23 @@ export class ProjectPartnerStore {
     return this.partnerService.deleteProjectPartner(partnerId)
       .pipe(
         tap(() => this.partnerUpdateEvent$.next(null)),
-        tap(() => Log.info('Partner removed:', this, partnerId)),
+        tap(() => Log.info('Partner removed:', this, partnerId))
       );
   }
 
+  deactivatePartner(partnerId: number): Observable<void> {
+    return this.partnerService.deactivate(partnerId)
+      .pipe(
+        tap(() => this.partnerUpdateEvent$.next(null)),
+        tap(() => Log.info('Partner deactivated:', this, partnerId))
+      );
+  }
 
   private partner(): Observable<ProjectPartnerDetailDTO> {
     const initialPartner$ = combineLatest([
       this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
       this.projectStore.projectId$,
-      this.projectVersionStore.currentRouteVersion$
+      this.projectVersionStore.selectedVersionParam$
     ]).pipe(
       tap(([partnerId, projectId]) => {
         this.partnerId = Number(partnerId);
@@ -125,7 +133,7 @@ export class ProjectPartnerStore {
         ? this.partnerService.getProjectPartnerById(Number(partnerId), version)
           .pipe(
             catchError(() => {
-              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, this.projectId]);
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, this.projectId, 'applicationFormPartner']);
               return of({} as ProjectPartnerDetailDTO);
             })
           )
@@ -141,9 +149,16 @@ export class ProjectPartnerStore {
   }
 
   private partnerSummaries(): Observable<ProjectPartnerSummaryDTO[]> {
-    return combineLatest([this.projectStore.projectId$, this.projectVersionStore.currentRouteVersion$, this.partnerUpdateEvent$])
+    return combineLatest([this.projectStore.projectId$, this.projectVersionStore.selectedVersionParam$, this.partnerUpdateEvent$])
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
+      );
+  }
+
+  private partnerSummariesForFiles(): Observable<ProjectPartnerSummaryDTO[]> {
+    return combineLatest([this.projectStore.projectId$, this.partnerUpdateEvent$])
+      .pipe(
+        switchMap(([projectId]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber']))
       );
   }
 }

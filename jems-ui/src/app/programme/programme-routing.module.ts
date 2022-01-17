@@ -25,10 +25,12 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        data: {breadcrumb: 'programme.breadcrumb.basic.data'},
         component: ProgrammeBasicDataComponent,
       },
       {
         path: 'funds',
+        data: {breadcrumb: 'programme.breadcrumb.funds'},
         component: ProgrammeFundsComponent,
       },
       {

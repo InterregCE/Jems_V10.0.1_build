@@ -8,11 +8,14 @@ import {Log} from '@common/utils/log';
 @Injectable()
 export class ProjectEligibilityDecisionStore {
 
-  project$: Observable<ProjectDetailDTO>;
+  currentVersionOfProject$: Observable<ProjectDetailDTO>;
+  currentVersionOfProjectTitle$: Observable<string>;
+
 
   constructor(private projectStore: ProjectStore,
               private projectStatusService: ProjectStatusService) {
-    this.project$ = this.projectStore.project$;
+    this.currentVersionOfProject$ = this.projectStore.currentVersionOfProject$;
+    this.currentVersionOfProjectTitle$ = this.projectStore.currentVersionOfProjectTitle$;
   }
 
   eligibilityDecision(step: number | undefined): Observable<ProjectStatusDTO> {

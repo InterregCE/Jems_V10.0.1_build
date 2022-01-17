@@ -35,6 +35,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing.GetProjectBudgetCoFinancingInteractor
+import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.GetProjectCoFinancingOverviewInteractor
 import io.cloudflight.jems.server.project.service.create_project.CreateProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
@@ -55,6 +56,7 @@ import io.cloudflight.jems.server.project.service.workpackage.investment.get_pro
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.cloudflight.jems.server.user.controller.toDto
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -94,6 +96,7 @@ class ProjectControllerTest {
 
         private val partner1 = ProjectPartnerSummary(
             id = 2,
+            active = true,
             abbreviation = "Partner 1",
             role = ProjectPartnerRole.LEAD_PARTNER,
             sortNumber = 1,
@@ -103,6 +106,7 @@ class ProjectControllerTest {
         private val partner2 = ProjectPartnerSummary(
             id = 1,
             abbreviation = "Partner 2",
+            active = true,
             role = ProjectPartnerRole.PARTNER,
             sortNumber = 2,
             country = "CZ",
@@ -141,8 +145,14 @@ class ProjectControllerTest {
             duration = 12,
             title = setOf(InputTranslation(SystemLanguage.EN, "title")),
             intro = setOf(InputTranslation(SystemLanguage.EN, "intro")),
-            specificObjective = OutputProgrammePriorityPolicySimpleDTO(ProgrammeObjectivePolicy.AdvancedTechnologies, "code"),
-            programmePriority = OutputProgrammePrioritySimple("code", setOf(InputTranslation(SystemLanguage.EN, "title"))),
+            specificObjective = OutputProgrammePriorityPolicySimpleDTO(
+                ProgrammeObjectivePolicy.AdvancedTechnologies,
+                "code"
+            ),
+            programmePriority = OutputProgrammePrioritySimple(
+                "code",
+                setOf(InputTranslation(SystemLanguage.EN, "title"))
+            ),
             periods = listOf(projectPeriod)
         )
         private val projectDetailFormDTO = ProjectDetailFormDTO(
@@ -168,6 +178,9 @@ class ProjectControllerTest {
 
     @MockK
     lateinit var getProjectBudgetCoFinancingInteractor: GetProjectBudgetCoFinancingInteractor
+
+    @MockK
+    lateinit var getProjectBudgetCoFinancingOverviewInteractor: GetProjectCoFinancingOverviewInteractor
 
     @MockK
     lateinit var createProjectInteractor: CreateProjectInteractor
@@ -310,7 +323,8 @@ class ProjectControllerTest {
     @Test
     fun `get Project by Id`() {
         val pId = 1L
-        val user = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"))
+        val user =
+            UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"), userStatus = UserStatus.ACTIVE)
         val projectStatus = ProjectStatus(5L, ApplicationStatus.APPROVED, user, updated = startDate)
         val project = ProjectDetail(
             id = pId,
@@ -408,6 +422,7 @@ class ProjectControllerTest {
                 activityId = wpASummary.activityId,
                 workPackageNumber = wpASummary.workPackageNumber,
                 activityNumber = wpASummary.activityNumber
-            ))
+            )
+        )
     }
 }

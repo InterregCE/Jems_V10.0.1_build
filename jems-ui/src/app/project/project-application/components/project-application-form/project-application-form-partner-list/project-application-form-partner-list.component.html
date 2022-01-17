@@ -1,27 +1,53 @@
+<ng-container *ngIf="tableRows$ | async as tableRows">
+    <p *ngIf="!tableRows.length">{{'project.application.form.partner.list.empty' | translate}}</p>
+    <app-table *ngIf="tableRows.length"
+               [configuration]="tableConfiguration"
+               [rows]="tableRows"
+               [totalElements]="totalElements"
+               [pageIndex]="pageIndex"
+               (newPageIndex)="newPageIndex.emit($event)"
+               (newPageSize)="newPageSize.emit($event)"
+               (sortRows)="newSort.emit($event)">
+    </app-table>
+</ng-container>
 
-<p *ngIf="!partnerPage?.content.length">{{'project.application.form.partner.list.empty' | translate}}</p>
-<app-table *ngIf="partnerPage.content.length"
-           [configuration]="tableConfiguration"
-           [rows]="partnerPage.content"
-           [totalElements]="partnerPage?.totalElements"
-           [pageIndex]="pageIndex"
-           (newPageIndex)="newPageIndex.emit($event)"
-           (newPageSize)="newPageSize.emit($event)"
-           (sortRows)="newSort.emit($event)">
-</app-table>
+<ng-template #statusCell let-partnerSummary>
+    <mat-chip-list>
+        <mat-chip  [removable]="false" [selectable]="false">
+            <ng-container *ngIf="partnerSummary.active">
+                <mat-icon>person</mat-icon>
+                <span>{{'project.application.form.partner.table.status.active' | translate}}</span>
+            </ng-container>
 
-<ng-template #deletionCell let-partner>
-    <app-delete-action-cell
+            <ng-container *ngIf="!partnerSummary.active">
+                <mat-icon>person_off</mat-icon>
+                <span>{{'project.application.form.partner.table.status.inactive' | translate}}</span>
+            </ng-container>
+        </mat-chip>
+    </mat-chip-list>
+</ng-template>
+
+<ng-template #deletionCell let-partnerSummary>
+    <app-delete-action-cell class="ml-auto"
             (click)="$event.stopPropagation()"
-            [element]="partner"
+            [element]="partnerSummary"
             [disabled]="!editable"
             (delete)="delete($event)">
     </app-delete-action-cell>
 </ng-template>
 
-<ng-template #budgetCell let-partner>
-    <button mat-raised-button color="primary" class="button"
-            [routerLink]="[partner.id, 'budget']">
-        {{'project.application.form.partner.list.budget' | translate}}
+<ng-template #deactivationCell let-partnerSummary>
+    <button class="ml-auto" mat-stroked-button
+            (click)="$event.stopPropagation();deactivate(partnerSummary)"
+            [disabled]="!editable || !partnerSummary.active">
+        <mat-icon>person_off</mat-icon>
+        <span class="ml-1">{{'project.application.form.partner.table.action.deactivate.label' | translate}}</span>
     </button>
+</ng-template>
+
+<ng-template #budgetCell let-partnerSummary >
+    <div class="ml-auto">
+        {{partnerSummary.totalBudget | asMoney : undefined : { style: 'currency', currency: 'EUR' } }}
+    </div>
+    <mat-icon [routerLink]="[partnerSummary.id, 'budget']" queryParamsHandling="merge" class="ml-2 mr-5 mat-primary">launch</mat-icon>
 </ng-template>

@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
+import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingOverviewDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
 import io.cloudflight.jems.server.project.controller.workpackage.toInvestmentSummaryDTOs
@@ -16,9 +17,11 @@ import io.cloudflight.jems.server.project.controller.workpackage.toSummariesDto
 import io.cloudflight.jems.server.project.service.ProjectService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing.GetProjectBudgetCoFinancingInteractor
+import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.GetProjectCoFinancingOverviewInteractor
 import io.cloudflight.jems.server.project.service.create_project.CreateProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.get_project_versions.GetProjectVersionsInteractor
+import io.cloudflight.jems.server.project.service.partner.cofinancing.toDto
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toProjectPartnerBudgetDTO
 import io.cloudflight.jems.server.project.service.workpackage.activity.get_activity.GetActivityInteractor
 import io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries.GetProjectInvestmentSummariesInteractor
@@ -31,6 +34,7 @@ class ProjectController(
     private val projectService: ProjectService,
     private val getProjectBudgetInteractor: GetProjectBudgetInteractor,
     private val getProjectBudgetCoFinancingInteractor: GetProjectBudgetCoFinancingInteractor,
+    private val getProjectCoFinancingOverviewInteractor: GetProjectCoFinancingOverviewInteractor,
     private val getProjectInteractor: GetProjectInteractor,
     private val createProjectInteractor: CreateProjectInteractor,
     private val getProjectVersionsInteractor: GetProjectVersionsInteractor,
@@ -63,7 +67,11 @@ class ProjectController(
         getProjectBudgetInteractor.getBudget(projectId = projectId, version).toDTO()
 
     override fun getProjectCoFinancing(projectId: Long, version: String?): List<ProjectPartnerBudgetCoFinancingDTO> =
-        getProjectBudgetCoFinancingInteractor.getBudgetCoFinancing(projectId = projectId, version).toProjectPartnerBudgetDTO()
+        getProjectBudgetCoFinancingInteractor.getBudgetCoFinancing(projectId = projectId, version)
+            .toProjectPartnerBudgetDTO()
+
+    override fun getProjectCoFinancingOverview(projectId: Long, version: String?): ProjectCoFinancingOverviewDTO =
+        getProjectCoFinancingOverviewInteractor.getProjectCoFinancingOverview(projectId, version).toDto()
 
     override fun getProjectVersions(projectId: Long): Collection<ProjectVersionDTO> =
         getProjectVersionsInteractor.getProjectVersions(projectId).toDTOs()

@@ -21,6 +21,17 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
         type = UserRolePermissionNodeType.TOGGLE_SECTION,
         children = listOf(
             UserRolePermissionNode(
+                name = "Contracting",
+                type = UserRolePermissionNodeType.SECTION_HEADER,
+                children = listOf(
+                    UserRolePermissionNode(
+                        name = "Contract monitoring",
+                        viewPermissions = setOf(UserRolePermission.ProjectContractingView),
+                        editPermissions = setOf(UserRolePermission.ProjectSetToContracted),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                    )
+            )),
+            UserRolePermissionNode(
                 name = "Application form",
                 type = UserRolePermissionNodeType.SECTION_HEADER,
                 children = listOf(
@@ -82,6 +93,33 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
                                 type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
                             ),
                         )
+                    ),
+                    UserRolePermissionNode(
+                        name = "Modification",
+                        type = UserRolePermissionNodeType.SECTION_HEADER,
+                        children = listOf(
+                            UserRolePermissionNode(
+                                name = "Modification panel",
+                                viewPermissions = setOf(UserRolePermission.ProjectModificationView),
+                                editPermissions = setOf(
+                                    UserRolePermission.ProjectStatusDecideModificationApproved,
+                                    UserRolePermission.ProjectStatusDecideModificationNotApproved
+                                ),
+                                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                            ),
+
+                            UserRolePermissionNode(
+                                name = "Open modification",
+                                editPermissions = setOf(UserRolePermission.ProjectOpenModification),
+                                type = UserRolePermissionNodeType.TOGGLE_EDIT,
+                            ),
+                            UserRolePermissionNode(
+                                name = "Modification files",
+                                viewPermissions = setOf(UserRolePermission.ProjectModificationFileAssessmentRetrieve),
+                                editPermissions = setOf(UserRolePermission.ProjectModificationFileAssessmentUpdate),
+                                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                            ),
+                        )
                     )
                 )
             )
@@ -113,7 +151,8 @@ val DEFAULT_TOP_NAVIGATION_PERMISSIONS =
             UserRolePermissionNode(
                 name = "Applications",
                 viewPermissions = setOf(UserRolePermission.ProjectRetrieve),
-                type = UserRolePermissionNodeType.HIDDEN_VIEW,
+                editPermissions = setOf(UserRolePermission.ProjectRetrieveEditUserAssignments),
+                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
             ),
             UserRolePermissionNode(
                 name = "Calls",

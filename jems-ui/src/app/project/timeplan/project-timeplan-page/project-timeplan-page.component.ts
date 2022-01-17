@@ -38,6 +38,7 @@ export class ProjectTimeplanPageComponent {
   visualization: ElementRef;
 
   periodsUnavailable$: Observable<boolean>;
+  workPackagesUnavailable$: Observable<boolean>;
   dataAvailable$: Observable<boolean>;
 
   constructor(private translateService: TranslateService,
@@ -70,14 +71,19 @@ export class ProjectTimeplanPageComponent {
         map(data => !data.periods.length)
       );
 
+    this.workPackagesUnavailable$ = data$
+      .pipe(
+        map(data => !data.workPackages.length && !data.results.length),
+      );
+
     this.dataAvailable$ = data$
       .pipe(
-        map(data => !!data.timelineGroups.getIds().length)
+        map(data => (!!data.workPackages.length || !!data.results.length) && !!data.periods.length),
       );
   }
 
   private createVisualizationOrUpdateJustTranslations(periods: ProjectPeriodDTO[], newItems: DataSet<any>, groups: DataSet<any>): void {
-    if (!periods.length) {
+    if (!periods.length || !groups.length) {
       return;
     }
     if (!this.timeline) {

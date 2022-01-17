@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {ProjectPartnerBudgetConstants} from '../project-partner-budget.constants';
 import {
   AbstractControl,
@@ -52,7 +52,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
   columnsToDisplay: string[];
   tableConfig: TableConfig[];
 
-  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private budgetTabService: ProjectPartnerBudgetTabService) {
+  constructor(private formService: FormService, private controlContainer: ControlContainer, private formBuilder: FormBuilder, private budgetTabService: ProjectPartnerBudgetTabService, private changeDetectorRef: ChangeDetectorRef) {
     this.budgetForm = this.controlContainer.control as FormGroup;
     this.dataSource = new MatTableDataSource<AbstractControl>(this.items.controls);
     this.numberOfItems$ = this.items.valueChanges.pipe(startWith(null), map(() => this.items.length));
@@ -88,6 +88,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
 
     this.columnsToDisplay = [
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.DESCRIPTION, ['description']),
+      ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.COMMENTS, ['comments']),
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.UNIT_TYPE_AND_NUMBER_OF_UNITS, ['unitType', 'numberOfUnits']),
       'pricePerUnit', 'total',
       ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods),
@@ -96,6 +97,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
 
     this.tableConfig = [
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.DESCRIPTION, [{minInRem: 12}]),
+      ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.COMMENTS, [{minInRem: 12}]),
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.UNIT_TYPE_AND_NUMBER_OF_UNITS, [{minInRem: 12}, {
         minInRem: 5,
         maxInRem: 5
@@ -122,6 +124,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     control.patchValue(
       {
         description: [],
+        comments: [],
         unitType: [],
         numberOfUnits: 1,
         pricePerUnit: selectedUnitCost?.costPerUnit || 0,
@@ -146,6 +149,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     this.items.push(this.formBuilder.group({
       id: null,
       description: [[]],
+      comments: [[]],
       unitType: [[]],
       unitCost: [null, [this.constants.requiredUnitCost(this.allowedBudgetCategory)]],
       numberOfUnits: [1, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -157,6 +161,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
     }));
     this.budgetTabService.addPeriods(this.items, this.projectPeriods);
     this.formService.setDirty(true);
+    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
   getUnitCost(formGroup: FormGroup): FormControl {
@@ -181,6 +186,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
       this.items.push(this.formBuilder.group({
         id: [item.id],
         description: [item.description],
+        comments: [item.comments],
         unitType: [item.unitType],
         unitCost: [this.availableUnitCosts.find(it => it.id === item.unitCostId) || null, [this.constants.requiredUnitCost(this.allowedBudgetCategory)]],
         numberOfUnits: [item.numberOfUnits, [Validators.max(this.constants.MAX_VALUE), Validators.min(this.constants.MIN_VALUE)]],
@@ -192,6 +198,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
       this.budgetTabService.addPeriods(this.items, this.projectPeriods, item.budgetPeriods);
     });
     this.formService.resetEditable();
+    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
 }

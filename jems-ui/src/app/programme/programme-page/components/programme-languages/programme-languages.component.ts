@@ -7,7 +7,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {FormGroup} from '@angular/forms';
 import {ProgrammeLanguageDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
@@ -23,7 +23,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./programme-languages.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeLanguagesComponent extends ViewEditForm implements OnInit {
+export class ProgrammeLanguagesComponent extends ViewEditFormComponent implements OnInit {
 
   @Input()
   languages: ProgrammeLanguageDTO[];

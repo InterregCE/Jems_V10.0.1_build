@@ -4,11 +4,12 @@ import {MatSort} from '@angular/material/sort';
 import {map, mergeMap, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';
-import {ProjectAssociatedOrganizationService} from '@cat/api';
+import {OutputProjectAssociatedOrganization, ProjectAssociatedOrganizationService} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import { Alert } from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-project-application-form-associated-org-page',
@@ -18,13 +19,14 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 })
 export class ProjectApplicationFormAssociatedOrgPageComponent {
   Permission = Permission;
-
+  Alert = Alert;
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
 
+  showSuccessMessage$ = new Subject<string | null >();
   associatedOrganizationsPage$ =
     combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
@@ -34,7 +36,7 @@ export class ProjectApplicationFormAssociatedOrgPageComponent {
         map(sort => sort?.direction ? sort : {active: 'sortNumber', direction: 'asc'}),
         map(sort => `${sort.active},${sort.direction}`)
       ),
-      this.projectVersionStore.currentRouteVersion$
+      this.projectVersionStore.selectedVersionParam$
     ])
       .pipe(
         mergeMap(([pageIndex, pageSize, sort, version]) =>
@@ -54,6 +56,19 @@ export class ProjectApplicationFormAssociatedOrgPageComponent {
         take(1),
         tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
         tap(() => Log.info('Deleted associated organization: ', this, associatedOrganizationId)),
+      ).subscribe();
+  }
+
+  deactivateAssociatedOrganization(associatedOrganizationId: number, associatedOrganizations: OutputProjectAssociatedOrganization[]): void {
+    this.projectAssociatedOrganizationService.deactivateAssociatedOrganization(associatedOrganizationId, this.projectId)
+      .pipe(
+        take(1),
+        tap(() => this.newPageIndex$.next(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
+        tap(() => {
+          this.showSuccessMessage$.next(associatedOrganizations.find(it => it.id === associatedOrganizationId)?.nameInOriginalLanguage);
+          setTimeout(() => this.showSuccessMessage$.next(null), 4000);
+        }),
+        tap(() => Log.info('deactivated associated organization: ', this, associatedOrganizationId)),
       ).subscribe();
   }
 }

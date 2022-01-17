@@ -13,4 +13,8 @@ interface AssociatedOrganizationPersistence {
         page: Pageable,
         version: String? = null
     ): Page<OutputProjectAssociatedOrganization>
+
+    fun findAllByProjectId(projectId: Long,  version: String? = null): List<OutputProjectAssociatedOrganizationDetail>
+
+    fun deactivate(id:Long)
 }

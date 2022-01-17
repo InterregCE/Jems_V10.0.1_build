@@ -42,12 +42,18 @@ export class MultiLanguageContainerService {
 
   multiLanguageFormFieldDefaultValue(includeFallbackIfNotExist?: boolean): InputTranslation[] {
     const neededLanguages = [...this.getCurrentLanguagesValue()] || [];
-    if (includeFallbackIfNotExist && neededLanguages.indexOf(this.languageStore.getFallbackLanguageValue()) < 0) { neededLanguages.push(this.languageStore.getFallbackLanguageValue()); }
+    if (includeFallbackIfNotExist && neededLanguages.indexOf(this.languageStore.getFallbackLanguageValue()) < 0) {
+      neededLanguages.push(this.languageStore.getFallbackLanguageValue());
+    }
     return neededLanguages.map(language => ({translation: '', language} as InputTranslation));
   }
 
   changeLanguage(language: string, useSystemLanguages: boolean): void {
-    useSystemLanguages ? this.multiLanguageGlobalService.setActiveSystemLanguage(language) : this.multiLanguageGlobalService.setActiveInputLanguage(language);
+    if (useSystemLanguages) {
+      this.multiLanguageGlobalService.setActiveSystemLanguage(language);
+    } else {
+      this.multiLanguageGlobalService.setActiveInputLanguage(language);
+    }
   }
 
   didLanguagesChange(savedTranslations: InputTranslation[]): boolean {

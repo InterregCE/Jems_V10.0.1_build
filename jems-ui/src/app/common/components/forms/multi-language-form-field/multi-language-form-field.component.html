@@ -10,7 +10,8 @@
                             #input
                             [placeholder]="useFallBackLanguage? (inputs.value | translateBySystemLanguage: true | async) : ''"
                             [readonly]="!isEditable(getLanguageValue(formGroup),languageStore.fallbackLanguage$ | async)"
-                             [formControlName]="constants.FORM_CONTROL_NAMES.translation"
+                            [formControlName]="constants.FORM_CONTROL_NAMES.translation"
+                            (keydown.enter)="$event.preventDefault()"
                             matInput>
                     <app-context-info *ngIf="contextInfoText"
                                       [infoText]="contextInfoText">

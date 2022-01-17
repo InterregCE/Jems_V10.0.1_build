@@ -2,12 +2,11 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ProjectAssessmentQualityDTO, OutputProjectQualityAssessment, ProjectDetailDTO} from '@cat/api';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {OutputProjectQualityAssessment, ProjectAssessmentQualityDTO, ProjectDetailDTO} from '@cat/api';
 import {ProjectQualityCheckPageStore} from './project-quality-check-page-store.service';
 import {map, tap} from 'rxjs/operators';
-import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectStepStatus} from '../project-step-status';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
   selector: 'app-project-application-quality-check',
@@ -24,8 +23,8 @@ export class ProjectApplicationQualityCheckComponent {
   options: string[] = [this.assessment.RECOMMENDEDFORFUNDING, this.assessment.RECOMMENDEDWITHCONDITIONS, this.assessment.NOTRECOMMENDED];
 
   data$: Observable<{
-    project: ProjectDetailDTO,
-    qualityAssessment: OutputProjectQualityAssessment
+    currentVersionOfProject: ProjectDetailDTO;
+    qualityAssessment: OutputProjectQualityAssessment;
   }>;
 
   qualityCheckForm = this.formBuilder.group({
@@ -42,20 +41,20 @@ export class ProjectApplicationQualityCheckComponent {
   constructor(private router: Router,
               private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder,
-              private pageStore: ProjectQualityCheckPageStore,
-              private projectStore: ProjectStore) {
+              private pageStore: ProjectQualityCheckPageStore) {
     this.data$ = combineLatest([
-      this.pageStore.project$,
+      this.pageStore.currentVersionOfProject$,
+      this.pageStore.currentVersionOfProjectTitle$,
       this.pageStore.qualityAssessment(this.step)]
     )
       .pipe(
-        tap(([project, qualityAssessment]) => {
+        tap(([currentVersionOfProject,currentVersionOfProjectTitle, qualityAssessment]) => {
           if (qualityAssessment) {
             this.qualityCheckForm.controls.result.setValue(qualityAssessment.result);
             this.qualityCheckForm.controls.note.setValue(qualityAssessment.note);
           }
         }),
-        map(([project, qualityAssessment]) => ({project, qualityAssessment}))
+        map(([currentVersionOfProject,currentVersionOfProjectTitle, qualityAssessment]) => ({currentVersionOfProject,currentVersionOfProjectTitle, qualityAssessment}))
       );
   }
 
@@ -69,7 +68,7 @@ export class ProjectApplicationQualityCheckComponent {
 
   private confirmQualityAssessment(): void {
     this.actionPending = true;
-    this.projectStore.setQualityAssessment(this.qualityCheckForm.value);
+    this.pageStore.setQualityAssessment(this.qualityCheckForm.value).subscribe();
     this.actionPending = false;
   }
 

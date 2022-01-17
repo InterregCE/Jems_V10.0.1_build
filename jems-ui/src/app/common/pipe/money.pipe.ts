@@ -8,10 +8,10 @@ export class MoneyPipe implements PipeTransform {
               private localeStore: LocaleStore) {
   }
 
-  transform(value: number | null, locale?: string): string | number {
+  transform(value: number | null, locale?: string, numberFormatOptions?: any): string | number {
     if (value === null) {
       return '';
     }
-    return NumberService.toLocale(value, locale ? locale : this.localeStore.userLocale());
+    return NumberService.toLocale(value, locale ? locale : this.localeStore.userLocale(), numberFormatOptions);
   }
 }

@@ -10,6 +10,7 @@ import {take} from 'rxjs/internal/operators';
 import {ActivatedRoute} from '@angular/router';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {MatSelectChange} from '@angular/material/select/select';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'app-project-results-page',
@@ -28,12 +29,13 @@ export class ProjectResultsPageComponent implements OnInit {
   });
 
   data$: Observable<{
-    results: ProjectResultDTO[],
-    resultIndicators: ResultIndicatorSummaryDTO[],
-    periods: ProjectPeriodDTO[],
-    projectId: number,
-    projectTitle: string
+    results: ProjectResultDTO[];
+    resultIndicators: ResultIndicatorSummaryDTO[];
+    periods: ProjectPeriodDTO[];
+    projectId: number;
+    projectTitle: string;
   }>;
+  Alert = Alert;
 
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,

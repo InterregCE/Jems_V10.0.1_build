@@ -18,7 +18,7 @@ class AuthenticationController(
     }
 
     override fun login(req: HttpServletRequest, loginRequest: LoginRequest): OutputCurrentUser? {
-        return authenticationService.login(req, loginRequest);
+        return authenticationService.login(req, loginRequest)
     }
 
     override fun logout(req: HttpServletRequest) {

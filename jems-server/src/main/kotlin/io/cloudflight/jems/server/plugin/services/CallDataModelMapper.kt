@@ -21,6 +21,7 @@ import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCateg
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.entity.TranslationEntity
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -39,9 +40,10 @@ fun CallDetail.toDataModel(inputLanguages: List<ProgrammeLanguage>) = CallDetail
     endDateTimeStep1 = endDateStep1,
     endDateTime = endDate,
     lengthOfPeriod = lengthOfPeriod,
-    description = description.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+    description = description.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }
+        .toSet(),
     objectives = objectives.map { it.toDataModel() },
-    strategies = strategies.map { ProgrammeStrategyData.valueOf(it.name)}.sorted(),
+    strategies = strategies.map { ProgrammeStrategyData.valueOf(it.name) }.sorted(),
     funds = funds.toProgrammeFundDataModel(),
     flatRates = flatRates.toDataModel(),
     lumpSums = lumpSums.toLumpSumDataModel(),
@@ -63,15 +65,25 @@ fun ProgrammeSpecificObjective.toDataModel() = ProgrammeSpecificObjectiveData(
     programmeObjectivePolicy = ProgrammeObjectivePolicyData.valueOf(programmeObjectivePolicy.name),
 )
 
-fun Iterable<ProgrammeFund>.toProgrammeFundDataModel() = map { it.toDataModel() }
+fun Iterable<CallFundRate>.toProgrammeFundDataModel() = map { it.programmeFund.toDataModel() }
 
 fun ProgrammeFund.toDataModel() =
     ProgrammeFundData(
         id = id,
         selected = selected,
         type = ProgrammeFundTypeData.valueOf(type.name),
-        abbreviation = abbreviation.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
-        description = description.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet()
+        abbreviation = abbreviation.map {
+            InputTranslationData(
+                SystemLanguageData.valueOf(it.language.name),
+                it.translation
+            )
+        }.toSet(),
+        description = description.map {
+            InputTranslationData(
+                SystemLanguageData.valueOf(it.language.name),
+                it.translation
+            )
+        }.toSet()
     )
 
 fun Set<ProjectCallFlatRate>.toDataModel(): FlatRateSetupData {
@@ -100,7 +112,8 @@ fun MutableSet<ApplicationFormFieldConfiguration>.toDataModel() = map {
 fun Iterable<ProgrammeLumpSum>.toLumpSumDataModel() = map {
     ProgrammeLumpSumListData(
         id = it.id,
-        name = it.name.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+        name = it.name.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }
+            .toSet(),
         cost = it.cost,
         splittingAllowed = it.splittingAllowed,
     )
@@ -109,8 +122,12 @@ fun Iterable<ProgrammeLumpSum>.toLumpSumDataModel() = map {
 fun Iterable<ProgrammeUnitCost>.toUnitCostDataModel() = sorted().map {
     ProgrammeUnitCostListData(
         id = it.id,
-        name = it.name.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
-        type = it.type.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }.toSet(),
+        name = it.name.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }
+            .toSet(),
+        type = it.type.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }
+            .toSet(),
+        description = it.description.map { InputTranslationData(SystemLanguageData.valueOf(it.language.name), it.translation) }
+            .toSet(),
         costPerUnit = it.costPerUnit,
         categories = it.categories.map { BudgetCategoryData.valueOf(it.name) }.toSet(),
     )

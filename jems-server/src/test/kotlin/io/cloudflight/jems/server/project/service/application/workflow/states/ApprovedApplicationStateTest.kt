@@ -39,7 +39,8 @@ class ApprovedApplicationStateTest {
 
         private val actionInfo = ApplicationActionInfo(
             note = "some dummy note",
-            date = LocalDate.now()
+            date = LocalDate.now(),
+            entryIntoForceDate = LocalDate.now()
         )
     }
 
@@ -100,21 +101,21 @@ class ApprovedApplicationStateTest {
     }
 
     @ParameterizedTest(name = "revertDecision to {0} - invalid")
-    @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "APPROVED_WITH_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "APPROVED_WITH_CONDITIONS", "CONDITIONS_SUBMITTED"], mode = EnumSource.Mode.EXCLUDE)
     fun revertDecision(status: ApplicationStatus) {
         every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         assertThrows<DecisionReversionIsNotPossibleException> { approvedApplicationState.revertDecision() }
     }
 
     @ParameterizedTest(name = "get possible status to revert to {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "APPROVED_WITH_CONDITIONS"])
+    @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "APPROVED_WITH_CONDITIONS", "CONDITIONS_SUBMITTED"])
     fun getPossibleStatusToRevertTo(status: ApplicationStatus) {
         every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         assertThat(approvedApplicationState.getPossibleStatusToRevertTo()).isEqualTo(status)
     }
 
     @ParameterizedTest(name = "getPossibleStatusToRevertTo {0} - invalid")
-    @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "APPROVED_WITH_CONDITIONS"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "APPROVED_WITH_CONDITIONS", "CONDITIONS_SUBMITTED"], mode = EnumSource.Mode.EXCLUDE)
     fun `getPossibleStatusToRevertTo - invalid`(status: ApplicationStatus) {
         every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         assertThat(approvedApplicationState.getPossibleStatusToRevertTo()).isNull()

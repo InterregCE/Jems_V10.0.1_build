@@ -35,6 +35,10 @@ export class ProgrammePriorityDetailPageConstants {
     name: 'programmeObjectivePolicy'
   };
 
+  public static POLICY_OFFICIAL_CODE: AppControl = {
+    name: 'officialCode',
+  };
+
   public static POLICY_CODE: AppControl = {
     name: 'code',
     errorMessages: {
@@ -54,7 +58,7 @@ export class ProgrammePriorityDetailPageConstants {
       return {required: true} as any;
     }
     return null;
-  }
+  };
 
   public static mustHaveSpecificObjectiveSelected(objectives: FormArray): ValidatorFn | null {
     const oneSelected = objectives.controls.some(

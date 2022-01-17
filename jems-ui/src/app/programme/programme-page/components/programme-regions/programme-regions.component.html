@@ -1,15 +1,15 @@
 <div>
     <h3>{{'programme.area.nuts.explorer.header' | translate}}
-        <button mat-raised-button color="primary"
+        <button appText mat-raised-button color="primary"
                 *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>
     </h3>
+    <p>{{'programme.area.nuts.explorer.select' | translate}}</p>
     <div id="nuts-explorer-container">
-        <div>
-            <p>{{'programme.area.nuts.explorer.select' | translate}}</p>
-            <div class="pane pt-3">
+        <div class="scroll-area">
+            <div class="pt-3">
                 <app-programme-regions-tree
                         [dataSource]="dataSource"
                         [disabled]="formState === FormState.VIEW"
@@ -17,9 +17,9 @@
                 </app-programme-regions-tree>
             </div>
         </div>
-        <div>
-            <p>{{'programme.area.nuts.explorer.selected' | translate}}</p>
-            <div class="pane pt-3 pl-3">
+        <div class="scroll-area selected-areas">
+            <p class="mat-body-strong">{{'programme.area.nuts.explorer.selected' | translate}}</p>
+            <div class="pt-3 pl-3">
                 <app-programme-selected-regions
                         [selectedRegions]="selectedRegions">
                 </app-programme-selected-regions>
@@ -27,11 +27,11 @@
         </div>
     </div>
     <div  *ngIf="formState === FormState.EDIT && (programmeEditableStateStore.hasEditPermission$ | async)" class="mt-3">
-        <button mat-stroked-button class="mr-3"
+        <button appText mat-stroked-button class="mr-3"
                 (click)="onCancel()">
             {{'common.cancel.label' | translate}}
         </button>
-        <button mat-raised-button color="primary"
+        <button appText mat-raised-button color="primary"
                 (click)="onSubmit()">
             {{'common.save.label' | translate}}
         </button>

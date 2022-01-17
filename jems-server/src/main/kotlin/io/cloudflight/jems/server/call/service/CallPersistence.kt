@@ -32,6 +32,7 @@ interface CallPersistence {
 
     fun publishCall(callId: Long): CallSummary
     fun hasAnyCallPublished(): Boolean
+    fun isCallPublished(callId: Long): Boolean
 
     fun getApplicationFormFieldConfigurations(callId: Long): MutableSet<ApplicationFormFieldConfiguration>
     fun saveApplicationFormFieldConfigurations(

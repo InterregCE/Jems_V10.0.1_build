@@ -79,8 +79,7 @@ class ProjectPartnerBudgetController(
             partnerId,
             equipment.toBudgetGeneralCostEntryList(),
             BudgetCategory.EquipmentCosts
-        )
-            .toBudgetGeneralCostsEntryDTOList()
+        ).toBudgetGeneralCostsEntryDTOList()
 
     override fun updateBudgetInfrastructure(partnerId: Long, infrastructures: List<BudgetGeneralCostEntryDTO>) =
         updateBudgetInfrastructureAndWorksCosts.updateBudgetGeneralCosts(

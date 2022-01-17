@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.audit.service
 
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
@@ -18,5 +19,12 @@ class AuditListener(
             else
                 auditService.logEvent(audit = auditCandidate, optionalUser = overrideCurrentUser)
         }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
+    fun saveAuditLog(event: JemsAuditEvent) =
+        if (event.auditUser == null)
+            auditService.logEvent(audit = event.auditCandidate)
+        else
+            auditService.logEvent(audit = event.auditCandidate, optionalUser = event.auditUser)
 
 }

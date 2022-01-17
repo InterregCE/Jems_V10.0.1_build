@@ -3,16 +3,18 @@ import {Observable} from 'rxjs';
 import {ApplicationActionInfoDTO, ProjectDetailDTO, ProjectStatusDTO, ProjectStatusService} from '@cat/api';
 import {map, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {Log} from '../../../common/utils/log';
+import {Log} from '@common/utils/log';
 
 @Injectable()
 export class ProjectFundingDecisionStore {
 
-  project$: Observable<ProjectDetailDTO>;
+  currentVersionOfProject$: Observable<ProjectDetailDTO>;
+  currentVersionOfProjectTitle$: Observable<string>;
 
   constructor(private projectStore: ProjectStore,
               private projectStatusService: ProjectStatusService) {
-    this.project$ = this.projectStore.project$;
+    this.currentVersionOfProject$ = this.projectStore.currentVersionOfProject$;
+    this.currentVersionOfProjectTitle$ = this.projectStore.currentVersionOfProjectTitle$;
   }
 
   finalFundingDecision(step: number | undefined): Observable<ProjectStatusDTO> {

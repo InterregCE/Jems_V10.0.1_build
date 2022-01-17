@@ -35,5 +35,7 @@ fun UserRoleDTO.toModel() = UserRole(
 fun UserRoleCreateDTO.toCreateModel() = UserRoleCreate(
     name = name,
     isDefault = defaultForRegisteredUser,
-    permissions = permissions.mapTo(HashSet()) { UserRolePermission.valueOf(it.name) }
+    permissions = permissions.toModel(),
 )
+
+fun Set<UserRolePermissionDTO>.toModel() = mapTo(HashSet()) { UserRolePermission.valueOf(it.name) }

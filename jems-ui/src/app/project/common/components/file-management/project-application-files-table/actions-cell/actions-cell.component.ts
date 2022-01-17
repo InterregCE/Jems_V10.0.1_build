@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {ProjectFileMetadataDTO, ProjectStatusDTO} from '@cat/api';
-import {FileCategoryEnum} from '@project/common/components/file-management/file-category';
+import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
@@ -13,7 +13,7 @@ export class ActionsCellComponent {
   @Input()
   file: ProjectFileMetadataDTO;
   @Input()
-  type: FileCategoryEnum;
+  type: FileCategoryTypeEnum;
   @Input()
   projectStatus: ProjectStatusDTO;
 
@@ -32,18 +32,18 @@ export class ActionsCellComponent {
   delete = new EventEmitter<ProjectFileMetadataDTO>();
 
   canChangeFile(): boolean {
-    if (this.type === FileCategoryEnum.ALL) {
+    if (this.type === FileCategoryTypeEnum.ALL) {
       return false;
     }
-    return this.type === FileCategoryEnum.ASSESSMENT
+    return this.type === FileCategoryTypeEnum.ASSESSMENT
       ? this.canChangeAssessmentFile() : this.canChangeApplicationFile();
   }
 
   canDeleteFile(): boolean {
-    if (this.type === FileCategoryEnum.ALL) {
+    if (this.type === FileCategoryTypeEnum.ALL) {
       return false;
     }
-    return this.type === FileCategoryEnum.ASSESSMENT
+    return this.type === FileCategoryTypeEnum.ASSESSMENT
       ? this.canChangeAssessmentFile() : this.canDeleteApplicationFile();
   }
 

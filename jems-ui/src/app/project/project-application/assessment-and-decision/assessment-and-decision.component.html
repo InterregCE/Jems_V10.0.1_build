@@ -1,24 +1,31 @@
 <app-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
-                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle}"
-                           subTitleKey="project.application.form.section.assessment.and.decision">
+                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.currentVersionOfProjectTitle}"
+                           subTitleKey="project.application.form.section.assessment.and.decision"
+                           [isVersionedData]="false">
     <div appFormLayout>
         <div appNoWidthLimit>
             <ng-container *hasPermission="PermissionsEnum.ProjectStatusReturnToApplicant">
-                <app-pending-button *ngIf="data.returnToApplicantAvailable"
+                <app-pending-button *ngIf="data.returnToApplicantAvailable && data.currentVersionOfProjectStatus !== STATUS.CONDITIONSSUBMITTED"
                                     class="mr-2 mt-2"
                                     [confirm]="{title: 'project.detail.return.dialog.title', message: 'project.detail.return.dialog.message'}"
                                     [pending]="actionPending"
                                     (clicked)="returnToApplicant(data.projectId)">
                     {{'project.detail.button.return.applicant' | translate}}
                 </app-pending-button>
+                <app-pending-button *ngIf="data.returnToApplicantAvailable && data.currentVersionOfProjectStatus === STATUS.CONDITIONSSUBMITTED"
+                        class="mr-2 mt-2"
+                        [confirm]="{title: 'project.detail.return.dialog.title', message: 'project.detail.return.dialog.message'}"
+                        [pending]="actionPending"
+                        (clicked)="returnToApplicantForConditions(data.projectId)">
+                    {{'project.detail.button.hand.back.applicant' | translate}}
+                </app-pending-button>
             </ng-container>
             <ng-container *hasPermission="PermissionsEnum.ProjectStatusDecisionRevert">
                 <app-pending-button
                         class="mr-2 mt-2"
                         *ngIf="data.revertToStatus; else revertNotPossible"
-                        [confirm]="getRevertConfirmation(data.projectStatus, data.revertToStatus)"
+                        [confirm]="getRevertConfirmation(data.currentVersionOfProjectStatus, data.revertToStatus)"
                         [pending]="actionPending"
-                        [disabled]="!data.isProjectLatestVersion"
                         (clicked)="revertProjectStatus(data.projectId)">
                     {{ 'project.application.revert.decision.button.label' | translate}}
                     {{ 'common.label.projectapplicationstatus.' + data.revertToStatus | translate }}
@@ -37,18 +44,18 @@
                 <ng-container *ngIf="data.callHasTwoSteps">
                     <app-project-application-decisions appNoWidthLimit step="1">
                     </app-project-application-decisions>
-                    <app-project-application-assessments [decisions]="data.project.firstStepDecision"
-                                                         [projectStatus]="data.project.projectStatus"
+                    <app-project-application-assessments [decisions]="data.currentVersionOfProject.firstStepDecision"
+                                                         [currentVersionOfProjectStatus]="data.currentVersionOfProject.projectStatus"
                                                          appNoWidthLimit
                                                          step="1">
                     </app-project-application-assessments>
                 </ng-container>
 
-                <ng-container *ngIf="data.project.step2Active && data.project.projectStatus.status !== STATUS.DRAFT">
+                <ng-container *ngIf="data.currentVersionOfProject.step2Active && data.currentVersionOfProjectStatus !== STATUS.DRAFT">
                     <app-project-application-decisions appNoWidthLimit step="2">
                     </app-project-application-decisions>
-                    <app-project-application-assessments [decisions]="data.project.secondStepDecision"
-                                                         [projectStatus]="data.project.projectStatus"
+                    <app-project-application-assessments [decisions]="data.currentVersionOfProject.secondStepDecision"
+                                                         [currentVersionOfProjectStatus]="data.currentVersionOfProject.projectStatus"
                                                          appNoWidthLimit
                                                          step="2">
                     </app-project-application-assessments>
@@ -63,7 +70,7 @@
             <app-file-management [section]="fileManagementSection" appNoWidthLimit></app-file-management>
         </ng-container>
         <ng-template #revertNotPossible>
-            <button class="mr-2 mt-2" *hasPermission="PermissionsEnum.ProjectStatusDecisionRevert"
+            <button appText class="mr-2 mt-2" *hasPermission="PermissionsEnum.ProjectStatusDecisionRevert"
                     mat-raised-button disabled
                     (click)="revertProjectStatus(data.projectId)">
                 {{ 'project.application.revert.decision.impossible.button.label' | translate }}
@@ -72,7 +79,7 @@
 
         <app-alert [show]="successMessage"
                    [type]="Alert.SUCCESS">
-            <p *ngIf="data.projectStatus === STATUS.RETURNEDTOAPPLICANT">
+            <p *ngIf="data.currentVersionOfProjectStatus === STATUS.RETURNEDTOAPPLICANT || data.currentVersionOfProjectStatus === STATUS.RETURNEDTOAPPLICANTFORCONDITIONS">
                 {{'project.detail.returned.to.applicant.success' | translate}}
             </p>
         </app-alert>

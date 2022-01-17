@@ -63,7 +63,8 @@ export class ApplicationFormConfigurationPageStore {
     return [
       this.addParentNode('application.config.project.section.a', 0, [
         this.addSectionNodes('application.config.project.section.a.1', 0, APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION, callPublished, configs),
-        this.addSectionNodes('application.config.project.section.a.2', 0, APPLICATION_FORM.SECTION_A.PROJECT_SUMMARY, callPublished, configs)
+        this.addSectionNodes('application.config.project.section.a.2', 0, APPLICATION_FORM.SECTION_A.PROJECT_SUMMARY, callPublished, configs),
+        this.addSectionNodes('application.config.project.section.overview.tables', 0, APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES, callPublished, configs),
       ]),
       this.addParentNode('application.config.project.section.b', 1, [
           this.addSectionNodes('application.config.project.section.b.1.1', 1, APPLICATION_FORM.SECTION_B.IDENTITY, callPublished, configs),
@@ -77,6 +78,7 @@ export class ApplicationFormConfigurationPageStore {
           this.addConfigurableParentNode('application.config.project.partner.budget.and.co.financing', 1, callPublished, configs, [
             this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS, 1, callPublished, configs, false),
             this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN, 1, callPublished, configs, false),
+            this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION, 1, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.staff.cost', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.travel.and.accommodation', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.external.expertise.and.services', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.EXTERNAL_EXPERTISE, callPublished, configs, false),
@@ -84,7 +86,7 @@ export class ApplicationFormConfigurationPageStore {
             this.addSectionNodes('application.config.project.section.b.budget.infrastructure.and.works', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.INFRASTRUCTURE_AND_WORKS, callPublished, configs, false),
             this.addSectionNodes('application.config.project.section.b.budget.unit.costs', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS, callPublished, configs, false),
           ]),
-          this.addSectionNodes('application.config.project.partner.state.aid', 1,  APPLICATION_FORM.SECTION_B.STATE_AID, callPublished, configs),
+          this.addSectionNodes('application.config.project.partner.state.aid', 1, APPLICATION_FORM.SECTION_B.STATE_AID, callPublished, configs),
           this.addLeafNode(APPLICATION_FORM.SECTION_B.PARTNER_ASSOCIATED_ORGANIZATIONS, 1, callPublished, configs)
         ]
       ),
@@ -96,10 +98,11 @@ export class ApplicationFormConfigurationPageStore {
           this.addSectionNodes('application.config.project.section.c.4.objectives', 2, APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES, callPublished, configs),
           this.addParentNode('application.config.project.section.c.4.investments', 2, [
             this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE, 2, callPublished, configs),
+            this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.EXPECTED_DELIVERY_PERIOD, 2, callPublished, configs),
             ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION, 2, callPublished, configs),
             ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS, 2, callPublished, configs),
             this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.RISK, 2, callPublished, configs),
-            this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.DOCUMENTATION, 2, callPublished, configs),
+            ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.DOCUMENTATION, 2, callPublished, configs),
             ...this.addLeafNodes(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.OWNERSHIP, 2, callPublished, configs),
           ]),
           this.addSectionNodes('application.config.project.section.c.4.activities', 2, APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES, callPublished, configs),
@@ -127,7 +130,7 @@ export class ApplicationFormConfigurationPageStore {
     };
   }
 
-  private addSectionNodes(id: string, rootIndex: number, section: { [key: string]: string }, callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[], showStepToggle: boolean = true, showVisibilitySwitch: boolean = true): ApplicationFormFieldNode {
+  private addSectionNodes(id: string, rootIndex: number, section: { [key: string]: string }, callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[], showStepToggle = true, showVisibilitySwitch = true): ApplicationFormFieldNode {
     return {
       id,
       rootIndex,
@@ -138,7 +141,7 @@ export class ApplicationFormConfigurationPageStore {
   }
 
   private addLeafNode(id: string, rootIndex: number, callPublished: boolean,
-                      configs: ApplicationFormFieldConfigurationDTO[], showStepToggle: boolean = true, showVisibilitySwitch: boolean = true): ApplicationFormFieldNode {
+                      configs: ApplicationFormFieldConfigurationDTO[], showStepToggle = true, showVisibilitySwitch = true): ApplicationFormFieldNode {
     const config = configs?.find(conf => conf.id === id);
     return {
       id,
@@ -153,7 +156,7 @@ export class ApplicationFormConfigurationPageStore {
   }
 
   private addLeafNodes(applicationFormModel: { [key: string]: string }, rootIndex: number, callPublished: boolean,
-                       configs: ApplicationFormFieldConfigurationDTO[], showStepToggle: boolean = true, showVisibilitySwitch: boolean = true): ApplicationFormFieldNode[] {
+                       configs: ApplicationFormFieldConfigurationDTO[], showStepToggle = true, showVisibilitySwitch = true): ApplicationFormFieldNode[] {
     return Object.keys(applicationFormModel).flatMap(key => [this.addLeafNode(applicationFormModel[key], rootIndex, callPublished, configs, showStepToggle, showVisibilitySwitch)]);
   }
 

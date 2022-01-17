@@ -20,22 +20,20 @@ export class ProjectApplicationAssessmentsComponent implements OnChanges {
   @Input()
   decisions: ProjectDecisionDTO;
   @Input()
-  projectStatus: ProjectStatusDTO;
+  currentVersionOfProjectStatus: ProjectStatusDTO;
 
   stepStatus: ProjectStepStatus;
 
   data$: Observable<{
-    isProjectLatestVersion: boolean,
-    callHasTwoSteps: boolean
+    callHasTwoSteps: boolean;
   }>;
 
   constructor(private projectStore: ProjectStore) {
     this.data$ = combineLatest([
-      this.projectStore.currentVersionIsLatest$,
       this.projectStore.callHasTwoSteps$
     ])
       .pipe(
-        map(([isProjectLatestVersion, callHasTwoSteps]) => ({isProjectLatestVersion, callHasTwoSteps}))
+        map(([callHasTwoSteps]) => ({ callHasTwoSteps}))
       );
   }
 
@@ -43,13 +41,13 @@ export class ProjectApplicationAssessmentsComponent implements OnChanges {
     this.stepStatus = new ProjectStepStatus(this.step);
   }
 
-  isAssessmentEditable(assessment: any, isProjectLatestVersion: boolean): boolean {
-    return !assessment && isProjectLatestVersion && this.projectStatus.status !== ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
+  isAssessmentEditable(assessment: any): boolean {
+    return !assessment && this.currentVersionOfProjectStatus.status !== ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT;
   }
 
   isPanelVisible(callHasTwoSteps: boolean): boolean {
-    const isDraft = this.projectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT;
-    const isStep1Draft = this.projectStatus.status === ProjectStatusDTO.StatusEnum.STEP1DRAFT;
+    const isDraft = this.currentVersionOfProjectStatus.status === ProjectStatusDTO.StatusEnum.DRAFT;
+    const isStep1Draft = this.currentVersionOfProjectStatus.status === ProjectStatusDTO.StatusEnum.STEP1DRAFT;
     if (callHasTwoSteps) {
       return !isStep1Draft && !(this.step === 2 && isDraft);
     } else {

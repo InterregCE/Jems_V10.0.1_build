@@ -1,0 +1,34 @@
+<app-project-page-template *ngIf="data$ | async as data"
+                           [needsCard]="true"
+                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
+                           subTitleKey="project.application.form.section.part.e.subsection.two">
+    <h3>{{'project.application.form.section.part.e.subsection.two.table.title' | translate}}</h3>
+    <p>{{'project.application.form.section.part.e.subsection.two.description' | translate}}</p>
+
+    <app-multi-language-container>
+        <div appNoWidthLimit
+             [appTableConfig]="tableConfig">
+            <div>
+                <span>{{'project.partner.budget.table.unitcosts.selection' | translate}}</span>
+                <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS.DESCRIPTION">{{'project.partner.budget.table.description' | translate}}</span>
+                <span>{{'project.partner.budget.table.unit.type' | translate}}</span>
+                <span>{{'project.partner.budget.table.price.per.unit' | translate}}</span>
+                <span>{{'project.partner.budget.table.number.of.units' | translate}}</span>
+                <span>{{'project.partner.budget.table.total' | translate}}</span>
+            </div>
+
+            <ng-container *ngFor="let unitCost of data">
+                <div>
+                    <span>{{unitCost.name | translateByInputLanguage | async}}</span>
+                    <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS.DESCRIPTION">{{unitCost.description | translateByInputLanguage | async}}</span>
+                    <span>{{unitCost.unitType | translateByInputLanguage | async}}</span>
+                    <span>{{unitCost.pricePerUnit | asMoney}}</span>
+                    <span>{{unitCost.numberOfUnits | asMoney}}</span>
+                    <span>{{unitCost.total | asMoney}}</span>
+                </div>
+            </ng-container>
+
+        </div>
+    </app-multi-language-container>
+
+</app-project-page-template>

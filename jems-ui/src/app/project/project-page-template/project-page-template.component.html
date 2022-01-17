@@ -1,6 +1,6 @@
 <app-main-page-template
         [needsCard]="needsCard"
-        [headerTemplate]="versionWarn"
+        [headerTemplate]="isVersionedData ? versionWarn : null"
         [titleKey]="titleKey"
         [titleText]="titleText"
         [subTitleKey]="subTitleKey"
@@ -10,20 +10,19 @@
 >
     <ng-content></ng-content>
 </app-main-page-template>
-
 <ng-template #versionWarn>
     <ng-container *hasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition pageStore.isThisUserOwner$ | async">
         <app-alert *ngIf="versionWarnData$ | async as data"
                    [type]="Alert.WARNING"
-                   [show]="!data.currentIsLatest">
+                   [show]="!data.selectedIsCurrent">
             <div id="version-warn">
                 <span class="mt-2">{{'project.versions.warn.old.version' | translate}}</span>
                 <span class="mt-2">
-                    {{data.current?.version}}, {{data.current?.status}}
-                    ({{data.current?.createdAt | localeDate: 'L' : 'LT'}})
+                    {{data.selected?.version}}, {{data.selected?.status}}
+                    ({{data.selected?.createdAt | localeDate: 'L' : 'LT'}})
                 </span>
-                <button id="switch-to-current" mat-raised-button
-                        (click)="pageStore.changeVersion(data.latest)">
+                <button appText id="switch-to-current" mat-raised-button
+                        (click)="pageStore.changeVersion(data.current)">
                     {{'project.versions.warn.switch' | translate}}
                 </button>
             </div>
@@ -35,17 +34,18 @@
     <ng-container *ngIf="versionSelectData$ | async as data">
         <mat-form-field *ngIf="data.versions.length" class="ml-4 mt-2">
             <mat-label>{{'project.versions.select.label' | translate}}</mat-label>
-            <mat-select *ngIf="data.current?.version"
-                        [value]="data.current"
+            <mat-select *ngIf="data.selectedVersion?.version"
+                        [value]="data.selectedVersion"
                         (selectionChange)="pageStore.changeVersion($event.value)">
-                <mat-option *ngFor="let version of data.versions; let first = first"
-                            [value]="version">
-                    <ng-container *ngIf="first">
-                        {{'project.versions.select.format.first' | translate : {version: version.version} }}
+                <mat-option *ngFor="let projectVersion of data.versions;"
+                            [value]="projectVersion">
+                    <ng-container *ngIf="projectVersion.current">
+                        {{'project.versions.select.format.current' | translate : {version: projectVersion.version} }}
                     </ng-container>
-                    <ng-container *ngIf="!first">
-                        {{'project.versions.select.format' | translate : {version: version.version} }}
+                    <ng-container *ngIf="!projectVersion.current">
+                        {{'project.versions.select.format' | translate : {version: projectVersion.version} }}
                     </ng-container>
+                    <span *ngIf="projectVersion.status === ProjectStatusEnum.MODIFICATIONREJECTED">{{'project.version.rejected' | translate}}</span>
                 </mat-option>
             </mat-select>
             <input matInput style="display:none">

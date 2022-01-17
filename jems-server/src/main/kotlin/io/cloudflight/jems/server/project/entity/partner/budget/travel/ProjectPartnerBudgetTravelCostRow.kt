@@ -29,6 +29,8 @@ interface ProjectPartnerBudgetTravelCostRow: TranslationView {
 
     fun getDescription(): String?
 
+    fun getComments(): String?
+
     @Value("#{target.unit_type}")
     fun getUnitType(): String?
 }

@@ -63,7 +63,7 @@ class UpdateOutputIndicator(
         generalValidator.throwIfAnyIsInvalid(
             generalValidator.notNullOrZero(outputIndicator.id, "id"),
             generalValidator.notBlank(outputIndicator.identifier, "identifier"),
-            generalValidator.maxLength(outputIndicator.identifier, 5, "identifier"),
+            generalValidator.maxLength(outputIndicator.identifier, 10, "identifier"),
             generalValidator.maxLength(outputIndicator.code, 6, "indicatorCode"),
             generalValidator.maxLength(outputIndicator.name, 255, "indicatorName"),
             generalValidator.maxLength(outputIndicator.measurementUnit, 255, "measurementUnit"),

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
-import {MenuItemConfiguration} from '../menu/model/menu-item.configuration';
+import {MenuItemConfiguration} from './menu-item.configuration';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {Permission} from '../../../security/permissions/permission';
 import {map} from 'rxjs/operators';
@@ -12,34 +12,30 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 export class TopBarService {
 
   menuItems$: Observable<MenuItemConfiguration[]>;
+  editUserItem$: Observable<MenuItemConfiguration | null>;
 
   private dashboardItem: MenuItemConfiguration = {
     name: 'topbar.main.dashboard',
-    isInternal: true,
     route: '/app/dashboard',
     icon: 'dashboard'
   };
   private applicationsItem: MenuItemConfiguration = {
     name: 'topbar.main.project',
-    isInternal: true,
     route: '/app/project',
     icon: 'description'
   };
   private programmeItem: MenuItemConfiguration = {
     name: 'topbar.main.programme',
-    isInternal: true,
     route: '/app/programme',
     icon: 'business'
   };
   private callsItem: MenuItemConfiguration = {
     name: 'topbar.main.call',
-    isInternal: true,
     route: '/app/call',
     icon: 'campaign'
   };
   private systemItem: MenuItemConfiguration = {
     name: 'topbar.main.system',
-    isInternal: true,
     route: '/app/system',
     icon: 'settings'
   };
@@ -47,6 +43,7 @@ export class TopBarService {
   constructor(private permissionService: PermissionService,
               private securityService: SecurityService) {
     this.menuItems$ = this.menuItems();
+    this.editUserItem$ = this.editUserItem();
   }
 
   logout(): Observable<any> {
@@ -94,9 +91,6 @@ export class TopBarService {
               this.systemItem.route = '/app/system/role';
             }
             menuItems.push(this.systemItem);
-          }
-          if (editUserItem) {
-            menuItems.push(editUserItem);
           }
 
           return menuItems;

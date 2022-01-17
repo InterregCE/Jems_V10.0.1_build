@@ -5,7 +5,12 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationUpdate
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileAssessmentRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileAssessmentUpdate
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationFileAssessmentRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationFileAssessmentUpdate
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -40,9 +45,9 @@ class ProjectFileAuthorization(
 
     private fun canUpdateFileInCategory(projectId: Long, fileCategoryTypeSet: Set<ProjectFileCategoryType>) =
         with(fileCategoryTypeSet) {
-            fileBelongsToAssessmentCategory(this) && canUpdateAssessmentAttachments()
-                ||
-                fileBelongsToApplicationCategory(this) && canUpdateApplicationAttachments(projectId)
+            fileBelongsToModificationCategory(this) && canUpdateModificationAttachments(projectId)
+                || fileBelongsToAssessmentCategory(this) && canUpdateAssessmentAttachments(projectId = projectId)
+                || fileBelongsToApplicationCategory(this) && canUpdateApplicationAttachments(projectId)
         }
 
     fun canRetrieveFileFromCategory(projectId: Long, fileId: Long): Boolean =
@@ -50,7 +55,9 @@ class ProjectFileAuthorization(
 
     fun getRetrievableCategories(projectId: Long): Set<ProjectFileCategoryType> =
         mutableSetOf<ProjectFileCategoryType>().also {
-            if (canRetrieveAssessmentAttachments())
+            if (canRetrieveModificationAttachments(projectId = projectId))
+                it.add(ProjectFileCategoryType.MODIFICATION)
+            if (canRetrieveAssessmentAttachments(projectId = projectId))
                 it.add(ProjectFileCategoryType.ASSESSMENT)
             if (canRetrieveApplicationAttachments(projectId, false))
                 it.addAll(
@@ -67,7 +74,8 @@ class ProjectFileAuthorization(
         fileCategoryTypeSet: Set<ProjectFileCategoryType>
     ): Boolean =
         with(fileCategoryTypeSet) {
-            fileBelongsToAssessmentCategory(this) && canRetrieveAssessmentAttachments() ||
+            fileBelongsToModificationCategory(this) && canRetrieveModificationAttachments(projectId) ||
+            fileBelongsToAssessmentCategory(this) && canRetrieveAssessmentAttachments(projectId = projectId) ||
                 fileBelongsToApplicationCategory(this) && canRetrieveApplicationAttachments(projectId)
         }
 
@@ -79,6 +87,9 @@ class ProjectFileAuthorization(
             ProjectFileCategoryType.PARTNER
         )
 
+    private fun fileBelongsToModificationCategory(fileCategories: Set<ProjectFileCategoryType>)
+        = containsAny(fileCategories, ProjectFileCategoryType.MODIFICATION)
+
     private fun fileBelongsToAssessmentCategory(fileCategories: Set<ProjectFileCategoryType>) =
         containsAny(fileCategories, ProjectFileCategoryType.ASSESSMENT)
 
@@ -88,20 +99,26 @@ class ProjectFileAuthorization(
     ): Boolean =
         fileCategories.any { targetCategories.contains(it) }
 
-    private fun canRetrieveAssessmentAttachments() =
-        securityService.currentUser?.hasPermission(UserRolePermission.ProjectFileAssessmentRetrieve) ?: false
+    private fun canRetrieveAssessmentAttachments(projectId: Long) =
+        hasPermissionForProject(ProjectFileAssessmentRetrieve, projectId)
 
-    private fun canUpdateAssessmentAttachments() =
-        securityService.currentUser?.hasPermission(UserRolePermission.ProjectFileAssessmentUpdate) ?: false
+    private fun canUpdateAssessmentAttachments(projectId: Long) =
+        hasPermissionForProject(ProjectFileAssessmentUpdate, projectId)
+
+    private fun canRetrieveModificationAttachments(projectId: Long) =
+        hasPermissionForProject(ProjectModificationFileAssessmentRetrieve, projectId)
+
+    private fun canUpdateModificationAttachments(projectId: Long) =
+        hasPermissionForProject(ProjectModificationFileAssessmentUpdate, projectId)
 
     private fun canRetrieveApplicationAttachments(projectId: Long, throwException: Boolean = true) =
         runCatching {
-            securityService.currentUser?.hasPermission(UserRolePermission.ProjectFileApplicationRetrieve) ?: false ||
-                projectAuthorization.isUserOwnerOfProject(projectId)
+            hasPermissionForProject(ProjectFileApplicationRetrieve, projectId) ||
+                projectAuthorization.isUserViewCollaboratorForProjectOrThrow(projectId)
         }.onFailure { if (throwException) throw it else Unit }.getOrDefault(false)
 
     private fun canUpdateApplicationAttachments(projectId: Long) =
-        securityService.currentUser?.hasPermission(UserRolePermission.ProjectFileApplicationUpdate) ?: false ||
+        hasPermissionForProject(ProjectFileApplicationUpdate, projectId) ||
             projectAuthorization.canUpdateProject(projectId)
 
 

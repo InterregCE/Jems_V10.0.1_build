@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { ProgrammeIndicatorsOverviewPageComponent } from './programme-indicators-overview-page.component';
 import {TestModule} from '../../../../common/test-module';
@@ -11,7 +11,7 @@ describe('ProgrammeIndicatorsOverviewPageComponent', () => {
   let component: ProgrammeIndicatorsOverviewPageComponent;
   let fixture: ComponentFixture<ProgrammeIndicatorsOverviewPageComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,

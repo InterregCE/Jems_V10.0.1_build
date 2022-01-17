@@ -41,6 +41,8 @@ data class ProjectStatusHistoryEntity(
 
     var decisionDate: LocalDate? = null,
 
+    var entryIntoForceDate: LocalDate? = null,
+
     var note: String? = null
 
 ) {

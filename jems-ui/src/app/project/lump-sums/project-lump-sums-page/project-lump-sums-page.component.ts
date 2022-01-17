@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
-import {ProjectLumpSumsPageStore} from './project-lump-sums-page.store';
+import {ProjectLumpSumsStore} from './project-lump-sums-store.service';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {
@@ -39,7 +39,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 })
 export class ProjectLumpSumsPageComponent implements OnInit {
 
-  constructor(public pageStore: ProjectLumpSumsPageStore,
+  constructor(public pageStore: ProjectLumpSumsStore,
               private formBuilder: FormBuilder,
               private formService: FormService,
               private translateService: TranslateService,
@@ -47,6 +47,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   ) {
   }
 
+  APPLICATION_FORM = APPLICATION_FORM;
   PREPARATION_PERIOD = 0;
   CLOSURE_PERIOD = 255;
 
@@ -59,17 +60,18 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   tableData: AbstractControl[] = [];
 
   data$: Observable<{
-    projectTitle: string,
-    columnsToDisplay: string[],
-    withConfigs: TableConfig[],
-    partners: ProjectPartner[],
-    lumpSums: ProgrammeLumpSum[],
-    periods: ProjectPeriod[],
-    showAddButton: boolean,
-    showGapExistsWarning: boolean,
-    costIsNotSplittableError: ValidationErrors | null,
-    partnerColumnsTotal: number[],
-    loading: boolean
+    projectTitle: string;
+    columnsToDisplay: string[];
+    withConfigs: TableConfig[];
+    partners: ProjectPartner[];
+    lumpSums: ProgrammeLumpSum[];
+    periods: ProjectPeriod[];
+    showAddButton: boolean;
+    showGapExistsWarning: boolean;
+    showPeriodMissingWarning: boolean;
+    costIsNotSplittableError: ValidationErrors | null;
+    partnerColumnsTotal: number[];
+    loading: boolean;
   }>;
 
   private columnsToDisplay$: Observable<string[]>;
@@ -78,6 +80,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private costIsNotSplittableError$: Observable<ValidationErrors | null>;
   private partnerColumnsTotal$: Observable<number[]>;
   private showGapExistsWarning$: Observable<boolean>;
+  private showPeriodMissingWarning$: Observable<boolean>;
   private loading = new BehaviorSubject(false);
 
   private static calculateRowSum(amounts: number[]): number {
@@ -94,7 +97,10 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ? ['period'] : [],
       'isSplittingLumpSumAllowed', 'lumpSumCost',
       ...partners?.map(partner => partner.toPartnerNumberString()),
-      'rowSum', 'gap', 'description', 'actions'
+      'rowSum',
+      'gap',
+      ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION) ? ['description'] : [],
+      'actions'
     ];
   }
 
@@ -106,7 +112,10 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       ...partners?.map(() => {
         return {minInRem: 8};
       }),
-      {minInRem: 8}, {minInRem: 8}, {minInRem: 12}, {minInRem: 3}
+      {minInRem: 8},
+      {minInRem: 8},
+      ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION) ? [{minInRem: 12}] : [],
+      {minInRem: 3}
     ];
   }
 
@@ -121,6 +130,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     );
     this.showAddButton$ = combineLatest([this.items.valueChanges.pipe(startWith(null)), this.pageStore.projectLumpSums$]).pipe(
       map(([, projectLumpSums]) => (projectLumpSums.length === 0 && this.items?.length === 0)),
+    );
+    this.showPeriodMissingWarning$ = combineLatest([this.items.valueChanges.pipe(startWith(null)), this.formService.reset$.pipe(startWith(null))]).pipe(
+      map(() => this.items.controls.some(control => this.isPeriodMissingInRow(control))),
     );
 
     this.columnsToDisplay$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => this.getColumnsToDisplay(partners)));
@@ -140,11 +152,12 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.pageStore.projectPeriods$,
       this.showAddButton$,
       this.showGapExistsWarning$,
+      this.showPeriodMissingWarning$,
       this.costIsNotSplittableError$,
       this.partnerColumnsTotal$,
       this.loading
     ]).pipe(
-      map(([projectTitle, columnsToDisplay, withConfigs, partners, lumpSums, periods, showAddButton, showGapExistsWarning, costIsNotSplittableError, partnerColumnsTotal, loading]: any) => {
+      map(([projectTitle, columnsToDisplay, withConfigs, partners, lumpSums, periods, showAddButton, showGapExistsWarning, showPeriodMissingWarning, costIsNotSplittableError, partnerColumnsTotal, loading]: any) => {
         return {
           projectTitle,
           columnsToDisplay,
@@ -154,6 +167,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
           periods,
           showAddButton,
           showGapExistsWarning,
+          showPeriodMissingWarning,
           costIsNotSplittableError,
           partnerColumnsTotal,
           loading
@@ -205,6 +219,10 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   isLumpSumSelectedForRow(control: FormGroup): boolean {
     return this.getLumpSumControl(control)?.value;
+  }
+
+  isPeriodMissingInRow(itemGroupControl: AbstractControl): boolean {
+    return this.getPeriodControl(itemGroupControl)?.value === null;
   }
 
   getPeriodLabel(period: ProjectPeriod | undefined): string {
@@ -344,7 +362,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       }
     }
     return null;
-  }
+  };
 
   private newRowId(): number {
     ++this.rowId;
@@ -365,6 +383,10 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   private getGapControl(itemFormGroup: AbstractControl): FormControl {
     return itemFormGroup.get(this.constants.FORM_CONTROL_NAMES.gap) as FormControl;
+  }
+
+  private getPeriodControl(itemFormGroup: AbstractControl): FormControl {
+    return itemFormGroup.get(this.constants.FORM_CONTROL_NAMES.periodNumber) as FormControl;
   }
 
   private getRowSumControl(itemFormGroup: AbstractControl): FormControl {

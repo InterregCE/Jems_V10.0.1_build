@@ -13,18 +13,18 @@ import {map} from 'rxjs/operators';
 export class ProjectDetailPageComponent {
 
   data$: Observable<{
-    project: ProjectDetailDTO,
-    projectTitle: string,
+    currentVersionOfProject: ProjectDetailDTO;
+    currentVersionOfProjectTitle: string;
   }>;
 
   constructor(public projectStore: ProjectStore) {
     this.data$ = combineLatest([
-      this.projectStore.project$,
-      this.projectStore.projectTitle$,
+      this.projectStore.currentVersionOfProject$,
+      this.projectStore.currentVersionOfProjectTitle$,
     ]).pipe(
-      map(([project, projectTitle]) => ({
-        project,
-        projectTitle,
+      map(([currentVersionOfProject, currentVersionOfProjectTitle]) => ({
+        currentVersionOfProject,
+        currentVersionOfProjectTitle,
       }))
     );
   }

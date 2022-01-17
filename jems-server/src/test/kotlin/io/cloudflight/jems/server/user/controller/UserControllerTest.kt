@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO
 import io.cloudflight.jems.api.user.dto.UserRoleSummaryDTO
 import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
+import io.cloudflight.jems.api.user.dto.UserStatusDTO.ACTIVE
 import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.user.service.model.Password
@@ -16,6 +17,7 @@ import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSearchRequest
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.user.create_user.CreateUserInteractor
 import io.cloudflight.jems.server.user.service.user.get_user.GetUserInteractor
@@ -66,14 +68,16 @@ class UserControllerTest : UnitTest() {
             email = "maintainer@interact.eu",
             name = "Michael",
             surname = "Schumacher",
-            userRole = userRoleSummary
+            userRole = userRoleSummary,
+            userStatus = UserStatus.ACTIVE
         )
         private val user = User(
             id = USER_ID,
             email = userSummary.email,
             name = userSummary.name,
             surname = userSummary.surname,
-            userRole = userRole
+            userRole = userRole,
+            userStatus = UserStatus.ACTIVE
         )
 
         private val expectedUserRoleSummary = UserRoleSummaryDTO(
@@ -92,14 +96,16 @@ class UserControllerTest : UnitTest() {
             email = "maintainer@interact.eu",
             name = "Michael",
             surname = "Schumacher",
-            userRole = expectedUserRoleSummary
+            userRole = expectedUserRoleSummary,
+            userStatus = ACTIVE
         )
         private val expectedUser = UserDTO(
             id = USER_ID,
             email = expectedUserSummary.email,
             name = expectedUserSummary.name,
             surname = expectedUserSummary.surname,
-            userRole = expectedUserRole
+            userRole = expectedUserRole,
+            userStatus = ACTIVE
         )
     }
 
@@ -122,7 +128,9 @@ class UserControllerTest : UnitTest() {
     fun list() {
         val slot = slot<UserSearchRequest>()
         every { getUserInteractor.getUsers(any(), capture(slot)) } returns PageImpl(listOf(userSummary))
-        assertThat(controller.list(Pageable.unpaged(), userSearchRequestDTO).content).containsExactly(expectedUserSummary)
+        assertThat(controller.list(Pageable.unpaged(), userSearchRequestDTO).content).containsExactly(
+            expectedUserSummary
+        )
         assertThat(slot.captured).isEqualTo(userSearchRequest)
     }
 
@@ -133,6 +141,7 @@ class UserControllerTest : UnitTest() {
             name = userSummary.name,
             surname = userSummary.surname,
             userRoleId = ROLE_ID,
+            userStatus = ACTIVE
         )
 
         val slotUserChange = slot<UserChange>()
@@ -145,6 +154,7 @@ class UserControllerTest : UnitTest() {
                 name = "Michael",
                 surname = "Schumacher",
                 userRoleId = ROLE_ID,
+                userStatus = UserStatus.ACTIVE
             )
         )
     }
@@ -157,6 +167,7 @@ class UserControllerTest : UnitTest() {
             name = userSummary.name,
             surname = userSummary.surname,
             userRoleId = ROLE_ID,
+            userStatus = ACTIVE
         )
 
         val slotUserChange = slot<UserChange>()
@@ -169,6 +180,7 @@ class UserControllerTest : UnitTest() {
                 name = "Michael",
                 surname = "Schumacher",
                 userRoleId = ROLE_ID,
+                userStatus = UserStatus.ACTIVE
             )
         )
     }
@@ -196,4 +208,17 @@ class UserControllerTest : UnitTest() {
         assertDoesNotThrow { controller.changeMyPassword(PasswordDTO(password = newPass, oldPassword = oldPass)) }
         verify(exactly = 1) { updateUserPasswordInteractor.updateMyPassword(passwordData) }
     }
+
+    @Test
+    fun getUsersWithProjectRetrievePermissions() {
+        every { getUserInteractor.getUsersWithProjectRetrievePermissions() } returns listOf(userSummary)
+        assertThat(controller.getUsersWithProjectRetrievePermissions()).containsExactly(expectedUserSummary)
+    }
+
+    @Test
+    fun getMonitorUsers() {
+        every { getUserInteractor.getMonitorUsers() } returns listOf(userSummary)
+        assertThat(controller.getMonitorUsers()).containsExactly(expectedUserSummary)
+    }
+
 }

@@ -19,6 +19,8 @@ import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -46,7 +48,8 @@ class WorkPackageServiceTest {
         name = "Name",
         surname = "Surname",
         userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-        password = "hash_pass"
+        password = "hash_pass",
+        userStatus = UserStatus.ACTIVE
     )
 
     private val call = CallEntity(
@@ -106,6 +109,9 @@ class WorkPackageServiceTest {
     @MockK
     lateinit var projectRepository: ProjectRepository
 
+    @MockK
+    lateinit var collaboratorRepository: UserProjectCollaboratorRepository
+
     lateinit var workPackageService: WorkPackageService
 
     @BeforeEach
@@ -113,7 +119,8 @@ class WorkPackageServiceTest {
         MockKAnnotations.init(this)
         workPackageService = WorkPackageServiceImpl(
             workPackageRepository,
-            projectRepository
+            projectRepository,
+            collaboratorRepository,
         )
     }
 

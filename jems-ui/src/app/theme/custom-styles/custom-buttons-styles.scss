@@ -42,17 +42,17 @@
 }
 
 @mixin customize-toggle-button-size($size:'medium') {
-  .mat-button-toggle-appearance-standard div.mat-button-toggle-label-content {
+  span.mat-button-toggle-label-content {
     display: flex;
     justify-content: center;
     align-items: center;
 
     @if $size == 'large' {
-      line-height: 3rem
+      height: 3rem
     } @else if ($size == 'medium') {
-      line-height: 2.25rem
+      height: 2.25rem
     } @else if ($size == 'small') {
-      line-height: 1.25rem
+      height: 1.25rem
     }
 
   }

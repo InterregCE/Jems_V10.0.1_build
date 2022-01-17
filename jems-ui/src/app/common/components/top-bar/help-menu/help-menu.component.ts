@@ -15,6 +15,7 @@ export class HelpMenuComponent implements OnInit {
 
   version: string;
   helpdeskUrl: string;
+  helpdeskEmail: string;
   accessibilityStatementUrl: string;
   termsAndPrivacyPolicyUrl: string;
 
@@ -26,6 +27,7 @@ export class HelpMenuComponent implements OnInit {
       tap(info => {
         this.version = info.version;
         this.helpdeskUrl = info.helpdeskUrl;
+        this.helpdeskEmail = info.helpdeskEmail;
         this.accessibilityStatementUrl = info.accessibilityStatementUrl;
         this.termsAndPrivacyPolicyUrl = info.termsAndPrivacyPolicyUrl;
       }),

@@ -62,8 +62,9 @@ fun WorkPackageActivityDeliverable.toEntity(
                 WorkPackageActivityDeliverableTranslationEntity(
                     translationId = TranslationId(this, language),
                     description = description.extractTranslation(language),
+                    title = title.extractTranslation(language),
                 )
-            }, arrayOf(description)
+            }, arrayOf(description, title)
         )
     }
 }
@@ -106,6 +107,7 @@ fun WorkPackageActivityDeliverableEntity.toModel() = WorkPackageActivityDelivera
     id = id,
     deliverableNumber = deliverableNumber,
     description = translatedValues.extractField { it.description },
+    title = translatedValues.extractField { it.title },
     period = startPeriod,
 )
 
@@ -137,7 +139,8 @@ fun List<WorkPackageDeliverableRow>.toDeliverableHistoricalData() =
             id = groupedRows.value.first().id,
             deliverableNumber = groupedRows.value.first().deliverableNumber,
             period = groupedRows.value.first().startPeriod,
-            description = groupedRows.value.extractField { it.description }
+            description = groupedRows.value.extractField { it.description },
+            title = groupedRows.value.extractField { it.title }
         )
     }
 

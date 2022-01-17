@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -51,13 +52,14 @@ class ApproveApplicationInteractorTest : UnitTest() {
         private val actionInfo = ApplicationActionInfo(
             note = "make approval",
             date = LocalDate.of(2021, 4, 13),
+            entryIntoForceDate = LocalDate.of(2021, 4, 13),
         )
     }
 
-    @MockK
+    @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
 
-    @MockK
+    @RelaxedMockK
     lateinit var applicationStateFactory: ApplicationStateFactory
 
     @RelaxedMockK
@@ -65,6 +67,9 @@ class ApproveApplicationInteractorTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var generalValidatorService: GeneralValidatorService
+
+    @RelaxedMockK
+    lateinit var projectAuthorization: ProjectAuthorization
 
     @InjectMockKs
     private lateinit var approveApplication: ApproveApplication
@@ -127,18 +132,22 @@ class ApproveApplicationInteractorTest : UnitTest() {
     @ParameterizedTest(name = "assessment null when in status {0}")
     @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "STEP1_ELIGIBLE"])
     fun `quality assessment null`(status: ApplicationStatus) {
-        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID, status = status)
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary(status = status)
+        every { applicationStateFactory.getInstance(any()) } returns eligibleState
+        every { eligibleState.approve(actionInfo) } throws QualityAssessmentMissing()
+
         assertThrows<QualityAssessmentMissing> { approveApplication.approve(PROJECT_ID, actionInfo) }
     }
 
-    @ParameterizedTest(name = "missing quality assessment when in status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "STEP1_ELIGIBLE"])
-    fun `quality assessment empty`(status: ApplicationStatus) {
-        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID, status = status).copy(
-            assessmentStep1 = ProjectAssessment(assessmentQuality = null),
-            assessmentStep2 = ProjectAssessment(assessmentQuality = null),
-        )
-        assertThrows<QualityAssessmentMissing> { approveApplication.approve(PROJECT_ID, actionInfo) }
+    @Test
+    fun `approve when submitted precontracted checks modification permission`() {
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
+        every { applicationStateFactory.getInstance(any()) } returns eligibleState
+        every { eligibleState.approve(actionInfo) } returns APPROVED
+
+        assertThat(approveApplication.approve(PROJECT_ID, actionInfo)).isEqualTo(APPROVED)
+
+        // verify CanApproveApplication annotation
     }
 
 }

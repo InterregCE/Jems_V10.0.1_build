@@ -13,7 +13,7 @@ data class ProjectPartnerBudgetStaffCostTranslEntity(
 
     val description: String? = null,
 
-    val comment: String? = null,
+    val comments: String? = null,
 
     val unitType: String? = null
 

@@ -31,11 +31,11 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   });
 
   data$: Observable<{
-    activities: WorkPackageActivityDTO[],
-    periods: ProjectPeriodDTO[],
-    partners: ProjectPartner[],
-    workPackageNumber: number,
-    isEditable: boolean,
+    activities: WorkPackageActivityDTO[];
+    periods: ProjectPeriodDTO[];
+    partners: ProjectPartner[];
+    workPackageNumber: number;
+    isEditable: boolean;
   }>;
 
   constructor(public formService: FormService,
@@ -183,7 +183,8 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   private addDeliverable(activityIndex: number, existing?: WorkPackageActivityDeliverableDTO): void {
     this.deliverables(activityIndex).push(this.formBuilder.group({
       deliverableId: this.formBuilder.control(existing?.deliverableId || 0),
-      description: this.formBuilder.control(existing?.description || [], this.constants.DELIVERABLE.validators),
+      title: this.formBuilder.control(existing?.title || [], this.constants.DELIVERABLE_TITLE.validators),
+      description: this.formBuilder.control(existing?.description || [], this.constants.DELIVERABLE_DESCRIPTION.validators),
       period: this.formBuilder.control(existing?.period || ''),
     }));
   }

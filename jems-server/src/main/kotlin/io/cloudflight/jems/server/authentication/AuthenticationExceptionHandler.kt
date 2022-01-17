@@ -8,6 +8,8 @@ import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.DisabledException
+import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -20,18 +22,26 @@ const val AUTHENTICATION_ERROR_CODE = "AUTH"
 class AuthenticationExceptionHandler : GlobalExceptionHandler() {
 
     @ExceptionHandler(AuthenticationException::class)
-    fun authenticationTransformer(exception: AuthenticationException, request: WebRequest): ResponseEntity<APIErrorDTO> {
+    fun authenticationTransformer(
+        exception: AuthenticationException,
+        request: WebRequest
+    ): ResponseEntity<APIErrorDTO> {
         return handleApplicationException(
             ApplicationAuthenticationException(
                 AUTHENTICATION_ERROR_CODE,
-                if (isBadCredentials(exception)) I18nMessage("authentication.bad.credentials") else I18nMessage("authentication.failed"),
+                getErrorMessage(exception),
                 exception
             ),
             request
         )
     }
 
-    private fun isBadCredentials(exception: AuthenticationException): Boolean {
-        return exception is BadCredentialsException || exception.cause is BadCredentialsException
-    }
+    private fun getErrorMessage(exception: AuthenticationException) =
+        when {
+            exception is BadCredentialsException || exception.cause is BadCredentialsException -> I18nMessage("authentication.bad.credentials")
+            exception is LockedException || exception.cause is LockedException -> I18nMessage("authentication.account.locked")
+            exception is DisabledException || exception.cause is DisabledException -> I18nMessage("authentication.account.disabled")
+            else -> I18nMessage("authentication.failed")
+        }
+
 }

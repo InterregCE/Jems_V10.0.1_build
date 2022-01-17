@@ -53,6 +53,16 @@
         margin-left: -2rem;
       }
     }
+    .icon-container{
+      display: flex;
+      justify-content: start;
+      align-items: center;
+      mat-icon{
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
   }
 
   .link {
@@ -114,6 +124,9 @@
 
   mat-expansion-panel-header {
     height: 2rem !important;
+    &:hover {
+      background: none !important;
+    }
   }
 
   ::ng-deep .mat-elevation-z0 .mat-expansion-panel-body {

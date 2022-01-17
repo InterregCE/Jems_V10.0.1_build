@@ -20,10 +20,10 @@ export class CallPriorityTreeComponent {
   selectionChanged = new EventEmitter<void>();
 
   data$: Observable<{
-    userCanApply: boolean,
-    callIsReadable: boolean,
-    callIsEditable: boolean,
-    callIsPublished: boolean
+    userCanApply: boolean;
+    callIsReadable: boolean;
+    callIsEditable: boolean;
+    callIsPublished: boolean;
   }>;
 
   constructor(private callDetailPageStore: CallDetailPageStore) {

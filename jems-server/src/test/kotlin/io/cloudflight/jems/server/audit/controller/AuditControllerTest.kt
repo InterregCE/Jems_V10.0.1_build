@@ -70,7 +70,7 @@ class AuditControllerTest: UnitTest() {
             AuditSearchRequest(
                 userId = AuditFilter(setOf(8L)),
                 userEmail = AuditFilter(setOf("user8@mail.eu")),
-                action = AuditFilter(setOf(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)),
+                action = AuditFilter(setOf(AuditAction.QUALITY_ASSESSMENT_CONCLUDED.name)),
                 projectId = AuditFilter(setOf("PROJECT_ID_5")),
                 pageable = pageable
             )

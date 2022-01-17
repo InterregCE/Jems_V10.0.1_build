@@ -10,13 +10,10 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.ELIGIBLE
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.NOT_APPROVED
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_ELIGIBLE
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_NOT_APPROVED
-import io.cloudflight.jems.server.project.service.application.approve_application.ApproveApplicationInteractorTest
 import io.cloudflight.jems.server.project.service.application.projectWithId
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
@@ -34,9 +31,6 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 
@@ -53,7 +47,8 @@ class RefuseApplicationInteractorTest : UnitTest() {
         )
         private val actionInfo = ApplicationActionInfo(
             note = "refusing application",
-            date = LocalDate.of(2021, 4, 13)
+            date = LocalDate.of(2021, 4, 13),
+            entryIntoForceDate = LocalDate.of(2021, 4, 13)
         )
     }
 
@@ -107,9 +102,6 @@ class RefuseApplicationInteractorTest : UnitTest() {
 
     @Test
     fun `refuse application when in STEP1`() {
-        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID, status = STEP1_ELIGIBLE).copy(
-            assessmentStep1 = ProjectAssessment(assessmentQuality = ProjectAssessmentQuality(PROJECT_ID, 1, ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING))
-        )
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary(STEP1_ELIGIBLE)
         every { applicationStateFactory.getInstance(any()) } returns eligibleStateStep1
         every { eligibleStateStep1.refuse(actionInfo) } returns STEP1_NOT_APPROVED
@@ -125,23 +117,6 @@ class RefuseApplicationInteractorTest : UnitTest() {
                 description = "Project application status changed from STEP1_ELIGIBLE to STEP1_NOT_APPROVED"
             )
         )
-    }
-
-    @ParameterizedTest(name = "assessment null when in status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "STEP1_ELIGIBLE"])
-    fun `quality assessment null`(status: ApplicationStatus) {
-        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID, status = status)
-        assertThrows<QualityAssessmentMissing> { refuseApplication.refuse(PROJECT_ID, actionInfo) }
-    }
-
-    @ParameterizedTest(name = "missing quality assessment when in status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["ELIGIBLE", "STEP1_ELIGIBLE"])
-    fun `quality assessment empty`(status: ApplicationStatus) {
-        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID, status = status).copy(
-            assessmentStep1 = ProjectAssessment(assessmentQuality = null),
-            assessmentStep2 = ProjectAssessment(assessmentQuality = null),
-        )
-        assertThrows<QualityAssessmentMissing> { refuseApplication.refuse(PROJECT_ID, actionInfo) }
     }
 
 }

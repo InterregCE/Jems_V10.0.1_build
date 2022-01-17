@@ -1,0 +1,36 @@
+$border-color: var(--table-border-color);
+
+#indicators-overview {
+  th, td {
+    padding-left: .75rem;
+    padding-right: .75rem;
+  }
+
+  th.no-left-padding,
+  td.no-left-padding {
+    padding-left: 0;
+  }
+
+  tr {
+    background-color: transparent;
+  }
+
+  th {
+    border-top: .0625rem solid $border-color;
+  }
+
+  td.border-cell-bottom {
+    border-bottom: .0625rem solid $border-color;
+  }
+
+  th.border-cell-left,
+  td.border-cell-left {
+    border-left: .0625rem solid $border-color;
+  }
+
+  th.border-cell-right,
+  td.border-cell-right {
+    border-right: .0625rem solid $border-color;
+  }
+
+}

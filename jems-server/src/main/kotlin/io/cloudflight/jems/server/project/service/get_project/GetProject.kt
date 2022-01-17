@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.getProjectWithoutFormData
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service
 @Service
 class GetProject(
     private val persistence: ProjectPersistence,
+    private val collaboratorPersistence: UserProjectCollaboratorPersistence,
     private val securityService: SecurityService,
 ) : GetProjectInteractor {
 
@@ -52,10 +54,14 @@ class GetProject(
 
     @CanRetrieveProjectsWithOwnership
     override fun getMyProjects(pageable: Pageable): Page<ProjectSummary> =
-        persistence.getProjects(
+        persistence.getProjectsOfUserPlusExtra(
             pageable = pageable,
-            filterByOwnerId = securityService.currentUser!!.user.id,
+            extraProjectIds = getAssignedProjectIdsForMonitorUsers() union getProjectIdsForCollaborators(),
         )
 
+    private fun getAssignedProjectIdsForMonitorUsers() = securityService.currentUser?.user?.assignedProjects ?: emptySet()
+
+    private fun getProjectIdsForCollaborators() = collaboratorPersistence
+        .getProjectIdsForUser(userId = securityService.getUserIdOrThrow())
 
 }

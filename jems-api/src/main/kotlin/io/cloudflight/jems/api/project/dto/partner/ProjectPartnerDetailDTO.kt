@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 data class ProjectPartnerDetailDTO (
     val id: Long,
     val abbreviation: String,
+    val active: Boolean,
     val role: ProjectPartnerRoleDTO,
     val sortNumber: Int? = null,
     val nameInOriginalLanguage: String?,

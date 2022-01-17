@@ -2,13 +2,13 @@
 
     <h2 page-sub-title> {{'call.list.header' | translate}}</h2>
 
-    <button *hasPermission="PermissionsEnum.CallUpdate" mat-raised-button color="primary"
+    <button appText *hasPermission="PermissionsEnum.CallUpdate" mat-raised-button color="primary"
             [routerLink]="'/app/call/create'">
         + {{'call.add.new' | translate}}
     </button>
     <div *ngIf="success" class="success-wrapper">
         <div class="success app-alert-success">
-            <em class="far fa-check-circle"></em>
+            <mat-icon>check_circle</mat-icon>
             <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
         </div>
     </div>

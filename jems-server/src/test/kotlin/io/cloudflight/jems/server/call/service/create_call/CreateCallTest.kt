@@ -12,13 +12,13 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.call.userWithId
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.mockk.clearMocks
@@ -51,7 +51,7 @@ class CreateCallTest : UnitTest() {
             ),
             priorityPolicies = setOf(Digitisation, AdvancedTechnologies),
             strategies = setOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
-            fundIds = setOf(FUND_ID),
+            funds = setOf(callFundRate(FUND_ID)),
         )
 
         private val expectedCallDetail = CallDetail(
@@ -78,7 +78,7 @@ class CreateCallTest : UnitTest() {
                 )
             ),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
-            funds = listOf(ProgrammeFund(id = FUND_ID, selected = true)),
+            funds = sortedSetOf(callFundRate(FUND_ID)),
             applicationFormFieldConfigurations = ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
         )
     }
@@ -103,9 +103,10 @@ class CreateCallTest : UnitTest() {
     private lateinit var createCall: CreateCall
 
     @BeforeEach
-    fun resetMocks(){
+    fun resetMocks() {
         clearMocks(persistence)
     }
+
     @Test
     fun `createCallInDraft - OK`() {
         val USER_ID = 5L
@@ -151,8 +152,8 @@ class CreateCallTest : UnitTest() {
                 "isAdditionalFundAllowed set to enabled,\n" +
                     "lengthOfPeriod set to 9,\n" +
                     "description set to [\n" +
-                    "  InputTranslation(language=EN, translation=EN desc)\n" +
-                    "  InputTranslation(language=SK, translation=SK desc)\n" +
+                    "  EN=EN desc\n" +
+                    "  SK=SK desc\n" +
                     "],\n" +
                     "objectives set to [\n" +
                     "  AdvancedTechnologies\n" +
@@ -162,7 +163,12 @@ class CreateCallTest : UnitTest() {
                     "  EUStrategyBalticSeaRegion\n" +
                     "  AtlanticStrategy\n" +
                     "],\n" +
-                    "fundIds set to [54]"
+                    "fundIds set to [54],\n" +
+                    "funds set to [\n" +
+                    "  CallFundRate(" +
+                    "programmeFund=ProgrammeFund(id=54, selected=true, type=OTHER, abbreviation=[], description=[]), " +
+                    "rate=10, adjustable=true)\n" +
+                    "]"
             )
         }
     }

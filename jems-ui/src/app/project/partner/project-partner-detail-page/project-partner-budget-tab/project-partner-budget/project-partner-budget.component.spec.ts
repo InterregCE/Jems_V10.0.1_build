@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import {ProjectPartnerBudgetComponent} from './project-partner-budget.component';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
@@ -9,6 +9,7 @@ import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.s
 import {of} from 'rxjs';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
 
 
 describe('ProjectApplicationPartnerBudgetPageComponent', () => {
@@ -18,7 +19,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
   let partnerDetailPageStore: ProjectPartnerDetailPageStore;
   let projectPartnerDetailPageStore: ProjectPartnerDetailPageStore;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,
@@ -35,7 +36,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
         {
           provide: ProjectVersionStore,
           useValue: {
-            currentRouteVersion$: of('1.0')
+            selectedVersionParam$: of('1.0')
           }
         },
         {
@@ -46,7 +47,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
         },
         {
           provide: ProjectPartnerDetailPageStore,
-          useClass: ProjectPartnerDetailPageStore
+          useClass: ProjectPartnerBudgetStore
         },
         {
           provide: ProjectPartnerBudgetTabService,
@@ -72,6 +73,7 @@ describe('ProjectApplicationPartnerBudgetPageComponent', () => {
 
   it('should fetch and save budgets', fakeAsync(() => {
     partnerDetailPageStore.budgetOptions$ = of({} as any);
+    httpTestingController.expectOne({method: 'GET', url: `//api/auth/current`});
 
     httpTestingController.expectOne({
       method: 'GET',

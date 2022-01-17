@@ -4,11 +4,13 @@ import io.cloudflight.jems.api.project.partner.ProjectPartnerApi
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectBudgetPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.server.project.service.partner.create_project_partner.CreateProjectPartnerInteractor
+import io.cloudflight.jems.server.project.service.partner.deactivate_project_partner.DeactivateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.delete_project_partner.DeleteProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.get_project_partner.GetProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.state_aid.get_project_partner_state_aid.GetProjectPartnerStateAidInteractor
@@ -26,9 +28,10 @@ class ProjectPartnerController(
     private val getProjectPartnerStateAid: GetProjectPartnerStateAidInteractor,
     private val updateProjectPartnerStateAid: UpdateProjectPartnerStateAidInteractor,
     private val deleteProjectPartner: DeleteProjectPartnerInteractor,
+    private val deactivateProjectPartner: DeactivateProjectPartnerInteractor
 ) : ProjectPartnerApi {
 
-    override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<ProjectPartnerSummaryDTO> =
+    override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<ProjectBudgetPartnerSummaryDTO> =
        getProjectPartner.findAllByProjectId(projectId, pageable, version).toDto()
 
     override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable, version: String?): List<ProjectPartnerSummaryDTO> =
@@ -60,5 +63,9 @@ class ProjectPartnerController(
 
     override fun deleteProjectPartner(partnerId: Long) {
         return deleteProjectPartner.deletePartner(partnerId)
+    }
+
+    override fun deactivate(partnerId: Long) {
+        deactivateProjectPartner.deactivate(partnerId)
     }
 }

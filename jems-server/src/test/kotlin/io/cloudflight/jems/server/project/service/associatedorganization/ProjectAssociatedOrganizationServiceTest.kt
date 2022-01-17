@@ -16,7 +16,6 @@ import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
-import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -26,13 +25,13 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContact
 import io.cloudflight.jems.server.project.entity.associatedorganization.ProjectAssociatedOrganizationContactId
-import io.cloudflight.jems.server.project.repository.ProjectAssociatedOrganizationRepository
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.partner.toModel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -43,7 +42,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Sort
 import java.util.Optional
 
@@ -66,7 +64,8 @@ internal class ProjectAssociatedOrganizationServiceTest {
         password = "hash",
         email = "admin@admin.dev",
         surname = "Surname",
-        userRole = userRole
+        userRole = userRole,
+        userStatus = UserStatus.ACTIVE
     )
 
     private val call = CallEntity(
@@ -107,6 +106,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
     private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
+        active = true,
         abbreviation = projectPartner.abbreviation,
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
@@ -122,9 +122,15 @@ internal class ProjectAssociatedOrganizationServiceTest {
             sortNumber = sortNr
         )
 
-    private fun outputOrganizationDetail(id: Long, partner: ProjectPartnerSummaryDTO, name: String, sortNr: Int? = null) =
+    private fun outputOrganizationDetail(
+        id: Long,
+        partner: ProjectPartnerSummaryDTO,
+        name: String,
+        sortNr: Int? = null
+    ) =
         OutputProjectAssociatedOrganizationDetail(
             id = id,
+            active = true,
             partner = partner,
             nameInOriginalLanguage = name,
             nameInEnglish = name,
@@ -141,15 +147,6 @@ internal class ProjectAssociatedOrganizationServiceTest {
                 projectAssociatedOrganizationRepository,
                 generalValidator
             )
-    }
-
-    @Test
-    fun findAllByProjectIdUnpaged() {
-        every { projectAssociatedOrganizationRepository.findAllByProjectId(1) } returns
-                PageImpl(listOf(organization(1, projectPartner, "test", 1)))
-
-        assertThat(projectAssociatedOrganizationService.findAllByProjectId(1))
-            .containsExactly(outputOrganizationDetail(1, projectPartner.toModel().toDto(), "test", 1))
     }
 
     @Test

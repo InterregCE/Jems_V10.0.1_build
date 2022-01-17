@@ -3,6 +3,7 @@ import { isDevMode } from '@angular/core';
 export class Log {
 
   static error(message: any, ...optionalParams: any[]): void {
+    /* eslint no-console: "off" */
     console.error(
       Log.getMessage(message, optionalParams),
       optionalParams
@@ -13,6 +14,7 @@ export class Log {
     if (!isDevMode()) {
       return;
     }
+    /* eslint no-console: "off" */
     console.debug(
       Log.getMessage(message, optionalParams),
       optionalParams
@@ -20,6 +22,7 @@ export class Log {
   }
 
   static info(message: any, ...optionalParams: any[]): void {
+    /* eslint no-console: "off" */
     console.log(
       Log.getMessage(message, optionalParams),
       optionalParams
@@ -27,6 +30,7 @@ export class Log {
   }
 
   static warn(message: any, ...optionalParams: any[]): void {
+    /* eslint no-console: "off" */
     console.warn(
       Log.getMessage(message, optionalParams),
       optionalParams

@@ -11,7 +11,7 @@ import javax.persistence.OneToMany
  * C2
  */
 @Entity(name = "project_description_c2_relevance")
-data class ProjectRelevanceEntity(
+class ProjectRelevanceEntity(
 
     @Id
     @Column(name = "project_id")
@@ -36,10 +36,4 @@ data class ProjectRelevanceEntity(
     @JoinColumn(name = "project_relevance_id", nullable = false, insertable = true)
     val projectSynergies: Set<ProjectRelevanceSynergyEntity> = emptySet()
 
-) {
-
-    override fun toString(): String {
-        return "${this.javaClass.simpleName}(projectId=${projectId})"
-    }
-
-}
+)

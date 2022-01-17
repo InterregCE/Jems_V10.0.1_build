@@ -20,6 +20,7 @@ import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryTypeDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.plugin.contract.models.common.I18nMessageData
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.MessageType
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckMessage
@@ -40,6 +41,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.user.controller.toDto
@@ -49,6 +51,7 @@ import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 
 fun ApplicationStatus.toDTO() = projectMapper.map(this)
+fun ProjectStatus.toDTO() = projectMapper.map(this)
 fun ApplicationActionInfoDTO.toModel() = projectMapper.map(this)
 fun PreConditionCheckResult.toDTO() = projectMapper.map(this).also { result ->
     result.messages.forEach {
@@ -140,6 +143,7 @@ private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 abstract class ProjectMapper {
 
     abstract fun map(applicationStatus: ApplicationStatus): ApplicationStatusDTO
+    abstract fun map(projectStatus: ProjectStatus): ProjectStatusDTO
     abstract fun map(applicationActionInfoDTO: ApplicationActionInfoDTO): ApplicationActionInfo
     abstract fun map(projectVersion: ProjectVersion): ProjectVersionDTO
 

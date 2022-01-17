@@ -5,14 +5,13 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import java.time.ZonedDateTime
 import java.util.SortedSet
 import java.util.TreeSet
 
-data class CallDetail (
+data class CallDetail(
     val id: Long,
     val name: String,
     val status: CallStatus,
@@ -24,7 +23,7 @@ data class CallDetail (
     val description: Set<InputTranslation> = emptySet(),
     val objectives: List<ProgrammePriority> = emptyList(),
     val strategies: SortedSet<ProgrammeStrategy> = sortedSetOf(),
-    val funds: List<ProgrammeFund> = emptyList(),
+    val funds: SortedSet<CallFundRate> = sortedSetOf(),
     val stateAids: List<ProgrammeStateAid> = emptyList(),
     val flatRates: SortedSet<ProjectCallFlatRate> = sortedSetOf(),
     val lumpSums: List<ProgrammeLumpSum> = emptyList(),
@@ -79,10 +78,13 @@ data class CallDetail (
         if (strategies != (old?.strategies ?: sortedSetOf<InputTranslation>()))
             changes["strategies"] = Pair(old?.strategies, strategies)
 
-        val oldFundIds = old?.funds?.mapTo(TreeSet()) { it.id } ?: sortedSetOf()
-        val newFundIds = funds.mapTo(TreeSet()) { it.id }
+        val oldFundIds = old?.funds?.mapTo(TreeSet()) { it.programmeFund.id } ?: sortedSetOf()
+        val newFundIds = funds.mapTo(TreeSet()) { it.programmeFund.id }
         if (newFundIds != oldFundIds)
             changes["fundIds"] = Pair(oldFundIds, newFundIds)
+
+        if (funds != (old?.funds ?: sortedSetOf<CallFundRate>()))
+            changes["funds"] = Pair(old?.funds, funds)
 
         if (flatRates != (old?.flatRates ?: sortedSetOf<ProjectCallFlatRate>()))
             changes["flatRates"] = Pair(old?.flatRates, flatRates)

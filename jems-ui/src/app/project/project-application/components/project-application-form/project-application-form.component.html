@@ -1,36 +1,35 @@
-<app-form (save)="save()"
-          (discard)="resetForm()">
-    <form appFormLayout [formGroup]="applicationForm">
+<app-form (discard)="resetForm()"
+          (save)="save()">
+    <form [formGroup]="applicationForm" appFormLayout>
         <h3>{{'project.application.form.section.part.a.subsection.one' | translate}}</h3>
-        <mat-form-field appFormFieldWidth="xx-large"
-                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ID">
+        <app-alert [closable]="false" [show]="true" [type]="Alert.INFO">
+            <span class="mat-required-marker empty"> {{'common.hint.required' | translate}}</span>
+        </app-alert>
+        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ID"
+                        appFormFieldWidth="xx-large">
             <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
-            <input name="projectId" formControlName="projectId" matInput>
+            <input formControlName="projectId" matInput name="projectId">
         </mat-form-field>
 
-        <mat-form-field appFormFieldWidth="half"
-                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION">
-            <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartner' | translate}}</mat-label>
-            <input name="nameOfTheLeadPartner" formControlName="nameOfTheLeadPartner" matInput>
-            <mat-hint *ngIf="!applicationForm?.controls?.nameOfTheLeadPartner?.value && (projectStore.projectEditable$ | async)"
-                      class="mat-error">
-                {{'project.application.form.name.of.the.lead.partner.required' | translate}}
-            </mat-hint>
-        </mat-form-field>
+        <div *ngIf="applicationForm?.controls?.nameOfTheLeadPartner?.value">
+            <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION"
+                            appFormFieldWidth="half">
+                <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartner' | translate}}</mat-label>
+                <input formControlName="nameOfTheLeadPartner" matInput name="nameOfTheLeadPartner">
+            </mat-form-field>
+        </div>
 
-        <mat-form-field appFormFieldWidth="half"
-                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION">
-            <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartnerInEnglish' | translate}}</mat-label>
-            <input name="nameOfTheLeadPartnerInEnglish" formControlName="nameOfTheLeadPartnerInEnglish" matInput>
-            <mat-hint *ngIf="!applicationForm?.controls?.nameOfTheLeadPartnerInEnglish?.value && (projectStore.projectEditable$ | async)"
-                      class="mat-error">
-                {{'project.application.form.nameOfTheLeadPartnerInEnglish.required' | translate}}
-            </mat-hint>
-        </mat-form-field>
+        <div *ngIf="applicationForm?.controls?.nameOfTheLeadPartnerInEnglish?.value">
+            <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION"
+                            appFormFieldWidth="half">
+                <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartnerInEnglish' | translate}}</mat-label>
+                <input formControlName="nameOfTheLeadPartnerInEnglish" matInput name="nameOfTheLeadPartnerInEnglish">
+            </mat-form-field>
+        </div>
 
         <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ACRONYM">
             <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
-            <input #projectAcronym name="acronym" formControlName="acronym" matInput>
+            <input #projectAcronym formControlName="acronym" matInput name="acronym">
             <mat-hint [appHintFor]="projectAcronym" [hide]="applicationForm.controls?.acronym?.errors !== null">
                 <app-text-hint [currentLength]="projectAcronym?.value?.length" [maxLength]="25"></app-text-hint>
             </mat-hint>
@@ -48,21 +47,21 @@
         <app-multi-language-container
                 *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.TITLE">
             <app-multi-language-form-field
-                    type="textarea"
-                    label="project.application.form.field.project.title"
                     [formControlName]="'title'"
-                    [maxLength]="200">
+                    [maxLength]="200"
+                    label="project.application.form.field.project.title"
+                    type="textarea">
             </app-multi-language-form-field>
         </app-multi-language-container>
 
         <h4>{{'project.application.project.duration.title' | translate}}</h4>
 
-        <div appMultiColumnRow stretch
-             *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.DURATION">
+        <div *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.DURATION" appMultiColumnRow
+             stretch>
             <mat-form-field>
                 <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
-                <input type="number" name="duration" formControlName="duration" matInput
-                       (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
+                <input (keypress)="tools.checkDigitsOnInput($event)" (paste)="tools.checkDigitsOnPaste($event)" formControlName="duration" matInput
+                       name="duration" type="number">
                 <mat-error>
                     <app-form-field-errors
                             [errors]="applicationForm?.controls?.duration?.errors"
@@ -73,12 +72,12 @@
             <span style="max-width:1rem;">{{'common.symbol.divide'| translate}}</span>
             <mat-form-field>
                 <mat-label>{{'project.application.form.field.project.periodlength' | translate}}</mat-label>
-                <input name="projectPeriodLength" formControlName="projectPeriodLength" matInput/>
+                <input formControlName="projectPeriodLength" matInput name="projectPeriodLength"/>
             </mat-form-field>
             <span style="max-width:1rem;">{{'common.symbol.result'| translate}}</span>
             <mat-form-field>
                 <mat-label>{{'project.application.form.field.project.periodcount' | translate}}</mat-label>
-                <input name="projectPeriodCount" formControlName="projectPeriodCount" matInput/>
+                <input formControlName="projectPeriodCount" matInput name="projectPeriodCount"/>
                 <app-context-info
                         infoText="{{'project.application.form.field.project.periodcount.info'| translate}}">
                 </app-context-info>
@@ -90,8 +89,8 @@
             <h4>{{'project.application.project.priority.title' | translate}}</h4>
             <mat-form-field *ngIf="applicationForm.enabled">
                 <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
-                <mat-select (selectionChange)="changeCurrentPriority($event.value)" required [(value)]=currentPriority
-                            formControlName="programmePriority">
+                <mat-select (selectionChange)="changeCurrentPriority($event.value)" [(value)]=currentPriority formControlName="programmePriority"
+                            required>
                     <mat-option *ngFor="let priority of priorities" [value]="priority.code">
                         {{ priority.code }} - {{ priority.title | translateBySystemLanguage | async }}
                     </mat-option>
@@ -104,26 +103,22 @@
                 </mat-error>
             </mat-form-field>
         </ng-container>
-
         <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.OBJECTIVE">
             <ng-container *ngIf="applicationForm.enabled && currentPriority">
-                <h4>{{'programme.priority.objective.title' | translate}}</h4>
+                <p [ngClass]="{'empty': applicationForm?.controls?.specificObjective?.errors}"
+                   class="mat-required-marker">
+                    {{'programme.priority.objective.title' | translate}}:
+                </p>
                 <mat-radio-group
-                        formControlName="specificObjective"
-                        (change)="selectedSpecificObjective= $event.value">
+                        (change)="selectedSpecificObjective= $event.value"
+                        formControlName="specificObjective">
                     <mat-radio-button
+                            (change)="selectedSpecificObjective= $event.value"
                             *ngFor="let objective of objectivesWithPolicies[currentPriority]"
-                            [value]="objective"
-                            (change)="selectedSpecificObjective= $event.value">
-                        <div>{{'programme.policy.' + objective | translate}}</div>
+                            [value]="objective.programmeObjectivePolicy">
+                        <div>{{objective.code + ': '}} {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}</div>
                     </mat-radio-button>
                 </mat-radio-group>
-                <mat-error>
-                    <app-form-field-errors
-                            [errors]="applicationForm?.controls?.specificObjective?.errors"
-                            [messages]="specificObjectiveErrors">
-                    </app-form-field-errors>
-                </mat-error>
             </ng-container>
         </ng-container>
 
@@ -161,21 +156,22 @@
             <app-multi-language-container *ngIf="!languageStore.isInputLanguageExist(this.LANGUAGE.EN)"
                                           [staticLanguages]="[LANGUAGE.EN]">
                 <app-multi-language-form-field
-                        type="textarea"
-                        label="project.application.form.field.project.summary.in.english"
                         formControlName="introEn"
-                        maxLength="2000">
+                        label="project.application.form.field.project.summary.in.english"
+                        maxLength="2000"
+                        type="textarea">
                 </app-multi-language-form-field>
             </app-multi-language-container>
 
             <app-multi-language-container>
                 <app-multi-language-form-field
-                        type="textarea"
-                        label="project.application.form.field.project.summary"
+                        [maxLength]="2000"
                         formControlName="intro"
-                        [maxLength]="2000">
+                        label="project.application.form.field.project.summary"
+                        type="textarea">
                 </app-multi-language-form-field>
             </app-multi-language-container>
         </ng-container>
     </form>
+
 </app-form>

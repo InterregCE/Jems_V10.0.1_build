@@ -31,29 +31,35 @@
 
     <div appFormLayout>
         <h3> {{'programme.translation.management.' + fileType.toLowerCase() + '.translations' | translate}}</h3>
-        <button mat-raised-button
-                *ngIf="(programmeEditableStateStore.hasEditPermission$ | async)"
-                (click)="downloadDefaultTranslationFile(fileType)"
-                color="primary">{{'programme.translation.management.get.default.translations' | translate}}</button>
+        <app-pending-button *ngIf="(programmeEditableStateStore.hasEditPermission$ | async)"
+                            (click)="downloadDefaultTranslationFile(fileType)"
+                            [pending]="this.getInProgressSubjectByFileType(fileType) | async"
+        >
+            {{'programme.translation.management.get.default.translations' | translate}}
+        </app-pending-button>
+
         <mat-table [appTableConfig]="[{minInRem:8},{minInRem:10},{},{minInRem:5, maxInRem:5}]" [dataSource]="dataSource"
                    matSort>
             <ng-container matColumnDef="language">
-                <mat-header-cell
-                        *matHeaderCellDef>{{ 'programme.translation.management.language' | translate }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef>
+                    <span appText maxLines="2">{{ 'programme.translation.management.language' | translate }}</span>
+                </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     {{ element?.language ? ('language.' + element?.language.toLowerCase() | translate) : ''}}
                 </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="fileName">
-                <mat-header-cell mat-sort-header="language"
-                                 *matHeaderCellDef>{{ 'programme.translation.management.file.name' | translate }}</mat-header-cell>
+                <mat-header-cell mat-sort-header="language" *matHeaderCellDef>
+                    <span appText maxLines="2">{{ 'programme.translation.management.file.name' | translate }}</span>
+                </mat-header-cell>
                 <mat-cell *matCellDef="let element"> {{getFileName(element?.fileType, element?.language)}}</mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="lastModified">
-                <mat-header-cell mat-sort-header
-                                 *matHeaderCellDef>{{ 'programme.translation.management.date' | translate }}</mat-header-cell>
+                <mat-header-cell mat-sort-header *matHeaderCellDef>
+                    <span appText maxLines="2">{{ 'programme.translation.management.date' | translate }}</span>
+                </mat-header-cell>
                 <mat-cell *matCellDef="let element">{{ element?.lastModified | localeDate : 'L' :'LT' }}</mat-cell>
             </ng-container>
 

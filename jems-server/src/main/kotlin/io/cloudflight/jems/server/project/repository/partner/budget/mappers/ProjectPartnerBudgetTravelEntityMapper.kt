@@ -19,6 +19,7 @@ fun List<ProjectPartnerBudgetTravelCostRow>.toBudgetTravelCostEntryList() =
         BudgetTravelAndAccommodationCostEntry(
             id = groupedRows.key,
             description = groupedRows.value.extractField { it.getDescription() },
+            comments = groupedRows.value.extractField { it.getComments() },
             unitType = groupedRows.value.extractField { it.getUnitType() },
             budgetPeriods = groupedRows.value.filter { it.getPeriodNumber() != null }
                 .mapTo(HashSet()) { BudgetPeriod(it.getPeriodNumber()!!, it.getAmount()) },
@@ -37,11 +38,12 @@ fun ProjectPartnerBudgetTravelEntity.toBudgetTravelAndAccommodationCostEntry() =
     description = translatedValues.extractField { it.description },
     unitType = translatedValues.extractField { it.unitType },
     budgetPeriods = budgetPeriodEntities.map { BudgetPeriod(it.budgetPeriodId.period.id.number, it.amount) }
-        .toMutableSet(),
+    .toMutableSet(),
     unitCostId = unitCostId,
     numberOfUnits = baseProperties.numberOfUnits,
     pricePerUnit = pricePerUnit,
-    rowSum = baseProperties.rowSum
+    rowSum = baseProperties.rowSum,
+    comments = translatedValues.extractField { it.comments }
 )
 
 fun List<BudgetTravelAndAccommodationCostEntry>.toProjectPartnerBudgetTravelEntities(
@@ -67,8 +69,9 @@ fun BudgetTravelAndAccommodationCostEntry.toProjectPartnerBudgetTravelEntity(
                     translationId = TranslationId(this, language),
                     description = description.extractTranslation(language),
                     unitType = unitType.extractTranslation(language),
+                    comments = comments.extractTranslation(language)
                 )
-            }, arrayOf(description, unitType)
+            }, arrayOf(description, unitType, comments)
         )
 
         budgetPeriodEntities.addAll(budgetPeriods.map {

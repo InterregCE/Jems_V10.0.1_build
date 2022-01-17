@@ -24,6 +24,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 
@@ -41,6 +42,7 @@ class SetApplicationAsIneligibleInteractorTest : UnitTest() {
         private val actionInfo = ApplicationActionInfo(
             note = "note ineligible",
             date = LocalDate.of(2021,4, 13),
+            entryIntoForceDate = LocalDate.of(2021,4, 13)
         )
     }
 
@@ -85,4 +87,10 @@ class SetApplicationAsIneligibleInteractorTest : UnitTest() {
         )
     }
 
+    @Test
+    fun setAsIneligibleException() {
+        every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID)
+
+        assertThrows<EligibilityAssessmentMissing> { setApplicationAsIneligible.setAsIneligible(PROJECT_ID, actionInfo) }
+    }
 }

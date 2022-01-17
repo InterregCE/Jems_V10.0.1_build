@@ -1,19 +1,19 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {combineLatest, of} from 'rxjs';
+import {combineLatest} from 'rxjs';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ActivatedRoute} from '@angular/router';
-import {map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {
   CallService,
-  InputProjectData,
   OutputProgrammePrioritySimple,
-  ProgrammePriorityDTO, ProjectPartnerService,
+  ProgrammePriorityDTO,
+  ProgrammeSpecificObjectiveDTO,
+  ProjectPartnerService,
   ProjectService
 } from '@cat/api';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
 
 @Component({
   selector: 'app-project-application-form-identification-page',
@@ -62,11 +62,11 @@ export class ProjectApplicationFormIdentificationPageComponent {
     this.projectApplicationFormStore.init(this.projectId);
   }
 
-  private getObjectivesWithPolicies(objectives: ProgrammePriorityDTO[]): { [key: string]: InputProjectData.SpecificObjectiveEnum[] } {
-    const objectivesWithPolicies: any = {};
+  private getObjectivesWithPolicies(objectives: ProgrammePriorityDTO[]): { [key: string]: ProgrammeSpecificObjectiveDTO[] } {
+    const objectivesWithPolicies: { [key: string]: ProgrammeSpecificObjectiveDTO[] } = {};
     objectives.forEach(objective =>
       objectivesWithPolicies[objective.code] =
-        objective.specificObjectives.map(priority => priority.programmeObjectivePolicy));
+        objective.specificObjectives.map(priority => priority));
     return objectivesWithPolicies;
   }
 

@@ -6,7 +6,5 @@ enum class ProgrammeObjective {
     PO3,
     PO4,
     PO5,
-    ISO1,
-    ISO2,
     ISO12,
 }

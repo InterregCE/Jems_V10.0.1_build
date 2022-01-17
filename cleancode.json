@@ -29,6 +29,10 @@
     {
       "hash": "5d77d119",
       "reason": "helper method calls repo methods handed to it via arg - thus @Transactional or repo-call check fails here"
+    },
+    {
+      "hash": "cc26f5aa",
+      "reason": "an indirect npm dependency fails because of it"
     }
   ]
 }

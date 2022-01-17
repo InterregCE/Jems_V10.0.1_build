@@ -1,19 +1,19 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {Tools} from '../../../../../common/utils/tools';
+import {Tools} from '@common/utils/tools';
 import {FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
-import {BudgetOptions} from '../../../../model/budget/budget-options';
+import {BudgetOptions} from '@project/model/budget/budget-options';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
-import {FlatRateSetting} from '../../../../model/flat-rate-setting';
+import {FlatRateSetting} from '@project/model/flat-rate-setting';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
-import {CallFlatRateSetting} from '../../../../model/call-flat-rate-setting';
+import {CallFlatRateSetting} from '@project/model/call-flat-rate-setting';
 import {ProjectPartnerBudgetOptionsConstants} from './project-partner-budget-options.constants';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
-import {PartnerBudgetTables} from '../../../../model/budget/partner-budget-tables';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
+import {PartnerBudgetTables} from '@project/model/budget/partner-budget-tables';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 const flatRateValidator: (control: FormControl) => ValidatorFn = (checkBoxControl: FormControl) => (valueControl: FormControl): ValidationErrors | null => {
   if (checkBoxControl?.value && valueControl === null) {
@@ -37,17 +37,17 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
 
   budgetOptionForm: FormGroup;
   data$: Observable<{
-    callFlatRateSettings: CallFlatRateSetting,
+    callFlatRateSettings: CallFlatRateSetting;
     flatRateErrorsArgs: {
-      staff: { [key: string]: {} }
-      officeOnStaff: { [key: string]: {} }
-      officeOnDirect: { [key: string]: {} }
-      travel: { [key: string]: {} }
-      other: { [key: string]: {} }
-    },
-    isDividerVisible: boolean,
-    isAnyOptionAvailable: boolean,
-    budgets: PartnerBudgetTables
+      staff: { [key: string]: {} };
+      officeOnStaff: { [key: string]: {} };
+      officeOnDirect: { [key: string]: {} };
+      travel: { [key: string]: {} };
+      other: { [key: string]: {} };
+    };
+    isDividerVisible: boolean;
+    isAnyOptionAvailable: boolean;
+    budgets: PartnerBudgetTables;
   }>;
 
   constructor(private formBuilder: FormBuilder,
@@ -61,6 +61,7 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
     this.initForm();
     this.handleResetForm();
     this.handleBudgetOptionsState();
+    this.formService.reset();
 
     this.data$ = combineLatest([
       this.pageStore.callFlatRatesSettings$,
@@ -301,7 +302,11 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
   }
 
   private setControlsState(isDisabled: boolean, controls: FormControl[]): void {
-    isDisabled ? this.disableControls(controls) : this.enableControls(controls);
+    if (isDisabled) {
+      this.disableControls(controls);
+    } else {
+      this.enableControls(controls);
+    }
   }
 
   private enableControls(controls: FormControl[]): void {

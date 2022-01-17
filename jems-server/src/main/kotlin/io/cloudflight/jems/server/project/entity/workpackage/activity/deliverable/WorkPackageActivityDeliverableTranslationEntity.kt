@@ -12,5 +12,6 @@ data class WorkPackageActivityDeliverableTranslationEntity(
     override val translationId: TranslationId<WorkPackageActivityDeliverableEntity>,
 
     var description: String? = null,
+    var title: String? = null,
 
     ) : TranslationEntity()

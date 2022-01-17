@@ -10,9 +10,14 @@ import io.cloudflight.jems.server.user.repository.userrole.UserRolePermissionRep
 import io.cloudflight.jems.server.user.repository.userrole.UserRoleRepository
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRoleCreate
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSubmission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.UserCreate
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.UserRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieveEditUserAssignments
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -225,6 +230,29 @@ internal class UserRolePersistenceTest : UnitTest() {
     fun `findUserRoleByName - not existing role name`() {
         every { userRoleRepo.findByName("not existing name") } returns Optional.empty()
         assertThat(persistence.findUserRoleByName("not existing name")).isNotPresent
+    }
+
+    @Test
+    fun `findRoleIdsHavingAndNotHavingPermissions - empty`() {
+        assertThrows<PermissionFilterEmpty> { persistence.findRoleIdsHavingAndNotHavingPermissions(
+            needsToHaveAtLeastOneFrom = emptySet(),
+            needsNotToHaveAnyOf = emptySet(),
+        ) }
+    }
+
+    @Test
+    fun findRoleIdsHavingAndNotHavingPermissions() {
+        val toHaveIdsSlot = slot<Collection<UserRolePermission>>()
+        val toNotHaveIdsSlot = slot<Collection<UserRolePermission>>()
+        every { userRolePermissionRepo.findRoleIdsHavingAndNotHavingPermissions(
+            needsToHaveAtLeastOneFrom = capture(toHaveIdsSlot),
+            needsNotToHaveAnyOf = capture(toNotHaveIdsSlot),
+        ) } returns setOf(1800L, 1900L)
+
+        assertThat(persistence.findRoleIdsHavingAndNotHavingPermissions(
+            needsToHaveAtLeastOneFrom = setOf(ProjectFormRetrieve, ProjectFileApplicationRetrieve),
+            needsNotToHaveAnyOf = setOf(ProjectRetrieve, ProjectRetrieveEditUserAssignments),
+        )).containsExactlyInAnyOrder(1800L, 1900L)
     }
 
 }

@@ -5,8 +5,8 @@ services:
   jems-database:
     image: mariadb/server:10.3.13
     container_name: jems-database
-    #    volumes:
-    #      - ems-database-data:/var/lib/mariadb
+#    volumes:
+#      - [YOUR/PATH/HERE]:/var/lib/mysql
     ports:
       - '3306:3306'
     environment:
@@ -17,8 +17,8 @@ services:
   jems-minio:
     image: minio/minio:RELEASE.2021-08-05T22-01-19Z
     container_name: jems-minio
-    #    volumes:
-    #      - ems-minio-data:/var/lib/minio
+#    volumes:
+#      - [YOUR/PATH/HERE]:/data
     ports:
       - '9000:9000'
       - '9001:9001'
@@ -33,18 +33,30 @@ services:
       retries: 3
 
   audit-database:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
     container_name: audit-database
     ports:
       - '9200:9200'
     environment:
       - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+
+#
+#  Optional: if you need, you can create mailhog container to test sending mail notifications:
+#
+#  mailhog:
+#    image: mailhog/mailhog:latest
+#    container_name: mailhog
+#    restart: always
+#    ports:
+#      - '1025:1025'
+#      - '8025:8025'
 
 #
 #  Optional: if you need, you can create kibana container to analyze all ElasticSearch data:
 #
 #  audit-analyzer:
-#    image: docker.elastic.co/kibana/kibana:7.10.2
+#    image: docker.elastic.co/kibana/kibana:7.16.3
 #    container_name: audit-analyzer
 #    ports:
 #      - '5601:5601'
@@ -52,7 +64,3 @@ services:
 #      - audit-database
 #    environment:
 #      ELASTICSEARCH_HOSTS: 'http://audit-database:9200'
-
-#volumes:
-#  ems-database-data:
-#  ems-minio-data:

@@ -3,10 +3,14 @@
 
   #project-files-tree {
     width: 20rem;
-    border: 1px solid lightgray;
+    border: 1px solid var(--table-border-color);
   }
 
   #project-files-table {
     flex: auto;
   }
+}
+
+.overflow-auto {
+  overflow: auto;
 }

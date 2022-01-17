@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ProgrammeFundDTO, ProgrammeFundService} from '@cat/api';
 import {FormState} from '@common/components/forms/form-state';
@@ -21,7 +21,7 @@ import {ProgrammePageSidenavService} from '../programme-page/services/programme-
   styleUrls: ['./programme-funds.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeFundsComponent extends ViewEditForm implements OnInit {
+export class ProgrammeFundsComponent extends ViewEditFormComponent implements OnInit {
 
   fundsSaveError$ = new Subject<APIError | null>();
   fundsSaveSuccess$ = new Subject<boolean>();
@@ -91,6 +91,7 @@ export class ProgrammeFundsComponent extends ViewEditForm implements OnInit {
         if (newState === FormState.VIEW) {
           if (funds) {
             this.resetForm(funds);
+            this.editableFundsForm.disable();
           }
         }
       });

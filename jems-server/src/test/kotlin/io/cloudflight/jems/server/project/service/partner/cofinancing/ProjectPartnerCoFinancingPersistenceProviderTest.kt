@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerFina
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
+import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
@@ -50,6 +51,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     protected class PreviousVersionOfPartner(
         override val language: SystemLanguage?,
         override val id: Long,
+        override val active: Boolean,
         override val projectId: Long,
         override val abbreviation: String,
         override val role: ProjectPartnerRole,
@@ -223,6 +225,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     private val previousProjectPartner = PreviousVersionOfPartner(
         language = SystemLanguage.EN,
         id = 1,
+        active = true,
         projectId = 1,
         abbreviation = "previous partner",
         role = ProjectPartnerRole.LEAD_PARTNER,
@@ -248,6 +251,9 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
     lateinit var projectPersistence: ProjectPersistence
 
     @MockK
+    lateinit var projectRepository: ProjectRepository
+
+    @MockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
 
     @MockK
@@ -263,7 +269,8 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
             projectPartnerRepository,
             projectPartnerCoFinancingRepository,
-            projectVersionUtils
+            projectVersionUtils,
+            projectRepository
         )
         every { projectPartnerRepository.getProjectIdForPartner(partnerId) } returns projectId
         every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp

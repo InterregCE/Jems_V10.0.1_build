@@ -49,8 +49,8 @@ class ProgrammePriorityControllerTest {
             title = testPriority.title,
             objective = PO1,
             specificObjectives = listOf(
-                ProgrammeSpecificObjectiveDTO(programmeObjectivePolicy = Growth, code = "G"),
-                ProgrammeSpecificObjectiveDTO(programmeObjectivePolicy = IndustrialTransition, code = "IT"),
+                ProgrammeSpecificObjectiveDTO(programmeObjectivePolicy = Growth, code = "G", "RSO1.3"),
+                ProgrammeSpecificObjectiveDTO(programmeObjectivePolicy = IndustrialTransition, code = "IT", "RSO1.4"),
             ),
         )
 
@@ -115,7 +115,7 @@ class ProgrammePriorityControllerTest {
             objectivePoliciesAlreadyInUse = setOf(Growth),
         )
         assertThat(controller.getAvailableSetup()).isEqualTo(ProgrammePriorityAvailableSetupDTO(
-            freePrioritiesWithPolicies = mapOf(PO2 to listOf(RenewableEnergy)),
+            freePrioritiesWithPolicies = mapOf(PO2 to listOf(ProgrammeSpecificObjectiveDTO(RenewableEnergy,"", "RSO2.2" ))),
             objectivePoliciesAlreadyInUse = setOf(Growth)
         ))
     }

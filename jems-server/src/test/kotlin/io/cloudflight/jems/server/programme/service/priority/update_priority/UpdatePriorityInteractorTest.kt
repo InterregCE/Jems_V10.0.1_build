@@ -110,9 +110,9 @@ class UpdatePriorityInteractorTest {
         assertThat(updatePriority.updatePriority(ID, toUpdatePriority)).isEqualTo(toUpdatePriority.copy(id = ID))
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_PRIORITY_UPDATED,
-            description = "Programme priority data changed for '_old_' '[InputTranslation(language=EN, translation=_oldTitle_)]':\n" +
+            description = "Programme priority data changed for '_old_' '[EN=_oldTitle_]':\n" +
                 "code changed from _old_ to PO-02,\n" +
-                "title changed from [InputTranslation(language=EN, translation=_oldTitle_)] to [InputTranslation(language=EN, translation=PO-02 title)],\n" +
+                "title changed from [EN=_oldTitle_] to [EN=PO-02 title],\n" +
                 "specificObjectives changed from [RenewableEnergy, GreenInfrastructure] to [WaterManagement, CircularEconomy, GreenInfrastructure]",
         ))
     }
@@ -214,8 +214,8 @@ class UpdatePriorityInteractorTest {
     @Test
     fun `updatePriority - specific objective does not belong to objective`() {
         every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
-        assertThat(toUpdatePriority.objective).isNotEqualTo(ProgrammeObjective.ISO1)
-        val priority = toUpdatePriority.copy(objective = ProgrammeObjective.ISO1)
+        assertThat(toUpdatePriority.objective).isNotEqualTo(ProgrammeObjective.ISO12)
+        val priority = toUpdatePriority.copy(objective = ProgrammeObjective.ISO12)
         val ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priority) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.specificObjectives.should.not.be.of.different.objectives")
     }

@@ -143,7 +143,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
         assertThat(updateLumpSum.updateLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_LUMP_SUM_CHANGED,
-            description = "Programme lump sum (id=4) '[InputTranslation(language=EN, translation=LS1)]' has been changed"
+            description = "Programme lump sum (id=4) '[EN=LS1]' has been changed"
         ))
     }
 
@@ -199,7 +199,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
         assertThat(updateLumpSum.updateLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_LUMP_SUM_CHANGED,
-            description = "Programme lump sum (id=4) '[InputTranslation(language=EN, translation=LS1 changed)]' has been changed"
+            description = "Programme lump sum (id=4) '[EN=LS1 changed]' has been changed"
         ))
     }
 

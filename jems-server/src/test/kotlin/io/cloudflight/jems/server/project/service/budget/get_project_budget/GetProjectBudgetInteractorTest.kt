@@ -27,13 +27,16 @@ class GetProjectBudgetInteractorTest : UnitTest() {
     private val partner2Id = 2L
     private val partner1 = ProjectPartnerSummary(
         id = partner1Id,
+        active = true,
         abbreviation = "PP 2",
         role = ProjectPartnerRole.PARTNER,
         sortNumber = 2,
-        country = "SK"
+        country = "SK",
+        region = "SK000"
     )
     private val partner2 = ProjectPartnerSummary(
         id = partner2Id,
+        active = true,
         abbreviation = "LP 1",
         role = ProjectPartnerRole.LEAD_PARTNER,
         sortNumber = 1

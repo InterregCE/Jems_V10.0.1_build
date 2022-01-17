@@ -4,6 +4,8 @@ import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurat
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.repository.ProjectCallStateAidRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
+import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
@@ -17,8 +19,13 @@ import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatu
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.EDIT
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -30,13 +37,15 @@ import java.sql.Timestamp
 class ProjectPersistenceProvider(
     private val projectVersionUtils: ProjectVersionUtils,
     private val projectRepository: ProjectRepository,
+    private val collaboratorRepository: UserProjectCollaboratorRepository,
     private val projectAssessmentQualityRepository: ProjectAssessmentQualityRepository,
     private val projectAssessmentEligibilityRepository: ProjectAssessmentEligibilityRepository,
     private val projectStatusHistoryRepo: ProjectStatusHistoryRepository,
     private val userRepository: UserRepository,
     private val callRepository: CallRepository,
     private val stateAidRepository: ProjectCallStateAidRepository,
-    private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository
+    private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
+    private val programmePriorityRepository: ProgrammePriorityRepository
 ) : ProjectPersistence {
 
     @Transactional(readOnly = true)
@@ -83,8 +92,14 @@ class ProjectPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus =
-        projectRepository.getOne(id).toApplicantAndStatus()
+    override fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus {
+        val collaboratorsByLevel = collaboratorRepository.findAllByIdProjectId(id).groupBy { it.level }
+        return projectRepository.getById(id).toApplicantAndStatus(
+            collaboratorViewIds = collaboratorsByLevel[VIEW] ?: emptySet(),
+            collaboratorEditIds = collaboratorsByLevel[EDIT] ?: emptySet(),
+            collaboratorManageIds = collaboratorsByLevel[MANAGE] ?: emptySet(),
+        )
+    }
 
     @Transactional(readOnly = true)
     override fun getProjectSummary(projectId: Long): ProjectSummary =
@@ -104,19 +119,31 @@ class ProjectPersistenceProvider(
         projectRepository.findCallIdFor(projectId).orElseThrow { ProjectNotFoundException() }
 
     @Transactional(readOnly = true)
-    override fun getProjects(pageable: Pageable, filterByOwnerId: Long?): Page<ProjectSummary> =
-        if (filterByOwnerId == null)
-            projectRepository.findAll(pageable).toModel()
-        else
-            projectRepository.findAllByApplicantId(pageable = pageable, applicantId = filterByOwnerId).toModel()
+    override fun getProjects(pageable: Pageable): Page<ProjectSummary> =
+        projectRepository.findAll(pageable).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getProjectsOfUserPlusExtra(pageable: Pageable, extraProjectIds: Collection<Long>): Page<ProjectSummary> =
+        projectRepository.findAllByIdIn(
+            projectIds = extraProjectIds,
+            pageable = pageable,
+        ).toModel()
 
     @Transactional(readOnly = true)
     override fun getProjectUnitCosts(projectId: Long): List<ProgrammeUnitCost> =
         getProjectOrThrow(projectId).call.unitCosts.toModel()
 
     @Transactional(readOnly = true)
-    override fun getProjectPeriods(projectId: Long) =
-        getProjectOrThrow(projectId).periods.toProjectPeriods()
+    override fun getProjectPeriods(projectId: Long, version: String?): List<ProjectPeriod>  {
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                getProjectOrThrow(projectId).periods.toProjectPeriods()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData()
+            }
+        ) ?: throw ApplicationVersionNotFoundException()
+    }
 
     @Transactional
     override fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): ProjectDetail {
@@ -163,18 +190,21 @@ class ProjectPersistenceProvider(
     ): ProjectFull {
         val periods =
             projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp).toProjectPeriodHistoricalData()
-        return projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
-            .toProjectEntryWithDetailData(
+        val projectRows = projectRepository.findByIdAsOfTimestamp(projectId, timestamp)
+        return projectRows.toProjectEntryWithDetailData(
                 project,
                 periods,
                 assessmentStep1,
                 assessmentStep2,
                 stateAidRepository.findAllByIdCallId(project.call.id),
-                applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id)
+                applicationFormFieldConfigurationRepository.findAllByCallId(project.call.id),
+                priority = getPriority(priorityId = projectRows.firstOrNull()?.programmePriorityId)
             )
     }
 
-    private fun ProjectEntity.idInStep(step: Int) = ProjectAssessmentId(this, step)
+    private fun getPriority(priorityId: Long?): ProgrammePriorityEntity? =
+        priorityId?.let { programmePriorityRepository.findById(it).orElse(null) }
 
+    private fun ProjectEntity.idInStep(step: Int) = ProjectAssessmentId(this, step)
 
 }

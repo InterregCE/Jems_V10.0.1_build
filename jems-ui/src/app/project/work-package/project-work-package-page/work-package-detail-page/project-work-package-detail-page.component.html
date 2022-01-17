@@ -5,22 +5,22 @@
          *ngIf="workPackageId">
         <a [active]="activeTab('objectives')" mat-tab-link
            (click)="routeTo('objectives')">
-            {{'workpackage.tab.objectives' | translate}}
+            <span appText maxWidth="230">{{'workpackage.tab.objectives' | translate}}</span>
         </a>
         <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS"
            [active]="activeTab('investments')" mat-tab-link
            (click)="routeTo('investments')">
-            {{'workpackage.tab.investments' | translate}}
+            <span appText maxWidth="230">{{'workpackage.tab.investments' | translate}}</span>
         </a>
         <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES"
            [active]="activeTab('activities')" mat-tab-link
            (click)="routeTo('activities')">
-            {{'workpackage.tab.activities' | translate}}
+            <span appText maxWidth="230">{{'workpackage.tab.activities' | translate}}</span>
         </a>
         <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS"
            [active]="activeTab('outputs')" mat-tab-link
            (click)="routeTo('outputs')">
-            {{'workpackage.tab.outputs' | translate}}
+            <span appText maxWidth="230">{{'workpackage.tab.outputs' | translate}}</span>
         </a>
     </nav>
     <router-outlet></router-outlet>

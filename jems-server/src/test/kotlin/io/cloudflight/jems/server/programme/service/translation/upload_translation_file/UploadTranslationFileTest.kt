@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.config.AppResourcesProperties
+import io.cloudflight.jems.server.config.AppProperties
 import io.cloudflight.jems.server.programme.service.translation.TranslationFilePersistence
 import io.cloudflight.jems.server.programme.service.translation.model.TranslationFileMetaData
 import io.cloudflight.jems.server.programme.service.translation.model.TranslationFileType
@@ -45,7 +45,7 @@ internal class UploadTranslationFileTest : UnitTest() {
     lateinit var translationFilePersistence: TranslationFilePersistence
 
     @MockK
-    lateinit var appResourcesProperties: AppResourcesProperties
+    lateinit var appProperties: AppProperties
 
     @RelaxedMockK
     lateinit var messageSource: ReloadableResourceBundleMessageSource
@@ -73,7 +73,7 @@ internal class UploadTranslationFileTest : UnitTest() {
         every {
             translationFilePersistence.save(fileType, language, capture(fileByteArraySlot), fileSize)
         } returns fileMetaData
-        every { appResourcesProperties.translationsFolder } returns translationsFolder
+        every { appProperties.translationsFolder } returns translationsFolder
 
         assertThat(uploadTranslationFile.upload(fileType, language, fileInputStream, fileSize))
             .isEqualTo(fileMetaData)
@@ -99,7 +99,7 @@ internal class UploadTranslationFileTest : UnitTest() {
         every {
             translationFilePersistence.save(fileType, language, capture(fileByteArraySlot), fileSize)
         } returns fileMetaData
-        every { appResourcesProperties.translationsFolder } returns translationsFolder
+        every { appProperties.translationsFolder } returns translationsFolder
 
         assertThat(uploadTranslationFile.upload(fileType, language, fileInputStream, fileSize))
             .isEqualTo(fileMetaData)

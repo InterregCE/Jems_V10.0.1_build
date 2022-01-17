@@ -18,6 +18,7 @@ export class Permission {
     PermissionsEnum.UserCreate,
     PermissionsEnum.UserUpdate,
     PermissionsEnum.UserUpdateRole,
+    PermissionsEnum.UserUpdatePassword,
   ];
 
   public static readonly PROGRAMME_SETUP_MODULE_PERMISSIONS = [
@@ -26,6 +27,20 @@ export class Permission {
   ];
 
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
+    {
+      name: 'project.application.contracting.title',
+      children: [
+        {
+          name: 'project.application.contract.monitoring.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.HIDDEN,
+          hideTooltip: 'permission.create.contracting'
+        }
+        ]
+    },
     {
       name: 'project.application.form.title',
       children: [
@@ -65,11 +80,38 @@ export class Permission {
           state: PermissionState.HIDDEN,
           hideTooltip: 'permission.create.assessment.and.decision'
         },
+        {
+          name: 'project.modification.header',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.HIDDEN,
+          hideTooltip: 'permission.create.modification'
+        },
+        {
+          name: 'project.privileges.header',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectCreatorCollaboratorsRetrieve],
+          editPermissions: [PermissionsEnum.ProjectCreatorCollaboratorsUpdate],
+        },
       ]
     }
   ];
 
   public static readonly DEFAULT_USER_INSPECT_PERMISSIONS: PermissionNode[] = [
+    {
+      name: 'project.application.contracting.title',
+      children: [
+        {
+          name: 'project.application.contract.monitoring.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectContractingView],
+          editPermissions: [PermissionsEnum.ProjectSetToContracted],
+          editTooltip: 'permission.inspect.contracting'
+        }
+      ]
+    },
     {
       name: 'project.application.form.title',
       children: [
@@ -139,6 +181,39 @@ export class Permission {
             },
           ],
         },
+        {
+          name: 'project.modification.header',
+          children: [
+            {
+              name: 'project.modification.panel',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectModificationView],
+              editPermissions: [
+                PermissionsEnum.ProjectStatusDecideModificationApproved,
+                PermissionsEnum.ProjectStatusDecideModificationNotApproved
+              ],
+              editTooltip: 'permission.inspect.modification.panel'
+            },
+            {
+              name: 'project.application.form.section.modification.open.button',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectOpenModification],
+            },
+            {
+              name: 'file.tab.modification',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectModificationFileAssessmentRetrieve],
+              editPermissions: [PermissionsEnum.ProjectModificationFileAssessmentUpdate],
+              editTooltip: 'permission.inspect.modification.files'
+            },
+          ],
+        },
+        {
+          name: 'project.privileges.header',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectMonitorCollaboratorsRetrieve],
+          editPermissions: [PermissionsEnum.ProjectMonitorCollaboratorsUpdate],
+        },
       ]
     }
   ];
@@ -170,9 +245,11 @@ export class Permission {
     },
     {
       name: 'topbar.main.project',
-      mode: PermissionMode.HIDDEN_VIEW,
+      mode: PermissionMode.HIDDEN_VIEW_EDIT,
       viewPermissions: [PermissionsEnum.ProjectRetrieve],
+      editPermissions: [PermissionsEnum.ProjectRetrieveEditUserAssignments],
       icon: 'description',
+      editTooltip: 'permission.top.bar.applications.edit'
     },
     {
       name: 'Calls',
@@ -205,6 +282,7 @@ export class Permission {
             PermissionsEnum.UserCreate,
             PermissionsEnum.UserUpdate,
             PermissionsEnum.UserUpdateRole,
+            PermissionsEnum.UserUpdatePassword,
             PermissionsEnum.RoleCreate,
             PermissionsEnum.RoleUpdate,
           ],

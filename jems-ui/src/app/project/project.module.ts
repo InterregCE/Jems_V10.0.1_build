@@ -69,19 +69,18 @@ import {ProjectResultsPageComponent} from './results/project-results-page/projec
 import {UnitCostsBudgetTableComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/unit-costs-budget-table/unit-costs-budget-table.component';
 import {ProjectWorkPackageOutputsTabComponent} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-outputs-tab/project-work-package-outputs-tab.component';
 import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/project-lump-sums-page.component';
-import {ProjectLumpSumsPageStore} from './lump-sums/project-lump-sums-page/project-lump-sums-page.store';
+import {ProjectLumpSumsStore} from './lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/budget-page-per-partner.component';
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
 import {FilterUnitCostsPipe} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
 import {ProjectApplicationPreConditionCheckResultComponent} from './project-detail-page/project-application-pre-condition-check-result/project-application-pre-condition-check-result.component';
 import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
-import {ProjectVersionStore} from './common/services/project-version-store.service';
 import {ProjectPageTemplateComponent} from './project-page-template/project-page-template.component';
 import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
 import {FormFieldVisibilityStatusDirective} from './common/directives/form-field-visibility-status.directive';
 import {ProjectPartnerStateAidTabComponent} from './partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
-import {ProjectApplicationFilesTreeComponent} from './common/components/file-management/project-application-files-tree/project-application-files-tree.component';
+import {CategoryTreeComponent} from './common/components/category-tree/category-tree.component';
 import {PeriodsTotalPipe} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/periods-total.pipe';
 import {FileManagementComponent} from './common/components/file-management/file-management.component';
 import {ProjectApplicationFilesTableComponent} from './common/components/file-management/project-application-files-table/project-application-files-table.component';
@@ -95,6 +94,28 @@ import {PartnerBreadcrumbResolver} from '@project/project-application/containers
 import {WorkPackageBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/work-package-breadcrumb-resolver.service';
 import {ProjectWorkPackageInvestmentDetailPageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-Investment-detail-page-store.service';
 import {InvestmentBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
+import {ProjectPartnerBudgetOverviewComponent} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-overview/project-partner-budget-overview.component';
+import {BudgetTableComponent} from '@project/budget/budget-page/budget-table/budget-table.component';
+import {ProjectApplicationFormA4Component} from '@project/project-overview-tables-page/project-application-form-a4/project-application-form-a4.component';
+import {ProjectOverviewTablesPageComponent} from './project-overview-tables-page/project-overview-tables-page.component';
+import {ProjectBudgetOverviewComponent} from './project-overview-tables-page/project-budget-overview/project-budget-overview.component';
+import {BudgetPageFundPerPeriodComponent} from './budget/budget-page-per-period/budget-page-fund-per-period/budget-page-fund-per-period.component';
+import {BudgetPerPeriodPageComponent} from './budget/budget-page-per-period/budget-per-period-page.component';
+import {ProjectBudgetPeriodPageStore} from '@project/budget/budget-page-per-period/budget-period-page.store';
+import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
+import {ProjectPartnerCoFinancingStore} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
+import {ProjectPartnerStateAidsStore} from '@project/partner/services/project-partner-state-aids.store';
+import {BudgetPagePartnerPerPeriodComponent} from '@project/budget/budget-page-per-period/budget-page-partner-per-period/budget-page-partner-per-period.component';
+import { ExportComponent } from './project-application/export/export.component';
+import {UsersFilterPipe} from '@common/components/project-application-list-user-assignments/user-filter.pipe';
+import {ProjectApplicationListUserAssignmentsComponent} from '@common/components/project-application-list-user-assignments/project-application-list-user-assignments.component';
+import {ProjectUnitCostsPageComponent} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-page.component';
+import {ProjectUnitCostsStore} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-store.service';
+import {ModificationPageComponent} from './project-application/modification-page/modification-page.component';
+import {ModificationConfirmationComponent} from './project-application/modification-page/modification-confirmation/modification-confirmation.component';
+import {PrivilegesPageComponent} from './project-application/privileges-page/privileges-page.component';
+import { ContractMonitoringComponent } from './project-application/contract-monitoring/contract-monitoring.component';
+import { LumpsumBudgetTableComponent } from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/lumpsum-budget-table/lumpsum-budget-table.component';
 
 @NgModule({
   declarations: [
@@ -148,11 +169,14 @@ import {InvestmentBreadcrumbResolver} from '@project/project-application/contain
     ProjectPartnerBudgetComponent,
     ProjectPartnerCoFinancingTabComponent,
     ProjectPartnerBudgetOptionsComponent,
+    ProjectPartnerBudgetOverviewComponent,
     ProjectApplicationPartnerIdentityComponent,
     ProjectApplicationFormIdentificationPageComponent,
+    ProjectApplicationFormA4Component,
     ProjectApplicationFormAssociatedOrgPageComponent,
     ProjectApplicationFormAddressComponent,
     BudgetPageComponent,
+    BudgetTableComponent,
     BudgetFlatRateTableComponent,
     GeneralBudgetTableComponent,
     StaffCostsBudgetTableComponent,
@@ -163,6 +187,7 @@ import {InvestmentBreadcrumbResolver} from '@project/project-application/contain
     ProjectPeriodsSelectComponent,
     ProjectResultsPageComponent,
     ProjectLumpSumsPageComponent,
+    ProjectUnitCostsPageComponent,
     BudgetPagePerPartnerComponent,
     ProjectTimeplanPageComponent,
     FilterUnitCostsPipe,
@@ -174,13 +199,26 @@ import {InvestmentBreadcrumbResolver} from '@project/project-application/contain
     FormFieldVisibilityStatusDirective,
     ProjectPartnerStateAidTabComponent,
     FileManagementComponent,
-    ProjectApplicationFilesTreeComponent,
+    CategoryTreeComponent,
     ProjectApplicationFilesTableComponent,
     ProjectPartnerFilterPipe,
     ApplicationAnnexesComponent,
     CheckAndSubmitComponent,
     AssessmentAndDecisionComponent,
     ProjectWorkPackageActivitiesFilterPipe,
+    BudgetPagePartnerPerPeriodComponent,
+    ProjectOverviewTablesPageComponent,
+    ProjectBudgetOverviewComponent,
+    BudgetPageFundPerPeriodComponent,
+    BudgetPerPeriodPageComponent,
+    ExportComponent,
+    UsersFilterPipe,
+    ProjectApplicationListUserAssignmentsComponent,
+    ModificationPageComponent,
+    ModificationConfirmationComponent,
+    PrivilegesPageComponent,
+    ContractMonitoringComponent,
+    LumpsumBudgetTableComponent
   ],
   imports: [
     SharedModule,
@@ -191,7 +229,6 @@ import {InvestmentBreadcrumbResolver} from '@project/project-application/contain
   ],
   providers: [
     DatePipe,
-    ProjectVersionStore,
     ProjectApplicationFormSidenavService,
     ProjectApplicationFormStore,
     ProjectAcronymResolver,
@@ -202,7 +239,12 @@ import {InvestmentBreadcrumbResolver} from '@project/project-application/contain
     ProjectWorkPackageInvestmentDetailPageStore,
     ProjectWorkPackagePageStore,
     ProjectPartnerDetailPageStore,
-    ProjectLumpSumsPageStore
+    ProjectLumpSumsStore,
+    ProjectUnitCostsStore,
+    ProjectBudgetPeriodPageStore,
+    ProjectPartnerBudgetStore,
+    ProjectPartnerCoFinancingStore,
+    ProjectPartnerStateAidsStore
   ]
 })
 export class ProjectModule {

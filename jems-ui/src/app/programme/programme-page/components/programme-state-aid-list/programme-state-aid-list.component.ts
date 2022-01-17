@@ -6,13 +6,11 @@ import {
   Input,
   OnChanges,
   OnInit,
-  Output, SimpleChanges
+  Output,
+  SimpleChanges
 } from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
-import {
-  ProgrammeStateAidDTO,
-  ProgrammeStateAidUpdateDTO
-} from '@cat/api';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
+import {ProgrammeStateAidDTO, ProgrammeStateAidUpdateDTO} from '@cat/api';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
@@ -20,6 +18,7 @@ import {tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormState} from '@common/components/forms/form-state';
 import {ProgrammeStateAidConstants, ProgrammeStateAidMeasureRelation} from './constants/programme-state-aid-constants';
+import {TableConfig} from '@common/directives/table-config/TableConfig';
 
 @UntilDestroy()
 @Component({
@@ -28,7 +27,7 @@ import {ProgrammeStateAidConstants, ProgrammeStateAidMeasureRelation} from './co
   styleUrls: ['./programme-state-aid-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeStateAidListComponent extends ViewEditForm implements OnInit, OnChanges {
+export class ProgrammeStateAidListComponent extends ViewEditFormComponent implements OnInit, OnChanges {
   programmeStateAidConstants = ProgrammeStateAidConstants;
 
   @Input()
@@ -40,10 +39,11 @@ export class ProgrammeStateAidListComponent extends ViewEditForm implements OnIn
   isProgrammeSetupRestricted: boolean;
   toDeleteIds: number[] = [];
 
-  stateAidForm = new FormGroup({});
+  stateAidForm: FormGroup;
   measureRelations = this.programmeStateAidConstants.stateAidMeasures;
   initialSelectedMeasures: ProgrammeStateAidDTO.MeasureEnum[];
   filteredMeasureRelations: ProgrammeStateAidMeasureRelation[];
+  tableConfig: TableConfig[];
 
   constructor(protected changeDetectorRef: ChangeDetectorRef,
               private formBuilder: FormBuilder,
@@ -64,6 +64,11 @@ export class ProgrammeStateAidListComponent extends ViewEditForm implements OnIn
     this.resetForm();
     this.initialSelectedMeasures = this.stateAids.map(stateAid => stateAid.measure);
     this.filteredMeasureRelations = this.measureRelations.filter(value => this.initialSelectedMeasures.indexOf(value.measure) < 0);
+
+    this.changeFormState$
+      .pipe(
+        untilDestroyed(this),
+      ).subscribe(state => this.tableConfig = [{minInRem: 19},{minInRem: 21},{minInRem: 21},{minInRem: 7},{minInRem: 6, maxInRem: 6},{minInRem: 8, maxInRem: 8},{minInRem: 40, maxInRem: 40}, ...state === FormState.EDIT ? [{maxInRem: 3, minInRem: 3}] : []]);
   }
 
   get stateAidsForm(): FormArray {

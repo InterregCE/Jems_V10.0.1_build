@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 data class OutputProjectAssociatedOrganizationDetail (
 
     val id: Long,
+    val active: Boolean,
     val partner: ProjectPartnerSummaryDTO,
     override val nameInOriginalLanguage: String? = null,
     override val nameInEnglish: String? = null,

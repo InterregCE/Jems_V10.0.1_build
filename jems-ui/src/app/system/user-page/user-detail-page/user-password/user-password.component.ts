@@ -10,7 +10,7 @@ import {
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {filter, take, takeUntil} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {TranslateService} from '@ngx-translate/core';
 import {FormState} from '@common/components/forms/form-state';
 import {UserDetailPageStore} from '../user-detail-page-store.service';
@@ -22,7 +22,7 @@ import {Forms} from '../../../../common/utils/forms';
   styleUrls: ['./user-password.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserPasswordComponent extends ViewEditForm implements OnInit {
+export class UserPasswordComponent extends ViewEditFormComponent implements OnInit {
   // password should have: at least 10 characters, one upper case letter, one lower case letter and one digit
   static PASSWORD_REGEX = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,})');
 

@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.TranslationPartnerId
 import io.cloudflight.jems.server.project.entity.partner.PartnerAddressRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
+import io.cloudflight.jems.server.project.entity.partner.PartnerDetailRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerMotivationRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
@@ -25,6 +26,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.PartnerStateAidRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidActivityEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidActivityId
@@ -33,6 +35,7 @@ import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartne
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionEntity
 import io.cloudflight.jems.server.project.repository.workpackage.activity.toSummaryModel
+import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
@@ -44,6 +47,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
+import java.math.BigDecimal
 
 fun ProjectPartner.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
     ProjectPartnerEntity(
@@ -84,9 +88,11 @@ fun MutableSet<ProjectPartnerTranslEntity>.addPartnerTranslations(
 fun ProjectPartnerEntity.toProjectPartner() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
+    active = active,
     role = role,
     sortNumber = sortNumber,
-    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
+    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country,
+    region = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.nutsRegion3
 )
 
 fun ProjectPartnerEntity.copy(
@@ -106,7 +112,7 @@ fun ProjectPartnerEntity.copy(
     nameInOriginalLanguage = projectPartner?.nameInOriginalLanguage ?: nameInOriginalLanguage,
     nameInEnglish = projectPartner?.nameInEnglish ?: nameInEnglish,
     partnerType = projectPartner?.partnerType ?: partnerType,
-    partnerSubType = projectPartner?.partnerSubType ?: partnerSubType,
+    partnerSubType = projectPartner?.partnerSubType,
     nace = projectPartner?.nace ?: nace,
     otherIdentifierNumber = projectPartner?.otherIdentifierNumber ?: otherIdentifierNumber,
     pic = projectPartner?.pic ?: pic,
@@ -129,9 +135,11 @@ fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartne
 fun ProjectPartnerEntity.toModel() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
+    active = active,
     role = role,
     sortNumber = sortNumber,
-    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country
+    country = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.country,
+    region = addresses?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address?.nutsRegion3
 )
 
 fun Iterable<ProjectPartnerEntity>.toModel() = map { it.toModel() }
@@ -139,6 +147,7 @@ fun Iterable<ProjectPartnerEntity>.toModel() = map { it.toModel() }
 fun ProjectPartnerEntity.toProjectPartnerDetail() = ProjectPartnerDetail(
     projectId = project.id,
     id = id,
+    active = active,
     abbreviation = abbreviation,
     role = role,
     sortNumber = sortNumber,
@@ -304,17 +313,18 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
     ProjectPartnerDetail(
         projectId = groupedRows.value.first().projectId,
         id = groupedRows.value.first().id,
+        active = groupedRows.value.first().active,
         abbreviation = groupedRows.value.first().abbreviation,
         role = groupedRows.value.first().role,
         sortNumber = groupedRows.value.first().sortNumber,
         nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
         nameInEnglish = groupedRows.value.first().nameInEnglish,
-        department = groupedRows.value.extractField { it.department },
+        department = extractField { it.department },
         partnerType = groupedRows.value.first().partnerType,
         partnerSubType = groupedRows.value.first().partnerSubType,
         nace = groupedRows.value.first().nace,
         otherIdentifierNumber = groupedRows.value.first().otherIdentifierNumber,
-        otherIdentifierDescription = groupedRows.value.extractField { it.otherIdentifierDescription },
+        otherIdentifierDescription = extractField { it.otherIdentifierDescription },
         pic = groupedRows.value.first().pic,
         legalStatusId = groupedRows.value.first().legalStatusId,
         vat = groupedRows.value.first().vat,
@@ -328,17 +338,21 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
 fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
+    active = active,
     role = role,
     sortNumber = sortNumber,
-    country = country
+    country = country,
+    region = nutsRegion2
 )
 
 fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
+    active = active,
     role = role,
     sortNumber = sortNumber,
-    country = country
+    country = country,
+    region = nutsRegion2
 )
 
 fun ProjectPartnerStateAid.toEntity(
@@ -431,3 +445,72 @@ fun List<PartnerStateAidRow>.toModel(
             stateAidScheme = stateAid?.toModel()
         )
     }.firstOrNull()
+
+fun List<ProjectPartnerBudgetPerPeriodRow>.toProjectPartnerBudgetPerPeriod() = map { it.toModel() }.toList()
+
+fun ProjectPartnerBudgetPerPeriodRow.toModel() = ProjectPartnerBudget(
+    id = id,
+    periodNumber = periodNumber ?: 0,
+    staffCostsPerPeriod = staffCostsPerPeriod ?: BigDecimal.ZERO,
+    travelAndAccommodationCostsPerPeriod = travelAndAccommodationCostsPerPeriod ?: BigDecimal.ZERO,
+    equipmentCostsPerPeriod = equipmentCostsPerPeriod ?: BigDecimal.ZERO,
+    externalExpertiseAndServicesCostsPerPeriod = externalExpertiseAndServicesCostsPerPeriod ?: BigDecimal.ZERO,
+    infrastructureAndWorksCostsPerPeriod = infrastructureAndWorksCostsPerPeriod ?: BigDecimal.ZERO,
+    unitCostsPerPeriod = unitCostsPerPeriod ?: BigDecimal.ZERO
+)
+
+
+fun List<PartnerDetailRow>.toModel(): List<ProjectPartnerDetail> =
+    groupBy { it.id }.map { groupedRows ->
+        ProjectPartnerDetail(
+            id = groupedRows.key,
+            active = groupedRows.value.first().active,
+            projectId = groupedRows.value.first().projectId,
+            abbreviation = groupedRows.value.first().abbreviation,
+            role = groupedRows.value.first().role,
+            sortNumber = groupedRows.value.first().sortNumber,
+            nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
+            nameInEnglish = groupedRows.value.first().nameInEnglish,
+            department = groupedRows.value.extractField { it.department },
+            partnerType = groupedRows.value.first().partnerType,
+            partnerSubType = groupedRows.value.first().partnerSubType,
+            nace = groupedRows.value.first().nace,
+            otherIdentifierNumber = groupedRows.value.first().otherIdentifierNumber,
+            otherIdentifierDescription = groupedRows.value.extractField { it.otherIdentifierDescription },
+            pic = groupedRows.value.first().pic,
+            legalStatusId = groupedRows.value.first().legalStatusId,
+            vat = groupedRows.value.first().vat,
+            vatRecovery = groupedRows.value.first().vatRecovery,
+            addresses = groupedRows.value.filter { it.addressType != null }.groupBy { it.addressType }.map { addressGroupedRows ->
+                ProjectPartnerAddress(
+                    type = addressGroupedRows.key!!,
+                    country = addressGroupedRows.value.first().country,
+                    nutsRegion2 = addressGroupedRows.value.first().nutsRegion2,
+                    nutsRegion3 = addressGroupedRows.value.first().nutsRegion3,
+                    street = addressGroupedRows.value.first().street,
+                    houseNumber = addressGroupedRows.value.first().houseNumber,
+                    postalCode = addressGroupedRows.value.first().postalCode,
+                    city = addressGroupedRows.value.first().city,
+                    homepage = addressGroupedRows.value.first().homepage
+                )
+            },
+            contacts = groupedRows.value.filter { it.contactType != null }.groupBy { it.contactType }.map { contactGroupedRows ->
+                ProjectPartnerContact(
+                    type = contactGroupedRows.key!!,
+                    title = contactGroupedRows.value.first().title,
+                    firstName = contactGroupedRows.value.first().firstName,
+                    lastName = contactGroupedRows.value.first().lastName,
+                    email = contactGroupedRows.value.first().email,
+                    telephone = contactGroupedRows.value.first().telephone
+                )
+            },
+            motivation = groupedRows.value.firstOrNull{ it.motivationRowLanguage != null }?.let {
+                ProjectPartnerMotivation(
+                    organizationRelevance = groupedRows.value.extractField({ it.motivationRowLanguage }) { it.organizationRelevance },
+                    organizationRole = groupedRows.value.extractField({ it.motivationRowLanguage }) { it.organizationRole },
+                    organizationExperience = groupedRows.value.extractField({ it.motivationRowLanguage }) { it.organizationExperience }
+                )
+            }
+        )
+
+    }

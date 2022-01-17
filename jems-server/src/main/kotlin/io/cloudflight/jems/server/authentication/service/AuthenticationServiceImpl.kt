@@ -37,7 +37,7 @@ class AuthenticationServiceImpl(
         return OutputCurrentUser(id, user, role)
     }
 
-    override fun login(req: HttpServletRequest, loginRequest: LoginRequest): OutputCurrentUser? {
+    override fun login(req: HttpServletRequest, loginRequest: LoginRequest): OutputCurrentUser {
         log.info("Attempting login for email {}", loginRequest.email)
 
         SecurityContextHolder.getContext().authentication = authenticationManager.authenticate(

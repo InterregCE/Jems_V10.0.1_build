@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import {ProjectPartnerBudgetOptionsComponent} from './project-partner-budget-options.component';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
@@ -17,7 +17,7 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
   let httpTestingController: HttpTestingController;
   let projectPartnerBudgetTabService: ProjectPartnerBudgetTabService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         TestModule,
@@ -40,7 +40,7 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
         {
           provide: ProjectVersionStore,
           useValue: {
-            currentRouteVersion$: of('1.0')
+            selectedVersionParam$: of('1.0')
           }
         },
         {

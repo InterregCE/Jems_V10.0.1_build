@@ -92,32 +92,44 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
             projectBenefits = setOf(
                 ProjectRelevanceBenefitEntity(
                     id = projectBenefitUuid,
+                    sortNumber = 1,
                     targetGroup = ProjectTargetGroupDTO.LocalPublicAuthority,
-                    translatedValues = combineTranslatedValuesBenefit(
-                        uuid = projectBenefitUuid,
-                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                ).apply {
+                    translatedValues.addAll(
+                        combineTranslatedValuesBenefit(
+                            this,
+                            specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                        )
                     )
-                )
+                }
             ),
             projectStrategies = setOf(
                 ProjectRelevanceStrategyEntity(
                     id = projectStrategyUuid,
+                    sortNumber = 1,
                     strategy = ProgrammeStrategy.AtlanticStrategy,
-                    translatedValues = combineTranslatedValuesStrategy(
-                        uuid = projectStrategyUuid,
-                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                ).apply {
+                    translatedValues.addAll(
+                        combineTranslatedValuesStrategy(
+                            this,
+                            specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                        )
                     )
-                )
+                }
             ),
             projectSynergies = setOf(
                 ProjectRelevanceSynergyEntity(
                     id = projectSynergyUuid,
-                    translatedValues = combineTranslatedValuesSynergy(
-                        uuid = projectSynergyUuid,
-                        synergy = setOf(InputTranslation(SystemLanguage.EN, "synergy")),
-                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                    sortNumber = 1,
+                ).apply {
+                    translatedValues.addAll(
+                        combineTranslatedValuesSynergy(
+                            this,
+                            synergy = setOf(InputTranslation(SystemLanguage.EN, "synergy")),
+                            specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                        )
                     )
-                )
+                }
             )
         )
         private fun dummyProjectPartnership() = ProjectPartnershipEntity(

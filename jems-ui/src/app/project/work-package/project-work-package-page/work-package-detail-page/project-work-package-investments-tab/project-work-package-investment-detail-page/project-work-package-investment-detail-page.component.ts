@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {OutputNuts, WorkPackageInvestmentDTO} from '@cat/api';
+import {OutputNuts, ProjectPeriodDTO, WorkPackageInvestmentDTO} from '@cat/api';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
@@ -8,6 +8,7 @@ import {ProjectWorkPackageInvestmentDetailPageConstants} from './project-work-pa
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {WorkPackagePageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
 
 @Component({
   selector: 'app-project-work-package-investment-detail-page',
@@ -23,14 +24,16 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
   private workPackageInvestmentId: number;
 
   data$: Observable<{
-    investment: WorkPackageInvestmentDTO,
-    workPackageNumber: number,
-    nuts: OutputNuts[]
+    investment: WorkPackageInvestmentDTO;
+    workPackageNumber: number;
+    periods: ProjectPeriodDTO[];
+    nuts: OutputNuts[];
   }>;
 
   workPackageInvestmentForm: FormGroup = this.formBuilder.group({
     number: [''],
     title: ['', this.constants.TITLE.validators],
+    expectedDeliveryPeriod: [null],
     justificationExplanation: ['', this.constants.JUSTIFICATION_EXPLANATION.validators],
     justificationTransactionalRelevance: ['', this.constants.JUSTIFICATION_TRANSNATIONAL_RELEVANCE.validators],
     justificationBenefits: ['', this.constants.JUSTIFICATION_BENEFITS.validators],
@@ -46,6 +49,7 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     }),
     risk: ['', this.constants.RISK.validators],
     documentation: ['', this.constants.DOCUMENTATION.validators],
+    documentationExpectedImpacts: ['', this.constants.DOCUMENTATION_EXPECTED_IMPACTS.validators],
     ownershipSiteLocation: ['', this.constants.OWNERSHIP_SITE_LOCATION.validators],
     ownershipMaintenance: ['', this.constants.OWNERSHIP_MAINTENANCE.validators],
     ownershipRetain: ['', this.constants.OWNERSHIP_RETAIN.validators],
@@ -53,10 +57,11 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
 
 
   constructor(private formBuilder: FormBuilder,
-              private formService: FormService,
+              public formService: FormService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
-              public investmentPageStore: ProjectWorkPackageInvestmentDetailPageStore) {
+              public investmentPageStore: ProjectWorkPackageInvestmentDetailPageStore,
+              private workPackageStore: WorkPackagePageStore) {
   }
 
   ngOnInit(): void {
@@ -65,9 +70,10 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     this.data$ = combineLatest([
       this.investmentPageStore.investment$,
       this.investmentPageStore.workPackageNumber$,
+      this.workPackageStore.projectForm$,
       this.investmentPageStore.nuts$
     ]).pipe(
-      map(([investment, workPackageNumber, nuts]) => ({investment, workPackageNumber, nuts})),
+      map(([investment, workPackageNumber, projectForm, nuts]) => ({investment, workPackageNumber, periods : projectForm.periods, nuts})),
       tap(data => this.workPackageInvestmentId = data.investment.id),
       tap(data => this.formService.setCreation(!data.investment.id)),
       tap(data => this.resetForm(data.investment, data.workPackageNumber)),
@@ -122,6 +128,8 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     this.address.city.setValue(investment?.address?.city);
     this.workPackageInvestmentForm.controls.risk?.setValue(investment?.risk || []);
     this.workPackageInvestmentForm.controls.documentation?.setValue(investment?.documentation || []);
+    this.workPackageInvestmentForm.controls.documentationExpectedImpacts?.setValue(investment?.documentationExpectedImpacts || []);
+    this.workPackageInvestmentForm.controls.expectedDeliveryPeriod?.setValue(investment?.expectedDeliveryPeriod || null);
     this.workPackageInvestmentForm.controls.ownershipSiteLocation?.setValue(investment?.ownershipSiteLocation || []);
     this.workPackageInvestmentForm.controls.ownershipMaintenance?.setValue(investment?.ownershipMaintenance || []);
     this.workPackageInvestmentForm.controls.ownershipRetain?.setValue(investment?.ownershipRetain || []);

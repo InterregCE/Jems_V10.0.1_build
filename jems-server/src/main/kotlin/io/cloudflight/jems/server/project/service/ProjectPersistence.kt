@@ -25,11 +25,13 @@ interface ProjectPersistence {
 
     fun getCallIdOfProject(projectId: Long): Long
 
-    fun getProjects(pageable: Pageable, filterByOwnerId: Long? = null): Page<ProjectSummary>
+    fun getProjects(pageable: Pageable): Page<ProjectSummary>
+
+    fun getProjectsOfUserPlusExtra(pageable: Pageable, extraProjectIds: Collection<Long>): Page<ProjectSummary>
 
     fun getProjectUnitCosts(projectId: Long): List<ProgrammeUnitCost>
 
-    fun getProjectPeriods(projectId: Long): List<ProjectPeriod>
+    fun getProjectPeriods(projectId: Long, version: String? = null): List<ProjectPeriod>
 
     fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): ProjectDetail
 

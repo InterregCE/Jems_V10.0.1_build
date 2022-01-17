@@ -106,8 +106,16 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectId(projectId: Long): Iterable<ProjectPartnerDetail> {
-        return projectPartnerRepository.findAllByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
+    override fun findTop30ByProjectId(projectId: Long, version: String?): Iterable<ProjectPartnerDetail> {
+        return projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectPartnerRepository.findTop30ByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectPartnerRepository.findTop30ByProjectIdAsOfTimestamp(projectId, timestamp).toModel()
+            }
+        ) ?: emptyList()
+
     }
 
     @Transactional(readOnly = true)
@@ -128,24 +136,24 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional
-    override fun create(projectId: Long, projectPartner: ProjectPartner): ProjectPartnerDetail =
+    override fun create(projectId: Long, projectPartner: ProjectPartner, resortByRole: Boolean): ProjectPartnerDetail =
         projectPartnerRepository.save(
             projectPartner.toEntity(
-                project = projectRepo.getReferenceIfExistsOrThrow(projectId),
-                legalStatus = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId)
+                project = projectRepo.getById(projectId),
+                legalStatus = legalStatusRepo.getById(projectPartner.legalStatusId!!)
             )
-        ).also { updateSortByRole(projectId) }.toProjectPartnerDetail()
+        ).also { if(resortByRole) updateSortByRole(projectId) else it.sortNumber = projectPartnerRepository.countByProjectId(projectId).toInt()}.toProjectPartnerDetail()
 
 
     @Transactional
-    override fun update(projectPartner: ProjectPartner): ProjectPartnerDetail =
+    override fun update(projectPartner: ProjectPartner, resortByRole: Boolean): ProjectPartnerDetail =
         getPartnerOrThrow(projectPartner.id!!).let { entity ->
             projectPartnerRepository.save(
                 entity.copy(
                     projectPartner = projectPartner,
-                    legalStatusRef = legalStatusRepo.getReferenceIfExistsOrThrow(projectPartner.legalStatusId)
+                    legalStatusRef = projectPartner.legalStatusId?.let { legalStatusRepo.getById(it) },
                 )
-            ).also { updateSortByRole(entity.project.id) }
+            ).also { if (resortByRole) updateSortByRole(entity.project.id) }
         }.toProjectPartnerDetail()
 
 
@@ -193,13 +201,11 @@ class PartnerPersistenceProvider(
     @Transactional
     override fun updatePartnerStateAid(partnerId: Long, stateAid: ProjectPartnerStateAid): ProjectPartnerStateAid {
         val workPackageActivities =
-            stateAid.activities?.map { workPackageActivityRepository.getReferenceIfExistsOrThrow(it.activityId) }
-                .orEmpty()
-                .filterNotNull()
+            stateAid.activities?.map { workPackageActivityRepository.getById(it.activityId) }.orEmpty()
         return projectPartnerStateAidRepository.save(stateAid.toEntity(
             partnerId = partnerId,
             workPackageActivities = workPackageActivities,
-            programmeStateAid = programmeStateAidRepository.getReferenceIfExistsOrThrow(stateAid.stateAidScheme?.id)
+            programmeStateAid = stateAid.stateAidScheme?.id?.let {programmeStateAidRepository.getById(it) }
         )).toModel()
     }
 
@@ -209,6 +215,13 @@ class PartnerPersistenceProvider(
         projectPartnerRepository.deleteById(partnerId)
         updateSortByRole(projectId)
         projectAssociatedOrganizationService.refreshSortNumbers(projectId)
+    }
+
+    @Transactional
+    override fun deactivatePartner(partnerId: Long) {
+        projectPartnerRepository.getById(partnerId).apply {
+            active = false
+        }
     }
 
     /**

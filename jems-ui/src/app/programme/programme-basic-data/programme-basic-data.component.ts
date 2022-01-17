@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {ViewEditForm} from '@common/components/forms/view-edit-form';
+import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.component';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
-import {catchError, filter, map, mergeMap, share, shareReplay, startWith, take, tap} from 'rxjs/operators';
+import {catchError, filter, map, mergeMap, shareReplay, startWith, take, tap} from 'rxjs/operators';
 import {OutputProgrammeData, ProgrammeDataService} from '@cat/api';
 import {Tools} from '@common/utils/tools';
 import {TranslateService} from '@ngx-translate/core';
@@ -25,7 +25,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
   styleUrls: ['./programme-basic-data.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeBasicDataComponent extends ViewEditForm implements OnInit {
+export class ProgrammeBasicDataComponent extends ViewEditFormComponent implements OnInit {
   private static readonly DATE_SHOULD_BE_VALID = 'common.date.should.be.valid';
   Permission = Permission;
   tools = Tools;
@@ -56,7 +56,7 @@ export class ProgrammeBasicDataComponent extends ViewEditForm implements OnInit 
       })
     );
 
-  programme$ = merge(this.programmeById$, this.savedProgramme$).pipe(share());
+  programme$ = merge(this.programmeById$, this.savedProgramme$).pipe(shareReplay(1));
 
   programmeForm = this.formBuilder.group({
     cci: ['', Validators.maxLength(15)],

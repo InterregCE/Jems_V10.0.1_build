@@ -40,7 +40,8 @@ class FirstStepApprovedApplicationWithConditionsStateTest {
 
         private val actionInfo = ApplicationActionInfo(
             note = "some dummy note",
-            date = LocalDate.now()
+            date = LocalDate.now(),
+            entryIntoForceDate = LocalDate.now()
         )
     }
 

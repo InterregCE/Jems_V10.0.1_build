@@ -12,6 +12,10 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.EDIT
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import org.springframework.data.domain.Sort
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
@@ -20,7 +24,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class WorkPackageServiceImpl(
     private val workPackageRepository: WorkPackageRepository,
-    private val projectRepository: ProjectRepository
+    private val projectRepository: ProjectRepository,
+    private val collaboratorRepository: UserProjectCollaboratorRepository,
 ) : WorkPackageService {
 
     companion object {
@@ -29,7 +34,14 @@ class WorkPackageServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getProjectForWorkPackageId(id: Long): ProjectApplicantAndStatus =
-        getWorkPackageOrThrow(id).project.toApplicantAndStatus()
+        getWorkPackageOrThrow(id).project.let {
+            val collaboratorsByLevel = collaboratorRepository.findAllByIdProjectId(it.id).groupBy { it.level }
+            return it.toApplicantAndStatus(
+                collaboratorViewIds = collaboratorsByLevel[VIEW] ?: emptySet(),
+                collaboratorEditIds = collaboratorsByLevel[EDIT] ?: emptySet(),
+                collaboratorManageIds = collaboratorsByLevel[MANAGE] ?: emptySet(),
+            )
+        }
 
     @CanUpdateProjectForm
     @Transactional

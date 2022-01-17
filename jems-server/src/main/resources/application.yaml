@@ -22,6 +22,20 @@ spring:
       enabled: true
       max-file-size: 50MB
       max-request-size: 51MB
+  mail:
+    host: "${SMTP_HOST:localhost}"
+    port: 1025
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: false
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: false
 
 audit-service:
   enabled: "${AUDIT_ENABLED:true}"
@@ -35,6 +49,8 @@ server:
   servlet:
     session:
       timeout: 60m
+  error:
+    path: "/error"
 
 management:
   endpoints:
@@ -48,11 +64,17 @@ management:
     elasticsearch:
       enabled: "${AUDIT_ENABLED:true}"
 info:
-  helpdesk-url: "https://helpdesk.interact-eu.net"
+  helpdesk-url: "${HELPDESK_URL:}"
+  helpdesk-email: "${HELPDESK_EMAIL:}"
   accessibility-statement-url: ""
   terms-privacy-policy-url: ""
 app:
+  server-url: "${SERVER_URL:http://localhost:4200}"
   security:
     default-password-prefix: Jems@2020
   translations-folder: resources/translations/
-
+  notification:
+    mail:
+      enabled: "${MAIL_ENABLED:false}"
+      sender: jems@jems.com
+      bcc-list:

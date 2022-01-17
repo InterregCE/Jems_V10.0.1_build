@@ -12,7 +12,6 @@ import {BreadcrumbComponent} from '@common/components/breadcrumb/breadcrumb.comp
 import {AlertComponent} from '@common/components/forms/form-validation/alert.component';
 import {ExpandableTextareaComponent} from '@common/components/expandable-textarea/expandable-textarea.component';
 import {TopBarComponent} from '@common/components/top-bar/top-bar.component';
-import {MenuComponent} from '@common/components/menu/menu.component';
 import {FormFieldErrorsComponent} from '@common/components/forms/form-field-errors/form-field-errors.component';
 import {ConfirmDialogComponent} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.component';
@@ -48,6 +47,12 @@ import {HasPermissionDirective} from './directives/has-permission.directive';
 import {HintDirective} from './directives/hint.directive';
 import {TextHintComponent} from '@common/components/forms/text-hint/text-hint.component';
 import {IsMenuActivePipe} from '@common/components/side-nav/is-menu-active.pipe';
+import {FilterAutocompleteInputComponent} from '@common/components/filter/filter-autocomplete-input/filter-autocomplete-input.component';
+import {FilterTemplateComponent} from '@common/components/filter/filter-template/filter-template.component';
+import {FilterTextInputComponent} from '@common/components/filter/filter-text-input/filter-text-input.component';
+import {FilterListInputComponent} from '@common/components/filter/filter-list-input/filter-list-input.component';
+import {FilterDateInputComponent} from '@common/components/filter/filter-date-input/filter-date-input.component';
+import {TextDirective} from '@common/directives/text.directive';
 
 const modules = [
   CommonModule,
@@ -81,7 +86,6 @@ const declarations = [
   AlertComponent,
   ExpandableTextareaComponent,
   TopBarComponent,
-  MenuComponent,
   FormFieldErrorsComponent,
   ConfirmDialogComponent,
   HelpMenuComponent,
@@ -96,13 +100,19 @@ const declarations = [
   MultiColumnRowDirective,
   NoWidthLimitDirective,
   LabelDirective,
+  TextDirective,
   MainPageTemplateComponent,
   ApiErrorContentComponent,
   InlineEditableFieldComponent,
   CustomTranslatePipe,
   HintDirective,
   TextHintComponent,
-  IsMenuActivePipe
+  IsMenuActivePipe,
+  FilterTemplateComponent,
+  FilterTextInputComponent,
+  FilterDateInputComponent,
+  FilterListInputComponent,
+  FilterAutocompleteInputComponent
 ];
 
 const providers = [

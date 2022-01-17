@@ -24,8 +24,8 @@ export class CallAllowedRealCostsComponent {
   });
 
   data$: Observable<{
-    allowedRealCosts: AllowedRealCostsDTO,
-    callIsPublished: boolean
+    allowedRealCosts: AllowedRealCostsDTO;
+    callIsPublished: boolean;
   }>;
 
   constructor(private pageStore: CallBudgetSettingsPageStore,

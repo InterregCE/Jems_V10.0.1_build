@@ -12,4 +12,5 @@ data class BudgetTravelAndAccommodationCostEntry(
     val pricePerUnit: BigDecimal,
     val unitType: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> = emptySet(),
+    val comments: Set<InputTranslation> = emptySet()
 ) : BaseBudgetEntry

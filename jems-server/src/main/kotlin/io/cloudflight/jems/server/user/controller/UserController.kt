@@ -23,7 +23,7 @@ class UserController(
 ) : UserApi {
 
     override fun list(pageable: Pageable, searchRequest: UserSearchRequestDTO?): Page<UserSummaryDTO> =
-        getUserInteractor.getUsers(pageable, searchRequest?.toModel()).toDto()
+        getUserInteractor.getUsers(pageable, searchRequest?.toModel()).map { it.toSummaryDto() }
 
     override fun createUser(user: UserChangeDTO): UserDTO =
         createUserInteractor.createUser(user.toModel()).toDto()
@@ -39,5 +39,11 @@ class UserController(
 
     override fun changeMyPassword(passwordData: PasswordDTO) =
         updateUserPasswordInteractor.updateMyPassword(passwordData.toModel())
+
+    override fun getUsersWithProjectRetrievePermissions(): List<UserSummaryDTO> =
+        getUserInteractor.getUsersWithProjectRetrievePermissions().map { it.toSummaryDto() }
+
+    override fun getMonitorUsers(): List<UserSummaryDTO> =
+        getUserInteractor.getMonitorUsers().map { it.toSummaryDto() }
 
 }

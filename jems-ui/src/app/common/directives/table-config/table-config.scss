@@ -1,5 +1,5 @@
 @mixin generate-widths() {
-  @for $i from 1 through 24 {
+  @for $i from 1 through 50 {
     &.max-width-#{$i} {
       max-width: #{$i}rem;
     }
@@ -40,6 +40,10 @@
       @include generate-widths()
 
     }
+
+    > .mat-checkbox {
+      display: flex;
+    }
   }
 
 
@@ -49,7 +53,7 @@
     background: var(--table-backaground-color);
 
     > :first-child {
-      min-height: 3rem;
+      min-height: 3.5rem;
       border-bottom: 1px solid;
       border-color: var(--table-border-color);
       color: var(--table-header-text-color);

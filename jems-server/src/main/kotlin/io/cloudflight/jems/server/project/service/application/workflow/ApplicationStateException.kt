@@ -77,28 +77,67 @@ class CallIsNotOpenException : ApplicationUnprocessableException(
 )
 
 class DecisionReversionIsNotPossibleException(fromStatus: ApplicationStatus, toStatus:ApplicationStatus) : ApplicationUnprocessableException(
-    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-009",
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-010",
     i18nMessage = I18nMessage("$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.reversion.of.decision.is.not.possible",
         mapOf("fromStatus" to fromStatus.name, "toStatus" to toStatus.name )
     )
 )
 
 class FundingDecisionIsBeforeEligibilityDecisionException : ApplicationUnprocessableException(
-    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-010",
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-011",
     i18nMessage = I18nMessage("$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.funding.decision.is.before.eligibility.decision")
 )
 
 class ReturnToApplicantIsNotPossibleException(fromStatus: ApplicationStatus, toStatus:ApplicationStatus) : ApplicationUnprocessableException(
-    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-011",
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-012",
     i18nMessage = I18nMessage("$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.reversion.of.decision.is.not.possible",
         mapOf("fromStatus" to fromStatus.name, "toStatus" to toStatus.name )
     )
 )
 
 class StartSecondStepIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
-    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-012",
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-013",
     i18nMessage = I18nMessage(
         "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.start.second.step.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)
+
+class HandBackToApplicantIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-014",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.hand.back.to.applicant.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)
+
+class StartingModificationIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-015",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.starting.modification.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)
+
+class ApproveModificationIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-016",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.approve.modification.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)
+
+class RejectModificationIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-017",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.reject.modification.is.not.allowed",
+        mapOf("status" to status.name)
+    )
+)
+    class SetToContractedIsNotAllowedException(status: ApplicationStatus) : ApplicationUnprocessableException(
+    code = "$APPLICATION_STATE_ACTIONS_ERROR_CODE_PREFIX-018",
+    i18nMessage = I18nMessage(
+        "$APPLICATION_STATE_ACTIONS_ERROR_KEY_PREFIX.set.to.contracted.is.not.allowed",
         mapOf("status" to status.name)
     )
 )

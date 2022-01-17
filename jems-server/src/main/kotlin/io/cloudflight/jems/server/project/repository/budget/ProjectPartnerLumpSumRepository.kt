@@ -3,16 +3,16 @@ package io.cloudflight.jems.server.project.repository.budget
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumRow
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEntity
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.sql.Timestamp
-import java.util.UUID
 
 @Repository
-interface ProjectPartnerLumpSumRepository : CrudRepository<ProjectPartnerLumpSumEntity, UUID> {
+interface ProjectPartnerLumpSumRepository : CrudRepository<ProjectPartnerLumpSumEntity, ProjectPartnerLumpSumId> {
 
     @Query("SELECT new io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumEntity(e.id.projectPartner, SUM(e.amount)) FROM #{#entityName} e WHERE e.id.projectPartner.id IN :ids GROUP BY e.id.projectPartner")
     fun sumLumpSumsPerPartner(@Param("ids") partnerIds: Set<Long>): List<ProjectLumpSumPerPartnerSumEntity>

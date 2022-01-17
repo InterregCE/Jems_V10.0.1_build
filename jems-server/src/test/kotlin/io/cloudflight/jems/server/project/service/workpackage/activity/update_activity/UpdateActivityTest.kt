@@ -51,8 +51,8 @@ internal class UpdateActivityTest {
         )
 
         val projectPartnerIds = listOf(
-            ProjectPartnerSummary(id = 3, abbreviation = "lp1", role = ProjectPartnerRole.LEAD_PARTNER),
-            ProjectPartnerSummary(id = 5, abbreviation = "p2", role = ProjectPartnerRole.PARTNER)
+            ProjectPartnerSummary(id = 3, abbreviation = "lp1", role = ProjectPartnerRole.LEAD_PARTNER, active = true,),
+            ProjectPartnerSummary(id = 5, abbreviation = "p2", role = ProjectPartnerRole.PARTNER, active = true)
         )
     }
 
@@ -149,7 +149,7 @@ internal class UpdateActivityTest {
     fun `update activities when description is too long`() {
         val description = setOf(InputTranslation(
             language = SK,
-            translation = getStringOfLength(501)
+            translation = getStringOfLength(1001)
         ))
         val toBeSaved = listOf(WorkPackageActivity(1L, 8L, description = description))
         val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 8L, toBeSaved) }
@@ -158,11 +158,13 @@ internal class UpdateActivityTest {
 
     @Test
     fun `update activity deliverables when description is too long`() {
-        val descreption = InputTranslation(
+        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
+        every { persistence.updateWorkPackageActivities(any(), any()) } returnsArgument 1
+        val description = InputTranslation(
             language = EN,
-            translation = getStringOfLength(201)
+            translation = getStringOfLength(1001)
         )
-        val toBeSaved = listOf(WorkPackageActivity(1L, 9L, deliverables = listOf(WorkPackageActivityDeliverable(description = setOf(descreption)))))
+        val toBeSaved = listOf(WorkPackageActivity(1L, 9L, deliverables = listOf(WorkPackageActivityDeliverable(description = setOf(description)))))
         val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 9L, toBeSaved) }
         assertThat(exception.i18nKey).isEqualTo("workPackage.activity.deliverable.description.size.too.long")
     }

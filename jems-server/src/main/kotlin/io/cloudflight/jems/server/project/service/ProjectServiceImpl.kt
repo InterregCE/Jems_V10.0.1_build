@@ -8,7 +8,10 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEnt
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import org.springframework.stereotype.Service
@@ -18,6 +21,7 @@ import kotlin.math.ceil
 @Service
 class ProjectServiceImpl(
     private val projectRepo: ProjectRepository,
+    private val workPackageRepository: WorkPackageRepository,
     private val getProjectInteractor: GetProjectInteractor,
     private val generalValidator: GeneralValidatorService
 ) : ProjectService {
@@ -30,6 +34,9 @@ class ProjectServiceImpl(
         val periods =
             if (project.projectData?.duration == projectData.duration) project.periods
             else calculatePeriods(projectId, project.call.lengthOfPeriod, projectData.duration)
+                .also { periods ->
+                    removeNoLongerAvailablePeriods(projectId, maxPeriod = periods.size)
+                }
 
         projectRepo.save(
             project.copy(
@@ -86,4 +93,32 @@ class ProjectServiceImpl(
             generalValidator.numberBetween(inputProjectData.duration, 1, 999, "duration"),
             generalValidator.maxLength(inputProjectData.intro, 2000, "intro"),
         )
+
+    private fun removeNoLongerAvailablePeriods(projectId: Long, maxPeriod: Int) {
+        workPackageRepository.findAllByProjectId(projectId).forEach {
+            it.activities.forEach { it.clearPeriodsBiggerThan(maxPeriod) }
+            it.outputs.forEach { it.clearPeriodIfBiggerThan(maxPeriod) }
+        }
+    }
+
+    private fun WorkPackageActivityEntity.clearPeriodsBiggerThan(maxPeriod: Int) {
+        val start = this.startPeriod
+        if (start != null && start > maxPeriod)
+            this.startPeriod = null
+        val end = this.endPeriod
+        if (end != null && end > maxPeriod)
+            this.endPeriod = null
+
+        this.deliverables.forEach {
+            val period = it.startPeriod
+            if (period != null && period > maxPeriod)
+                it.startPeriod = null
+        }
+    }
+
+    private fun WorkPackageOutputEntity.clearPeriodIfBiggerThan(maxPeriod: Int) {
+        val periodNumber = this.periodNumber
+        if (periodNumber != null && periodNumber > maxPeriod)
+            this.periodNumber = null
+    }
 }

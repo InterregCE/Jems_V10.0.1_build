@@ -13,5 +13,6 @@ data class BudgetTravelAndAccommodationCostEntryDTO(
     val pricePerUnit: BigDecimal,
     val unitType: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> = emptySet(),
+    val comments: Set<InputTranslation> = emptySet(),
     val unitCostId: Long? = null
 ) : BaseBudgetEntryDTO

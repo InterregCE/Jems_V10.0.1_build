@@ -1,0 +1,67 @@
+<ng-container *ngIf="data$ | async as data">
+    <app-form (discard)="resetForm(data.rows)" (save)="saveForm()">
+        <p *ngIf="!data.rows.length">{{'project.list.empty' | translate}}</p>
+        <app-table *ngIf="data.rows.length"
+                   [configuration]="tableConfiguration"
+                   [rows]="data.rows"
+                   [totalElements]="data.totalElements"
+                   [pageIndex]="projectUserStore.newPageIndex$ | async"
+                   [temporarilyHidePagination]="!!changes.length"
+                   (newPageIndex)="projectUserStore.newPageIndex$.next($event)"
+                   (newPageSize)="projectUserStore.newPageSize$.next($event)"
+                   (sortRows)="projectUserStore.newSort$.next($event)">
+        </app-table>
+    </app-form>
+</ng-container>
+
+<ng-template #userAssignment let-project>
+    <mat-form-field appearance="fill" class="w-100 pt-2">
+        <mat-label>{{ 'project.table.column.name.users' | translate }}</mat-label>
+
+        <mat-chip-list #chipList [disabled]="false" class="mt-2 mb-2">
+            <mat-chip
+                    *ngFor="let user of project.defaultUsers"
+                    [selectable]="false"
+                    matTooltip="{{ 'project.table.column.users.privileged.tooltip' | translate }}">
+                {{ user.email }}
+            </mat-chip>
+
+            <ng-container *ngFor="let userId of users(project.index).value;let userIndex = index">
+                <ng-container *ngIf="getUserByIdFromAvailable(userId, project.availableUsers) as user">
+                    <mat-chip
+                            color="primary" selected class="mat-chip-selected-user"
+                            [selectable]="false"
+                            [removable]="true"
+                            matTooltip="{{ user.name }} {{ user.surname }} ({{ user.userRole.name }})"
+                            (removed)="removeUser(project.index, userId)">
+                        {{ user?.email }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                </ng-container>
+            </ng-container>
+            <input
+                #filterUsers
+                [matAutocomplete]="auto"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+            <mat-autocomplete #auto="matAutocomplete"
+                              (optionSelected)="addUser(project.index, $event.option.value); filterUsers.value = ''; filterUsers.blur()">
+                <mat-option class="mat-option-list-entry"
+                        *ngFor="let user of getAvailableUsersWithoutSelected(project.index, project.availableUsers) | filterUsers: filterUsers.value" [value]="user">
+                    {{ user.name }} {{ user.surname }}<br />
+                    <small>{{ user.email }}</small>
+                </mat-option>
+            </mat-autocomplete>
+
+        </mat-chip-list>
+
+    </mat-form-field>
+</ng-template>
+
+<ng-template #callActionsCell let-project>
+    <button mat-icon-button color="primary"
+            matTooltip="{{'project.table.column.action.clear.tooltip' | translate}}"
+            (click)="clearUserProjectAssignments(project.index)">
+        <mat-icon>highlight_off</mat-icon>
+    </button>
+</ng-template>

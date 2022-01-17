@@ -29,6 +29,7 @@ interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPacka
              SELECT
              entity.*,
              entity.investment_number as investmentNumber,
+             CONVERT(entity.expected_delivery_period, INT) as expectedDeliveryPeriod,
              entity.nuts_region2 as nutsRegion2,
              entity.nuts_region3 as nutsRegion3,
              entity.house_number as houseNumber,
@@ -38,6 +39,7 @@ interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPacka
              workPackageInvestmentTransl.justification_transactional_relevance as justificationTransactionalRelevance,
              workPackageInvestmentTransl.justification_benefits as justificationBenefits,
              workPackageInvestmentTransl.justification_pilot as justificationPilot,
+             workPackageInvestmentTransl.documentation_expected_impacts as documentationExpectedImpacts,
              workPackageInvestmentTransl.ownership_site_location as ownershipSiteLocation,
              workPackageInvestmentTransl.ownership_retain as ownershipRetain,
              workPackageInvestmentTransl.ownership_maintenance as ownershipMaintenance
@@ -54,6 +56,7 @@ interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPacka
              SELECT
              entity.*,
              entity.investment_number as investmentNumber,
+             CONVERT(entity.expected_delivery_period, INT) as expectedDeliveryPeriod,
              entity.nuts_region2 as nutsRegion2,
              entity.nuts_region3 as nutsRegion3,
              entity.house_number as houseNumber,
@@ -63,6 +66,7 @@ interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPacka
              workPackageInvestmentTransl.justification_transactional_relevance as justificationTransactionalRelevance,
              workPackageInvestmentTransl.justification_benefits as justificationBenefits,
              workPackageInvestmentTransl.justification_pilot as justificationPilot,
+             workPackageInvestmentTransl.documentation_expected_impacts as documentationExpectedImpacts,
              workPackageInvestmentTransl.ownership_site_location as ownershipSiteLocation,
              workPackageInvestmentTransl.ownership_retain as ownershipRetain,
              workPackageInvestmentTransl.ownership_maintenance as ownershipMaintenance

@@ -5,5 +5,6 @@ enum class ProjectFileCategoryTypeDTO {
     ASSESSMENT,
     APPLICATION,
     PARTNER,
-    INVESTMENT
+    INVESTMENT,
+    MODIFICATION
 }

@@ -5,11 +5,12 @@ import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
 import {catchError, finalize, map, tap} from 'rxjs/operators';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {Alert} from '@common/components/forms/alert';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {FileCategoryEnum, FileCategoryInfo} from '@project/common/components/file-management/file-category';
+import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
+import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {AssessmentAndDecisionStore} from '@project/project-application/assessment-and-decision/assessment-and-decision-store.service';
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
   selector: 'app-assessment-and-decision',
@@ -23,18 +24,17 @@ export class AssessmentAndDecisionComponent {
   Permission = Permission;
   PermissionsEnum = UserRoleDTO.PermissionsEnum;
   STATUS = ProjectStatusDTO.StatusEnum;
-  fileManagementSection = {type: FileCategoryEnum.ASSESSMENT} as FileCategoryInfo;
+  fileManagementSection = {type: FileCategoryTypeEnum.ASSESSMENT} as CategoryInfo;
 
   data$: Observable<{
-    project: ProjectDetailDTO,
-    projectTitle: string,
-    projectStatus: ProjectStatusDTO.StatusEnum,
-    projectId: number,
-    startStepTwoAvailable: boolean,
-    returnToApplicantAvailable: boolean,
-    revertToStatus: string | null,
-    isProjectLatestVersion: boolean,
-    callHasTwoSteps: boolean
+    currentVersionOfProject: ProjectDetailDTO;
+    currentVersionOfProjectTitle: string;
+    currentVersionOfProjectStatus: ProjectStatusDTO.StatusEnum;
+    projectId: number;
+    startStepTwoAvailable: boolean;
+    returnToApplicantAvailable: boolean;
+    revertToStatus: string | null;
+    callHasTwoSteps: boolean;
   }>;
 
   // TODO: create a component
@@ -47,22 +47,20 @@ export class AssessmentAndDecisionComponent {
               private projectStore: ProjectStore,
               private changeDetectorRef: ChangeDetectorRef) {
     this.data$ = combineLatest([
-      this.projectStore.project$,
-      this.projectStore.projectTitle$,
+      this.projectStore.currentVersionOfProject$,
+      this.projectStore.currentVersionOfProjectTitle$,
       this.projectStore.callHasTwoSteps$,
-      this.assessmentAndDecisionStore.revertToStatus$,
-      this.projectStore.currentVersionIsLatest$
+      this.assessmentAndDecisionStore.revertToStatus$
     ]).pipe(
-      map(([project, projectTitle, callHasTwoSteps, revertToStatus, isProjectLatestVersion]) => ({
-        project,
-        projectTitle,
-        projectStatus: project.projectStatus.status,
-        projectId: project.id,
-        startStepTwoAvailable: this.startStepTwoAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active, isProjectLatestVersion),
-        returnToApplicantAvailable: this.returnToApplicantAvailable(project.projectStatus.status, callHasTwoSteps, project.step2Active, isProjectLatestVersion),
+      map(([currentVersionOfProject, currentVersionOfProjectTitle, callHasTwoSteps, revertToStatus]) => ({
+        currentVersionOfProject,
+        currentVersionOfProjectTitle,
+        currentVersionOfProjectStatus: currentVersionOfProject.projectStatus.status,
+        projectId: currentVersionOfProject.id,
+        startStepTwoAvailable: this.startStepTwoAvailable(currentVersionOfProject.projectStatus.status, callHasTwoSteps, currentVersionOfProject.step2Active),
+        returnToApplicantAvailable: this.returnToApplicantAvailable(currentVersionOfProject.projectStatus.status, callHasTwoSteps, currentVersionOfProject.step2Active),
         revertToStatus,
-        callHasTwoSteps,
-        isProjectLatestVersion,
+        callHasTwoSteps
       }))
     );
   }
@@ -70,6 +68,15 @@ export class AssessmentAndDecisionComponent {
   returnToApplicant(projectId: number): void {
     this.actionPending = true;
     this.assessmentAndDecisionStore.returnApplicationToApplicant(projectId)
+      .pipe(
+        finalize(() => this.actionPending = false),
+        tap(() => this.showSuccessMessage())
+      ).subscribe();
+  }
+
+  returnToApplicantForConditions(projectId: number): void {
+    this.actionPending = true;
+    this.assessmentAndDecisionStore.returnApplicationToApplicantForConditions(projectId)
       .pipe(
         finalize(() => this.actionPending = false),
         tap(() => this.showSuccessMessage())
@@ -125,9 +132,8 @@ export class AssessmentAndDecisionComponent {
 
   private startStepTwoAvailable(status: ProjectStatusDTO.StatusEnum,
                                 callHasTwoSteps: boolean,
-                                projectInSecondStep: boolean,
-                                isProjectLatestVersion: boolean): boolean {
-    if (!isProjectLatestVersion || !callHasTwoSteps || projectInSecondStep) {
+                                projectInSecondStep: boolean): boolean {
+    if (!callHasTwoSteps || projectInSecondStep) {
       return false;
     }
     return status === ProjectStatusDTO.StatusEnum.STEP1APPROVED
@@ -136,16 +142,15 @@ export class AssessmentAndDecisionComponent {
 
   private returnToApplicantAvailable(status: ProjectStatusDTO.StatusEnum,
                                      callHasTwoSteps: boolean,
-                                     projectInSecondStep: boolean,
-                                     isProjectLatestVersion: boolean): boolean {
+                                     projectInSecondStep: boolean): boolean {
     const returnableStatuses = [
       ProjectStatusDTO.StatusEnum.SUBMITTED,
       ProjectStatusDTO.StatusEnum.ELIGIBLE,
       ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS,
-      ProjectStatusDTO.StatusEnum.APPROVED,
+      ProjectStatusDTO.StatusEnum.CONDITIONSSUBMITTED
     ];
 
-    if (!isProjectLatestVersion || (callHasTwoSteps && !projectInSecondStep)) {
+    if (callHasTwoSteps && !projectInSecondStep) {
       return false;
     }
 

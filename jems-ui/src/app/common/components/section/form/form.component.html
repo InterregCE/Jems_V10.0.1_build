@@ -20,7 +20,7 @@
 
 <ng-template #saveDiscard>
     <mat-card-footer [@slideInOut] class="footer">
-        <button [disabled]="(formService.pending$ | async) === true"
+        <button appText [disabled]="(formService.pending$ | async) === true"
                 mat-stroked-button class="action-button discard" type="button"
                 (click)="formService.setDirty(false); this.discard.emit(); formService.reset()">
             <mat-icon>cancel</mat-icon>&nbsp;{{'common.cancel.label' | translate}}
@@ -40,7 +40,7 @@
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
             <div class="message app-alert-success">
-                <em class="far fa-check-circle mr-1"></em>
+                <mat-icon class="app-alert-icon">check_circle</mat-icon>
                 <span *ngIf="message.i18nKey">{{message.i18nKey | translate : message.i18nArguments}}</span>
                 <span *ngIf="!message.i18nKey">{{message | translate}}</span>
             </div>
@@ -52,7 +52,7 @@
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
             <div class="message app-alert-danger">
-                <em class="fas fa-exclamation-triangle mr-4"></em>
+                <mat-icon class="app-alert-icon">warning_amber</mat-icon>
                 <div>
                     <div>
                         <span class="mat-body-strong">

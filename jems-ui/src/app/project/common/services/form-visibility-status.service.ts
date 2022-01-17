@@ -15,9 +15,9 @@ export class FormVisibilityStatusService {
   }
 
   isVisible(fieldIds: string | ApplicationFormModel): boolean {
-    return !this.projectStore.currentProject ?
+    return !this.projectStore.project ?
       false :
-      this.shouldBeVisible(fieldIds, this.projectStore.currentProject.callSettings.applicationFormFieldConfigurations, this.projectStore.currentProject.callSettings.endDateStep1 !== undefined, this.projectStore.currentProject.step2Active);
+      this.shouldBeVisible(fieldIds, this.projectStore.project.callSettings.applicationFormFieldConfigurations, this.projectStore.project.callSettings.endDateStep1 !== undefined, this.projectStore.project.step2Active);
   }
 
   isVisible$(fieldIds: string | ApplicationFormModel): Observable<boolean> {
@@ -26,6 +26,10 @@ export class FormVisibilityStatusService {
         this.shouldBeVisible(fieldIds, callSetting.applicationFormFieldConfigurations, hasCallTwoSteps, project.step2Active)
       )
     );
+  }
+
+  shouldBeVisibleIfUnitCostsSelected(): boolean {
+    return this.projectStore.project.callSettings.unitCosts.filter(cost => !cost.oneCostCategory).length !== 0;
   }
 
   private shouldBeVisible(fieldIds: string | ApplicationFormModel, applicationFormFieldConfigurations: ApplicationFormFieldConfigurationDTO[], hasCallTwoSteps: boolean, isProjectInStepTwo: boolean): boolean {

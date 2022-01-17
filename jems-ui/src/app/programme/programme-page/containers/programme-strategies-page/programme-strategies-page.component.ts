@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {InputProgrammeStrategy, ProgrammeStrategyService} from '@cat/api';
-import {catchError, mergeMap, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {merge, Subject} from 'rxjs';
@@ -16,6 +16,7 @@ import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav
 export class ProgrammeStrategiesPageComponent {
   strategies$ = this.programmeStrategyService.getProgrammeStrategies()
     .pipe(
+      map(programmeStrategies => programmeStrategies.filter( programmeStrategy => programmeStrategy.strategy  !== InputProgrammeStrategy.StrategyEnum.Other)),
       tap(programmeStrategies => Log.info('Fetched programme strategies:', this, programmeStrategies))
     );
   strategiesSaveError$ = new Subject<I18nValidationError | null>();

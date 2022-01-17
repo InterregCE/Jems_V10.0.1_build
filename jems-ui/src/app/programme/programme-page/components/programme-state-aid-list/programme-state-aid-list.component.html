@@ -1,12 +1,12 @@
 <form id="stateAids" appFormLayout [formGroup]="stateAidForm">
     <div>
         <h3 class="mb-2">{{'programme.state.aid.list.title' | translate}}</h3>
-        <button color="primary" mat-raised-button
+        <button appText color="primary" mat-raised-button
                 *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length > 0"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>
-        <button mat-stroked-button
+        <button appText mat-stroked-button
                 *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length == 0"
                 (click)="addNewStateAidAndChangeFormState()">
             <mat-icon>add</mat-icon>&nbsp;{{ 'programme.state.aid.add' | translate }}
@@ -16,7 +16,7 @@
                 *ngIf="stateAids.length > 0 || (changeFormState$ | async) !== FormState.VIEW"
                 appNoWidthLimit [useSystemLanguages]="true"
                 [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
-        <div [appTableConfig]="[{minInRem: 17},{minInRem: 15},{minInRem: 21},{minInRem: 7},{maxInRem: 5},{minInRem: 10},{minInRem: 10},{maxInRem: 5}]">
+        <div [appTableConfig]="tableConfig">
             <div>
                 <span class="mat-body-strong">{{ 'programme.state.aid.list.measure' | translate }}</span>
                 <span class="mat-body-strong">{{ 'programme.state.aid.list.name' | translate }}</span>
@@ -35,6 +35,7 @@
                             infoText="{{'programme.state.aid.list.threshold.info' | translate}}"
                             infoPosition="right">
                     </app-context-info>
+                    <div class="context-info-space-for-tooltip"></div>
                 </div>
 
                 <span class="mat-body-strong">{{ 'programme.state.aid.list.comments' | translate }}</span>
@@ -49,6 +50,7 @@
                             <input name="measure" formControlName="measure" matInput required
                                    [matAutocomplete]="measure"
                                    (focusout)="selectionUnfocused($event, stateAid)">
+                            <mat-label>{{ 'programme.state.aid.list.measure' | translate }}</mat-label>
                             <mat-autocomplete #measure="matAutocomplete"
                                               (optionSelected)="relationChanged($event.option?.value, stateAid)" [displayWith]="displayFn">
                                 <mat-option *ngFor="let relation of filteredStateAidMeasureValues(i)" [value]="relation">
@@ -65,7 +67,8 @@
                         <app-multi-language-form-field
                                 formControlName="name"
                                 maxLength="250"
-                                minRows="5"
+                                minRows="6"
+                                maxRows="6"
                                 type="textarea"
                                 [useFallBackLanguage]="true">
                         </app-multi-language-form-field>
@@ -100,8 +103,8 @@
                             </mat-error>
                         </mat-form-field>
 
-                        <mat-form-field>
-                            <input currencyMask type="decimal" [options]="{nullable: true}"
+                        <mat-form-field class="text-right">
+                            <input currencyMask type="decimal" [options]="{nullable: true, align: 'right'}"
                                    name="threshold" formControlName="threshold" matInput>
                             <mat-error>
                                 <app-form-field-errors
@@ -113,6 +116,9 @@
                         <app-multi-language-form-field
                                 formControlName="comments"
                                 maxLength="500"
+                                minRows="6"
+                                maxRows="6"
+                                type="textarea"
                                 [useFallBackLanguage]="true">
                         </app-multi-language-form-field>
 

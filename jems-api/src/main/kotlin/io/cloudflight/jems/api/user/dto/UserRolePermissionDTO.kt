@@ -10,6 +10,7 @@ enum class UserRolePermissionDTO(val key: String) {
     CallUpdate("CallUpdate"),
 
     ProjectRetrieve("ProjectRetrieve"),
+    ProjectRetrieveEditUserAssignments("ProjectRetrieveEditUserAssignments"),
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     ProjectCreate("ProjectCreate"),
 
@@ -35,6 +36,21 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectStatusDecideNotApproved("ProjectStatusDecideNotApproved"),
     ProjectStatusDecisionRevert("ProjectStatusDecisionRevert"),
     ProjectStartStepTwo("ProjectStartStepTwo"),
+
+    ProjectContractingView("ProjectContractingView"),
+    ProjectSetToContracted("ProjectSetToContracted"),
+
+    ProjectModificationView("ProjectModificationView"),
+    ProjectStatusDecideModificationApproved("ProjectStatusDecideModificationApproved"),
+    ProjectStatusDecideModificationNotApproved("ProjectStatusDecideModificationNotApproved"),
+    ProjectOpenModification("ProjectOpenModification"),
+    ProjectModificationFileAssessmentRetrieve("ProjectModificationFileAssessmentRetrieve"),
+    ProjectModificationFileAssessmentUpdate("ProjectModificationFileAssessmentUpdate"),
+
+    ProjectCreatorCollaboratorsRetrieve("ProjectCreatorCollaboratorsRetrieve"),
+    ProjectCreatorCollaboratorsUpdate("ProjectCreatorCollaboratorsUpdate"),
+    ProjectMonitorCollaboratorsRetrieve("ProjectMonitorCollaboratorsRetrieve"),
+    ProjectMonitorCollaboratorsUpdate("ProjectMonitorCollaboratorsUpdate"),
 
     AuditRetrieve("AuditRetrieve"),
 

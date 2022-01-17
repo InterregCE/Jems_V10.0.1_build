@@ -2,8 +2,8 @@
           (save)="updateStateAid(data.project.callSettings.stateAids)"
           (discard)="resetForm(data.stateAid)">
     <form appFormLayout [formGroup]="form">
-        <h3>{{ 'project.partner.state.aid.title' | translate }}</h3>
         <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID.CRITERIA_SELF_CHECK">
+            <h3>{{ 'project.partner.state.aid.title' | translate }}</h3>
             <app-multi-language-container>
                 <div [appTableConfig]="[{},{maxInRem:6},{}]">
                     <span class="table-header mt-2">

@@ -9,6 +9,7 @@ import {ProjectPartnerStore} from '../../project-application/containers/project-
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
+import { Alert } from '@common/components/forms/alert';
 
 @Component({
   templateUrl: './project-partner-detail-page.component.html',
@@ -17,6 +18,7 @@ import {RoutingService} from '@common/services/routing.service';
 })
 export class ProjectPartnerDetailPageComponent {
   APPLICATION_FORM = APPLICATION_FORM;
+  Alert = Alert;
 
   constructor(private programmeLegalStatusService: ProgrammeLegalStatusService,
               private activatedRoute: ActivatedRoute,

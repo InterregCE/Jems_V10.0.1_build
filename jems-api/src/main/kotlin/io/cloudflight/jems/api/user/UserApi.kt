@@ -52,4 +52,12 @@ interface UserApi {
     @PutMapping("/changeMyPassword", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun changeMyPassword(@RequestBody passwordData: PasswordDTO)
 
+    @ApiOperation("Returns list of Users, which do have or do NOT have requested permissions")
+    @PostMapping("/withProjectRetrievePermission")
+    fun getUsersWithProjectRetrievePermissions(): List<UserSummaryDTO>
+
+    @ApiOperation("Returns list of Users, which do have or do NOT have requested permissions")
+    @PostMapping("/withoutProjectRetrievePermissionAndWithMonitor")
+    fun getMonitorUsers(): List<UserSummaryDTO>
+
 }

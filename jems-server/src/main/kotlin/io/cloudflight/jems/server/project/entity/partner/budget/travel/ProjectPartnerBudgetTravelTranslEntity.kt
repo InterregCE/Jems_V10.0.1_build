@@ -13,6 +13,8 @@ data class ProjectPartnerBudgetTravelTranslEntity(
 
     val unitType: String? = null,
 
-    val description: String? = null
+    val description: String? = null,
+
+    val comments: String? = null
 
 ) : TranslationEntity()

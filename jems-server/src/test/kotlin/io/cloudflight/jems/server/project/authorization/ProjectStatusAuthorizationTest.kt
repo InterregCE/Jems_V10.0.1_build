@@ -4,128 +4,110 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.service.ProjectService
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.userApplicant
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSubmission
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCheckApplicationForm
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 internal class ProjectStatusAuthorizationTest: UnitTest() {
 
     companion object {
-
-        private val userWithProjectSubmissionPermission = LocalCurrentUser(
-            AuthorizationUtil.userAdmin, "hash_pass",
-            listOf(SimpleGrantedAuthority(UserRolePermission.ProjectSubmission.key))
-        )
-
-        private val userWithProjectRetrievePermission = LocalCurrentUser(
-            AuthorizationUtil.userAdmin, "hash_pass",
-            listOf(SimpleGrantedAuthority(UserRolePermission.ProjectRetrieve.key))
-        )
-
-        private val userApplicant = LocalCurrentUser(
-            AuthorizationUtil.userApplicant, "hash_pass",
-            emptyList()
-        )
-
+        private const val PROJECT_ID = 588L
     }
 
     @MockK
     lateinit var securityService: SecurityService
 
     @MockK
-    lateinit var projectService: ProjectService
+    lateinit var projectPersistence: ProjectPersistence
 
     @MockK
-    lateinit var projectPersistence: ProjectPersistence
+    lateinit var mockStatus: ApplicationStatus
 
     @InjectMockKs
     lateinit var projectStatusAuthorization: ProjectStatusAuthorization
 
-    @ParameterizedTest(name = "owner can submit project in status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"])
-    fun `owner can submit`(status: ApplicationStatus) {
-        val user = userApplicant
-        val PROJECT_ID = 14L
-
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(applicantId = user.user.id, projectStatus = status)
-        every { securityService.currentUser } returns user
-
-        assertThat(projectStatusAuthorization.canSubmit(PROJECT_ID)).isTrue
+    @BeforeEach
+    fun resetMocks() {
+        clearMocks(securityService)
     }
 
-    @ParameterizedTest(name = "owner can NOT submit project when status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
-    fun `owner can NOT submit`(status: ApplicationStatus) {
-        val user = userApplicant
-        val PROJECT_ID = 15L
+    @Test
+    fun `owner can submit`() {
+        val user = applicantUser
 
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(applicantId = user.user.id, projectStatus = status)
-        every { securityService.currentUser } returns user
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = user.user.id,
+                projectStatus = mockStatus,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = setOf(user.user.id),
+                collaboratorViewIds = emptySet(),
+            )
+        every { securityService.getUserIdOrThrow() } returns user.user.id
 
-        assertThat(projectStatusAuthorization.canSubmit(PROJECT_ID)).isFalse
+        // verify test setup
+        assertThat(user.user.assignedProjects).isEmpty()
+        assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectSubmission.name))
+
+        assertThat(projectStatusAuthorization.hasPermissionOrIsEditCollaborator(ProjectSubmission, PROJECT_ID)).isTrue
     }
 
-    @ParameterizedTest(name = "user with proper permission can submit project in status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"])
-    fun `user with proper permission can submit`(status: ApplicationStatus) {
-        val user = userWithProjectSubmissionPermission
-        val PROJECT_ID = 16L
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(applicantId = 4896L, projectStatus = status)
-        every { securityService.currentUser } returns user
+    @Test
+    fun `user NOT owner, has permission for THIS PROJECT, can submit`() {
+        val user = LocalCurrentUser(userApplicant.copy(assignedProjects = setOf(PROJECT_ID)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectCheckApplicationForm.name)))
 
-        assertThat(projectStatusAuthorization.canSubmit(PROJECT_ID)).isTrue
+        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = 3552L,
+                projectStatus = mockStatus,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
+        every { securityService.currentUser } returns user
+        every { securityService.getUserIdOrThrow() } returns user.user.id
+
+        // verify test setup
+        assertThat(user.user.assignedProjects).contains(PROJECT_ID)
+        assertThat(user.authorities).contains(SimpleGrantedAuthority(ProjectCheckApplicationForm.name))
+
+        assertThat(projectStatusAuthorization.hasPermissionOrIsEditCollaborator(ProjectCheckApplicationForm, PROJECT_ID)).isTrue
     }
 
-    @ParameterizedTest(name = "user with proper permission can NOT submit project when status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT"], mode = EnumSource.Mode.EXCLUDE)
-    fun `user with proper permission can NOT submit`(status: ApplicationStatus) {
-        val user = userWithProjectSubmissionPermission
-        val PROJECT_ID = 17L
+    @Test
+    fun `user NOT owner, without permission, cannot submit, he does NOT have Retrieve also`() {
+        val user = applicantUser
 
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(applicantId = 3699, projectStatus = status)
+            ProjectApplicantAndStatus(PROJECT_ID,
+                applicantId = 3482L,
+                projectStatus = mockStatus,
+                collaboratorManageIds = emptySet(),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
         every { securityService.currentUser } returns user
+        every { securityService.getUserIdOrThrow() } returns user.user.id
 
-        assertThat(projectStatusAuthorization.canSubmit(PROJECT_ID)).isFalse
-    }
+        // verify test setup
+        assertThat(user.user.assignedProjects).isEmpty()
+        assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectRetrieve.name))
 
-    @ParameterizedTest(name = "not-owner with project-retrieve permission can NOT submit (no matter the status {0})")
-    @EnumSource(value = ApplicationStatus::class)
-    fun `not-owner with project-retrieve permission can NOT submit`(status: ApplicationStatus) {
-        val user = userWithProjectRetrievePermission
-        val PROJECT_ID = 18L
-
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(applicantId = 4022L, projectStatus = status)
-        every { securityService.currentUser } returns user
-
-        assertThat(projectStatusAuthorization.canSubmit(PROJECT_ID)).isFalse
-    }
-
-    @ParameterizedTest(name = "not owner without any permission can NOT find the project (no matter the status {0})")
-    @EnumSource(value = ApplicationStatus::class)
-    fun `not owner without any permission can NOT find the project`(status: ApplicationStatus) {
-        val user = userApplicant
-        val PROJECT_ID = 16L
-
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns
-            ProjectApplicantAndStatus(applicantId = 1960L, projectStatus = status)
-        every { securityService.currentUser } returns user
-
-        assertThrows<ResourceNotFoundException> { projectStatusAuthorization.canSubmit(PROJECT_ID) }
+        assertThrows<ResourceNotFoundException> { projectStatusAuthorization.hasPermissionOrIsEditCollaborator(ProjectCheckApplicationForm, PROJECT_ID) }
     }
 
 }

@@ -1,0 +1,26 @@
+<mat-tree id = "category-tree" *ngIf="categories"
+        [dataSource]="dataSource"
+        [treeControl]="treeControl">
+
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="20">
+        <button disabled mat-icon-button></button>
+        <button appText [disabled]="node.data.disabled" (click)="selectCategory(node.data)"
+                [class.selected-category]="node.data?.info && node.data.info.type === selectedCategory?.type  && node.data.info.id === selectedCategory?.id"
+                mat-button>
+            {{node.data.name?.i18nKey | translate : node.data.name?.i18nArguments}}
+        </button>
+    </mat-tree-node>
+
+    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodePaddingIndent="20">
+        <button mat-icon-button matTreeNodeToggle>
+            <mat-icon class="mat-icon-rtl-mirror">
+                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+        </button>
+        <button appText [disabled]="node.data.disabled" (click)="selectCategory(node.data)"
+                [class.selected-category]="node.data?.info && node.data.info.type === selectedCategory?.type && node.data.info.id === selectedCategory?.id"
+                mat-button>
+            {{node.data.name?.i18nKey | translate : node.data.name?.i18nArguments}}
+        </button>
+    </mat-tree-node>
+</mat-tree>

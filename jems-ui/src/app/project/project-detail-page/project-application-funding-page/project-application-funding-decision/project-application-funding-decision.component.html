@@ -1,7 +1,7 @@
 <form appFormLayout [formGroup]="decisionForm">
     <mat-radio-group required formControlName="status"
-                     name="status-{{status?.status}}"
-                     [disabled]="!!status || !userCanChangeFunding">
+                     name="status-{{currentVersionOfProjectStatus?.status}}"
+                     [disabled]="!!currentVersionOfProjectStatus || !userCanChangeFunding">
         <mat-radio-button *ngFor="let option of options" [value]="option">
             {{'project.assessment.fundingDecision.' + option | translate}}
         </mat-radio-button>
@@ -10,20 +10,20 @@
                              [errors]="decisionForm?.controls?.notes?.errors"
                              [characterLimit]="10000"
                              [label]="'project.assessment.fundingDecision.dialog.field.note'"
-                             [disabled]="!!status || !userCanChangeFunding"
+                             [disabled]="!!currentVersionOfProjectStatus || !userCanChangeFunding"
                              [customStyle]="'outline'">
     </app-expandable-textarea>
     <mat-form-field appFormFieldWidth="xx-large">
         <mat-label>{{'project.assessment.fundingDecision.dialog.field.date' | translate | dateFormatInfo}}</mat-label>
         <input required formControlName="decisionDate" matInput
-               name="decisionDate-{{status?.status}}"
+               name="decisionDate-{{currentVersionOfProjectStatus?.status}}"
                [readonly]="!!fundingDecision || !userCanChangeFunding"
                [matDatepicker]="picker"
                [max]="today"
                [min]="eligibilityDecisionDate">
         <mat-datepicker-toggle
                 matSuffix
-                [disabled]="!!status || !userCanChangeFunding"
+                [disabled]="!!currentVersionOfProjectStatus || !userCanChangeFunding"
                 [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
         <mat-error>
@@ -33,9 +33,9 @@
             </app-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <ng-container *ngIf="!status">
+    <ng-container *ngIf="!currentVersionOfProjectStatus">
         <div appMultiColumnRow *hasPermission="[PermissionsEnum.ProjectStatusDecideApproved, PermissionsEnum.ProjectStatusDecideApprovedWithConditions, PermissionsEnum.ProjectStatusDecideNotApproved]">
-            <button mat-stroked-button
+            <button appText mat-stroked-button
                     (click)="redirectToAssessmentAndDecisions()">
                 {{'project.assessment.fundingDecision.dialog.button.cancel' | translate}}
             </button>

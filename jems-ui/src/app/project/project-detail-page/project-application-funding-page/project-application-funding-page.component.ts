@@ -24,20 +24,23 @@ export class ProjectApplicationFundingPageComponent {
   stepStatus = new ProjectStepStatus(this.step);
 
   details$ = combineLatest([
-    this.fundingDecisionStore.project$,
+    this.fundingDecisionStore.currentVersionOfProject$,
+    this.fundingDecisionStore.currentVersionOfProjectTitle$,
     this.fundingDecisionStore.preFundingDecision(this.step),
     this.fundingDecisionStore.finalFundingDecision(this.step),
     this.fundingDecisionStore.eligibilityDecisionDate(this.step),
     this.permissionService.hasPermission([Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideNotApproved]),
   ])
     .pipe(
-      map(([project, preFundingDecision, finalFundingDecision, eligibilityDecisionDate, userCanChangeFunding]) => ({
-        project,
+      map(([currentVersionOfProject,currentVersionOfProjectTitle, preFundingDecision, finalFundingDecision, eligibilityDecisionDate, userCanChangeFunding]) => ({
+        currentVersionOfProject,
+        currentVersionOfProjectTitle,
         preFundingDecision,
         finalFundingDecision,
         eligibilityDecisionDate,
-        showSecondDecision: !!project.secondStepDecision?.preFundingDecision
-          && project.projectStatus.status !== StatusEnum.RETURNEDTOAPPLICANT
+        showSecondDecision: !!currentVersionOfProject.secondStepDecision?.preFundingDecision
+          && currentVersionOfProject.projectStatus.status !== StatusEnum.RETURNEDTOAPPLICANT
+          && currentVersionOfProject.projectStatus.status !== StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS
           && (!!finalFundingDecision || userCanChangeFunding),
         fullOptions: [this.stepStatus.approved, this.stepStatus.approvedWithConditions, this.stepStatus.notApproved],
         optionsForSecondDecision: [this.stepStatus.approved, this.stepStatus.notApproved],

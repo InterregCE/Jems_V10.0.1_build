@@ -7,12 +7,11 @@
         <div appNoWidthLimit *ngFor="let output of outputs.controls;let i=index">
             <ng-container [formArrayName]="constants.OUTPUTS.name">
                 <div class="output-container" appFormLayout [formGroupName]="i">
-                    <div class="output-header" appNoWidthLimit appMultiColumnRow justifyContent="space-between">
-                        <h4 class="mb-0" appMultiColumnRow>
+                    <div class="output-header" stretch="1" appNoWidthLimit appMultiColumnRow justifyContent="space-between">
+                        <h4 class="mb-0 output-header-inner" stretch="1" appMultiColumnRow>
                             <span>{{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
-                            <span appFormFieldWidth="xx-large"
-                                  *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE"
-                                  class="text-overflow-ellipsis">{{output.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
+                            <span
+                                  *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">{{output.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                         </h4>
                         <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
                                 matTooltip="{{'project.application.form.work.package.output.table.action.delete.tooltip' | translate}}"
@@ -22,25 +21,27 @@
                     </div>
 
                     <app-multi-language-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">
-                        <app-multi-language-form-field
+                        <app-multi-language-form-field type="textarea" minRows="2"
                                 label="project.application.form.work.package.output.title"
                                 [formControlName]="constants.TITLE.name"
                                 [maxLength]="constants.TITLE.maxLength">
                         </app-multi-language-form-field>
                     </app-multi-language-container>
 
-                    <mat-form-field [class.mat-form-field-invalid]="!data.outputIndicators.length" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
+                    <app-alert [closable]="false"
+                               [type]="Alert.WARNING"
+                               [show]="!data.outputIndicators?.length">
+                            {{'project.application.form.overall.objective.specific.objective.required' | translate}}
+                    </app-alert>
+                    <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
                         <mat-label>{{'project.application.form.work.package.output.programme.output.indicator' | translate}}</mat-label>
                         <mat-select [disabled]="!data.outputIndicators.length"
                                     [formControlName]="constants.RESULT_INDICATOR.name">
                             <mat-option *ngFor="let resultIndicator of data.outputIndicators"
                                         [value]="resultIndicator.id">
-                                {{resultIndicator.name | translateBySystemLanguage | async}}
+                                {{resultIndicator.identifier + ': '}} {{resultIndicator.name | translateBySystemLanguage | async}}
                             </mat-option>
                         </mat-select>
-                        <mat-hint *ngIf="!data.outputIndicators?.length" class="mat-error">
-                            {{'project.application.form.overall.objective.specific.objective.required' | translate}}
-                        </mat-hint>
                     </mat-form-field>
 
                     <div appMultiColumnRow stretch>
@@ -49,7 +50,7 @@
                             <input readonly matInput
                                    value="{{getMeasurementUnit(output.get(constants.RESULT_INDICATOR.name)?.value, data.outputIndicators)
                                             | translateBySystemLanguage | async}}"
-                                   [disabled]="form.disabled">
+                                   [disabled]="true">
                         </mat-form-field>
 
                         <mat-form-field appFormFieldWidth="medium" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TARGET_VALUE">
@@ -68,7 +69,7 @@
                     </app-project-periods-select>
 
                     <app-multi-language-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.DESCRIPTION">
-                        <app-multi-language-form-field
+                        <app-multi-language-form-field type="textarea" minRows="3"
                                 label="project.application.form.work.package.output.description"
                                 [formControlName]="constants.DESCRIPTION.name"
                                 [maxLength]="constants.DESCRIPTION.maxLength">
@@ -77,8 +78,8 @@
                 </div>
             </ng-container>
         </div>
-        <button *ngIf="addOutputVisible()" mat-stroked-button color="primary"
-                (click)="addNewOutput()">
+        <button appText *ngIf="addOutputVisible()" mat-stroked-button color="primary"
+                (click)="addNewOutput()" type="button">
             + {{'project.application.form.workpackage.output.add' | translate}}
         </button>
     </form>

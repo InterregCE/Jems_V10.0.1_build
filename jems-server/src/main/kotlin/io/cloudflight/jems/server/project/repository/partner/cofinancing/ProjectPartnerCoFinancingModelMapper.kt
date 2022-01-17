@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerFinancingRow
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.PerPartnerFinancingRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
@@ -17,6 +18,8 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
+import java.util.TreeMap
+import kotlin.collections.HashSet
 
 // region Finances
 
@@ -49,6 +52,24 @@ fun Collection<PartnerFinancingRow>.toProjectPartnerFinancingHistoricalData() = 
             ) else null,
             percentage = groupedRows.value.first().percentage
         )
+    }
+
+fun Collection<PerPartnerFinancingRow>.toPerPartnerFinancing() = groupBy { it.partnerId }
+    .mapValues { it.value.groupByTo(TreeMap<Int, MutableList<PerPartnerFinancingRow>>()) { values -> values.orderNr }
+        .map { groupedRows -> groupedRows.value }
+        .map { value ->
+            ProjectPartnerCoFinancing(
+                fundType = if (value.firstOrNull()?.fundId == null) PartnerContribution else MainFund,
+                fund = if (value.firstOrNull()?.fundType != null) ProgrammeFund(
+                    id = value.firstOrNull()?.fundId ?: 0,
+                    selected = value.first().selected ?: false,
+                    type = ProgrammeFundType.from(value.first().fundType!!)!!,
+                    abbreviation = value.extractField { fund -> fund.abbreviation },
+                    description = value.extractField { fund -> fund.description }
+                ) else null,
+                percentage = value.first().percentage
+            )
+        }
     }
 
 fun Collection<ProjectPartnerCoFinancingEntity>.toCoFinancingModel() =

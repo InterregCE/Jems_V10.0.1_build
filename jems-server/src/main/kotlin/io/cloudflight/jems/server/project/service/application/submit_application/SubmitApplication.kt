@@ -6,11 +6,9 @@ import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.repository.PluginStatusRepository
 import io.cloudflight.jems.server.project.authorization.CanSubmitApplication
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.execute_pre_condition_check.pluginKey
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
-import io.cloudflight.jems.server.project.service.create_new_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.projectStatusChanged
 import io.cloudflight.jems.server.project.service.unsuccessfulProjectSubmission
@@ -21,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class SubmitApplication(
     private val projectPersistence: ProjectPersistence,
-    private val projectWorkflowPersistence: ProjectWorkflowPersistence,
     private val applicationStateFactory: ApplicationStateFactory,
-    private val createNewProjectVersion: CreateNewProjectVersionInteractor,
     private val jemsPluginRegistry: JemsPluginRegistry,
     private val auditPublisher: ApplicationEventPublisher,
     //TODO should be replaced with persistence after MP2-1510
@@ -58,16 +54,11 @@ class SubmitApplication(
             }
         else submitApplication(projectSummary)
 
-    private fun submitApplication(projectSummary: ProjectSummary) =
-        applicationStateFactory.getInstance(projectSummary).submit().also {
+    private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus {
+        return applicationStateFactory.getInstance(projectSummary).submit().also {
             auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
-            createNewProjectVersion.create(
-                projectId = projectSummary.id,
-                status = projectWorkflowPersistence.getLatestApplicationStatusNotEqualTo(
-                    projectSummary.id, ApplicationStatus.RETURNED_TO_APPLICANT
-                )
-            )
         }
+    }
 
     private fun isPluginEnabled(): Boolean =
         pluginStatusRepository.findById(pluginKey).let {

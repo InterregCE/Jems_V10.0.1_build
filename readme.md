@@ -33,7 +33,7 @@ The following are example properties:
 
 Synchronize or import the Gradle project.
 To run the server successfully, it is needed to at least have an instance of MariaDB available.
-This is configured by the property `SPRING_DATASOURCE_URL` or the default `jdbc:mariadb://localhost:3306/jems`.
+This is configured by the property `SPRING_DATASOURCE_URL` or the default `jdbc:mariadb://localhost:3306/jemsdb`.
 To simplify the startup of Jems, a docker compose file is available (docker-compose.yml).
 The following commands are used for development:
 
@@ -51,6 +51,7 @@ Requirements:
  - MinIO
  - Elastic Search
  - Kibana (optional, only if needed)
+ - Mailhog (optional, only if you want to test sending mail notifications)
 
 Currently, there are two environments set up for internal development [4] and testing [5] with external access.
 Both are deployed on the Cloudflight OpenShift and updated automatically within each development cycle.
@@ -61,9 +62,12 @@ Manual deployment using docker compose:
  - execute `gradle clean build` for building the project
  - run the following docker-compose services
    - jems-database (relational database for Jems configuration and input data)
-   - jems-minio (Object storage for files)
-   - audit-database (logging into elastic search, needed for Audit Logs)
+   - jems-minio (Object storage for files) **WE DO NOT RECOMMEND THIS FOR PRODUCTION**, on production you should use
+     [MinIO operator](https://github.com/minio/operator)
+   - audit-database (logging into elastic search, needed for Audit Logs) **WE DO NOT RECOMMEND THIS FOR PRODUCTION**, on
+     production you should use multi-node cluster, see [ES images in Docker in production env](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites)
    - audit-analyzer (Kibana for additional Audit Log access)
+   - mailhog (mail server to test sending mail notification)
  - run the jar (jems-server `./build/libs`) as Spring Boot application
    - the webapp uses flyway to automatically migrate the relational database (mariaDB)
    - `--audit-service.url-and-port=127.0.0.1:9200` can be specified to use a local elastic search instance
@@ -72,17 +76,16 @@ Manual deployment using docker compose:
    [localhost:18080/actuator/info](http://localhost:18080/actuator/info)
  - use the following environment variables to control
    - `AUDIT_ENABLED=false` to enable/disable logging into elastic search
+   - `MAIL_ENABLED=false` to enable/disable sending mail notifications
+   - `SERVER_URL` to specify the url by which the application would be accessible publicly
 
 application.yaml can be added to root of the full executable jems-server.jar
 the properties specified will override the default ones within resources/application.yaml
 
-## Codestyle
-
-Import `./idea/Cloudflight-codestyle.xml` to your development environment (e.g. IntelliJ) and use it.
 
 ## Additional details
 
-### Database (Store)
+### For developers (how to start)
 This project is now based on
 - [MariaDB](https://mariadb.com/kb/en/installing-and-using-mariadb-via-docker/) for storing all data
 - ElasticSearch for storing "audit logs". Those are tracking specific interactions between users and the system itself.
@@ -99,8 +102,15 @@ in Kibana web interface [localhost:5601](http://localhost:5601)
 [localhost:9000](http://localhost:9000)
 
 There is no need to start anything besides MariaDB, so spring-boot will also start without MinIO and without
-Audit (ES). There is property value `audit-service.enabled` - if you set to `false` audits will be written
+Audit (ES). There is evnironment variable `AUDIT_ENABLED=true` - if you set to `false` audits will be written
 as _info \[LOG\]_ to stdout.
+
+#### Logo Setup
+To exchange the current default Logos used by Jems Minio has to be used directly. There the bucket
+`jems-logo-file-bucket` has to be added. The following files are currently used:
+- JemsLogo_48.png
+- JemsLogo_96.png
+- favlogo.png
 
 ### API testing
 For testing the API, the module [jems-rest-test](jems-rest-test) was introduced.
@@ -109,18 +119,31 @@ The generated documentation of the API can be found on the successful started Je
 ### Startup parameters
 
 You can define following startup parameters (see also [application.yaml](jems-server/src/main/resources/application.yaml)):
-- `audit-service.enabled`=[true,false] (or env variable `AUDIT_ENABLED`), if this one is set to true, you need to provide also:
-  - `audit-service.url-and-port` with address of ElasticSearch (or env variable `AUDIT_ELASTICSEARCH_URL_AND_PORT`)
+- `audit-service.enabled`=[true,false] (**we recommend using env variable** `AUDIT_ENABLED`), if this one is set to true, you need to provide also:
+  - `audit-service.url-and-port` with address of ElasticSearch (better use env variable `AUDIT_ELASTICSEARCH_URL_AND_PORT`)
 - `spring.datasource.url` with address of MariaDB (or env variable `SPRING_DATASOURCE_URL`)
   - optional `spring.datasource.username` (by default set to `root`)
   - `spring.datasource.password` (or env variable `SPRING_DATASOURCE_PASSWORD`)
 - `minio-storage.endpoint` with address of Minio (or env variable `MINIO_URL_AND_PORT`)
   - `minio-storage.accessKey` with access key for Minio (or env variable `MINIO_ACCESS_KEY`)
   - `minio-storage.secretKey` with secret key for Minio (or env variable `MINIO_SECRET_KEY`)
-- `info.helpdesk-url` URL, which is available in the main HELP tooltip
+- env variable `HELPDESK_URL` a URL, which is available in the main HELP tooltip (will set param `info.helpdesk-url`)
+- env variable `HELPDESK_EMAIL` an email, which is available in the main HELP section _to contact_ (will set param `info.helpdesk-email`)
 - `info.accessibility-statement-url` URL for accessibility statement, which is available in the login page that can be modified by the user
 - `info.terms-privacy-policy-url` URL for the Terms of service and privacy policy page, that is available in the login and register pages and can be modified by the user
 - `app.translations-folder` Path for translations folder that will be uploaded by the users
+- `app.notification.mail.enabled`=[true,false] (or env variable `MAIL_ENABLED`) if this one is set to true, you need to provide also:
+  - `spring.mail.host` with address of SMTP server
+  - `spring.mail.port` with port number on which SMTP server is listening
+  - `spring.mail.username` with the username defined in the SMTP server
+  - `spring.mail.password`  with the password of the specified username
+  - `spring.mail.properties.mail.smtp.auth`=[true,false] (by default set to `false`)
+  - optional `spring.mail.properties.mail.smtp.connectiontimeout` (by default set to `5000`)
+  - optional `spring.mail.properties.mail.smtp.timeout` (by default set to `5000`)
+  - optional `spring.mail.properties.mail.smtp.writetimeout` (by default set to `5000`)
+  - optional `spring.mail.properties.mail.smtp.starttls.enabled` (by default set to `false`)
+- `app.notification.mail.sender` The sender address that will be used as from in the outgoing mail notifications
+- `app.notification.mail.bcc-list` List of BCC recipients that should receive a copy of all the outgoing mail notifications
 
 
 ### Plugins
@@ -143,7 +166,7 @@ if the main translation files need to be exchanged, instead of the `classpath:/m
 1. [Cloudflight Platform](https://git.internal.cloudflight.io/cloudflight/libs/cloudflight-platform)
 2. [Cloudflight Gradle Plugin](https://git.internal.cloudflight.io/cloudflight/gradle/cloudflight-gradle-plugin)
 3. https://artifacts.cloudflight.io/repository/plugins-maven
-4. https://jems-dev.internal.cloudflight.dev/
-5. https://jems-test.cloudflight.dev/
+4. https://jems-dev.internal.cloudflight.dev
+5. http://jems1.interact-eu.net
 6. [Teamcity](https://teamcity.internal.cloudflight.io/)
 7. [Generated Swagger API documentation](https://jems-test.cloudflight.dev/swagger-ui.html#/)

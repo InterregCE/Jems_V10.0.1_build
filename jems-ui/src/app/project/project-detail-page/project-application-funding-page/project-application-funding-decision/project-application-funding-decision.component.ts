@@ -6,9 +6,9 @@ import {ProjectFundingDecisionStore} from '../project-funding-decision-store.ser
 import {RoutingService} from '@common/services/routing.service';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/internal/operators';
-import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.component';
 import {ProjectStepStatus} from '../../project-step-status';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
   selector: 'app-project-application-funding-decision',
@@ -20,9 +20,9 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   PermissionsEnum = PermissionsEnum;
 
   @Input()
-  project: ProjectDetailDTO;
+  currentVersionOfProject: ProjectDetailDTO;
   @Input()
-  status: ProjectStatusDTO;
+  currentVersionOfProjectStatus: ProjectStatusDTO;
   @Input()
   userCanChangeFunding = false;
   @Input()
@@ -58,10 +58,10 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.decisionForm.controls.status.setValue(this.status?.status);
-    this.decisionForm.controls.notes.setValue(this.status?.note);
-    this.decisionForm.controls.decisionDate.setValue(this.status?.decisionDate);
-    if (this.project.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT) {
+    this.decisionForm.controls.status.setValue(this.currentVersionOfProjectStatus?.status);
+    this.decisionForm.controls.notes.setValue(this.currentVersionOfProjectStatus?.note);
+    this.decisionForm.controls.decisionDate.setValue(this.currentVersionOfProjectStatus?.decisionDate);
+    if (this.currentVersionOfProject.projectStatus.status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT) {
       this.decisionForm.disable();
     }
   }
@@ -77,21 +77,22 @@ export class ProjectApplicationFundingDecisionComponent implements OnInit {
   }
 
   redirectToAssessmentAndDecisions(): void {
-    this.router.navigate(['app', 'project', 'detail', this.project.id, 'assessmentAndDecision']);
+    this.router.navigate(['app', 'project', 'detail', this.currentVersionOfProject.id, 'assessmentAndDecision']);
   }
 
   private getDecisionAction(): Observable<string> {
     const statusInfo: ApplicationActionInfoDTO = {
       note: this.decisionForm?.controls?.notes?.value,
-      date: this.decisionForm?.controls?.decisionDate?.value?.format('YYYY-MM-DD')
+      date: this.decisionForm?.controls?.decisionDate?.value?.format('YYYY-MM-DD'),
+      entryIntoForceDate: null as any
     };
 
     if (this.decisionForm?.controls?.status?.value === this.stepStatus.approved) {
-      return this.fundingDecisionStore.approveApplication(this.project.id, statusInfo);
+      return this.fundingDecisionStore.approveApplication(this.currentVersionOfProject.id, statusInfo);
     } else if (this.decisionForm?.controls?.status?.value === this.stepStatus.approvedWithConditions) {
-      return this.fundingDecisionStore.approveApplicationWithCondition(this.project.id, statusInfo);
+      return this.fundingDecisionStore.approveApplicationWithCondition(this.currentVersionOfProject.id, statusInfo);
     }
-    return this.fundingDecisionStore.refuseApplication(this.project.id, statusInfo);
+    return this.fundingDecisionStore.refuseApplication(this.currentVersionOfProject.id, statusInfo);
   }
 
   getFundingConfirmation(): ConfirmDialogData {

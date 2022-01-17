@@ -4,10 +4,10 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.Audit
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.model.AuditUser
-import org.elasticsearch.common.xcontent.XContentBuilder
-import org.elasticsearch.common.xcontent.XContentFactory
 import org.elasticsearch.search.SearchHit
 import org.elasticsearch.search.SearchHits
+import org.elasticsearch.xcontent.XContentBuilder
+import org.elasticsearch.xcontent.XContentFactory
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
@@ -20,8 +20,8 @@ const val FIELD_PROJECT = "project"
 const val FIELD_PROJECT_ID = "id"
 const val FIELD_PROJECT_CUSTOM_IDENTIFIER = "customIdentifier"
 const val FIELD_PROJECT_NAME = "name"
-private const val FIELD_ENTITY_RELATED_ID = "entityRelatedId"
-private const val FIELD_DESCRIPTION = "description"
+const val FIELD_ENTITY_RELATED_ID = "entityRelatedId"
+const val FIELD_DESCRIPTION = "description"
 
 fun Audit.toElasticsearchEntity(): XContentBuilder {
     val entityBuilder = XContentFactory

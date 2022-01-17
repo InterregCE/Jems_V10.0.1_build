@@ -16,20 +16,22 @@ class ProjectVersionPersistenceProvider(
 ) : ProjectVersionPersistence {
 
     @Transactional
-    override fun createNewVersion(projectId: Long, version: String, status: ApplicationStatus, userId: Long) =
-        projectVersionRepository.save(
+    override fun createNewVersion(projectId: Long, status: ApplicationStatus, version: String, userId: Long) : ProjectVersion {
+        projectVersionRepository.endCurrentVersion(projectId)
+        return projectVersionRepository.save(
             ProjectVersionEntity(
                 id = ProjectVersionId(version, projectId),
-                user = userRepository.getOne(userId),
-                status = status
+                user = userRepository.getById(userId)
             )
-        ).toProjectVersion()
+        ).toProjectVersion(status, true)
+    }
 
     @Transactional(readOnly = true)
-    override fun getLatestVersionOrNull(projectId: Long): ProjectVersion? =
-        projectVersionRepository.findFirstByIdProjectIdOrderByCreatedAtDesc(projectId)?.toProjectVersion()
+    override fun getLatestVersionOrNull(projectId: Long): String? =
+        projectVersionRepository.findLatestVersion(projectId)
 
     @Transactional(readOnly = true)
     override fun getAllVersionsByProjectId(projectId: Long): List<ProjectVersion> =
-        projectVersionRepository.findAllVersionsByIdProjectIdOrderByCreatedAtDesc(projectId).toProjectVersions()
+        projectVersionRepository.findAllVersionsByProjectId(projectId).toProjectVersion()
+
 }

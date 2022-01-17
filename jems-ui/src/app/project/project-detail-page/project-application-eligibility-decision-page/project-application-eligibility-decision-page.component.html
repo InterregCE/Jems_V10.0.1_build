@@ -1,8 +1,9 @@
 <app-project-page-template [needsCard]="true" *ngIf="data$ | async as data"
-                           titleKey="project.application.form.lifecycle.title">
+                           titleKey="project.assessment.and.decision.header"
+                           [isVersionedData]="false">
     <div page-sub-title appFormLayout appNoWidthLimit>
-        <h2>{{data.project.customIdentifier}} – {{data.project.acronym}}</h2>
-        <app-project-application-information appNoWidthLimit [project]="data.project">
+        <h2>{{data.currentVersionOfProjectTitle}}</h2>
+        <app-project-application-information appNoWidthLimit [project]="data.currentVersionOfProject">
         </app-project-application-information>
     </div>
 
@@ -46,7 +47,7 @@
         </mat-form-field>
         <ng-container *ngIf="!data.eligibilityDecision">
             <div appMultiColumnRow *hasPermission="[PermissionsEnum.ProjectStatusDecideEligible, PermissionsEnum.ProjectStatusDecideIneligible]">
-                <button mat-stroked-button
+                <button appText mat-stroked-button
                         (click)="redirectToAssessmentAndDecisions()">
                     {{'project.assessment.eligibilityDecision.dialog.button.cancel' | translate}}
                 </button>

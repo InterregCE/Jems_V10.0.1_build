@@ -18,7 +18,14 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.summary",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-
+    PROJECT_A3(
+        "application.config.project.section.a.3",
+        setOf(FieldVisibilityStatus.STEP_TWO_ONLY),
+    ),
+    PROJECT_A4(
+        "application.config.project.section.a.4",
+        setOf(FieldVisibilityStatus.STEP_TWO_ONLY),
+    ),
 
     PARTNER_ROLE("application.config.project.partner.role", setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO)),
     PARTNER_ABBREVIATED_ORGANISATION_NAME(
@@ -169,11 +176,15 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.partner.budget.periods",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PROJECT_LUMP_SUMS_DESCRIPTION(
+    "application.config.project.lump.sums.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PARTNER_BUDGET_STAFF_COST_STAFF_FUNCTION(
         "application.config.project.partner.budget.staff.cost.staff.function",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-    PARTNER_BUDGET_STAFF_COST_COMMENT(
+    PARTNER_BUDGET_STAFF_COST_COMMENTS(
         "application.config.project.partner.budget.staff.cost.comment",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
@@ -189,6 +200,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.partner.budget.travel.and.accommodation.description",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_COMMENTS(
+        "application.config.project.partner.budget.travel.and.accommodation.comments",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_UNIT_TYPE_AND_NUMBER_OF_UNITS(
         "application.config.project.partner.budget.travel.and.accommodation.unit.type.and.number.of.units",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -199,6 +214,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     ),
     PARTNER_BUDGET_EXTERNAL_EXPERTISE_DESCRIPTION(
         "application.config.project.partner.budget.external.expertise.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_EXTERNAL_EXPERTISE_COMMENTS(
+        "application.config.project.partner.budget.external.expertise.comments",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PARTNER_BUDGET_EXTERNAL_EXPERTISE_AWARD_PROCEDURE(
@@ -221,6 +240,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.partner.budget.equipment.description",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PARTNER_BUDGET_EQUIPMENT_COMMENTS(
+        "application.config.project.partner.budget.equipment.comments",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PARTNER_BUDGET_EQUIPMENT_AWARD_PROCEDURE(
         "application.config.project.partner.budget.equipment.award.procedure",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -239,6 +262,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     ),
     PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_DESCRIPTION(
         "application.config.project.partner.budget.infrastructure.and.works.description",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_COMMENTS(
+        "application.config.project.partner.budget.infrastructure.and.works.comments",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_AWARD_PROCEDURE(
@@ -347,6 +374,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         "application.config.project.investment.title",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    PROJECT_INVESTMENT_PERIOD(
+        "application.config.project.investment.expected.delivery.period",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PROJECT_INVESTMENT_WHY_IS_INVESTMENT_NEEDED(
         "application.config.project.investment.why.is.investment.needed",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -389,6 +420,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     ),
     PROJECT_INVESTMENT_DOCUMENTATION(
         "application.config.project.investment.documentation",
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PROJECT_INVESTMENT_DOCUMENTATION_EXPECTED_IMPACTS(
+        "application.config.project.investment.documentation.expected.impacts",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_INVESTMENT_WHO_OWNS_THE_INVESTMENT_SITE(
@@ -520,28 +555,33 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
                 ApplicationFormFieldConfiguration(it.id, defaultVisibilityStatus)
             }.toMutableSet()
 
-        fun getFieldsThatDependsOnBudgetSetting() : Set<String> =
+        fun getFieldsThatDependsOnBudgetSetting(): Set<String> =
             setOf(
                 PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id,
                 PARTNER_BUDGET_PERIODS.id,
+                PROJECT_LUMP_SUMS_DESCRIPTION.id,
                 PARTNER_BUDGET_STAFF_COST_STAFF_FUNCTION.id,
-                PARTNER_BUDGET_STAFF_COST_COMMENT.id,
+                PARTNER_BUDGET_STAFF_COST_COMMENTS.id,
                 PARTNER_BUDGET_STAFF_COST_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
                 PARTNER_BUDGET_STAFF_COST_PRICE_PER_UNIT.id,
                 PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_DESCRIPTION.id,
+                PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_COMMENTS.id,
                 PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
                 PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_PRICE_PER_UNIT.id,
                 PARTNER_BUDGET_EXTERNAL_EXPERTISE_DESCRIPTION.id,
+                PARTNER_BUDGET_EXTERNAL_EXPERTISE_COMMENTS.id,
                 PARTNER_BUDGET_EXTERNAL_EXPERTISE_AWARD_PROCEDURE.id,
                 PARTNER_BUDGET_EXTERNAL_EXPERTISE_INVESTMENT.id,
                 PARTNER_BUDGET_EXTERNAL_EXPERTISE_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
                 PARTNER_BUDGET_EXTERNAL_EXPERTISE_PRICE_PER_UNIT.id,
                 PARTNER_BUDGET_EQUIPMENT_DESCRIPTION.id,
+                PARTNER_BUDGET_EQUIPMENT_COMMENTS.id,
                 PARTNER_BUDGET_EQUIPMENT_AWARD_PROCEDURE.id,
                 PARTNER_BUDGET_EQUIPMENT_INVESTMENT.id,
                 PARTNER_BUDGET_EQUIPMENT_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
                 PARTNER_BUDGET_EQUIPMENT_PRICE_PER_UNIT.id,
                 PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_DESCRIPTION.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_COMMENTS.id,
                 PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_AWARD_PROCEDURE.id,
                 PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_INVESTMENT.id,
                 PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,

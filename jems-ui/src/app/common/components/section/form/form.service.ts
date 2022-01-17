@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {FormGroup} from '@angular/forms';
+import {FormArray, FormGroup} from '@angular/forms';
 import {I18nLabel} from '@common/i18n/i18n-label';
 import {Log} from '@common/utils/log';
 import {filter, tap} from 'rxjs/operators';
@@ -13,7 +13,7 @@ import {APIError} from '@common/models/APIError';
 @UntilDestroy()
 @Injectable()
 export class FormService {
-  private form: FormGroup;
+  private form: FormGroup | FormArray;
   private resetSubject = new Subject();
   private editable = true;
 
@@ -28,7 +28,7 @@ export class FormService {
   constructor(private routingService: RoutingService, private translateService: TranslateService) {
   }
 
-  init(form: FormGroup, editable$?: Observable<boolean>): void {
+  init(form: FormGroup | FormArray, editable$?: Observable<boolean>): void {
     this.form = form;
     this.form?.valueChanges
       .pipe(
@@ -122,7 +122,7 @@ export class FormService {
   }
 
   private setFieldErrors(error: APIError): void {
-    if (!this.form) {
+    if (!this.form || this.form instanceof FormArray) {
       return;
     }
     Log.debug('Set form backend errors.', this, error);
@@ -130,8 +130,8 @@ export class FormService {
       if (!error?.formErrors || !error.formErrors[key]) {
         return;
       }
-      this.form?.controls[key].setErrors({error: this.translateService.instant(error.formErrors[key].i18nKey, error.formErrors[key].i18nArguments)});
-      this.form?.controls[key].markAsTouched();
+      (this.form as FormGroup)?.controls[key].setErrors({error: this.translateService.instant(error.formErrors[key].i18nKey, error.formErrors[key].i18nArguments)});
+      (this.form as FormGroup)?.controls[key].markAsTouched();
     });
   }
 }

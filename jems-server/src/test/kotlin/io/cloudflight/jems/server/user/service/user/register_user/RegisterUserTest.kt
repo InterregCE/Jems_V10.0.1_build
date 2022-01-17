@@ -1,17 +1,15 @@
 package io.cloudflight.jems.server.user.service.user.register_user
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.audit.model.AuditUser
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
+import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRegistration
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -34,6 +32,7 @@ internal class RegisterUserTest : UnitTest() {
 
     @MockK
     lateinit var persistence: UserPersistence
+
     @MockK
     lateinit var programmeDataPersistence: ProgrammeDataPersistence
 
@@ -45,6 +44,9 @@ internal class RegisterUserTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @RelaxedMockK
+    lateinit var userConfirmationPersistence: UserConfirmationPersistence
 
     @InjectMockKs
     lateinit var registerUser: RegisterUser
@@ -68,6 +70,7 @@ internal class RegisterUserTest : UnitTest() {
             name = "Michael",
             surname = "Schumacher",
             userRoleId = defaultUserRoleId,
+            userStatus = UserStatus.UNCONFIRMED
         )
         val expectedUser = User(
             id = USER_ID,
@@ -78,7 +81,8 @@ internal class RegisterUserTest : UnitTest() {
                 id = defaultUserRoleId,
                 name = "applicant",
                 permissions = emptySet()
-            )
+            ),
+            userStatus = UserStatus.UNCONFIRMED
         )
 
         every { programmeDataPersistence.getDefaultUserRole() } returns defaultUserRoleId
@@ -90,18 +94,9 @@ internal class RegisterUserTest : UnitTest() {
         assertThat(registerUser.registerUser(userRegistration)).isEqualTo(expectedUser)
         assertThat(slotPassword.captured).isEqualTo("hash_my_plain_pass")
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = slot<UserRegisteredEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.overrideCurrentUser).isEqualTo(AuditUser(id= USER_ID, email="applicant@interact.eu"))
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(AuditCandidate(
-            action = AuditAction.USER_REGISTERED,
-            entityRelatedId = USER_ID,
-            description = "A new user applicant@interact.eu registered:\n" +
-                "email set to 'applicant@interact.eu',\n" +
-                "name set to 'Michael',\n" +
-                "surname set to 'Schumacher',\n" +
-                "userRole set to 'applicant(id=3)'"
-        ))
+        assertThat(slotAudit.captured.user).isEqualTo(expectedUser)
     }
 
     @Test

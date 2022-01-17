@@ -12,12 +12,17 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_description_c2_relevance_strategy")
-data class ProjectRelevanceStrategyEntity(
+class ProjectRelevanceStrategyEntity(
 
     @Id
     val id: UUID,
+
+    @Column
+    @field:NotNull
+    val sortNumber: Int,
 
     @ManyToOne
     @JoinColumn(name = "project_relevance_id", insertable = false, updatable = false)
@@ -28,22 +33,7 @@ data class ProjectRelevanceStrategyEntity(
     val strategy: ProgrammeStrategy?,
 
     // specification
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.id")
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectRelevanceStrategyTransl> = mutableSetOf()
 
-) {
-
-    override fun hashCode(): Int {
-        return Objects.hash(projectRelevance?.projectId, strategy)
-    }
-
-    override fun equals(other: Any?): Boolean = (other is ProjectRelevanceStrategyEntity)
-        && projectRelevance?.projectId == other.projectRelevance?.projectId
-        && strategy == other.strategy
-        && translatedValues == other.translatedValues
-
-    override fun toString(): String {
-        return "${this.javaClass.simpleName}(projectRelevance.projectId=${projectRelevance?.projectId}, strategy=$strategy, translatedValues=$translatedValues)"
-    }
-
-}
+)

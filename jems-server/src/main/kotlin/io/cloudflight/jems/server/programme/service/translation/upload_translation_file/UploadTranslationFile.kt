@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.programme.service.translation.upload_translat
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.config.AppResourcesProperties
+import io.cloudflight.jems.server.config.AppProperties
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.programmeTranslationFileUploaded
 import io.cloudflight.jems.server.programme.service.translation.TranslationFilePersistence
@@ -23,7 +23,7 @@ class UploadTranslationFile(
     private val translationFilePersistence: TranslationFilePersistence,
     private val messageSource: ReloadableResourceBundleMessageSource,
     private val eventPublisher: ApplicationEventPublisher,
-    private val appResourcesProperties: AppResourcesProperties
+    private val appProperties: AppProperties
 ) : UploadTranslationFileInteractor {
 
     @Transactional
@@ -47,7 +47,7 @@ class UploadTranslationFile(
     }
 
     private fun copyTranslationFiles(byteArray: ByteArray, fileType: TranslationFileType, language: SystemLanguage, ) =
-        with(Path.of(appResourcesProperties.translationsFolder)) {
+        with(Path.of(appProperties.translationsFolder)) {
             if (!Files.exists(this))
                 Files.createDirectories(this)
 
