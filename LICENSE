@@ -16,7 +16,7 @@ Some parts of the software are not property of the City of Vienna. The excluded 
 · jackson-module-kotlin (Apache 2.0) - version 2.11.0
 · swagger (Apache 2.0) - version 2.9.2
 · h2database (MPL 2.0) - version 1.4.200
-· ElasticSearch (Apache 2.0 for most of parts) - version 7.16.1
+· ElasticSearch (Apache 2.0 for most of parts) - version 7.16.3
 
 2. Front-End
 

@@ -33,7 +33,7 @@ services:
       retries: 3
 
   audit-database:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
     container_name: audit-database
     ports:
       - '9200:9200'
@@ -56,7 +56,7 @@ services:
 #  Optional: if you need, you can create kibana container to analyze all ElasticSearch data:
 #
 #  audit-analyzer:
-#    image: docker.elastic.co/kibana/kibana:7.16.1
+#    image: docker.elastic.co/kibana/kibana:7.16.3
 #    container_name: audit-analyzer
 #    ports:
 #      - '5601:5601'
