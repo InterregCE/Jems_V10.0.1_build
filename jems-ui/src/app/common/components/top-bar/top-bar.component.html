@@ -1,10 +1,11 @@
 <nav class="navbar navbar-expand-lg">
         <div class="navbar-logos">
-            <div class="programme-logo-container">
-                <img *ngIf="smallLogo$ | async as logo; else defaultLogo" class="logo fill" src="data:image/png;base64,{{logo.value}}" alt="">
-                <ng-template #defaultLogo>
-                    <img class="logo fill" src="assets/logos/InterregProgrammeLogo_96.png" alt="">
-                </ng-template>
+            <div class="programme-logo-container show-pointer"
+                 (click)="router.navigate(['app'])">
+                    <img *ngIf="largeLogo$ | async as logo; else defaultLogo" class="logo fill" src="data:image/png;base64,{{logo.value}}" alt="">
+                    <ng-template #defaultLogo>
+                        <img class="logo fill" src="assets/logos/InterregProgrammeLogo_96.png" alt="">
+                    </ng-template>
                 <div class="vertical-splitter"></div>
             </div>
             <img class="logo half-size" src="assets/logos/JemsLogo_96.png" alt="">
@@ -21,15 +22,14 @@
     <!-- Content -->
     <div class="navbar-collapse collapse" [ngClass]="{'show': !isNavBarCollapsed}" id="navbarSupportedContent">
         <ul class="navbar-nav left-side-menu">
-
             <ng-container *ngIf="currentUser">
-                <li class="nav-item" *ngFor="let item of menuItems$ | async"
+                <li class="nav-item show-pointer" *ngFor="let item of menuItems$ | async"
+                    (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})"
                     [ngClass]="{
                          'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
                          'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
                        }">
-                    <a class="nav-link"
-                       (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})">
+                    <a class="nav-link">
                         <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
                         <span class="nav-text" appText maxLines="2">{{item.name | translate}}</span>
                     </a>
@@ -39,13 +39,13 @@
 
         <ul class="navbar-nav" [ngClass]="{'divide': !isNavBarCollapsed}">
             <!-- Current user -->
-            <li class="nav-item" *ngIf="editUserItem$ | async as item"
+            <li class="nav-item show-pointer" *ngIf="editUserItem$ | async as item"
+                (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})"
                 [ngClass]="{
                          'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
                          'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
                        }">
-                <a class="nav-link"
-                   (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})">
+                <a class="nav-link">
                     <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
                     <span class="nav-text" appText maxLines="2">{{item.name | translate}}</span>
                 </a>

@@ -591,6 +591,9 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     margin-left: 1rem;
   }
 }
+.show-pointer {
+  cursor: pointer;
+}
 
 .vertical-splitter {
   height: 60%;
@@ -632,7 +635,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   }
 
   &.active-collapsed {
-    border: 1px solid rgba(white, 0.25);
     border-bottom: .125rem solid var(--font-text-link);
     background: rgba(white, 0.75);
   }
