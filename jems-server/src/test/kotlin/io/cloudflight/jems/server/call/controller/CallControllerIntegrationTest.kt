@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.CallApi
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
@@ -45,6 +46,7 @@ class CallControllerIntegrationTest(
             callApi.createCall(
                 CallUpdateRequestDTO(
                     name = "Call 1",
+                    type = CallType.STANDARD,
                     startDateTime = START_DATE,
                     endDateTime = END_DATE,
                     additionalFundAllowed = true,

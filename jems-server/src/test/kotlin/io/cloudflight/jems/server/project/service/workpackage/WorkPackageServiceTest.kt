@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.project.service.workpackage
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.common.entity.TranslationId
@@ -64,8 +66,10 @@ class WorkPackageServiceTest {
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
+        type = CallType.STANDARD,
         translatedValues = mutableSetOf(),
         lengthOfPeriod = 1,
+        allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null
     ).apply { translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call")) }
 

@@ -12,6 +12,7 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.Mediterr
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.callFundRate
@@ -52,6 +53,7 @@ class UpdateCallTest : UnitTest() {
             id = CALL_ID,
             name = "call name",
             status = CallStatus.PUBLISHED,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().plusDays(1),
             endDateStep1 = ZonedDateTime.now().plusHours(4),
             endDate = ZonedDateTime.now().plusDays(2),
@@ -84,6 +86,7 @@ class UpdateCallTest : UnitTest() {
             id = CALL_ID,
             name = "new name",
             status = existingCall.status,
+            type = existingCall.type,
             startDate = existingCall.startDate,
             endDate = existingCall.endDate.plusDays(1),
             isAdditionalFundAllowed = existingCall.isAdditionalFundAllowed,

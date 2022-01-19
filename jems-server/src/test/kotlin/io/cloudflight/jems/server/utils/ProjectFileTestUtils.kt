@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.utils
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryTypeDTO
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.file.ProjectFileCategoryEntity
@@ -84,6 +86,7 @@ val callEntity = CallEntity(
     creator = userEntity,
     name = "call",
     status = CallStatus.DRAFT,
+    type = CallType.STANDARD,
     startDate = ZonedDateTime.now(),
     endDateStep1 = null,
     endDate = ZonedDateTime.now(),
@@ -92,6 +95,7 @@ val callEntity = CallEntity(
     isAdditionalFundAllowed = false,
     funds = mutableSetOf(),
     lengthOfPeriod = 1,
+    allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
     preSubmissionCheckPluginKey = null
 )
 val projectStatusEntity = ProjectStatusHistoryEntity(

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.service.update_application_form_field_configuration
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
@@ -49,6 +50,7 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         id = CALL_ID,
         name = "call name",
         status = CallStatus.DRAFT,
+        type = CallType.STANDARD,
         startDate = ZonedDateTime.now().minusDays(1),
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(1),

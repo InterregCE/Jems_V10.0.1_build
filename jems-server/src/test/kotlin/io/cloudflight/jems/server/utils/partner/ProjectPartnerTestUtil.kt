@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.utils.partner
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
@@ -347,6 +349,7 @@ class ProjectPartnerTestUtil {
             creator = user,
             name = "call",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now(),
             endDateStep1 = null,
             endDate = ZonedDateTime.now(),
@@ -355,6 +358,7 @@ class ProjectPartnerTestUtil {
             isAdditionalFundAllowed = false,
             funds = mutableSetOf(),
             lengthOfPeriod = 1,
+            allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
             preSubmissionCheckPluginKey = null
         )
         val projectStatus = ProjectStatusHistoryEntity(

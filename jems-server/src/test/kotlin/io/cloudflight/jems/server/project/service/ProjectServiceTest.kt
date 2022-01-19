@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Healthcare
@@ -10,6 +11,7 @@ import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -90,7 +92,9 @@ class ProjectServiceTest : UnitTest() {
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(1),
         status = CallStatus.PUBLISHED,
+        type = CallType.STANDARD,
         lengthOfPeriod = 1,
+        allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null
     )
 
@@ -206,7 +210,9 @@ class ProjectServiceTest : UnitTest() {
             endDateStep1 = null,
             endDate = ZonedDateTime.now(),
             status = CallStatus.PUBLISHED,
+            type = CallType.STANDARD,
             lengthOfPeriod = 6,
+            allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
             preSubmissionCheckPluginKey = null
         )
         val projectData = InputProjectData(acronym = "acronym", duration = 13)

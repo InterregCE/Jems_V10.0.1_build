@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.factory
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.call.repository.CallRepository
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -28,6 +30,7 @@ class CallFactory(
                 0,
                 creator = user,
                 name = callName,
+                type = CallType.STANDARD,
                 prioritySpecificObjectives = mutableSetOf(),
                 strategies = mutableSetOf(),
                 isAdditionalFundAllowed = false,
@@ -37,6 +40,7 @@ class CallFactory(
                 endDate = callEnd,
                 status = CallStatus.PUBLISHED,
                 lengthOfPeriod = 1,
+                allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
                 preSubmissionCheckPluginKey = null
             )
         )

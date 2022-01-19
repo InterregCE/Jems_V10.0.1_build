@@ -4,9 +4,8 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.call.callFundRateEntity
-import io.cloudflight.jems.server.call.callWithId
+import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -37,20 +36,20 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
-import java.util.Optional
+import java.util.*
 
 class ProjectBudgetCoFinancingPersistenceTest {
 
     companion object {
         private const val PARTNER_ID = 1L
 
-        private val fund1 = callFundRateEntity(callWithId(10), 10L)
-        private val fund2 = callFundRateEntity(callWithId(10), 11L)
+        private val fund1 = callFundRateEntity(createTestCallEntity(10), 10L)
+        private val fund2 = callFundRateEntity(createTestCallEntity(10), 11L)
 
         private val fund1Model = ProgrammeFund(id = fund1.setupId.programmeFund.id, selected = true)
 
         private fun dummyCall(): CallEntity {
-            val call = callWithId(10)
+            val call = createTestCallEntity(10)
             call.funds.clear()
             call.funds.addAll(setOf(fund1, fund2))
             return call

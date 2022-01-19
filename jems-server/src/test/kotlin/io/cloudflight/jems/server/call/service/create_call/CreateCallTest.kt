@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.call.service.create_call
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
@@ -41,6 +42,7 @@ class CreateCallTest : UnitTest() {
         private const val FUND_ID = 54L
         private val callToCreate = Call(
             name = "call to create",
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
@@ -58,6 +60,7 @@ class CreateCallTest : UnitTest() {
             id = 0L,
             name = "call to create",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
@@ -144,7 +147,7 @@ class CreateCallTest : UnitTest() {
         with(slotAudit.captured.auditCandidate) {
             assertThat(action).isEqualTo(AuditAction.CALL_ADDED)
             assertThat(description).startsWith(
-                "A new call id=0 name='call to create' was created as:\n" +
+                "A new call id=0 name='call to create' for type='STANDARD' project was created as:\n" +
                     "name set to 'call to create',\n" +
                     "status set to DRAFT,\n" +
                     "startDate set to "

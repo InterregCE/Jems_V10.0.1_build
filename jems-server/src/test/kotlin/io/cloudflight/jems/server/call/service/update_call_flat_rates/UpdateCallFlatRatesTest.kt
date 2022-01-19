@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -30,6 +31,7 @@ class UpdateCallFlatRatesTest {
             id = id,
             name = "",
             status = status,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),

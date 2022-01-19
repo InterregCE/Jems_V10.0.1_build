@@ -8,7 +8,7 @@ import {
   ProgrammeUnitCostListDTO,
   UserRoleCreateDTO
 } from '@cat/api';
-import {merge, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../security/permissions/permission.service';
@@ -28,6 +28,7 @@ export class CallStore {
   callIsPublished$: Observable<boolean>;
 
   savedCall$ = new Subject<CallDetailDTO>();
+  callType$ = new BehaviorSubject<CallDetailDTO.TypeEnum>(CallDetailDTO.TypeEnum.STANDARD);
 
   constructor(private callService: CallService,
               private programmeCostOptionService: ProgrammeCostOptionService,
@@ -78,6 +79,7 @@ export class CallStore {
       .pipe(
         switchMap(id => id ? this.callService.getCallById(Number(id)) : of({} as CallDetailDTO)),
         tap(call => this.callId = (call as any)?.id),
+        tap(call => this.callType$.next(call.type)),
         tap(call => Log.info('Fetched the call:', this, call)),
       );
     return merge(initialCall$, this.savedCall$)

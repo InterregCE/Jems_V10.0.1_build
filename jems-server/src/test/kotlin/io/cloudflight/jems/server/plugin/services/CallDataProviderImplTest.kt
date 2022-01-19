@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.plugin.contract.models.call.CallDetailData
@@ -58,6 +59,7 @@ internal class CallDataProviderImplTest : UnitTest() {
             id = CALL_ID,
             name = "call name",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),

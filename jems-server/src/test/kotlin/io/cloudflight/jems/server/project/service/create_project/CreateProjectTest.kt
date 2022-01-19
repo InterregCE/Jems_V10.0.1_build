@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction.APPLICATION_STATUS_CHANGED
 import io.cloudflight.jems.api.audit.dto.AuditAction.APPLICATION_VERSION_RECORDED
 import io.cloudflight.jems.api.audit.dto.AuditAction.CALL_ALREADY_ENDED
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -62,6 +63,7 @@ internal class CreateProjectTest : UnitTest() {
             id = CALL_ID,
             name = "call name",
             status = CallStatus.PUBLISHED,
+            type = CallType.STANDARD,
             startDate = startDate,
             endDateStep1 = endDateStep1,
             endDate = endDate,

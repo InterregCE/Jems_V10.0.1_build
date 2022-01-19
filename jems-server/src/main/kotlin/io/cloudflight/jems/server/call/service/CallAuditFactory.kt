@@ -12,7 +12,7 @@ fun callCreated(context: Any, call: CallDetail) = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.CALL_ADDED)
         .entityRelatedId(call.id)
-        .description("A new call id=${call.id} name='${call.name}' was created as:\n${call.getDiff().onlyNewChanges()}")
+        .description("A new call id=${call.id} name='${call.name}' for type='${call.type}' project was created as:\n${call.getDiff().onlyNewChanges()}")
         .build()
 )
 

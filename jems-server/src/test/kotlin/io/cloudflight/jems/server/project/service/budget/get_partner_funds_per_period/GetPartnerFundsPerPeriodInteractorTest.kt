@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.budget.get_partner_funds_per_period
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
@@ -68,6 +69,7 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
         id = 1L,
         name = "existing call",
         status = CallStatus.PUBLISHED,
+        type = CallType.STANDARD,
         startDate = ZonedDateTime.now().minusDays(1),
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(1),
