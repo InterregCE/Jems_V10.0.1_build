@@ -4,9 +4,9 @@
             <h3>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h3>
             <div>{{'project.work.package.tab.investment.intro' | translate}}</div>
 
-            <button appText mat-stroked-button
-                    routerLink="create"
-                    [disabled]="(projectStore.projectEditable$ | async) === false">
+            <button *ngIf="projectStore.projectEditable$ | async"
+                    appText mat-stroked-button
+                    routerLink="create">
                 + {{'project.application.form.add.workpackage.investment' | translate}}
             </button>
 
