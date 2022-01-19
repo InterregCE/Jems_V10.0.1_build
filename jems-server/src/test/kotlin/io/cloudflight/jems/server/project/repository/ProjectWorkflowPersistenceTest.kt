@@ -422,7 +422,9 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 listOf(
                     ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
                     ApplicationStatus.MODIFICATION_REJECTED,
-                    ApplicationStatus.APPROVED
+                    ApplicationStatus.APPROVED,
+                    ApplicationStatus.MODIFICATION_SUBMITTED,
+                    ApplicationStatus.CONTRACTED,
                 )
             )
         } returns listOf(status2, status1)
@@ -438,7 +440,9 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 listOf(
                     ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
                     ApplicationStatus.MODIFICATION_REJECTED,
-                    ApplicationStatus.APPROVED
+                    ApplicationStatus.APPROVED,
+                    ApplicationStatus.MODIFICATION_SUBMITTED,
+                    ApplicationStatus.CONTRACTED,
                 )
             )
         } returns emptyList()

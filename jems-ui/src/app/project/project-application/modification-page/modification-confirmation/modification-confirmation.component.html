@@ -27,7 +27,7 @@
                 {{'project.application.form.section.modification.decision' | translate}}
             </div>
             <mat-button-toggle-group formControlName="status">
-                <mat-button-toggle #approvedToggle [value]="ProjectStatus.APPROVED">
+                <mat-button-toggle #approvedToggle [value]="getSwitchValue()">
                     <span jemsText
                           maxWidth="230">{{'project.application.form.section.modification.approve' | translate}}</span>
                 </mat-button-toggle>

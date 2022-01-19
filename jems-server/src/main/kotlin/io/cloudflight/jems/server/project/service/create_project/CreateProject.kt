@@ -61,7 +61,7 @@ class CreateProject(
 
         auditPublisher.publishEvent(projectApplicationCreated(this, project))
 
-        createNewProjectVersion.create(project.id, status)
+        createNewProjectVersion.create(project.id)
         auditPublisher.publishEvent(
             projectVersionRecorded(
                 context = this,

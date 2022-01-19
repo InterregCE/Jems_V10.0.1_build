@@ -29,6 +29,7 @@ import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
 import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserStatus
@@ -104,6 +105,15 @@ internal class CreateProjectTest : UnitTest() {
                 user = userEntity,
                 status = status,
                 current = true
+            )
+        }
+
+        private fun projectVersionSummary(): ProjectVersionSummary {
+            return ProjectVersionSummary(
+                version = "1.0",
+                projectId = PROJECT_ID,
+                createdAt = ZonedDateTime.now(),
+                user = userEntity,
             )
         }
 
@@ -188,7 +198,7 @@ internal class CreateProjectTest : UnitTest() {
             dummyProjectWithStatus(acronym = "test application", status = DRAFT)
         every { programmeService.get() } returns getProgrammeData("SK-AT_", true)
         every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "SK-AT_5400029") } answers {}
-        every { createNewProjectVersion.create(PROJECT_ID, DRAFT) } returns projectVersion(DRAFT)
+        every { createNewProjectVersion.create(PROJECT_ID) } returns projectVersionSummary()
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
@@ -235,7 +245,7 @@ internal class CreateProjectTest : UnitTest() {
             dummyProjectWithStatus(acronym = acronym, status = STEP1_DRAFT)
         every { programmeService.get() } returns getProgrammeData("CZ-DE", false)
         every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "CZ-DE00029") } answers {}
-        every { createNewProjectVersion.create(PROJECT_ID, STEP1_DRAFT) } returns projectVersion(STEP1_DRAFT)
+        every { createNewProjectVersion.create(PROJECT_ID) } returns projectVersionSummary()
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
@@ -282,7 +292,7 @@ internal class CreateProjectTest : UnitTest() {
             dummyProjectWithStatus(acronym = acronym, status = STEP1_DRAFT)
         every { programmeService.get() } returns getProgrammeData(null, false)
         every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, any()) } answers {}
-        every { createNewProjectVersion.create(PROJECT_ID, STEP1_DRAFT) } returns projectVersion(STEP1_DRAFT)
+        every { createNewProjectVersion.create(PROJECT_ID) } returns projectVersionSummary()
         every { auditPublisher.publishEvent(any()) } answers { }
 
         val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
