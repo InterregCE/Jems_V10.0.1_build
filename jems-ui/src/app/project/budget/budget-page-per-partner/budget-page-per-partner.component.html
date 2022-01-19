@@ -1,10 +1,10 @@
-<app-project-page-template [needsCard]="true"
+<jems-project-page-template [needsCard]="true"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
                            subTitleKey="project.application.form.section.part.d">
     <h3>{{'project.application.form.budgetPerPartner.title' | translate}}</h3>
 
-    <div appNoWidthLimit
-         [appTableConfig]="tableConfig"
+    <div jemsNoWidthLimit
+         [jemsTableConfig]="tableConfig"
          *ngIf="budgets$ | async as budgets">
         <div>
             <span>{{ 'project.breadcrumb.partnerName' | translate}}</span>
@@ -23,9 +23,9 @@
             <span class="justify-end">{{ 'project.partner.total.contribution' | translate }}</span>
             <span class="justify-end">{{ 'project.partner.total.eligible.budget' | translate }}</span>
             <span class="justify-end">{{ 'project.partner.percent.total.budget' | translate }}
-                <app-context-info    infoText="{{ 'project.partner.percent.total.budget.contextinfo' | translate }}"
+                <jems-context-info    infoText="{{ 'project.partner.percent.total.budget.contextinfo' | translate }}"
                                      infoPosition="right">
-                </app-context-info>
+                </jems-context-info>
             </span>
         </div>
 
@@ -55,10 +55,10 @@
 
         <div class="footer" *ngIf="budgetColumns[budgetColumns.length - 1] as total">
             <span> {{ 'project.partner.budget.table.total' | translate }}
-                <app-context-info
+                <jems-context-info
                         infoText="{{ 'project.partner.percent.total.partner.contextinfo' | translate }}"
                         infoPosition="right">
-                </app-context-info>
+                </jems-context-info>
             </span>
             <span><!--blank cell--></span>
             <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
@@ -75,4 +75,4 @@
             </span>
         </div>
     </div>
-</app-project-page-template>
+</jems-project-page-template>

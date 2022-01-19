@@ -4,10 +4,10 @@ type WidthType = 'small' | 'medium' | 'large' | 'x-large' | 'xx-large' | 'half' 
 type NumberOfCharsType = 1 | 2 | 3 | 4 | 5;
 
 @Directive({
-  selector: '[appFormFieldWidth]'
+  selector: '[jemsFormFieldWidth]'
 })
 export class FormFieldWidthDirective implements OnInit {
-  @Input('appFormFieldWidth') formFieldWidth: WidthType;
+  @Input('jemsFormFieldWidth') formFieldWidth: WidthType;
   @Input() expectedNumberOfChars: NumberOfCharsType;
   @Input() extendError: true = true;
   @Input() minWidth: string;
@@ -17,9 +17,9 @@ export class FormFieldWidthDirective implements OnInit {
   }
 
   ngOnInit(): void {
-    this.el.nativeElement.classList.add(`app-layout`);
-    this.el.nativeElement.classList.add(`app-form-field`);
-    this.el.nativeElement.classList.add(`app-form-field-width`);
+    this.el.nativeElement.classList.add(`jems-layout`);
+    this.el.nativeElement.classList.add(`jems-form-field`);
+    this.el.nativeElement.classList.add(`jems-form-field-width`);
     this.el.nativeElement.style.setProperty('--widthBasedOnType', this.mapWidthToActualWidth(this.formFieldWidth));
 
     if (this.expectedNumberOfChars) {

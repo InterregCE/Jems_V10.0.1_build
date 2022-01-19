@@ -24,7 +24,7 @@ import {
 import {MultiLanguageGlobalService} from '@common/components/forms/multi-language-container/multi-language-global.service';
 
 @Component({
-  selector: 'app-project-timeplan-page',
+  selector: 'jems-project-timeplan-page',
   templateUrl: './project-timeplan-page.component.html',
   styleUrls: ['./project-timeplan-page.component.scss'],
   providers: [ProjectTimeplanPageStore],

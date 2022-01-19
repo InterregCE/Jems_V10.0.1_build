@@ -1,6 +1,6 @@
 <ng-container *ngIf="data$ | async as data">
     <p *ngIf="!data.page?.content.length">No calls submitted</p>
-    <app-table *ngIf="data.page.content.length"
+    <jems-table *ngIf="data.page.content.length"
                [configuration]="data.tableConfiguration"
                [rows]="data.page.content"
                [totalElements]="data.page?.totalElements"
@@ -8,11 +8,11 @@
                (newPageIndex)="listStore.newPageIndex$.next($event)"
                (newPageSize)="listStore.newPageSize$.next($event)"
                (sortRows)="listStore.newSort$.next($event)">
-    </app-table>
+    </jems-table>
 </ng-container>
 
 <ng-template #callActionsCell let-call>
-    <button appText mat-raised-button color="primary"
+    <button jemsText mat-raised-button color="primary"
             [disabled]="!isOpen(call)"
             (click)="applyToCall(call.id)">
         {{'call.table.column.action.apply' | translate}} <mat-icon>arrow_forward</mat-icon>

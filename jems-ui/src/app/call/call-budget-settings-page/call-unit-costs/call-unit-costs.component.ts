@@ -10,7 +10,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
-  selector: 'app-call-unit-costs',
+  selector: 'jems-call-unit-costs',
   templateUrl: './call-unit-costs.component.html',
   styleUrls: ['./call-unit-costs.component.scss'],
   providers: [FormService],

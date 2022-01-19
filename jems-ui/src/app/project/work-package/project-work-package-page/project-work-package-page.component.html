@@ -1,4 +1,4 @@
-<app-project-page-template
+<jems-project-page-template
         *ngIf="data$ | async as data"
         [needsCard]="true"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
@@ -6,7 +6,7 @@
     <h3>{{'project.application.form.section.part.c.subsection.four' | translate}}</h3>
 
     <ng-container *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button appText *ngIf="projectEditable$ | async"
+        <button jemsText *ngIf="projectEditable$ | async"
                 mat-stroked-button class="mb-3"
                 (click)="createWorkPackage()">
             + {{'project.application.form.add.workpackage' | translate}}
@@ -16,14 +16,14 @@
     <p class="spaced-elements" *ngIf="!data.workPackages.length">
         {{'project.application.form.workpackage.list.empty' | translate}}
     </p>
-    <app-table *ngIf="data.workPackages.length"
+    <jems-table *ngIf="data.workPackages.length"
                [configuration]="tableConfiguration"
                [rows]="data.workPackages"
                [totalElements]="data.workPackages.length">
-    </app-table>
+    </jems-table>
 
 
-</app-project-page-template>
+</jems-project-page-template>
 
 <ng-template #deletionCell let-workPackage>
     <input #workPackageName type="hidden"

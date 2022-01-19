@@ -14,7 +14,7 @@ import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-strategies',
+  selector: 'jems-programme-strategies',
   templateUrl: './programme-strategies.component.html',
   styleUrls: ['./programme-strategies.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

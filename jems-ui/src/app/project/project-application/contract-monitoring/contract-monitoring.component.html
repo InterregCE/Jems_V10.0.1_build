@@ -1,31 +1,31 @@
-<app-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
+<jems-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
                            titleKey="project.application.contracting.title"
                            [subTitleText]="'project.application.form.acronym' | translate : {projectTitle: data.currentVersionOfProjectTitle}"
                            [isVersionedData]="false">
 
     <h3> {{'project.application.contract.monitoring.title' | translate}}</h3>
-    <app-pending-button
+    <jems-pending-button
             [disabled]="data.currentVersionOfProject.projectStatus.status !== STATUS.APPROVED"
             [pending]="actionPending"
             (clicked)="setToContracted(data.currentVersionOfProject.id, data.currentVersionOfProjectTitle)">
         {{'project.application.set.to.contracted' | translate}}
-    </app-pending-button>
-    <app-context-info    infoText="{{ 'project.application.set.to.contracted.info' | translate }}"
+    </jems-pending-button>
+    <jems-context-info    infoText="{{ 'project.application.set.to.contracted.info' | translate }}"
                          infoPosition="right">
-    </app-context-info>
+    </jems-context-info>
 
-    <app-alert *ngIf="error$ | async as error"
+    <jems-alert *ngIf="error$ | async as error"
                [show]="!!error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-        <app-api-error-content [error]="error"></app-api-error-content>
-    </app-alert>
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
 
     <ng-container *ngIf="showSuccessMessage$ | async as successMessageArg">
-        <app-alert
+        <jems-alert
                 [show]="successMessageArg"
                 [type]="Alert.SUCCESS">
             <p>{{'project.application.set.to.contracted.success.message' | translate : {projectName: successMessageArg} }}</p>
-        </app-alert>
+        </jems-alert>
     </ng-container>
 
-</app-project-page-template>
+</jems-project-page-template>

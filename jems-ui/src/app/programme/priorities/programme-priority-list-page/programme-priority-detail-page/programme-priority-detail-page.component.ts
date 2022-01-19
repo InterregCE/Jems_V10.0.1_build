@@ -18,7 +18,7 @@ import {APIError} from '../../../../common/models/APIError';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-priority-detail-page',
+  selector: 'jems-programme-priority-detail-page',
   templateUrl: './programme-priority-detail-page.component.html',
   styleUrls: ['./programme-priority-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

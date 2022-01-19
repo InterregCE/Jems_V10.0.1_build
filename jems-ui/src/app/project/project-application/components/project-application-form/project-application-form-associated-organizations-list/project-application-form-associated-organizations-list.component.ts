@@ -19,7 +19,7 @@ import {ProjectUtil} from '@project/common/project-util';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
-  selector: 'app-project-application-form-associated-organizations-list',
+  selector: 'jems-project-application-form-associated-organizations-list',
   templateUrl: './project-application-form-associated-organizations-list.component.html',
   styleUrls: ['./project-application-form-associated-organizations-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

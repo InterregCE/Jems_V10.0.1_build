@@ -12,7 +12,7 @@ import {InputProjectRelevanceSynergy} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 
 @Component({
-  selector: 'app-synergy-table',
+  selector: 'jems-synergy-table',
   templateUrl: './synergy-table.component.html',
   styleUrls: ['./synergy-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

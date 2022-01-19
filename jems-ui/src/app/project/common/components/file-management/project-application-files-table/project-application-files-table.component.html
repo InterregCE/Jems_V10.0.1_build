@@ -1,17 +1,17 @@
 <ng-container *ngIf="data$ | async as data">
     <mat-table *ngIf="data.files.content?.length; else noFiles"
-               [dataSource]="dataSource" appNoWidthLimit>
+               [dataSource]="dataSource" jemsNoWidthLimit>
 
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef>
-                <span appText maxLines="2">{{'file.table.column.name.name' | translate }}</span>
+                <span jemsText maxLines="2">{{'file.table.column.name.name' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file">{{ file?.name }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="uploadDate">
             <mat-header-cell *matHeaderCellDef>
-                <span appText maxLines="2">{{'file.table.column.name.timestamp' | translate }}</span>
+                <span jemsText maxLines="2">{{'file.table.column.name.timestamp' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file">
                 {{ file?.uploadedAt | localeDate: 'L' : 'LT'}}
@@ -20,31 +20,31 @@
 
         <ng-container matColumnDef="user">
             <mat-header-cell *matHeaderCellDef>
-                <span appText maxLines="2">{{'file.table.column.name.username' | translate }}</span>
+                <span jemsText maxLines="2">{{'file.table.column.name.username' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file">{{ file?.uploadedBy?.email }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="description">
             <mat-header-cell *matHeaderCellDef>
-                <span appText maxLines="2">{{'file.table.column.name.description' | translate }}</span>
+                <span jemsText maxLines="2">{{'file.table.column.name.description' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file">
-                <app-description-cell
+                <jems-description-cell
                         (editFinished)="editableDescriptionFileId = null"
                         (saveFile)="setFileDescription($event)"
                         [editable]="editableDescriptionFileId === file?.id"
                         [file]="file">
-                </app-description-cell>
+                </jems-description-cell>
             </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef class="justify-end">
-                <span appText maxLines="2">{{'file.table.column.name.action' | translate }}</span>
+                <span jemsText maxLines="2">{{'file.table.column.name.action' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file" class="justify-end">
-                <app-actions-cell
+                <jems-actions-cell
                         (delete)="deleteFile($event)"
                         (download)="downloadFile($event)"
                         (edit)="editableDescriptionFileId = $event"
@@ -54,7 +54,7 @@
                         [isThisUserOwner]="fileManagementStore.userIsProjectOwnerOrEditCollaborator$ | async"
                         [projectStatus]="data.projectStatus"
                         [type]="data.selectedCategory?.type">
-                </app-actions-cell>
+                </jems-actions-cell>
             </mat-cell>
         </ng-container>
 
@@ -63,13 +63,13 @@
 
     </mat-table>
 
-    <app-paginator (pageIndexChanged)="fileManagementStore.newPageIndex$.next($event)"
+    <jems-paginator (pageIndexChanged)="fileManagementStore.newPageIndex$.next($event)"
                    (pageSizeChanged)="fileManagementStore.newPageSize$.next($event)"
                    *ngIf="data.files.content?.length"
                    [currentPageIndex]="Tables.DEFAULT_INITIAL_PAGE_INDEX"
                    [currentPageSize]="Tables.DEFAULT_INITIAL_PAGE_SIZE"
                    [length]="data.files.totalElements">
-    </app-paginator>
+    </jems-paginator>
 
     <div *ngIf="fileManagementStore.canUpload$ | async">
         <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
@@ -80,24 +80,24 @@
     </div>
 </ng-container>
 
-<app-alert [show]="fileManagementStore.deleteSuccess$ | async"
+<jems-alert [show]="fileManagementStore.deleteSuccess$ | async"
            [type]="Alert.SUCCESS">
     <p>{{'file.delete.message.successful' | translate}}</p>
-</app-alert>
-<app-alert *ngIf="fileManagementStore.error$ | async as error"
+</jems-alert>
+<jems-alert *ngIf="fileManagementStore.error$ | async as error"
            [show]="!!error"
            [type]="Alert.ERROR">
-    <app-api-error-content [error]="error"></app-api-error-content>
-</app-alert>
-<app-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+    <jems-api-error-content [error]="error"></jems-api-error-content>
+</jems-alert>
+<jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
            [show]="showError"
            [type]="Alert.ERROR">
     <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
-</app-alert>
+</jems-alert>
 
 <ng-template #noFiles>
-    <app-alert [show]="true"
+    <jems-alert [show]="true"
                [type]="Alert.WARNING">
         <p>{{'file.table.no.files' | translate}}</p>
-    </app-alert>
+    </jems-alert>
 </ng-template>

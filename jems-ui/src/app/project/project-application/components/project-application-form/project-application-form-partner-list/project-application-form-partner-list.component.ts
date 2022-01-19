@@ -24,7 +24,7 @@ import {FormVisibilityStatusService} from '@project/common/services/form-visibil
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
-  selector: 'app-project-application-form-partner-list',
+  selector: 'jems-project-application-form-partner-list',
   templateUrl: './project-application-form-partner-list.component.html',
   styleUrls: ['./project-application-form-partner-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

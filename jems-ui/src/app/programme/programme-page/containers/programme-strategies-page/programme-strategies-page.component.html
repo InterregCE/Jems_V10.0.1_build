@@ -1,11 +1,11 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.strategies">
-    <app-programme-strategies
+    <jems-programme-strategies
             *ngIf="details$ | async as strategies"
             [strategies]="strategies"
             [success$]="strategiesSaveSuccess$"
             [error$]="strategiesSaveError$"
             (updateProgrammeStrategy)="saveStrategies$.next($event)">
-    </app-programme-strategies>
-</app-main-page-template>>
+    </jems-programme-strategies>
+</jems-main-page-template>>

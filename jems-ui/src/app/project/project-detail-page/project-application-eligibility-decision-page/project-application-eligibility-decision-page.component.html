@@ -1,13 +1,13 @@
-<app-project-page-template [needsCard]="true" *ngIf="data$ | async as data"
+<jems-project-page-template [needsCard]="true" *ngIf="data$ | async as data"
                            titleKey="project.assessment.and.decision.header"
                            [isVersionedData]="false">
-    <div page-sub-title appFormLayout appNoWidthLimit>
+    <div page-sub-title jemsFormLayout jemsNoWidthLimit>
         <h2>{{data.currentVersionOfProjectTitle}}</h2>
-        <app-project-application-information appNoWidthLimit [project]="data.currentVersionOfProject">
-        </app-project-application-information>
+        <jems-project-application-information jemsNoWidthLimit [project]="data.currentVersionOfProject">
+        </jems-project-application-information>
     </div>
 
-    <form appFormLayout [formGroup]="notesForm">
+    <form jemsFormLayout [formGroup]="notesForm">
         <h3>{{'project.assessment.eligibilityDecision.dialog.title' | translate}}</h3>
         <mat-radio-group
                 required
@@ -18,7 +18,7 @@
                 <div>{{'project.assessment.eligibilityDecision.dialog.select.' + option | translate}}</div>
             </mat-radio-button>
         </mat-radio-group>
-        <app-expandable-textarea
+        <jems-expandable-textarea
                 [control]="notesForm?.controls?.notes"
                 [errors]="notesForm?.controls?.notes?.errors"
                 [messages]="notesErrors"
@@ -26,8 +26,8 @@
                 [label]="'project.assessment.eligibilityDecision.dialog.field.note'"
                 [disabled]="!!data.eligibilityDecision || !data.canSetEligibleDecision"
                 [customStyle]="'outline'">
-        </app-expandable-textarea>
-        <mat-form-field appFormFieldWidth="x-large">
+        </jems-expandable-textarea>
+        <mat-form-field jemsFormFieldWidth="x-large">
             <mat-label>
                 {{'project.assessment.eligibilityDecision.dialog.field.date' | translate | dateFormatInfo}}
             </mat-label>
@@ -39,27 +39,27 @@
                                    [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="notesForm?.controls?.decisionDate?.errors"
                         [messages]="dateErrors">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
         <ng-container *ngIf="!data.eligibilityDecision">
-            <div appMultiColumnRow *hasPermission="[PermissionsEnum.ProjectStatusDecideEligible, PermissionsEnum.ProjectStatusDecideIneligible]">
-                <button appText mat-stroked-button
+            <div jemsMultiColumnRow *jemsHasPermission="[PermissionsEnum.ProjectStatusDecideEligible, PermissionsEnum.ProjectStatusDecideIneligible]">
+                <button jemsText mat-stroked-button
                         (click)="redirectToAssessmentAndDecisions()">
                     {{'project.assessment.eligibilityDecision.dialog.button.cancel' | translate}}
                 </button>
 
-                <app-pending-button
+                <jems-pending-button
                         [confirm]="getEligibilityDecisionConfirmation()"
                         [pending]="actionPending"
                         [disabled]="notesForm.invalid"
                         (clicked)="submitEligibilityDecision()">
                     {{'project.assessment.eligibilityDecision.dialog.button.submit' | translate}}
-                </app-pending-button>
+                </jems-pending-button>
             </div>
         </ng-container>
     </form>
-</app-project-page-template>
+</jems-project-page-template>

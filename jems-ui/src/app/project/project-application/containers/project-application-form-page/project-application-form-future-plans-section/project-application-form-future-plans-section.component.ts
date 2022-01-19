@@ -9,7 +9,7 @@ import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 
 @Component({
-  selector: 'app-project-application-form-future-plans-section',
+  selector: 'jems-project-application-form-future-plans-section',
   templateUrl: './project-application-form-future-plans-section.component.html',
   styleUrls: ['./project-application-form-future-plans-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

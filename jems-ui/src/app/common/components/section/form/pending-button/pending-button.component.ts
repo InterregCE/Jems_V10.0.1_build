@@ -6,7 +6,7 @@ import {tap} from 'rxjs/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-pending-button',
+  selector: 'jems-pending-button',
   templateUrl: './pending-button.component.html',
   styleUrls: ['./pending-button.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

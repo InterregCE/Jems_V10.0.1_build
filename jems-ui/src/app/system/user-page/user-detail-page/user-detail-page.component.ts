@@ -18,7 +18,7 @@ import {PermissionService} from '../../../security/permissions/permission.servic
 import UserStatusEnum = UserDTO.UserStatusEnum;
 
 @Component({
-  selector: 'app-user-detail-page',
+  selector: 'jems-user-detail-page',
   templateUrl: './user-detail-page.component.html',
   styleUrls: ['./user-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

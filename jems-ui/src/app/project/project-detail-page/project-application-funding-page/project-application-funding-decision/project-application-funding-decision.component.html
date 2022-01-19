@@ -1,4 +1,4 @@
-<form appFormLayout [formGroup]="decisionForm">
+<form jemsFormLayout [formGroup]="decisionForm">
     <mat-radio-group required formControlName="status"
                      name="status-{{currentVersionOfProjectStatus?.status}}"
                      [disabled]="!!currentVersionOfProjectStatus || !userCanChangeFunding">
@@ -6,14 +6,14 @@
             {{'project.assessment.fundingDecision.' + option | translate}}
         </mat-radio-button>
     </mat-radio-group>
-    <app-expandable-textarea [control]="decisionForm?.controls?.notes"
+    <jems-expandable-textarea [control]="decisionForm?.controls?.notes"
                              [errors]="decisionForm?.controls?.notes?.errors"
                              [characterLimit]="10000"
                              [label]="'project.assessment.fundingDecision.dialog.field.note'"
                              [disabled]="!!currentVersionOfProjectStatus || !userCanChangeFunding"
                              [customStyle]="'outline'">
-    </app-expandable-textarea>
-    <mat-form-field appFormFieldWidth="xx-large">
+    </jems-expandable-textarea>
+    <mat-form-field jemsFormFieldWidth="xx-large">
         <mat-label>{{'project.assessment.fundingDecision.dialog.field.date' | translate | dateFormatInfo}}</mat-label>
         <input required formControlName="decisionDate" matInput
                name="decisionDate-{{currentVersionOfProjectStatus?.status}}"
@@ -27,26 +27,26 @@
                 [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="decisionForm?.controls?.decisionDate?.errors"
                     [messages]="dateErrors">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
     <ng-container *ngIf="!currentVersionOfProjectStatus">
-        <div appMultiColumnRow *hasPermission="[PermissionsEnum.ProjectStatusDecideApproved, PermissionsEnum.ProjectStatusDecideApprovedWithConditions, PermissionsEnum.ProjectStatusDecideNotApproved]">
-            <button appText mat-stroked-button
+        <div jemsMultiColumnRow *jemsHasPermission="[PermissionsEnum.ProjectStatusDecideApproved, PermissionsEnum.ProjectStatusDecideApprovedWithConditions, PermissionsEnum.ProjectStatusDecideNotApproved]">
+            <button jemsText mat-stroked-button
                     (click)="redirectToAssessmentAndDecisions()">
                 {{'project.assessment.fundingDecision.dialog.button.cancel' | translate}}
             </button>
 
-            <app-pending-button
+            <jems-pending-button
                     [confirm]="getFundingConfirmation()"
                     [pending]="actionPending"
                     [disabled]="decisionForm.invalid || decisionForm.disabled"
                     (clicked)="onSubmit()">
                 {{submitLabel | translate}}
-            </app-pending-button>
+            </jems-pending-button>
         </div>
     </ng-container>
 </form>

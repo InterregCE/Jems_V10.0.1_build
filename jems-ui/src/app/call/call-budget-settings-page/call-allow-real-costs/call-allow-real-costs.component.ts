@@ -7,7 +7,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {catchError, map, take, tap} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-call-allow-real-costs',
+  selector: 'jems-call-allow-real-costs',
   templateUrl: './call-allow-real-costs.component.html',
   styleUrls: ['./call-allow-real-costs.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

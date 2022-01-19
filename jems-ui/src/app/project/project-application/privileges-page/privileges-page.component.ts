@@ -21,7 +21,7 @@ const uniqueEmails = (): ValidatorFn => (formArray: FormArray) => {
 };
 
 @Component({
-  selector: 'app-privileges-page',
+  selector: 'jems-privileges-page',
   templateUrl: './privileges-page.component.html',
   styleUrls: ['./privileges-page.component.scss'],
   providers: [PrivilegesPageStore, FormService],

@@ -4,7 +4,7 @@ import {SecurityService} from '../../../../security/security.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-project-application',
+  selector: 'jems-project-application',
   templateUrl: 'project-application.component.html',
   styleUrls: ['project-application.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

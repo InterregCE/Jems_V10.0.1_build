@@ -5,7 +5,7 @@ import {UntilDestroy} from '@ngneat/until-destroy';
 import {MatTableDataSource} from '@angular/material/table';
 
 @Component({
-  selector: 'app-programme-lump-sums-list',
+  selector: 'jems-programme-lump-sums-list',
   templateUrl: './programme-lump-sums-list.component.html',
   styleUrls: ['./programme-lump-sums-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,10 +1,10 @@
-<app-form *ngIf="data$ | async as data"
+<jems-form *ngIf="data$ | async as data"
           (discard)="resetForm(data.programmeUnitCosts, data.callUnitCosts, data.callIsEditable, data.callIsPublished)"
           (save)="onSubmit()">
     <h3>{{'unit.cost.table.title' | translate}}</h3>
-    <app-multi-language-container>
+    <jems-multi-language-container>
         <div *ngIf="unitCostDataSource.data.length"
-             [appTableConfig]="[{maxInRem:3},{maxInRem:20},{maxInRem:10},{},{maxInRem:8}]">
+             [jemsTableConfig]="[{maxInRem:3},{maxInRem:20},{maxInRem:10},{},{maxInRem:8}]">
             <div>
                 <span>{{'unit.cost.table.column.name.activate.option' | translate}}</span>
                 <span>{{'unit.cost.table.column.name.name' | translate}}</span>
@@ -25,5 +25,5 @@
                 <span class="justify-end">{{ element?.costPerUnit | asMoney}}</span>
             </span>
         </div>
-    </app-multi-language-container>
-</app-form>
+    </jems-multi-language-container>
+</jems-form>

@@ -1,7 +1,7 @@
 import {Directive, ElementRef, Input, OnInit} from '@angular/core';
 
 @Directive({
-  selector: '[appText]',
+  selector: '[jemsText]',
 })
 export class TextDirective implements OnInit {
 

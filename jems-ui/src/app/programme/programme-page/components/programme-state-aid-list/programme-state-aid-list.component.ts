@@ -22,7 +22,7 @@ import {TableConfig} from '@common/directives/table-config/TableConfig';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-state-aid-list',
+  selector: 'jems-programme-state-aid-list',
   templateUrl: './programme-state-aid-list.component.html',
   styleUrls: ['./programme-state-aid-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

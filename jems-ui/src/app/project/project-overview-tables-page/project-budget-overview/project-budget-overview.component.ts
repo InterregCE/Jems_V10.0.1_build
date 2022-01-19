@@ -7,7 +7,7 @@ import {tap} from 'rxjs/operators';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-project-budget-overview',
+  selector: 'jems-project-budget-overview',
   templateUrl: './project-budget-overview.component.html',
   styleUrls: ['./project-budget-overview.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

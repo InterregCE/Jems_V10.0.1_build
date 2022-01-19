@@ -28,7 +28,7 @@ interface ActivityIdentificationInformation {
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-partner-state-aid-tab',
+  selector: 'jems-project-partner-state-aid-tab',
   templateUrl: './project-partner-state-aid-tab.component.html',
   styleUrls: ['./project-partner-state-aid-tab.component.scss'],
   providers: [FormService],

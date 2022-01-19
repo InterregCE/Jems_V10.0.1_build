@@ -10,7 +10,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammeCostOptionService, ProgrammeUnitCostDTO} from '@cat/api';
 
 @Component({
-  selector: 'app-programme-unit-costs-submission-page',
+  selector: 'jems-programme-unit-costs-submission-page',
   templateUrl: './programme-unit-costs-submission-page.component.html',
   styleUrls: ['./programme-unit-costs-submission-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

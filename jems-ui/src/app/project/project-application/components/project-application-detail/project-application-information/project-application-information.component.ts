@@ -7,7 +7,7 @@ import {ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-project-application-information',
+  selector: 'jems-project-application-information',
   templateUrl: './project-application-information.component.html',
   styleUrls: ['./project-application-information.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

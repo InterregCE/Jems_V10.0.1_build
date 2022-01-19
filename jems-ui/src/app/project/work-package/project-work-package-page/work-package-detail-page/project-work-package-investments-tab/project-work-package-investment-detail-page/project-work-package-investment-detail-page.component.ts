@@ -11,7 +11,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {WorkPackagePageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
 
 @Component({
-  selector: 'app-project-work-package-investment-detail-page',
+  selector: 'jems-project-work-package-investment-detail-page',
   templateUrl: './project-work-package-investment-detail-page.component.html',
   styleUrls: ['./project-work-package-investment-detail-page.component.scss'],
   providers: [FormService],

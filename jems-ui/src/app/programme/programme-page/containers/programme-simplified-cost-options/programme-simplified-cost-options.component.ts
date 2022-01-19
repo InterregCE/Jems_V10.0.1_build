@@ -11,7 +11,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-programme-simplified-cost-options',
+  selector: 'jems-programme-simplified-cost-options',
   templateUrl: './programme-simplified-cost-options.component.html',
   styleUrls: ['./programme-simplified-cost-options.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

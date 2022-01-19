@@ -3,7 +3,7 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {ProjectFileMetadataDTO} from '@cat/api';
 
 @Component({
-  selector: 'app-description-cell',
+  selector: 'jems-description-cell',
   templateUrl: './description-cell.component.html',
   styleUrls: ['./description-cell.component.scss']
 })

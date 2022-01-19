@@ -1,17 +1,17 @@
-<app-project-page-template [needsCard]="true" *ngIf="details$ | async as details"
+<jems-project-page-template [needsCard]="true" *ngIf="details$ | async as details"
                            titleKey="project.assessment.and.decision.header"
                            [isVersionedData]="false">
 
-    <div page-sub-title appNoWidthLimit appFormLayout>
+    <div page-sub-title jemsNoWidthLimit jemsFormLayout>
         <h2>{{details.currentVersionOfProjectTitle}}</h2>
-        <app-project-application-information appNoWidthLimit [project]="details.currentVersionOfProject">
-        </app-project-application-information>
+        <jems-project-application-information jemsNoWidthLimit [project]="details.currentVersionOfProject">
+        </jems-project-application-information>
     </div>
 
-    <div appFormLayout>
+    <div jemsFormLayout>
         <h3>{{'project.assessment.fundingDecision.dialog.title' | translate}}</h3>
-        <app-project-application-funding-decision
-                appNoWidthLimit
+        <jems-project-application-funding-decision
+                jemsNoWidthLimit
                 *ngIf="details.showSecondDecision"
                 [currentVersionOfProject]="details.currentVersionOfProject"
                 [currentVersionOfProjectStatus]="details.finalFundingDecision"
@@ -21,9 +21,9 @@
                 [eligibilityDecisionDate]="details.eligibilityDecisionDate"
                 [options]="details.optionsForSecondDecision"
                 [submitLabel]="'project.assessment.fundingDecision.submit.finalize.label'">
-        </app-project-application-funding-decision>
-        <app-project-application-funding-decision
-                appNoWidthLimit
+        </jems-project-application-funding-decision>
+        <jems-project-application-funding-decision
+                jemsNoWidthLimit
                 [currentVersionOfProject]="details.currentVersionOfProject"
                 [currentVersionOfProjectStatus]="step === '2' ? (details.preFundingDecision || details.finalFundingDecision) : details.finalFundingDecision"
                 [userCanChangeFunding]="details.userCanChangeFunding"
@@ -32,6 +32,6 @@
                 [eligibilityDecisionDate]="details.eligibilityDecisionDate"
                 [options]="details.fullOptions"
                 [submitLabel]="'project.assessment.fundingDecision.submit.label'">
-        </app-project-application-funding-decision>
+        </jems-project-application-funding-decision>
     </div>
-</app-project-page-template>
+</jems-project-page-template>

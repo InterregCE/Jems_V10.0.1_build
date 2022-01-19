@@ -10,7 +10,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
-  selector: 'app-call-flat-rates',
+  selector: 'jems-call-flat-rates',
   templateUrl: './call-flat-rates.component.html',
   styleUrls: ['./call-flat-rates.component.scss'],
   providers: [FormService],

@@ -12,7 +12,7 @@ import {combineLatest, Observable} from 'rxjs';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-call-lump-sums',
+  selector: 'jems-call-lump-sums',
   templateUrl: './call-lump-sums.component.html',
   styleUrls: ['./call-lump-sums.component.scss'],
   providers: [FormService],

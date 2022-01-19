@@ -13,7 +13,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-work-package-objectives-tab',
+  selector: 'jems-project-work-package-objectives-tab',
   templateUrl: './project-work-package-objectives-tab.component.html',
   styleUrls: ['./project-work-package-objectives-tab.component.scss'],
   providers: [FormService],

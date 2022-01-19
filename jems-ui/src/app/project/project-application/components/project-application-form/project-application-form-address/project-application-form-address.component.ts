@@ -5,7 +5,7 @@ import {map, startWith} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 
 @Component({
-  selector: 'app-project-application-form-address',
+  selector: 'jems-project-application-form-address',
   templateUrl: './project-application-form-address.component.html',
   styleUrls: ['./project-application-form-address.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -31,7 +31,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-lump-sums-page',
+  selector: 'jems-project-lump-sums-page',
   templateUrl: './project-lump-sums-page.component.html',
   styleUrls: ['./project-lump-sums-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

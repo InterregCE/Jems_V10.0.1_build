@@ -8,11 +8,11 @@ interface StickyConfig {
 }
 
 @Directive({
-  selector: '[appTableConfig]'
+  selector: '[jemsTableConfig]'
 })
 export class TableConfigDirective implements AfterViewInit, AfterContentChecked {
 
-  @Input('appTableConfig') tableConfig: TableConfig[] = [];
+  @Input('jemsTableConfig') tableConfig: TableConfig[] = [];
 
   private firstColLeftPaddingInRem = 1;
   private lastColRightPaddingInRem = 1;
@@ -32,7 +32,7 @@ export class TableConfigDirective implements AfterViewInit, AfterContentChecked 
   }
 
   setClasses(): void {
-    this.el.nativeElement.classList.add(`app-table-config`);
+    this.el.nativeElement.classList.add(`jems-table-config`);
     this.el.nativeElement.classList.add(`material-table-appearance`);
 
     this.el.nativeElement.style.setProperty('--first-col-left-padding', `${this.firstColLeftPaddingInRem}rem`);

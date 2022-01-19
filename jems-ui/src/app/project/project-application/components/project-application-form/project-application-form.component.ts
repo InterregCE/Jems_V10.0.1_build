@@ -26,7 +26,7 @@ import { APPLICATION_FORM } from '@project/common/application-form-model';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-project-application-form',
+  selector: 'jems-project-application-form',
   templateUrl: './project-application-form.component.html',
   styleUrls: ['./project-application-form.component.scss'],
   providers: [FormService],

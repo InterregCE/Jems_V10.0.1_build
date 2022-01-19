@@ -1,11 +1,11 @@
-<app-main-page-template *ngIf="details$ | async as details" [needsCard]="true"
+<jems-main-page-template *ngIf="details$ | async as details" [needsCard]="true"
                         subTitleText="{{'userRole.detail.short' | translate}}: {{details.user?.name}} {{details.user?.surname}}"
                         titleKey="topbar.main.user.user.management">
-    <form [formGroup]="userForm" appFormLayout>
-        <div appMultiColumnRow>
+    <form [formGroup]="userForm" jemsFormLayout>
+        <div jemsMultiColumnRow>
             <h2 class="inline-block">{{'user.detail.page.title' | translate}}</h2>
-            <ng-container *hasPermission="PermissionsEnum.UserUpdate">
-                <button appText (click)="changeFormState$.next(FormState.EDIT)"
+            <ng-container *jemsHasPermission="PermissionsEnum.UserUpdate">
+                <button jemsText (click)="changeFormState$.next(FormState.EDIT)"
                         *ngIf="details.user?.id && formState === FormState.VIEW" [disabled]="passwordIsInEditMode"
                         color="primary"
                         mat-raised-button>
@@ -14,7 +14,7 @@
             </ng-container>
         </div>
 
-        <mat-form-field *hasPermission="PermissionsEnum.UserUpdateRole">
+        <mat-form-field *jemsHasPermission="PermissionsEnum.UserUpdateRole">
             <mat-label>{{'user.detail.field.status' | translate}}</mat-label>
             <mat-select formControlName="userStatus" required>
                 <mat-option [value]="userStatus.ACTIVE">
@@ -33,7 +33,7 @@
             <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
             <input formControlName="name" matInput name="name" required>
             <mat-error>
-                <app-form-field-errors [errors]="userForm?.controls?.name?.errors"></app-form-field-errors>
+                <jems-form-field-errors [errors]="userForm?.controls?.name?.errors"></jems-form-field-errors>
             </mat-error>
         </mat-form-field>
 
@@ -41,7 +41,7 @@
             <mat-label>{{'user.detail.field.surname' | translate}}</mat-label>
             <input formControlName="surname" matInput name="surname" required>
             <mat-error>
-                <app-form-field-errors [errors]="userForm?.controls?.surname?.errors"></app-form-field-errors>
+                <jems-form-field-errors [errors]="userForm?.controls?.surname?.errors"></jems-form-field-errors>
             </mat-error>
         </mat-form-field>
 
@@ -49,32 +49,32 @@
             <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
             <input formControlName="email" matInput name="email" required>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="userForm?.controls?.email?.errors"
                         [messages]="emailErrors">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
 
-        <div *hasPermission="PermissionsEnum.UserUpdateRole">
+        <div *jemsHasPermission="PermissionsEnum.UserUpdateRole">
             <mat-form-field class="w-100">
                 <mat-label>{{'user.detail.field.role' | translate}}</mat-label>
                 <mat-select formControlName="userRoleId" required>
                     <mat-option *ngFor="let role of details.roles" [value]="role.id">{{role.name}}</mat-option>
                 </mat-select>
                 <mat-error>
-                    <app-form-field-errors [errors]="userRoleId.errors"></app-form-field-errors>
+                    <jems-form-field-errors [errors]="userRoleId.errors"></jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </div>
 
-        <div *ngIf="formState === FormState.EDIT" appMultiColumnRow>
-            <button appText (click)="discard(details.user)"
+        <div *ngIf="formState === FormState.EDIT" jemsMultiColumnRow>
+            <button jemsText (click)="discard(details.user)"
                     mat-stroked-button
                     type="button">
                 {{'common.cancel.label' | translate}}
             </button>
-            <button appText (click)="onSubmit(details.user)"
+            <button jemsText (click)="onSubmit(details.user)"
                     [disabled]="userForm.invalid || submitted"
                     color="primary"
                     mat-raised-button
@@ -83,22 +83,22 @@
             </button>
         </div>
         <div>
-            <app-alert
+            <jems-alert
                     [show]="!submitted && (showSuccessMessage$ | async)"
                     [type]="Alert.SUCCESS">
                 <p>{{'user.detail.save.success' | translate}}</p>
-            </app-alert>
-            <app-alert *ngIf="error$ | async as error"
+            </jems-alert>
+            <jems-alert *ngIf="error$ | async as error"
                        [show]="!submitted && !!error.i18nMessage?.i18nKey"
                        [type]="Alert.ERROR">
-                <app-api-error-content [error]="error"></app-api-error-content>
-            </app-alert>
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </jems-alert>
         </div>
     </form>
 
     <ng-container
             *ngIf="details.canUpdatePassword">
-        <app-user-password
+        <jems-user-password
                 (switchedFormState)="passwordIsInEditMode = FormState.EDIT === $event"
                 *ngIf="details.user?.id"
                 [disabled]="formState === FormState.EDIT"
@@ -107,7 +107,7 @@
                 [success$]="userStore.passwordSaveSuccess$"
                 [userId]="details.user?.id"
                 class="mt-3 block">
-        </app-user-password>
+        </jems-user-password>
     </ng-container>
-</app-main-page-template>
+</jems-main-page-template>
 

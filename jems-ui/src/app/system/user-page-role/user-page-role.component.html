@@ -1,7 +1,7 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         titleKey="topbar.main.user.role.management"
                         subTitleKey="userRole.breadcrumb.list">
-    <button appText *hasPermission="PermissionsEnum.RoleCreate"
+    <button jemsText *jemsHasPermission="PermissionsEnum.RoleCreate"
             mat-raised-button
             class="mb-3 put-into-paginator"
             color="primary"
@@ -9,14 +9,14 @@
         <mat-icon>add</mat-icon>{{'userRole.breadcrumb.create' | translate}}
     </button>
 
-    <app-alert *ngIf="success"
+    <jems-alert *ngIf="success"
                [show]="true"
                [type]="Alert.SUCCESS">
         <p *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</p>
-    </app-alert>
+    </jems-alert>
 
     <div *ngIf="roleStore.roleSummaryList$ | async as page">
-        <app-table
+        <jems-table
                 [configuration]="tableConfiguration"
                 [rows]="page.content"
                 [totalElements]="page.totalElements"
@@ -24,7 +24,7 @@
                 (newPageSize)="roleStore.newPageSize$.next($event)"
                 (newPageIndex)="roleStore.newPageIndex$.next($event)"
                 (sortRows)="roleStore.newSort$.next($event)">
-        </app-table>
+        </jems-table>
     </div>
 
-</app-main-page-template>
+</jems-main-page-template>

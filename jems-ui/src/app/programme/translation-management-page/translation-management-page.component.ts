@@ -15,7 +15,7 @@ import {DownloadService} from '@common/services/download.service';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-translation-management-page',
+  selector: 'jems-translation-management-page',
   templateUrl: './translation-management-page.component.html',
   styleUrls: ['./translation-management-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

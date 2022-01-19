@@ -21,7 +21,7 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-application-list-user-assignments',
+  selector: 'jems-project-application-list-user-assignments',
   templateUrl: './project-application-list-user-assignments.component.html',
   styleUrls: ['./project-application-list-user-assignments.component.scss'],
   providers: [FormService, ProjectApplicationListUserAssignmentsStore],

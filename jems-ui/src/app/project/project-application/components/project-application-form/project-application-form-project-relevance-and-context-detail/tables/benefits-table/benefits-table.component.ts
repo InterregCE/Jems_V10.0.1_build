@@ -11,7 +11,7 @@ import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectRelevanceBenefit} from '@cat/api';
 
 @Component({
-  selector: 'app-benefits-table',
+  selector: 'jems-benefits-table',
   templateUrl: './benefits-table.component.html',
   styleUrls: ['./benefits-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

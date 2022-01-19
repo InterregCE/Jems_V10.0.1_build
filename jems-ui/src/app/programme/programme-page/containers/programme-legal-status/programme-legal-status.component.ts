@@ -9,7 +9,7 @@ import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav
 import {BaseComponent} from '@common/components/base-component';
 
 @Component({
-  selector: 'app-programme-legal-status',
+  selector: 'jems-programme-legal-status',
   templateUrl: './programme-legal-status.component.html',
   styleUrls: ['./programme-legal-status.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

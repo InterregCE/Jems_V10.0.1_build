@@ -8,7 +8,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectBudgetPeriodPageStore} from '@project/budget/budget-page-per-period/budget-period-page.store';
 
 @Component({
-  selector: 'app-budget-page-funds-per-period',
+  selector: 'jems-budget-page-funds-per-period',
   templateUrl: './budget-page-fund-per-period.component.html',
   styleUrls: ['./budget-page-fund-per-period.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

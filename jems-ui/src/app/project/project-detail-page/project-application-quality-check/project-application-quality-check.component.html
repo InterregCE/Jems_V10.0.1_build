@@ -1,14 +1,14 @@
-<app-project-page-template [needsCard]="true" *ngIf="data$ | async as data"
+<jems-project-page-template [needsCard]="true" *ngIf="data$ | async as data"
                            titleKey="project.assessment.and.decision.header"
                             [isVersionedData]="false">
 
-    <div page-sub-title appNoWidthLimit appFormLayout>
+    <div page-sub-title jemsNoWidthLimit jemsFormLayout>
         <h2>{{data.currentVersionOfProjectTitle}}</h2>
-        <app-project-application-information appNoWidthLimit [project]="data.currentVersionOfProject">
-        </app-project-application-information>
+        <jems-project-application-information jemsNoWidthLimit [project]="data.currentVersionOfProject">
+        </jems-project-application-information>
     </div>
 
-    <form appFormLayout [formGroup]="qualityCheckForm">
+    <form jemsFormLayout [formGroup]="qualityCheckForm">
         <h3>{{'project.assessment.qualityCheck.dialog.title' | translate}}</h3>
         <mat-radio-group
                 required
@@ -20,26 +20,26 @@
                 {{'project.assessment.qualityCheck.dialog.select.' + option | translate}}
             </mat-radio-button>
         </mat-radio-group>
-        <app-expandable-textarea [control]="qualityCheckForm?.controls?.note"
+        <jems-expandable-textarea [control]="qualityCheckForm?.controls?.note"
                                  [errors]="qualityCheckForm?.controls?.note?.errors"
                                  [messages]="notesErrors"
                                  [characterLimit]="1000"
                                  [label]="'project.assessment.qualityCheck.dialog.field.note'"
                                  [disabled]="!!data.qualityAssessment"
                                  [customStyle]="'outline'">
-        </app-expandable-textarea>
-        <div appMultiColumnRow *ngIf="!data.qualityAssessment">
-            <button appText mat-stroked-button
+        </jems-expandable-textarea>
+        <div jemsMultiColumnRow *ngIf="!data.qualityAssessment">
+            <button jemsText mat-stroked-button
                     (click)="onCancel()">{{'project.assessment.qualityCheck.dialog.button.cancel' | translate}}
             </button>
 
-            <app-pending-button
+            <jems-pending-button
                     [confirm]="getQualityCheckConfirmation()"
                     [pending]="actionPending"
                     [disabled]="qualityCheckForm.invalid"
                     (clicked)="onSubmit()">
                 {{'project.assessment.qualityCheck.dialog.button.submit' | translate}}
-            </app-pending-button>
+            </jems-pending-button>
         </div>
     </form>
-</app-project-page-template>
+</jems-project-page-template>

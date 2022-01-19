@@ -11,7 +11,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-project-application-funding-decision',
+  selector: 'jems-project-application-funding-decision',
   templateUrl: './project-application-funding-decision.component.html',
   styleUrls: ['./project-application-funding-decision.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

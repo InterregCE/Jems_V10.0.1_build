@@ -1,5 +1,5 @@
-<form appFormLayout [formGroup]="resultIndicatorForm">
-    <div appMultiColumnRow>
+<form jemsFormLayout [formGroup]="resultIndicatorForm">
+    <div jemsMultiColumnRow>
         <h3 class="mb-0">{{'result.indicator.title' | translate}}</h3>
         <button mat-raised-button color="primary"
                 *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
@@ -11,10 +11,10 @@
         <mat-label>{{'result.indicator.form.field.identifier' | translate}}</mat-label>
         <input name="identifier" formControlName="identifier" matInput required>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.identifier?.errors"
                     [messages]="inputErrorMessages">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
     <mat-form-field>
@@ -28,16 +28,16 @@
             </mat-option>
         </mat-select>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.indicatorCode?.errors"
                     [messages]="inputErrorMessages">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <app-multi-language-container [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
-        <app-multi-language-form-field label="result.indicator.form.field.name" formControlName="indicatorName">
-        </app-multi-language-form-field>
-    </app-multi-language-container>
+    <jems-multi-language-container [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
+        <jems-multi-language-form-field label="result.indicator.form.field.name" formControlName="indicatorName">
+        </jems-multi-language-form-field>
+    </jems-multi-language-container>
 
     <mat-form-field>
         <mat-label>{{'result.indicator.form.field.specific.objective' | translate}}</mat-label>
@@ -51,18 +51,18 @@
             </mat-optgroup>
         </mat-select>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.specificObjective?.errors"
                     [messages]="inputErrorMessages">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
 
-    <app-multi-language-container [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
-        <app-multi-language-form-field label="result.indicator.form.field.measurement.unit"
+    <jems-multi-language-container [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">
+        <jems-multi-language-form-field label="result.indicator.form.field.measurement.unit"
                                        formControlName="measurementUnit">
-        </app-multi-language-form-field>
-    </app-multi-language-container>
+        </jems-multi-language-form-field>
+    </jems-multi-language-container>
 
     <mat-form-field>
         <mat-label>{{'result.indicator.form.field.baseline' | translate}}</mat-label>
@@ -70,18 +70,18 @@
                [options]="baselineOption"
                name="baseline" formControlName="baseline" matInput>
         <mat-error>
-            <app-form-field-errors [errors]="resultIndicatorForm?.controls?.baseline?.errors">
-            </app-form-field-errors>
+            <jems-form-field-errors [errors]="resultIndicatorForm?.controls?.baseline?.errors">
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
     <mat-form-field>
         <mat-label>{{'result.indicator.form.field.referenceYear' | translate}}</mat-label>
         <input name="referenceYear" formControlName="referenceYear" matInput>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="resultIndicatorForm?.controls?.referenceYear?.errors"
                     [messages]="inputErrorMessages">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
     <mat-form-field>
@@ -89,27 +89,27 @@
         <input currencyMask type="decimal"
                name="finalTarget" formControlName="finalTarget" matInput>
         <mat-error>
-            <app-form-field-errors [errors]="resultIndicatorForm?.controls?.finalTarget?.errors">
-            </app-form-field-errors>
+            <jems-form-field-errors [errors]="resultIndicatorForm?.controls?.finalTarget?.errors">
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
-    <app-multi-language-container [useSystemLanguages]="true"
+    <jems-multi-language-container [useSystemLanguages]="true"
                                   [switchButtonsVisible]="formState === FormState.EDIT">
-        <app-multi-language-form-field [disabled]="formState === FormState.VIEW" [maxLength]="1000" type="textarea"
+        <jems-multi-language-form-field [disabled]="formState === FormState.VIEW" [maxLength]="1000" type="textarea"
                                        label="result.indicator.form.field.source.of.data"
                                        formControlName="sourceOfData">
-        </app-multi-language-form-field>
-    </app-multi-language-container>
+        </jems-multi-language-form-field>
+    </jems-multi-language-container>
 
-    <app-expandable-textarea
+    <jems-expandable-textarea
             [control]="resultIndicatorForm?.controls?.comments"
             [errors]="resultIndicatorForm?.controls?.comments?.errors"
             [messages]="inputErrorMessages"
             [characterLimit]="1000"
             [label]="'result.indicator.form.field.comments'"
             [disabled]="formState === FormState.VIEW">
-    </app-expandable-textarea>
-    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+    </jems-expandable-textarea>
+    <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">
         <button mat-stroked-button
                 type="button"
                 (click)="onCancel()">
@@ -124,14 +124,14 @@
         </button>
     </div>
 
-    <app-alert
+    <jems-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>{{'result.indicator.new.message.successful' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
+    </jems-alert>
+    <jems-alert *ngIf="error$ | async as error"
                [show]="!!error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-        <app-api-error-content [error]="error"></app-api-error-content>
-    </app-alert>
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
 </form>

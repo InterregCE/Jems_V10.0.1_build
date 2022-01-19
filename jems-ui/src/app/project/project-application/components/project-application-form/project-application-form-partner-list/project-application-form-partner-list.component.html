@@ -1,6 +1,6 @@
 <ng-container *ngIf="tableRows$ | async as tableRows">
     <p *ngIf="!tableRows.length">{{'project.application.form.partner.list.empty' | translate}}</p>
-    <app-table *ngIf="tableRows.length"
+    <jems-table *ngIf="tableRows.length"
                [configuration]="tableConfiguration"
                [rows]="tableRows"
                [totalElements]="totalElements"
@@ -8,7 +8,7 @@
                (newPageIndex)="newPageIndex.emit($event)"
                (newPageSize)="newPageSize.emit($event)"
                (sortRows)="newSort.emit($event)">
-    </app-table>
+    </jems-table>
 </ng-container>
 
 <ng-template #statusCell let-partnerSummary>
@@ -28,12 +28,12 @@
 </ng-template>
 
 <ng-template #deletionCell let-partnerSummary>
-    <app-delete-action-cell class="ml-auto"
+    <jems-delete-action-cell class="ml-auto"
             (click)="$event.stopPropagation()"
             [element]="partnerSummary"
             [disabled]="!editable"
             (delete)="delete($event)">
-    </app-delete-action-cell>
+    </jems-delete-action-cell>
 </ng-template>
 
 <ng-template #deactivationCell let-partnerSummary>

@@ -1,50 +1,50 @@
-<app-main-page-template *ngIf="auditLogStore.auditPage$ | async as auditPage" [needsCard]="true">
+<jems-main-page-template *ngIf="auditLogStore.auditPage$ | async as auditPage" [needsCard]="true">
     <h3 class="mb-0">{{'audit.list.title' | translate}}</h3>
-    <app-filter-template [formGroup]="filterForm"
+    <jems-filter-template [formGroup]="filterForm"
                          [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
-        <div appMultiColumnRow>
-            <app-filter-date-input
+        <div jemsMultiColumnRow>
+            <jems-filter-date-input
                     formControlName="timeFrom"
                     label="audit.start.date">
-            </app-filter-date-input>
+            </jems-filter-date-input>
 
-            <app-filter-date-input
+            <jems-filter-date-input
                     formControlName="timeTo"
                     label="audit.end.date">
-            </app-filter-date-input>
+            </jems-filter-date-input>
         </div>
-        <div appMultiColumnRow>
-            <app-filter-list-input
+        <div jemsMultiColumnRow>
+            <jems-filter-list-input
               #userIdFilter
               formControlName="userIds"
               label="audit.user.ids"
               placeholder="audit.user.ids"
               type="number">
-            </app-filter-list-input>
+            </jems-filter-list-input>
 
-            <app-filter-list-input
+            <jems-filter-list-input
                     formControlName="userEmails"
                     label="audit.user.emails"
                     placeholder="audit.user.emails">
-            </app-filter-list-input>
+            </jems-filter-list-input>
 
-            <app-filter-autocomplete-input
+            <jems-filter-autocomplete-input
                     [options]="actions"
                     formControlName="actions"
                     label="audit.actions">
-            </app-filter-autocomplete-input>
+            </jems-filter-autocomplete-input>
 
-            <app-filter-list-input
+            <jems-filter-list-input
               #projectIdFilter
               formControlName="projectIds"
               label="audit.projectIds"
               placeholder="audit.projectIds"
               type="number">
-            </app-filter-list-input>
+            </jems-filter-list-input>
         </div>
-    </app-filter-template>
+    </jems-filter-template>
 
-    <app-table (newPageIndex)="auditLogStore.auditPageIndex$.next($event)"
+    <jems-table (newPageIndex)="auditLogStore.auditPageIndex$.next($event)"
                (newPageSize)="auditLogStore.auditPageSize$.next($event)"
                (sortRows)="auditLogStore.auditPageSort$.next($event)"
                *ngIf="auditPage?.content.length"
@@ -52,8 +52,8 @@
                [pageIndex]="auditLogStore.auditPageIndex$ | async"
                [rows]="auditPage?.content"
                [totalElements]="auditPage?.totalElements">
-    </app-table>
-</app-main-page-template>
+    </jems-table>
+</jems-main-page-template>
 
 <ng-template #userIdCell let-audit>
     <ng-container *ngIf="audit.user">

@@ -12,7 +12,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import { Alert } from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-project-application-form-associated-org-page',
+  selector: 'jems-project-application-form-associated-org-page',
   templateUrl: './project-application-form-associated-org-page.component.html',
   styleUrls: ['./project-application-form-associated-org-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

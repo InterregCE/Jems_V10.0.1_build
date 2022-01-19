@@ -1,6 +1,6 @@
-<div appFormLayout [formGroup]="formGroup">
-    <app-multi-language-container appNoWidthLimit *ngIf="strategiesForm.controls.length>0">
-        <div [appTableConfig]="[{},{}, {maxInRem:2}]">
+<div jemsFormLayout [formGroup]="formGroup">
+    <jems-multi-language-container jemsNoWidthLimit *ngIf="strategiesForm.controls.length>0">
+        <div [jemsTableConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.strategy' | translate }}</span>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.contribution' | translate }}</span>
@@ -18,19 +18,19 @@
                                 </mat-option>
                             </mat-select>
                             <mat-error>
-                                <app-form-field-errors [errors]="strategy.get('strategy')?.errors"
-                                                       [messages]="strategyErrors"></app-form-field-errors>
+                                <jems-form-field-errors [errors]="strategy.get('strategy')?.errors"
+                                                       [messages]="strategyErrors"></jems-form-field-errors>
                             </mat-error>
                         </mat-form-field>
 
                         <div>
-                            <app-multi-language-form-field
+                            <jems-multi-language-form-field
                                     type="textarea"
                                     formControlName="contribution"
                                     maxLength="2000"
                                     minRows="1"
                                     label="project.application.form.relevance.contribution">
-                            </app-multi-language-form-field>
+                            </jems-multi-language-form-field>
                         </div>
 
                         <div>
@@ -42,8 +42,8 @@
                 </ng-container>
             </div>
         </div>
-    </app-multi-language-container>
-    <button appText *ngIf="editable && strategiesForm.controls?.length < 20" mat-stroked-button type="button"
+    </jems-multi-language-container>
+    <button jemsText *ngIf="editable && strategiesForm.controls?.length < 20" mat-stroked-button type="button"
             (click)="addNewStrategy()">
         <mat-icon>add</mat-icon>
     </button>

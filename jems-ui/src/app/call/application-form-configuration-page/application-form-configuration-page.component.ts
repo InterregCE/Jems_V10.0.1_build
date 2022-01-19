@@ -15,7 +15,7 @@ import {take} from 'rxjs/internal/operators';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-application-form-configuration-page',
+  selector: 'jems-application-form-configuration-page',
   templateUrl: './application-form-configuration-page.component.html',
   styleUrls: ['./application-form-configuration-page.component.scss'],
   providers: [FormService, ApplicationFormConfigurationPageStore],

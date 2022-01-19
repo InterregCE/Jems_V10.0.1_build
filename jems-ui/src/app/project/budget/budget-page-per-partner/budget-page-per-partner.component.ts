@@ -12,7 +12,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 
 @Component({
-  selector: 'app-budget-page-per-partner',
+  selector: 'jems-budget-page-per-partner',
   templateUrl: './budget-page-per-partner.component.html',
   styleUrls: ['./budget-page-per-partner.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,6 +1,6 @@
-<div appFormLayout>
+<div jemsFormLayout>
     <h3>{{'programme.area.nuts.header' | translate}}</h3>
-    <app-alert
+    <jems-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>
@@ -11,13 +11,13 @@
             }
             }}
         </p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
+    </jems-alert>
+    <jems-alert *ngIf="error$ | async as error"
                [show]="!!error"
                [type]="Alert.ERROR">
-        <app-api-error-content *ngIf="error.i18nMessage?.i18nKey" [error]="error"></app-api-error-content>
+        <jems-api-error-content *ngIf="error.i18nMessage?.i18nKey" [error]="error"></jems-api-error-content>
         <p *ngIf="!error.i18nMessage?.i18nKey">{{'programme.area.nuts.download.error' | translate}}</p>
-    </app-alert>
+    </jems-alert>
     <div>
         <p *ngIf="metadata">
             {{
@@ -38,7 +38,7 @@
     </div>
     <ng-container *ngIf="!metadata">
         <button mat-stroked-button type="submit"
-                *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
+                *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                 [disabled]="submitted"
                 (click)="onSubmit()">
             {{'programme.area.nuts.download.button' | translate}}

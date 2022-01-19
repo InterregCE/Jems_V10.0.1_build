@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
-  selector: 'app-contribution-toggle-column',
+  selector: 'jems-contribution-toggle-column',
   templateUrl: './contribution-toggle-column.component.html',
   styleUrls: ['./contribution-toggle-column.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

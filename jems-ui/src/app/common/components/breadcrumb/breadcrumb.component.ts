@@ -6,7 +6,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {RoutingService} from '@common/services/routing.service';
 
 @Component({
-  selector: 'app-breadcrumb',
+  selector: 'jems-breadcrumb',
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

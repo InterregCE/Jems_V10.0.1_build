@@ -4,7 +4,7 @@ import {Alert} from '@common/components/forms/alert';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-confirm-dialog',
+  selector: 'jems-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.scss']
 })

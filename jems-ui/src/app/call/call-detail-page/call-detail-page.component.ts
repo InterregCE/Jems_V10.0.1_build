@@ -24,7 +24,7 @@ import {CallStateAidDTO} from './call-state-aids/CallStateAidDTO';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-call-detail-page',
+  selector: 'jems-call-detail-page',
   templateUrl: './call-detail-page.component.html',
   styleUrls: ['./call-detail-page.component.scss'],
   providers: [CallDetailPageStore, FormService],

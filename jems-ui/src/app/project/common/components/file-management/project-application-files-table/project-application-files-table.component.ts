@@ -13,7 +13,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-application-files-table',
+  selector: 'jems-project-application-files-table',
   templateUrl: './project-application-files-table.component.html',
   styleUrls: ['./project-application-files-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

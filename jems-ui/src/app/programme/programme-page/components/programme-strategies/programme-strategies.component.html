@@ -1,7 +1,7 @@
-<form appFormLayout [formGroup]="programmeStrategyForm">
-    <div appMultiColumnRow>
+<form jemsFormLayout [formGroup]="programmeStrategyForm">
+    <div jemsMultiColumnRow>
         <h3 class="mb-0">{{'programme.strategy.title' | translate}}</h3>
-        <button appText mat-raised-button color="primary"
+        <button jemsText mat-raised-button color="primary"
                 *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'programme.strategy.button.edit' | translate}}
@@ -18,13 +18,13 @@
             </mat-checkbox>
         </div>
     </div>
-    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
-        <button appText mat-stroked-button
+    <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">
+        <button jemsText mat-stroked-button
                 type="button"
                 (click)="onCancel()">
             {{'programme.strategy.button.cancel' | translate}}
         </button>
-        <button appText mat-raised-button
+        <button jemsText mat-raised-button
                 color="primary"
                 type="button"
                 [disabled]="submitted"
@@ -34,15 +34,15 @@
     </div>
 
 
-    <app-alert
+    <jems-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>{{'programme.strategy.message.successful' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
+    </jems-alert>
+    <jems-alert *ngIf="error$ | async as error"
                [show]="!!error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-        <app-api-error-content [error]="error"></app-api-error-content>
-    </app-alert>
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
 
 </form>

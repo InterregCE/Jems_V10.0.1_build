@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {TooltipPosition} from '@angular/material/tooltip';
 
 @Component({
-  selector: 'app-context-info',
+  selector: 'jems-context-info',
   templateUrl: './context-info.component.html',
   styleUrls: ['./context-info.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,35 +1,35 @@
-<app-main-page-template *ngIf="data$ | async as data" subTitleKey="call.general.settings"
+<jems-main-page-template *ngIf="data$ | async as data" subTitleKey="call.general.settings"
                         titleKey="call.detail.title">
-    <app-form (discard)="onCancel(data.call)"
+    <jems-form (discard)="onCancel(data.call)"
               (save)="onSubmit(data.call, data.priorityCheckboxes, data.strategies, data.stateAids)">
-        <app-alert [show]="published && data.callIsEditable"
+        <jems-alert [show]="published && data.callIsEditable"
                    [type]="Alert.WARNING">
             <span>{{'call.detail.edit.published.warning' | translate}}</span>
-        </app-alert>
-        <app-alert [show]="published && data.userCanApply && !isOpen(data.call)"
+        </jems-alert>
+        <jems-alert [show]="published && data.userCanApply && !isOpen(data.call)"
                    [type]="Alert.WARNING">
             <span>{{'call.table.column.action.apply.inactive.note' | translate}}</span>
-        </app-alert>
-        <form [formGroup]="callForm" appFormLayout>
-            <app-pending-button
+        </jems-alert>
+        <form [formGroup]="callForm" jemsFormLayout>
+            <jems-pending-button
                     (clicked)="publishCall()"
                     *ngIf="data.call?.id && data.callIsEditable && !published"
                     [confirm]="confirmData() | async"
                     [disabled]="isPublishDisabled(data.call) | async"
                     [pending]="publishPending">
                 {{'call.detail.button.publish' | translate}}
-            </app-pending-button>
+            </jems-pending-button>
             <h3>{{'call.identification.title' | translate}}</h3>
             <mat-form-field>
                 <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
                 <input formControlName="name" matInput name="name" required>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [args]="dateNameArgs"
                             [errors]="callForm?.controls?.name?.errors"
                             [messages]="inputErrorMessages"
                     >
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-checkbox
@@ -39,7 +39,7 @@
                     name="is2Step">
                 {{'call.is2Step' | translate}}
             </mat-checkbox>
-            <div appMultiColumnRow stretch>
+            <div jemsMultiColumnRow stretch>
                 <mat-form-field>
                     <mat-label>{{'call.detail.field.start' | translate | dateFormatInfo : true}}</mat-label>
                     <input [disabled]="published" [max]="callForm?.controls?.endDateTime?.value"
@@ -51,12 +51,12 @@
                     </mat-datepicker-toggle>
                     <ngx-mat-datetime-picker #start [enableMeridian]="true"></ngx-mat-datetime-picker>
                     <mat-error>
-                        <app-form-field-errors
+                        <jems-form-field-errors
                                 [args]="dateNameArgs"
                                 [errors]="callForm?.controls?.startDateTime?.errors"
                                 [messages]="inputErrorMessages"
                         >
-                        </app-form-field-errors>
+                        </jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
 
@@ -72,10 +72,10 @@
                     </mat-datepicker-toggle>
                     <ngx-mat-datetime-picker #endStep1 [enableMeridian]="true"></ngx-mat-datetime-picker>
                     <mat-error>
-                        <app-form-field-errors
+                        <jems-form-field-errors
                                 [errors]="callForm?.controls?.endDateTimeStep1?.errors"
                                 [messages]="inputErrorMessagesForEndDateStep1">
-                        </app-form-field-errors>
+                        </jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
 
@@ -89,12 +89,12 @@
                     </mat-datepicker-toggle>
                     <ngx-mat-datetime-picker #end [enableMeridian]="true"></ngx-mat-datetime-picker>
                     <mat-error>
-                        <app-form-field-errors
+                        <jems-form-field-errors
                                 [args]="dateNameArgs"
                                 [errors]="callForm?.controls?.endDateTime?.errors"
                                 [messages]="inputErrorMessages"
                         >
-                        </app-form-field-errors>
+                        </jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
             </div>
@@ -106,42 +106,42 @@
                        formControlName="lengthOfPeriod" matInput name="lengthOfPeriod"
                        required type="number">
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [args]="dateNameArgs"
                             [errors]="callForm?.controls?.lengthOfPeriod?.errors"
                             [messages]="inputErrorMessages"
                     >
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
-            <app-multi-language-container
+            <jems-multi-language-container
                     [switchButtonsVisible]="data.callIsEditable || (published && !data.userCanApply)"
                     [useSystemLanguages]="true"
                     class="pb-3">
-                <app-multi-language-form-field
+                <jems-multi-language-form-field
                         [maxLength]="1000"
                         formControlName="description"
                         label="call.detail.field.description"
                         type="textarea">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
 
             <h3>{{'call.programme.priorities.title' | translate}}</h3>
-            <app-call-priority-tree
+            <jems-call-priority-tree
                     (selectionChanged)="formChanged()"
                     *ngIf="data.priorityCheckboxes"
                     [initialPriorityCheckboxes]="data.initialPriorityCheckboxes"
                     [priorityCheckboxes]="data.priorityCheckboxes">
-            </app-call-priority-tree>
+            </jems-call-priority-tree>
 
             <span *ngIf="isStrategySectionShown(data)">
                 <h3>{{'call.strategy.title' | translate}}</h3>
-                <app-call-strategies
+                <jems-call-strategies
                         (selectionChanged)="formChanged()"
                         [initialStrategies]="data.initialStrategies"
                         [strategies]="data.strategies">
-                </app-call-strategies>
+                </jems-call-strategies>
             </span>
 
             <h3>{{'call.funds.title' | translate}}</h3>
@@ -157,29 +157,29 @@
                 </mat-checkbox>
             </span>
             <h4>{{'call.funds.select.funds' | translate}}</h4>
-            <app-call-funds (selectionChanged)="formChanged()"
+            <jems-call-funds (selectionChanged)="formChanged()"
                             [callForm]="callForm"
-                            appFormFieldWidth="full">
-            </app-call-funds>
+                            jemsFormFieldWidth="full">
+            </jems-call-funds>
 
             <span *ngIf="isStateAidSectionShown(data)">
                 <h3>{{'call.state.aid.title' | translate}}</h3>
-                <app-call-state-aids
+                <jems-call-state-aids
                         (selectionChanged)="formChanged()"
                         [initialStateAids]="data.initialStateAids"
                         [stateAids]="data.stateAids">
-                </app-call-state-aids>
+                </jems-call-state-aids>
             </span>
         </form>
-    </app-form>
+    </jems-form>
 
     <mat-card-footer *ngIf="published && data.userCanApply && isOpen(data.call)" class="footer">
-        <button appText (click)="applyToCall(data.call.id)" class="action-button"
+        <button jemsText (click)="applyToCall(data.call.id)" class="action-button"
                 color="primary"
                 mat-raised-button>
             {{'call.table.column.action.apply' | translate}}
             <mat-icon>arrow_forward</mat-icon>
         </button>
     </mat-card-footer>
-</app-main-page-template>
+</jems-main-page-template>
 

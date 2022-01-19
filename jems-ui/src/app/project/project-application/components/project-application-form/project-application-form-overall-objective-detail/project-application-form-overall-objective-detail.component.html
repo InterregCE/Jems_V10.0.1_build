@@ -1,20 +1,20 @@
-<app-form (save)="onSubmit()"
+<jems-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form appFormLayout [formGroup]="overallObjectiveForm">
+    <form jemsFormLayout [formGroup]="overallObjectiveForm">
         <h3>{{'project.application.form.section.part.c.subsection.one' | translate}}</h3>
         <p>{{'project.application.form.overall.objective.field.row.one' | translate}}</p>
-        <app-alert [show]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value"
+        <jems-alert [show]="!overallObjectiveForm?.controls?.projectSpecificObjective?.value"
                    [type]="Alert.WARNING"
                    [closable]="false">
             <span>{{'project.application.form.overall.objective.specific.objective.required' | translate}}</span>
-        </app-alert>
+        </jems-alert>
         <mat-form-field class="mat-form-field-disabled"
                         name="projectSpecificObjective">
             <mat-label>{{'project.application.form.overall.objective.field.projectSpecificObjective' | translate}}</mat-label>
             <input readonly formControlName="projectSpecificObjective" matInput>
         </mat-form-field>
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE.OVERALL_OBJECTIVE">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE.OVERALL_OBJECTIVE">
             <h4>{{'project.application.form.overall.objective.field.projectOverallObjective' | translate}}</h4>
             <p>{{'project.application.form.overall.objective.field.row.two' | translate}}</p>
             <div>
@@ -25,16 +25,16 @@
                     <li>{{'project.application.form.overall.objective.field.row.six' | translate}}</li>
                 </ul>
             </div>
-            <app-multi-language-container>
-                <app-multi-language-form-field
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
                         type="textarea"
                         formControlName="projectOverallObjective"
                         maxLength="500"
                         minRows="3"
                         label="project.application.form.overall.objective.field.projectOverallObjective"
                         [disabled]="!editable">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
     </form>
-</app-form>
+</jems-form>

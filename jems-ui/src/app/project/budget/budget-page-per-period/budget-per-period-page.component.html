@@ -1,22 +1,22 @@
-<app-project-page-template *ngIf="(data$ | async) as data"
+<jems-project-page-template *ngIf="(data$ | async) as data"
                            [needsCard]="true"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
                            subTitleKey="project.application.form.section.part.d">
 
-    <app-alert [show]="!data.isAFPeriodsEnabled"
+    <jems-alert [show]="!data.isAFPeriodsEnabled"
                [type]="Alert.WARNING">
         <span>{{ 'project.application.form.work.package.output.delivery.period.required' | translate}}</span>
-    </app-alert>
+    </jems-alert>
 
     <div class="mb-5">
-        <app-budget-page-partner-per-period [tableConfig]="data.tableConfig"
+        <jems-budget-page-partner-per-period [tableConfig]="data.tableConfig"
                                             [projectPeriodNumbers]="data.projectPeriodNumbers">
-        </app-budget-page-partner-per-period>
+        </jems-budget-page-partner-per-period>
     </div>
 
-    <app-budget-page-funds-per-period [tableConfig]="data.tableConfig"
+    <jems-budget-page-funds-per-period [tableConfig]="data.tableConfig"
                                       [projectPeriodNumbers]="data.projectPeriodNumbers">
-    </app-budget-page-funds-per-period>
+    </jems-budget-page-funds-per-period>
 
 
-</app-project-page-template>
+</jems-project-page-template>

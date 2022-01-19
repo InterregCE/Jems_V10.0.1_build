@@ -17,7 +17,7 @@ import {UserDetailPageStore} from '../user-detail-page-store.service';
 import {Forms} from '../../../../common/utils/forms';
 
 @Component({
-  selector: 'app-user-password',
+  selector: 'jems-user-password',
   templateUrl: './user-password.component.html',
   styleUrls: ['./user-password.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
