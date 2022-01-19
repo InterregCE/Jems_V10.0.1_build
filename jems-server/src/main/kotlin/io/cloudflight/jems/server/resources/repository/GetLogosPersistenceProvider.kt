@@ -13,7 +13,7 @@ class GetLogosPersistenceProvider(
     private val minioStorage: MinioStorage,
 ): GetLogosPersistence {
     override fun getLogos(): List<LogoDTO> {
-        return listOf(LogoType.INTERREG_PROGRAMME_LOGO_SMALL, LogoType.INTERREG_PROGRAMME_LOGO_MEDIUM, LogoType.INTERREG_PROGRAMME_LOGO_LARGE)
+        return LogoType.values()
             .filter {
                 minioStorage.exists(LOGO_FILE_BUCKET_NAME, it.key)
             }

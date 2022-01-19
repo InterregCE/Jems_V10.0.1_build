@@ -108,9 +108,7 @@ as _info \[LOG\]_ to stdout.
 #### Logo Setup
 To exchange the current default Logos used by Jems Minio has to be used directly. There the bucket
 `jems-logo-file-bucket` has to be added. The following files are currently used:
-- JemsLogo_48.png
-- JemsLogo_96.png
-- favlogo.png
+- InterregProgrammeLogo_200.png
 
 ### API testing
 For testing the API, the module [jems-rest-test](jems-rest-test) was introduced.
