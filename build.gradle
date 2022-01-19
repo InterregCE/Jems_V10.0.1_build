@@ -12,7 +12,7 @@ if (!(System.getenv("TEAMCITY_BUILD") != null && System.getenv("TEAMCITY_BUILD")
 
 description "Jems Project"
 group "io.cloudflight.jems"
-version "4.0.1$customerPostfix"
+version "5.0.0$customerPostfix"
 
 cloudflight {
     softwareProjectKey = "interact/ems"
