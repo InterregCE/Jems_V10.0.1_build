@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.entity
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
@@ -42,6 +43,10 @@ class CallEntity(
     @Enumerated(EnumType.STRING)
     @field:NotNull
     var status: CallStatus = CallStatus.DRAFT,
+
+    @Enumerated(EnumType.STRING)
+    @field: NotNull
+    var type: CallType,
 
     @field:NotNull
     var startDate: ZonedDateTime,
@@ -99,7 +104,7 @@ class CallEntity(
     val unitCosts: MutableSet<ProgrammeUnitCostEntity> = mutableSetOf(),
 
     @Embedded
-    var allowedRealCosts: AllowedRealCostsEntity = AllowedRealCostsEntity(),
+    var allowedRealCosts: AllowedRealCostsEntity,
 
     @Column
     var preSubmissionCheckPluginKey: String?

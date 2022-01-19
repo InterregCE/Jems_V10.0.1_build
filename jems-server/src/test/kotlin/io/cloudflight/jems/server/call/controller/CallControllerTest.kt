@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallFundRateDTO
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
@@ -86,6 +87,7 @@ class CallControllerTest : UnitTest() {
             id = ID,
             name = "call name",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDate = call.startDate,
             endDateStep1 = null,
             endDate = call.endDate,
@@ -133,6 +135,7 @@ class CallControllerTest : UnitTest() {
             id = ID,
             name = "call name",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDateTime = call.startDate,
             endDateTimeStep1 = null,
             endDateTime = call.endDate,
@@ -170,6 +173,7 @@ class CallControllerTest : UnitTest() {
         private val callUpdateDto = CallUpdateRequestDTO(
             id = ID,
             name = "call name",
+            type = CallType.STANDARD,
             startDateTime = call.startDate,
             endDateTime = call.endDate,
             additionalFundAllowed = true,
@@ -187,6 +191,7 @@ class CallControllerTest : UnitTest() {
             id = ID,
             name = "call name",
             status = null,
+            type = CallType.STANDARD,
             startDate = call.startDate,
             endDate = call.endDate,
             isAdditionalFundAllowed = true,

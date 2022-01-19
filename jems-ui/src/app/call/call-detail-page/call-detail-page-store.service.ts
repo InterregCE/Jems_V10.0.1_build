@@ -19,6 +19,7 @@ import {ProgrammeEditableStateStore} from '../../programme/programme-page/servic
 @Injectable()
 export class CallDetailPageStore {
   call$: Observable<CallDetailDTO>;
+  callType$: Observable<CallDetailDTO.TypeEnum>;
   userCanApply$: Observable<boolean>;
   allPriorities$: Observable<CallPriorityCheckbox[]>;
   allActiveStrategies$: Observable<OutputProgrammeStrategy[]>;
@@ -39,6 +40,7 @@ export class CallDetailPageStore {
               private programmeStateAidService: ProgrammeStateAidService,
               private callService: CallService) {
     this.call$ = this.callStore.call$;
+    this.callType$ = this.callStore.callType$.asObservable();
     this.userCanApply$ = this.callStore.userCanApply$;
     this.allPriorities$ = this.allPriorities();
     this.allActiveStrategies$ = this.allActiveStrategies();

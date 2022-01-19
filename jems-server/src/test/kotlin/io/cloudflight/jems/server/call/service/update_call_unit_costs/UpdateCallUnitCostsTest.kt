@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.call.service.update_call_unit_costs
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -26,10 +27,11 @@ import java.time.ZonedDateTime
 class UpdateCallUnitCostsTest {
 
     companion object {
-        private fun callWithStatus(id: Long, status: CallStatus) = CallDetail(
+        private fun callWithStatus(id: Long, status: CallStatus, callType: CallType) = CallDetail(
             id = id,
             name = "",
             status = status,
+            type = callType,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
@@ -52,7 +54,7 @@ class UpdateCallUnitCostsTest {
     @Test
     fun `updateUnitCosts - change of unit costs when call is PUBLISHED`() {
         val ID = 5L
-        val call = callWithStatus(id = ID, CallStatus.PUBLISHED)
+        val call = callWithStatus(id = ID, CallStatus.PUBLISHED, CallType.STANDARD)
         every { persistence.existsAllProgrammeUnitCostsByIds(setOf(4, 5)) } returns true
         every { persistence.updateProjectCallUnitCost(ID, setOf(4, 5)) } returns call.copy(
             unitCosts = listOf(
@@ -80,7 +82,7 @@ class UpdateCallUnitCostsTest {
     @Test
     fun `updateUnitCosts - change of unit costs when call is DRAFT`() {
         val ID = 6L
-        val call = callWithStatus(id = ID, CallStatus.DRAFT)
+        val call = callWithStatus(id = ID, CallStatus.DRAFT, CallType.STANDARD)
         every { persistence.existsAllProgrammeUnitCostsByIds(setOf(5)) } returns true
         every { persistence.updateProjectCallUnitCost(ID, setOf(5)) } returns call
         every { persistence.getCallById(ID) } returns call
@@ -93,7 +95,7 @@ class UpdateCallUnitCostsTest {
     fun `updateUnitCosts - forbidden change when call is published`() {
         val ID = 7L
         every { persistence.existsAllProgrammeUnitCostsByIds(setOf(5)) } returns true
-        every { persistence.getCallById(ID) } returns callWithStatus(id = ID, CallStatus.PUBLISHED).copy(
+        every { persistence.getCallById(ID) } returns callWithStatus(id = ID, CallStatus.PUBLISHED, CallType.STANDARD).copy(
             unitCosts = listOf(
                 ProgrammeUnitCost(id = 4, isOneCostCategory = true),
                 ProgrammeUnitCost(id = 5, isOneCostCategory = false),

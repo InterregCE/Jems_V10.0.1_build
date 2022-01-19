@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.StepSelectionOptionDTO
 import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormFieldConfigurationRequestDTO
@@ -45,6 +46,7 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
             id = ID,
             name = "call name",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),

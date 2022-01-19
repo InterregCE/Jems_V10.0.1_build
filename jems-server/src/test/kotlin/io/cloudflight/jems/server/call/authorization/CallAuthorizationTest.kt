@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.authorization
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -55,6 +56,7 @@ internal class CallAuthorizationTest {
             id = 1,
             name = "published call",
             status = CallStatus.PUBLISHED,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(2),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(2),

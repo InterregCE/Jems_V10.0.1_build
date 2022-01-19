@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {Tools} from '@common/utils/tools';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {
@@ -33,16 +33,20 @@ import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confir
 export class CallDetailPageComponent {
   private static readonly DATE_SHOULD_BE_VALID = 'common.date.should.be.valid';
   private static readonly CALL_INVALID_PERIOD = 'call.lengthOfPeriod.invalid.period';
+  private static readonly STANDARD_CALL_DETAIL_TITLE = 'call.detail.title';
+  private static readonly SPF_CALL_DETAIL_TITLE = 'spf.call.detail.title';
 
   private resetEvent$ = new BehaviorSubject<void | null>(null);
   Alert = Alert;
   tools = Tools;
 
   callId = this.activatedRoute?.snapshot?.params?.callId;
+
   publishPending = false;
   published = false;
   data$: Observable<{
     call: CallDetailDTO;
+    callType: CallDetailDTO.TypeEnum;
     userCanApply: boolean;
     callIsEditable: boolean;
     priorityCheckboxes: CallPriorityCheckbox[];
@@ -98,6 +102,7 @@ export class CallDetailPageComponent {
 
     this.data$ = combineLatest([
       this.pageStore.call$,
+      this.pageStore.callType$,
       this.pageStore.userCanApply$,
       this.pageStore.callIsEditable$,
       this.pageStore.allPriorities$,
@@ -106,8 +111,9 @@ export class CallDetailPageComponent {
       this.resetEvent$
     ])
       .pipe(
-        map(([call, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allStateAids]: any) => ({
+        map(([call, callType, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allStateAids]: any) => ({
           call,
+          callType,
           userCanApply,
           callIsEditable,
           priorityCheckboxes: this.getPriorities(allPriorities, call),
@@ -124,6 +130,7 @@ export class CallDetailPageComponent {
   }
 
   onSubmit(savedCall: CallDetailDTO,
+           callType: CallDetailDTO.TypeEnum,
            priorityCheckboxes: CallPriorityCheckbox[],
            strategies: OutputProgrammeStrategy[],
            stateAids: CallStateAidDTO[]): void {
@@ -139,10 +146,11 @@ export class CallDetailPageComponent {
     }
 
     if (!this.callId) {
+      call.type = callType;
       this.createCall(call);
       return;
     }
-
+    call.type = savedCall.type;
     if (savedCall.endDateTimeStep1 && !this.callForm.controls.is2Step.value) {
       Forms.confirm(this.dialog, {
         title: 'call.detail.save.confirm.step.switch.title',
@@ -155,7 +163,6 @@ export class CallDetailPageComponent {
       ).subscribe();
       return;
     }
-
     this.updateCall(call);
   }
 
@@ -186,7 +193,8 @@ export class CallDetailPageComponent {
   isPublishDisabled(call: CallDetailDTO): Observable<boolean> {
     return of(true).pipe(
       withLatestFrom(this.formService.dirty$, this.formService.pending$),
-      map(([, dirty, pending]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0 || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0)
+      map(([, dirty, pending, callType]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0 || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0 ||
+        callType == CallDetailDTO.TypeEnum.SPF) // for disabling publish button TODO remove call type check after implementing MP2-2211
     );
   }
 
@@ -246,12 +254,26 @@ export class CallDetailPageComponent {
     return (data.numberOfSelectedStrategies > 0 && !data.callIsEditable) || (data.strategies.length > 0 && data.callIsEditable);
   }
 
+  isStandardCall(callType: CallDetailDTO.TypeEnum): boolean {
+     return callType == CallDetailDTO.TypeEnum.STANDARD;
+  }
+
+  isSPFCall(callType: CallDetailDTO.TypeEnum): boolean {
+    return callType == CallDetailDTO.TypeEnum.SPF;
+  }
+
+  getCallPageTitle(callType: CallDetailDTO.TypeEnum): string {
+    return this.isStandardCall(callType) ? CallDetailPageComponent.STANDARD_CALL_DETAIL_TITLE :
+      (this.isSPFCall(callType) ? CallDetailPageComponent.SPF_CALL_DETAIL_TITLE : '');
+  }
+
   private createCall(call: CallUpdateRequestDTO): void {
     this.pageStore.createCall(call)
       .pipe(
         take(1),
         tap(created => this.callNavService.redirectToCallDetail(
           created.id,
+          created.type,
           {
             i18nKey: 'call.detail.created.success',
             i18nArguments: {name: created.name}
