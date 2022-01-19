@@ -26,7 +26,7 @@ class StartSecondStep(
     @Transactional
     @ExceptionWrapper(StartSecondStepException::class)
     override fun startSecondStep(projectId: Long): ApplicationStatus =
-        createNewProjectVersion.create(projectId, ApplicationStatus.DRAFT).let { newProjectVersion ->
+        createNewProjectVersion.create(projectId).let { newProjectVersion ->
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).startSecondStep().also {
                     auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))

@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.application.workflow.states.Ap
 import io.cloudflight.jems.server.project.service.application.workflow.states.SubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
@@ -50,6 +51,12 @@ class ReturnApplicationToApplicantInteractorTest : UnitTest() {
             user = UserEntity(1L, "some@applicant", "name", "surname", UserRoleEntity(1L, "applicant"), "", UserStatus.ACTIVE),
             status = ApplicationStatus.DRAFT,
             current = true
+        )
+        private val projectVersionSummary = ProjectVersionSummary(
+            version = "1.0",
+            projectId = PROJECT_ID,
+            createdAt = ZonedDateTime.now(),
+            user = UserEntity(1L, "some@applicant", "name", "surname", UserRoleEntity(1L, "applicant"), "", UserStatus.ACTIVE),
         )
     }
 
@@ -89,7 +96,7 @@ class ReturnApplicationToApplicantInteractorTest : UnitTest() {
 
     @Test
     fun returnToApplicant() {
-        every { createNewProjectVersion.create(PROJECT_ID, ApplicationStatus.RETURNED_TO_APPLICANT) } returns projectVersion
+        every { createNewProjectVersion.create(PROJECT_ID) } returns projectVersionSummary
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary
         every { applicationStateFactory.getInstance(any()) } returns submittedState
         every { submittedState.returnToApplicant() } returns ApplicationStatus.RETURNED_TO_APPLICANT

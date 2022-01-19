@@ -16,7 +16,7 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -57,7 +57,7 @@ fun unsuccessfulProjectSubmission(
 
 
 fun projectVersionSnapshotCreated(
-    context: Any, projectSummary: ProjectSummary, projectVersion: ProjectVersion
+    context: Any, projectSummary: ProjectSummary, projectVersion: ProjectVersionSummary
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,

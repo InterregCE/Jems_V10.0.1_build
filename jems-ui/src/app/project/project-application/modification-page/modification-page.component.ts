@@ -58,7 +58,7 @@ export class ModificationPageComponent {
         modificationDecisions,
         canOpenModification: this.canOpenModification(currentVersionOfProjectStatus, hasOpenPermission),
         canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission),
-        versions: this.isModificationOpened(currentVersionOfProjectStatus) ? versions.splice(1, versions.length - 1) : versions
+        versions: this.isModificationOpenedOrSubmitted(currentVersionOfProjectStatus) ? versions.slice(1, versions.length - 1) : versions
       }))
     );
   }
@@ -85,11 +85,11 @@ export class ModificationPageComponent {
 
   private canOpenModification(projectStatus: ProjectStatusDTO.StatusEnum, hasOpenPermission: boolean): boolean {
     return hasOpenPermission
-      && (projectStatus === this.ProjectStatusEnum.APPROVED || projectStatus === this.ProjectStatusEnum.NOTAPPROVED);
+      && (projectStatus === this.ProjectStatusEnum.APPROVED || projectStatus === this.ProjectStatusEnum.NOTAPPROVED || projectStatus === this.ProjectStatusEnum.CONTRACTED);
   }
 
   private canHandBackModification(projectStatus: ProjectStatusDTO.StatusEnum, hasOpenPermission: boolean): boolean {
-    return hasOpenPermission && projectStatus === this.ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+    return hasOpenPermission && (projectStatus === this.ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED || projectStatus === this.ProjectStatusEnum.MODIFICATIONSUBMITTED);
   }
 
   private showSuccessMessage(): void {
@@ -100,8 +100,10 @@ export class ModificationPageComponent {
     }, 4000);
   }
 
-  isModificationOpened(currentStatus: ProjectStatusDTO.StatusEnum) {
+  isModificationOpenedOrSubmitted(currentStatus: ProjectStatusDTO.StatusEnum) {
     return currentStatus === ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTING ||
-      currentStatus === ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+      currentStatus === ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED ||
+      currentStatus === ProjectStatusDTO.StatusEnum.INMODIFICATION ||
+      currentStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
   }
 }

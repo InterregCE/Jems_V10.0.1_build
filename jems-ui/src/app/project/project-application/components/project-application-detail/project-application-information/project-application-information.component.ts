@@ -64,7 +64,8 @@ export class ProjectApplicationInformationComponent {
       || this.projectStatus === ProjectStatusDTO.StatusEnum.ELIGIBLE
       || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1SUBMITTED
       || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1ELIGIBLE
-      || this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
   }
 
   hasApprovedStatusColor(): boolean {

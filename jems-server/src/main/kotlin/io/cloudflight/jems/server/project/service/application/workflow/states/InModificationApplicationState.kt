@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.context.ApplicationEventPublisher
 
-class ModificationPreContractingApplicationState(
+class InModificationApplicationState(
     override val projectSummary: ProjectSummary,
     override val projectWorkflowPersistence: ProjectWorkflowPersistence,
     override val auditPublisher: ApplicationEventPublisher,
@@ -20,7 +20,7 @@ class ModificationPreContractingApplicationState(
 
     override fun submit() =
         ifPreviousStateIsValid().let { previousStatus ->
-            if (previousStatus.status == ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
+            if (previousStatus.status == ApplicationStatus.MODIFICATION_SUBMITTED)
                 projectWorkflowPersistence.updateProjectLastResubmission(
                     projectId = projectSummary.id,
                     userId = securityService.getUserIdOrThrow(),
@@ -30,14 +30,14 @@ class ModificationPreContractingApplicationState(
                 projectWorkflowPersistence.updateProjectLastResubmission(
                     projectId = projectSummary.id,
                     userId = securityService.getUserIdOrThrow(),
-                    status = ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED
+                    status = ApplicationStatus.MODIFICATION_SUBMITTED
                 )
         }
 
     private fun ifPreviousStateIsValid(): ProjectStatus =
         projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).also { previousStatus ->
             when (previousStatus.status) {
-                ApplicationStatus.APPROVED, ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED -> Unit
+                ApplicationStatus.CONTRACTED, ApplicationStatus.MODIFICATION_SUBMITTED -> Unit
                 else -> throw InvalidPreviousStatusException(
                     fromStatus = projectSummary.status,
                     toStatus = previousStatus.status

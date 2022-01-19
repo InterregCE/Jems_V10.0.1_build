@@ -205,14 +205,20 @@ class ProjectWorkflowPersistenceProvider(
             listOf(
                 ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
                 ApplicationStatus.MODIFICATION_REJECTED,
-                ApplicationStatus.APPROVED
+                ApplicationStatus.APPROVED,
+                ApplicationStatus.MODIFICATION_SUBMITTED,
+                ApplicationStatus.CONTRACTED,
             )
         ).zipWithNext()
             .filter {
-                it.second.status == ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED && listOf(
+                (it.second.status == ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED && listOf(
                     ApplicationStatus.MODIFICATION_REJECTED,
                     ApplicationStatus.APPROVED
-                ).contains(it.first.status)
+                ).contains(it.first.status)) ||
+                    (it.second.status == ApplicationStatus.MODIFICATION_SUBMITTED && listOf(
+                    ApplicationStatus.MODIFICATION_REJECTED,
+                    ApplicationStatus.CONTRACTED
+                ).contains(it.first.status))
             }.map { it.first.toProjectStatus() }
 
     @Transactional

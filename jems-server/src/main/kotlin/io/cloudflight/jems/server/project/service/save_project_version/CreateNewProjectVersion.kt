@@ -4,8 +4,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.project.service.projectVersionSnapshotCreated
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -20,11 +19,10 @@ class CreateNewProjectVersion(
 ) : CreateNewProjectVersionInteractor {
 
     @Transactional
-    override fun create(projectId: Long, status: ApplicationStatus): ProjectVersion =
+    override fun create(projectId: Long): ProjectVersionSummary =
         projectVersionPersistence.getLatestVersionOrNull(projectId).let { lastVersionOrNull ->
             projectVersionPersistence.createNewVersion(
                 projectId = projectId,
-                status = status,
                 version = ProjectVersionUtils.increaseMajor(lastVersionOrNull),
                 userId = securityService.getUserIdOrThrow()
             ).also {

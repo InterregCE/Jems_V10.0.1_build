@@ -29,7 +29,7 @@
     <ng-container
             *jemsHasPermission="[PermissionsEnum.ProjectStatusDecideModificationApproved, PermissionsEnum.ProjectStatusDecideModificationNotApproved]">
         <jems-modification-confirmation
-                *ngIf="data.currentVersionOfProjectStatus === ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED || data.currentVersionOfProjectStatus === ProjectStatusEnum.MODIFICATIONPRECONTRACTING"
+                *ngIf="isModificationOpenedOrSubmitted(data.currentVersionOfProjectStatus)"
                 [index]="data.modificationDecisions.length + 1"
                 [projectStatus]="data.currentVersionOfProjectStatus">
         </jems-modification-confirmation>
