@@ -1,18 +1,18 @@
-<div appFormLayout appNoWidthLimit
+<div jemsFormLayout jemsNoWidthLimit
      *ngIf="(projectPartnerDetailStore.partnerLumpSums$ | async) as partnerLumpSums">
 
-    <div appNoWidthLimit
-         [appTableConfig]="[{minInRem: 12},{minInRem: 5, maxInRem: 5},{minInRem: 5},{minInRem: 15},{minInRem: 15}]">
+    <div jemsNoWidthLimit
+         [jemsTableConfig]="[{minInRem: 12},{minInRem: 5, maxInRem: 5},{minInRem: 5},{minInRem: 15},{minInRem: 15}]">
         <div>
             <span>{{'project.application.form.section.part.e.lump.sums.column.title' | translate}}</span>
-            <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">{{'project.application.form.section.part.e.period.column.title' | translate}}</span>
+            <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">{{'project.application.form.section.part.e.period.column.title' | translate}}</span>
             <span class="justify-end">{{'lump.sum.table.column.name.cost' | translate}}</span>
             <span class="justify-end">{{'project.partner.budget.lump.sums.partner.share.column.title' | translate}}</span>
-            <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION">{{'project.application.form.section.part.e.lump.sums.description.column.title' | translate}}</span>
+            <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION">{{'project.application.form.section.part.e.lump.sums.description.column.title' | translate}}</span>
         </div>
         <div *ngFor="let partnerLumpSum of partnerLumpSums">
             <span>{{ partnerLumpSum.lumpSumName | translateByInputLanguage | async}}</span>
-            <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
+            <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
                             {{
                 partnerLumpSum.period === null || partnerLumpSum.period === undefined ? '' :
                         partnerLumpSum.period === PERIOD_PREPARATION ? ('project.application.form.section.part.e.period.preparation' | translate) :
@@ -21,14 +21,14 @@
                         </span>
             <span class="justify-end">{{ partnerLumpSum.lumpSumCost | asMoney}}</span>
             <span class="justify-end">{{ partnerLumpSum.partnerShare | asMoney}}</span>
-            <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION">{{ partnerLumpSum.lumpSumDescription | translateByInputLanguage | async}}</span>
+            <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION">{{ partnerLumpSum.lumpSumDescription | translateByInputLanguage | async}}</span>
         </div>
         <div class="footer">
             <span>{{'project.partner.budget.lump.sums.partner.share.total' | translate}}</span>
-            <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS"></span>
+            <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS"></span>
             <span></span>
             <span class="justify-end">{{projectPartnerDetailStore.partnerTotalLumpSum$ | async | asMoney}}</span>
-            <span *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION"></span>
+            <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION"></span>
         </div>
     </div>
 </div>

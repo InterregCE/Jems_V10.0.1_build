@@ -4,7 +4,7 @@ import {FileCategoryTypeEnum} from '@project/common/components/file-management/f
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 
 @Component({
-  selector: 'app-application-annexes',
+  selector: 'jems-application-annexes',
   templateUrl: './application-annexes.component.html',
   styleUrls: ['./application-annexes.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

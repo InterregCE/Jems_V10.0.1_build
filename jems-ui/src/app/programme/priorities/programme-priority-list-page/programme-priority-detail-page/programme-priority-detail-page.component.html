@@ -1,38 +1,38 @@
-<app-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
+<jems-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.priority.add.title">
-    <form appFormLayout [formGroup]="form">
-        <div page-sub-title appMultiColumnRow>
+    <form jemsFormLayout [formGroup]="form">
+        <div page-sub-title jemsMultiColumnRow>
             <h2 class="mb-0">{{'programme.priority.add.title' | translate}}</h2>
-            <button appText color="primary" mat-raised-button
+            <button jemsText color="primary" mat-raised-button
                     *ngIf="form.disabled && (programmeEditableStateStore.hasEditPermission$ | async)"
                     (click)="form.enable(); resetForm(data.priority, data.freePrioritiesWithPolicies)">
                 {{'common.edit.label' | translate}}
             </button>
         </div>
-        <div appMultiColumnRow stretch>
-            <mat-form-field appFormFieldWidth="large">
+        <div jemsMultiColumnRow stretch>
+            <mat-form-field jemsFormFieldWidth="large">
                 <mat-label>{{'programme.priority.field.code' | translate}}</mat-label>
                 <input #codeInput [formControlName]="constants.CODE.name" matInput required>
-                <mat-hint [appHintFor]="codeInput" [hide]="form.get(constants.CODE.name)?.errors !== null">
-                    <app-text-hint [currentLength]="codeInput?.value?.length" [maxLength]="50"></app-text-hint>
+                <mat-hint [jemsHintFor]="codeInput" [hide]="form.get(constants.CODE.name)?.errors !== null">
+                    <jems-text-hint [currentLength]="codeInput?.value?.length" [maxLength]="50"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="form.get(constants.CODE.name)?.errors"
                             [messages]="constants.CODE.errorMessages">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
-            <app-multi-language-container [useSystemLanguages]="true"
+            <jems-multi-language-container [useSystemLanguages]="true"
                                           [switchButtonsVisible]="!form.disabled">
-                <app-multi-language-form-field
+                <jems-multi-language-form-field
                         [formControlName]="constants.TITLE.name"
                         label="programme.priority.field.title"
                         [maxLength]="300">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </div>
 
         <h3>{{'programme.priority.add.objective.title' | translate}}</h3>
@@ -47,17 +47,17 @@
                 </mat-option>
             </mat-select>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="form.get(constants.OBJECTIVE.name)?.errors"
                         [messages]="constants.OBJECTIVE.errorMessages">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
 
         <ng-container *ngIf="specificObjectives.length">
             <h3>{{'programme.priority.objective.title' | translate}}</h3>
-            <div appNoWidthLimit
-                 [appTableConfig]="[{maxInRem: 2},{maxInRem:16},{},{maxInRem:12}]">
+            <div jemsNoWidthLimit
+                 [jemsTableConfig]="[{maxInRem: 2},{maxInRem:16},{},{maxInRem:12}]">
                 <div>
                     <span></span>
                     <div class="mat-body-strong">{{'programme.priority.objective.table.column.programmeCode' | translate}}</div>
@@ -72,17 +72,17 @@
                                 (change)="setCheckedStatus(i, $event.checked)">
                         </mat-checkbox>
                         <div>
-                            <mat-form-field appFormFieldWidth="full" extendError>
+                            <mat-form-field jemsFormFieldWidth="full" extendError>
                                 <mat-label>{{'programme.priority.objective.table.field.code' | translate}}</mat-label>
                                 <input #policyCode [formControlName]="constants.POLICY_CODE.name" [required]="control.get(constants.POLICY_SELECTED.name).value" matInput>
-                                <mat-hint [appHintFor]="policyCode" [hide]="control.get(constants.POLICY_CODE.name)?.errors !== null">
-                                    <app-text-hint [currentLength]="policyCode?.value?.length" [maxLength]="50"></app-text-hint>
+                                <mat-hint [jemsHintFor]="policyCode" [hide]="control.get(constants.POLICY_CODE.name)?.errors !== null">
+                                    <jems-text-hint [currentLength]="policyCode?.value?.length" [maxLength]="50"></jems-text-hint>
                                 </mat-hint>
                                 <mat-error>
-                                    <app-form-field-errors
+                                    <jems-form-field-errors
                                             [errors]="control.get(constants.POLICY_CODE.name)?.errors"
                                             [messages]="constants.POLICY_CODE.errorMessages">
-                                    </app-form-field-errors>
+                                    </jems-form-field-errors>
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -93,15 +93,15 @@
                 </div>
             </div>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="form.get(constants.SPECIFIC_OBJECTIVES.name)?.errors"
                         [messages]="constants.SPECIFIC_OBJECTIVES.errorMessages">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </ng-container>
 
         <!--TODO: remove when new edit mode is introduced-->
-        <div appMultiColumnRow *ngIf="form.enabled">
+        <div jemsMultiColumnRow *ngIf="form.enabled">
             <button mat-stroked-button type="button"
                     (click)="cancel(data.priority, data.freePrioritiesWithPolicies)">
                 {{'programme.priority.button.cancel' | translate}}
@@ -114,14 +114,14 @@
             </button>
         </div>
 
-        <app-alert [show]="!!saveSuccess"
+        <jems-alert [show]="!!saveSuccess"
                    [type]="Alert.SUCCESS">
             <p>{{saveSuccess | translate}}</p>
-        </app-alert>
-        <app-alert *ngIf="saveError"
+        </jems-alert>
+        <jems-alert *ngIf="saveError"
                    [show]="!!saveError"
                    [type]="Alert.ERROR">
-            <app-api-error-content *ngIf="!!saveError.i18nMessage.i18nKey" [error]="saveError"></app-api-error-content>
+            <jems-api-error-content *ngIf="!!saveError.i18nMessage.i18nKey" [error]="saveError"></jems-api-error-content>
 
             <p *ngIf="!saveError.i18nMessage.i18nKey && !specificObjectiveError()">
                 {{'programme.priority.code.or.title.already.in.use' | translate}}
@@ -130,6 +130,6 @@
             <p *ngIf="!!specificObjectiveError()">
                 {{specificObjectiveError()?.i18nKey | translate : specificObjectiveError()?.i8nArguments }}
             </p>
-        </app-alert>
+        </jems-alert>
     </form>
-</app-main-page-template>
+</jems-main-page-template>

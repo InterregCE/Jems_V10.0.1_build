@@ -1,5 +1,5 @@
-.app-layout {
-  &.app-form-layout {
+.jems-layout  {
+  &.jems-form-layout {
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -27,7 +27,7 @@
     }
 
 
-    [appLabel] {
+    [jemsLabel] {
       margin-bottom: 0.5rem;
     }
 

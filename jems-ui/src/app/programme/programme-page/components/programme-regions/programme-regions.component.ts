@@ -16,7 +16,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
 @Component({
-  selector: 'app-programme-regions',
+  selector: 'jems-programme-regions',
   templateUrl: './programme-regions.component.html',
   styleUrls: ['./programme-regions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

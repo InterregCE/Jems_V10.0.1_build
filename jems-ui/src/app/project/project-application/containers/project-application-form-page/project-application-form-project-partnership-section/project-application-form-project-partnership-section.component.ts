@@ -10,7 +10,7 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
-  selector: 'app-project-application-form-project-partnership-section',
+  selector: 'jems-project-application-form-project-partnership-section',
   templateUrl: './project-application-form-project-partnership-section.component.html',
   styleUrls: ['./project-application-form-project-partnership-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

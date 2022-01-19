@@ -1,10 +1,10 @@
-<div *ngIf="canReadFiles$ | async" appNoWidthLimit id="project-files" class="overflow-auto">
-    <app-category-tree
+<div *ngIf="canReadFiles$ | async" jemsNoWidthLimit id="project-files" class="overflow-auto">
+    <jems-category-tree
             [categories]="fileManagementStore.fileCategories$ | async"
             (categorySelected)="fileManagementStore.selectedCategory$.next($event)"
             [selectedCategory]="fileManagementStore.selectedCategory$ | async"
             class="mr-3" id="project-files-tree">
-    </app-category-tree>
+    </jems-category-tree>
 
     <div id="project-files-table">
         <div *ngIf="selectedCategoryPath$ | async as selectedCategoryPath" class="mb-3">
@@ -13,6 +13,6 @@
                 <span *ngIf="!last"> / </span>
             </span>
         </div>
-        <app-project-application-files-table></app-project-application-files-table>
+        <jems-project-application-files-table></jems-project-application-files-table>
     </div>
 </div>

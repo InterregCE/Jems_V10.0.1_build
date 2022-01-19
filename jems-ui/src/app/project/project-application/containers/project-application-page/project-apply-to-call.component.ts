@@ -15,7 +15,7 @@ import {Alert} from '@common/components/forms/alert';
 import {ApplyToCallPageStore} from './apply-to-call-page-store.service';
 
 @Component({
-  selector: 'app-project-apply-to-call',
+  selector: 'jems-project-apply-to-call',
   templateUrl: 'project-apply-to-call.component.html',
   styleUrls: ['project-apply-to-call.component.scss'],
   providers: [ApplyToCallPageStore],

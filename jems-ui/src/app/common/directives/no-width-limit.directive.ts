@@ -1,7 +1,7 @@
 import {Directive, ElementRef, OnInit} from '@angular/core';
 
 @Directive({
-  selector: '[appNoWidthLimit]'
+  selector: '[jemsNoWidthLimit]'
 })
 export class NoWidthLimitDirective implements OnInit {
   constructor(private el: ElementRef) {

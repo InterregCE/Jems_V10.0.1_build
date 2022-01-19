@@ -26,7 +26,7 @@ import {AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-travel-and-accommodation-costs-budget-table',
+  selector: 'jems-travel-and-accommodation-costs-budget-table',
   templateUrl: './travel-and-accommodation-costs-budget-table.component.html',
   styleUrls: ['./travel-and-accommodation-costs-budget-table.component.scss']
 })

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
-  selector: 'app-call-flat-rates-toggle-column',
+  selector: 'jems-call-flat-rates-toggle-column',
   templateUrl: './call-flat-rates-toggle-column.component.html',
   styleUrls: ['./call-flat-rates-toggle-column.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

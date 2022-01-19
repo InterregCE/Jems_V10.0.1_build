@@ -1,17 +1,17 @@
-<app-main-page-template [needsCard]="true" titleKey="call.header">
+<jems-main-page-template [needsCard]="true" titleKey="call.header">
 
     <h2 page-sub-title> {{'call.list.header' | translate}}</h2>
 
-    <button appText *hasPermission="PermissionsEnum.CallUpdate" mat-raised-button color="primary"
+    <button jemsText *jemsHasPermission="PermissionsEnum.CallUpdate" mat-raised-button color="primary"
             [routerLink]="'/app/call/create'">
         + {{'call.add.new' | translate}}
     </button>
     <div *ngIf="success" class="success-wrapper">
-        <div class="success app-alert-success">
+        <div class="success jems-alert-success">
             <mat-icon>check_circle</mat-icon>
             <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
         </div>
     </div>
-    <app-call-list appNoWidthLimit [publishedCallsOnly]="false"></app-call-list>
+    <jems-call-list jemsNoWidthLimit [publishedCallsOnly]="false"></jems-call-list>
 
-</app-main-page-template>
+</jems-main-page-template>

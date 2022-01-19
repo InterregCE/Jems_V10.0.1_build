@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'app-filter-template',
+  selector: 'jems-filter-template',
   templateUrl: './filter-template.component.html',
   styleUrls: ['./filter-template.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

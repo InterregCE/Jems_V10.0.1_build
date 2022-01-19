@@ -1,6 +1,6 @@
-<div appFormLayout [formGroup]="addressForm">
+<div jemsFormLayout [formGroup]="addressForm">
     <ng-container *ngIf="nuts">
-        <mat-form-field *appFormFieldVisibilityStatus="fieldIds?.COUNTRY_AND_NUTS || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
+        <mat-form-field *jemsFormFieldVisibilityStatus="fieldIds?.COUNTRY_AND_NUTS || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
             <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
             <input name="country" formControlName="country" matInput
                    [matAutocomplete]="country"
@@ -15,7 +15,7 @@
     </ng-container>
 
     <ng-container *ngIf="addressForm.controls.country?.value">
-        <mat-form-field *appFormFieldVisibilityStatus="fieldIds?.COUNTRY_AND_NUTS || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
+        <mat-form-field *jemsFormFieldVisibilityStatus="fieldIds?.COUNTRY_AND_NUTS || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
             <mat-label>{{'project.partner.main-address.region2' | translate}}</mat-label>
             <input name="region2" formControlName="region2" matInput
                    [matAutocomplete]="region2"
@@ -30,7 +30,7 @@
     </ng-container>
 
     <ng-container *ngIf="addressForm.controls.region2?.value">
-        <mat-form-field *appFormFieldVisibilityStatus="fieldIds?.COUNTRY_AND_NUTS || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
+        <mat-form-field *jemsFormFieldVisibilityStatus="fieldIds?.COUNTRY_AND_NUTS || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
             <mat-label>{{'project.partner.main-address.region3' | translate}}</mat-label>
             <input name="region3" formControlName="region3" matInput
                    [matAutocomplete]="region3"
@@ -43,69 +43,69 @@
         </mat-form-field>
     </ng-container>
 
-    <mat-form-field class="w-100" *appFormFieldVisibilityStatus="fieldIds?.STREET || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
+    <mat-form-field class="w-100" *jemsFormFieldVisibilityStatus="fieldIds?.STREET || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
         <mat-label>{{'project.partner.main-address.street' | translate}}</mat-label>
         <input #streetInput name="street" formControlName="street" matInput>
-        <mat-hint [appHintFor]="streetInput" [hide]="addressForm.controls?.street?.errors !== null">
-            <app-text-hint [currentLength]="streetInput?.value?.length" [maxLength]="50"></app-text-hint>
+        <mat-hint [jemsHintFor]="streetInput" [hide]="addressForm.controls?.street?.errors !== null">
+            <jems-text-hint [currentLength]="streetInput?.value?.length" [maxLength]="50"></jems-text-hint>
         </mat-hint>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="addressForm?.controls?.street?.errors">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="w-100" *appFormFieldVisibilityStatus="fieldIds?.HOUSE_NUMBER || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
+    <mat-form-field class="w-100" *jemsFormFieldVisibilityStatus="fieldIds?.HOUSE_NUMBER || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
         <mat-label>{{'project.partner.main-address.housenumber' | translate}}</mat-label>
         <input #houseNumberInput name="houseNumber" formControlName="houseNumber" matInput>
-        <mat-hint [appHintFor]="houseNumberInput" [hide]="addressForm.controls?.houseNumber?.errors !== null">
-            <app-text-hint [currentLength]="houseNumberInput?.value?.length" [maxLength]="20"></app-text-hint>
+        <mat-hint [jemsHintFor]="houseNumberInput" [hide]="addressForm.controls?.houseNumber?.errors !== null">
+            <jems-text-hint [currentLength]="houseNumberInput?.value?.length" [maxLength]="20"></jems-text-hint>
         </mat-hint>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="addressForm?.controls?.houseNumber?.errors">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="w-100" *appFormFieldVisibilityStatus="fieldIds?.POSTAL_CODE || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
+    <mat-form-field class="w-100" *jemsFormFieldVisibilityStatus="fieldIds?.POSTAL_CODE || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
         <mat-label>{{'project.partner.main-address.postalcode' | translate}}</mat-label>
         <input #postCodeInput name="postalCode" formControlName="postalCode" matInput>
-        <mat-hint [appHintFor]="postCodeInput" [hide]="addressForm.controls?.postalCode?.errors !== null">
-            <app-text-hint [currentLength]="postCodeInput?.value?.length" [maxLength]="20"></app-text-hint>
+        <mat-hint [jemsHintFor]="postCodeInput" [hide]="addressForm.controls?.postalCode?.errors !== null">
+            <jems-text-hint [currentLength]="postCodeInput?.value?.length" [maxLength]="20"></jems-text-hint>
         </mat-hint>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="addressForm?.controls?.postalCode?.errors">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="w-100" *appFormFieldVisibilityStatus="fieldIds?.CITY || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
+    <mat-form-field class="w-100" *jemsFormFieldVisibilityStatus="fieldIds?.CITY || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
         <mat-label>{{'project.partner.main-address.city' | translate}}</mat-label>
         <input #cityInput name="city" formControlName="city" matInput>
-        <mat-hint [appHintFor]="cityInput" [hide]="addressForm.controls?.city?.errors !== null">
-            <app-text-hint [currentLength]="cityInput?.value?.length" [maxLength]="50"></app-text-hint>
+        <mat-hint [jemsHintFor]="cityInput" [hide]="addressForm.controls?.city?.errors !== null">
+            <jems-text-hint [currentLength]="cityInput?.value?.length" [maxLength]="50"></jems-text-hint>
         </mat-hint>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="addressForm?.controls?.city?.errors">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
 
     <ng-container *ngIf="addressForm.controls?.homepage">
-        <mat-form-field class="w-100" *appFormFieldVisibilityStatus="fieldIds?.HOMEPAGE || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
+        <mat-form-field class="w-100" *jemsFormFieldVisibilityStatus="fieldIds?.HOMEPAGE || fieldIds?.PARTNER_ASSOCIATED_ORGANIZATIONS">
             <mat-label>{{'project.partner.main-address.homepage' | translate}}</mat-label>
             <input #homepageInput name="homepage" formControlName="homepage" matInput>
-            <mat-hint [appHintFor]="homepageInput" [hide]="addressForm.controls?.homepage?.errors !== null">
-                <app-text-hint [currentLength]="homepageInput?.value?.length" [maxLength]="250"></app-text-hint>
+            <mat-hint [jemsHintFor]="homepageInput" [hide]="addressForm.controls?.homepage?.errors !== null">
+                <jems-text-hint [currentLength]="homepageInput?.value?.length" [maxLength]="250"></jems-text-hint>
             </mat-hint>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="addressForm?.controls?.homepage?.errors">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
     </ng-container>

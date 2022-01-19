@@ -1,16 +1,16 @@
-<app-form (save)="onSubmit()"
+<jems-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form appFormLayout [formGroup]="projectPartnershipForm">
+    <form jemsFormLayout [formGroup]="projectPartnershipForm">
         <h3>{{'project.application.form.section.part.c.subsection.three' | translate}}</h3>
         <p>{{'project.application.form.project.partnership.field.row' | translate}}</p>
-        <app-multi-language-container>
-            <app-multi-language-form-field
+        <jems-multi-language-container>
+            <jems-multi-language-form-field
                     type="textarea"
                     formControlName="partnership"
                     maxLength="5000"
                     minRows="3"
                     label="common.textarea.enter.text">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
     </form>
-</app-form>
+</jems-form>

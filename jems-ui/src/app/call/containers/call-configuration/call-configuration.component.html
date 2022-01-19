@@ -1,6 +1,6 @@
-<app-main-page-template *ngIf="details$ | async as details" titleKey="call.detail.title"
+<jems-main-page-template *ngIf="details$ | async as details" titleKey="call.detail.title"
                         subTitleKey="call.general.settings">
-    <app-call-detail *ngIf="details.call"
+    <jems-call-detail *ngIf="details.call"
             [call]="details.call"
             [strategies]="details.strategies"
             [initialStrategies]="details.initialStrategies"
@@ -9,7 +9,7 @@
             [priorityCheckboxes]="details.priorities"
             [initialPriorityCheckboxes]="details.initialPriorities"
             [isApplicant]="details.isApplicant">
-    </app-call-detail>
-</app-main-page-template>
+    </jems-call-detail>
+</jems-main-page-template>
 
 

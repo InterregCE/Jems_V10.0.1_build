@@ -1,13 +1,13 @@
-<app-project-page-template
+<jems-project-page-template
         [needsCard]="true"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.application.annexes"
         [isVersionedData]="false">
-    <div appFormLayout>
+    <div jemsFormLayout>
         <h3>
             {{'file.tab.header' | translate}}
-            <app-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></app-context-info>
+            <jems-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></jems-context-info>
         </h3>
-        <app-file-management [section]="fileManagementSection" appNoWidthLimit></app-file-management>
+        <jems-file-management [section]="fileManagementSection" jemsNoWidthLimit></jems-file-management>
     </div>
-</app-project-page-template>
+</jems-project-page-template>

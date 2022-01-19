@@ -24,7 +24,7 @@ import {Forms} from '../../../../common/utils/forms';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-lump-sum-detail',
+  selector: 'jems-programme-lump-sum-detail',
   templateUrl: './programme-lump-sum-detail.component.html',
   styleUrls: ['./programme-lump-sum-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

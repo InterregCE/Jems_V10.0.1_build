@@ -1,9 +1,9 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         *ngIf="programme$ | async as programme"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.data">
-    <form appFormLayout [formGroup]="programmeForm">
-        <div appMultiColumnRow>
+    <form jemsFormLayout [formGroup]="programmeForm">
+        <div jemsMultiColumnRow>
             <h3 class="mb-0">{{'programme.data.header' | translate}}</h3>
             <button color="primary" mat-raised-button
                     *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
@@ -15,37 +15,37 @@
             <mat-label>{{'programme.data.field.cci' | translate}}</mat-label>
             <input name="cci" formControlName="cci" matInput>
             <mat-error>
-                <app-form-field-errors [errors]="programmeForm?.controls?.cci?.errors"></app-form-field-errors>
+                <jems-form-field-errors [errors]="programmeForm?.controls?.cci?.errors"></jems-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <div appMultiColumnRow stretch>
+        <div jemsMultiColumnRow stretch>
             <mat-form-field>
                 <mat-label>{{'programme.data.field.title' | translate}}</mat-label>
                 <input [title]="programme.title" name="title" formControlName="title" matInput>
                 <mat-error>
-                    <app-form-field-errors [errors]="programmeForm?.controls?.title?.errors"></app-form-field-errors>
+                    <jems-form-field-errors [errors]="programmeForm?.controls?.title?.errors"></jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-form-field>
                 <mat-label>{{'programme.data.field.version' | translate}}</mat-label>
                 <input [title]="programme.version" name="version" formControlName="version" matInput>
                 <mat-error>
-                    <app-form-field-errors [errors]="programmeForm?.controls?.version?.errors"></app-form-field-errors>
+                    <jems-form-field-errors [errors]="programmeForm?.controls?.version?.errors"></jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </div>
-        <div appMultiColumnRow stretch>
+        <div jemsMultiColumnRow stretch>
             <mat-form-field>
                 <mat-label>{{'programme.data.field.year.from' | translate}}</mat-label>
                 <input type="number" name="firstYear" formControlName="firstYear" matInput
                        [max]="programmeForm?.controls?.lastYear?.value"
                        (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="programmeForm?.controls?.firstYear?.errors"
                             [messages]="firstYearErrors"
                             [args]="yearErrorsArgs">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-form-field>
@@ -54,12 +54,12 @@
                        [min]="programmeForm?.controls?.firstYear?.value"
                        (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="programmeForm?.controls?.lastYear?.errors"
                             [messages]="lastYearErrors"
                             [args]="yearErrorsArgs"
                     >
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </div>
@@ -68,7 +68,7 @@
             startDate: "first year",
             endDate: "Last year"
         } }}    </mat-error>
-        <div appMultiColumnRow stretch>
+        <div jemsMultiColumnRow stretch>
             <mat-form-field>
                 <mat-label>{{'programme.data.field.eligible.from' | translate | dateFormatInfo}}</mat-label>
                 <input name="eligibleFrom" formControlName="eligibleFrom" matInput
@@ -77,10 +77,10 @@
                 <mat-datepicker-toggle matSuffix [for]="eligibleFromPicker"></mat-datepicker-toggle>
                 <mat-datepicker #eligibleFromPicker></mat-datepicker>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="programmeForm?.controls?.eligibleFrom?.errors"
                             [messages]="eligibleFromErrors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-form-field>
@@ -91,21 +91,21 @@
                 <mat-datepicker-toggle matSuffix [for]="eligibleUntilPicker"></mat-datepicker-toggle>
                 <mat-datepicker #eligibleUntilPicker></mat-datepicker>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="programmeForm?.controls?.eligibleUntil?.errors"
                             [messages]="eligibleUntilErrors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </div>
-        <div appMultiColumnRow stretch>
+        <div jemsMultiColumnRow stretch>
             <mat-form-field>
                 <mat-label>{{'programme.data.field.commission.number' | translate}}</mat-label>
                 <input [title]="programme.commissionDecisionNumber" name="commissionDecisionNumber"
                        formControlName="commissionDecisionNumber" matInput>
                 <mat-error>
-                    <app-form-field-errors
-                            [errors]="programmeForm?.controls?.commissionDecisionNumber?.errors"></app-form-field-errors>
+                    <jems-form-field-errors
+                            [errors]="programmeForm?.controls?.commissionDecisionNumber?.errors"></jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-form-field>
@@ -115,21 +115,21 @@
                 <mat-datepicker-toggle matSuffix [for]="commissionDecisionPicker"></mat-datepicker-toggle>
                 <mat-datepicker #commissionDecisionPicker></mat-datepicker>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="programmeForm?.controls?.commissionDecisionDate?.errors"
                             [messages]="dateErrors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </div>
-        <div appMultiColumnRow stretch>
+        <div jemsMultiColumnRow stretch>
             <mat-form-field>
                 <mat-label>{{'programme.data.field.amending.decision.number' | translate}}</mat-label>
                 <input [title]="programme.programmeAmendingDecisionNumber" name="programmeAmendingDecisionNumber"
                        formControlName="programmeAmendingDecisionNumber" matInput>
                 <mat-error>
-                    <app-form-field-errors
-                            [errors]="programmeForm?.controls?.programmeAmendingDecisionNumber?.errors"></app-form-field-errors>
+                    <jems-form-field-errors
+                            [errors]="programmeForm?.controls?.programmeAmendingDecisionNumber?.errors"></jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <mat-form-field>
@@ -141,24 +141,24 @@
                 <mat-datepicker-toggle matSuffix [for]="programmeAmendingDecisionPicker"></mat-datepicker-toggle>
                 <mat-datepicker #programmeAmendingDecisionPicker></mat-datepicker>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="programmeForm?.controls?.programmeAmendingDecisionDate?.errors"
                             [messages]="dateErrors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </div>
         <h3>{{'programme.data.field.project.id' | translate}}</h3>
         <span>{{'programme.data.field.project.id.description' | translate}}</span>
-        <div appMultiColumnRow stretch class="mb-3">
+        <div jemsMultiColumnRow stretch class="mb-3">
             <div>
                 <mat-form-field>
                     <mat-label>{{'programme.data.field.project.id.programme.abbreviation' | translate }}</mat-label>
                     <input name="projectIdProgrammeAbbreviation" formControlName="projectIdProgrammeAbbreviation"
                            matInput>
                     <mat-error>
-                        <app-form-field-errors
-                                [errors]="programmeForm?.controls?.projectIdProgrammeAbbreviation?.errors"></app-form-field-errors>
+                        <jems-form-field-errors
+                                [errors]="programmeForm?.controls?.projectIdProgrammeAbbreviation?.errors"></jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
                 <mat-checkbox class="pl-3" name="projectIdUseCallId" formControlName="projectIdUseCallId">
@@ -171,7 +171,7 @@
             </div>
         </div>
 
-        <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+        <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">
             <button mat-stroked-button
                     type="button"
                     (click)="changeFormState$.next(FormState.VIEW)">
@@ -185,15 +185,15 @@
                 {{'programme.data.button.save' | translate}}
             </button>
         </div>
-        <app-alert
+        <jems-alert
                 [show]="!submitted && (showSuccessMessage$ | async)"
                 [type]="Alert.SUCCESS">
             <p>{{'programme.data.save.success' | translate}}</p>
-        </app-alert>
-        <app-alert *ngIf="programmeSaveError$ | async as error"
+        </jems-alert>
+        <jems-alert *ngIf="programmeSaveError$ | async as error"
                    [show]="!submitted && !!error.i18nMessage?.i18nKey"
                    [type]="Alert.ERROR">
-            <app-api-error-content [error]="error"></app-api-error-content>
-        </app-alert>
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
     </form>
-</app-main-page-template>
+</jems-main-page-template>

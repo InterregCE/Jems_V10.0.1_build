@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-call-page',
+  selector: 'jems-call-page',
   templateUrl: './call-page.component.html',
   styleUrls: ['./call-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -18,7 +18,7 @@ import {takeUntil, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 
 @Component({
-  selector: 'app-project-application-form-project-partnership-detail',
+  selector: 'jems-project-application-form-project-partnership-detail',
   templateUrl: './project-application-form-project-partnership-detail.component.html',
   styleUrls: ['./project-application-form-project-partnership-detail.component.scss'],
   providers: [FormService],

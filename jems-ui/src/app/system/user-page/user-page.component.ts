@@ -13,7 +13,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
-  selector: 'app-user-page',
+  selector: 'jems-user-page',
   templateUrl: './user-page.component.html',
   styleUrls: ['./user-page.component.scss'],
   providers: [UserPageStore],

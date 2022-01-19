@@ -17,7 +17,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-multi-language-container',
+  selector: 'jems-multi-language-container',
   templateUrl: './multi-language-container.component.html',
   styleUrls: ['./multi-language-container.component.scss'],
   providers: [MultiLanguageContainerService],

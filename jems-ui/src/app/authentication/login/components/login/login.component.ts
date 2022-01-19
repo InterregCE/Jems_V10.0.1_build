@@ -8,7 +8,7 @@ import {map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 
 @Component({
-  selector: 'app-login',
+  selector: 'jems-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })

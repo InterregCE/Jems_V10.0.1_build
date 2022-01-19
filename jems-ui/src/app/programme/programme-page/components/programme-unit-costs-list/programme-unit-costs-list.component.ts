@@ -5,7 +5,7 @@ import {ProgrammeUnitCostListDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 
 @Component({
-  selector: 'app-programme-unit-costs-list',
+  selector: 'jems-programme-unit-costs-list',
   templateUrl: './programme-unit-costs-list.component.html',
   styleUrls: ['./programme-unit-costs-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

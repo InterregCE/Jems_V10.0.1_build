@@ -1,15 +1,15 @@
-<app-project-page-template *ngIf="data$ | async as data"
+<jems-project-page-template *ngIf="data$ | async as data"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle}"
                            subTitleKey="project.application.form.section.part.c">
-    <app-form (save)="updateResults()"
+    <jems-form (save)="updateResults()"
               (discard)="resetForm(data.results, data.resultIndicators)">
-        <form appFormLayout [formGroup]="form">
+        <form jemsFormLayout [formGroup]="form">
             <h3>{{'project.application.form.section.part.c.subsection.five' | translate}}</h3>
             <p>{{'project.results.intro' | translate}}</p>
-            <div appNoWidthLimit *ngFor="let result of results.controls;let i=index">
+            <div jemsNoWidthLimit *ngFor="let result of results.controls;let i=index">
                 <ng-container [formArrayName]="constants.RESULTS.name">
-                    <div class="result-container" appFormLayout [formGroupName]="i">
-                        <div class="result-header" appNoWidthLimit appMultiColumnRow justifyContent="space-between">
+                    <div class="result-container" jemsFormLayout [formGroupName]="i">
+                        <div class="result-header" jemsNoWidthLimit jemsMultiColumnRow justifyContent="space-between">
                             <h4 class="mb-0">{{('project.results.result.title' | translate) + ' ' + (i + 1) }}</h4>
                             <button *ngIf="form.enabled" type="button"
                                     (click)="removeResult(i)" mat-icon-button color="accent">
@@ -17,14 +17,14 @@
                             </button>
                         </div>
 
-                        <app-alert
+                        <jems-alert
                             [show]="!data.resultIndicators?.length"
                             [type]="Alert.WARNING"
                             [closable]="false">
                             <span>{{'project.application.form.overall.objective.specific.objective.required' | translate}}</span>
-                        </app-alert>
+                        </jems-alert>
                         <mat-form-field
-                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">
+                                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">
                             <mat-label>{{'project.results.result.indicator' | translate}}</mat-label>
                             <mat-select [disabled]="!data.resultIndicators.length"
                                         [formControlName]="constants.RESULT_INDICATOR.name"
@@ -35,9 +35,9 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <div appMultiColumnRow stretch>
-                            <mat-form-field appFormFieldWidth="large"
-                                            *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">
+                        <div jemsMultiColumnRow stretch>
+                            <mat-form-field jemsFormFieldWidth="large"
+                                            *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">
                                 <mat-label>{{'project.results.result.measurement.unit' | translate}}</mat-label>
                                 <input readonly matInput
                                        value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)
@@ -45,50 +45,50 @@
                                        [disabled]="true">
                             </mat-form-field>
 
-                            <mat-form-field appFormFieldWidth="medium"
-                                            *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.BASELINE">
+                            <mat-form-field jemsFormFieldWidth="medium"
+                                            *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.BASELINE">
                                 <mat-label>{{'project.results.result.baseline' | translate}}</mat-label>
                                 <input currencyMask type="decimal"
                                        [options]="{min: 0, max: result.get(constants.BASELINE_MAX_VALUE.name)?.value, align: 'right'}"
                                        name="baseline" formControlName="baseline" matInput>
-                                <app-context-info infoPosition="above"
+                                <jems-context-info infoPosition="above"
                                                   infoText="{{'project.results.result.baseline.info.text' | translate}}">
-                                </app-context-info>
+                                </jems-context-info>
                             </mat-form-field>
 
 
-                            <mat-form-field appFormFieldWidth="medium"
-                                            *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.TARGET_VALUE">
+                            <mat-form-field jemsFormFieldWidth="medium"
+                                            *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.TARGET_VALUE">
                                 <mat-label>{{'project.results.result.target.value' | translate}}</mat-label>
                                 <input currencyMask type="decimal" [options]="{min: 1, max: 99999999, align: 'right'}"
                                        name="targetValue" formControlName="targetValue" matInput>
                             </mat-form-field>
 
-                            <app-project-periods-select
-                                    *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DELIVERY_PERIOD"
+                            <jems-project-periods-select
+                                    *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DELIVERY_PERIOD"
                                     [periods]="data.periods"
                                     [control]="result.get(constants.PERIOD.name)"
                                     label='project.results.result.delivery.period'
                                     (selectionChanged)="formService.setDirty(true)">
-                            </app-project-periods-select>
+                            </jems-project-periods-select>
                         </div>
 
-                        <app-multi-language-container
-                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DESCRIPTION">
-                            <app-multi-language-form-field
+                        <jems-multi-language-container
+                                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DESCRIPTION">
+                            <jems-multi-language-form-field
                                     type="textarea"
                                     label="project.results.result.description"
                                     [formControlName]="constants.DESCRIPTION.name"
                                     [maxLength]="constants.DESCRIPTION.maxLength">
-                            </app-multi-language-form-field>
-                        </app-multi-language-container>
+                            </jems-multi-language-form-field>
+                        </jems-multi-language-container>
 
                     </div>
                 </ng-container>
             </div>
-            <button appText *ngIf="addResultVisible()" mat-stroked-button (click)="addNewResult()">
+            <button jemsText *ngIf="addResultVisible()" mat-stroked-button (click)="addNewResult()">
                 + {{'project.results.result.add' | translate}}
             </button>
         </form>
-    </app-form>
-</app-project-page-template>
+    </jems-form>
+</jems-project-page-template>

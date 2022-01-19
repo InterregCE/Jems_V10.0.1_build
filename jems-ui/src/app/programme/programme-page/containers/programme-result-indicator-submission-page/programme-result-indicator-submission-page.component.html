@@ -1,8 +1,8 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         *ngIf="resultIndicator$ | async as details"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.indicators">
-    <app-programme-result-indicator-detail
+    <jems-programme-result-indicator-detail
             [resultIndicator]="details"
             [priorities]="priorities$ | async"
             [success$]="resultIndicatorSaveSuccess$"
@@ -11,5 +11,5 @@
             (createResultIndicator)="createResultIndicator($event)"
             (updateResultIndicator)="updateResultIndicator($event)"
             (cancelCreate)="cancelCreate()">
-    </app-programme-result-indicator-detail>
-</app-main-page-template>
+    </jems-programme-result-indicator-detail>
+</jems-main-page-template>

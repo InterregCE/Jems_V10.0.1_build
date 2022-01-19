@@ -13,7 +13,7 @@ import {CheckAndSubmitStore} from '@project/project-application/check-and-submit
 import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
-  selector: 'app-check-and-submit',
+  selector: 'jems-check-and-submit',
   templateUrl: './check-and-submit.component.html',
   styleUrls: ['./check-and-submit.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

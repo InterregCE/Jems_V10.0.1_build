@@ -10,7 +10,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammeCostOptionService, ProgrammeLumpSumDTO} from '@cat/api';
 
 @Component({
-  selector: 'app-programme-lump-sums-submission-page',
+  selector: 'jems-programme-lump-sums-submission-page',
   templateUrl: './programme-lump-sums-submission-page.component.html',
   styleUrls: ['./programme-lump-sums-submission-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

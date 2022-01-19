@@ -18,7 +18,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
-  selector: 'app-project-work-package-investments-tab',
+  selector: 'jems-project-work-package-investments-tab',
   templateUrl: './project-work-package-investments-tab.component.html',
   styleUrls: ['./project-work-package-investments-tab.component.scss'],
   providers: [FormService],

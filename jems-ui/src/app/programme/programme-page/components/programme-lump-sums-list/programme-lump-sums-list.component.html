@@ -1,16 +1,16 @@
-<app-alert
+<jems-alert
         [show]="!!lumpSum"
         [type]="Alert.SUCCESS">
     <p>{{'lump.sum.save.success' | translate: {lumpSum: lumpSum} }}</p>
-</app-alert>
+</jems-alert>
 
 <p *ngIf="!dataSource.data.length">{{'lump.sum.empty.list' | translate}}</p>
-<app-multi-language-container [switchButtonsVisible]="!!dataSource.data.length" appNoWidthLimit>
-    <mat-table appNoWidthLimit *ngIf="dataSource.data.length" [dataSource]="dataSource">
+<jems-multi-language-container [switchButtonsVisible]="!!dataSource.data.length" jemsNoWidthLimit>
+    <mat-table jemsNoWidthLimit *ngIf="dataSource.data.length" [dataSource]="dataSource">
 
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef>
-                <span appText maxLines="2">{{ 'lump.sum.table.column.name.name' | translate }}</span>
+                <span jemsText maxLines="2">{{ 'lump.sum.table.column.name.name' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let element">{{ element?.name | translateByInputLanguage | async }}</mat-cell>
         </ng-container>
@@ -18,7 +18,7 @@
         <ng-container matColumnDef="cost">
             <mat-header-cell *matHeaderCellDef
                              class="justify-end">
-                <span appText maxLines="2">{{ 'lump.sum.table.column.name.cost' | translate }}</span></mat-header-cell>
+                <span jemsText maxLines="2">{{ 'lump.sum.table.column.name.cost' | translate }}</span></mat-header-cell>
             <mat-cell *matCellDef="let element" class="justify-end">{{ element?.cost | asMoney }}</mat-cell>
         </ng-container>
 
@@ -27,4 +27,4 @@
                  [routerLink]="['lumpSum', 'detail', row.id]"></mat-row>
 
     </mat-table>
-</app-multi-language-container>
+</jems-multi-language-container>

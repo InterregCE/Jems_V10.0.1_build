@@ -1,16 +1,16 @@
-<app-top-bar
+<jems-top-bar
         [currentUser]="securityService.currentUser | async"
         [isAuthenticated]="true">
-</app-top-bar>
+</jems-top-bar>
 
 <mat-sidenav-container>
     <mat-sidenav #sidenav  *ngIf="headlines$ | async as headlines"
                  [ngClass]="{'stayVisible' : !!headlines.length}"
                  [opened]="!!headlines.length"
                  class="side-nav-container" mode="side">
-        <app-side-nav
+        <jems-side-nav
                 [headlines]="headlines">
-        </app-side-nav>
+        </jems-side-nav>
         <button class="side-nav-toggle-button mat-elevation-z3" mat-mini-fab color="basic" (click)="sidenav.toggle()">
             <mat-icon>chevron_right</mat-icon>
         </button>

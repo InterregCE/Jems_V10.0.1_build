@@ -9,7 +9,7 @@ import StatusEnum = ProjectStatusDTO.StatusEnum;
 import Permissions = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-project-application-decisions',
+  selector: 'jems-project-application-decisions',
   templateUrl: './project-application-decisions.component.html',
   styleUrls: ['./project-application-decisions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

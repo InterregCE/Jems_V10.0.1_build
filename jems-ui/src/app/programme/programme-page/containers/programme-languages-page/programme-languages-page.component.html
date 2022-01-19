@@ -1,12 +1,12 @@
-<app-main-page-template [needsCard]="true" *ngIf="languages$ | async as languages"
+<jems-main-page-template [needsCard]="true" *ngIf="languages$ | async as languages"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.languages">
     <ng-container>
-        <app-programme-languages
+        <jems-programme-languages
                 [languages]="languages"
                 [success$]="languagesSaveSuccess$"
                 [error$]="languagesSaveError$"
                 (saveLanguages)="saveLanguages$.next($event)">
-        </app-programme-languages>
+        </jems-programme-languages>
     </ng-container>
-</app-main-page-template>
+</jems-main-page-template>

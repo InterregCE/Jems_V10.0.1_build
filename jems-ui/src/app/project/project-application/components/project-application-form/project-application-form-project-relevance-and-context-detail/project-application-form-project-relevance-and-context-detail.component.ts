@@ -24,7 +24,7 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
 import { APPLICATION_FORM } from '@project/common/application-form-model';
 
 @Component({
-  selector: 'app-project-application-form-project-relevance-and-context-detail',
+  selector: 'jems-project-application-form-project-relevance-and-context-detail',
   templateUrl: './project-application-form-project-relevance-and-context-detail.component.html',
   styleUrls: ['./project-application-form-project-relevance-and-context-detail.component.scss'],
   providers: [FormService],

@@ -12,8 +12,7 @@ import {tap} from 'rxjs/operators';
 import {SecurityService} from '../../security/security.service';
 
 @Directive({
-  // tslint:disable-next-line:directive-selector
-  selector: '[hasPermission]',
+  selector: '[jemsHasPermission]'
 })
 export class HasPermissionDirective implements OnInit {
   private alternativeCondition: boolean;
@@ -21,7 +20,7 @@ export class HasPermissionDirective implements OnInit {
   private permissionsNeeded: UserRoleDTO.PermissionsEnum[];
 
   @Input()
-  set hasPermissionAlternativeCondition(val: boolean) {
+  set jemsHasPermissionAlternativeCondition(val: boolean) {
     this.alternativeCondition = val;
   }
 
@@ -42,7 +41,7 @@ export class HasPermissionDirective implements OnInit {
   }
 
   @Input()
-  set hasPermission(permission: UserRoleDTO.PermissionsEnum | UserRoleDTO.PermissionsEnum[]) {
+  set jemsHasPermission(permission: UserRoleDTO.PermissionsEnum | UserRoleDTO.PermissionsEnum[]) {
     this.permissionsNeeded = Array.isArray(permission) ? permission : [permission];
     this.updateView();
   }

@@ -17,7 +17,7 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
 import { APPLICATION_FORM } from '@project/common/application-form-model';
 
 @Component({
-  selector: 'app-project-application-form-future-plans-detail',
+  selector: 'jems-project-application-form-future-plans-detail',
   templateUrl: './project-application-form-future-plans-detail.component.html',
   styleUrls: ['./project-application-form-future-plans-detail.component.scss'],
   providers: [FormService],

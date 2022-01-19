@@ -5,7 +5,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-call-priority-tree',
+  selector: 'jems-call-priority-tree',
   templateUrl: './call-priority-tree.component.html',
   styleUrls: ['./call-priority-tree.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

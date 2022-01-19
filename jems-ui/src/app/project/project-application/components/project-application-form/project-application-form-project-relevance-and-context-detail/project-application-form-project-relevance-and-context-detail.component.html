@@ -1,101 +1,101 @@
-<app-form (save)="onSubmit()"
+<jems-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form appFormLayout [formGroup]="projectRelevanceForm">
+    <form jemsFormLayout [formGroup]="projectRelevanceForm">
         <h3>{{'project.application.form.section.part.c.subsection.two' | translate}}</h3>
 
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.TERRITORIAL_CHALLENGES">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.TERRITORIAL_CHALLENGES">
             <h4>{{'project.application.form.relevance.field.1' | translate}}</h4>
             <p>{{'project.application.form.relevance.field.1.intro' | translate}}</p>
 
-            <app-multi-language-container>
-                <app-multi-language-form-field
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
                         type="textarea"
                         formControlName="territorialChallenge"
                         maxLength="5000"
                         label="common.textarea.enter.text">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
 
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.HOW_ARE_CHALLENGES_AND_OPPORTUNITIES_TACKLED">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.HOW_ARE_CHALLENGES_AND_OPPORTUNITIES_TACKLED">
             <h4>{{'project.application.form.relevance.field.2' | translate}}</h4>
             <p>{{'project.application.form.relevance.field.2.intro' | translate}}</p>
 
-            <app-multi-language-container>
-                <app-multi-language-form-field
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
                         type="textarea"
                         formControlName="commonChallenge"
                         maxLength="5000"
                         label="common.textarea.enter.text">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
 
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.WHY_IS_COOPERATION_NEEDED">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.WHY_IS_COOPERATION_NEEDED">
             <h4>{{'project.application.form.relevance.field.3' | translate}}</h4>
             <p>{{'project.application.form.relevance.field.3.intro' | translate}}</p>
-            <app-multi-language-container>
-                <app-multi-language-form-field
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
                         type="textarea"
                         formControlName="transnationalCooperation"
                         maxLength="5000"
                         label="common.textarea.enter.text">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
 
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.TARGET_GROUP">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.TARGET_GROUP">
             <h4>{{'project.application.form.relevance.field.4' | translate}}</h4>
             <p>{{'project.application.form.relevance.field.4.intro' | translate}}</p>
-            <app-benefits-table appNoWidthLimit
+            <jems-benefits-table jemsNoWidthLimit
                                 [formGroup]="projectRelevanceForm"
                                 [benefits]="benefits"
                                 [editable]="editable"
                                 (changed)="tableChanged()">
-            </app-benefits-table>
+            </jems-benefits-table>
         </ng-container>
 
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.STRATEGY_CONTRIBUTION">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.STRATEGY_CONTRIBUTION">
             <h4>{{'project.application.form.relevance.field.5' | translate}}</h4>
             <p>{{'project.application.form.relevance.field.5.intro' | translate}}</p>
-            <app-strategy-table appNoWidthLimit
+            <jems-strategy-table jemsNoWidthLimit
                                 [formGroup]="projectRelevanceForm"
                                 [strategies]="strategies"
                                 [callStrategies]="strategiesFromCall"
                                 [editable]="editable"
                                 (changed)="tableChanged()">
-            </app-strategy-table>
+            </jems-strategy-table>
         </ng-container>
 
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.SYNERGIES">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.SYNERGIES">
             <h4>{{'project.application.form.relevance.field.6' | translate}}</h4>
-            <app-synergy-table appNoWidthLimit
+            <jems-synergy-table jemsNoWidthLimit
                                [formGroup]="projectRelevanceForm"
                                [synergies]="synergies"
                                [editable]="editable"
                                (changed)="tableChanged()">
-            </app-synergy-table>
+            </jems-synergy-table>
         </ng-container>
 
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.HOW_BUILDS_PROJECT_ON_AVAILABLE_KNOWLEDGE">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.HOW_BUILDS_PROJECT_ON_AVAILABLE_KNOWLEDGE">
             <h4>{{'project.application.form.relevance.field.7' | translate}}</h4>
             <p>{{'project.application.form.relevance.field.7.intro' | translate}}</p>
-            <app-multi-language-container>
-                <app-multi-language-form-field
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
                         type="textarea"
                         formControlName="availableKnowledge"
                         maxLength="5000"
                         label="common.textarea.enter.text"
                         [disabled]="!editable">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
     </form>
-</app-form>
+</jems-form>

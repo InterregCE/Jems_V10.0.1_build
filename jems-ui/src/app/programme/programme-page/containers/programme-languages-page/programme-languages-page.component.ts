@@ -10,7 +10,7 @@ import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav
 import {LanguageStore} from '../../../../common/services/language-store.service';
 
 @Component({
-  selector: 'app-programme-languages-page',
+  selector: 'jems-programme-languages-page',
   templateUrl: './programme-languages-page.component.html',
   styleUrls: ['./programme-languages-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

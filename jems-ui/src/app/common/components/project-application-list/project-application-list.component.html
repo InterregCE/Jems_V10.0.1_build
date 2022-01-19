@@ -1,6 +1,6 @@
 <ng-container *ngIf="(filterByOwner ? listStore.pageFilteredByOwner$ : listStore.page$) | async as page">
     <p *ngIf="!page.content.length">{{'project.list.empty' | translate}}</p>
-    <app-table *ngIf="page.content.length"
+    <jems-table *ngIf="page.content.length"
                [configuration]="tableConfiguration"
                [rows]="page.content"
                [totalElements]="page?.totalElements"
@@ -8,5 +8,5 @@
                (newPageIndex)="listStore.newPageIndex$.next($event)"
                (newPageSize)="listStore.newPageSize$.next($event)"
                (sortRows)="listStore.newSort$.next($event)">
-    </app-table>
+    </jems-table>
 </ng-container>

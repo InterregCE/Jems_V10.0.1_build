@@ -1,48 +1,48 @@
-<app-form (save)="onSubmit()"
+<jems-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form appFormLayout [formGroup]="futurePlansForm">
+    <form jemsFormLayout [formGroup]="futurePlansForm">
         <h3>{{'project.application.form.section.part.c.subsection.eight' | translate}}</h3>
         <p>{{'project.application.form.future.plans.intro' | translate}}</p>
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS.OWNERSHIP">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS.OWNERSHIP">
             <h4>{{'project.application.form.future.plans.field.1' | translate}}</h4>
             <p>{{'project.application.form.future.plans.field.1.intro' | translate}}</p>
-            <app-multi-language-container>
-                <app-multi-language-form-field
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
                         type="textarea"
                         [label]="'common.textarea.enter.text'"
                         [formControlName]="'ownership'"
                         [maxLength]="5000">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
 
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS.DURABILITY">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS.DURABILITY">
             <h4>{{'project.application.form.future.plans.field.2' | translate}}</h4>
             <p>{{'project.application.form.future.plans.field.2.intro' | translate}}</p>
-            <app-multi-language-container>
-                <app-multi-language-form-field
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
                         type="textarea"
                         [label]="'common.textarea.enter.text'"
                         [formControlName]="'durability'"
                         [maxLength]="5000">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
 
         <ng-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS.TRANSFERABILITY">
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS.TRANSFERABILITY">
             <h4>{{'project.application.form.future.plans.field.3' | translate}}</h4>
             <p>{{'project.application.form.future.plans.field.3.intro' | translate}}</p>
-            <app-multi-language-container>
-                <app-multi-language-form-field
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
                         type="textarea"
                         [label]="'common.textarea.enter.text'"
                         [formControlName]="'transferability'"
                         [maxLength]="5000">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
     </form>
-</app-form>
+</jems-form>

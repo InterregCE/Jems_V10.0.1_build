@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import {I18nMessage} from '@common/models/I18nMessage';
 
 @Component({
-  selector: 'app-file-management',
+  selector: 'jems-file-management',
   templateUrl: './file-management.component.html',
   styleUrls: ['./file-management.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

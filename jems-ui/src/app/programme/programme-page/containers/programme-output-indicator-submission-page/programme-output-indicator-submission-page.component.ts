@@ -14,7 +14,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
-  selector: 'app-programme-output-indicator-submission-page',
+  selector: 'jems-programme-output-indicator-submission-page',
   templateUrl: './programme-output-indicator-submission-page.component.html',
   styleUrls: ['./programme-output-indicator-submission-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

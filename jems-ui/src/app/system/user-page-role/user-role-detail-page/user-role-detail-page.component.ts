@@ -19,7 +19,7 @@ import {PermissionService} from '../../../security/permissions/permission.servic
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-user-role-detail-page',
+  selector: 'jems-user-role-detail-page',
   templateUrl: './user-role-detail-page.component.html',
   styleUrls: ['./user-role-detail-page.component.scss'],
   providers: [FormService],

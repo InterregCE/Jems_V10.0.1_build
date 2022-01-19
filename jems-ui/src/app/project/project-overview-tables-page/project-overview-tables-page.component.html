@@ -1,15 +1,15 @@
-<app-project-page-template
+<jems-project-page-template
         [needsCard]="true"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} ">
 
-    <div appNoWidthLimit>
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES.A3">
-            <app-project-budget-overview></app-project-budget-overview>
+    <div jemsNoWidthLimit>
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES.A3">
+            <jems-project-budget-overview></jems-project-budget-overview>
         </ng-container>
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES.A4">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES.A4">
             <h3>{{'application.config.project.section.a.4' | translate}}</h3>
-            <app-project-application-form-a4></app-project-application-form-a4>
+            <jems-project-application-form-a4></jems-project-application-form-a4>
         </ng-container>
     </div>
 
-</app-project-page-template>
+</jems-project-page-template>

@@ -9,7 +9,7 @@ import {ProjectStepStatus} from '../project-step-status';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-project-application-quality-check',
+  selector: 'jems-project-application-quality-check',
   templateUrl: './project-application-quality-check.component.html',
   styleUrls: ['./project-application-quality-check.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -42,7 +42,7 @@ const totalContributionValidator = (expectedAmount: number): ValidatorFn => (for
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-partner-co-financing-tab',
+  selector: 'jems-project-partner-co-financing-tab',
   templateUrl: './project-partner-co-financing-tab.component.html',
   styleUrls: ['./project-partner-co-financing-tab.component.scss'],
   providers: [FormService],

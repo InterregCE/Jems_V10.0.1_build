@@ -35,7 +35,7 @@ import {AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-staff-costs-budget-table',
+  selector: 'jems-staff-costs-budget-table',
   templateUrl: './staff-costs-budget-table.component.html',
   styleUrls: ['./staff-costs-budget-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

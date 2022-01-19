@@ -12,7 +12,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
-  selector: 'app-programme-state-aid',
+  selector: 'jems-programme-state-aid',
   templateUrl: './programme-state-aid.component.html',
   styleUrls: ['./programme-state-aid.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

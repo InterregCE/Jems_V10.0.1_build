@@ -24,7 +24,7 @@ const flatRateValidator: (control: FormControl) => ValidatorFn = (checkBoxContro
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-partner-budget-options',
+  selector: 'jems-project-partner-budget-options',
   templateUrl: './project-partner-budget-options.component.html',
   styleUrls: ['./project-partner-budget-options.component.scss'],
   providers: [FormService],

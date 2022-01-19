@@ -1,6 +1,6 @@
-.app-layout {
-  &.app-form-field {
-    &.app-form-field-width {
+.jems-layout  {
+  &.jems-form-field {
+    &.jems-form-field-width {
       .mat-form-field-infix {
         width: var(--widthBasedOnNumberChars);
       }

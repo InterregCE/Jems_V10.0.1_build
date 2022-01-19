@@ -1,5 +1,5 @@
-<form appFormLayout [formGroup]="unitCostForm">
-    <div appMultiColumnRow>
+<form jemsFormLayout [formGroup]="unitCostForm">
+    <div jemsMultiColumnRow>
         <h3 class="mb-0">{{'unit.cost.title' | translate}}</h3>
         <button mat-raised-button color="primary"
                 *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
@@ -8,41 +8,41 @@
         </button>
     </div>
 
-    <app-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
-        <app-multi-language-form-field
+    <jems-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
+        <jems-multi-language-form-field
                 formControlName="name"
                 label="unit.cost.form.field.name"
                 [maxLength]="50">
-        </app-multi-language-form-field>
-    </app-multi-language-container>
-    <app-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
-        <app-multi-language-form-field
+        </jems-multi-language-form-field>
+    </jems-multi-language-container>
+    <jems-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
+        <jems-multi-language-form-field
                 formControlName="description"
                 label="unit.cost.form.field.description"
                 [maxLength]="255">
-        </app-multi-language-form-field>
-    </app-multi-language-container>
-    <app-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
-        <app-multi-language-form-field
+        </jems-multi-language-form-field>
+    </jems-multi-language-container>
+    <jems-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
+        <jems-multi-language-form-field
                 formControlName="type"
                 label="unit.cost.form.field.unit.type"
                 [maxLength]="25">
-        </app-multi-language-form-field>
-    </app-multi-language-container>
+        </jems-multi-language-form-field>
+    </jems-multi-language-container>
     <mat-form-field>
         <mat-label>{{'unit.cost.form.field.cost' | translate}}</mat-label>
         <input currencyMask type="decimal"
                [options]="{nullable: true}"
                name="costPerUnit" formControlName="costPerUnit" matInput required>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="unitCostForm?.controls?.costPerUnit?.errors"
                     [messages]="costErrors">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
 
-    <h4 appLabel class="mat-required-marker"
+    <h4 jemsLabel class="mat-required-marker"
          [ngClass]="{'empty': !oneCostToggle.checked && !multiCostToggle.checked}">
         {{'unit.cost.cost.categories' | translate}}</h4>
     <div>{{'unit.cost.toggle.row.one' | translate}}</div>
@@ -54,20 +54,20 @@
                     [value]="true"
                     [checked]="unitCostForm.controls.isOneCostCategory.value === true"
                     (change)="changeAllowedCategories($event.value)">
-                <span appText maxWidth="230">{{'unit.cost.toggle.allow.single' | translate}}</span>
+                <span jemsText maxWidth="230">{{'unit.cost.toggle.allow.single' | translate}}</span>
             </mat-button-toggle>
             <mat-button-toggle #multiCostToggle
                     [value]="false"
                     [checked]="unitCostForm.controls.isOneCostCategory.value === false"
                     (change)="changeAllowedCategories($event.value)">
-                <span appText maxWidth="230">{{'unit.cost.toggle.allow.multiple' | translate}}</span>
+                <span jemsText maxWidth="230">{{'unit.cost.toggle.allow.multiple' | translate}}</span>
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
     <br>
     <div *ngIf="unitCostForm.controls.isOneCostCategory.value !== null">
         <div *ngIf="unitCostForm.controls.isOneCostCategory.value === false">
-            <p appLabel class="mat-required-marker mat-body-strong"
+            <p jemsLabel class="mat-required-marker mat-body-strong"
                  [ngClass]="{'empty': unitCostForm?.controls?.categories?.errors}">
                 {{'programme.unitCost.categories.min.2' | translate}}:
             </p>
@@ -82,7 +82,7 @@
         </div>
 
         <div *ngIf="unitCostForm.controls.isOneCostCategory.value === true">
-            <p appLabel class="mat-required-marker mat-body-strong"
+            <p jemsLabel class="mat-required-marker mat-body-strong"
                  [ngClass]="{'empty': unitCostForm?.controls?.categories?.errors}">
                 {{'unit.cost.categories.should.not.be.empty.single' | translate}}:
             </p>
@@ -98,7 +98,7 @@
     </div>
     <br><br>
 
-    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+    <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">
         <button mat-stroked-button
                 type="button"
                 (click)="onCancel()">
@@ -112,15 +112,15 @@
             {{'unit.cost.new.button.save' | translate}}
         </button>
     </div>
-    <app-alert
+    <jems-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>{{'unit.cost.new.message.successful' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
+    </jems-alert>
+    <jems-alert *ngIf="error$ | async as error"
                [show]="!!error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-        <app-api-error-content [error]="error"></app-api-error-content>
-    </app-alert>
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
 </form>
 

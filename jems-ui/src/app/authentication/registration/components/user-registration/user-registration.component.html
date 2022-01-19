@@ -18,7 +18,7 @@
     </mat-card>
     <mat-card class="form-card">
         <mat-card-content>
-            <form appFormLayout [formGroup]="userForm" class="px-3">
+            <form jemsFormLayout [formGroup]="userForm" class="px-3">
 
                 <h1>{{'user.registration.title' | translate}}</h1>
 
@@ -26,7 +26,7 @@
                     <mat-label>{{'user.registration.field.name' | translate}}</mat-label>
                     <input name="name" formControlName="name" matInput required>
                     <mat-error>
-                        <app-form-field-errors [errors]="userForm?.controls?.name?.errors"></app-form-field-errors>
+                        <jems-form-field-errors [errors]="userForm?.controls?.name?.errors"></jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
 
@@ -34,7 +34,7 @@
                     <mat-label>{{'user.registration.field.surname' | translate}}</mat-label>
                     <input name="surname" formControlName="surname" matInput required>
                     <mat-error>
-                        <app-form-field-errors [errors]="userForm?.controls?.surname?.errors"></app-form-field-errors>
+                        <jems-form-field-errors [errors]="userForm?.controls?.surname?.errors"></jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
 
@@ -44,10 +44,10 @@
                         {{'user.registration.field.email' | translate}}</mat-label>
                     <input name="email" formControlName="email" matInput required>
                     <mat-error>
-                        <app-form-field-errors
+                        <jems-form-field-errors
                                 [errors]="userForm?.controls?.email?.errors"
                                 [messages]="emailErrors">
-                        </app-form-field-errors>
+                        </jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
 
@@ -61,10 +61,10 @@
                         <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                     </button>
                     <mat-error>
-                        <app-form-field-errors
+                        <jems-form-field-errors
                                 [errors]="userForm?.controls?.password?.errors"
                                 [messages]="passwordErrors">
-                        </app-form-field-errors>
+                        </jems-form-field-errors>
                     </mat-error>
                     <mat-hint>{{'user.registration.field.password.hint' | translate}}</mat-hint>
                 </mat-form-field>
@@ -78,7 +78,7 @@
                     </mat-checkbox>
                 </div>
 
-                <div appMultiColumnRow>
+                <div jemsMultiColumnRow>
                     <button mat-stroked-button
                             type="button"
                             (click)="redirectToLogin()">
@@ -92,7 +92,7 @@
                         {{'user.registration.button.register' | translate}}
                     </button>
                 </div>
-                <app-alert
+                <jems-alert
                         [closable]="false"
                         [show]="!submitted && (showSuccessMessage$ | async)"
                         [type]="Alert.SUCCESS">
@@ -101,13 +101,13 @@
                     <button mat-stroked-button (click)="redirectToLogin()">
                         {{'user.registration.save.success.redirect.login' | translate}}
                     </button>
-                </app-alert>
+                </jems-alert>
 
-                <app-alert *ngIf="error$ | async as error"
+                <jems-alert *ngIf="error$ | async as error"
                            [show]="!submitted && !!error.i18nMessage?.i18nKey"
                            [type]="Alert.ERROR">
-                    <app-api-error-content [error]="error"></app-api-error-content>
-                </app-alert>
+                    <jems-api-error-content [error]="error"></jems-api-error-content>
+                </jems-alert>
 
             </form>
         </mat-card-content>

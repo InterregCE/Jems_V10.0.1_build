@@ -12,7 +12,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-modification-page',
+  selector: 'jems-modification-page',
   templateUrl: './modification-page.component.html',
   styleUrls: ['./modification-page.component.scss'],
   providers: [ModificationPageStore],

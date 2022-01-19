@@ -11,7 +11,7 @@ import {ResourceStoreService} from '@common/services/resource-store.service';
 
 
 @Component({
-  selector: 'app-user-registration',
+  selector: 'jems-user-registration',
   templateUrl: './user-registration.component.html',
   styleUrls: ['./user-registration.component.scss']
 })

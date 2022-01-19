@@ -18,7 +18,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import { Alert } from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-project-application-form-associated-org-detail',
+  selector: 'jems-project-application-form-associated-org-detail',
   templateUrl: './project-application-form-associated-org-detail.component.html',
   styleUrls: ['./project-application-form-associated-org-detail.component.scss'],
   providers: [FormService, ProjectAssociatedOrganizationStore],

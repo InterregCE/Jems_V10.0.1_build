@@ -1,10 +1,10 @@
 <ng-container *ngIf="data$ | async as data">
     <h3>{{ 'project.application.form.budgetFundPerPeriod.title' | translate }}</h3>
 
-    <app-multi-language-container>
-        <div appNoWidthLimit
-             [appTableConfig]="tableConfig"
-             *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
+    <jems-multi-language-container>
+        <div jemsNoWidthLimit
+             [jemsTableConfig]="tableConfig"
+             *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
             <div>
                 <span>{{ 'Fund' | translate}}</span>
                 <span><!--blank cell--></span>
@@ -49,6 +49,6 @@
             </div>
 
         </div>
-    </app-multi-language-container>
+    </jems-multi-language-container>
 
 </ng-container>

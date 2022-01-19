@@ -11,7 +11,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-partner-budget-tab',
+  selector: 'jems-project-partner-budget-tab',
   templateUrl: './project-partner-budget-tab.component.html',
   styleUrls: ['./project-partner-budget-tab.component.scss'],
   providers: [ProjectPartnerBudgetTabService, FormService],

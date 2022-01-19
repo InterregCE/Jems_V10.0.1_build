@@ -11,7 +11,7 @@
             <img class="logo half-size" src="assets/logos/JemsLogo_96.png" alt="">
         </div>
     <!--Hamburger Menu-->
-    <button appText mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
+    <button jemsText mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
             data-toggle="collapse"
             data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
@@ -31,7 +31,7 @@
                        }">
                     <a class="nav-link">
                         <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
-                        <span class="nav-text" appText maxLines="2">{{item.name | translate}}</span>
+                        <span class="nav-text" jemsText maxLines="2">{{item.name | translate}}</span>
                     </a>
                 </li>
             </ng-container>
@@ -47,12 +47,12 @@
                        }">
                 <a class="nav-link">
                     <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
-                    <span class="nav-text" appText maxLines="2">{{item.name | translate}}</span>
+                    <span class="nav-text" jemsText maxLines="2">{{item.name | translate}}</span>
                 </a>
             </li>
             <!-- Logout -->
             <li class="nav-item" *ngIf="currentUser">
-                <button appText mat-flat-button class="logout-button" color="primary"
+                <button jemsText mat-flat-button class="logout-button" color="primary"
                         (click)="logout()" [ngClass]="{'not-collapsed': !isNavBarCollapsed}">
                     {{'topbar.main.button.logout' | translate}}
                 </button>
@@ -78,7 +78,7 @@
             </li>
             <!-- Help -->
             <li class="nav-item" [ngClass]="{'mt-2': !isNavBarCollapsed}">
-                <app-help-menu></app-help-menu>
+                <jems-help-menu></jems-help-menu>
             </li>
 
         </ul>

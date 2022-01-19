@@ -23,7 +23,7 @@ import {LanguageStore} from '@common/services/language-store.service';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-multi-language-form-field',
+  selector: 'jems-multi-language-form-field',
   templateUrl: './multi-language-form-field.component.html',
   styleUrls: ['./multi-language-form-field.component.scss'],
   providers: [

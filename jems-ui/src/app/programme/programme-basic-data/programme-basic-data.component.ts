@@ -20,7 +20,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-basic-data',
+  selector: 'jems-programme-basic-data',
   templateUrl: './programme-basic-data.component.html',
   styleUrls: ['./programme-basic-data.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -118,7 +118,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
   ) {
     super(changeDetectorRef, translationService);
 
-    // todo remove after switching to app-form
+    // todo remove after switching to jems-form
     this.success$ = this.programmeSaveSuccess$.asObservable();
     this.error$ = this.programmeSaveError$.asObservable();
     combineLatest([this.changeFormState$, this.programme$])

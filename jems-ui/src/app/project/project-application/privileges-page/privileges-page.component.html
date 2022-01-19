@@ -1,35 +1,35 @@
-<app-project-page-template *ngIf="data$ | async as data"
+<jems-project-page-template *ngIf="data$ | async as data"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
                            subTitleKey="project.application.form.section.privileges">
-    <app-alert [show]="true"
+    <jems-alert [show]="true"
                [closable]="false"
                [type]="Alert.WARNING">
         <p>{{'project.application.form.section.privileges.warning' | translate}}</p>
-    </app-alert>
+    </jems-alert>
     <mat-expansion-panel [expanded]="true" id="collaborators-panel">
         <mat-expansion-panel-header>
             <mat-panel-title class="mt-2">
                 {{'project.application.form.section.privileges.lead' | translate }}
-                <app-context-info infoText="{{'project.application.form.section.privileges.lead.tooltip' | translate}}"
+                <jems-context-info infoText="{{'project.application.form.section.privileges.lead.tooltip' | translate}}"
                                   infoPosition="right">
-                </app-context-info>
+                </jems-context-info>
             </mat-panel-title>
         </mat-expansion-panel-header>
 
-        <app-form (save)="saveCollaborators()"
+        <jems-form (save)="saveCollaborators()"
                   (discard)="resetForm(data.projectCollaborators)">
-            <form appFormLayout [formGroup]="form">
+            <form jemsFormLayout [formGroup]="form">
                 <div formArrayName="projectCollaborators" id="collaborators-table">
                     <div *ngFor="let collaborator of projectCollaborators.controls;let i=index">
-                        <div appMultiColumnRow justifyContent="space-between" [formGroupName]="i">
+                        <div jemsMultiColumnRow justifyContent="space-between" [formGroupName]="i">
 
-                            <mat-form-field appFormFieldWidth="xx-large" appearance="fill">
+                            <mat-form-field jemsFormFieldWidth="xx-large" appearance="fill">
                                 <mat-label>{{'project.application.form.section.privileges.email' | translate}}</mat-label>
                                 <input formControlName="userEmail" matInput required>
                                 <mat-error>
-                                    <app-form-field-errors
+                                    <jems-form-field-errors
                                             [errors]="collaborator.get('userEmail').errors">
-                                    </app-form-field-errors>
+                                    </jems-form-field-errors>
                                 </mat-error>
                             </mat-form-field>
 
@@ -64,15 +64,15 @@
                     </div>
                 </div>
                 <mat-error>
-                    <app-form-field-errors [errors]="projectCollaborators.errors"
+                    <jems-form-field-errors [errors]="projectCollaborators.errors"
                                            [messages]="errorMessages">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </form>
-            <button appText *ngIf="form.enabled" mat-stroked-button class="mt-2"
+            <button jemsText *ngIf="form.enabled" mat-stroked-button class="mt-2"
                     (click)="addCollaborator(); formService.setDirty(true)">
                 +
             </button>
-        </app-form>
+        </jems-form>
     </mat-expansion-panel>
-</app-project-page-template>
+</jems-project-page-template>

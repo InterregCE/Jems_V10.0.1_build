@@ -1,18 +1,18 @@
 <ng-container *ngIf="indicatorOverviewLines$ | async as indicatorOverviewLines">
 
-    <app-alert [closable]="false" [show]="!indicatorOverviewLines?.length"
+    <jems-alert [closable]="false" [show]="!indicatorOverviewLines?.length"
                [type]="Alert.WARNING">
         <p>{{'project.application.form.a4.indicators.overview.table.not.available' | translate}}</p>
-    </app-alert>
+    </jems-alert>
 
-    <app-multi-language-container *ngIf="indicatorOverviewLines?.length">
+    <jems-multi-language-container *ngIf="indicatorOverviewLines?.length">
         <table [dataSource]="indicatorOverviewLines"
                aria-label="Overview of project results and outputs in connection to indicators"
                id="indicators-overview"
                mat-table>
             <ng-container matColumnDef="resultIndicatorName">
                 <th *matHeaderCellDef mat-header-cell scope="col">
-                    <span appText maxLines="2">{{ 'project.results.result.indicator' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'project.results.result.indicator' | translate }}</span>
                 </th>
                 <td *matCellDef="let data; let i = index" [attr.rowspan]="getRowSpan('resultIndicator', i)"
                     [matTooltip]="data.resultIndicatorIdentifier"
@@ -26,7 +26,7 @@
 
             <ng-container matColumnDef="resultIndicatorMeasurementUnit">
                 <th *matHeaderCellDef class="border-cell-right no-left-padding" mat-header-cell scope="col">
-                    <span appText maxLines="2">{{ 'project.results.result.measurement.unit' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'project.results.result.measurement.unit' | translate }}</span>
                 </th>
                 <td *matCellDef="let data; let i = index" [attr.rowspan]="getRowSpan('resultIndicator', i)"
                     [style.display]="getRowSpan('resultIndicator', i) ? '' : 'none'"
@@ -38,7 +38,7 @@
 
             <ng-container matColumnDef="resultIndicatorBaseline">
                 <th *matHeaderCellDef class="justify-end" mat-header-cell scope="col">
-                    <span appText maxLines="2">{{ 'project.results.result.baseline' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'project.results.result.baseline' | translate }}</span>
                 </th>
                 <td *matCellDef="let data; let i = index" [attr.rowspan]="getRowSpan('resultIndicator', i)"
                     [style.display]="getRowSpan('resultIndicator', i) ? '' : 'none'"
@@ -52,7 +52,7 @@
 
             <ng-container matColumnDef="resultIndicatorTargetValueSumUp">
                 <th *matHeaderCellDef class="justify-end" mat-header-cell scope="col">
-                    <span appText maxLines="2">{{ 'project.application.form.a4.table.result.indicator.value' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'project.application.form.a4.table.result.indicator.value' | translate }}</span>
                 </th>
                 <td *matCellDef="let data; let i = index" [attr.rowspan]="getRowSpan('resultIndicator', i)"
                     [style.display]="getRowSpan('resultIndicator', i) ? '' : 'none'"
@@ -64,7 +64,7 @@
 
             <ng-container matColumnDef="outputIndicatorName">
                 <th *matHeaderCellDef class="border-cell-left" mat-header-cell scope="col">
-                    <span appText maxLines="2">{{ 'project.application.form.work.package.output.programme.output.indicator' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'project.application.form.work.package.output.programme.output.indicator' | translate }}</span>
                 </th>
                 <td *matCellDef="let data; let i = index" [attr.rowspan]="getRowSpan('outputIndicator', i)"
                     [matTooltip]="data.outputIndicatorIdentifier"
@@ -72,25 +72,25 @@
                     class="border-cell-bottom border-cell-left"
                     mat-cell
                     matTooltipPosition="right">
-                    <span appText maxLines="2">{{ data.outputIndicatorName | translateByInputLanguage | async }}</span>
+                    <span jemsText maxLines="2">{{ data.outputIndicatorName | translateByInputLanguage | async }}</span>
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="outputIndicatorMeasurementUnit">
                 <th *matHeaderCellDef class="no-left-padding" mat-header-cell scope="col">
-                    <span appText maxLines="2">{{ 'project.application.form.work.package.output.measurement.unit' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'project.application.form.work.package.output.measurement.unit' | translate }}</span>
                 </th>
                 <td *matCellDef="let data; let i = index" [attr.rowspan]="getRowSpan('outputIndicator', i)"
                     [style.display]="getRowSpan('outputIndicator', i) ? '' : 'none'"
                     class="border-cell-bottom no-left-padding"
                     mat-cell>
-                    <span appText maxLines="2">{{ data.outputIndicatorMeasurementUnit | translateByInputLanguage | async }}</span>
+                    <span jemsText maxLines="2">{{ data.outputIndicatorMeasurementUnit | translateByInputLanguage | async }}</span>
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="outputIndicatorTargetValueSumUp">
                 <th *matHeaderCellDef class="justify-end" mat-header-cell scope="col">
-                    <span appText maxLines="2">{{ 'project.application.form.a4.table.aggregated.value' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'project.application.form.a4.table.aggregated.value' | translate }}</span>
                 </th>
                 <td *matCellDef="let data; let i = index" [attr.rowspan]="getRowSpan('outputIndicator', i)"
                     [style.display]="getRowSpan('outputIndicator', i) ? '' : 'none'"
@@ -102,18 +102,18 @@
 
             <ng-container matColumnDef="projectOutputNumber">
                 <th *matHeaderCellDef class="border-cell-left" mat-header-cell scope="col">
-                    <span appText maxLines="2">{{ 'project.application.form.work.package.output' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'project.application.form.work.package.output' | translate }}</span>
                 </th>
                 <td *matCellDef="let data; let i = index" class="border-cell-bottom border-cell-left">
                     <ng-container *ngIf="data.projectOutputNumber">
-                        <span appText maxLines="2">{{ 'project.application.form.work.package.output' | translate }} {{ data.projectOutputNumber }}</span>
+                        <span jemsText maxLines="2">{{ 'project.application.form.work.package.output' | translate }} {{ data.projectOutputNumber }}</span>
                     </ng-container>
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="projectOutputTitle">
                 <th *matHeaderCellDef mat-header-cell scope="col">
-                    <span appText maxLines="2">{{ 'project.application.form.work.package.output.title' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'project.application.form.work.package.output.title' | translate }}</span>
                 </th>
                 <td *matCellDef="let data; let i = index" class="border-cell-bottom">
                     {{ data.projectOutputTitle | translateByInputLanguage | async }}
@@ -122,7 +122,7 @@
 
             <ng-container matColumnDef="projectOutputTargetValue">
                 <th *matHeaderCellDef class="justify-end border-cell-right" mat-header-cell scope="col">
-                    <span appText maxLines="2">{{ 'project.application.form.a4.table.output.target.value' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'project.application.form.a4.table.output.target.value' | translate }}</span>
                 </th>
                 <td *matCellDef="let data; let i = index" class="justify-end border-cell-bottom border-cell-right">
                     {{ data.projectOutputTargetValue | asMoney }}
@@ -132,7 +132,7 @@
             <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
             <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
         </table>
-    </app-multi-language-container>
+    </jems-multi-language-container>
 
 </ng-container>
 

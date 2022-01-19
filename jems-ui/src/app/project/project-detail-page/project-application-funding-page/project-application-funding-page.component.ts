@@ -11,7 +11,7 @@ import StatusEnum = ProjectStatusDTO.StatusEnum;
 import Permissions = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-project-application-funding-page',
+  selector: 'jems-project-application-funding-page',
   templateUrl: './project-application-funding-page.component.html',
   styleUrls: ['./project-application-funding-page.component.scss'],
   providers: [ProjectFundingDecisionStore],

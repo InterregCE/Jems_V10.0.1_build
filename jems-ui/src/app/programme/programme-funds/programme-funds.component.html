@@ -1,10 +1,10 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         *ngIf="funds$ | async as funds"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.funds">
 
-    <form id="funds" appFormLayout [formGroup]="editableFundsForm">
-        <div appMultiColumnRow>
+    <form id="funds" jemsFormLayout [formGroup]="editableFundsForm">
+        <div jemsMultiColumnRow>
             <h3 class="mb-0">{{'programme.fund.list.title' | translate}}</h3>
             <button color="primary" mat-raised-button
                     *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
@@ -12,9 +12,9 @@
                 {{'common.edit.label' | translate}}
             </button>
         </div>
-        <app-multi-language-container appNoWidthLimit [useSystemLanguages]="true"
+        <jems-multi-language-container jemsNoWidthLimit [useSystemLanguages]="true"
                                       [switchButtonsVisible]="formState === FormState.EDIT">
-            <div [appTableConfig]="[{maxInRem: 2},{maxInRem: 10},{},{}]">
+            <div [jemsTableConfig]="[{maxInRem: 2},{maxInRem: 10},{},{}]">
                 <div>
                     <span class="mat-body-strong">{{ 'programme.fund.list.select' | translate }}</span>
                     <span class="mat-body-strong">{{ 'programme.legal.status.list.type' | translate }}</span>
@@ -34,19 +34,19 @@
 
                             <div>{{fund?.value?.type}}</div>
 
-                            <app-multi-language-form-field
+                            <jems-multi-language-form-field
                                     formControlName="abbreviation"
                                     [useFallBackLanguage]="true"
                                     [isFallBackLanguageReadonly]="isPredefinedFund(fund)"
                                     maxLength="127">
-                            </app-multi-language-form-field>
+                            </jems-multi-language-form-field>
 
-                            <app-multi-language-form-field
+                            <jems-multi-language-form-field
                                     formControlName="description"
                                     [useFallBackLanguage]="true"
                                     [isFallBackLanguageReadonly]="isPredefinedFund(fund)"
                                     maxLength="127">
-                            </app-multi-language-form-field>
+                            </jems-multi-language-form-field>
 
                         </ng-container>
                     </ng-container>
@@ -61,8 +61,8 @@
                 </div>
 
             </div>
-        </app-multi-language-container>
-        <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+        </jems-multi-language-container>
+        <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">
             <button mat-stroked-button type="button"
                     (click)="changeFormState$.next(FormState.VIEW)">
                 {{'common.cancel.label' | translate}}
@@ -73,15 +73,15 @@
                 {{'common.save.label' | translate}}
             </button>
         </div>
-        <app-alert
+        <jems-alert
                 [show]="!submitted && (showSuccessMessage$ | async)"
                 [type]="Alert.SUCCESS">
             <p>{{'programme.fund.save.success' | translate}}</p>
-        </app-alert>
-        <app-alert *ngIf="error$ | async as error"
+        </jems-alert>
+        <jems-alert *ngIf="error$ | async as error"
                    [show]="!submitted && !!error.i18nMessage?.i18nKey"
                    [type]="Alert.ERROR">
-            <app-api-error-content [error]="error"></app-api-error-content>
-        </app-alert>
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
     </form>
-</app-main-page-template>
+</jems-main-page-template>

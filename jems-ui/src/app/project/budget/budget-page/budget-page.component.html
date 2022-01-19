@@ -1,10 +1,10 @@
-<app-project-page-template [needsCard]="true"
+<jems-project-page-template [needsCard]="true"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
                            subTitleKey="project.application.form.section.part.d">
     <h3>{{'project.application.form.budget.title' | translate}}</h3>
 
-    <app-budget-table *ngIf="!!projectId"
+    <jems-budget-table *ngIf="!!projectId"
             [projectId]="projectId"
             [dataSource]="dataSource$ | async">
-    </app-budget-table>
-</app-project-page-template>
+    </jems-budget-table>
+</jems-project-page-template>
