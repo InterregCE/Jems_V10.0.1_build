@@ -28,7 +28,7 @@ export class TopBarComponent {
   logoutOngoing = false;
   isNavBarCollapsed = true;
 
-  smallLogo$ = this.resourceStore.smallLogo$;
+  largeLogo$ = this.resourceStore.largeLogo$;
 
   languageSettings$ = this.languageStore.systemLanguages$
     .pipe(
