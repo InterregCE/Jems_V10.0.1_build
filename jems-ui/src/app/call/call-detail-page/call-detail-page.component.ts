@@ -13,7 +13,7 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallPageSidenavService} from '../services/call-page-sidenav.service';
-import {catchError, map, take, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, finalize, map, take, tap, withLatestFrom} from 'rxjs/operators';
 import moment from 'moment';
 import {Alert} from '@common/components/forms/alert';
 import {CallDetailPageStore} from './call-detail-page-store.service';
@@ -172,21 +172,21 @@ export class CallDetailPageComponent {
     this.pageStore.publishCall(this.callId)
       .pipe(
         take(1),
-        tap(() => this.publishPending = false),
         tap(published => this.callNavService.redirectToCallOverview(
           {
             i18nKey: 'call.detail.publish.success',
             i18nArguments: {name: published.name}
           })
         ),
-        catchError(err => this.formService.setError(err))
+        catchError(err => this.formService.setError(err)),
+        finalize(() => this.publishPending = false)
       ).subscribe();
   }
 
   isPublishDisabled(call: CallDetailDTO): Observable<boolean> {
     return of(true).pipe(
       withLatestFrom(this.formService.dirty$, this.formService.pending$),
-      map(([, dirty, pending]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0)
+      map(([, dirty, pending]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0 || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0)
     );
   }
 

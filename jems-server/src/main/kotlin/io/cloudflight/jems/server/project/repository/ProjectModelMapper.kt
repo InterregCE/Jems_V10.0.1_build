@@ -89,7 +89,8 @@ fun CallEntity.toSettingsModel(
     lumpSums = lumpSums.map { it.toModel() }.sortedBy { it.id },
     unitCosts = unitCosts.toProgrammeUnitCost(),
     stateAids = stateAidEntities.toModel(),
-    applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
+    applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
+    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
 )
 
 fun ProjectEntity.toModel(

@@ -91,7 +91,8 @@ val callEntity = CallEntity(
     strategies = mutableSetOf(),
     isAdditionalFundAllowed = false,
     funds = mutableSetOf(),
-    lengthOfPeriod = 1
+    lengthOfPeriod = 1,
+    preSubmissionCheckPluginKey = null
 )
 val projectStatusEntity = ProjectStatusHistoryEntity(
     status = ApplicationStatus.APPROVED,

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4be9682e-85f5-4fb4-845c-0f2c2a939bf4",
+		"_postman_id": "6085179d-7b82-4943-bff2-cf483888a089",
 		"name": "ems-rest-test",
 		"description": "Check JEMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -1216,6 +1216,80 @@
 								"byId",
 								"{{callId}}",
 								"unitCost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set 'off' pre-submission check plugin for the call",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('off pre-submission check plugin is set for the call successfully', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "jems-pre-condition-check-off",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/call/byId/{{callId}}/preSubmissionCheck",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"call",
+								"byId",
+								"{{callId}}",
+								"preSubmissionCheck"
 							]
 						}
 					},

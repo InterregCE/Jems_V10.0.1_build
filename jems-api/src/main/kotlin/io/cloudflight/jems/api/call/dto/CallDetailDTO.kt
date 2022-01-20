@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.call.dto.application_form_configuration.Applicati
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumListDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
-import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammePriorityDTO
 import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidDTO
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
@@ -29,5 +28,6 @@ data class CallDetailDTO(
     val flatRates: FlatRateSetupDTO,
     val lumpSums: List<ProgrammeLumpSumListDTO> = emptyList(),
     val unitCosts: List<ProgrammeUnitCostListDTO> = emptyList(),
-    val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfigurationDTO>
+    val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfigurationDTO>,
+    val preSubmissionCheckPluginKey: String?
 )

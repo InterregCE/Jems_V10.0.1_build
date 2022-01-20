@@ -43,8 +43,8 @@ class SubmitApplicationInteractorTest : UnitTest() {
     private val projectInStepTwo = buildProjectSummary(status = ApplicationStatus.DRAFT)
     private val projectInStepOne = buildProjectSummary(status = ApplicationStatus.STEP1_DRAFT)
     private val projectInStepTwoReturnedForConditions = buildProjectSummary(status = ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
-    private val twoStepCallSetting = buildCallSetting()
-    private val oneStepCallSetting = buildCallSetting(endDateStep1 = null)
+    private val twoStepCallSetting = buildCallSetting(preSubmissionCheckPluginKey = pluginKey)
+    private val oneStepCallSetting = buildCallSetting(preSubmissionCheckPluginKey = pluginKey)
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
@@ -137,7 +137,19 @@ class SubmitApplicationInteractorTest : UnitTest() {
     @Test
     fun `should not execute pre condition check when application belongs to two-step call and application is not in step two`() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepOne
+        every { projectPersistence.getProjectCallSettings(projectId) } returns oneStepCallSetting
+        every { applicationStateFactory.getInstance(any()) } returns draftState
+        every { draftState.submit() } returns ApplicationStatus.SUBMITTED
+
+        submitApplication.submit(projectId)
+        verify(exactly = 0) { preConditionCheckPlugin.check(projectId) }
+    }
+
+    @Test
+    fun `should not execute pre condition check when plugin is disabled`() {
+        every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwo
         every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
+        every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(PluginStatusEntity(pluginKey, false))
         every { applicationStateFactory.getInstance(any()) } returns draftState
         every { draftState.submit() } returns ApplicationStatus.SUBMITTED
 
@@ -181,11 +193,13 @@ class SubmitApplicationInteractorTest : UnitTest() {
         lumpSums: List<ProgrammeLumpSum> = emptyList(),
         unitCosts: List<ProgrammeUnitCost> = emptyList(),
         stateAids : List<ProgrammeStateAid> = emptyList(),
+        preSubmissionCheckPluginKey : String? = null
     ) =
         ProjectCallSettings(
             callId, callName, startDate, endDate, endDateStep1,
             lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
         )
 
     private fun buildProjectSummary(

@@ -84,7 +84,7 @@ internal class CallPersistenceProviderTest {
         private const val STATE_AID_ID = 23L
         private const val LUMP_SUM_ID = 4L
         private const val UNIT_COST_ID = 3L
-        private const val USER_ID = 302L
+        private const val PLUGIN_KEY = "plugin-key"
 
         private val START = ZonedDateTime.now().withSecond(0).withNano(0)
         private val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
@@ -100,16 +100,6 @@ internal class CallPersistenceProviderTest {
             ProjectCallStateAidEntity(
                 StateAidSetupId(callEntity, stateAid)
             )
-        )
-
-        private val user = UserEntity(
-            id = USER_ID,
-            email = "admin@admin.dev",
-            name = "Name",
-            surname = "Surname",
-            userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-            password = "hash_pass",
-            userStatus = UserStatus.ACTIVE
         )
 
         val specificObjectives = setOf(
@@ -146,6 +136,7 @@ internal class CallPersistenceProviderTest {
             fund = callFundRateEntity(call, FUND_ID)
             call.startDate = START
             call.endDate = END
+            call.preSubmissionCheckPluginKey = PLUGIN_KEY
             call.prioritySpecificObjectives.clear()
             call.prioritySpecificObjectives.addAll(specificObjectives)
             call.strategies.clear()
@@ -250,7 +241,8 @@ internal class CallPersistenceProviderTest {
                     categories = setOf(BudgetCategory.InfrastructureCosts),
                 )
             ),
-            applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities(callEntity()).toModel()
+            applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities(callEntity()).toModel(),
+            preSubmissionCheckPluginKey = PLUGIN_KEY
         )
 
         private val expectedCall = CallSummary(
@@ -407,6 +399,30 @@ internal class CallPersistenceProviderTest {
         val config = ApplicationFormFieldConfiguration(fieldId, FieldVisibilityStatus.STEP_ONE_AND_TWO)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(configEntity)
         assertThat(persistence.getApplicationFormFieldConfigurations(CALL_ID)).containsExactly(config)
+    }
+
+
+    @Test
+    fun `should return pre-submission check settings of for the call`() {
+        val callEntity = callEntity(CALL_ID)
+        val applicationFormConfigEntity = ApplicationFormFieldConfigurationEntity(
+            ApplicationFormFieldConfigurationId(
+                "fieldId", callEntity(
+                    CALL_ID
+                )
+            ), FieldVisibilityStatus.STEP_ONE_AND_TWO
+        )
+        every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
+        every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(applicationFormConfigEntity)
+        assertThat(persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PLUGIN_KEY)).isEqualTo(expectedCallDetail)
+    }
+
+
+    @Test
+    fun `should throw CallNotFound while setting pre-submission check settings for the call and call does not exist`() {
+        every { callRepo.findById(CALL_ID) } returns Optional.empty()
+        assertThrows<CallNotFound> { persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PLUGIN_KEY)}
     }
 
     @Test

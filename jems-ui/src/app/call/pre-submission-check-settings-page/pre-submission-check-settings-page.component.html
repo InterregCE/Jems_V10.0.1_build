@@ -1,0 +1,21 @@
+<jems-main-page-template *ngIf="data$ | async as data"
+                        titleKey="call.detail.pre.submission.check.config.title">
+    <jems-form (save)="save()"
+              (discard)="resetForm(data.pluginKey)">
+        <form appFormLayout [formGroup]="form">
+            <jems-alert [show]="true" [type]="Alert.WARNING">
+                <span>{{'call.detail.pre.submission.check.config.warning' | translate}}</span>
+            </jems-alert>
+            <mat-form-field >
+                <mat-label *ngIf="pluginKey?.value?.length>0">{{'call.detail.pre.submission.check.config.label' | translate}}</mat-label>
+                <mat-select  class="placeholder-required" [disabled]="!data.callIsEditable" formControlName="plugin" required
+                            placeholder="{{'call.detail.pre.submission.check.config.placeholder' | translate}}"
+                >
+                    <mat-option *ngFor="let plugin of data.preSubmissionCheckPlugins" [value]="plugin.key">
+                        {{plugin.name}} {{plugin.version?.length > 0 ? '- ' + plugin.version : ''}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </form>
+    </jems-form>
+</jems-main-page-template>

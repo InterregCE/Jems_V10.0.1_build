@@ -116,7 +116,8 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
         unitCosts = listOf(
             ProgrammeUnitCost(isOneCostCategory = true),
         ),
-        applicationFormFieldConfigurations = mutableSetOf()
+        applicationFormFieldConfigurations = mutableSetOf(),
+        preSubmissionCheckPluginKey = null
     )
 
     @MockK

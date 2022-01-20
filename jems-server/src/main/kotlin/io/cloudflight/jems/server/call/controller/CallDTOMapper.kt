@@ -52,7 +52,8 @@ fun CallDetail.toDto() = CallDetailDTO(
     flatRates = flatRates.toDto(),
     lumpSums = lumpSums.toDto(),
     unitCosts = unitCosts.toDto(),
-    applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDTO()
+    applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDTO(),
+    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
 )
 
 fun CallUpdateRequestDTO.toModel() = Call(

@@ -43,13 +43,17 @@ export class CallPageSidenavService {
       headline: {i18nKey: 'call.detail.application.form.config.title'},
       route: `/app/call/detail/${callId}/applicationFormConfiguration`,
     };
+    const preSubmissionCheckSettings = {
+      headline: {i18nKey: 'call.detail.pre.submission.check.config.title'},
+      route: `/app/call/detail/${callId}/preSubmissionCheckSettings`,
+    };
 
     this.callStore.callIsReadable$
       .pipe(
         take(1),
         tap(callIsReadable => {
           if (callId && callIsReadable) {
-            bulletsArray.push(flatRates, applicationFormConfiguration);
+            bulletsArray.push(flatRates, applicationFormConfiguration, preSubmissionCheckSettings);
           }
           this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [
             {

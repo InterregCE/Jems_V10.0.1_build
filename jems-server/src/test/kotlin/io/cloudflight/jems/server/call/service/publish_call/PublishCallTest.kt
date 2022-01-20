@@ -52,7 +52,8 @@ class PublishCallTest : UnitTest() {
         applicationFormFieldConfigurations = mutableSetOf(),
         strategies = sortedSetOf(ProgrammeStrategy.AtlanticStrategy),
         funds = sortedSetOf(callFundRate(1)),
-        objectives = listOf(ProgrammePriority(code = "code", objective = ProgrammeObjective.ISO12))
+        objectives = listOf(ProgrammePriority(code = "code", objective = ProgrammeObjective.ISO12)),
+        preSubmissionCheckPluginKey = null
     )
 
     @MockK
@@ -71,7 +72,7 @@ class PublishCallTest : UnitTest() {
 
     @Test
     fun publishCall() {
-        every { persistence.getCallById(id) } returns callDetail
+        every { persistence.getCallById(id) } returns callDetail.copy(preSubmissionCheckPluginKey = "jems-pre-condition-check-off")
         every { persistence.publishCall(id) } returns publishedCall
         assertThat(publishCall.publishCall(id)).isEqualTo(publishedCall)
 
@@ -96,10 +97,12 @@ class PublishCallTest : UnitTest() {
     }
 
     @TestFactory
-    fun `should throw CannotPublishCallException when funds or strategies or programmePriorities are empty`() =
+    fun `should throw CannotPublishCallException when funds or strategies or programmePriorities or pre-submission check plugin key are empty`() =
         listOf(
             Pair("funds", callDetail.copy(funds = sortedSetOf())),
             Pair("programmePriorities", callDetail.copy(objectives = listOf())),
+            Pair("pre-submissionCheckPlugin", callDetail.copy(preSubmissionCheckPluginKey = null)),
+            Pair("pre-submissionCheckPlugin", callDetail.copy(preSubmissionCheckPluginKey = "")),
         ).map { input ->
             DynamicTest.dynamicTest(
                 "should throw CannotPublishCallException when ${input.first} are empty"

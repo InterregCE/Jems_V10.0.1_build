@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.call.service.update_call.UpdateCallInteractor
 import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
 import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallLumpSumsInteractor
 import io.cloudflight.jems.server.call.service.update_call_unit_costs.UpdateCallUnitCostsInteractor
+import io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration.UpdatePreSubmissionCheckSettingsInteractor
 import io.cloudflight.jems.server.common.toDTO
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -34,6 +35,7 @@ class CallController(
     private val getAllowedRealCosts: GetAllowedRealCostsInteractor,
     private val updateCallLumpSums: UpdateCallLumpSumsInteractor,
     private val updateCallUnitCosts: UpdateCallUnitCostsInteractor,
+    private val updatePreSubmissionCheckSettings: UpdatePreSubmissionCheckSettingsInteractor
 ) : CallApi {
 
     override fun getCalls(pageable: Pageable): Page<CallDTO> =
@@ -71,5 +73,8 @@ class CallController(
 
     override fun updateCallUnitCosts(callId: Long, unitCostIds: Set<Long>) =
         updateCallUnitCosts.updateUnitCosts(callId, unitCostIds).toDto()
+
+    override fun updatePreSubmissionCheckSettings(callId: Long, pluginKey: String?): CallDetailDTO =
+        updatePreSubmissionCheckSettings.update(callId, pluginKey).toDto()
 
 }

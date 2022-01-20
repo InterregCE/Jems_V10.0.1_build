@@ -18,7 +18,6 @@ import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.CallDetail
-import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.update_application_form_field_configuration.UpdateApplicationFormFieldConfigurationsException
@@ -80,7 +79,8 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
             unitCosts = listOf(
                 ProgrammeUnitCost(isOneCostCategory = true),
             ),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null
         )
 
         private val configDTO = mutableSetOf(

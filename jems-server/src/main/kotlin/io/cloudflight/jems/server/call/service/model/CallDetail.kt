@@ -28,7 +28,8 @@ data class CallDetail(
     val flatRates: SortedSet<ProjectCallFlatRate> = sortedSetOf(),
     val lumpSums: List<ProgrammeLumpSum> = emptyList(),
     val unitCosts: List<ProgrammeUnitCost> = emptyList(),
-    val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
+    val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>,
+    val preSubmissionCheckPluginKey: String?
 ) {
     fun isPublished() = status == CallStatus.PUBLISHED
 
@@ -98,6 +99,9 @@ data class CallDetail(
         val newUnitCostIds = unitCosts.mapTo(TreeSet()) { it.id }
         if (newUnitCostIds != oldUnitCostIds)
             changes["unitCostIds"] = Pair(oldUnitCostIds, newUnitCostIds)
+
+        if (old == null || preSubmissionCheckPluginKey != old.preSubmissionCheckPluginKey)
+            changes["preSubmissionCheckPluginKey"] = Pair(old?.preSubmissionCheckPluginKey, preSubmissionCheckPluginKey)
 
         return changes
     }
