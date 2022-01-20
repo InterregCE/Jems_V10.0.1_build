@@ -5,6 +5,9 @@ export interface ResultIndicatorCodeRelation {
 }
 
 export class ProgrammeResultIndicatorConstants {
+  private static readonly MEASUREMENT_UNIT_USER_YEAR = 'users/year';
+  private static readonly MEASUREMENT_UNIT_TONNES_YEAR = 'tonnes/year';
+
   static indicatorCodes: ResultIndicatorCodeRelation[] = [
     {
       code: 'RCR01',
@@ -49,12 +52,12 @@ export class ProgrammeResultIndicatorConstants {
     {
       code: 'RCR11',
       name: 'Users of new and upgraded public digital services, products and processes',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR12',
       name: 'Users of new and upgraded digital services, products and processes developed by enterprises',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR13',
@@ -144,12 +147,12 @@ export class ProgrammeResultIndicatorConstants {
     {
       code: 'RCR47',
       name: 'Waste recycled',
-      measurementUnit: 'tonnes/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_TONNES_YEAR
     },
     {
       code: 'RCR48',
       name: 'Waste used as raw materials',
-      measurementUnit: 'tonnes/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_TONNES_YEAR
     },
     {
       code: 'RCR50',
@@ -199,57 +202,57 @@ export class ProgrammeResultIndicatorConstants {
     {
       code: 'RCR62',
       name: 'Annual users of new or modernised public transport',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR63',
       name: 'Annual users of new or modernised tram and metro lines',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR64',
       name: 'Annual users of dedicated cycling infrastructure',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR65',
       name: 'Annual users of new or modernised facilities for employment services',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR66',
       name: 'Annual users of new or modernised temporary reception facilities',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR67',
       name: 'Annual users of new or modernised social housing',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR70',
       name: 'Annual users of new or modernised childcare facilities',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR71',
       name: 'Annual users of new or modernised education facilities',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR72',
       name: 'Annual users of new or modernised e-health care services',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR73',
       name: 'Annual users of new or modernised health care facilities',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR74',
       name: 'Annual users of new or modernised social care facilities',
-      measurementUnit: 'users/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_USER_YEAR
     },
     {
       code: 'RCR77',
@@ -319,7 +322,7 @@ export class ProgrammeResultIndicatorConstants {
     {
       code: 'RCR103',
       name: 'Waste collected separately',
-      measurementUnit: 'tonnes/year'
+      measurementUnit: ProgrammeResultIndicatorConstants.MEASUREMENT_UNIT_TONNES_YEAR
     },
     {
       code: 'RCR104',

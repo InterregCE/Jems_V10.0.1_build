@@ -108,25 +108,4 @@ class CallEntity(
 
     @Column
     var preSubmissionCheckPluginKey: String?
-) {
-    fun updateFlatRateSetup(flatRates: Set<ProjectCallFlatRateEntity>) {
-        val groupedByType = flatRates.associateBy { it.setupId.type }.toMutableMap()
-        // update existing
-        this.flatRates.forEach {
-            if (groupedByType.keys.contains(it.setupId.type)) {
-                val newValue = groupedByType.getValue(it.setupId.type)
-                it.rate = newValue.rate
-                it.isAdjustable = newValue.isAdjustable
-            }
-        }
-        // remove those that needs to be removed
-        this.flatRates.removeIf { !groupedByType.keys.contains(it.setupId.type) }
-
-        // add those that are not yet there
-        val existingTypes = this.flatRates.associateBy { it.setupId.type }.keys
-        groupedByType.filterKeys { !existingTypes.contains(it) }
-            .forEach {
-                this.flatRates.add(it.value)
-            }
-    }
-}
+)

@@ -148,9 +148,24 @@ class CallPersistenceProvider(
     }
 
     @Transactional
-    override fun updateProjectCallFlatRate(callId: Long, flatRates: Set<ProjectCallFlatRate>): CallDetail {
+    override fun updateProjectCallFlatRate(callId: Long, flatRatesRequest: Set<ProjectCallFlatRate>): CallDetail {
         val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
-        call.updateFlatRateSetup(flatRates.toEntity(call))
+            .apply {
+                val groupedByType = flatRatesRequest.toEntity(this).associateBy { it.setupId.type }.toMutableMap()
+                flatRates.forEach {
+                    if (groupedByType.keys.contains(it.setupId.type)) {
+                        val newValue = groupedByType.getValue(it.setupId.type)
+                        it.rate = newValue.rate
+                        it.isAdjustable = newValue.isAdjustable
+                    }
+                }
+                flatRates.removeIf { !groupedByType.keys.contains(it.setupId.type) }
+                val existingTypes = flatRates.associateBy { it.setupId.type }.keys
+                groupedByType.filterKeys { !existingTypes.contains(it) }
+                    .forEach {
+                        flatRates.add(it.value)
+                    }
+            }
         return call.toDetailModel(
             applicationFormFieldConfigurationRepository.findAllByCallId(callId),
             projectCallStateAidRepo.findAllByIdCallId(callId)
@@ -259,10 +274,8 @@ class CallPersistenceProvider(
             )
 
     private fun adjustTimeToLastNanoSec(call: Call) {
-
         call.startDate = call.startDate.withSecond(0).withNano(0)
         call.endDateStep1 = call.endDateStep1?.withSecond(0)?.withNano(0)?.plusMinutes(1)?.minusNanos(1)
         call.endDate = call.endDate.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
-
     }
 }
