@@ -7,7 +7,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
-  selector: 'app-budget-page',
+  selector: 'jems-budget-page',
   templateUrl: './budget-page.component.html',
   styleUrls: ['./budget-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

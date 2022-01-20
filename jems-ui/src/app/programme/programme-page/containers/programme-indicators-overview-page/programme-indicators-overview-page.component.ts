@@ -11,7 +11,7 @@ import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-programme-indicators-overview-page',
+  selector: 'jems-programme-indicators-overview-page',
   templateUrl: './programme-indicators-overview-page.component.html',
   styleUrls: ['./programme-indicators-overview-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

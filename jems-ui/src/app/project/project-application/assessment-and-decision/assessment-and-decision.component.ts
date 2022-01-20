@@ -13,7 +13,7 @@ import {AssessmentAndDecisionStore} from '@project/project-application/assessmen
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-assessment-and-decision',
+  selector: 'jems-assessment-and-decision',
   templateUrl: './assessment-and-decision.component.html',
   styleUrls: ['./assessment-and-decision.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

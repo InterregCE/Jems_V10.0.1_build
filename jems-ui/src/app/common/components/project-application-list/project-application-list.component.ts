@@ -4,7 +4,7 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {ProjectApplicationListStore} from '@common/components/project-application-list/project-application-list-store.service';
 
 @Component({
-  selector: 'app-project-application-list',
+  selector: 'jems-project-application-list',
   templateUrl: './project-application-list.component.html',
   styleUrls: ['./project-application-list.component.scss'],
   providers: [ProjectApplicationListStore],

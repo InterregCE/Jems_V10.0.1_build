@@ -8,7 +8,7 @@ import {NumberService} from '@common/services/number.service';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 
 @Component({
-  selector: 'app-budget-table',
+  selector: 'jems-budget-table',
   templateUrl: './budget-table.component.html',
   styleUrls: ['./budget-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

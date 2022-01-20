@@ -21,7 +21,7 @@ import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-legal-status-list',
+  selector: 'jems-programme-legal-status-list',
   templateUrl: './programme-legal-status-list.component.html',
   styleUrls: ['./programme-legal-status-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

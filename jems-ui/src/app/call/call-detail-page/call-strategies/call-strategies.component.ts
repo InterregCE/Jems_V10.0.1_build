@@ -4,7 +4,7 @@ import {CallDetailPageStore} from '../call-detail-page-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 @Component({
-  selector: 'app-call-strategies',
+  selector: 'jems-call-strategies',
   templateUrl: './call-strategies.component.html',
   styleUrls: ['./call-strategies.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

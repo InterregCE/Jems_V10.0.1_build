@@ -1,4 +1,4 @@
-<app-main-page-template
+<jems-main-page-template
         [needsCard]="needsCard"
         [headerTemplate]="isVersionedData ? versionWarn : null"
         [titleKey]="titleKey"
@@ -9,10 +9,10 @@
         [descriptionText]="descriptionText"
 >
     <ng-content></ng-content>
-</app-main-page-template>
+</jems-main-page-template>
 <ng-template #versionWarn>
-    <ng-container *hasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition pageStore.isThisUserOwner$ | async">
-        <app-alert *ngIf="versionWarnData$ | async as data"
+    <ng-container *jemsHasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition pageStore.isThisUserOwner$ | async">
+        <jems-alert *ngIf="versionWarnData$ | async as data"
                    [type]="Alert.WARNING"
                    [show]="!data.selectedIsCurrent">
             <div id="version-warn">
@@ -21,12 +21,12 @@
                     {{data.selected?.version}}, {{data.selected?.status}}
                     ({{data.selected?.createdAt | localeDate: 'L' : 'LT'}})
                 </span>
-                <button appText id="switch-to-current" mat-raised-button
+                <button jemsText id="switch-to-current" mat-raised-button
                         (click)="pageStore.changeVersion(data.current)">
                     {{'project.versions.warn.switch' | translate}}
                 </button>
             </div>
-        </app-alert>
+        </jems-alert>
     </ng-container>
 </ng-template>
 

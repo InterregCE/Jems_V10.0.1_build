@@ -1,27 +1,27 @@
-<app-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
+<jems-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.currentVersionOfProjectTitle}"
                            subTitleKey="project.application.form.section.assessment.and.decision"
                            [isVersionedData]="false">
-    <div appFormLayout>
-        <div appNoWidthLimit>
-            <ng-container *hasPermission="PermissionsEnum.ProjectStatusReturnToApplicant">
-                <app-pending-button *ngIf="data.returnToApplicantAvailable && data.currentVersionOfProjectStatus !== STATUS.CONDITIONSSUBMITTED"
+    <div jemsFormLayout>
+        <div jemsNoWidthLimit>
+            <ng-container *jemsHasPermission="PermissionsEnum.ProjectStatusReturnToApplicant">
+                <jems-pending-button *ngIf="data.returnToApplicantAvailable && data.currentVersionOfProjectStatus !== STATUS.CONDITIONSSUBMITTED"
                                     class="mr-2 mt-2"
                                     [confirm]="{title: 'project.detail.return.dialog.title', message: 'project.detail.return.dialog.message'}"
                                     [pending]="actionPending"
                                     (clicked)="returnToApplicant(data.projectId)">
                     {{'project.detail.button.return.applicant' | translate}}
-                </app-pending-button>
-                <app-pending-button *ngIf="data.returnToApplicantAvailable && data.currentVersionOfProjectStatus === STATUS.CONDITIONSSUBMITTED"
+                </jems-pending-button>
+                <jems-pending-button *ngIf="data.returnToApplicantAvailable && data.currentVersionOfProjectStatus === STATUS.CONDITIONSSUBMITTED"
                         class="mr-2 mt-2"
                         [confirm]="{title: 'project.detail.return.dialog.title', message: 'project.detail.return.dialog.message'}"
                         [pending]="actionPending"
                         (clicked)="returnToApplicantForConditions(data.projectId)">
                     {{'project.detail.button.hand.back.applicant' | translate}}
-                </app-pending-button>
+                </jems-pending-button>
             </ng-container>
-            <ng-container *hasPermission="PermissionsEnum.ProjectStatusDecisionRevert">
-                <app-pending-button
+            <ng-container *jemsHasPermission="PermissionsEnum.ProjectStatusDecisionRevert">
+                <jems-pending-button
                         class="mr-2 mt-2"
                         *ngIf="data.revertToStatus; else revertNotPossible"
                         [confirm]="getRevertConfirmation(data.currentVersionOfProjectStatus, data.revertToStatus)"
@@ -29,64 +29,64 @@
                         (clicked)="revertProjectStatus(data.projectId)">
                     {{ 'project.application.revert.decision.button.label' | translate}}
                     {{ 'common.label.projectapplicationstatus.' + data.revertToStatus | translate }}
-                </app-pending-button>
+                </jems-pending-button>
             </ng-container>
-            <ng-container *hasPermission="PermissionsEnum.ProjectStartStepTwo">
-                <app-pending-button *ngIf="data.startStepTwoAvailable"
+            <ng-container *jemsHasPermission="PermissionsEnum.ProjectStartStepTwo">
+                <jems-pending-button *ngIf="data.startStepTwoAvailable"
                                     class="mr-2 mt-2"
                                     [pending]="actionPending"
                                     (clicked)="startStepTwo(data.projectId)">
                     {{'project.application.start.step.two.button.label' | translate}}
-                </app-pending-button>
+                </jems-pending-button>
             </ng-container>
 
-            <div *hasPermission="PermissionsEnum.ProjectAssessmentView" appFormLayout id="project-detail-container">
+            <div *jemsHasPermission="PermissionsEnum.ProjectAssessmentView" jemsFormLayout id="project-detail-container">
                 <ng-container *ngIf="data.callHasTwoSteps">
-                    <app-project-application-decisions appNoWidthLimit step="1">
-                    </app-project-application-decisions>
-                    <app-project-application-assessments [decisions]="data.currentVersionOfProject.firstStepDecision"
+                    <jems-project-application-decisions jemsNoWidthLimit step="1">
+                    </jems-project-application-decisions>
+                    <jems-project-application-assessments [decisions]="data.currentVersionOfProject.firstStepDecision"
                                                          [currentVersionOfProjectStatus]="data.currentVersionOfProject.projectStatus"
-                                                         appNoWidthLimit
+                                                         jemsNoWidthLimit
                                                          step="1">
-                    </app-project-application-assessments>
+                    </jems-project-application-assessments>
                 </ng-container>
 
                 <ng-container *ngIf="data.currentVersionOfProject.step2Active && data.currentVersionOfProjectStatus !== STATUS.DRAFT">
-                    <app-project-application-decisions appNoWidthLimit step="2">
-                    </app-project-application-decisions>
-                    <app-project-application-assessments [decisions]="data.currentVersionOfProject.secondStepDecision"
+                    <jems-project-application-decisions jemsNoWidthLimit step="2">
+                    </jems-project-application-decisions>
+                    <jems-project-application-assessments [decisions]="data.currentVersionOfProject.secondStepDecision"
                                                          [currentVersionOfProjectStatus]="data.currentVersionOfProject.projectStatus"
-                                                         appNoWidthLimit
+                                                         jemsNoWidthLimit
                                                          step="2">
-                    </app-project-application-assessments>
+                    </jems-project-application-assessments>
                 </ng-container>
             </div>
         </div>
-        <ng-container *hasPermission="PermissionsEnum.ProjectFileAssessmentRetrieve">
+        <ng-container *jemsHasPermission="PermissionsEnum.ProjectFileAssessmentRetrieve">
             <h3>
                 {{'file.tab.header' | translate}}
-                <app-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></app-context-info>
+                <jems-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></jems-context-info>
             </h3>
-            <app-file-management [section]="fileManagementSection" appNoWidthLimit></app-file-management>
+            <jems-file-management [section]="fileManagementSection" jemsNoWidthLimit></jems-file-management>
         </ng-container>
         <ng-template #revertNotPossible>
-            <button appText class="mr-2 mt-2" *hasPermission="PermissionsEnum.ProjectStatusDecisionRevert"
+            <button jemsText class="mr-2 mt-2" *jemsHasPermission="PermissionsEnum.ProjectStatusDecisionRevert"
                     mat-raised-button disabled
                     (click)="revertProjectStatus(data.projectId)">
                 {{ 'project.application.revert.decision.impossible.button.label' | translate }}
             </button>
         </ng-template>
 
-        <app-alert [show]="successMessage"
+        <jems-alert [show]="successMessage"
                    [type]="Alert.SUCCESS">
             <p *ngIf="data.currentVersionOfProjectStatus === STATUS.RETURNEDTOAPPLICANT || data.currentVersionOfProjectStatus === STATUS.RETURNEDTOAPPLICANTFORCONDITIONS">
                 {{'project.detail.returned.to.applicant.success' | translate}}
             </p>
-        </app-alert>
-        <app-alert *ngIf="error$ | async as error"
+        </jems-alert>
+        <jems-alert *ngIf="error$ | async as error"
                    [show]="!!error.i18nMessage?.i18nKey"
                    [type]="Alert.ERROR">
-            <app-api-error-content [error]="error"></app-api-error-content>
-        </app-alert>
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
     </div>
-</app-project-page-template>
+</jems-project-page-template>

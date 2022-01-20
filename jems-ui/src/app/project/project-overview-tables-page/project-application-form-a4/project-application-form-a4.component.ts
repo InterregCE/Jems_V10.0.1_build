@@ -8,7 +8,7 @@ import {Alert} from '@common/components/forms/alert';
 import {ProjectOverviewTablesPageStore} from '@project/project-overview-tables-page/project-overview-tables-page-store.service';
 
 @Component({
-  selector: 'app-project-application-form-a4',
+  selector: 'jems-project-application-form-a4',
   templateUrl: './project-application-form-a4.component.html',
   styleUrls: ['./project-application-form-a4.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

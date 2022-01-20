@@ -1,12 +1,12 @@
-<app-form>
-    <div appFormLayout>
+<jems-form>
+    <div jemsFormLayout>
         <h3>{{'project.partner.budget.overview.header' | translate}}</h3>
 
-        <mat-card-content appFormLayout appNoWidthLimit>
-            <app-budget-table appNoWidthLimit hideFooter="true" hideCountry="true"
+        <mat-card-content jemsFormLayout jemsNoWidthLimit>
+            <jems-budget-table jemsNoWidthLimit hideFooter="true" hideCountry="true"
                               [projectId]="projectStore.projectId$ | async"
                               [dataSource]="dataSource$ | async">
-            </app-budget-table>
+            </jems-budget-table>
         </mat-card-content>
     </div>
-</app-form>
+</jems-form>

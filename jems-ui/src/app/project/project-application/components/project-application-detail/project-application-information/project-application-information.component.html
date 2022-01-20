@@ -42,7 +42,7 @@
     <div class="project-row">
         <span class="header p-1 pt-3 pr-3">{{'project.detail.table.call.name' | translate}}</span>
         <span class="p-1 pt-3">
-            <a *hasPermission="[PermissionsEnum.CallRetrieve, PermissionsEnum.ProjectCreate]"
+            <a *jemsHasPermission="[PermissionsEnum.CallRetrieve, PermissionsEnum.ProjectCreate]"
                [routerLink]="[CALL_PATH, project?.callSettings?.callId]">
                 {{project?.callSettings?.callName}}
             </a>

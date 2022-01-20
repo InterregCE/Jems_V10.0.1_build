@@ -16,7 +16,7 @@ import {UntilDestroy} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-call-funds',
+  selector: 'jems-call-funds',
   templateUrl: './call-funds.component.html',
   styleUrls: ['./call-funds.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

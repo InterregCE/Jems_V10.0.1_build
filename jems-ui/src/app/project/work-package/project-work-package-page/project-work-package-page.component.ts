@@ -16,7 +16,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
-  selector: 'app-project-work-package-page',
+  selector: 'jems-project-work-package-page',
   templateUrl: './project-work-package-page.component.html',
   styleUrls: ['./project-work-package-page.component.scss'],
   providers: [ProjectWorkPackagePageStore],

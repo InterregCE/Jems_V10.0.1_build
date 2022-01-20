@@ -8,7 +8,7 @@ import {Alert} from '@common/components/forms/alert';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-user-page-role',
+  selector: 'jems-user-page-role',
   templateUrl: './user-page-role.component.html',
   styleUrls: ['./user-page-role.component.scss'],
   providers: [UserPageRoleStore],

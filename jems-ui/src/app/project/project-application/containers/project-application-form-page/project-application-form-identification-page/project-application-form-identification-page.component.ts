@@ -16,7 +16,7 @@ import {
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 
 @Component({
-  selector: 'app-project-application-form-identification-page',
+  selector: 'jems-project-application-form-identification-page',
   templateUrl: './project-application-form-identification-page.component.html',
   styleUrls: ['./project-application-form-identification-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

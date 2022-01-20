@@ -45,7 +45,7 @@ const FIELD_KEYS =
 
 @UntilDestroy()
 @Component({
-  selector: 'app-general-budget-table',
+  selector: 'jems-general-budget-table',
   templateUrl: './general-budget-table.component.html',
   styleUrls: ['./general-budget-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -8,7 +8,7 @@ import {ProjectVersionDTO} from '@cat/api';
 import {DownloadService} from '@common/services/download.service';
 
 @Component({
-  selector: 'app-export',
+  selector: 'jems-export',
   templateUrl: './export.component.html',
   styleUrls: ['./export.component.scss'],
   providers: [ExportPageStore],

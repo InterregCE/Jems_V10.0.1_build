@@ -1,6 +1,6 @@
-<div appFormLayout [formGroup]="formGroup">
-    <app-multi-language-container appNoWidthLimit *ngIf="benefitsForm.controls.length>0">
-        <div [appTableConfig]="[{},{}, {maxInRem:2}]">
+<div jemsFormLayout [formGroup]="formGroup">
+    <jems-multi-language-container jemsNoWidthLimit *ngIf="benefitsForm.controls.length>0">
+        <div [jemsTableConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.target.group' | translate }}</span>
                 <span class="mat-body-strong">{{ 'project.application.form.relevance.specification' | translate }}</span>
@@ -18,20 +18,20 @@
                                 </mat-option>
                             </mat-select>
                             <mat-error>
-                                <app-form-field-errors [errors]="benefit.get('targetGroup')?.errors"
-                                                       [messages]="targetGroupErrors"></app-form-field-errors>
+                                <jems-form-field-errors [errors]="benefit.get('targetGroup')?.errors"
+                                                       [messages]="targetGroupErrors"></jems-form-field-errors>
                             </mat-error>
                         </mat-form-field>
 
                         <div>
-                            <app-multi-language-form-field
+                            <jems-multi-language-form-field
                                     type="textarea"
                                     formControlName="specification"
                                     maxLength="2000"
                                     minRows="1"
                                     label="project.application.form.relevance.specification"
                                     [disabled]="!editable">
-                            </app-multi-language-form-field>
+                            </jems-multi-language-form-field>
                         </div>
 
                         <div>
@@ -43,8 +43,8 @@
                 </ng-container>
             </div>
         </div>
-    </app-multi-language-container>
-    <button appText *ngIf="editable && benefitsForm.controls?.length < 20" mat-stroked-button type="button"
+    </jems-multi-language-container>
+    <button jemsText *ngIf="editable && benefitsForm.controls?.length < 20" mat-stroked-button type="button"
             (click)="addNewBenefit()">
         <mat-icon>add</mat-icon>
     </button>

@@ -10,7 +10,7 @@ import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-contract-monitoring',
+  selector: 'jems-contract-monitoring',
   templateUrl: './contract-monitoring.component.html',
   styleUrls: ['./contract-monitoring.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

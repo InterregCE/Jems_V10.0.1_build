@@ -1,7 +1,7 @@
-<app-project-page-template
+<jems-project-page-template
         *ngIf="partnerStore.partner$ | async as partner"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} ">
     <h2 page-sub-title *ngIf="!partner?.abbreviation">{{'project.application.form.partner.add' | translate}}</h2>
 
-    <app-project-application-form-partner-edit></app-project-application-form-partner-edit>
-</app-project-page-template>
+    <jems-project-application-form-partner-edit></jems-project-application-form-partner-edit>
+</jems-project-page-template>

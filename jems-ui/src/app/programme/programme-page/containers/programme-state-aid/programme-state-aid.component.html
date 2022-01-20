@@ -1,12 +1,12 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.state.aid.list.title">
-    <app-programme-state-aid-list
+    <jems-programme-state-aid-list
             *ngIf="stateAids$ | async as stateAids"
             [success$]="success$"
             [error$]="error$"
             [stateAids]="stateAids"
             (saveStateAids)="saveStateAids$.next($event)">
-    </app-programme-state-aid-list>
-</app-main-page-template>
+    </jems-programme-state-aid-list>
+</jems-main-page-template>
 

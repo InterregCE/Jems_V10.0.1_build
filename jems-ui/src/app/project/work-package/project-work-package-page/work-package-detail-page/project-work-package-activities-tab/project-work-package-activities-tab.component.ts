@@ -14,7 +14,7 @@ import {ProjectPartner} from '@project/model/ProjectPartner';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-work-package-activities-tab',
+  selector: 'jems-project-work-package-activities-tab',
   templateUrl: './project-work-package-activities-tab.component.html',
   styleUrls: ['./project-work-package-activities-tab.component.scss'],
   providers: [FormService],

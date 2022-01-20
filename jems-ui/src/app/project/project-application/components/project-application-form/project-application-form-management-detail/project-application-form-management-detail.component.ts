@@ -20,7 +20,7 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
 import { APPLICATION_FORM } from '@project/common/application-form-model';
 
 @Component({
-  selector: 'app-project-application-form-management-detail',
+  selector: 'jems-project-application-form-management-detail',
   templateUrl: './project-application-form-management-detail.component.html',
   styleUrls: ['./project-application-form-management-detail.component.scss'],
   providers: [FormService],

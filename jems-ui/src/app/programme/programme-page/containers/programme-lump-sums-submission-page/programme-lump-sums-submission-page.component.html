@@ -1,8 +1,8 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         *ngIf="lumpSum$ | async as details"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.costs.option">
-    <app-programme-lump-sum-detail
+    <jems-programme-lump-sum-detail
             [lumpSum]="details"
             [success$]="lumpSumSaveSuccess$"
             [error$]="lumpSumSaveError$"
@@ -10,5 +10,5 @@
             (createLumpSum)="createLumpSum($event)"
             (updateLumpSum)="updateLumpSum($event)"
             (cancelCreate)="cancelCreate()">
-    </app-programme-lump-sum-detail>
-</app-main-page-template>
+    </jems-programme-lump-sum-detail>
+</jems-main-page-template>

@@ -13,7 +13,7 @@ import {MatSelectChange} from '@angular/material/select/select';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-project-results-page',
+  selector: 'jems-project-results-page',
   templateUrl: './project-results-page.component.html',
   styleUrls: ['./project-results-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -11,7 +11,7 @@ import ProjectStatusEnum = ProjectUserDTO.ProjectStatusEnum;
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-page-template',
+  selector: 'jems-project-page-template',
   templateUrl: './project-page-template.component.html',
   styleUrls: ['./project-page-template.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

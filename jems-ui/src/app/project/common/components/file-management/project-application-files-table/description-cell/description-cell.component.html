@@ -2,21 +2,21 @@
     <label *ngIf="!editable" [title]="file?.description">
         {{getSizedDescription()}}
     </label>
-    <app-expandable-textarea
+    <jems-expandable-textarea
             *ngIf="editable"
             label="file.table.column.name.description"
             [control]="descriptionForm.controls.description"
             [errors]="descriptionForm.controls.description.errors"
             characterLimit="100">
-    </app-expandable-textarea>
+    </jems-expandable-textarea>
     <div class="mb-2 mt-2">
-        <button appText (click)="onCancel()"
+        <button jemsText (click)="onCancel()"
                 *ngIf="editable"
                 class="button"
                 mat-stroked-button>{{'project.file.description.button.cancel' | translate}}
         </button>
 
-        <button appText (click)="onSubmit()"
+        <button jemsText (click)="onSubmit()"
                 *ngIf="editable" [disabled]="descriptionForm.invalid" class="ml-2" color="primary"
                 mat-raised-button
                 type="submit">{{'project.file.description.button.save' | translate}}

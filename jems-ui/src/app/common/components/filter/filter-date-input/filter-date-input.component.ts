@@ -3,7 +3,7 @@ import {NG_VALUE_ACCESSOR} from '@angular/forms';
 import {FilterTextInputComponent} from '@common/components/filter/filter-text-input/filter-text-input.component';
 
 @Component({
-  selector: 'app-filter-date-input',
+  selector: 'jems-filter-date-input',
   templateUrl: './filter-date-input.component.html',
   styleUrls: ['./filter-date-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

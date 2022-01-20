@@ -5,7 +5,7 @@ import {FlatTreeNode} from '@common/models/flat-tree-node';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 
 @Component({
-  selector: 'app-category-tree',
+  selector: 'jems-category-tree',
   templateUrl: './category-tree.component.html',
   styleUrls: ['./category-tree.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

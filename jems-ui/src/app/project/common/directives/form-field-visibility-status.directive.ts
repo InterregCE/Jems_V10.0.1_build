@@ -5,13 +5,13 @@ import {FormVisibilityStatusService} from '@project/common/services/form-visibil
 
 @UntilDestroy()
 @Directive({
-  selector: '[appFormFieldVisibilityStatus]'
+  selector: '[jemsFormFieldVisibilityStatus]'
 })
 export class FormFieldVisibilityStatusDirective {
 
   private hasView = false;
 
-  @Input() set appFormFieldVisibilityStatus(fieldIds: string | ApplicationFormModel) {
+  @Input() set jemsFormFieldVisibilityStatus(fieldIds: string | ApplicationFormModel) {
     if (fieldIds === undefined || fieldIds === null || (typeof fieldIds === 'string' && fieldIds.length === 0) || (typeof fieldIds === 'object' && Object.keys(fieldIds).length === 0)) {
       return;
     }

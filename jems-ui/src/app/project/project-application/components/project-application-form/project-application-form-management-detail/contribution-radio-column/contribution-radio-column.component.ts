@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
-  selector: 'app-contribution-radio-column',
+  selector: 'jems-contribution-radio-column',
   templateUrl: './contribution-radio-column.component.html',
   styleUrls: ['./contribution-radio-column.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

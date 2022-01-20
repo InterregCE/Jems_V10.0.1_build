@@ -1,51 +1,51 @@
-<app-project-page-template *ngIf="(data$ | async) as data"
+<jems-project-page-template *ngIf="(data$ | async) as data"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
                            subTitleKey="project.application.form.section.part.e.subsection.one">
 
-    <app-form (save)="updateLumpSums()">
-        <form appFormLayout [formGroup]="lumpSumsForm">
-            <app-alert *ngIf="data.lumpSums.length===0 || data.partners.length===0"
+    <jems-form (save)="updateLumpSums()">
+        <form jemsFormLayout [formGroup]="lumpSumsForm">
+            <jems-alert *ngIf="data.lumpSums.length===0 || data.partners.length===0"
                        [show]="true"
                        [closable]="false" [type]="Alert.WARNING">
                 <p *ngIf="data.lumpSums.length===0">{{'project.application.form.section.part.e.no.lump.sums.warning' | translate}}</p>
                 <p *ngIf="data.lumpSums.length>0">{{'project.application.form.section.part.e.no.partner.warning' | translate}}</p>
-            </app-alert>
+            </jems-alert>
             <ng-container *ngIf="data.partners.length>0 && data.lumpSums.length>0">
                 <h3>{{'project.application.form.section.part.e.subsection.one.table.title' | translate}}</h3>
                 <p>{{'project.application.form.section.part.e.subsection.one.description' | translate}}</p>
                 <ng-container *ngIf="!data.showAddButton; else addItemButton">
-                    <app-alert
+                    <jems-alert
                             [show]="data.showGapExistsWarning"
                             [closable]="false"
                             [type]="Alert.WARNING">
                         {{'project.application.form.section.part.e.gap.warning' | translate}}
-                    </app-alert>
-                    <app-alert *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS"
+                    </jems-alert>
+                    <jems-alert *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS"
                             [type]="Alert.WARNING"
                             [show]="data.showPeriodMissingWarning"
                             [closable]="false">
                         <span>{{'project.application.form.section.part.e.period.warning' | translate}}</span>
-                    </app-alert>
-                    <div id="loading-container" appNoWidthLimit *ngIf="data.loading">
+                    </jems-alert>
+                    <div id="loading-container" jemsNoWidthLimit *ngIf="data.loading">
                         {{'common.loading' | translate}}
                         <mat-spinner class="ml-2" [diameter]="32" [strokeWidth]="3"></mat-spinner>
                     </div>
 
-                    <div id="table-container" appNoWidthLimit>
+                    <div id="table-container" jemsNoWidthLimit>
                         <div id="overlay" *ngIf="data.loading"></div>
-                        <app-multi-language-container>
+                        <jems-multi-language-container>
                             <mat-table
                                     #table
-                                    appNoWidthLimit
+                                    jemsNoWidthLimit
                                     id="lump-sums-table"
-                                    [appTableConfig]="data.withConfigs"
+                                    [jemsTableConfig]="data.withConfigs"
                                     [dataSource]="tableData" [formArrayName]="constants.FORM_CONTROL_NAMES.items">
                                 <ng-container matColumnDef="lumpSum" sticky>
                                     <mat-header-cell *matHeaderCellDef>
-                                        <span appText maxLines="2">{{'project.application.form.section.part.e.lump.sums.column.title' | translate}}</span>
+                                        <span jemsText maxLines="2">{{'project.application.form.section.part.e.lump.sums.column.title' | translate}}</span>
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                        <mat-form-field appFormFieldWidth="full">
+                                        <mat-form-field jemsFormFieldWidth="full">
                                             <mat-select
                                                     [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.name| translateByInputLanguage | async"
                                                     [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum"
@@ -56,10 +56,10 @@
                                                 </mat-option>
                                             </mat-select>
                                             <mat-error>
-                                                <app-form-field-errors
+                                                <jems-form-field-errors
                                                         [errors]="control?.get(constants.FORM_CONTROL_NAMES.lumpSum)?.errors"
                                                         [messages]="constants.FORM_ERRORS.lumpSum"
-                                                ></app-form-field-errors>
+                                                ></jems-form-field-errors>
                                             </mat-error>
                                         </mat-form-field>
                                     </mat-cell>
@@ -68,15 +68,15 @@
 
                                 <ng-container matColumnDef="period">
                                     <mat-header-cell *matHeaderCellDef>
-                                        <span appText maxLines="2">{{'project.application.form.section.part.e.period.column.title' | translate}}</span>
-                                        <app-context-info
+                                        <span jemsText maxLines="2">{{'project.application.form.section.part.e.period.column.title' | translate}}</span>
+                                        <jems-context-info
                                                 infoText="{{ 'project.application.form.section.part.e.period.column.contextinfo' | translate }}"
                                                 infoPosition="right">
-                                        </app-context-info>
+                                        </jems-context-info>
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                         <mat-form-field *ngIf="isLumpSumSelectedForRow(control)"
-                                                        appFormFieldWidth="full">
+                                                        jemsFormFieldWidth="full">
                                             <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.periodNumber"
                                                         [matTooltip]="getPeriodLabel(getPeriod(i, data.periods))"
                                                         placeholder="{{'project.application.form.section.part.e.period.label' | translate}}">
@@ -92,10 +92,10 @@
                                                 </mat-option>
                                             </mat-select>
                                             <mat-error>
-                                                <app-form-field-errors
+                                                <jems-form-field-errors
                                                         [errors]="control?.get(constants.FORM_CONTROL_NAMES.periodNumber)?.errors"
                                                         [messages]="constants.FORM_ERRORS.period"
-                                                ></app-form-field-errors>
+                                                ></jems-form-field-errors>
                                             </mat-error>
                                         </mat-form-field>
                                     </mat-cell>
@@ -104,11 +104,11 @@
 
                                 <ng-container matColumnDef="isSplittingLumpSumAllowed">
                                     <mat-header-cell *matHeaderCellDef>
-                                        <span appText maxLines="2">{{'project.application.form.section.part.e.is.splitting.lump.sums.allowed.column.title' | translate}}</span>
-                                        <app-context-info
+                                        <span jemsText maxLines="2">{{'project.application.form.section.part.e.is.splitting.lump.sums.allowed.column.title' | translate}}</span>
+                                        <jems-context-info
                                                 infoText="{{ 'project.application.form.section.part.e.is.splitting.lump.sums.allowed.column.contextinfo' | translate }}"
                                                 infoPosition="right">
-                                        </app-context-info>
+                                        </jems-context-info>
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                         <div *ngIf="isLumpSumSelectedForRow(control)">
@@ -120,7 +120,7 @@
 
                                 <ng-container matColumnDef="lumpSumCost">
                                     <mat-header-cell *matHeaderCellDef>
-                                        <span appText maxLines="2">{{'project.application.form.section.part.e.lump.sums.cost.column.title' | translate}}</span>
+                                        <span jemsText maxLines="2">{{'project.application.form.section.part.e.lump.sums.cost.column.title' | translate}}</span>
                                     </mat-header-cell>
                                     <mat-cell class="cost" [class.gap-exists]="isGapExistsInRow(control)"
                                               *matCellDef="let control;  let i = index" [formGroupName]="i">
@@ -133,14 +133,14 @@
                                         *ngFor="let partner of data.partners, let partnerAmountIndex=index"
                                         [matColumnDef]="partner.toPartnerNumberString()">
                                     <mat-header-cell *matHeaderCellDef class="justify-end">
-                                        <span appText maxLines="2">{{partner.toPartnerNumberString()}}</span>
+                                        <span jemsText maxLines="2">{{partner.toPartnerNumberString()}}</span>
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i"
                                               [class.gap-exists]="isGapExistsInRow(control)">
                                         <ng-container *ngIf="isLumpSumSelectedForRow(control)"
                                                       [formArrayName]="constants.FORM_CONTROL_NAMES.partnersContribution">
                                             <ng-container [formGroupName]="partnerAmountIndex">
-                                                <app-inline-editable-field appFormFieldWidth="full">
+                                                <jems-inline-editable-field jemsFormFieldWidth="full">
                                                     <mat-form-field>
                                                         <input
                                                                 currencyMask
@@ -149,7 +149,7 @@
                                                                 type="decimal"
                                                                 matInput>
                                                     </mat-form-field>
-                                                </app-inline-editable-field>
+                                                </jems-inline-editable-field>
                                             </ng-container>
                                         </ng-container>
                                     </mat-cell>
@@ -161,7 +161,7 @@
 
                                 <ng-container matColumnDef="rowSum">
                                     <mat-header-cell class="justify-end" *matHeaderCellDef>
-                                        <span appText maxLines="2">{{'project.application.form.section.part.e.lump.sums.row.sum.column.title' | translate}}</span>
+                                        <span jemsText maxLines="2">{{'project.application.form.section.part.e.lump.sums.row.sum.column.title' | translate}}</span>
                                     </mat-header-cell>
                                     <mat-cell class="justify-end row-sum" [class.gap-exists]="isGapExistsInRow(control)"
                                               *matCellDef="let control;  let i = index" [formGroupName]="i">
@@ -172,7 +172,7 @@
 
                                 <ng-container matColumnDef="gap">
                                     <mat-header-cell class="justify-end" *matHeaderCellDef>
-                                        <span appText maxLines="2">{{'project.application.form.section.part.e.lump.sums.gap.column.title' | translate}}</span>
+                                        <span jemsText maxLines="2">{{'project.application.form.section.part.e.lump.sums.gap.column.title' | translate}}</span>
                                     </mat-header-cell>
                                     <mat-cell class="justify-end" *matCellDef="let control;  let i = index"
                                               [formGroupName]="i"
@@ -184,7 +184,7 @@
 
                                 <ng-container matColumnDef="description">
                                     <mat-header-cell *matHeaderCellDef>
-                                        <span appText maxLines="2">{{'project.application.form.section.part.e.lump.sums.description.column.title' | translate}}</span>
+                                        <span jemsText maxLines="2">{{'project.application.form.section.part.e.lump.sums.description.column.title' | translate}}</span>
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                         <div [matTooltip]="$any(control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.description) | translateByInputLanguage | async"
@@ -214,30 +214,30 @@
                                 <mat-footer-row *matFooterRowDef="data.columnsToDisplay"></mat-footer-row>
 
                             </mat-table>
-                        </app-multi-language-container>
+                        </jems-multi-language-container>
                     </div>
-                    <button appText *ngIf="lumpSumsForm.enabled" mat-stroked-button type="button" class="mt-2"
+                    <button jemsText *ngIf="lumpSumsForm.enabled" mat-stroked-button type="button" class="mt-2"
                             [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
                             (click)="addNewItem(data.partners)">
                         <mat-icon>add</mat-icon>
                     </button>
                     <mat-error class="pt-3">
-                        <app-form-field-errors
+                        <jems-form-field-errors
                                 [errors]="data.costIsNotSplittableError"
                                 [messages]="constants.FORM_ERRORS.items">
-                        </app-form-field-errors>
+                        </jems-form-field-errors>
                     </mat-error>
                 </ng-container>
             </ng-container>
         </form>
 
-    </app-form>
+    </jems-form>
 
     <ng-template #addItemButton>
         <ng-container *ngIf="lumpSumsForm.enabled">
-            <button appText mat-stroked-button
+            <button jemsText mat-stroked-button
                     (click)="addNewItem(data.partners)">+ {{'common.button.add' | translate}}
             </button>
         </ng-container>
     </ng-template>
-</app-project-page-template>
+</jems-project-page-template>

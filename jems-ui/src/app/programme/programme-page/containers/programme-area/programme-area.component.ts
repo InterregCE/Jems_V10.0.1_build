@@ -12,7 +12,7 @@ import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav
 import {Permission} from '../../../../security/permissions/permission';
 
 @Component({
-  selector: 'app-programme-area',
+  selector: 'jems-programme-area',
   templateUrl: './programme-area.component.html',
   styleUrls: ['./programme-area.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

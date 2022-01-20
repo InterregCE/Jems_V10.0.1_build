@@ -3,7 +3,7 @@ import {Tables} from '../../../utils/tables';
 import {PageEvent} from '@angular/material/paginator';
 
 @Component({
-  selector: 'app-paginator',
+  selector: 'jems-paginator',
   templateUrl: './paginator.component.html',
   styleUrls: ['./paginator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

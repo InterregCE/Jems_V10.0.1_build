@@ -1,7 +1,7 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         subTitleKey="users.table.title.label"
                         titleKey="topbar.main.user.user.management">
-    <button appText *hasPermission="PermissionsEnum.UserCreate"
+    <button jemsText *jemsHasPermission="PermissionsEnum.UserCreate"
             class="mb-3"
             color="primary"
             mat-raised-button
@@ -9,50 +9,50 @@
         <mat-icon>add</mat-icon>
         {{'user.create.button.add' | translate}}
     </button>
-    <app-alert *ngIf="success"
+    <jems-alert *ngIf="success"
                [show]="true"
                [type]="Alert.SUCCESS">
         <p *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</p>
-    </app-alert>
+    </jems-alert>
 
-    <app-filter-template *ngIf="data$ | async as data"
+    <jems-filter-template *ngIf="data$ | async as data"
                          [formGroup]="filterForm"
                          [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
-        <div alignItems="start" appMultiColumnRow>
-            <app-filter-text-input
+        <div alignItems="start" jemsMultiColumnRow>
+            <jems-filter-text-input
                     formControlName="name"
                     label="user.detail.field.name">
-            </app-filter-text-input>
+            </jems-filter-text-input>
 
-            <app-filter-text-input
+            <jems-filter-text-input
                     formControlName="surname"
                     label="user.detail.field.surname">
-            </app-filter-text-input>
+            </jems-filter-text-input>
 
-            <app-filter-text-input
+            <jems-filter-text-input
                     formControlName="email"
                     label="user.detail.field.email">
-            </app-filter-text-input>
+            </jems-filter-text-input>
 
-            <app-filter-autocomplete-input
+            <jems-filter-autocomplete-input
                     [options]="data.roles"
                     formControlName="roles"
                     label="user.detail.field.role"
                     placeholder="user.detail.search.for.roles">
-            </app-filter-autocomplete-input>
+            </jems-filter-autocomplete-input>
 
-            <app-filter-autocomplete-input
+            <jems-filter-autocomplete-input
                     [filterable]="false"
                     [options]="data.userStatuses"
                     formControlName="userStatuses"
                     label="user.detail.field.status"
                     placeholder="user.detail.search.for.status">
-            </app-filter-autocomplete-input>
+            </jems-filter-autocomplete-input>
         </div>
-    </app-filter-template>
+    </jems-filter-template>
 
     <div *ngIf="userPageStore.page$ | async as page">
-        <app-table
+        <jems-table
                 (newPageIndex)="userPageStore.newPageIndex$.next($event)"
                 (newPageSize)="userPageStore.newPageSize$.next($event)"
                 (sortRows)="userPageStore.newSort$.next($event)"
@@ -60,6 +60,6 @@
                 [pageIndex]="userPageStore.newPageIndex$ | async"
                 [rows]="page.content"
                 [totalElements]="page.totalElements">
-        </app-table>
+        </jems-table>
     </div>
-</app-main-page-template>
+</jems-main-page-template>

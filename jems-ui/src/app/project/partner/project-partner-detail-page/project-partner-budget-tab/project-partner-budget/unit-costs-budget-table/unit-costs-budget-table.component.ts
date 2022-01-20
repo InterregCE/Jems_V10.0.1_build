@@ -33,7 +33,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-unit-costs-budget-table',
+  selector: 'jems-unit-costs-budget-table',
   templateUrl: './unit-costs-budget-table.component.html',
   styleUrls: ['./unit-costs-budget-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

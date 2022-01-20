@@ -10,7 +10,7 @@ import {ResourceStoreService} from '@common/services/resource-store.service';
 import {RoutingService} from '@common/services/routing.service';
 
 @Component({
-  selector: 'app-top-bar',
+  selector: 'jems-top-bar',
   templateUrl: './top-bar.component.html',
   styleUrls: ['./top-bar.component.scss'],
   providers: [TopBarService]

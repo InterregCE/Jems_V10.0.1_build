@@ -25,7 +25,7 @@ import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-partner-budget',
+  selector: 'jems-project-partner-budget',
   templateUrl: './project-partner-budget.component.html',
   styleUrls: ['./project-partner-budget.component.scss'],
   providers: [FormService],

@@ -22,7 +22,7 @@ import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
 import {ProjectPartner} from '@project/model/ProjectPartner';
 
 @Component({
-  selector: 'app-project-application-form-partner-edit',
+  selector: 'jems-project-application-form-partner-edit',
   templateUrl: './project-application-form-partner-edit.component.html',
   styleUrls: ['./project-application-form-partner-edit.component.scss'],
   providers: [FormService],

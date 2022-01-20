@@ -1,12 +1,12 @@
 <div *ngIf="show"
-     class="app-alert app-fade app-alert-dismissible"
+     class="jems-alert jems-fade jems-alert-dismissible"
      [class.show]="show"
-     [class.app-alert-success]="type === Alert.SUCCESS"
-     [class.app-alert-danger]="type === Alert.ERROR"
-     [class.app-alert-warning]="type === Alert.WARNING"
-     [class.app-alert-info]="type === Alert.INFO"
+     [class.jems-alert-success]="type === Alert.SUCCESS"
+     [class.jems-alert-danger]="type === Alert.ERROR"
+     [class.jems-alert-warning]="type === Alert.WARNING"
+     [class.jems-alert-info]="type === Alert.INFO"
      id="successMessage" role="alert">
-    <button appText *ngIf="closable" type="button" data-dismiss="app-alert" class="close-btn" aria-label="Close" (click)="show = false">
+    <button jemsText *ngIf="closable" type="button" data-dismiss="jems-alert" class="close-btn" aria-label="Close" (click)="show = false">
         <span aria-hidden="true">&times;</span>
     </button>
     <ng-content></ng-content>

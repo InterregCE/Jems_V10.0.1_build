@@ -6,7 +6,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
 @Component({
-  selector: 'app-programme-regions-tree',
+  selector: 'jems-programme-regions-tree',
   templateUrl: './programme-regions-tree.component.html',
   styleUrls: ['./programme-regions-tree.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

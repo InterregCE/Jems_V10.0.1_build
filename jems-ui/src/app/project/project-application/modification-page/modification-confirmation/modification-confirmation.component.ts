@@ -9,7 +9,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-modification-confirmation',
+  selector: 'jems-modification-confirmation',
   templateUrl: './modification-confirmation.component.html',
   styleUrls: ['./modification-confirmation.component.scss'],
   providers: [FormService],

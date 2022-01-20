@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, ContentChild, ElementRef, HostBindin
 import {MatInput} from '@angular/material/input';
 
 @Component({
-  selector: 'app-inline-editable-field',
+  selector: 'jems-inline-editable-field',
   templateUrl: './inline-editable-field.component.html',
   styleUrls: ['./inline-editable-field.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

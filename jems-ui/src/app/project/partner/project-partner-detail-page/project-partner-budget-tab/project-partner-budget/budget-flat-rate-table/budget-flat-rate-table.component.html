@@ -1,16 +1,16 @@
 <mat-table
-        [appTableConfig]="[{},{maxInRem:8}]"
+        [jemsTableConfig]="[{},{maxInRem:8}]"
         [dataSource]="[]">
     <ng-container matColumnDef="description">
         <mat-header-cell *matHeaderCellDef>
-            <span appText maxLines="2">{{description}}</span>
+            <span jemsText maxLines="2">{{description}}</span>
         </mat-header-cell>
         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="total">
         <mat-header-cell class="justify-end" *matHeaderCellDef>
-            <span appText maxLines="2">{{'project.partner.budget.table.total' | translate}}</span>
+            <span jemsText maxLines="2">{{'project.partner.budget.table.total' | translate}}</span>
         </mat-header-cell>
         <mat-footer-cell *matFooterCellDef
                          class="justify-end"> {{total | asMoney}} </mat-footer-cell>

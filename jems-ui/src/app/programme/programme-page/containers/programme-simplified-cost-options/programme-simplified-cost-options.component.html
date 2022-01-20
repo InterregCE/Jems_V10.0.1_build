@@ -1,17 +1,17 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.costs.option">
-    <div appFormLayout>
+    <div jemsFormLayout>
         <ng-container *ngIf="lumpSumsDataSource$ | async as lumpSumsDataSource">
             <h3>{{'lump.sums.table.title' | translate}}</h3>
-            <app-programme-lump-sums-list
-                    appFormLayout
-                    appNoWidthLimit
+            <jems-programme-lump-sums-list
+                    jemsFormLayout
+                    jemsNoWidthLimit
                     [lumpSum]="lumpSum$ | async"
                     [dataSource]="lumpSumsDataSource">
-            </app-programme-lump-sums-list>
+            </jems-programme-lump-sums-list>
             <button mat-stroked-button
-                    *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
+                    *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                     [routerLink]="'/app/programme/costs/lumpSum/create'">
                 <mat-icon>add</mat-icon>&nbsp;{{ 'programme.lumpSum.add' | translate }}
             </button>
@@ -19,17 +19,17 @@
 
         <ng-container *ngIf="unitCostDataSource$ | async as unitCostDataSource">
             <h3>{{'unit.cost.table.title' | translate}}</h3>
-            <app-programme-unit-costs-list
-                    appFormLayout
-                    appNoWidthLimit
+            <jems-programme-unit-costs-list
+                    jemsFormLayout
+                    jemsNoWidthLimit
                     [unitCost]="unitCost$ | async"
                     [dataSource]="unitCostDataSource">
-            </app-programme-unit-costs-list>
+            </jems-programme-unit-costs-list>
             <button mat-stroked-button
-                    *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
+                    *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                     [routerLink]="'/app/programme/costs/unitCost/create'">
                 <mat-icon>add</mat-icon>&nbsp;{{ 'programme.unitCost.add' | translate }}
             </button>
         </ng-container>
     </div>
-</app-main-page-template>
+</jems-main-page-template>

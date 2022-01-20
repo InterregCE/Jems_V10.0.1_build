@@ -6,7 +6,7 @@ import {ProjectPartnerStore} from '../../services/project-partner-store.service'
 import {ProjectStore} from '../../../project-application-detail/services/project-store.service';
 
 @Component({
-  selector: 'app-project-application-form-region-selection',
+  selector: 'jems-project-application-form-region-selection',
   templateUrl: './project-application-form-region-selection.component.html',
   styleUrls: ['./project-application-form-region-selection.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

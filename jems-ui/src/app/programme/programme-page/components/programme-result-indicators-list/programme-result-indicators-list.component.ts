@@ -7,7 +7,7 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {PageResultIndicatorDetailDTO} from '@cat/api';
 
 @Component({
-  selector: 'app-programme-result-indicators-list',
+  selector: 'jems-programme-result-indicators-list',
   templateUrl: './programme-result-indicators-list.component.html',
   styleUrls: ['./programme-result-indicators-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

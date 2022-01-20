@@ -13,20 +13,20 @@
                             [formControlName]="constants.FORM_CONTROL_NAMES.translation"
                             (keydown.enter)="$event.preventDefault()"
                             matInput>
-                    <app-context-info *ngIf="contextInfoText"
+                    <jems-context-info *ngIf="contextInfoText"
                                       [infoText]="contextInfoText">
-                    </app-context-info>
+                    </jems-context-info>
                     <mat-hint *ngIf="input"
-                              [appHintFor]="input"
+                              [jemsHintFor]="input"
                               [hide]="!isEditable(getLanguageValue(formGroup), languageStore.fallbackLanguage$ | async)">
-                        <app-text-hint [currentLength]="getTranslationLength(formGroup)"
-                                       [maxLength]="maxLength"></app-text-hint>
+                        <jems-text-hint [currentLength]="getTranslationLength(formGroup)"
+                                       [maxLength]="maxLength"></jems-text-hint>
                     </mat-hint>
                     <mat-error>
-                        <app-form-field-errors
+                        <jems-form-field-errors
                                 [errors]="getTranslation(formGroup).errors"
                                 [messages]="constants.FORM_ERRORS.translation">
-                        </app-form-field-errors>
+                        </jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field *ngIf="type==='textarea'"
@@ -42,20 +42,20 @@
                               [cdkAutosizeMinRows]="minRows"
                               [cdkAutosizeMaxRows]="maxRows">
                     </textarea>
-                    <app-context-info *ngIf="contextInfoText"
+                    <jems-context-info *ngIf="contextInfoText"
                                       [infoText]="contextInfoText">
-                    </app-context-info>
+                    </jems-context-info>
                     <mat-hint *ngIf="textarea"
-                            [appHintFor]="textarea"
+                            [jemsHintFor]="textarea"
                             [hide]="!isEditable(getLanguageValue(formGroup), languageStore.fallbackLanguage$ | async)">
-                        <app-text-hint [currentLength]="getTranslationLength(formGroup)"
-                                       [maxLength]="maxLength"></app-text-hint>
+                        <jems-text-hint [currentLength]="getTranslationLength(formGroup)"
+                                       [maxLength]="maxLength"></jems-text-hint>
                     </mat-hint>
                     <mat-error>
-                        <app-form-field-errors
+                        <jems-form-field-errors
                                 [errors]="getTranslation(formGroup).errors"
                                 [messages]="constants.FORM_ERRORS.translation">
-                        </app-form-field-errors>
+                        </jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
             </ng-container>

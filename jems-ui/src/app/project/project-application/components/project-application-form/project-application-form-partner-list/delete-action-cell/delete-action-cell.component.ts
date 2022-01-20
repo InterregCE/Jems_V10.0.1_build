@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {ProjectBudgetPartner} from '@project/model/ProjectBudgetPartner';
 
 @Component({
-  selector: 'app-delete-action-cell',
+  selector: 'jems-delete-action-cell',
   templateUrl: './delete-action-cell.component.html',
   styleUrls: ['./delete-action-cell.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

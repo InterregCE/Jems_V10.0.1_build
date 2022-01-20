@@ -12,7 +12,7 @@ import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectRelevanceStrategy, CallDetailDTO} from '@cat/api';
 
 @Component({
-  selector: 'app-strategy-table',
+  selector: 'jems-strategy-table',
   templateUrl: './strategy-table.component.html',
   styleUrls: ['./strategy-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

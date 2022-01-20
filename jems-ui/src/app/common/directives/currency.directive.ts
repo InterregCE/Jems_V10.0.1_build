@@ -6,8 +6,7 @@ import {NumberService} from '../services/number.service';
  * Extends the CurrencyMaskDirective with the NumberService settings.
  */
 @Directive({
-  // tslint:disable-next-line:directive-selector
-  selector: '[currencyMask]',
+  selector: '[currencyMask]'
 })
 export class CurrencyDirective implements OnInit, OnChanges {
   @Input()

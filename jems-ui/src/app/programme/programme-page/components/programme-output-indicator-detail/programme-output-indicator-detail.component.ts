@@ -35,7 +35,7 @@ import {LanguageStore} from '../../../../common/services/language-store.service'
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-output-indicator-detail',
+  selector: 'jems-programme-output-indicator-detail',
   templateUrl: './programme-output-indicator-detail.component.html',
   styleUrls: ['./programme-output-indicator-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

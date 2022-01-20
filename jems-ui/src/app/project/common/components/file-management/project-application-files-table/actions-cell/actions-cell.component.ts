@@ -4,7 +4,7 @@ import {FileCategoryTypeEnum} from '@project/common/components/file-management/f
 import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
-  selector: 'app-actions-cell',
+  selector: 'jems-actions-cell',
   templateUrl: './actions-cell.component.html',
   styleUrls: ['./actions-cell.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

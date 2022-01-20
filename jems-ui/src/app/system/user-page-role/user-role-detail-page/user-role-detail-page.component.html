@@ -1,16 +1,16 @@
-<app-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
+<jems-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
                         titleKey="topbar.main.user.role.management"
                         [subTitleKey]="roleId ? 'userRole.detail.short' : 'userRole.breadcrumb.create'">
-    <app-form (save)="save(data.role)"
+    <jems-form (save)="save(data.role)"
               (discard)="discard(data.role, data.isUpdateAllowed)">
 
-        <form appFormLayout [formGroup]="userRoleForm">
-            <div appMultiColumnRow>
-                <mat-form-field appFormFieldWidth="xx-large">
+        <form jemsFormLayout [formGroup]="userRoleForm">
+            <div jemsMultiColumnRow>
+                <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{ 'userRole.table.column.name.name' | translate }}</mat-label>
                     <input formControlName="name" matInput required>
                     <mat-error>
-                        <app-form-field-errors [errors]="name?.errors"></app-form-field-errors>
+                        <jems-form-field-errors [errors]="name?.errors"></jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
             </div>
@@ -37,10 +37,10 @@
                                     [disabled]="!data.isUpdateAllowed">
                                 {{'userRole.allow.users.create' | translate}}
                             </mat-checkbox>
-                            <app-context-info
+                            <jems-context-info
                                     infoText="{{'userRole.allow.users.create.info' | translate}}"
                                     infoPosition="right">
-                            </app-context-info>
+                            </jems-context-info>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <mat-tree [dataSource]="dataSourceCreateProjects" [treeControl]="treeControlCreateAndCollaborate" class="permission-tree">
@@ -127,10 +127,10 @@
                                     [disabled]="!data.isUpdateAllowed">
                                 {{'userRole.allow.users.inspect' | translate}}
                             </mat-checkbox>
-                            <app-context-info
+                            <jems-context-info
                                     infoText="{{'userRole.allow.users.inspect.info' | translate}}"
                                     infoPosition="right">
-                            </app-context-info>
+                            </jems-context-info>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <mat-tree [dataSource]="dataSourceInspectProjects" [treeControl]="treeControlInspect" class="permission-tree">
@@ -221,10 +221,10 @@
                     <mat-expansion-panel-header>
                         <mat-panel-title class="mt-3">
                             {{'userRole.top.navigation' | translate}}
-                            <app-context-info
+                            <jems-context-info
                                     infoText="{{'userRole.top.navigation.info' | translate}}"
                                     infoPosition="right">
-                            </app-context-info>
+                            </jems-context-info>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                     <mat-tree [dataSource]="dataSourceTopNavigation" [treeControl]="treeControlTopNavigation" class="permission-tree">
@@ -314,5 +314,5 @@
                 </mat-expansion-panel>
             </mat-accordion>
         </form>
-    </app-form>
-</app-main-page-template>
+    </jems-form>
+</jems-main-page-template>

@@ -1,4 +1,4 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.indicators">
 
@@ -11,42 +11,42 @@
         </ul>
     </div>
 
-    <div appFormLayout>
+    <div jemsFormLayout>
         <ng-container *ngIf="currentOutputIndicatorPage$ | async as outputIndicatorPage">
             <h3>{{'output.indicator.table.title' | translate}}</h3>
-            <button appText mat-stroked-button
-                    *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
+            <button jemsText mat-stroked-button
+                    *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                     [routerLink]="'/app/programme/indicators/outputIndicator/create'">
                 <mat-icon>add</mat-icon>&nbsp;{{ 'programme.breadcrumb.outputIndicator.create' | translate }}
             </button>
-            <app-programme-output-indicators-list
-                    appNoWidthLimit
+            <jems-programme-output-indicators-list
+                    jemsNoWidthLimit
                     [indicator]="outputIndicator$ | async"
                     [indicatorPage]="outputIndicatorPage"
                     [pageIndex]="newOutputIndicatorPageIndex$ | async"
                     (newPageSize)="newOutputIndicatorPageSize$.next($event)"
                     (newPageIndex)="newOutputIndicatorPageIndex$.next($event)"
                     (newSort)="newOutputIndicatorSort$.next($event)">
-            </app-programme-output-indicators-list>
+            </jems-programme-output-indicators-list>
         </ng-container>
 
         <ng-container *ngIf="currentResultIndicatorPage$ | async as resultIndicatorPage">
             <h3>{{'result.indicator.table.title' | translate}}</h3>
-            <button appText mat-stroked-button
-                    *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
+            <button jemsText mat-stroked-button
+                    *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
                     [routerLink]="'/app/programme/indicators/resultIndicator/create'">
                 <mat-icon>add</mat-icon>&nbsp;{{ 'programme.breadcrumb.resultIndicator.create' | translate }}
             </button>
-            <app-programme-result-indicators-list
-                    appNoWidthLimit
+            <jems-programme-result-indicators-list
+                    jemsNoWidthLimit
                     [indicator]="resultIndicator$ | async"
                     [indicatorPage]="resultIndicatorPage"
                     [pageIndex]="newResultIndicatorPageIndex$ | async"
                     (newPageSize)="newResultIndicatorPageSize$.next($event)"
                     (newPageIndex)="newResultIndicatorPageIndex$.next($event)"
                     (newSort)="newResultIndicatorSort$.next($event)">
-            </app-programme-result-indicators-list>
+            </jems-programme-result-indicators-list>
         </ng-container>
     </div>
 
-</app-main-page-template>
+</jems-main-page-template>

@@ -1,72 +1,72 @@
-<app-form (discard)="resetForm()"
+<jems-form (discard)="resetForm()"
           (save)="save()">
-    <form [formGroup]="applicationForm" appFormLayout>
+    <form [formGroup]="applicationForm" jemsFormLayout>
         <h3>{{'project.application.form.section.part.a.subsection.one' | translate}}</h3>
-        <app-alert [closable]="false" [show]="true" [type]="Alert.INFO">
+        <jems-alert [closable]="false" [show]="true" [type]="Alert.INFO">
             <span class="mat-required-marker empty"> {{'common.hint.required' | translate}}</span>
-        </app-alert>
-        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ID"
-                        appFormFieldWidth="xx-large">
+        </jems-alert>
+        <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ID"
+                        jemsFormFieldWidth="xx-large">
             <mat-label>{{'project.application.form.field.project.id' | translate}}</mat-label>
             <input formControlName="projectId" matInput name="projectId">
         </mat-form-field>
 
         <div *ngIf="applicationForm?.controls?.nameOfTheLeadPartner?.value">
-            <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION"
-                            appFormFieldWidth="half">
+            <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION"
+                            jemsFormFieldWidth="half">
                 <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartner' | translate}}</mat-label>
                 <input formControlName="nameOfTheLeadPartner" matInput name="nameOfTheLeadPartner">
             </mat-form-field>
         </div>
 
         <div *ngIf="applicationForm?.controls?.nameOfTheLeadPartnerInEnglish?.value">
-            <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION"
-                            appFormFieldWidth="half">
+            <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION"
+                            jemsFormFieldWidth="half">
                 <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartnerInEnglish' | translate}}</mat-label>
                 <input formControlName="nameOfTheLeadPartnerInEnglish" matInput name="nameOfTheLeadPartnerInEnglish">
             </mat-form-field>
         </div>
 
-        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ACRONYM">
+        <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.ACRONYM">
             <mat-label>{{'project.application.form.field.project.acronym' | translate}}</mat-label>
             <input #projectAcronym formControlName="acronym" matInput name="acronym">
-            <mat-hint [appHintFor]="projectAcronym" [hide]="applicationForm.controls?.acronym?.errors !== null">
-                <app-text-hint [currentLength]="projectAcronym?.value?.length" [maxLength]="25"></app-text-hint>
+            <mat-hint [jemsHintFor]="projectAcronym" [hide]="applicationForm.controls?.acronym?.errors !== null">
+                <jems-text-hint [currentLength]="projectAcronym?.value?.length" [maxLength]="25"></jems-text-hint>
             </mat-hint>
-            <app-context-info *ngIf="applicationForm.enabled"
+            <jems-context-info *ngIf="applicationForm.enabled"
                               infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
-            </app-context-info>
+            </jems-context-info>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="applicationForm?.controls?.acronym?.errors"
                         [messages]="projectAcronymErrors">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.TITLE">
-            <app-multi-language-form-field
+        <jems-multi-language-container
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.TITLE">
+            <jems-multi-language-form-field
                     [formControlName]="'title'"
                     [maxLength]="200"
                     label="project.application.form.field.project.title"
                     type="textarea">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
 
         <h4>{{'project.application.project.duration.title' | translate}}</h4>
 
-        <div *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.DURATION" appMultiColumnRow
+        <div *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.DURATION" jemsMultiColumnRow
              stretch>
             <mat-form-field>
                 <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
                 <input (keypress)="tools.checkDigitsOnInput($event)" (paste)="tools.checkDigitsOnPaste($event)" formControlName="duration" matInput
                        name="duration" type="number">
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="applicationForm?.controls?.duration?.errors"
                             [messages]="projectDurationErrors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <span style="max-width:1rem;">{{'common.symbol.divide'| translate}}</span>
@@ -78,14 +78,14 @@
             <mat-form-field>
                 <mat-label>{{'project.application.form.field.project.periodcount' | translate}}</mat-label>
                 <input formControlName="projectPeriodCount" matInput name="projectPeriodCount"/>
-                <app-context-info
+                <jems-context-info
                         infoText="{{'project.application.form.field.project.periodcount.info'| translate}}">
-                </app-context-info>
+                </jems-context-info>
             </mat-form-field>
         </div>
 
 
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.PRIORITY">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.PRIORITY">
             <h4>{{'project.application.project.priority.title' | translate}}</h4>
             <mat-form-field *ngIf="applicationForm.enabled">
                 <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
@@ -96,14 +96,14 @@
                     </mat-option>
                 </mat-select>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="applicationForm?.controls?.programmePriority?.errors"
                             [messages]="programmePriorityErrors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </ng-container>
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.OBJECTIVE">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.OBJECTIVE">
             <ng-container *ngIf="applicationForm.enabled && currentPriority">
                 <p [ngClass]="{'empty': applicationForm?.controls?.specificObjective?.errors}"
                    class="mat-required-marker">
@@ -141,7 +141,7 @@
             </div>
         </div>
 
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_SUMMARY.SUMMARY">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_SUMMARY.SUMMARY">
             <h3>{{'project.application.form.section.part.a.subsection.two' | translate}}</h3>
             <div>
                 <span>{{'project.application.form.summary.intro.row.one' | translate}}</span>
@@ -153,25 +153,25 @@
                     <li>{{'project.application.form.summary.intro.row.six' | translate}}</li>
                 </ul>
             </div>
-            <app-multi-language-container *ngIf="!languageStore.isInputLanguageExist(this.LANGUAGE.EN)"
+            <jems-multi-language-container *ngIf="!languageStore.isInputLanguageExist(this.LANGUAGE.EN)"
                                           [staticLanguages]="[LANGUAGE.EN]">
-                <app-multi-language-form-field
+                <jems-multi-language-form-field
                         formControlName="introEn"
                         label="project.application.form.field.project.summary.in.english"
                         maxLength="2000"
                         type="textarea">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
 
-            <app-multi-language-container>
-                <app-multi-language-form-field
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
                         [maxLength]="2000"
                         formControlName="intro"
                         label="project.application.form.field.project.summary"
                         type="textarea">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
     </form>
 
-</app-form>
+</jems-form>

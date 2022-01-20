@@ -3,7 +3,7 @@ import {FilterListInputComponent} from '@common/components/filter/filter-list-in
 import {NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
-  selector: 'app-filter-autocomplete-input',
+  selector: 'jems-filter-autocomplete-input',
   templateUrl: './filter-autocomplete-input.component.html',
   styleUrls: ['./filter-autocomplete-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -3,7 +3,7 @@ import {PreConditionCheckResult} from '../../model/plugin/PreConditionCheckResul
 import {PluginMessageType} from '../../model/plugin/PluginMessageType';
 
 @Component({
-  selector: 'app-project-application-pre-condition-check-result',
+  selector: 'jems-project-application-pre-condition-check-result',
   templateUrl: './project-application-pre-condition-check-result.component.html',
   styleUrls: ['./project-application-pre-condition-check-result.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

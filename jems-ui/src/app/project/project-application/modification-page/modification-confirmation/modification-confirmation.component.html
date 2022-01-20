@@ -18,27 +18,27 @@
         </mat-panel-title>
     </mat-expansion-panel-header>
 
-    <app-form [formGroup]="decisionForm"
+    <jems-form [formGroup]="decisionForm"
               (save)="saveConfirmation()"
               (discard)="decisionForm.reset()">
-        <form appFormLayout [formGroup]="decisionForm">
-            <div appLabel class="mat-required-marker"
+        <form jemsFormLayout [formGroup]="decisionForm">
+            <div jemsLabel class="mat-required-marker"
                  [ngClass]="{'empty': !approvedToggle.checked && !rejectedToggle.checked}">
                 {{'project.application.form.section.modification.decision' | translate}}
             </div>
             <mat-button-toggle-group formControlName="status">
                 <mat-button-toggle #approvedToggle [value]="ProjectStatus.APPROVED">
-                    <span appText
+                    <span jemsText
                           maxWidth="230">{{'project.application.form.section.modification.approve' | translate}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle #rejectedToggle [value]="ProjectStatus.MODIFICATIONREJECTED">
-                    <span appText
+                    <span jemsText
                           maxWidth="230">{{'project.application.form.section.modification.reject' | translate}}</span>
                 </mat-button-toggle>
             </mat-button-toggle-group>
 
-            <div appMultiColumnRow stretch>
-                <mat-form-field appFormFieldWidth="xx-large">
+            <div jemsMultiColumnRow stretch>
+                <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'project.assessment.fundingDecision.dialog.field.date' | translate | dateFormatInfo}}</mat-label>
                     <input required formControlName="decisionDate" matInput
                            [matDatepicker]="decisionPicker"
@@ -46,36 +46,36 @@
                     <mat-datepicker-toggle matSuffix [for]="decisionPicker"></mat-datepicker-toggle>
                     <mat-datepicker #decisionPicker></mat-datepicker>
                     <mat-error>
-                        <app-form-field-errors
+                        <jems-form-field-errors
                                 [errors]="decisionForm?.controls?.decisionDate?.errors"
                                 [messages]="dateErrors">
-                        </app-form-field-errors>
+                        </jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
 
-                <mat-form-field appFormFieldWidth="xx-large">
+                <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'Entry into force' | translate | dateFormatInfo}}</mat-label>
                     <input required formControlName="entryIntoForceDate" matInput
                            [matDatepicker]="forcePicker">
                     <mat-datepicker-toggle matSuffix [for]="forcePicker"></mat-datepicker-toggle>
                     <mat-datepicker #forcePicker></mat-datepicker>
                     <mat-error>
-                        <app-form-field-errors
+                        <jems-form-field-errors
                                 [errors]="decisionForm?.controls?.decisionDate?.errors"
                                 [messages]="dateErrors">
-                        </app-form-field-errors>
+                        </jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
             </div>
 
-            <app-expandable-textarea class="mt-2"
+            <jems-expandable-textarea class="mt-2"
                                      [control]="decisionForm?.controls?.note"
                                      [errors]="decisionForm?.controls?.note?.errors"
                                      [characterLimit]="10000"
                                      label="project.assessment.fundingDecision.dialog.field.note"
                                      [customStyle]="'outline'">
-            </app-expandable-textarea>
+            </jems-expandable-textarea>
         </form>
-    </app-form>
+    </jems-form>
 
 </mat-expansion-panel>

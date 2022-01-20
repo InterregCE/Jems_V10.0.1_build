@@ -1,8 +1,8 @@
-<app-form (discard)="resetForm(data.allowedRealCosts)"
+<jems-form (discard)="resetForm(data.allowedRealCosts)"
           (save)="updateAllowedRealCosts()"
           *ngIf="data$ | async as data">
     <h3>{{'call.allow.real.costs.title' | translate}}</h3>
-    <form [formGroup]="form" appFormLayout>
+    <form [formGroup]="form" jemsFormLayout>
         <mat-checkbox [disabled]="data.callIsPublished && data.allowedRealCosts.allowRealStaffCosts"
                       formControlName="allowRealStaffCosts">
             {{'call.allow.real.costs.staff' | translate}}
@@ -25,4 +25,4 @@
             {{'call.allow.real.costs.infrastructure' | translate}}
         </mat-checkbox>
     </form>
-</app-form>
+</jems-form>

@@ -7,7 +7,7 @@ import {ProjectStore} from '@project/project-application/containers/project-appl
 import Permissions = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-project-application-assessments',
+  selector: 'jems-project-application-assessments',
   templateUrl: './project-application-assessments.component.html',
   styleUrls: ['./project-application-assessments.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

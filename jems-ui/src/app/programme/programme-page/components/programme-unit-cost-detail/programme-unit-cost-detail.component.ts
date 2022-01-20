@@ -24,7 +24,7 @@ import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-unit-cost-detail',
+  selector: 'jems-programme-unit-cost-detail',
   templateUrl: './programme-unit-cost-detail.component.html',
   styleUrls: ['./programme-unit-cost-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,8 +1,8 @@
-<app-main-page-template
+<jems-main-page-template
         [needsCard]="true"
         titleKey="project.detail.new.title">
 
-    <form appFormLayout *ngIf="callStore.call$ | async as call" [formGroup]="submissionForm">
+    <form jemsFormLayout *ngIf="callStore.call$ | async as call" [formGroup]="submissionForm">
         <h3>{{'project.detail.new.call.info.title' | translate}} {{call.id}} – {{call.name}}</h3>
 
         <div id="project-info">
@@ -26,28 +26,28 @@
             </div>
         </div>
 
-        <app-alert [type]="Alert.WARNING" [show]="true">{{'project.detail.new.hint' | translate}}</app-alert>
+        <jems-alert [type]="Alert.WARNING" [show]="true">{{'project.detail.new.hint' | translate}}</jems-alert>
 
         <mat-form-field>
             <mat-label>{{'project.detail.new.field.acronym' | translate}}</mat-label>
             <input name="acronym" formControlName="acronym" matInput required>
-            <app-context-info
+            <jems-context-info
                     infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
-            </app-context-info>
+            </jems-context-info>
             <mat-error>
-                <app-form-field-errors [errors]="submissionForm?.controls?.acronym?.errors">
-                </app-form-field-errors>
+                <jems-form-field-errors [errors]="submissionForm?.controls?.acronym?.errors">
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
 
-        <div appMultiColumnRow>
-            <button appText *ngxPermissionsOnly="Permission.APPLICANT_USER"
+        <div jemsMultiColumnRow>
+            <button jemsText *ngxPermissionsOnly="Permission.APPLICANT_USER"
                     mat-stroked-button
                     type="button"
                     (click)="onCancel()">
                 {{'project.detail.new.button.cancel' | translate}}
             </button>
-            <button appText mat-raised-button
+            <button jemsText mat-raised-button
                     color="primary"
                     type="submit"
                     [disabled]="submissionForm.invalid"
@@ -57,12 +57,12 @@
             </button>
         </div>
 
-        <app-alert *ngIf="saveError$ | async as error"
+        <jems-alert *ngIf="saveError$ | async as error"
                    [show]="!!error?.i18nMessage.i18nKey"
                    [type]="Alert.ERROR">
-            <app-api-error-content [error]="error"></app-api-error-content>
-        </app-alert>
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
         `
     </form>
 
-</app-main-page-template>
+</jems-main-page-template>

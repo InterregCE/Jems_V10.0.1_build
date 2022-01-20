@@ -22,7 +22,7 @@
                 <h1 class="login-headline">
                     <img class="logo-inline" src="assets/logos/JemsLogoNoClaim_96.png" alt="">
                     &ndash; {{'authentication.login.title.label' | translate}}</h1>
-                <form appFormLayout gap="0.5rem" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                <form jemsFormLayout gap="0.5rem" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                     <mat-form-field>
                         <mat-label>
                             <mat-icon>email</mat-icon>&nbsp;{{'authentication.email.label' | translate}}</mat-label>
@@ -52,7 +52,7 @@
                         {{'user.terms.login.firstText' | translate}} <span class="terms-link"><a [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} </a></span>
                     </div>
 
-                    <button appText mat-raised-button
+                    <button jemsText mat-raised-button
                             class="button-full-width"
                             color="primary"
                             type="submit"
@@ -63,11 +63,11 @@
                         <a [routerLink]="registerLink"><strong>{{'user.login.button.create' | translate}}</strong></a>
                         <a *ngIf="helpdeskUrl$ | async as helpdeskUrl" [href]="helpdeskUrl">{{'user.login.button.forgot' | translate}}</a>
                     </div>
-                    <app-alert *ngIf="error$ | async as error"
+                    <jems-alert *ngIf="error$ | async as error"
                                [show]="!submitted && !!error.i18nMessage?.i18nKey"
                                [type]="Alert.ERROR">
-                        <app-api-error-content [error]="error"></app-api-error-content>
-                    </app-alert>
+                        <jems-api-error-content [error]="error"></jems-api-error-content>
+                    </jems-alert>
                 </form>
                 <div class="accessibility-statement">
                     {{'user.login.accessibility.statement.part.1' | translate}}

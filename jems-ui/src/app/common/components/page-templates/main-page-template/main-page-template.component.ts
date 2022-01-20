@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, ElementRef, Input, TemplateRef, ViewChild} from '@angular/core';
 
 @Component({
-  selector: 'app-main-page-template',
+  selector: 'jems-main-page-template',
   templateUrl: './main-page-template.component.html',
   styleUrls: ['./main-page-template.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

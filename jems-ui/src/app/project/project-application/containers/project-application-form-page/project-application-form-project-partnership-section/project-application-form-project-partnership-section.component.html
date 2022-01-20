@@ -1,10 +1,10 @@
-<app-project-page-template
+<jems-project-page-template
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.c">
-    <app-project-application-form-project-partnership-detail
+    <jems-project-application-form-project-partnership-detail
             [success$]="saveSuccess$"
             [project]="partnership$ | async"
             [error$]="saveError$"
             (updateData)="updatePartnership$.next($event)">
-    </app-project-application-form-project-partnership-detail>
-</app-project-page-template>
+    </jems-project-application-form-project-partnership-detail>
+</jems-project-page-template>

@@ -6,7 +6,7 @@ import {ThemeService} from './theme/theme.service';
 import {takeUntil} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-root',
+  selector: 'jems-root',
   styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush

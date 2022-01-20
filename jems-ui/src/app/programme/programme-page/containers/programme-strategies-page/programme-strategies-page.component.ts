@@ -8,7 +8,7 @@ import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
-  selector: 'app-programme-strategies-page',
+  selector: 'jems-programme-strategies-page',
   templateUrl: './programme-strategies-page.component.html',
   styleUrls: ['./programme-strategies-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

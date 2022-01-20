@@ -13,7 +13,7 @@ import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-work-package-outputs-tab',
+  selector: 'jems-project-work-package-outputs-tab',
   templateUrl: './project-work-package-outputs-tab.component.html',
   styleUrls: ['./project-work-package-outputs-tab.component.scss'],
   providers: [FormService],

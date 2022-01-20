@@ -14,7 +14,7 @@ import {ProjectPartnerStore} from '@project/project-application/containers/proje
 import { Alert } from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-project-application-form-partner-section',
+  selector: 'jems-project-application-form-partner-section',
   templateUrl: './project-application-form-partner-section.component.html',
   styleUrls: ['./project-application-form-partner-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -21,7 +21,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-project-application-form-overall-objective-detail',
+  selector: 'jems-project-application-form-overall-objective-detail',
   templateUrl: './project-application-form-overall-objective-detail.component.html',
   styleUrls: ['./project-application-form-overall-objective-detail.component.scss'],
   providers: [FormService],

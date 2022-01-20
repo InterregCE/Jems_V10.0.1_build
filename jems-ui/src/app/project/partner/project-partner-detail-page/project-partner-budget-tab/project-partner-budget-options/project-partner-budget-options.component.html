@@ -1,7 +1,7 @@
 <ng-container *ngIf="(data$ | async) as data">
-    <app-form [confirmSave]="realCostsConfirmationConfig(formToBudgetOptions(data.callFlatRateSettings), data.budgets)"
+    <jems-form [confirmSave]="realCostsConfirmationConfig(formToBudgetOptions(data.callFlatRateSettings), data.budgets)"
               (save)="updateBudgetOptions(formToBudgetOptions(data.callFlatRateSettings))">
-        <form appFormLayout *ngIf="data.isAnyOptionAvailable else noOptionIsAvailable" [formGroup]="budgetOptionForm">
+        <form jemsFormLayout *ngIf="data.isAnyOptionAvailable else noOptionIsAvailable" [formGroup]="budgetOptionForm">
             <h3>{{'project.partner.budget.options.header' | translate}}</h3>
             <mat-list>
                 <mat-list-item *ngIf="data.callFlatRateSettings.staffCostFlatRateSetup">
@@ -20,7 +20,7 @@
                         </span>
                     </mat-checkbox>
                     <mat-form-field
-                            appFormFieldWidth
+                            jemsFormFieldWidth
                             extendError
                             [expectedNumberOfChars]="3"
                             *ngIf="isStaffCostsFlatRateSelected?.value && data.callFlatRateSettings.staffCostFlatRateSetup.adjustable">
@@ -32,11 +32,11 @@
                         <mat-hint>{{constants.MIN_FLAT_RATE_VALUE}}–{{data.callFlatRateSettings.staffCostFlatRateSetup.rate}}%</mat-hint>
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.staff.costs.on.direct.cost.flat.rate.percent' | translate}}</span>
                         <mat-error>
-                            <app-form-field-errors
+                            <jems-form-field-errors
                                     [errors]="staffCostsFlatRate?.errors"
                                     [messages]="constants.FORM_ERRORS.flatRateErrors"
                                     [args]="data.flatRateErrorsArgs.staff">
-                            </app-form-field-errors>
+                            </jems-form-field-errors>
                         </mat-error>
                     </mat-form-field>
                 </mat-list-item>
@@ -53,14 +53,14 @@
                                 {{data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.rate}}
                                 {{'project.partner.budget.options.office.on.staff.cost.flat.rate.percent' | translate}}
                                 ({{'project.partner.budget.options.definition.fixed' | translate}})
-                                <app-context-info infoPosition="right"
+                                <jems-context-info infoPosition="right"
                                       infoText="{{'project.partner.budget.options.office.on.staff.cost.flat.rate.info' | translate}}">
-                                </app-context-info>
+                                </jems-context-info>
                             </span>
                         </span>
                     </mat-checkbox>
                     <mat-form-field
-                            appFormFieldWidth
+                            jemsFormFieldWidth
                             extendError
                             [expectedNumberOfChars]="3"
                             *ngIf="isOfficeOnStaffSelected?.value && data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.adjustable">
@@ -72,15 +72,15 @@
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <mat-hint>{{constants.MIN_FLAT_RATE_VALUE}}–{{data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.rate}}%</mat-hint>
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.office.on.staff.cost.flat.rate.percent' | translate}}</span>
-                        <app-context-info matSuffix
+                        <jems-context-info matSuffix
                                           infoText="{{'project.partner.budget.options.office.on.staff.cost.flat.rate.info' | translate}}">
-                        </app-context-info>
+                        </jems-context-info>
                         <mat-error>
-                            <app-form-field-errors
+                            <jems-form-field-errors
                                     [errors]="officeOnStaffCostsFlatRate?.errors"
                                     [messages]="constants.FORM_ERRORS.flatRateErrors"
                                     [args]="data.flatRateErrorsArgs.officeOnStaff">
-                            </app-form-field-errors>
+                            </jems-form-field-errors>
                         </mat-error>
                     </mat-form-field>
                 </mat-list-item>
@@ -96,14 +96,14 @@
                                 {{data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.rate}}
                                 {{'project.partner.budget.options.office.on.direct.cost.flat.rate.percent' | translate}}
                                 ({{'project.partner.budget.options.definition.fixed' | translate}})
-                                <app-context-info infoPosition="right"
+                                <jems-context-info infoPosition="right"
                                       infoText="{{'project.partner.budget.options.office.on.direct.cost.flat.rate.info' | translate}}">
-                                </app-context-info>
+                                </jems-context-info>
                             </span>
                         </span>
                     </mat-checkbox>
                     <mat-form-field
-                            appFormFieldWidth
+                            jemsFormFieldWidth
                             extendError
                             [expectedNumberOfChars]="3"
                             *ngIf="isOfficeOnDirectCostsSelected?.value && data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.adjustable">
@@ -114,15 +114,15 @@
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <mat-hint>{{constants.MIN_FLAT_RATE_VALUE}}–{{data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.rate}}%</mat-hint>
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.office.on.direct.cost.flat.rate.percent' | translate}}</span>
-                        <app-context-info matSuffix
+                        <jems-context-info matSuffix
                                           infoText="{{'project.partner.budget.options.office.on.direct.cost.flat.rate.info' | translate}}">
-                        </app-context-info>
+                        </jems-context-info>
                         <mat-error>
-                            <app-form-field-errors
+                            <jems-form-field-errors
                                     [errors]="officeOnDirectCostsFlatRate?.errors"
                                     [messages]="constants.FORM_ERRORS.flatRateErrors"
                                     [args]="data.flatRateErrorsArgs.officeOnDirect">
-                            </app-form-field-errors>
+                            </jems-form-field-errors>
                         </mat-error>
                     </mat-form-field>
                 </mat-list-item>
@@ -142,7 +142,7 @@
                         </span>
                     </mat-checkbox>
                     <mat-form-field
-                            appFormFieldWidth
+                            jemsFormFieldWidth
                             extendError
                             [expectedNumberOfChars]="3"
                             *ngIf="isTravelOnStaffCostsSelected?.value && data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.adjustable">
@@ -157,11 +157,11 @@
                               class="pl-1">{{'project.partner.budget.options.travel.based.on.staff.cost.flat.rate.percent' | translate}}
                         </span>
                         <mat-error>
-                            <app-form-field-errors
+                            <jems-form-field-errors
                                     [errors]="travelOnStaffCostsFlatRate?.errors"
                                     [messages]="constants.FORM_ERRORS.flatRateErrors"
                                     [args]="data.flatRateErrorsArgs.travel">
-                            </app-form-field-errors>
+                            </jems-form-field-errors>
                         </mat-error>
                     </mat-form-field>
                 </mat-list-item>
@@ -178,14 +178,14 @@
                                 {{data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.rate}}
                                 {{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.percent' | translate}}
                                 ({{'project.partner.budget.options.definition.fixed' | translate}})
-                                <app-context-info infoPosition="right"
+                                <jems-context-info infoPosition="right"
                                           infoText="{{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.info' | translate}}">
-                                </app-context-info>
+                                </jems-context-info>
                             </span>
                         </span>
                     </mat-checkbox>
                     <mat-form-field
-                            appFormFieldWidth
+                            jemsFormFieldWidth
                             extendError
                             [expectedNumberOfChars]="3"
                             *ngIf="isOtherCostsOnStaffCostsSelected?.value && data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.adjustable">
@@ -197,21 +197,21 @@
                                (keypress)="Tools.checkDigitsOnInput($event)">
                         <mat-hint>{{constants.MIN_FLAT_RATE_VALUE}}–{{data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.rate}}%</mat-hint>
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.percent' | translate}}</span>
-                        <app-context-info matSuffix
+                        <jems-context-info matSuffix
                                           infoText="{{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.info' | translate}}">
-                        </app-context-info>
+                        </jems-context-info>
                         <mat-error>
-                            <app-form-field-errors
+                            <jems-form-field-errors
                                     [errors]="otherCostsOnStaffCostsFlatRate?.errors"
                                     [messages]="constants.FORM_ERRORS.flatRateErrors"
                                     [args]="data.flatRateErrorsArgs.other">
-                            </app-form-field-errors>
+                            </jems-form-field-errors>
                         </mat-error>
                     </mat-form-field>
                 </mat-list-item>
             </mat-list>
         </form>
-    </app-form>
+    </jems-form>
 </ng-container>
 <ng-template #noOptionIsAvailable>
     <div>{{'project.partner.budget.options.empty' | translate}}</div>

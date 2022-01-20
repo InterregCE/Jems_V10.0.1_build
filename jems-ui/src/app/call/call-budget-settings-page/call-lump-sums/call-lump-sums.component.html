@@ -1,10 +1,10 @@
-<app-form *ngIf="data$ | async as data"
+<jems-form *ngIf="data$ | async as data"
           (discard)="resetForm(data.programmeLumpSums, data.callLumpSums, data.callIsEditable, data.callIsPublished)"
           (save)="onSubmit()">
     <h3>{{'lump.sums.table.title' | translate}}</h3>
-    <app-multi-language-container>
+    <jems-multi-language-container>
         <div *ngIf="lumpSumDataSource.data.length"
-             [appTableConfig]="[{maxInRem:3},{},{maxInRem:8}]">
+             [jemsTableConfig]="[{maxInRem:3},{},{maxInRem:8}]">
             <div>
                 <span>{{'lump.sum.table.column.name.activate.option' | translate}}</span>
                 <span>{{'lump.sum.table.column.name.name' | translate}}</span>
@@ -21,5 +21,5 @@
                 <span class="justify-end">{{ element?.cost | asMoney}}</span>
             </div>
         </div>
-    </app-multi-language-container>
-</app-form>
+    </jems-multi-language-container>
+</jems-form>

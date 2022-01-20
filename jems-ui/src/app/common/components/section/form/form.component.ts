@@ -6,7 +6,7 @@ import {map} from 'rxjs/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-form',
+  selector: 'jems-form',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss'],
   animations: [

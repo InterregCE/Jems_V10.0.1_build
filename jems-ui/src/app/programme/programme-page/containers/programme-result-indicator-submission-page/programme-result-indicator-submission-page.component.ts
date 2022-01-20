@@ -13,7 +13,7 @@ import {
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
-  selector: 'app-programme-result-indicator-submission-page',
+  selector: 'jems-programme-result-indicator-submission-page',
   templateUrl: './programme-result-indicator-submission-page.component.html',
   styleUrls: ['./programme-result-indicator-submission-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

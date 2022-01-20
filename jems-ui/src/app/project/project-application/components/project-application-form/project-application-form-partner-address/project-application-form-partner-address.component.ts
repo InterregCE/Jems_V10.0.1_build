@@ -12,7 +12,7 @@ import {FormVisibilityStatusService} from '@project/common/services/form-visibil
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-application-form-partner-address',
+  selector: 'jems-project-application-form-partner-address',
   templateUrl: './project-application-form-partner-address.component.html',
   styleUrls: ['./project-application-form-partner-address.component.scss'],
   providers: [FormService],

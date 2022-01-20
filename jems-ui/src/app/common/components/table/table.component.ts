@@ -13,7 +13,7 @@ import {ColumnWidth} from './model/column-width';
 import {LocaleDatePipe} from '../../pipe/locale-date.pipe';
 
 @Component({
-  selector: 'app-table',
+  selector: 'jems-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })

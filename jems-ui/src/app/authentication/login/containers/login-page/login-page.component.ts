@@ -6,7 +6,7 @@ import {LoginRequest} from '@cat/api';
 import {AuthenticationStore} from '../../../service/authentication-store.service';
 
 @Component({
-  selector: 'app-login-page',
+  selector: 'jems-login-page',
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss']
 })

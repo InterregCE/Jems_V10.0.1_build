@@ -20,27 +20,27 @@
 
 <ng-template #saveDiscard>
     <mat-card-footer [@slideInOut] class="footer">
-        <button appText [disabled]="(formService.pending$ | async) === true"
+        <button jemsText [disabled]="(formService.pending$ | async) === true"
                 mat-stroked-button class="action-button discard" type="button"
                 (click)="formService.setDirty(false); this.discard.emit(); formService.reset()">
             <mat-icon>cancel</mat-icon>&nbsp;{{'common.cancel.label' | translate}}
         </button>
-        <app-pending-button
+        <jems-pending-button
                 icon="save"
                 [confirm]="confirmSave"
                 [disabled]="(formService.valid$ | async) === false"
                 [pending]="(formService.pending$ | async) === true"
                 (clicked)="submit()">
             {{formService.saveLabel | translate}}
-        </app-pending-button>
+        </jems-pending-button>
     </mat-card-footer>
 </ng-template>
 
 <ng-template #saveSuccess let-message>
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
-            <div class="message app-alert-success">
-                <mat-icon class="app-alert-icon">check_circle</mat-icon>
+            <div class="message jems-alert-success">
+                <mat-icon class="jems-alert-icon">check_circle</mat-icon>
                 <span *ngIf="message.i18nKey">{{message.i18nKey | translate : message.i18nArguments}}</span>
                 <span *ngIf="!message.i18nKey">{{message | translate}}</span>
             </div>
@@ -51,8 +51,8 @@
 <ng-template #saveError let-error>
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
-            <div class="message app-alert-danger">
-                <mat-icon class="app-alert-icon">warning_amber</mat-icon>
+            <div class="message jems-alert-danger">
+                <mat-icon class="jems-alert-icon">warning_amber</mat-icon>
                 <div>
                     <div>
                         <span class="mat-body-strong">
