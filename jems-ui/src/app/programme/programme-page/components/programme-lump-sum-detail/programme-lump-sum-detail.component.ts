@@ -30,6 +30,7 @@ import {Forms} from '../../../../common/utils/forms';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent implements OnInit {
+  private static readonly LUMP_SUM_OUT_OF_RANGE_ERROR = 'lump.sum.out.of.range';
 
   ProgrammeLumpSumDTO = ProgrammeLumpSumDTO;
   isProgrammeSetupLocked: boolean;
@@ -60,9 +61,9 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     categories: ['', Validators.required]
   });
   costErrors = {
-    required: 'lump.sum.out.of.range',
-    min: 'lump.sum.out.of.range',
-    max: 'lump.sum.out.of.range'
+    required: ProgrammeLumpSumDetailComponent.LUMP_SUM_OUT_OF_RANGE_ERROR,
+    min: ProgrammeLumpSumDetailComponent.LUMP_SUM_OUT_OF_RANGE_ERROR,
+    max: ProgrammeLumpSumDetailComponent.LUMP_SUM_OUT_OF_RANGE_ERROR
   };
 
   allowSplittingErrors = {

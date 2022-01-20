@@ -12,6 +12,7 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
   providedIn: 'root'
 })
 export class AssessmentAndDecisionStore {
+  private static readonly LOG_INFO_CHANGE_STATUS_PROJECT = 'Changed status for project';
 
   revertToStatus$: Observable<string | null>;
 
@@ -26,7 +27,7 @@ export class AssessmentAndDecisionStore {
     return this.projectStatusService.returnApplicationToApplicant(projectId)
       .pipe(
         tap(() => this.projectStore.projectStatusChanged$.next()),
-        tap(status => Log.info('Changed status for project', projectId, status))
+        tap(status => Log.info(AssessmentAndDecisionStore.LOG_INFO_CHANGE_STATUS_PROJECT, projectId, status))
       );
   }
 
@@ -34,7 +35,7 @@ export class AssessmentAndDecisionStore {
     return this.projectStatusService.handBackToApplicant(projectId)
       .pipe(
         tap(() => this.projectStore.projectStatusChanged$.next()),
-        tap(status => Log.info('Changed status for project', projectId, status))
+        tap(status => Log.info(AssessmentAndDecisionStore.LOG_INFO_CHANGE_STATUS_PROJECT, projectId, status))
       );
   }
 
@@ -42,7 +43,7 @@ export class AssessmentAndDecisionStore {
     return this.projectStatusService.startSecondStep(projectId)
       .pipe(
         tap(() => this.projectStore.projectStatusChanged$.next()),
-        tap(status => Log.info('Changed status for project', projectId, status))
+        tap(status => Log.info(AssessmentAndDecisionStore.LOG_INFO_CHANGE_STATUS_PROJECT, projectId, status))
       );
   }
 
@@ -50,7 +51,7 @@ export class AssessmentAndDecisionStore {
     return this.projectStatusService.revertApplicationDecision(projectId)
       .pipe(
         tap(() => this.projectStore.projectStatusChanged$.next()),
-        tap(status => Log.info('Changed status for project', projectId, status))
+        tap(status => Log.info(AssessmentAndDecisionStore.LOG_INFO_CHANGE_STATUS_PROJECT, projectId, status))
       );
   }
 

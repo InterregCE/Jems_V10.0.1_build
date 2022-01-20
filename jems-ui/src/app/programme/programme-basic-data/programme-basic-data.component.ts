@@ -27,6 +27,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 })
 export class ProgrammeBasicDataComponent extends ViewEditFormComponent implements OnInit {
   private static readonly DATE_SHOULD_BE_VALID = 'common.date.should.be.valid';
+  private static readonly NUMBER_OUT_OF_RANGE_ERROR = 'common.error.field.number.out.of.range';
   Permission = Permission;
   tools = Tools;
 
@@ -85,13 +86,13 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
   };
 
   firstYearErrors = {
-    max: 'common.error.field.number.out.of.range',
-    min: 'common.error.field.number.out.of.range',
+    max: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR,
+    min: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR,
   };
 
   lastYearErrors = {
-    max: 'common.error.field.number.out.of.range',
-    min: 'common.error.field.number.out.of.range',
+    max: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR,
+    min: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR,
   };
 
   dateErrors = {

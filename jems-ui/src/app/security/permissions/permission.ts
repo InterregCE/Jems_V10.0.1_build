@@ -6,6 +6,7 @@ export class Permission {
   public static readonly ADMINISTRATOR = 'administrator';
   public static readonly PROGRAMME_USER = 'programme user';
   public static readonly APPLICANT_USER = 'applicant user';
+  public static readonly PROJECT_APPLICATION_FORM_TITLE_NAME = 'project.application.form.title';
 
   public static readonly SYSTEM_MODULE_PERMISSIONS = [
     PermissionsEnum.AuditRetrieve,
@@ -42,10 +43,10 @@ export class Permission {
         ]
     },
     {
-      name: 'project.application.form.title',
+      name: Permission.PROJECT_APPLICATION_FORM_TITLE_NAME,
       children: [
         {
-          name: 'project.application.form.title',
+          name: Permission.PROJECT_APPLICATION_FORM_TITLE_NAME,
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [],
           editPermissions: [],
@@ -113,10 +114,10 @@ export class Permission {
       ]
     },
     {
-      name: 'project.application.form.title',
+      name: Permission.PROJECT_APPLICATION_FORM_TITLE_NAME,
       children: [
         {
-          name: 'project.application.form.title',
+          name: Permission.PROJECT_APPLICATION_FORM_TITLE_NAME,
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [PermissionsEnum.ProjectFormRetrieve],
           editPermissions: [PermissionsEnum.ProjectFormUpdate],

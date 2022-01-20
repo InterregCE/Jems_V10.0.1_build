@@ -30,9 +30,10 @@ import {TranslateService} from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent implements OnInit {
+  private static readonly PROGRAMME_UNIT_COST_INVALID = 'programme.unitCost.costPerUnit.invalid';
 
   MIN_VALUE = 0.01;
-  MAX_VALUE =  999999999.99;
+  MAX_VALUE = 999999999.99;
 
   @Input()
   unitCost: ProgrammeUnitCostDTO;
@@ -61,9 +62,9 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
   });
 
   costErrors = {
-    required: 'programme.unitCost.costPerUnit.invalid',
-    min: 'programme.unitCost.costPerUnit.invalid',
-    max: 'programme.unitCost.costPerUnit.invalid'
+    required: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID,
+    min: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID,
+    max: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID
   };
 
   categoriesErrorsMultiple = {
@@ -108,8 +109,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
     super(changeDetectorRef, translationService);
 
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
-        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
-        untilDestroyed(this)
+      tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+      untilDestroyed(this)
     ).subscribe();
   }
 
@@ -226,7 +227,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
       this.unitCostForm.controls.categories.setErrors(null);
     }
     if ((this.unitCost.oneCostCategory && this.unitCost.categories?.length === 1)
-        || (!this.unitCost.oneCostCategory && this.unitCost.categories?.length >= 2)) {
+      || (!this.unitCost.oneCostCategory && this.unitCost.categories?.length >= 2)) {
       this.validNumberOfSelections = true;
     }
     if (this.isProgrammeSetupLocked && !this.isCreate) {
