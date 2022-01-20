@@ -66,7 +66,8 @@ internal class CreateProjectTest : UnitTest() {
             endDate = endDate,
             isAdditionalFundAllowed = true,
             lengthOfPeriod = 12,
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null
         )
 
         val callSettings = ProjectCallSettings(
@@ -81,7 +82,8 @@ internal class CreateProjectTest : UnitTest() {
             lumpSums = emptyList(),
             unitCosts = emptyList(),
             stateAids = emptyList(),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null
         )
 
         private val userEntity = UserEntity(

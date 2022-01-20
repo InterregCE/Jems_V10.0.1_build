@@ -26,7 +26,6 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackag
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
-import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
@@ -91,7 +90,8 @@ class ProjectServiceTest : UnitTest() {
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(1),
         status = CallStatus.PUBLISHED,
-        lengthOfPeriod = 1
+        lengthOfPeriod = 1,
+        preSubmissionCheckPluginKey = null
     )
 
     private fun wp(id: Long, project: ProjectEntity) = WorkPackageEntity(id = id, project = project).apply {
@@ -206,7 +206,8 @@ class ProjectServiceTest : UnitTest() {
             endDateStep1 = null,
             endDate = ZonedDateTime.now(),
             status = CallStatus.PUBLISHED,
-            lengthOfPeriod = 6
+            lengthOfPeriod = 6,
+            preSubmissionCheckPluginKey = null
         )
         val projectData = InputProjectData(acronym = "acronym", duration = 13)
         val projectToReturn = ProjectEntity(
@@ -228,7 +229,8 @@ class ProjectServiceTest : UnitTest() {
             lumpSums = emptyList(),
             unitCosts = emptyList(),
             stateAids = emptyList(),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         val slot = slot<ProjectEntity>()

@@ -345,7 +345,8 @@ internal class ProjectPersistenceTest : UnitTest() {
                         threshold = stateAidEntity.threshold
                     )
                 ),
-                applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
+                applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
+                preSubmissionCheckPluginKey = null
             )
         )
     }

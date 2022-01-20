@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.plugin.repository.PluginStatusRepository
 import io.cloudflight.jems.server.project.authorization.CanSubmitApplication
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.execute_pre_condition_check.pluginKey
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.projectStatusChanged
@@ -34,15 +33,14 @@ class SubmitApplication(
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 when {
                     callSettings.endDateStep1 == null || projectSummary.status.isInStep2() ->
-                        // todo plugin key should be used from call settings for the project when it is added
-                        preCheckAndSubmit(projectSummary, "standard-pre-condition-check-plugin")
+                        preCheckAndSubmit(projectSummary, callSettings.preSubmissionCheckPluginKey)
                     else -> submitApplication(projectSummary)
                 }
             }
         }
 
-    private fun preCheckAndSubmit(projectSummary: ProjectSummary, pluginKey: String) =
-        if (isPluginEnabled())
+    private fun preCheckAndSubmit(projectSummary: ProjectSummary, pluginKey: String?) =
+        if (isPluginEnabled(pluginKey))
             jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey).check(projectSummary.id).let {
                 when {
                     it.isSubmissionAllowed -> this.submitApplication(projectSummary)
@@ -60,8 +58,9 @@ class SubmitApplication(
         }
     }
 
-    private fun isPluginEnabled(): Boolean =
-        pluginStatusRepository.findById(pluginKey).let {
+    private fun isPluginEnabled(pluginKey: String?): Boolean =
+        if (pluginKey.isNullOrBlank()) false
+        else pluginStatusRepository.findById(pluginKey).let {
             when {
                 it.isPresent -> it.get().enabled
                 else -> true

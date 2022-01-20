@@ -42,7 +42,8 @@ val callSettings = ProjectCallSettings(
     lumpSums = emptyList(),
     unitCosts = emptyList(),
     stateAids = emptyList(),
-    applicationFormFieldConfigurations = mutableSetOf()
+    applicationFormFieldConfigurations = mutableSetOf(),
+    preSubmissionCheckPluginKey = null
 )
 
 fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMITTED) = ProjectFull(

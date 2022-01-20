@@ -61,7 +61,8 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         flatRates = sortedSetOf(),
         lumpSums = listOf(),
         unitCosts = listOf(),
-        applicationFormFieldConfigurations = applicationFormFieldConfigurations
+        applicationFormFieldConfigurations = applicationFormFieldConfigurations,
+        preSubmissionCheckPluginKey = null
     )
 
 

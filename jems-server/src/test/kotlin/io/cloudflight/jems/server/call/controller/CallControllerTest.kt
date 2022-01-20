@@ -41,6 +41,7 @@ import io.cloudflight.jems.server.call.service.update_call.UpdateCallInteractor
 import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
 import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallLumpSumsInteractor
 import io.cloudflight.jems.server.call.service.update_call_unit_costs.UpdateCallUnitCostsInteractor
+import io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration.UpdatePreSubmissionCheckSettingsInteractor
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -62,6 +63,7 @@ class CallControllerTest : UnitTest() {
     companion object {
 
         private const val ID = 1L
+        private const val PLUGIN_KEY = "pluginKey"
 
         private val call = CallSummary(
             id = ID,
@@ -114,7 +116,8 @@ class CallControllerTest : UnitTest() {
             unitCosts = listOf(
                 ProgrammeUnitCost(isOneCostCategory = true),
             ),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = PLUGIN_KEY
         )
 
         private val callDto = CallDTO(
@@ -160,7 +163,8 @@ class CallControllerTest : UnitTest() {
             unitCosts = listOf(
                 ProgrammeUnitCostListDTO(id = 0L),
             ),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = PLUGIN_KEY
         )
 
         private val callUpdateDto = CallUpdateRequestDTO(
@@ -227,6 +231,9 @@ class CallControllerTest : UnitTest() {
 
     @MockK
     lateinit var updateAllowedRealCostsInteractor: UpdateAllowedRealCostsInteractor
+
+    @MockK
+    lateinit var updatePreSubmissionCheckSettings: UpdatePreSubmissionCheckSettingsInteractor
 
     @InjectMockKs
     private lateinit var controller: CallController
@@ -310,6 +317,14 @@ class CallControllerTest : UnitTest() {
         every { updateCallUnitCosts.updateUnitCosts(40L, capture(slotUnitCostIds)) } returns callDetail
         controller.updateCallUnitCosts(40L, setOf(259, 337))
         assertThat(slotUnitCostIds.captured).containsExactlyInAnyOrder(259, 337)
+    }
+
+    @Test
+    fun `update call's pre-submission check settings`() {
+        val pluginKey = slot<String>()
+        every { updatePreSubmissionCheckSettings.update(40L, capture(pluginKey)) } returns callDetail
+        controller.updatePreSubmissionCheckSettings(40L, PLUGIN_KEY)
+        assertThat(pluginKey.captured).isEqualTo(callDetail.preSubmissionCheckPluginKey)
     }
 
 }

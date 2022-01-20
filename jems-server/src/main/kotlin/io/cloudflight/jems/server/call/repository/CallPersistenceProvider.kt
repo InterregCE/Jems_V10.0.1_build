@@ -13,7 +13,6 @@ import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
@@ -251,6 +250,13 @@ class CallPersistenceProvider(
         )
     }
 
+    @Transactional
+    override fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKey: String?) =
+        callRepo.findById(callId).orElseThrow { CallNotFound() }
+        .apply { preSubmissionCheckPluginKey = pluginKey }.toDetailModel(
+                applicationFormFieldConfigurationRepository.findAllByCallId(callId),
+                projectCallStateAidRepo.findAllByIdCallId(callId)
+            )
 
     private fun adjustTimeToLastNanoSec(call: Call) {
 

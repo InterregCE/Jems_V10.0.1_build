@@ -9,7 +9,7 @@ interface JemsPluginRegistry {
 
     fun registerPlugins(plugins: List<JemsPlugin>)
 
-    fun <T : JemsPlugin> get(type: KClass<T>, key: String): T
+    fun <T : JemsPlugin> get(type: KClass<T>, key: String?): T
 
     fun <T : JemsPlugin> list(type: KClass<T>): List<T>
 

@@ -79,7 +79,8 @@ class CreateCallTest : UnitTest() {
             ),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             funds = sortedSetOf(callFundRate(FUND_ID)),
-            applicationFormFieldConfigurations = ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+            applicationFormFieldConfigurations = ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(),
+            preSubmissionCheckPluginKey = null
         )
     }
 
@@ -168,7 +169,8 @@ class CreateCallTest : UnitTest() {
                     "  CallFundRate(" +
                     "programmeFund=ProgrammeFund(id=54, selected=true, type=OTHER, abbreviation=[], description=[]), " +
                     "rate=10, adjustable=true)\n" +
-                    "]"
+                    "],\n"+
+                    "preSubmissionCheckPluginKey set to null"
             )
         }
     }

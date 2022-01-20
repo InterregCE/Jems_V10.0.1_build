@@ -32,8 +32,8 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     private val pluginKey = "standard-pre-condition-check-plugin"
     private val projectInStepTwo = buildProjectSummary(status = ApplicationStatus.DRAFT)
     private val projectInStepOne = buildProjectSummary(status = ApplicationStatus.STEP1_DRAFT)
-    private val twoStepCallSetting = buildCallSetting()
-    private val oneStepCallSetting = buildCallSetting(endDateStep1 = null)
+    private val twoStepCallSetting = buildCallSetting(preSubmissionCheckPluginKey= pluginKey )
+    private val oneStepCallSetting = buildCallSetting(preSubmissionCheckPluginKey= pluginKey, endDateStep1 = null)
 
     @MockK
     lateinit var jemsPluginRegistry: JemsPluginRegistry
@@ -52,17 +52,14 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     @InjectMockKs
     lateinit var executePreConditionCheck: ExecutePreConditionCheck
 
-    @BeforeAll
-    fun setup() {
+
+    @Test
+    fun `should execute pre condition check plugin for the project application when application belongs to two-step call and application is in step two`() {
+        every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
+        every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwo
         every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(
             PluginStatusEntity(pluginKey, true)
         )
-    }
-
-    @Test
-    fun `should execute pre condition check plugin for the project application when application belongs to twp-step call and application is in step two`() {
-        every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
-        every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwo
         val pluginExpectedResult = PreConditionCheckResult(listOf(), false)
         every {
             jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey)
@@ -78,6 +75,9 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     fun `should execute pre condition check plugin for the project application when application belongs to a one-step call`() {
         every { projectPersistence.getProjectCallSettings(projectId) } returns oneStepCallSetting
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepOne
+        every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(
+            PluginStatusEntity(pluginKey, true)
+        )
         val pluginExpectedResult = PreConditionCheckResult(listOf(), false)
         every {
             jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey)
@@ -92,6 +92,9 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     fun `should throw exception when application belongs to two-step call and application is not in step two`() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepOne
         every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
+        every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(
+            PluginStatusEntity(pluginKey, true)
+        )
         every {
             jemsPluginRegistry.get(
                 PreConditionCheckPlugin::class, pluginKey
@@ -99,6 +102,13 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
         } returns preConditionCheckPlugin
 
         assertThrows<PreConditionCheckCannotBeExecutedException> { executePreConditionCheck.execute(projectId) }
+    }
+
+    @Test
+    fun `should return empty result when plugins is disabled`() {
+        every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
+        every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(PluginStatusEntity(pluginKey, false))
+        assertThat ( executePreConditionCheck.execute(projectId) ).isEqualTo(PreConditionCheckResult(emptyList(), true))
     }
 
     private fun buildCallSetting(
@@ -113,11 +123,13 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
         lumpSums: List<ProgrammeLumpSum> = emptyList(),
         unitCosts: List<ProgrammeUnitCost> = emptyList(),
         stateAids : List<ProgrammeStateAid> = emptyList(),
+        preSubmissionCheckPluginKey: String? = null
     ) =
         ProjectCallSettings(
             callId, callName, startDate, endDate, endDateStep1,
             lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
         )
 
     private fun buildProjectSummary(

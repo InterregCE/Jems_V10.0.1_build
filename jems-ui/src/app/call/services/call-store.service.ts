@@ -66,6 +66,13 @@ export class CallStore {
       );
   }
 
+  savePreSubmissionCheckSettings(pluginKey: string): Observable<CallDetailDTO> {
+    return this.callService.updatePreSubmissionCheckSettings(this.callId, pluginKey).pipe(
+      tap(saved => this.savedCall$.next(saved)),
+      tap(saved => Log.info('Updated call pre-submission check settings:', this, saved))
+    );
+  }
+
   private call(): Observable<CallDetailDTO> {
     const initialCall$ = this.router.routeParameterChanges(CallStore.CALL_DETAIL_PATH, 'callId')
       .pipe(
