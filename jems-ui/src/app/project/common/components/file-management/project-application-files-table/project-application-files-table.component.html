@@ -6,7 +6,9 @@
             <mat-header-cell *matHeaderCellDef>
                 <span jemsText maxLines="2">{{'file.table.column.name.name' | translate }}</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let file">{{ file?.name }}</mat-cell>
+            <mat-cell *matCellDef="let file">
+                <span jemsText maxWidth="100" maxLines="1"> {{ file?.name }}</span>
+            </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="uploadDate">
