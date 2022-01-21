@@ -26,7 +26,7 @@ class PublishCall(
 
     private fun ifCallCanBePublished(callId: Long) =
         with(persistence.getCallById(callId)) {
-            if (this.funds.isNullOrEmpty() || this.objectives.isNullOrEmpty())
+            if (this.funds.isNullOrEmpty() || this.objectives.isNullOrEmpty() || this.preSubmissionCheckPluginKey.isNullOrBlank())
                 throw CannotPublishCallException()
         }
 

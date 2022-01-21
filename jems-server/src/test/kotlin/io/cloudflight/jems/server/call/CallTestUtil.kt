@@ -10,6 +10,8 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.FundSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
+import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -26,6 +28,8 @@ import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import java.math.BigDecimal
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 private val account = UserEntity(
@@ -53,6 +57,7 @@ private fun testCall(id: Long = 0) = CallEntity(
     strategies = mutableSetOf(),
     funds = mutableSetOf(),
     flatRates = mutableSetOf(),
+    preSubmissionCheckPluginKey = null
 ).apply {
     translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call"))
     flatRates.add(
@@ -114,4 +119,28 @@ fun callFundRateEntity(call: CallEntity, fundId: Long) = CallFundRateEntity(
 fun callFund(fundId: Long) = ProgrammeFund(
     id = fundId,
     selected = true
+)
+
+fun callDetail(
+    id : Long = 10L,
+    name : String = "call name",
+    status : CallStatus = CallStatus.PUBLISHED,
+    startDate : ZonedDateTime = ZonedDateTime.of(2020,1,10,10,10,10,10, ZoneId.systemDefault()),
+    endDateStep1 : ZonedDateTime = ZonedDateTime.of(2020,1,15,10,10,10,10, ZoneId.systemDefault()),
+    endDate : ZonedDateTime = ZonedDateTime.of(2020,1,30,15,10,10,10, ZoneId.systemDefault()),
+    isAdditionalFundAllowed : Boolean = true,
+    lengthOfPeriod : Int = 12,
+    applicationFormFieldConfigurations : MutableSet<ApplicationFormFieldConfiguration> = mutableSetOf(),
+    preSubmissionCheckPluginKey: String? = null
+) = CallDetail(
+    id = id,
+    name = name,
+    status = status,
+    startDate = startDate,
+    endDateStep1 = endDateStep1,
+    endDate = endDate,
+    isAdditionalFundAllowed = isAdditionalFundAllowed,
+    lengthOfPeriod = lengthOfPeriod,
+    applicationFormFieldConfigurations =  applicationFormFieldConfigurations,
+    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
 )

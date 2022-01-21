@@ -65,7 +65,8 @@ class WorkPackageServiceTest {
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
         translatedValues = mutableSetOf(),
-        lengthOfPeriod = 1
+        lengthOfPeriod = 1,
+        preSubmissionCheckPluginKey = null
     ).apply { translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call")) }
 
     private val statusDraft = ProjectStatusHistoryEntity(

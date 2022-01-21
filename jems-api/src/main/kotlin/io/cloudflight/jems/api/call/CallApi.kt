@@ -94,4 +94,11 @@ interface CallApi {
         @RequestBody unitCostIds: Set<Long>
     ): CallDetailDTO
 
+    @ApiOperation("Update pre-submission check settings for Call")
+    @PutMapping("/byId/{callId}/preSubmissionCheck", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updatePreSubmissionCheckSettings(
+        @PathVariable callId: Long,
+        @RequestBody pluginKey: String?
+    ): CallDetailDTO
+
 }

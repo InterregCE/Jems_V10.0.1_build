@@ -25,7 +25,6 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.costoption.toModel
 import io.cloudflight.jems.server.programme.repository.fund.toModel
@@ -74,7 +73,8 @@ fun CallEntity.toDetailModel(
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.toModel(),
     unitCosts = unitCosts.toModel(),
-    applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
+    applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
+    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
 )
 
 private fun Set<ProgrammeSpecificObjectiveEntity>.groupSpecificObjectives() =
@@ -115,7 +115,8 @@ fun Call.toEntity(
     flatRates = existingEntity?.flatRates ?: mutableSetOf(),
     lumpSums = existingEntity?.lumpSums ?: mutableSetOf(),
     unitCosts = existingEntity?.unitCosts ?: mutableSetOf(),
-    allowedRealCosts = existingEntity?.allowedRealCosts ?: AllowedRealCostsEntity()
+    allowedRealCosts = existingEntity?.allowedRealCosts ?: AllowedRealCostsEntity(),
+    preSubmissionCheckPluginKey = existingEntity?.preSubmissionCheckPluginKey
 ).apply {
     translatedValues.addAll(description.combineDescriptionsToTranslations(this))
 }

@@ -45,7 +45,8 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             lumpSums = lumpSums,
             unitCosts = listOf(),
             stateAids = emptyList(),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null
         )
 
         private val periods = listOf(

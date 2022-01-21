@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.plugin
 
 import io.cloudflight.jems.api.plugin.dto.PluginInfoDTO
+import io.cloudflight.jems.api.plugin.dto.PluginTypeDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 interface PluginApi {
 
     @ApiOperation("list available plugins")
-    @GetMapping("list")
-    fun getAvailablePluginList(): List<PluginInfoDTO>
+    @GetMapping("list/{type}")
+    fun getAvailablePluginList(@PathVariable type: PluginTypeDTO): List<PluginInfoDTO>
 
     @ApiOperation("enable plugin")
     @PostMapping("{pluginKey}/enable")
