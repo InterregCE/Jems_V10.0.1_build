@@ -4,13 +4,15 @@ import io.cloudflight.jems.api.common.dto.VersionDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Info")
-@RequestMapping("/api/_info")
 interface InfoApi {
 
+    companion object {
+        private const val ENDPOINT_API_INFO = "/api/_info"
+    }
+
     @ApiOperation("Returns version info")
-    @GetMapping("/version")
+    @GetMapping("$ENDPOINT_API_INFO/version")
     fun getVersionInfo(): VersionDTO
 }

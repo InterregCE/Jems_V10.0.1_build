@@ -7,6 +7,5 @@ pluginManagement {
 rootProject.name = 'jems'
 
 include 'jems-api'
-include 'jems-client'
 include 'jems-server'
 include 'jems-ui'
