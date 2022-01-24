@@ -27,8 +27,6 @@ import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confir
 export class CallDetailPageComponent {
   private static readonly DATE_SHOULD_BE_VALID = 'common.date.should.be.valid';
   private static readonly CALL_INVALID_PERIOD = 'call.lengthOfPeriod.invalid.period';
-  private static readonly STANDARD_CALL_DETAIL_TITLE = 'call.detail.title';
-  private static readonly SPF_CALL_DETAIL_TITLE = 'spf.call.detail.title';
 
   private resetEvent$ = new BehaviorSubject<void | null>(null);
   Alert = Alert;
@@ -187,9 +185,10 @@ export class CallDetailPageComponent {
   isPublishDisabled(call: CallDetailDTO): Observable<boolean> {
     return of(true).pipe(
       withLatestFrom(this.formService.dirty$, this.formService.pending$, of(call.type)),
-      map(([, dirty, pending, callType]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0 ||
-        call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0 ||
-        callType === CallDetailDTO.TypeEnum.SPF) // for disabling publish button TODO remove call type check after implementing MP2-2211
+      map(([, dirty, pending, callType]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0
+        || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0
+        // TODO remove after implementing MP2-2211 - temporarily disabled publish button for SPF calls
+        || callType === CallDetailDTO.TypeEnum.SPF)
     );
   }
 
@@ -249,17 +248,15 @@ export class CallDetailPageComponent {
     return (data.numberOfSelectedStrategies > 0 && !data.callIsEditable) || (data.strategies.length > 0 && data.callIsEditable);
   }
 
-  isStandardCall(callType: CallDetailDTO.TypeEnum): boolean {
-     return callType === CallDetailDTO.TypeEnum.STANDARD;
-  }
-
-  isSPFCall(callType: CallDetailDTO.TypeEnum): boolean {
-    return callType === CallDetailDTO.TypeEnum.SPF;
-  }
-
   getCallPageTitle(callType: CallDetailDTO.TypeEnum): string {
-    return this.isStandardCall(callType) ? CallDetailPageComponent.STANDARD_CALL_DETAIL_TITLE :
-      (this.isSPFCall(callType) ? CallDetailPageComponent.SPF_CALL_DETAIL_TITLE : '');
+    switch (callType) {
+      case CallDetailDTO.TypeEnum.STANDARD:
+        return 'call.detail.title';
+      case CallDetailDTO.TypeEnum.SPF:
+        return 'spf.call.detail.title';
+      default:
+        return '';
+    }
   }
 
   private createCall(call: CallUpdateRequestDTO): void {
