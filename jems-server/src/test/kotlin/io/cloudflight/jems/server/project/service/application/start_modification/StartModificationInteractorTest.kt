@@ -75,6 +75,7 @@ class StartModificationInteractorTest: UnitTest() {
     fun startModifications() {
         every { projectPersistence.getProjectSummary(StartModificationInteractorTest.PROJECT_ID) } returns StartModificationInteractorTest.summary
         every { applicationStateFactory.getInstance(any()) } returns approvedState
+        every { projectPersistence.getApplicantAndStatusById(any()).projectStatus } returns ApplicationStatus.APPROVED
         every { approvedState.startModification() } returns ApplicationStatus.MODIFICATION_PRECONTRACTING
 
         val slotAudit = mutableListOf<AuditCandidateEvent>()

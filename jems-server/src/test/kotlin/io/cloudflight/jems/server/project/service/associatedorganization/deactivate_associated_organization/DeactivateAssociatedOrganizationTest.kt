@@ -45,7 +45,7 @@ internal class DeactivateAssociatedOrganizationTest : UnitTest() {
     @TestFactory
     fun `should throw AssociatedOrganizationCannotBeDeactivatedException when application is not in a modifiable status after Approved`() =
         listOf(
-            *ApplicationStatus.values().filterNot { it == ApplicationStatus.MODIFICATION_PRECONTRACTING }.toTypedArray()
+            *ApplicationStatus.values().filterNot { it == ApplicationStatus.MODIFICATION_PRECONTRACTING || it == ApplicationStatus.IN_MODIFICATION }.toTypedArray()
         ).map { status ->
             DynamicTest.dynamicTest(
                 "should throw AssociatedOrganizationCannotBeDeactivatedException when application is in '$status' status"

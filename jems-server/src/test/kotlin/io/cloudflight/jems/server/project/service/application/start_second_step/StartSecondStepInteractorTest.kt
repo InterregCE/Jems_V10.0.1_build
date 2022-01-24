@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
@@ -49,13 +49,11 @@ class StartSecondStepInteractorTest : UnitTest() {
             password = "",
             userStatus = UserStatus.ACTIVE
         )
-        private val projectVersion = ProjectVersion(
+        private val projectVersionSummary = ProjectVersionSummary(
             version = "1.0",
             projectId = PROJECT_ID,
             createdAt = ZonedDateTime.now(),
             user = userEntity,
-            status = ApplicationStatus.DRAFT,
-            current = true
         )
     }
 
@@ -85,7 +83,7 @@ class StartSecondStepInteractorTest : UnitTest() {
 
     @Test
     fun startSecondStep() {
-        every { createNewProjectVersion.create(PROJECT_ID, ApplicationStatus.DRAFT) } returns projectVersion
+        every { createNewProjectVersion.create(PROJECT_ID) } returns projectVersionSummary
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary
         every { applicationStateFactory.getInstance(any()) } returns approvedState
         every { approvedState.startSecondStep() } returns ApplicationStatus.DRAFT

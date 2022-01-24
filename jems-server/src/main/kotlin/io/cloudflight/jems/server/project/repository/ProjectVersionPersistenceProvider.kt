@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.repository
 import io.cloudflight.jems.server.project.entity.ProjectVersionEntity
 import io.cloudflight.jems.server.project.entity.ProjectVersionId
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -16,14 +16,14 @@ class ProjectVersionPersistenceProvider(
 ) : ProjectVersionPersistence {
 
     @Transactional
-    override fun createNewVersion(projectId: Long, status: ApplicationStatus, version: String, userId: Long) : ProjectVersion {
+    override fun createNewVersion(projectId: Long, version: String, userId: Long) : ProjectVersionSummary {
         projectVersionRepository.endCurrentVersion(projectId)
         return projectVersionRepository.save(
             ProjectVersionEntity(
                 id = ProjectVersionId(version, projectId),
                 user = userRepository.getById(userId)
             )
-        ).toProjectVersion(status, true)
+        ).toProjectVersionSummary()
     }
 
     @Transactional(readOnly = true)

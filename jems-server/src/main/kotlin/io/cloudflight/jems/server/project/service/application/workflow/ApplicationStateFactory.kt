@@ -13,9 +13,11 @@ import io.cloudflight.jems.server.project.service.application.workflow.states.Co
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.InEligibleApplicationState
+import io.cloudflight.jems.server.project.service.application.workflow.states.InModificationApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationPreContractingApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationPreContractingSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationRejectedApplicationState
+import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.NotApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantForConditionsApplicationState
@@ -62,6 +64,8 @@ class ApplicationStateFactory(
             CONDITIONS_SUBMITTED ->  ConditionsSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)
             MODIFICATION_PRECONTRACTING ->  ModificationPreContractingApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
             MODIFICATION_PRECONTRACTING_SUBMITTED ->  ModificationPreContractingSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)
+            IN_MODIFICATION -> InModificationApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
+            MODIFICATION_SUBMITTED ->ModificationSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)
             MODIFICATION_REJECTED ->  ModificationRejectedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
             CONTRACTED -> ContractedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
     }

@@ -26,7 +26,7 @@ class StartModification(
     @Transactional
     @ExceptionWrapper(StartModificationExceptions::class)
     override fun startModification(projectId: Long): ApplicationStatus =
-        createNewProjectVersion.create(projectId, ApplicationStatus.MODIFICATION_PRECONTRACTING).let { newProjectVersion ->
+        createNewProjectVersion.create(projectId).let { newProjectVersion ->
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).startModification().also {
                     auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))

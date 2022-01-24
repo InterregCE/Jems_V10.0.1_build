@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.UserStatus
@@ -53,6 +54,13 @@ internal class SaveProjectVersionTest : UnitTest() {
         current = true
     )
 
+    private val newProjectVersionSummary = ProjectVersionSummary(
+        "2.0",
+        projectId,
+        createdAt = ZonedDateTime.now(),
+        user
+    )
+
     private val projectSummary = ProjectSummary(
         id = projectId,
         customIdentifier = "01",
@@ -83,19 +91,18 @@ internal class SaveProjectVersionTest : UnitTest() {
         every {
             projectVersionPersistence.createNewVersion(
                 projectId,
-                currentProjectVersion.status,
                 ProjectVersionUtils.increaseMajor(currentProjectVersion.version),
                 userId
             )
-        } returns newProjectVersion
+        } returns newProjectVersionSummary
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
         val auditEventSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditEventSlot)) } returns Unit
 
-        val createdProjectVersion = saveProjectVersion.create(projectId, currentProjectVersion.status)
+        val createdProjectVersion = saveProjectVersion.create(projectId)
 
         verify(exactly = 1) { auditPublisher.publishEvent(auditEventSlot.captured) }
 
-        assertThat(createdProjectVersion).isEqualTo(newProjectVersion)
+        assertThat(createdProjectVersion).isEqualTo(newProjectVersionSummary)
     }
 }

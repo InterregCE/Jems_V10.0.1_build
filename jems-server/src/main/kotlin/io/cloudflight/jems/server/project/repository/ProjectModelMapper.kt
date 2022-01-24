@@ -25,7 +25,6 @@ import io.cloudflight.jems.server.project.entity.ProjectVersionRow
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEligibilityEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentQualityEntity
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
@@ -34,6 +33,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -51,8 +51,8 @@ fun Collection<ProjectPeriodEntity>.toProjectPeriods() = map { it.toProjectPerio
 
 fun ProjectPeriodEntity.toProjectPeriod() = ProjectPeriod(number = id.number, start = start, end = end)
 
-fun ProjectVersionEntity.toProjectVersion(status: ApplicationStatus, current: Boolean) =
-    ProjectVersion(version = id.version, projectId = id.projectId, createdAt = createdAt, user = user, status = status, current = current)
+fun ProjectVersionEntity.toProjectVersionSummary() =
+    ProjectVersionSummary(version = id.version, projectId = id.projectId, createdAt = createdAt, user = user)
 
 fun List<ProjectVersionRow>.toProjectVersion() =
     this.groupBy { ProjectVersionId(it.version, it.projectId) }.map { groupedRows ->

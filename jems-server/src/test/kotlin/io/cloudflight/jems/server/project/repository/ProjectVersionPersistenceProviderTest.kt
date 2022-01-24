@@ -54,9 +54,9 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
         every { projectVersionRepository.save(capture(entitySlot)) } answers { entitySlot.captured }
         every { projectVersionRepository.endCurrentVersion(projectId) } returns  Unit
         every { userRepository.getById(userId) } returns user
-        val projectVersion =
-            projectVersionPersistenceProvider.createNewVersion(projectId, ApplicationStatus.SUBMITTED, version, userId)
-        assertThat(projectVersion).isEqualTo(entitySlot.captured.toProjectVersion(ApplicationStatus.SUBMITTED, true))
+        val projectVersionSummary =
+            projectVersionPersistenceProvider.createNewVersion(projectId, version, userId)
+        assertThat(projectVersionSummary).isEqualTo(entitySlot.captured.toProjectVersionSummary())
     }
 
     @Test
