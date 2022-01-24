@@ -1,20 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "experimentalDecorators": true,
     "outDir": "./out-tsc/app",
-    "types": [],
-    "paths": {
-      "@cat/api": [
-        "./build/generated-sources/jems-api/index.ts"
-      ],
-      "@common/*": [
-        "src/app/common/*"
-      ],
-      "@project/*": [
-        "src/app/project/*"
-      ]
-    }
+    "types": []
   },
   "files": [
     "src/main.ts",
