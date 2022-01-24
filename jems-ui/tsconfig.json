@@ -10,7 +10,7 @@
     "experimentalDecorators": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "module": "esnext",
+    "module": "es2020",
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2015",
@@ -23,7 +23,7 @@
     ],
     "paths": {
       "@cat/api": [
-        "./build/generated-sources/jems-api/index.ts"
+        "build/swagger-code-jems-api/index.ts"
       ],
       "@common/*": [
         "src/app/common/*"
@@ -34,8 +34,8 @@
     }
   },
   "include": [
-    "src/**/*",
-    "build/generated-sources/**/*.ts"
+    "build/generated-sources/**/*.ts",
+    "src/**/*"
   ],
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
