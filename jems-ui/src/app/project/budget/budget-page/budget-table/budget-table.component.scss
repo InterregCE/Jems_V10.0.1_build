@@ -1,14 +1,4 @@
-#budget-table {
-  width: 100%;
-
-  mat-header-cell,
-  mat-cell,
-  mat-footer-cell {
-    margin: 0 .25rem;
-
-    &.justify-end {
-      justify-content: flex-end;
-      text-align: right;
-    }
-  }
+.header-center {
+  display: flex;
+  align-items: center;
 }
