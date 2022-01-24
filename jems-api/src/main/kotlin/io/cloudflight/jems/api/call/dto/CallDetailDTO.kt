@@ -14,11 +14,11 @@ data class CallDetailDTO(
     val id: Long,
     val name: String,
     val status: CallStatus,
+    val type: CallType,
     val startDateTime: ZonedDateTime,
     val endDateTimeStep1: ZonedDateTime?,
     val endDateTime: ZonedDateTime,
-    val additionalFundAllowed
-    : Boolean,
+    val additionalFundAllowed: Boolean,
     val lengthOfPeriod: Int?,
     val description: Set<InputTranslation> = emptySet(),
     val objectives: List<ProgrammePriorityDTO> = emptyList(),

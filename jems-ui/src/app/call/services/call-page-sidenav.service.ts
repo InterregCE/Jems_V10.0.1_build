@@ -7,6 +7,7 @@ import {take} from 'rxjs/internal/operators';
 import {distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {CallDetailDTO} from '@cat/api';
 
 @UntilDestroy()
 @Injectable()
@@ -17,19 +18,20 @@ export class CallPageSidenavService {
               private routingService: RoutingService) {
     this.callStore.call$
       .pipe(
-        map(call => call?.id),
+        map(call => call),
         distinctUntilChanged(),
-        filter(id => !!id),
-        tap(id => this.setHeadlines(id)),
+        filter(call => !!call?.id),
+        tap(call => this.setHeadlines(call)),
         untilDestroyed(this)
       ).subscribe();
   }
 
-  init(callId: number): void {
-    this.setHeadlines(callId);
+  init(call: CallDetailDTO): void {
+    this.setHeadlines(call);
   }
 
-  private setHeadlines(callId: number): void {
+  private setHeadlines(call: CallDetailDTO): void {
+    const callId = call.id;
     const bulletsArray: HeadlineRoute[] = [{
       headline: {i18nKey: 'call.general.settings'},
       route: `/app/call/detail/${callId}`,
@@ -52,7 +54,7 @@ export class CallPageSidenavService {
       .pipe(
         take(1),
         tap(callIsReadable => {
-          if (callId && callIsReadable) {
+          if (callId && callIsReadable && call.type === CallDetailDTO.TypeEnum.STANDARD) { // TODO remove call type check after implementing MP2-2211
             bulletsArray.push(flatRates, applicationFormConfiguration, preSubmissionCheckSettings);
           }
           this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [
@@ -69,7 +71,7 @@ export class CallPageSidenavService {
     this.routingService.navigate(['/app/call'], {state: {success: successMessage}});
   }
 
-  redirectToCallDetail(callId: number, successMessage?: I18nLabel): void {
+  redirectToCallDetail(callId: number, callType: CallDetailDTO.TypeEnum, successMessage?: I18nLabel): void {
     this.routingService.navigate(['/app/call/detail/' + callId], {state: {success: successMessage}});
   }
 }

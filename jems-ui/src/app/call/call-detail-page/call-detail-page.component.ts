@@ -1,13 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Tools} from '@common/utils/tools';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {
-  CallDetailDTO,
-  CallDTO,
-  CallUpdateRequestDTO,
-  OutputProgrammeStrategy,
-  ProgrammeStateAidDTO
-} from '@cat/api';
+import {CallDetailDTO, CallDTO, CallUpdateRequestDTO, OutputProgrammeStrategy, ProgrammeStateAidDTO} from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -39,10 +33,12 @@ export class CallDetailPageComponent {
   tools = Tools;
 
   callId = this.activatedRoute?.snapshot?.params?.callId;
+
   publishPending = false;
   published = false;
   data$: Observable<{
     call: CallDetailDTO;
+    callType: CallDetailDTO.TypeEnum;
     userCanApply: boolean;
     callIsEditable: boolean;
     priorityCheckboxes: CallPriorityCheckbox[];
@@ -98,6 +94,7 @@ export class CallDetailPageComponent {
 
     this.data$ = combineLatest([
       this.pageStore.call$,
+      this.pageStore.callType$,
       this.pageStore.userCanApply$,
       this.pageStore.callIsEditable$,
       this.pageStore.allPriorities$,
@@ -106,8 +103,9 @@ export class CallDetailPageComponent {
       this.resetEvent$
     ])
       .pipe(
-        map(([call, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allStateAids]: any) => ({
+        map(([call, callType, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allStateAids]: any) => ({
           call,
+          callType,
           userCanApply,
           callIsEditable,
           priorityCheckboxes: this.getPriorities(allPriorities, call),
@@ -124,6 +122,7 @@ export class CallDetailPageComponent {
   }
 
   onSubmit(savedCall: CallDetailDTO,
+           callType: CallDetailDTO.TypeEnum,
            priorityCheckboxes: CallPriorityCheckbox[],
            strategies: OutputProgrammeStrategy[],
            stateAids: CallStateAidDTO[]): void {
@@ -139,10 +138,11 @@ export class CallDetailPageComponent {
     }
 
     if (!this.callId) {
+      call.type = callType;
       this.createCall(call);
       return;
     }
-
+    call.type = savedCall.type;
     if (savedCall.endDateTimeStep1 && !this.callForm.controls.is2Step.value) {
       Forms.confirm(this.dialog, {
         title: 'call.detail.save.confirm.step.switch.title',
@@ -155,7 +155,6 @@ export class CallDetailPageComponent {
       ).subscribe();
       return;
     }
-
     this.updateCall(call);
   }
 
@@ -185,8 +184,11 @@ export class CallDetailPageComponent {
 
   isPublishDisabled(call: CallDetailDTO): Observable<boolean> {
     return of(true).pipe(
-      withLatestFrom(this.formService.dirty$, this.formService.pending$),
-      map(([, dirty, pending]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0 || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0)
+      withLatestFrom(this.formService.dirty$, this.formService.pending$, of(call.type)),
+      map(([, dirty, pending, callType]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0
+        || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0
+        // TODO remove after implementing MP2-2211 - temporarily disabled publish button for SPF calls
+        || callType === CallDetailDTO.TypeEnum.SPF)
     );
   }
 
@@ -246,12 +248,24 @@ export class CallDetailPageComponent {
     return (data.numberOfSelectedStrategies > 0 && !data.callIsEditable) || (data.strategies.length > 0 && data.callIsEditable);
   }
 
+  getCallPageTitle(callType: CallDetailDTO.TypeEnum): string {
+    switch (callType) {
+      case CallDetailDTO.TypeEnum.STANDARD:
+        return 'call.detail.title';
+      case CallDetailDTO.TypeEnum.SPF:
+        return 'spf.call.detail.title';
+      default:
+        return '';
+    }
+  }
+
   private createCall(call: CallUpdateRequestDTO): void {
     this.pageStore.createCall(call)
       .pipe(
         take(1),
         tap(created => this.callNavService.redirectToCallDetail(
           created.id,
+          created.type,
           {
             i18nKey: 'call.detail.created.success',
             i18nArguments: {name: created.name}

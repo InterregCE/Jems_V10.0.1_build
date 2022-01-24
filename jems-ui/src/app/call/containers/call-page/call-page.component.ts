@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {CallService, UserRoleDTO} from '@cat/api';
+import {CallDetailDTO, CallService, UserRoleDTO} from '@cat/api';
 import {Router} from '@angular/router';
+import {CallStore} from '../../services/call-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
@@ -11,10 +12,10 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 })
 export class CallPageComponent implements OnInit {
   PermissionsEnum = PermissionsEnum;
-
   success = this.router.getCurrentNavigation()?.extras?.state?.success;
 
-  constructor(private callService: CallService,
+  constructor(public callStore: CallStore,
+              private callService: CallService,
               private router: Router,
               private changeDetectorRef: ChangeDetectorRef) {
   }
@@ -26,5 +27,9 @@ export class CallPageComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       },         3000);
     }
+  }
+
+  setCallType(callType: CallDetailDTO.TypeEnum) {
+    this.callStore.callType$.next(callType);
   }
 }

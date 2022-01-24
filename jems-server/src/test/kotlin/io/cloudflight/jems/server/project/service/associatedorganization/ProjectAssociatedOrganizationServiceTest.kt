@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectContactTypeDTO
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganizationAddress
@@ -11,6 +12,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerContactDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
@@ -73,6 +75,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         creator = user,
         name = "call",
         status = CallStatus.DRAFT,
+        type = CallType.STANDARD,
         startDate = ZonedDateTime.now(),
         endDateStep1 = null,
         endDate = ZonedDateTime.now(),
@@ -81,6 +84,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
         lengthOfPeriod = 1,
+        allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null
     )
     private val projectStatus = ProjectStatusHistoryEntity(

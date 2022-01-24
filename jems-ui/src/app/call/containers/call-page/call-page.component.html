@@ -2,10 +2,22 @@
 
     <h2 page-sub-title> {{'call.list.header' | translate}}</h2>
 
-    <button jemsText *jemsHasPermission="PermissionsEnum.CallUpdate" mat-raised-button color="primary"
-            [routerLink]="'/app/call/create'">
+    <button class="mr-3"
+            jemsText
+            mat-raised-button color="primary"
+            *jemsHasPermission="PermissionsEnum.CallUpdate"
+            [routerLink]="'/app/call/create'"
+            (click)="setCallType('STANDARD')">
         + {{'call.add.new' | translate}}
     </button>
+    <button jemsText
+            mat-raised-button color="primary"
+            *jemsHasPermission="PermissionsEnum.CallUpdate"
+            [routerLink]="'/app/call/create'"
+            (click)="setCallType('SPF')">
+        + {{'call.add.new.spf' | translate}}
+    </button>
+    <jems-context-info infoPosition="right" infoText="{{'call.add.spf.info' | translate}}"></jems-context-info>
     <div *ngIf="success" class="success-wrapper">
         <div class="success jems-alert-success">
             <mat-icon>check_circle</mat-icon>

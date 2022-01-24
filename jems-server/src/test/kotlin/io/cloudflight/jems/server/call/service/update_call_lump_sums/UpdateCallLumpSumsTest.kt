@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.call.service.update_call_lump_sums
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -26,10 +27,11 @@ import java.time.ZonedDateTime
 class UpdateCallLumpSumsTest {
 
     companion object {
-        private fun callWithStatus(id: Long, status: CallStatus) = CallDetail(
+        private fun callWithStatus(id: Long, status: CallStatus, callType: CallType) = CallDetail(
             id = id,
             name = "",
             status = status,
+            type = callType,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
@@ -52,7 +54,7 @@ class UpdateCallLumpSumsTest {
     @Test
     fun `updateLumpSums - change of lump sums when call is PUBLISHED`() {
         val ID = 1L
-        val call = callWithStatus(id = ID, CallStatus.PUBLISHED)
+        val call = callWithStatus(id = ID, CallStatus.PUBLISHED, CallType.STANDARD)
         every { persistence.existsAllProgrammeLumpSumsByIds(setOf(2, 3)) } returns true
         every { persistence.updateProjectCallLumpSum(ID, setOf(2, 3)) } returns call.copy(lumpSums = listOf(ProgrammeLumpSum(id = 2, splittingAllowed = true), ProgrammeLumpSum(id = 3, splittingAllowed = true)))
         every { persistence.getCallById(ID) } returns call
@@ -75,7 +77,7 @@ class UpdateCallLumpSumsTest {
     @Test
     fun `updateLumpSums - change of lump sums when call is DRAFT`() {
         val ID = 2L
-        val call = callWithStatus(id = ID, CallStatus.DRAFT)
+        val call = callWithStatus(id = ID, CallStatus.DRAFT, CallType.STANDARD)
         every { persistence.existsAllProgrammeLumpSumsByIds(setOf(3)) } returns true
         every { persistence.updateProjectCallLumpSum(ID, setOf(3)) } returns call
         every { persistence.getCallById(ID) } returns call
@@ -88,7 +90,7 @@ class UpdateCallLumpSumsTest {
     fun `updateLumpSums - forbidden change when call is published`() {
         val ID = 3L
         every { persistence.existsAllProgrammeLumpSumsByIds(setOf(3)) } returns true
-        every { persistence.getCallById(ID) } returns callWithStatus(id = ID, CallStatus.PUBLISHED).copy(
+        every { persistence.getCallById(ID) } returns callWithStatus(id = ID, CallStatus.PUBLISHED, CallType.STANDARD).copy(
             lumpSums = listOf(
                 ProgrammeLumpSum(id = 2, splittingAllowed = true),
                 ProgrammeLumpSum(id = 3, splittingAllowed = true),

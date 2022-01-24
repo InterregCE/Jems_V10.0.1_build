@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.call.service.publish_call
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.server.UnitTest
@@ -44,6 +45,7 @@ class PublishCallTest : UnitTest() {
         id = id,
         name = "name of just-now-published call",
         status = CallStatus.DRAFT,
+        type= CallType.STANDARD,
         startDate = ZonedDateTime.now().minusDays(1),
         endDate = ZonedDateTime.now().plusDays(1),
         endDateStep1 = null,

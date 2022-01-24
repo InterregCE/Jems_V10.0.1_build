@@ -9,12 +9,12 @@ import {FormArray, FormBuilder} from '@angular/forms';
 import {ProgrammePriorityDetailPageConstants} from './programme-priority-detail-page.constants';
 import {take} from 'rxjs/internal/operators';
 import {Alert} from '@common/components/forms/alert';
-import {Forms} from '../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../../programme-page/services/programme-editable-state-store.service';
-import {APIError} from '../../../../common/models/APIError';
+import {APIError} from '@common/models/APIError';
 
 @UntilDestroy()
 @Component({
@@ -66,15 +66,13 @@ export class ProgrammePriorityDetailPageComponent {
       ),
       map(([priority, setup]) => ({
           priority,
-          // tslint:disable-next-line
-          objectives: this.getAvailableObjectives((priority as any).objective, setup.freePrioritiesWithPolicies),
+          objectives: this.getAvailableObjectives((priority as ProgrammePriorityDTO).objective, setup.freePrioritiesWithPolicies),
           freePrioritiesWithPolicies: setup.freePrioritiesWithPolicies,
           objectivePoliciesAlreadyInUse: setup.objectivePoliciesAlreadyInUse as string[]
         })
       ),
       tap(data => this.resetForm(data.priority as ProgrammePriorityDTO, data.freePrioritiesWithPolicies)),
-      // tslint:disable-next-line
-      tap(data => (data.priority as any)?.id ? this.form.disable() : this.form.enable())
+      tap(data => (data.priority as ProgrammePriorityDTO)?.id ? this.form.disable() : this.form.enable())
     );
 
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(

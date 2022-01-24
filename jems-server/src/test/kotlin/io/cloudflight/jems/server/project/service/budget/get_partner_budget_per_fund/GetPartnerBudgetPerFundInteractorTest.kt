@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_fund
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -50,6 +51,7 @@ class GetPartnerBudgetPerFundInteractorTest : UnitTest() {
         id = 1,
         name = "call",
         status = CallStatus.PUBLISHED,
+        type = CallType.STANDARD,
         startDate = ZonedDateTime.now(),
         endDateStep1 = ZonedDateTime.now(),
         endDate = ZonedDateTime.now(),

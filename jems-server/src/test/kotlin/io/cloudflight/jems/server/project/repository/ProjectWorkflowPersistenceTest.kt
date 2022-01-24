@@ -1,12 +1,13 @@
 package io.cloudflight.jems.server.project.repository
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.callWithId
+import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
@@ -51,7 +52,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         val endDate: ZonedDateTime = ZonedDateTime.now().plusDays(2)
 
         private fun dummyCall(): CallEntity {
-            val call = callWithId(CALL_ID)
+            val call = createTestCallEntity(CALL_ID)
             call.name = "call name"
             call.startDate = startDate
             call.endDate = endDate
