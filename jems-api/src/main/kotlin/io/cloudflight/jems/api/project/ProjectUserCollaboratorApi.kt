@@ -22,7 +22,10 @@ interface ProjectUserCollaboratorApi {
 
     @ApiOperation("Assigns a list of Users for monitoring to Projects")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateAssignedUserCollaborators(@PathVariable projectId: Long, @RequestBody users: Set<UpdateProjectUserCollaboratorDTO>): List<ProjectUserCollaboratorDTO>
+    fun updateAssignedUserCollaborators(
+        @PathVariable projectId: Long,
+        @RequestBody users: Set<UpdateProjectUserCollaboratorDTO>
+    ): List<ProjectUserCollaboratorDTO>
 
     @ApiOperation("Check my collaborator-related project permissions")
     @GetMapping("/checkMyLevel")

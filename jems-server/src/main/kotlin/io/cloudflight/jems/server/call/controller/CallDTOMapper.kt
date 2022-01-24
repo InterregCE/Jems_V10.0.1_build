@@ -5,9 +5,9 @@ import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallFundRateDTO
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormFieldConfigurationDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.StepSelectionOptionDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormFieldConfigurationRequestDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.UpdateApplicationFormFieldConfigurationRequestDTO
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
@@ -17,7 +17,6 @@ import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.CommonDTOMapper
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
-import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.programme.controller.priority.toDto
 import io.cloudflight.jems.server.programme.controller.stateaid.toDto
 import org.mapstruct.Mapper

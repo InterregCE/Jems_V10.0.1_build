@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import javax.validation.Valid
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("WorkPackage")
@@ -24,23 +23,39 @@ interface ProjectWorkPackageApi {
 
     @ApiOperation("Returns a work package by id")
     @GetMapping("/{workPackageId}")
-    fun getWorkPackageById(@PathVariable projectId: Long, @PathVariable workPackageId: Long, @RequestParam(required = false) version: String? = null): OutputWorkPackage
+    fun getWorkPackageById(
+        @PathVariable projectId: Long,
+        @PathVariable workPackageId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): OutputWorkPackage
 
     @ApiOperation("Returns all work packages for a project")
     @GetMapping
-    fun getWorkPackagesByProjectId(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<OutputWorkPackageSimple>
+    fun getWorkPackagesByProjectId(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<OutputWorkPackageSimple>
 
     @ApiOperation("Returns all work packages for a project including outputs and activities")
     @GetMapping("/withOutputsAndActivities")
-    fun getWorkPackagesForTimePlanByProjectId(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<ProjectWorkPackageDTO>
+    fun getWorkPackagesForTimePlanByProjectId(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<ProjectWorkPackageDTO>
 
     @ApiOperation("Create work package")
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createWorkPackage(@PathVariable projectId: Long, @Valid @RequestBody inputWorkPackageCreate: InputWorkPackageCreate): OutputWorkPackage
+    fun createWorkPackage(
+        @PathVariable projectId: Long,
+        @RequestBody inputWorkPackageCreate: InputWorkPackageCreate
+    ): OutputWorkPackage
 
     @ApiOperation("Update work package")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateWorkPackage(@PathVariable projectId: Long, @Valid @RequestBody inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage
+    fun updateWorkPackage(
+        @PathVariable projectId: Long,
+        @RequestBody inputWorkPackageUpdate: InputWorkPackageUpdate
+    ): OutputWorkPackage
 
     @ApiOperation("Delete a work package")
     @DeleteMapping("/{workPackageId}")

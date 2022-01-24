@@ -19,14 +19,23 @@ interface ProjectResultApi {
 
     @ApiOperation("Returns all project results")
     @GetMapping
-    fun getProjectResults(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<ProjectResultDTO>
+    fun getProjectResults(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<ProjectResultDTO>
 
     @ApiOperation("Creates or updates project results")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProjectResults(@PathVariable projectId: Long, @RequestBody projectResultUpdateRequests: List<ProjectResultUpdateRequestDTO>): List<ProjectResultDTO>
+    fun updateProjectResults(
+        @PathVariable projectId: Long,
+        @RequestBody projectResultUpdateRequests: List<ProjectResultUpdateRequestDTO>
+    ): List<ProjectResultDTO>
 
     @ApiOperation("Calculate and return all data needed for project indicators overview table A4")
     @GetMapping("/indicatorsOverview")
-    fun getProjectResultIndicatorOverview(@PathVariable projectId: Long, @RequestParam(required = false) version: String? = null): List<IndicatorOverviewLineDTO>
+    fun getProjectResultIndicatorOverview(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<IndicatorOverviewLineDTO>
 
 }

@@ -18,7 +18,11 @@ interface ProjectWorkPackageOutputApi {
 
     @ApiOperation("Returns all work package outputs for a work package")
     @GetMapping
-    fun getOutputs(@PathVariable projectId: Long, @PathVariable workPackageId: Long, @RequestParam(required = false) version: String? = null): List<WorkPackageOutputDTO>
+    fun getOutputs(
+        @PathVariable projectId: Long,
+        @PathVariable workPackageId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): List<WorkPackageOutputDTO>
 
     @ApiOperation("Updates work packages outputs for a work package")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
