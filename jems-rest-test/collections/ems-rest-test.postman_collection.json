@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6085179d-7b82-4943-bff2-cf483888a089",
+		"_postman_id": "b8e1d763-86fc-441f-984e-e8b5fe6911d4",
 		"name": "ems-rest-test",
 		"description": "Check JEMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -984,7 +984,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDateTime\": \"{{callDateStart}}\",\n\t\"endDateTime\": \"{{callDateEnd}}\",\n    \"isAdditionalFundAllowed\": true,\n    \"lengthOfPeriod\": 12,\n    \"description\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{inputLanguage}} description\"\n        }\n    ],\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"strategies\": [\"EUStrategyDanubeRegion\", \"SeaBasinStrategyOutermostRegions\"],\n    \"funds\": [ {\n        \"programmeFund\": {\n            \"id\": \"{{programmeFundId}}\"\n        },\n        \"rate\": 100,\n        \"isAdjustable\": true\n    }]\n}\n"
+							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n    \"type\": \"STANDARD\",\n\t\"startDateTime\": \"{{callDateStart}}\",\n\t\"endDateTime\": \"{{callDateEnd}}\",\n    \"isAdditionalFundAllowed\": true,\n    \"lengthOfPeriod\": 12,\n    \"description\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{inputLanguage}} description\"\n        }\n    ],\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"strategies\": [\"EUStrategyDanubeRegion\", \"SeaBasinStrategyOutermostRegions\"],\n    \"funds\": [ {\n        \"programmeFund\": {\n            \"id\": \"{{programmeFundId}}\"\n        },\n        \"rate\": 100,\n        \"isAdjustable\": true\n    }]\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/call",
@@ -12292,7 +12292,7 @@
 			]
 		},
 		{
-			"name": "Project Work Package",
+			"name": "Project Work Package and Result",
 			"item": [
 				{
 					"name": "just create project application",
@@ -13126,6 +13126,177 @@
 								"workPackage",
 								"{{workPackage_id_2}}",
 								"output"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add project results",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('applicant can add results to project', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('results has been created', function() {\r",
+									"    const results = pm.response.json();\r",
+									"    pm.expect(results).to.have.length(3);\r",
+									"});\r",
+									"\r",
+									"pm.test('results has correct numbers', function() {\r",
+									"    const results = pm.response.json();\r",
+									"    pm.expect(results[0].resultNumber).to.be.eql(1);\r",
+									"    pm.expect(results[1].resultNumber).to.be.eql(2);\r",
+									"    pm.expect(results[2].resultNumber).to.be.eql(3);\r",
+									"});\r",
+									"\r",
+									"pm.test('results has correct periods and baselines', function() {\r",
+									"    const results = pm.response.json();\r",
+									"\r",
+									"    pm.expect(results[0].periodNumber).to.be.eql(6);\r",
+									"    pm.expect(results[1].periodNumber).to.be.eql(7);\r",
+									"    pm.expect(results[2].periodNumber).to.be.eql(7);\r",
+									"\r",
+									"    pm.expect(results[0].baseline).to.be.eql(4500);\r",
+									"    pm.expect(results[1].baseline).to.be.eql(80000);\r",
+									"    pm.expect(results[2].baseline).to.be.eql(10500);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"baseline\": 4500,\r\n        \"periodNumber\": 6,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{$randomJobTitle}}\"\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"baseline\": 80000,\r\n        \"periodNumber\": 7,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{$randomJobTitle}}\"\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"baseline\": 10500,\r\n        \"periodNumber\": 7,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{$randomJobTitle}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/result",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"result"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test timeplan data",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('applicant can retrieve data for timeplan', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('2 work packages are returned', function() {\r",
+									"    const wps = pm.response.json();\r",
+									"    pm.expect(wps).to.have.length(2);\r",
+									"});\r",
+									"\r",
+									"pm.test('assert first work package data', function() {\r",
+									"    const wp = pm.response.json()[0];\r",
+									"\r",
+									"    pm.expect(wp.workPackageNumber).to.eql(1);\r",
+									"    pm.expect(wp.activities).to.have.length(3);\r",
+									"    pm.expect(wp.outputs).to.have.length(1);\r",
+									"});\r",
+									"\r",
+									"pm.test('assert second work package data', function() {\r",
+									"    const wp = pm.response.json()[1];\r",
+									"\r",
+									"    pm.expect(wp.workPackageNumber).to.eql(2);\r",
+									"    pm.expect(wp.activities).to.have.length(3);\r",
+									"    pm.expect(wp.outputs).to.have.length(2);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage/withOutputsAndActivities",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"workPackage",
+								"withOutputsAndActivities"
 							]
 						}
 					},
