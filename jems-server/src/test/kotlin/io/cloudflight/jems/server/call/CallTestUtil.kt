@@ -126,7 +126,7 @@ fun createCallDetailModel(
     status: CallStatus = CallStatus.DRAFT,
     type: CallType = CallType.STANDARD,
     startDate: ZonedDateTime = START,
-    endDateStep1:  ZonedDateTime? = null,
+    endDateStep1: ZonedDateTime? = null,
     endDate: ZonedDateTime = END,
     isAdditionalFundAllowed: Boolean = false,
     lengthOfPeriod: Int = 1,
@@ -139,7 +139,8 @@ fun createCallDetailModel(
     lumpSums: List<ProgrammeLumpSum> = defaultLumpSums,
     unitCosts: List<ProgrammeUnitCost> = defaultUnitCosts,
     applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration> =
-        applicationFormFieldConfigurationEntities(createTestCallEntity(id,  name = name)).toModel()
+        applicationFormFieldConfigurationEntities(createTestCallEntity(id,  name = name)).toModel(),
+    preSubmissionCheckPluginKey: String? = null
 ): CallDetail {
     return CallDetail(
         id = id,
@@ -159,11 +160,10 @@ fun createCallDetailModel(
         flatRates = flatRates,
         lumpSums = lumpSums,
         unitCosts = unitCosts,
-        applicationFormFieldConfigurations = applicationFormFieldConfigurations
+        applicationFormFieldConfigurations = applicationFormFieldConfigurations,
+        preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
     )
 }
-
-
 
 fun partnerWithId(id: Long) = ProjectPartnerEntity(
     id = id,
@@ -224,6 +224,7 @@ fun callDetail(
     id : Long = 10L,
     name : String = "call name",
     status : CallStatus = CallStatus.PUBLISHED,
+    type: CallType = CallType.STANDARD,
     startDate : ZonedDateTime = ZonedDateTime.of(2020,1,10,10,10,10,10, ZoneId.systemDefault()),
     endDateStep1 : ZonedDateTime = ZonedDateTime.of(2020,1,15,10,10,10,10, ZoneId.systemDefault()),
     endDate : ZonedDateTime = ZonedDateTime.of(2020,1,30,15,10,10,10, ZoneId.systemDefault()),
@@ -235,6 +236,7 @@ fun callDetail(
     id = id,
     name = name,
     status = status,
+    type = type,
     startDate = startDate,
     endDateStep1 = endDateStep1,
     endDate = endDate,

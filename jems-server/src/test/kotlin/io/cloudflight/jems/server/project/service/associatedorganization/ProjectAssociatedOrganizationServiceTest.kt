@@ -84,7 +84,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
         lengthOfPeriod = 1,
-        allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD)
+        allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null
     )
     private val projectStatus = ProjectStatusHistoryEntity(
