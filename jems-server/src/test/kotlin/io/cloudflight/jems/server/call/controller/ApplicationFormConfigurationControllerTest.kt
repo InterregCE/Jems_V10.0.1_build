@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallType
-import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormFieldConfigurationDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.StepSelectionOptionDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormFieldConfigurationRequestDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.UpdateApplicationFormFieldConfigurationRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
