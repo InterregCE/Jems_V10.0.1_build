@@ -49,10 +49,7 @@ import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundReposit
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.user.entity.UserEntity
-import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
-import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -66,7 +63,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
-import java.util.*
+import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
 internal class CallPersistenceProviderTest {
@@ -78,7 +75,6 @@ internal class CallPersistenceProviderTest {
         private const val STATE_AID_ID = 23L
         private const val LUMP_SUM_ID = 4L
         private const val UNIT_COST_ID = 3L
-        private const val USER_ID = 302L
         private const val PLUGIN_KEY = "plugin-key"
 
         private fun applicationFormFieldConfigurationEntities(callEntity: CallEntity) = mutableSetOf(
@@ -126,8 +122,6 @@ internal class CallPersistenceProviderTest {
         private fun callEntity(id: Long): CallEntity {
             val call = createTestCallEntity(id)
             fund = callFundRateEntity(call, FUND_ID)
-            call.startDate = START
-            call.endDate = END
             call.preSubmissionCheckPluginKey = PLUGIN_KEY
             call.prioritySpecificObjectives.clear()
             call.prioritySpecificObjectives.addAll(specificObjectives)
@@ -175,67 +169,10 @@ internal class CallPersistenceProviderTest {
             return call
         }
 
-
         private val expectedStandardCallDetail = createCallDetailModel(
             id = CALL_ID,
             name = "Test call name",
-            status = CallStatus.DRAFT,
-            type = CallType.STANDARD,
-            startDate = START,
-            endDateStep1 = null,
-            endDate = END,
-            isAdditionalFundAllowed = false,
-            lengthOfPeriod = 1,
-            description = setOf(InputTranslation(SystemLanguage.EN, "This is a dummy call")),
-            objectives = listOf(
-                ProgrammePriority(
-                    id = 0L,
-                    code = "PRIO_CODE",
-                    objective = PO1,
-                    specificObjectives = listOf(
-                        ProgrammeSpecificObjective(AdvancedTechnologies, "CODE_ADVA"),
-                        ProgrammeSpecificObjective(Digitisation, "CODE_DIGI"),
-                    )
-                )
-            ),
-            strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             funds = sortedSetOf(callFundRate(FUND_ID)),
-            stateAids = listOf(
-                ProgrammeStateAid(
-                    id = STATE_AID_ID,
-                    measure = ProgrammeStateAidMeasure.OTHER_1,
-                    threshold = BigDecimal.ZERO,
-                    maxIntensity = BigDecimal.ZERO,
-                    name = emptySet(),
-                    abbreviatedName = emptySet(),
-                    schemeNumber = ""
-                )
-            ),
-            flatRates = sortedSetOf(
-                ProjectCallFlatRate(
-                    type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS,
-                    rate = 15,
-                    adjustable = true
-                )
-            ),
-            lumpSums = listOf(
-                ProgrammeLumpSum(
-                    id = LUMP_SUM_ID,
-                    cost = BigDecimal.ONE,
-                    splittingAllowed = true,
-                    phase = ProgrammeLumpSumPhase.Closure,
-                    categories = setOf(BudgetCategory.InfrastructureCosts),
-                )
-            ),
-            unitCosts = listOf(
-                ProgrammeUnitCost(
-                    id = UNIT_COST_ID,
-                    costPerUnit = BigDecimal.TEN,
-                    isOneCostCategory = true,
-                    categories = setOf(BudgetCategory.InfrastructureCosts),
-                )
-            ),
-            applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities(callEntity()).toModel(),
             preSubmissionCheckPluginKey = PLUGIN_KEY
         )
 
@@ -245,7 +182,6 @@ internal class CallPersistenceProviderTest {
             type = CallType.SPF,
             funds = sortedSetOf(callFundRate(FUND_ID))
         )
-
 
         private val expectedCall = CallSummary(
             id = CALL_ID,
@@ -431,7 +367,7 @@ internal class CallPersistenceProviderTest {
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(applicationFormConfigEntity)
-        assertThat(persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PLUGIN_KEY)).isEqualTo(expectedCallDetail)
+        assertThat(persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PLUGIN_KEY)).isEqualTo(expectedStandardCallDetail)
     }
 
 
@@ -609,8 +545,8 @@ internal class CallPersistenceProviderTest {
             assertThat(endDate).isEqualTo(expectedResultEntity.endDate)
             assertThat(lengthOfPeriod).isEqualTo(expectedResultEntity.lengthOfPeriod)
             assertThat(isAdditionalFundAllowed).isEqualTo(expectedResultEntity.isAdditionalFundAllowed)
-            assertThat(prioritySpecificObjectives).containsExactlyInAnyOrderElementsOf(io.cloudflight.jems.server.call.repository.CallPersistenceProviderTest.specificObjectives)
-            assertThat(funds.map { it.setupId.programmeFund }).containsExactly(io.cloudflight.jems.server.call.repository.CallPersistenceProviderTest.fund.setupId.programmeFund)
+            assertThat(prioritySpecificObjectives).containsExactlyInAnyOrderElementsOf(specificObjectives)
+            assertThat(funds.map { it.setupId.programmeFund }).containsExactly(fund.setupId.programmeFund)
             assertThat(strategies).containsExactlyInAnyOrderElementsOf(strategies)
             assertThat(flatRates).isEmpty()
             assertThat(lumpSums).isEmpty()

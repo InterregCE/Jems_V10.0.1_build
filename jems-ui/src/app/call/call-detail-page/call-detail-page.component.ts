@@ -1,13 +1,7 @@
-import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Tools} from '@common/utils/tools';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {
-  CallDetailDTO,
-  CallDTO,
-  CallUpdateRequestDTO,
-  OutputProgrammeStrategy,
-  ProgrammeStateAidDTO
-} from '@cat/api';
+import {CallDetailDTO, CallDTO, CallUpdateRequestDTO, OutputProgrammeStrategy, ProgrammeStateAidDTO} from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -192,9 +186,10 @@ export class CallDetailPageComponent {
 
   isPublishDisabled(call: CallDetailDTO): Observable<boolean> {
     return of(true).pipe(
-      withLatestFrom(this.formService.dirty$, this.formService.pending$),
-      map(([, dirty, pending, callType]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0 || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0 ||
-        callType == CallDetailDTO.TypeEnum.SPF) // for disabling publish button TODO remove call type check after implementing MP2-2211
+      withLatestFrom(this.formService.dirty$, this.formService.pending$, of(call.type)),
+      map(([, dirty, pending, callType]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0 ||
+        call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0 ||
+        callType === CallDetailDTO.TypeEnum.SPF) // for disabling publish button TODO remove call type check after implementing MP2-2211
     );
   }
 
@@ -255,11 +250,11 @@ export class CallDetailPageComponent {
   }
 
   isStandardCall(callType: CallDetailDTO.TypeEnum): boolean {
-     return callType == CallDetailDTO.TypeEnum.STANDARD;
+     return callType === CallDetailDTO.TypeEnum.STANDARD;
   }
 
   isSPFCall(callType: CallDetailDTO.TypeEnum): boolean {
-    return callType == CallDetailDTO.TypeEnum.SPF;
+    return callType === CallDetailDTO.TypeEnum.SPF;
   }
 
   getCallPageTitle(callType: CallDetailDTO.TypeEnum): string {
