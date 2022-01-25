@@ -66,10 +66,17 @@
                             </jems-multi-language-form-field>
                         </jems-multi-language-container>
 
+                        <jems-alert
+                                [type]="Alert.WARNING"
+                                [show]="data.partners.length === 0"
+                                [closable]="false">
+                            <span>{{'project.work.package.tab.activity.partnersInvolved.warning' | translate}}</span>
+                        </jems-alert>
+
                         <mat-form-field class="example-chip-list" appearance="fill"
                                         *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.STATE_AID_PARTNERS_INVOLVED">
                             <mat-label>{{ 'project.work.package.tab.activity.partnersInvolved' | translate }}</mat-label>
-                            <mat-chip-list #chipList [disabled]="!data.isEditable">
+                            <mat-chip-list #chipList [disabled]="!data.isEditable || data.partners.length === 0 ">
                                 <mat-chip
                                         *ngFor="let partner of partners(i).value;let partnerIndex = index"
                                         [selectable]="false"

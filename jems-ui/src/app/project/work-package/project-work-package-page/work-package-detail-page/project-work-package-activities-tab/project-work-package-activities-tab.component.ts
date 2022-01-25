@@ -11,6 +11,7 @@ import {ProjectWorkPackageActivitiesTabConstants} from './project-work-package-a
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectPartner} from '@project/model/ProjectPartner';
+import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
@@ -23,6 +24,7 @@ import {ProjectPartner} from '@project/model/ProjectPartner';
 export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   constants = ProjectWorkPackageActivitiesTabConstants;
   APPLICATION_FORM = APPLICATION_FORM;
+  Alert = Alert;
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
