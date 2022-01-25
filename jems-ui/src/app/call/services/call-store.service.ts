@@ -79,7 +79,11 @@ export class CallStore {
       .pipe(
         switchMap(id => id ? this.callService.getCallById(Number(id)) : of({} as CallDetailDTO)),
         tap(call => this.callId = (call as any)?.id),
-        tap(call => this.callType$.next(call.type)),
+        tap(call => {
+          if (call.type) {
+            this.callType$.next(call.type);
+          }
+        }),
         tap(call => Log.info('Fetched the call:', this, call)),
       );
     return merge(initialCall$, this.savedCall$)
