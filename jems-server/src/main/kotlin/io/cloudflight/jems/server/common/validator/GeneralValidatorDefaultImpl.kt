@@ -192,6 +192,16 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
             }
         }
 
+    override fun notEqualTo(item: String?, compareTo: String, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (item != null && item.equals(compareTo)) {
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.key.invalid",
+                    i18nArguments = mapOf("key" to item.toString())
+                )
+            }
+        }
+
     override fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>) =
         mutableMapOf<String, I18nMessage>().run {
             validationResult.forEach { this.putAll(it) }
