@@ -28,8 +28,8 @@ import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
 import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
@@ -205,7 +205,7 @@ internal class CreateProjectTest : UnitTest() {
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
 
-        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        val usersToPersistSlot = slot<Map<Long, ProjectCollaboratorLevel>>()
         every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
 
         val result = createProject.createProject("test application", CALL_ID)
@@ -252,7 +252,7 @@ internal class CreateProjectTest : UnitTest() {
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
 
-        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        val usersToPersistSlot = slot<Map<Long, ProjectCollaboratorLevel>>()
         every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
 
         val result = createProject.createProject(acronym, CALL_ID)
@@ -297,7 +297,7 @@ internal class CreateProjectTest : UnitTest() {
         every { createNewProjectVersion.create(PROJECT_ID) } returns projectVersionSummary()
         every { auditPublisher.publishEvent(any()) } answers { }
 
-        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        val usersToPersistSlot = slot<Map<Long, ProjectCollaboratorLevel>>()
         every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
 
         createProject.createProject(acronym, CALL_ID)

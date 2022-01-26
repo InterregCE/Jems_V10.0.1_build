@@ -14,5 +14,5 @@ class UserProjectCollaboratorEntity(
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val level: CollaboratorLevel,
+    val level: ProjectCollaboratorLevel,
 )

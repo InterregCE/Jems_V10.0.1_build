@@ -54,9 +54,9 @@ internal class AssignUserEventListenersTest : UnitTest() {
         verify { eventPublisher.publishEvent(capture(auditSlot)) }
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
-                action = AuditAction.PROJECT_USER_ASSIGNMENT,
+                action = AuditAction.PROJECT_USER_ASSIGNMENT_PROGRAMME,
                 project = AuditProject(project.id.toString(), project.customIdentifier, project.acronym),
-                description = "Project can be accessed by: ${user.email}, ${otherUser.email}"
+                description = "Project can be accessed by: ${user.email}: role, ${otherUser.email}: role"
             )
         )
     }
@@ -71,7 +71,7 @@ internal class AssignUserEventListenersTest : UnitTest() {
         verify { eventPublisher.publishEvent(capture(auditSlot)) }
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
-                action = AuditAction.PROJECT_USER_ASSIGNMENT,
+                action = AuditAction.PROJECT_USER_ASSIGNMENT_PROGRAMME,
                 project = AuditProject(project.id.toString(), project.customIdentifier, project.acronym),
                 description = "Project can be accessed by: "
             )

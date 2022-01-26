@@ -181,6 +181,15 @@ fun projectPartnerEntity(
     sortNumber = sortNumber
 )
 
+fun userSummary(id: Long, roleId: Long) = UserSummary(
+    id = id,
+    email = "user@email.com",
+    name = "",
+    surname = "",
+    userRole = UserRoleSummary(roleId, "", false),
+    userStatus = UserStatus.ACTIVE,
+)
+
 fun partnerDetailRows(): List<PartnerDetailRow> =
         listOf(
             object : PartnerDetailRow {

@@ -13,15 +13,15 @@ import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.entity.projectuser.UserProjectCollaboratorEntity
 
 fun ProjectEntity.toApplicantAndStatus(
-    collaboratorViewIds: Iterable<UserProjectCollaboratorEntity>,
-    collaboratorEditIds: Iterable<UserProjectCollaboratorEntity>,
-    collaboratorManageIds: Iterable<UserProjectCollaboratorEntity>,
+    collaboratorViewIds: Set<Long>,
+    collaboratorEditIds: Set<Long>,
+    collaboratorManageIds: Set<Long>,
 ) = ProjectApplicantAndStatus(
     projectId = id,
     applicantId = applicant.id,
-    collaboratorViewIds = collaboratorViewIds.mapTo(HashSet()) { it.id.userId },
-    collaboratorEditIds = collaboratorEditIds.mapTo(HashSet()) { it.id.userId },
-    collaboratorManageIds = collaboratorManageIds.mapTo(HashSet()) { it.id.userId },
+    collaboratorViewIds = collaboratorViewIds,
+    collaboratorEditIds = collaboratorEditIds,
+    collaboratorManageIds = collaboratorManageIds,
     projectStatus = currentStatus.status,
 )
 
