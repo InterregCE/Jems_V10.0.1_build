@@ -50,5 +50,7 @@ interface GeneralValidatorService {
 
     fun minSize(items: Collection<Any>?, minSize: Int, fieldName: String): Map<String, I18nMessage>
 
+    fun notEqualTo(item: String?, compareTo: String, fieldName: String): Map<String, I18nMessage>
+
     fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>)
 }
