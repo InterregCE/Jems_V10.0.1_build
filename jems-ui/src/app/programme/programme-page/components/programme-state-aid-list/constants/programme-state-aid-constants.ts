@@ -1,7 +1,7 @@
 import {InputTranslation, ProgrammeStateAidDTO} from '@cat/api';
 import {DEFAULT_FALLBACK_LANGUAGE} from '@common/services/language-store.service';
 
-export interface ProgrammeStateAidMeasureRelation{
+export interface ProgrammeStateAidMeasureRelation {
   measure: ProgrammeStateAidDTO.MeasureEnum;
   measureDisplayValue: string;
   name?: InputTranslation[];
@@ -12,41 +12,62 @@ export interface ProgrammeStateAidMeasureRelation{
 }
 
 export class ProgrammeStateAidConstants {
+  private static readonly GENERAL_DE_MINIMIS = 'General de minimis';
+  private static readonly ROAD_FREIGHT_DE_MINIMIS = 'Road freight de minimis';
+  private static readonly AGRICULTURAL_DE_MINIMIS = 'Agricultural de minimis';
+  private static readonly FISHER_AND_AQUA_CULTURE_SECTOR_DE_MINIMIS = 'Fishery and aquaculture sector de minimis';
+  private static readonly SGEI_DE_MINIMIS = 'SGEI de minimis';
+
   static stateAidMeasures: ProgrammeStateAidMeasureRelation[] = [
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GENERALDEMINIMIS,
-      measureDisplayValue: 'General de minimis',
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'General de minimis'}],
-      abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'General de minimis'}],
+      measureDisplayValue: ProgrammeStateAidConstants.GENERAL_DE_MINIMIS,
+      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: ProgrammeStateAidConstants.GENERAL_DE_MINIMIS}],
+      abbreviatedName: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: ProgrammeStateAidConstants.GENERAL_DE_MINIMIS
+      }],
       threshold: 200000,
       comments: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'per MS'}],
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.ROADFREIGHTDEMINIMIS,
-      measureDisplayValue: 'Road freight de minimis',
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Road freight de minimis'}],
-      abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Road freight de minimis'}],
+      measureDisplayValue: ProgrammeStateAidConstants.ROAD_FREIGHT_DE_MINIMIS,
+      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: ProgrammeStateAidConstants.ROAD_FREIGHT_DE_MINIMIS}],
+      abbreviatedName: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: ProgrammeStateAidConstants.ROAD_FREIGHT_DE_MINIMIS
+      }],
       threshold: 100000,
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.AGRICULTURALDEMINIMIS,
-      measureDisplayValue: 'Agricultural de minimis',
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Agricultural de minimis'}],
-      abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Agricultural de minimis'}],
+      measureDisplayValue: ProgrammeStateAidConstants.AGRICULTURAL_DE_MINIMIS,
+      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: ProgrammeStateAidConstants.AGRICULTURAL_DE_MINIMIS}],
+      abbreviatedName: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: ProgrammeStateAidConstants.AGRICULTURAL_DE_MINIMIS
+      }],
       threshold: 25000,
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.FISHERANDAQUACULTURESECTORDEMINIMIS,
-      measureDisplayValue: 'Fishery and aquaculture sector de minimis',
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Fishery and aquaculture sector de minimis'}],
-      abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Fishery and aquaculture sector de minimis'}],
+      measureDisplayValue: ProgrammeStateAidConstants.FISHER_AND_AQUA_CULTURE_SECTOR_DE_MINIMIS,
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: ProgrammeStateAidConstants.FISHER_AND_AQUA_CULTURE_SECTOR_DE_MINIMIS
+      }],
+      abbreviatedName: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: ProgrammeStateAidConstants.FISHER_AND_AQUA_CULTURE_SECTOR_DE_MINIMIS
+      }],
       threshold: 30000,
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.SGEIDEMINIMIS,
-      measureDisplayValue: 'SGEI de minimis',
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'SGEI de minimis'}],
-      abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'SGEI de minimis'}],
+      measureDisplayValue: ProgrammeStateAidConstants.SGEI_DE_MINIMIS,
+      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: ProgrammeStateAidConstants.SGEI_DE_MINIMIS}],
+      abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: ProgrammeStateAidConstants.SGEI_DE_MINIMIS}],
       threshold: 500000,
     },
     {
@@ -95,20 +116,29 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE19A,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for costs incurred by SMEs participating in community-led local development (“CLLD”) or European Innovation Partnership for agricultural productivity and sustainability (“EIP”) Operational Group projects'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for costs incurred by SMEs participating in community-led local development (“CLLD”) or European Innovation Partnership for agricultural productivity and sustainability (“EIP”) Operational Group projects'
+      }],
       measureDisplayValue: 'GBER Article 19a',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 19a'}],
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE19B,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Limited amounts of aid to SMEs benefitting from community-led local development (“CLLD”) or European Innovation Partnership for agricultural productivity and sustainability (“EIP”) Operational Group projects'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Limited amounts of aid to SMEs benefitting from community-led local development (“CLLD”) or European Innovation Partnership for agricultural productivity and sustainability (“EIP”) Operational Group projects'
+      }],
       measureDisplayValue: 'GBER Article 19b',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 19b'}],
       threshold: 200000,
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE20,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for costs incurred by undertakings participating in European Territorial Cooperation project'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for costs incurred by undertakings participating in European Territorial Cooperation project'
+      }],
       measureDisplayValue: 'GBER Article 20',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 20'}],
       maxIntensity: 80,
@@ -116,7 +146,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE20A,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Limited amounts of aid to undertakings for participation in European Territorial Cooperation projects'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Limited amounts of aid to undertakings for participation in European Territorial Cooperation projects'
+      }],
       measureDisplayValue: 'GBER Article 20a',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 20a'}],
       threshold: 20000,
@@ -134,11 +167,17 @@ export class ProgrammeStateAidConstants {
       measureDisplayValue: 'GBER Article 22',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 22'}],
       threshold: 400000,
-      comments: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'grants, including equity or quasi equity investment, interests rate and guarantee premium reductions up to EUR 0,4 million gross grant equivalent or EUR 0,6 million for undertakings established in assisted areas fulfilling the conditions of Article 107(3)(c) of the Treaty, or EUR 0,8 million for undertakings established in assisted areas fulfilling the conditions of Article 107(3)(a) of the Treaty.'}],
+      comments: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'grants, including equity or quasi equity investment, interests rate and guarantee premium reductions up to EUR 0,4 million gross grant equivalent or EUR 0,6 million for undertakings established in assisted areas fulfilling the conditions of Article 107(3)(c) of the Treaty, or EUR 0,8 million for undertakings established in assisted areas fulfilling the conditions of Article 107(3)(a) of the Treaty.'
+      }],
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE23,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid to alternative trading platforms specialised in SME'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid to alternative trading platforms specialised in SME'
+      }],
       measureDisplayValue: 'GBER Article 23',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 23'}],
     },
@@ -151,7 +190,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE25PARA,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for research and development projects (a) fundamental research'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for research and development projects (a) fundamental research'
+      }],
       measureDisplayValue: 'GBER Article 25 par. (a)',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 25 par. (a)'}],
       maxIntensity: 100,
@@ -159,7 +201,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE25PARB,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for research and development projects (b) fundamental research'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for research and development projects (b) fundamental research'
+      }],
       measureDisplayValue: 'GBER Article 25 par. (b)',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 25 par. (b)'}],
       maxIntensity: 50,
@@ -167,7 +212,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE25PARC,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for research and development projects (c) fundamental research'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for research and development projects (c) fundamental research'
+      }],
       measureDisplayValue: 'GBER Article 25 par. (c)',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 25 par. (c)'}],
       maxIntensity: 25,
@@ -175,7 +223,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE25PARD,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for research and development projects (d) fundamental research'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for research and development projects (d) fundamental research'
+      }],
       measureDisplayValue: 'GBER Article 25 par. (d)',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 25 par. (d)'}],
       maxIntensity: 50,
@@ -183,20 +234,29 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE25A,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for projects awarded a Seal of Excellence quality label'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for projects awarded a Seal of Excellence quality label'
+      }],
       measureDisplayValue: 'GBER Article 25a',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 25a'}],
       threshold: 2500000,
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE25B,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for Marie Skłodowska-Curie actions and ERC Proof of Concept actions'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for Marie Skłodowska-Curie actions and ERC Proof of Concept actions'
+      }],
       measureDisplayValue: 'GBER Article 25b',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 25b'}],
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE25C,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid involved in co-funded research and development projects'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid involved in co-funded research and development projects'
+      }],
       measureDisplayValue: 'GBER Article 25c',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 25c'}],
     },
@@ -240,7 +300,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE30,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for research and development in the fishery and acquaculture sector'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for research and development in the fishery and acquaculture sector'
+      }],
       measureDisplayValue: 'GBER Article 30',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 30'}],
       maxIntensity: 100,
@@ -255,7 +318,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE32,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for the recruitment of disadvantaged workers in the form of wage subsidies'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for the recruitment of disadvantaged workers in the form of wage subsidies'
+      }],
       measureDisplayValue: 'GBER Article 32',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 32'}],
       maxIntensity: 50,
@@ -264,7 +330,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE33,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for the employment of workers with disabilities in the form of wage subsidies'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for the employment of workers with disabilities in the form of wage subsidies'
+      }],
       measureDisplayValue: 'GBER Article 33',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 33'}],
       maxIntensity: 75,
@@ -273,7 +342,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE34,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for compensating the additional costs of employing workers with disabilities'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for compensating the additional costs of employing workers with disabilities'
+      }],
       measureDisplayValue: 'GBER Article 34',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 34'}],
       maxIntensity: 100,
@@ -282,7 +354,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE35,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for compensating the costs of assistance provided to disadvantaged workers'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for compensating the costs of assistance provided to disadvantaged workers'
+      }],
       measureDisplayValue: 'GBER Article 35',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 35'}],
       maxIntensity: 50,
@@ -291,7 +366,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE36,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Investment aid enabling undertakings to go beyond Union standards for environmental protection or to increase the level of environmental protection in the absence of Union standards'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Investment aid enabling undertakings to go beyond Union standards for environmental protection or to increase the level of environmental protection in the absence of Union standards'
+      }],
       measureDisplayValue: 'GBER Article 36',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 36'}],
       maxIntensity: 40,
@@ -299,13 +377,19 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE36A,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Investment aid for publicly accessible recharging or refuelling infrastructure for zero and low emission road vehicles'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Investment aid for publicly accessible recharging or refuelling infrastructure for zero and low emission road vehicles'
+      }],
       measureDisplayValue: 'GBER Article 36a',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 36a'}],
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE37,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Investment aid for early adaptation to future Union standards'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Investment aid for early adaptation to future Union standards'
+      }],
       measureDisplayValue: 'GBER Article 37',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 37'}],
       maxIntensity: 15,
@@ -320,7 +404,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE39,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Investment aid for energy efficiency projects in buildings in the form of financial instruments'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Investment aid for energy efficiency projects in buildings in the form of financial instruments'
+      }],
       measureDisplayValue: 'GBER Article 39',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 39'}],
     },
@@ -333,33 +420,48 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE41,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Investment aid for the promotion of energy from renewable sources'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Investment aid for the promotion of energy from renewable sources'
+      }],
       measureDisplayValue: 'GBER Article 41',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 41'}],
       maxIntensity: 30,
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE42,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Operating aid for the promotion of electricity from renewable sources'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Operating aid for the promotion of electricity from renewable sources'
+      }],
       measureDisplayValue: 'GBER Article 42',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 42'}],
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE43,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Operating aid for the promotion of energy from renewable sources in small scale installations'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Operating aid for the promotion of energy from renewable sources in small scale installations'
+      }],
       measureDisplayValue: 'GBER Article 43',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 43'}],
       threshold: 15000000,
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE44,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid in the form of reductions in environmental taxes under Directive 2003/96/EC'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid in the form of reductions in environmental taxes under Directive 2003/96/EC'
+      }],
       measureDisplayValue: 'GBER Article 44',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 44'}],
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE45,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Investment aid for remediation of contaminated sites'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Investment aid for remediation of contaminated sites'
+      }],
       measureDisplayValue: 'GBER Article 45',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 45'}],
       maxIntensity: 100,
@@ -367,7 +469,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE46,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Investment aid for energy efficient district heating and cooling'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Investment aid for energy efficient district heating and cooling'
+      }],
       measureDisplayValue: 'GBER Article 46',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 46'}],
       maxIntensity: 45,
@@ -375,7 +480,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE47,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Investment aid for waste recycling and re-utilisation'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Investment aid for waste recycling and re-utilisation'
+      }],
       measureDisplayValue: 'GBER Article 47',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 47'}],
       maxIntensity: 35,
@@ -396,14 +504,20 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE50,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid schemes to make good the damage caused by certain natural disasters'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid schemes to make good the damage caused by certain natural disasters'
+      }],
       measureDisplayValue: 'GBER Article 50',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 50'}],
       maxIntensity: 100,
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE51,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Social aid for transport for residents of remote regions'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Social aid for transport for residents of remote regions'
+      }],
       measureDisplayValue: 'GBER Article 51',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 51'}],
       maxIntensity: 100,
@@ -423,7 +537,10 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE52B,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for projects of common interest in the area of trans-European digital connectivity infrastructure'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for projects of common interest in the area of trans-European digital connectivity infrastructure'
+      }],
       measureDisplayValue: 'GBER Article 52b',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 52b'}],
     },
@@ -451,12 +568,18 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE55,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for sport and multifunctional recreational infrastructures'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Aid for sport and multifunctional recreational infrastructures'
+      }],
       measureDisplayValue: 'GBER Article 55',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 55'}],
       maxIntensity: 80,
       threshold: 2000000,
-      comments: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'for investment aid for sport and multifunctional recreational infrastructures: EUR 30 million or the total costs exceeding EUR 100 million per project; operating aid for sport infrastructure: EUR 2 million per infrastructure per year;'}],
+      comments: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'for investment aid for sport and multifunctional recreational infrastructures: EUR 30 million or the total costs exceeding EUR 100 million per project; operating aid for sport infrastructure: EUR 2 million per infrastructure per year;'
+      }],
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE56,
@@ -490,13 +613,19 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE56E,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Conditions for aid involved in financial products supported by the InvestEU Fund'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Conditions for aid involved in financial products supported by the InvestEU Fund'
+      }],
       measureDisplayValue: 'GBER Article 56e',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 56e'}],
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE56F,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Conditions for aid involved in intermediated commercially-driven financial products supported by the InvestEU Fund'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'Conditions for aid involved in intermediated commercially-driven financial products supported by the InvestEU Fund'
+      }],
       measureDisplayValue: 'GBER Article 56f',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 56f'}],
     },
@@ -508,13 +637,19 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.RDIFRAMEWORK,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'State aid Framework for Research, Development and Innovation'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'State aid Framework for Research, Development and Innovation'
+      }],
       measureDisplayValue: 'RDI Framework',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'RDI Framework'}],
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.SGEIFRAMEWORK,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'State aid Framework for Services of General Economic Interest'}],
+      name: [{
+        language: DEFAULT_FALLBACK_LANGUAGE,
+        translation: 'State aid Framework for Services of General Economic Interest'
+      }],
       measureDisplayValue: 'SGEI Framework',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'SGEI Framework'}],
     },

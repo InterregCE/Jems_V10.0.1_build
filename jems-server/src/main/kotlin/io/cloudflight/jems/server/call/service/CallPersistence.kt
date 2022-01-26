@@ -21,7 +21,7 @@ interface CallPersistence {
     fun createCall(call: Call, userId: Long): CallDetail
     fun updateCall(call: Call): CallDetail
 
-    fun updateProjectCallFlatRate(callId: Long, flatRates: Set<ProjectCallFlatRate>): CallDetail
+    fun updateProjectCallFlatRate(callId: Long, flatRatesRequest: Set<ProjectCallFlatRate>): CallDetail
     fun existsAllProgrammeLumpSumsByIds(ids: Set<Long>): Boolean
     fun updateProjectCallLumpSum(callId: Long, lumpSumIds: Set<Long>): CallDetail
     fun existsAllProgrammeUnitCostsByIds(ids: Set<Long>): Boolean

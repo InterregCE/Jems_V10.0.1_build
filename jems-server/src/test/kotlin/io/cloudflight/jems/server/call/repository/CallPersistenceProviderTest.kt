@@ -586,6 +586,35 @@ internal class CallPersistenceProviderTest {
     }
 
     @Test
+    fun `update flat rates with same setup type - OK`() {
+        val call = createTestCallEntity(1)
+        every { callRepo.findById(1L) } returns Optional.of(call)
+
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(
+            call
+        )
+        every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
+
+        persistence.updateProjectCallFlatRate(
+            1, setOf(
+                ProjectCallFlatRate(
+                    type = FlatRateType.STAFF_COSTS,
+                    rate = 12,
+                    adjustable = false
+                ),
+            )
+        )
+
+        assertThat(call.flatRates).containsExactlyInAnyOrder(
+            ProjectCallFlatRateEntity(
+                setupId = FlatRateSetupId(call = call, type = FlatRateType.STAFF_COSTS),
+                rate = 12,
+                isAdjustable = false,
+            )
+        )
+    }
+
+    @Test
     fun existsAllProgrammeLumpSumsByIds() {
         every { programmeLumpSumRepo.findAllById(setOf(56L)) } returns emptyList()
         assertThat(persistence.existsAllProgrammeLumpSumsByIds(setOf(56L))).isFalse
