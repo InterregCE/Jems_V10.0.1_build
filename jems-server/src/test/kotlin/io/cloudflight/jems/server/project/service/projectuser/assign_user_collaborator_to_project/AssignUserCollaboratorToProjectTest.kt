@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -91,23 +91,23 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
         )
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
 
-        val userData = slot<Map<Long, CollaboratorLevel>>()
+        val userData = slot<Map<Long, ProjectCollaboratorLevel>>()
         val expectedResult = listOf(
-            CollaboratorAssignedToProject(userId = USER_ADMIN_ID, userEmail = "admin1", CollaboratorLevel.EDIT),
-            CollaboratorAssignedToProject(userId = USER_APPLICANT_ID, userEmail = "applicant1", CollaboratorLevel.MANAGE),
+            CollaboratorAssignedToProject(userId = USER_ADMIN_ID, userEmail = "admin1", ProjectCollaboratorLevel.EDIT),
+            CollaboratorAssignedToProject(userId = USER_APPLICANT_ID, userEmail = "applicant1", ProjectCollaboratorLevel.MANAGE),
         )
         every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(userData)) } returns expectedResult
 
         assertThat(assignUser.updateUserAssignmentsOnProject(
             PROJECT_ID, setOf(
-            Pair("admin1", CollaboratorLevel.EDIT),
-            Pair("applicant1", CollaboratorLevel.MANAGE),
+            Pair("admin1", ProjectCollaboratorLevel.EDIT),
+            Pair("applicant1", ProjectCollaboratorLevel.MANAGE),
         ))).containsExactlyElementsOf(expectedResult)
 
         assertThat(allEmails.captured).containsExactlyInAnyOrder("admin1", "applicant1")
         assertThat(userData.captured).containsExactlyEntriesOf(mapOf(
-            USER_ADMIN_ID to CollaboratorLevel.EDIT,
-            USER_APPLICANT_ID to CollaboratorLevel.MANAGE,
+            USER_ADMIN_ID to ProjectCollaboratorLevel.EDIT,
+            USER_APPLICANT_ID to ProjectCollaboratorLevel.MANAGE,
         ))
 
         verify(exactly = 1) { eventPublisher.publishEvent(AssignUserCollaboratorEvent(
@@ -124,7 +124,7 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
         val allEmails = slot<Collection<String>>()
         every { userPersistence.findAllByEmails(capture(allEmails)) } returns emptyList()
 
-        assertThrows<UsersAreNotValid> { assignUser.updateUserAssignmentsOnProject(PROJECT_ID, setOf(Pair("applicant1", CollaboratorLevel.MANAGE))) }
+        assertThrows<UsersAreNotValid> { assignUser.updateUserAssignmentsOnProject(PROJECT_ID, setOf(Pair("applicant1", ProjectCollaboratorLevel.MANAGE))) }
     }
 
     @Test
@@ -136,7 +136,7 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
         every { userPersistence.findAllByEmails(capture(allEmails)) } returns listOf(user(USER_APPLICANT_ID, "applicant1", APPLICANT_ROLE_ID))
 
         assertThrows<MinOneManagingCollaboratorRequiredException> {
-            assignUser.updateUserAssignmentsOnProject(PROJECT_ID, setOf(Pair("applicant1", CollaboratorLevel.VIEW)))
+            assignUser.updateUserAssignmentsOnProject(PROJECT_ID, setOf(Pair("applicant1", ProjectCollaboratorLevel.VIEW)))
         }
     }
 

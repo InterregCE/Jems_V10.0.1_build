@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -115,7 +116,10 @@ class WorkPackageServiceTest {
     lateinit var projectRepository: ProjectRepository
 
     @MockK
-    lateinit var collaboratorRepository: UserProjectCollaboratorRepository
+    lateinit var projectCollaboratorRepository: UserProjectCollaboratorRepository
+
+    @MockK
+    lateinit var partnerCollaboratorRepository: UserPartnerCollaboratorRepository
 
     lateinit var workPackageService: WorkPackageService
 
@@ -125,7 +129,8 @@ class WorkPackageServiceTest {
         workPackageService = WorkPackageServiceImpl(
             workPackageRepository,
             projectRepository,
-            collaboratorRepository,
+            projectCollaboratorRepository,
+            partnerCollaboratorRepository
         )
     }
 

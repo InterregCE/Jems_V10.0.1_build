@@ -2,7 +2,8 @@ package io.cloudflight.jems.server.project.service.projectuser.get_my_collaborat
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
+import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -13,7 +14,10 @@ import org.junit.jupiter.api.Test
 internal class GetMyCollaboratorLevelTest : UnitTest() {
 
     @MockK
-    lateinit var collaboratorPersistence: UserProjectCollaboratorPersistence
+    lateinit var projectCollaboratorPersistence: UserProjectCollaboratorPersistence
+
+    @MockK
+    lateinit var partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
 
     @MockK
     lateinit var securityService: SecurityService
@@ -24,8 +28,16 @@ internal class GetMyCollaboratorLevelTest : UnitTest() {
     @Test
     fun getUserIdsForProject() {
         every { securityService.getUserIdOrThrow() } returns 16L
-        every { collaboratorPersistence.getLevelForProjectAndUser(15L, 16L) } returns CollaboratorLevel.MANAGE
-        assertThat(getCollaborators.getMyCollaboratorLevel(15L)).isEqualTo(CollaboratorLevel.MANAGE)
+        every { projectCollaboratorPersistence.getLevelForProjectAndUser(15L, 16L) } returns ProjectCollaboratorLevel.MANAGE
+        assertThat(getCollaborators.getMyCollaboratorLevel(15L)).isEqualTo(ProjectCollaboratorLevel.MANAGE)
+    }
+
+    @Test
+    fun `partner collaborators have view project level`() {
+        every { securityService.getUserIdOrThrow() } returns 16L
+        every { projectCollaboratorPersistence.getLevelForProjectAndUser(15L, 16L) } returns null
+        every { partnerCollaboratorPersistence.findUserIdsByProjectId(15L) } returns setOf(16L)
+        assertThat(getCollaborators.getMyCollaboratorLevel(15L)).isEqualTo(ProjectCollaboratorLevel.VIEW)
     }
 
 }
