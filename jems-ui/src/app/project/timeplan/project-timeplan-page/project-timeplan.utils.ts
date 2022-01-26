@@ -66,19 +66,19 @@ function groupTemplateFunction(item: any, translateService: TranslateService): s
   const data = item.data;
   switch (data.type) {
     case GroupType.WorkPackage:
-      return `<span>${translateService.instant(
+      return `<span>${escapeHtml(translateService.instant(
         'common.label.workpackage',
         {wpNumber: data.wpNumber, title: item.content}
-      )}</span>`;
+      ))}</span>`;
     case GroupType.Activity:
-      return `<span>${translateService.instant(
+      return `<span>${escapeHtml(translateService.instant(
         'common.label.activity',
         {wpNumber: data.wpNumber, activityNumber: data.activityNumber, title: item.content}
-      )}</span>`;
+      ))}</span>`;
     case GroupType.Indicator:
-      return `<span>${item.content}</span>`;
+      return `<span>${escapeHtml(item.content)}</span>`;
     case GroupType.ResultTitle:
-      return `<span>${translateService.instant('result.indicator.title')}</span>`;
+      return `<span>${escapeHtml(translateService.instant('result.indicator.title'))}</span>`;
     default:
       return 'error';
   }
@@ -250,8 +250,12 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
 
 function getIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
   return targetValue
-    ? `<span>${translateService.instant('project.results.result.target.value')}: ${NumberService.toLocale(targetValue)}</span>`
+    ? `<span>${escapeHtml(getTargetValueTooltip(targetValue, translateService))}</span>`
     : '';
+}
+
+function getTargetValueTooltip(value: number, translateService: TranslateService): string {
+  return `${translateService.instant('project.results.result.target.value')}: ${NumberService.toLocale(value)}`;
 }
 
 export function sortNullLast(a: Indicator, b: Indicator): number {
@@ -401,4 +405,14 @@ export function getOptions(translateService: TranslateService, custom?: Partial<
     },
     custom
   );
+}
+
+function escapeHtml(unsafe: string)
+{
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
