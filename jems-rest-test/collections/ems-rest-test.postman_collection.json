@@ -915,6 +915,248 @@
 					"response": []
 				},
 				{
+					"name": "retrieve some existing result indicators",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('we can retrieve indicators', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('we have result indicator for this SO or we need to create one', function() {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.length > 0) {\r",
+									"        console.log('There is already indicator ' + response[0].code + ' with id=' + response[0].id + ', which we will use for applciations during this test');\r",
+									"        pm.environment.set('resultIndicatorId', response[0].id);\r",
+									"    } else {\r",
+									"        console.log('There are no any indicators for this SO yet. We need to create one.');\r",
+									"        pm.environment.set('resultIndicatorId', null);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/programmeindicator/result/summary/{{programmePriorityPolicy}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmeindicator",
+								"result",
+								"summary",
+								"{{programmePriorityPolicy}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[IF] not exists, then create result indicator",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (pm.environment.get('resultIndicatorId') == null) {\r",
+									"    console.log('There is no result indicator we can use, so we need to create one.');\r",
+									"    pm.variables.set('resultIndicatorCode', \"RI.1 (API)\");\r",
+									"} else {\r",
+									"    console.log('There is already a result indicator we will use that one.');\r",
+									"    pm.variables.set('resultIndicatorCode', \"!!!This name is so long that it needs to fail and it should never be created!!!\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programme result indicator has been created (as if was needed)', function() {\r",
+									"    if (pm.environment.get('resultIndicatorId') == null) {\r",
+									"        const response = pm.response.json();\r",
+									"        pm.response.to.have.status(200);\r",
+									"        console.log('We created new result indicator with id=' + response.id);\r",
+									"        pm.environment.set('resultIndicatorId', response.id);\r",
+									"    } else {\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([400, 422]);\r",
+									"        console.log('We did an invalid POST to NOT create new result indicator.');\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identifier\": \"{{resultIndicatorCode}}\",\r\n    \"code\": \"RCR73\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"Annual users of new or modernised health care facilities\"\r\n        }\r\n    ],\r\n    \"measurementUnit\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"users/year\"\r\n        }\r\n    ],\r\n    \"type\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"type translated to {{inputLanguage}}\"\r\n        }\r\n    ],\r\n    \"finalTarget\": 8000000,\r\n    \"referenceYear\": \"2027\",\r\n    \"programmeObjectivePolicy\": \"{{programmePriorityPolicy}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/programmeindicator/result",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmeindicator",
+								"result"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "retrieve some existing output indicators",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('we can retrieve SOs', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('we have output indicator for this SO or we need to create one', function() {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.length > 0) {\r",
+									"        console.log('There is already indicator ' + response[0].code + ' with id=' + response[0].id + ', which we will use for applciations during this test');\r",
+									"        pm.environment.set('outputIndicatorId', response[0].id);\r",
+									"    } else {\r",
+									"        console.log('There are no any indicators for this SO yet. We need to create one.');\r",
+									"        pm.environment.set('outputIndicatorId', null);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/programmeindicator/output/summary/{{programmePriorityPolicy}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmeindicator",
+								"output",
+								"summary",
+								"{{programmePriorityPolicy}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[IF] not exists, then create output indicator",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (pm.environment.get('outputIndicatorId') == null) {\r",
+									"    console.log('There is no output indicator we can use, so we need to create one.');\r",
+									"    pm.variables.set('outputIndicatorCode', \"OI.1 (API)\");\r",
+									"} else {\r",
+									"    console.log('There is already an output indicator we will use that one.');\r",
+									"    pm.variables.set('outputIndicatorCode', \"!!!This name is so long that it needs to fail and it should never be created!!!\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programme output indicator has been created (as if was needed)', function() {\r",
+									"    if (pm.environment.get('outputIndicatorId') == null) {\r",
+									"        const response = pm.response.json();\r",
+									"        pm.response.to.have.status(200);\r",
+									"        console.log('We created new output indicator with id=' + response.id);\r",
+									"        pm.environment.set('outputIndicatorId', response.id);\r",
+									"    } else {\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([400, 422]);\r",
+									"        console.log('We did an invalid POST to NOT create new output indicator.');\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identifier\": \"{{outputIndicatorCode}}\",\r\n    \"code\": \"RCO52\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"Length of new, upgraded or modernised inland waterways - non-TEN-T\"\r\n        }\r\n    ],\r\n    \"measurementUnit\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"km\"\r\n        }\r\n    ],\r\n    \"type\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"type translated to {{inputLanguage}}\"\r\n        }\r\n    ],\r\n    \"finalTarget\": 200000,\r\n    \"programmeObjectivePolicy\": \"{{programmePriorityPolicy}}\",\r\n    \"resultIndicatorId\": {{resultIndicatorId}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/programmeindicator/output",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmeindicator",
+								"output"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create call",
 					"event": [
 						{
@@ -10361,7 +10603,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ],\n\t\"duration\": 50,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
+									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ],\n\t\"duration\": 50,\n    \"intro\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n        }\n    ]\n}\n"
 								},
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}",
@@ -10430,7 +10672,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -10556,7 +10798,7 @@
 											"pm.test('address is saved correctly', function() {\r",
 											"    const addr = partner.addresses[0];\r",
 											"    pm.expect(addr.type).to.eql(\"Organization\");\r",
-											"    pm.expect(addr.country).to.eql(\"\");\r",
+											"    pm.expect(addr.country).to.eql(\"Burundi (BI)\");\r",
 											"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
 											"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
 											"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
@@ -10589,7 +10831,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\": \"\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Burundi (BI)\",\r\n        \"nutsRegion2\":\"Burundi (BI00)\",\r\n        \"nutsRegion3\":\"Burundi (BI000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -10916,7 +11158,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -10934,6 +11176,91 @@
 										"partner",
 										"toProjectId",
 										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in address",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const partner = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can remove addresses from partner', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('just one address is now returned', function() {\r",
+											"    pm.expect(partner.addresses.length).to.eql(1);\r",
+											"});\r",
+											"\r",
+											"pm.test('address is saved correctly', function() {\r",
+											"    const addr = partner.addresses[0];\r",
+											"    pm.expect(addr.type).to.eql(\"Organization\");\r",
+											"    pm.expect(addr.country).to.eql(\"Honduras (HN)\");\r",
+											"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
+											"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
+											"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
+											"    pm.expect(addr.city).to.eql(\"Washington, DC\");\r",
+											"    pm.expect(addr.homepage).to.eql(\"https://www.whitehouse.gov/\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/address",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_2}}",
+										"address"
 									]
 								}
 							},
@@ -11736,7 +12063,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -11754,6 +12081,91 @@
 										"partner",
 										"toProjectId",
 										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in address",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const partner = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can remove addresses from partner', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('just one address is now returned', function() {\r",
+											"    pm.expect(partner.addresses.length).to.eql(1);\r",
+											"});\r",
+											"\r",
+											"pm.test('address is saved correctly', function() {\r",
+											"    const addr = partner.addresses[0];\r",
+											"    pm.expect(addr.type).to.eql(\"Organization\");\r",
+											"    pm.expect(addr.country).to.eql(\"Somalia (SO)\");\r",
+											"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
+											"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
+											"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
+											"    pm.expect(addr.city).to.eql(\"Washington, DC\");\r",
+											"    pm.expect(addr.homepage).to.eql(\"https://www.whitehouse.gov/\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/address",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_lead}}",
+										"address"
 									]
 								}
 							},
@@ -11967,6 +12379,74 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "fill in contacts",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant fill in contacts', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"type\": \"LegalRepresentative\",\r\n        \"title\": \"{{$randomNamePrefix}}\",\r\n        \"firstName\": \"{{$randomFirstName}}\",\r\n        \"lastName\": \"{{$randomLastName}}\",\r\n        \"email\": \"{{$randomEmail}}\",\r\n        \"telephone\": \"{{$randomPhoneNumber}}\"\r\n    },\r\n    {\r\n        \"type\": \"ContactPerson\",\r\n        \"title\": \"{{$randomNamePrefix}}\",\r\n        \"firstName\": \"{{$randomFirstName}}\",\r\n        \"lastName\": \"{{$randomLastName}}\",\r\n        \"email\": \"{{$randomEmail}}\",\r\n        \"telephone\": \"{{$randomPhoneNumber}}\"\r\n    }\r\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/contact",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_lead}}",
+										"contact"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"event": [
@@ -12108,7 +12588,7 @@
 									"    pm.expect(res[0].officeAndAdministrationCosts).to.eql(2200.0);\r",
 									"    pm.expect(res[0].totalSum).to.eql(24200);\r",
 									"\r",
-									"    pm.expect(res[1].partner.country).to.eql('');\r",
+									"    pm.expect(res[1].partner.country).to.eql('Burundi (BI)');\r",
 									"    pm.expect(res[1].totalSum).to.eql(6044);\r",
 									"    pm.expect(res[1].lumpSumContribution).to.eql(6044);\r",
 									"\r",
