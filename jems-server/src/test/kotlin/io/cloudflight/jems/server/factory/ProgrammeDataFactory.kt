@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.factory
 
-import io.cloudflight.jems.server.programme.entity.ProgrammeData
+import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
@@ -15,7 +15,7 @@ class ProgrammeDataFactory(
 ) {
 
     val legalStatus = ProgrammeLegalStatusEntity(id = 1)
-    val programmeData = ProgrammeData(
+    val programmeData = ProgrammeDataEntity(
         id = 1L,
         cci = "cci",
         title = "title",
@@ -39,7 +39,7 @@ class ProgrammeDataFactory(
     }
 
     @Transactional
-    fun saveProgrammeData(): ProgrammeData {
+    fun saveProgrammeData(): ProgrammeDataEntity {
         return programmeDataRepository.save(programmeData)
     }
 }

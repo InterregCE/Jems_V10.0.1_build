@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.common.validator
 
-import io.cloudflight.jems.api.programme.dto.InputProgrammeData
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataUpdateRequestDTO
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.validation.Constraint
@@ -25,7 +25,7 @@ class StartBeforeEndValidator(private val startBeforeEndValidator: StartDateBefo
         var start: ZonedDateTime? = null
         var end: ZonedDateTime? = null
 
-        if (dtoWithTimeRange is InputProgrammeData) {
+        if (dtoWithTimeRange is ProgrammeDataUpdateRequestDTO) {
             start = toYear(dtoWithTimeRange.firstYear)
             end = toYear(dtoWithTimeRange.lastYear)
         }

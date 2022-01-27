@@ -1,16 +1,16 @@
 package io.cloudflight.jems.server.programme.service
 
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
-import io.cloudflight.jems.api.programme.dto.InputProgrammeData
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataUpdateRequestDTO
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataDTO
 
 interface ProgrammeDataService {
 
-    fun get(): OutputProgrammeData
+    fun get(): ProgrammeDataDTO
 
-    fun update(basicData: InputProgrammeData): OutputProgrammeData
+    fun update(updateRequestDTO: ProgrammeDataUpdateRequestDTO): ProgrammeDataDTO
 
-    fun saveProgrammeNuts(regions: Collection<String>): OutputProgrammeData
+    fun saveProgrammeNuts(regions: Collection<String>): ProgrammeDataDTO
 
     fun getAvailableNuts(): List<OutputNuts>
 }
