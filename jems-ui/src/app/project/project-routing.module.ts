@@ -53,6 +53,8 @@ import {ModificationPageComponent} from './project-application/modification-page
 import {ProjectUnitCostsPageComponent} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-page.component';
 import {PrivilegesPageComponent} from './project-application/privileges-page/privileges-page.component';
 import {ContractMonitoringComponent} from '@project/project-application/contract-monitoring/contract-monitoring.component';
+import {PartnerReportComponent} from '@project/project-application/report/partner-report.component';
+import {PartnerReportBreadcrumbResolver} from '@project/project-application/report/service/partner-report-breadcrumb-resolver.service';
 
 export const routes: Routes = [
   {
@@ -78,6 +80,12 @@ export const routes: Routes = [
           {
             path: '',
             component: ProjectDetailPageComponent,
+          },
+          {
+            path: 'reporting/:partnerId',
+            component: PartnerReportComponent,
+            data: {dynamicBreadcrumb: true},
+            resolve: {breadcrumb$: PartnerReportBreadcrumbResolver},
           },
           {
             path: 'contractMonitoring',

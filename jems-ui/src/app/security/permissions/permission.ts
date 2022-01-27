@@ -30,6 +30,20 @@ export class Permission {
 
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
     {
+      name: 'project.application.reporting.title',
+      children: [
+        {
+          name: 'project.application.reporting.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectReportingView],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.HIDDEN,
+          hideTooltip: 'permission.create.reporting'
+        }
+      ]
+    },
+    {
       name: 'project.application.contracting.title',
       children: [
         {
@@ -102,6 +116,18 @@ export class Permission {
   ];
 
   public static readonly DEFAULT_USER_INSPECT_PERMISSIONS: PermissionNode[] = [
+    {
+      name: 'project.application.reporting.title',
+      children: [
+        {
+          name: 'project.application.reporting.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectReportingView],
+          editPermissions: [PermissionsEnum.ProjectReportingEdit],
+          editTooltip: 'permission.inspect.reporting'
+        }
+      ]
+    },
     {
       name: 'project.application.contracting.title',
       children: [
