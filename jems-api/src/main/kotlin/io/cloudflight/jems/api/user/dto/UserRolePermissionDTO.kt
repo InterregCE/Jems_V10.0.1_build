@@ -38,6 +38,9 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectStatusDecisionRevert("ProjectStatusDecisionRevert"),
     ProjectStartStepTwo("ProjectStartStepTwo"),
 
+    ProjectReportingView("ProjectReportingView"),
+    ProjectReportingEdit("ProjectReportingEdit"),
+
     ProjectContractingView("ProjectContractingView"),
     ProjectSetToContracted("ProjectSetToContracted"),
 

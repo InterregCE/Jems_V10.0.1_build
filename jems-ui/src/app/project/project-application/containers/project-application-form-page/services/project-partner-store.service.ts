@@ -7,9 +7,10 @@ import {
   ProjectPartnerDTO,
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
-  ProjectPartnerSummaryDTO,
+  ProjectPartnerReportService,
+  ProjectPartnerSummaryDTO, ProjectStatusDTO, ProjectVersionDTO
 } from '@cat/api';
-import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
@@ -18,6 +19,8 @@ import {ProjectPartnerRoleEnum, ProjectPartnerRoleEnumUtil} from '@project/model
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectPaths} from '@project/common/project-util';
+import StatusEnum = ProjectStatusDTO.StatusEnum;
+import {Tools} from '@common/utils/tools';
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Injectable({
@@ -25,26 +28,31 @@ import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 })
 export class ProjectPartnerStore {
   public static PARTNER_DETAIL_PATH = '/applicationFormPartner/';
+  public static PARTNER_REPORT_DETAIL_PATH = '/reporting/';
   isProjectEditable$: Observable<boolean>;
   projectCallType$: Observable<CallTypeEnum>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   partners$: Observable<ProjectPartner[]>;
   leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
   partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerReportSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   latestPartnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   private partnerId: number;
   private projectId: number;
+  private lastContractedVersion$ = new ReplaySubject<string>(1);
   private partnerUpdateEvent$ = new BehaviorSubject(null);
   private updatedPartner$ = new Subject<ProjectPartnerDetailDTO>();
 
   constructor(private partnerService: ProjectPartnerService,
               private projectStore: ProjectStore,
               private routingService: RoutingService,
-              private projectVersionStore: ProjectVersionStore) {
+              private projectVersionStore: ProjectVersionStore,
+              private projectPartnerReportService: ProjectPartnerReportService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.projectCallType$ = this.projectStore.projectCallType$;
     this.partnerSummaries$ = this.partnerSummaries();
     this.latestPartnerSummaries$ = this.partnerSummariesFromVersion();
+    this.partnerReportSummaries$ = this.partnerReportSummaries();
     this.partners$ = combineLatest([
       this.projectStore.project$,
       this.projectVersionStore.selectedVersionParam$,
@@ -130,6 +138,10 @@ export class ProjectPartnerStore {
       );
   }
 
+  lastContractedVersionASObservable(): Observable<string> {
+    return this.lastContractedVersion$.asObservable();
+  }
+
   private partner(): Observable<ProjectPartnerDetailDTO> {
     const initialPartner$ = combineLatest([
       this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
@@ -164,6 +176,25 @@ export class ProjectPartnerStore {
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
       );
+  }
+
+  private partnerReportSummaries(): Observable<ProjectPartnerSummaryDTO[]> {
+    return combineLatest([this.projectStore.projectId$, this.projectVersionStore.versions$])
+      .pipe(
+        switchMap(([projectId, versions]) => {
+            const contractedVersion = this.getLastContractedVersion(versions);
+            this.lastContractedVersion$.next(contractedVersion);
+            return contractedVersion ? this.projectPartnerReportService.getProjectPartnersForReporting(projectId, ['sortNumber'], contractedVersion)
+              : of([]);
+          }
+        ),
+        shareReplay(1)
+      );
+  }
+
+  private getLastContractedVersion(versions: ProjectVersionDTO[]): string {
+    return Tools.first(versions.filter(version => version.status === StatusEnum.CONTRACTED)
+      .sort((a, b) => a.createdAt > b.createdAt ? -1 : 1))?.version;
   }
 
   static getPartnerTranslationKey(role: ProjectPartnerDTO.RoleEnum, callType: CallTypeEnum) {

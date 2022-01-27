@@ -21,6 +21,17 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
         type = UserRolePermissionNodeType.TOGGLE_SECTION,
         children = listOf(
             UserRolePermissionNode(
+                name = "Reporting",
+                type = UserRolePermissionNodeType.SECTION_HEADER,
+                children = listOf(
+                    UserRolePermissionNode(
+                        name = "Reporting",
+                        viewPermissions = setOf(UserRolePermission.ProjectReportingView),
+                        editPermissions = setOf(UserRolePermission.ProjectReportingEdit),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                    )
+                )),
+            UserRolePermissionNode(
                 name = "Contracting",
                 type = UserRolePermissionNodeType.SECTION_HEADER,
                 children = listOf(

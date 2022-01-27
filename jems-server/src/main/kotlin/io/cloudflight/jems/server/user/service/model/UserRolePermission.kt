@@ -42,6 +42,9 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     ProjectStatusDecisionRevert("ProjectStatusDecisionRevert", true),
     ProjectStartStepTwo("ProjectStartStepTwo", true),
 
+    ProjectReportingView("ProjectReportingView", true),
+    ProjectReportingEdit("ProjectReportingEdit", true),
+
     ProjectContractingView("ProjectContractingView", true),
     ProjectSetToContracted("ProjectSetToContracted", true),
 

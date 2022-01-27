@@ -35,10 +35,10 @@ export class ProjectApplicationFormSidenavService {
   private static readonly PROJECT_DETAIL_URL = '/app/project/detail';
 
   versionSelectTemplate$ = new Subject<TemplateRef<any>>();
-  private fetchPartners$ = new Subject<number>();
-  private fetchPackages$ = new Subject<number>();
+  private readonly fetchPartners$ = new Subject<number>();
+  private readonly fetchPackages$ = new Subject<number>();
 
-  private canSeeContracting$: Observable<boolean> = combineLatest([
+  private readonly canSeeContracting$: Observable<boolean> = combineLatest([
     this.projectStore.currentVersionOfProjectStatus$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectContractingView),
     this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted),
@@ -49,14 +49,26 @@ export class ProjectApplicationFormSidenavService {
     ),
   );
 
-  private canSeeProjectForm$: Observable<boolean> = combineLatest([
+  private readonly canSeeReporting$: Observable<boolean> = combineLatest([
+    this.projectStore.currentVersionOfProjectStatus$,
+    this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectReportingEdit),
+    this.partnerStore.partnerReportSummaries$
+  ]).pipe(
+    map(([projectStatus, hasContractingViewPermission, hasSetToContractedPermission, partnerReports]) =>
+      (hasContractingViewPermission || hasSetToContractedPermission || partnerReports.length > 0)
+      && ProjectUtil.isContractedOrAnyStatusAfterContracted(projectStatus)
+    ),
+  );
+
+  private readonly canSeeProjectForm$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectFormRetrieve),
     this.projectStore.userIsProjectOwner$,
   ]).pipe(
     map(([hasPermission, isOwner]) => hasPermission || isOwner),
   );
 
-  private canSubmitApplication$: Observable<boolean> = combineLatest([
+  private readonly canSubmitApplication$: Observable<boolean> = combineLatest([
     this.projectStore.currentVersionOfProjectStatus$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectSubmission),
     this.projectStore.userIsProjectOwnerOrEditCollaborator$,
@@ -66,7 +78,7 @@ export class ProjectApplicationFormSidenavService {
     ),
   );
 
-  private canCheckApplication$: Observable<boolean> = combineLatest([
+  private readonly canCheckApplication$: Observable<boolean> = combineLatest([
     this.projectStore.currentVersionOfProjectStatus$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectCheckApplicationForm),
     this.projectStore.userIsProjectOwner$,
@@ -76,7 +88,7 @@ export class ProjectApplicationFormSidenavService {
     ),
   );
 
-  private canSeeModificationSection$: Observable<boolean> = combineLatest([
+  private readonly canSeeModificationSection$: Observable<boolean> = combineLatest([
     this.projectStore.currentVersionOfProjectStatus$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectModificationView),
     this.permissionService.hasPermission(PermissionsEnum.ProjectOpenModification),
@@ -89,7 +101,7 @@ export class ProjectApplicationFormSidenavService {
     ),
   );
 
-  private canSeePrivilegesSection$: Observable<boolean> = combineLatest([
+  private readonly canSeePrivilegesSection$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorCollaboratorsRetrieve),
     this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorCollaboratorsUpdate),
     this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorCollaboratorsRetrieve),
@@ -98,7 +110,7 @@ export class ProjectApplicationFormSidenavService {
     map(perms => perms.some(perm => perm)),
   );
 
-  private canSeeAssessments$: Observable<boolean> = combineLatest([
+  private readonly canSeeAssessments$: Observable<boolean> = combineLatest([
     this.projectStore.currentVersionOfProjectStatus$.pipe(map(it => it.status)),
     this.projectStore.callHasTwoSteps$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectAssessmentView),
@@ -107,14 +119,17 @@ export class ProjectApplicationFormSidenavService {
     this.permissionService.hasPermission(PermissionsEnum.ProjectStatusDecisionRevert),
     this.fileManagementStore.canReadAssessmentFile$,
   ]).pipe(
-    map(([projectStatus, callHas2Steps, hasAssessmentViewPermission, hasReturnToaApplicantPermission, hasStartStepTwoPermission, hasRevertDecisionPermission, canReadAssessmentFiles]: any) => {
-      return ((canReadAssessmentFiles || hasAssessmentViewPermission || hasRevertDecisionPermission) && ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT)))
+    map(([projectStatus, callHas2Steps, hasAssessmentViewPermission, hasReturnToaApplicantPermission, hasStartStepTwoPermission,
+           hasRevertDecisionPermission, canReadAssessmentFiles]: any) => {
+      return ((canReadAssessmentFiles || hasAssessmentViewPermission || hasRevertDecisionPermission) &&
+          ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT)))
         || (hasStartStepTwoPermission && (projectStatus === StatusEnum.STEP1APPROVED || projectStatus === StatusEnum.STEP1APPROVEDWITHCONDITIONS))
-        || (hasReturnToaApplicantPermission && (projectStatus === StatusEnum.SUBMITTED || projectStatus === StatusEnum.APPROVED || projectStatus === StatusEnum.APPROVEDWITHCONDITIONS || projectStatus === StatusEnum.ELIGIBLE));
+        || (hasReturnToaApplicantPermission && (projectStatus === StatusEnum.SUBMITTED || projectStatus === StatusEnum.APPROVED ||
+          projectStatus === StatusEnum.APPROVEDWITHCONDITIONS || projectStatus === StatusEnum.ELIGIBLE));
     }),
   );
 
-  private partners$: Observable<HeadlineRoute[]> =
+  private readonly partners$: Observable<HeadlineRoute[]> =
     combineLatest([this.canSeeProjectForm$, this.fileManagementStore.canReadApplicationFile$, this.projectStore.projectCallType$]).pipe(
       switchMap(([canSeeProject, canSeeApplicationFiles, callType]) => {
         return (canSeeProject || canSeeApplicationFiles) ?
@@ -138,7 +153,30 @@ export class ProjectApplicationFormSidenavService {
       startWith([])
     );
 
-  private packages$: Observable<HeadlineRoute[]> =
+  private readonly reportSectionPartners$: Observable<HeadlineRoute[]> =
+    combineLatest([this.canSeeReporting$, this.projectStore.projectId$, this.projectStore.projectCallType$]).pipe(
+      switchMap(([canSeeReporting, projectId, callType]) => {
+        return (canSeeReporting) ?
+          this.partnerStore.partnerReportSummaries$.pipe(
+            withLatestFrom(this.projectStore.projectId$),
+            map(([partners]) =>
+              partners.map(partner => ({
+                  headline: {
+                    i18nKey: ProjectPartnerStore.getPartnerTranslationKey(partner.role, callType),
+                    i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
+                  },
+                  icon: partner.active ? '' : 'person_off',
+                  route: `/app/project/detail/${projectId}/reporting/${partner.id}`
+                }
+              ))
+            )
+          ) : of([]);
+      }),
+      catchError(() => of([])),
+      startWith([])
+    );
+
+  private readonly packages$: Observable<HeadlineRoute[]> =
     this.canSeeProjectForm$.pipe(
       switchMap(canSeeProject => {
         return canSeeProject ?
@@ -182,6 +220,8 @@ export class ProjectApplicationFormSidenavService {
 
     const headlines$ = combineLatest([
       this.projectStore.project$,
+      this.canSeeReporting$,
+      this.reportSectionPartners$,
       this.canSeeContracting$,
       this.canSeeAssessments$,
       this.canSubmitApplication$,
@@ -199,6 +239,8 @@ export class ProjectApplicationFormSidenavService {
         filter(([project]) => !!project),
         tap(([
                project,
+               canSeeReporting,
+               reportSectionPartners,
                canSeeContracting,
                canSeeAssessments,
                canSubmitApplication,
@@ -213,8 +255,10 @@ export class ProjectApplicationFormSidenavService {
              ]: any) => {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
+            ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners) : [],
             ...canSeeContracting ? this.getContractingHeadline(project.id) : [],
-            this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles, canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
+            this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles,
+              canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
             ...canSeeProjectForm ? this.getExportHeadline(project.id) : [],
             ...canSeePrivilegesSection ? this.getProjectPrivilegesHeadline(project.id) : [],
           ]);
@@ -259,6 +303,25 @@ export class ProjectApplicationFormSidenavService {
         }
       ]
     }];
+  }
+
+  private getReportingHeadline(partners: HeadlineRoute[]): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.reporting.title'},
+      bullets: [
+        ...this.getPartnerReportingSections(partners)
+      ]
+    }];
+  }
+
+  private getPartnerReportingSections(partners: HeadlineRoute[]): HeadlineRoute[] {
+    return [
+      {
+        headline: {i18nKey: 'project.application.partner.reports.title'},
+        bullets: [...partners],
+        versionedSection: true
+      }
+    ];
   }
 
   private getApplicationFormHeadline(projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>, showApplicationAnnexes: boolean, showAssessment: boolean, canCheckOrSubmitApplication: boolean, showProjectForm: boolean, canSeeModificationSection: boolean): HeadlineRoute {

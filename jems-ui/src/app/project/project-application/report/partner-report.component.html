@@ -1,0 +1,19 @@
+<jems-project-page-template *ngIf="this.data$ | async as data" [needsCard]="true"
+                            titleKey="project.application.partner.reports.title"
+                            [subTitleText]="'common.label.project.partner.role.shortcut.' + data.partner.role | specialCallTypeAppender | async | translate
+            : {partner: getPartnerTranslationString(data.partner)}"
+                            [isVersionedData]="false">
+    <ng-container>
+        <button jemsText disabled
+                mat-stroked-button class="mb-3">
+            + {{'project.application.partner.reports.add' | translate}}
+        </button>
+    </ng-container>
+
+    <jems-table *ngIf="data.partnerReports as partnerReports"
+                [configuration]="tableConfiguration"
+                [rows]="partnerReports"
+                [totalElements]="partnerReports.length">
+    </jems-table>
+
+</jems-project-page-template>
