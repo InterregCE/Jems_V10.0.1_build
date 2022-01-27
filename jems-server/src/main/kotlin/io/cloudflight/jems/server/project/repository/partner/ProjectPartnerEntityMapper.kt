@@ -105,6 +105,7 @@ fun ProjectPartnerEntity.copy(
     newFinancing: Collection<UpdateProjectPartnerCoFinancing>? = null
 ): ProjectPartnerEntity = ProjectPartnerEntity(
     id = projectPartner?.id ?: id,
+    active = active,
     project = project,
     abbreviation = projectPartner?.abbreviation ?: abbreviation,
     role = projectPartner?.role ?: role,
