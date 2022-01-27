@@ -170,7 +170,7 @@ fun partnerWithId(id: Long) = ProjectPartnerEntity(
     project = dummyProject,
     abbreviation = "test abbr",
     role = ProjectPartnerRole.LEAD_PARTNER,
-    legalStatus = ProgrammeLegalStatusEntity(),
+    legalStatus = ProgrammeLegalStatusEntity()
 )
 
 fun userWithId(id: Long) = LocalCurrentUser(
