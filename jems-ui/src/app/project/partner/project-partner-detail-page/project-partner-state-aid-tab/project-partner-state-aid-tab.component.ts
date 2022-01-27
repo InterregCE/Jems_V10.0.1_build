@@ -20,6 +20,7 @@ import {ProjectWorkPackagePageStore} from '@project/work-package/project-work-pa
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {RoutingService} from '@common/services/routing.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {Alert} from '@common/components/forms/alert';
 
 interface ActivityIdentificationInformation {
   workpackage: OutputWorkPackageSimple;
@@ -37,6 +38,7 @@ interface ActivityIdentificationInformation {
 export class ProjectPartnerStateAidTabComponent {
   APPLICATION_FORM = APPLICATION_FORM;
   separatorKeysCodes: number[] = [ENTER, COMMA];
+  Alert = Alert;
 
   data$: Observable<{
     stateAid: ProjectPartnerStateAidDTO;

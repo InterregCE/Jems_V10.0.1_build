@@ -104,9 +104,17 @@
             </div>
         </ng-container>
 
+
+        <jems-alert
+                [type]="Alert.WARNING"
+                [show]="data.activities.length === 0"
+                [closable]="false">
+            <span>{{'project.partner.state.aid.relevant.activities.warning' | translate}}</span>
+        </jems-alert>
+
         <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID.RELEVANT_ACTIVITIES" class="example-chip-list" appearance="fill">
             <mat-label>{{ 'project.partner.state.aid.relevant.activities' | translate }}</mat-label>
-            <mat-chip-list #chipList [disabled]="!data.isEditable">
+            <mat-chip-list #chipList [disabled]="!data.isEditable || data.activities.length === 0">
                 <mat-chip
                         *ngFor="let activity of activities().value;let activityIndex = index"
                         [selectable]="false"
