@@ -4,10 +4,9 @@ import {ProgrammePageSidenavService} from '../../../programme-page/services/prog
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Observable, of} from 'rxjs';
 import {ProgrammePriorityDTO, ProgrammeSpecificObjectiveDTO} from '@cat/api';
-import {catchError, filter, map, tap} from 'rxjs/operators';
+import {catchError, filter, map, take, tap} from 'rxjs/operators';
 import {FormArray, FormBuilder} from '@angular/forms';
 import {ProgrammePriorityDetailPageConstants} from './programme-priority-detail-page.constants';
-import {take} from 'rxjs/internal/operators';
 import {Alert} from '@common/components/forms/alert';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';

@@ -1,8 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '../../../../utils/forms';
-import {take} from 'rxjs/internal/operators';
-import {tap} from 'rxjs/operators';
+import {take, tap} from 'rxjs/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({

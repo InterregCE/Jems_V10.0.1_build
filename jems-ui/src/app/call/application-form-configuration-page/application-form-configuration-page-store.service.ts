@@ -8,8 +8,7 @@ import {
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {RoutingService} from '@common/services/routing.service';
 import {CallStore} from '../services/call-store.service';
-import {map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
-import {filter} from 'rxjs/internal/operators';
+import {filter, map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ApplicationFormFieldNode} from './application-form-field-node';
 import {APPLICATION_FORM} from '@project/common/application-form-model';

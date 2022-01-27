@@ -6,10 +6,9 @@ import {
   ProjectResultService, ResultIndicatorSummaryDTO
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {take} from 'rxjs/internal/operators';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Injectable()

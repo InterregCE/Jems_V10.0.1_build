@@ -5,9 +5,8 @@ import {ProjectWorkPackageOutputsTabConstants} from './project-work-package-outp
 import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
 import {WorkPackagePageStore} from '../work-package-page-store.service';
-import {catchError, map, startWith, tap} from 'rxjs/operators';
+import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {InputTranslation, OutputIndicatorSummaryDTO, ProjectPeriodDTO, WorkPackageOutputDTO} from '@cat/api';
-import {take} from 'rxjs/internal/operators';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Alert} from '@common/components/forms/alert';
 
