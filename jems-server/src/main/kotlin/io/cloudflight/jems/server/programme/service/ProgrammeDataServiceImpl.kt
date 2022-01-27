@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.programme.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
-import io.cloudflight.jems.api.programme.dto.InputProgrammeData
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataUpdateRequestDTO
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
@@ -15,7 +15,7 @@ import io.cloudflight.jems.server.nuts.service.toOutput
 import io.cloudflight.jems.server.programme.authorization.CanRetrieveNuts
 import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSetup
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
-import io.cloudflight.jems.server.programme.entity.ProgrammeData
+import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -30,19 +30,19 @@ class ProgrammeDataServiceImpl(
 
     @Transactional(readOnly = true)
     @CanRetrieveProgrammeSetup
-    override fun get(): OutputProgrammeData =
-        getProgrammeDataOrThrow().toOutputProgrammeData()
+    override fun get(): ProgrammeDataDTO =
+        getProgrammeDataOrThrow().toProgrammeDataDTO()
 
     @Transactional
     @CanUpdateProgrammeSetup
-    override fun update(basicData: InputProgrammeData): OutputProgrammeData {
-        validateInputProgrammeData(basicData)
+    override fun update(updateRequestDTO: ProgrammeDataUpdateRequestDTO): ProgrammeDataDTO {
+        validateInputData(updateRequestDTO)
         val oldProgrammeData = getProgrammeDataOrThrow()
-        val oldProgrammeBasicData = oldProgrammeData.toOutputProgrammeData()
+        val oldProgrammeBasicData = oldProgrammeData.toProgrammeDataDTO()
 
         val savedProgrammeData = programmeDataRepository.save(
-            basicData.toEntity(oldProgrammeData.programmeNuts, oldProgrammeData.defaultUserRoleId)
-        ).toOutputProgrammeData()
+            updateRequestDTO.toEntity(oldProgrammeData.programmeNuts, oldProgrammeData.defaultUserRoleId)
+        ).toProgrammeDataDTO()
 
         programmeBasicDataChanged(changes = oldProgrammeBasicData.getChange(savedProgrammeData))
             .logWith(auditService)
@@ -52,7 +52,7 @@ class ProgrammeDataServiceImpl(
 
     @Transactional
     @CanUpdateProgrammeSetup
-    override fun saveProgrammeNuts(regions: Collection<String>): OutputProgrammeData {
+    override fun saveProgrammeNuts(regions: Collection<String>): ProgrammeDataDTO {
         val programmeData = getProgrammeDataOrThrow()
         val oldNuts = programmeData.programmeNuts.mapTo(HashSet()) { it.id }
 
@@ -63,7 +63,7 @@ class ProgrammeDataServiceImpl(
         val toBeSaved = programmeData
             .copy(programmeNuts = nutsRegion3Repository.findAllById(regions).toSet())
 
-        val savedProgramme = programmeDataRepository.save(toBeSaved).toOutputProgrammeData()
+        val savedProgramme = programmeDataRepository.save(toBeSaved).toProgrammeDataDTO()
         val updatedNuts = toBeSaved.programmeNuts.mapTo(HashSet()) { it.toOutput() }
 
         programmeNutsAreaChanged(updatedNuts).logWith(auditService)
@@ -76,20 +76,20 @@ class ProgrammeDataServiceImpl(
         getProgrammeDataOrThrow().programmeNuts.toDto()
 
 
-    private fun getProgrammeDataOrThrow(): ProgrammeData =
+    private fun getProgrammeDataOrThrow(): ProgrammeDataEntity =
         programmeDataRepository.findById(1).orElseThrow { ResourceNotFoundException() }
 
-    private fun validateInputProgrammeData(basicData: InputProgrammeData){
+    private fun validateInputData(updateRequestDTO: ProgrammeDataUpdateRequestDTO){
         generalValidator.throwIfAnyIsInvalid(
-            generalValidator.startDateBeforeEndDate(basicData.firstYear.toYear(), basicData.lastYear.toYear(),"firstYear","lastYear"),
-            generalValidator.maxLength(basicData.cci, 15, "cci"),
-            generalValidator.maxLength(basicData.title, 255, "title"),
-            generalValidator.maxLength(basicData.version, 255, "version"),
-            generalValidator.numberBetween(basicData.firstYear, 1000,9999, "firstYear"),
-            generalValidator.numberBetween(basicData.lastYear, 1000,9999, "lastYear"),
-            generalValidator.maxLength(basicData.commissionDecisionNumber, 255, "commissionDecisionNumber"),
-            generalValidator.maxLength(basicData.programmeAmendingDecisionNumber, 255, "programmeAmendingDecisionNumber"),
-            generalValidator.maxLength(basicData.projectIdProgrammeAbbreviation, 12, "projectIdProgrammeAbbreviation"),
+            generalValidator.startDateBeforeEndDate(updateRequestDTO.firstYear.toYear(), updateRequestDTO.lastYear.toYear(),"firstYear","lastYear"),
+            generalValidator.maxLength(updateRequestDTO.cci, 15, "cci"),
+            generalValidator.maxLength(updateRequestDTO.title, 255, "title"),
+            generalValidator.maxLength(updateRequestDTO.version, 255, "version"),
+            generalValidator.numberBetween(updateRequestDTO.firstYear, 1000,9999, "firstYear"),
+            generalValidator.numberBetween(updateRequestDTO.lastYear, 1000,9999, "lastYear"),
+            generalValidator.maxLength(updateRequestDTO.commissionDecisionNumber, 255, "commissionDecisionNumber"),
+            generalValidator.maxLength(updateRequestDTO.programmeAmendingDecisionNumber, 255, "programmeAmendingDecisionNumber"),
+            generalValidator.maxLength(updateRequestDTO.projectIdProgrammeAbbreviation, 12, "projectIdProgrammeAbbreviation"),
         )
     }
 }

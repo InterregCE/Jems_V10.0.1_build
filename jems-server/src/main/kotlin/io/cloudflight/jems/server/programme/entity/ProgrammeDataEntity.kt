@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.entity
 
 import io.cloudflight.jems.server.nuts.entity.NutsRegion3
 import java.time.LocalDate
+import java.util.Collections.emptySet
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.JoinColumn
@@ -10,7 +11,7 @@ import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "programme_data")
-data class ProgrammeData(
+data class ProgrammeDataEntity(
 
     @Id
     val id: Long = 1,

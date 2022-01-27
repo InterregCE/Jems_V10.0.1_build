@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.programme.controller
 
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.programme.ProgrammeDataApi
-import io.cloudflight.jems.api.programme.dto.InputProgrammeData
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataUpdateRequestDTO
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataDTO
 import io.cloudflight.jems.server.programme.service.ProgrammeDataService
 import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
 import org.springframework.web.bind.annotation.RestController
@@ -14,15 +14,15 @@ class ProgrammeDataController(
     private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
 ) : ProgrammeDataApi {
 
-    override fun get(): OutputProgrammeData {
+    override fun get(): ProgrammeDataDTO {
         return programmeDataService.get()
     }
 
-    override fun update(programmeData: InputProgrammeData): OutputProgrammeData {
-        return programmeDataService.update(programmeData)
+    override fun update(updateRequestDTO: ProgrammeDataUpdateRequestDTO): ProgrammeDataDTO {
+        return programmeDataService.update(updateRequestDTO)
     }
 
-    override fun updateNuts(regions: Collection<String>): OutputProgrammeData {
+    override fun updateNuts(regions: Collection<String>): ProgrammeDataDTO {
         return programmeDataService.saveProgrammeNuts(regions)
     }
 

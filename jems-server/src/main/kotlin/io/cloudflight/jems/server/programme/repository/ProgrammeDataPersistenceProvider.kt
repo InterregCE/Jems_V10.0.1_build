@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.programme.repository
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammeData
+import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -30,6 +30,6 @@ class ProgrammeDataPersistenceProvider(
         programmeDataRepository.save(programmeData.copy(defaultUserRoleId = userRoleId))
     }
 
-    private fun getProgrammeDataOrThrow(): ProgrammeData =
+    private fun getProgrammeDataOrThrow(): ProgrammeDataEntity =
         programmeDataRepository.findById(programmeDataId).orElseThrow { ResourceNotFoundException("programmeData") }
 }

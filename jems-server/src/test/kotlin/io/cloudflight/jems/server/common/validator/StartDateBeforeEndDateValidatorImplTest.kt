@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.common.validator
 
 import io.cloudflight.jems.api.common.validator.StartBeforeEndValidator
-import io.cloudflight.jems.api.programme.dto.InputProgrammeData
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataUpdateRequestDTO
 import io.cloudflight.jems.server.UnitTest
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
@@ -13,7 +13,7 @@ import java.time.ZonedDateTime
 internal class StartDateBeforeEndDateValidatorImplTest : UnitTest() {
 
     companion object {
-        fun inputProgrammeData(firstYear: Int?, lastYear: Int?) = InputProgrammeData(
+        fun programmeDataUpdateRequest(firstYear: Int?, lastYear: Int?) = ProgrammeDataUpdateRequestDTO(
             cci = "cci",
             title = "title",
             version = "version",
@@ -45,12 +45,12 @@ internal class StartDateBeforeEndDateValidatorImplTest : UnitTest() {
     }
 
     @Test
-    fun `should return correct validation on test InputProgrammeData`() {
+    fun `should return correct validation on test ProgrammeUpdateRequestData`() {
         val context: ConstraintValidatorContextImpl = mockk()
 
-        assertThat(startBeforeEndValidator.isValid(inputProgrammeData(firstYear = 2014, lastYear = 2016), context)).isTrue
-        assertThat(startBeforeEndValidator.isValid(inputProgrammeData(firstYear = 2016, lastYear = 2014), context)).isFalse
-        assertThat(startBeforeEndValidator.isValid(inputProgrammeData(firstYear = null, lastYear = null), context)).isTrue
-        assertThat(startBeforeEndValidator.isValid(inputProgrammeData(firstYear = 2016, lastYear = 2016), context)).isTrue
+        assertThat(startBeforeEndValidator.isValid(programmeDataUpdateRequest(firstYear = 2014, lastYear = 2016), context)).isTrue
+        assertThat(startBeforeEndValidator.isValid(programmeDataUpdateRequest(firstYear = 2016, lastYear = 2014), context)).isFalse
+        assertThat(startBeforeEndValidator.isValid(programmeDataUpdateRequest(firstYear = null, lastYear = null), context)).isTrue
+        assertThat(startBeforeEndValidator.isValid(programmeDataUpdateRequest(firstYear = 2016, lastYear = 2016), context)).isTrue
     }
 }

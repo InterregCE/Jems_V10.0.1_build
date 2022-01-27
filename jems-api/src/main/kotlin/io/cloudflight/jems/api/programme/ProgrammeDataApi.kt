@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.programme
 
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
-import io.cloudflight.jems.api.programme.dto.InputProgrammeData
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataUpdateRequestDTO
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -18,15 +18,15 @@ interface ProgrammeDataApi {
 
     @ApiOperation("Retrieve programme setup")
     @GetMapping
-    fun get(): OutputProgrammeData
+    fun get(): ProgrammeDataDTO
 
     @ApiOperation("Specify base data for this programme")
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun update(@Valid @RequestBody programmeData: InputProgrammeData): OutputProgrammeData
+    fun update(@Valid @RequestBody updateRequestDTO: ProgrammeDataUpdateRequestDTO): ProgrammeDataDTO
 
     @ApiOperation("Specify available NUTS regions for this programme")
     @PutMapping("/nuts", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateNuts(@Valid @RequestBody regions: Collection<String>): OutputProgrammeData
+    fun updateNuts(@Valid @RequestBody regions: Collection<String>): ProgrammeDataDTO
 
     @ApiOperation("Retrieve NUTS available for this programme setup")
     @GetMapping("/nuts")

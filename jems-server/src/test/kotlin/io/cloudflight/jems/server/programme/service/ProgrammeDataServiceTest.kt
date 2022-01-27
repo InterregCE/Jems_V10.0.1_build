@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.programme.service
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
-import io.cloudflight.jems.api.programme.dto.InputProgrammeData
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataUpdateRequestDTO
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataDTO
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
@@ -15,7 +15,7 @@ import io.cloudflight.jems.server.nuts.entity.NutsRegion1
 import io.cloudflight.jems.server.nuts.entity.NutsRegion2
 import io.cloudflight.jems.server.nuts.entity.NutsRegion3
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
-import io.cloudflight.jems.server.programme.entity.ProgrammeData
+import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
 import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -36,7 +36,7 @@ import java.util.Optional
 internal class ProgrammeDataServiceTest {
 
     private val existingProgrammeData =
-        ProgrammeData(
+        ProgrammeDataEntity(
             1,
             "cci",
             "title",
@@ -82,7 +82,7 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun get() {
         val programmeDataInput =
-            OutputProgrammeData("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, "SK-AT", false, emptyList(),)
+            ProgrammeDataDTO("cci", "title", "version", 2020, 2024, null, null, null, null, null, null, "SK-AT", false, emptyList(),)
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
 
         val programmeData = programmeDataService.get()
@@ -93,13 +93,13 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun `update existing programme data`() {
         val programmeDataInput =
-            InputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, "SK-AT", false)
+            ProgrammeDataUpdateRequestDTO("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null, "SK-AT", false)
         val programmeDataUpdated =
-            ProgrammeData(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,"SK-AT", false)
+            ProgrammeDataEntity(1, "cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,"SK-AT", false)
         val programmeDataExpectedOutput =
-            OutputProgrammeData("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,  "SK-AT", false, emptyList())
+            ProgrammeDataDTO("cci-updated", "title", "version", 2020, 2024, null, null, null, null, null, null,  "SK-AT", false, emptyList())
 
-        every { programmeDataRepository.save(any<ProgrammeData>()) } returns programmeDataUpdated
+        every { programmeDataRepository.save(any<ProgrammeDataEntity>()) } returns programmeDataUpdated
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
 
         val programmeData = programmeDataService.update(programmeDataInput)
@@ -118,14 +118,14 @@ internal class ProgrammeDataServiceTest {
     @Test
     fun `update existing programme data with different data`() {
         val programmeDataInput =
-            InputProgrammeData("cci-updated", "title-updated", "version-updated", 2021, 2025,
+            ProgrammeDataUpdateRequestDTO("cci-updated", "title-updated", "version-updated", 2021, 2025,
                 LocalDate.of(2020, 1, 1), LocalDate.of(2021, 2, 2),
                 "d1",  LocalDate.of(2022, 3, 3),
                 "d2", LocalDate.of(2022, 4, 4), "CZ-DE", true)
         val programmeDataUpdated = programmeDataInput.toEntity(emptySet(), null)
-        val programmeDataExpectedOutput = programmeDataUpdated.toOutputProgrammeData()
+        val programmeDataExpectedOutput = programmeDataUpdated.toProgrammeDataDTO()
 
-        every { programmeDataRepository.save(any<ProgrammeData>()) } returns programmeDataUpdated
+        every { programmeDataRepository.save(any<ProgrammeDataEntity>()) } returns programmeDataUpdated
         every { programmeDataRepository.findById(1) } returns Optional.of(existingProgrammeData)
 
         val programmeData = programmeDataService.update(programmeDataInput)
@@ -172,7 +172,7 @@ internal class ProgrammeDataServiceTest {
 
         every { programmeDataRepository.findById(eq(1)) } returns Optional.of(existingProgrammeData)
         every { nutsRegion3Repository.findAllById(eq(setOf("nuts_3_id"))) } returns setOf(regionToBeSaved)
-        every { programmeDataRepository.save(any<ProgrammeData>()) } returnsArgument 0
+        every { programmeDataRepository.save(any<ProgrammeDataEntity>()) } returnsArgument 0
 
         val result = programmeDataService.saveProgrammeNuts(setOf("nuts_3_id"))
         assertThat(result.programmeNuts).isEqualTo(
