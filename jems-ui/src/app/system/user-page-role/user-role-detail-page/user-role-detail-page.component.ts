@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {take} from 'rxjs/internal/operators';
 import {UserRoleDTO} from '@cat/api';
 import {combineLatest, Observable, of} from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {UserRoleDetailPageStore} from './user-role-detail-page-store.service';

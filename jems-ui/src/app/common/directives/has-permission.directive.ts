@@ -7,8 +7,7 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import {OutputCurrentUser, UserRoleDTO} from '@cat/api';
-import {take} from 'rxjs/internal/operators';
-import {tap} from 'rxjs/operators';
+import {take, tap} from 'rxjs/operators';
 import {SecurityService} from '../../security/security.service';
 
 @Directive({

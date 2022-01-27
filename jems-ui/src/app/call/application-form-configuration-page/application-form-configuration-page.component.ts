@@ -6,12 +6,11 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {FlatTreeNode} from '@common/models/flat-tree-node';
 import {ApplicationFormConfigurationPageStore} from './application-form-configuration-page-store.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {ApplicationFormFieldNode} from './application-form-field-node';
 import {CallPageSidenavService} from '../services/call-page-sidenav.service';
 import AvailableInStepEnum = ApplicationFormFieldConfigurationDTO.AvailableInStepEnum;
 import {ApplicationFormFieldConfigurationDTO, CallDetailDTO} from '@cat/api';
-import {take} from 'rxjs/internal/operators';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({

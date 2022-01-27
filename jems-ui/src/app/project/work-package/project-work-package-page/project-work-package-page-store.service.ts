@@ -1,11 +1,10 @@
 import {InputWorkPackageCreate, OutputWorkPackage, OutputWorkPackageSimple, WorkPackageService} from '@cat/api';
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable, Subject} from 'rxjs';
-import {startWith, switchMap, tap} from 'rxjs/operators';
+import {filter, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '../../common/services/project-version-store.service';
-import {filter, take} from 'rxjs/internal/operators';
 
 @Injectable()
 export class ProjectWorkPackagePageStore {
