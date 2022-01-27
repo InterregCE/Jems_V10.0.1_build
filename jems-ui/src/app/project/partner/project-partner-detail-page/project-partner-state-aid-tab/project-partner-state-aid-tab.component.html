@@ -105,7 +105,7 @@
         </ng-container>
 
 
-        <jems-alert
+        <jems-alert *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID.RELEVANT_ACTIVITIES"
                 [type]="Alert.WARNING"
                 [show]="data.activities.length === 0"
                 [closable]="false">
