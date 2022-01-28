@@ -3,7 +3,7 @@ package io.cloudflight.jems.api.programme.dto
 import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import java.time.LocalDate
 
-data class OutputProgrammeData(
+data class ProgrammeDataDTO(
 
     val cci: String?,
     val title: String?,
@@ -20,7 +20,7 @@ data class OutputProgrammeData(
     val projectIdUseCallId: Boolean,
     val programmeNuts: List<OutputNuts>
 ) {
-    fun getChange(newData: OutputProgrammeData): Map<String, Pair<Any?, Any?>> {
+    fun getChange(newData: ProgrammeDataDTO): Map<String, Pair<Any?, Any?>> {
         val changes = mutableMapOf<String, Pair<Any?, Any?>>()
         if (cci != newData.cci) {
             changes["cci"] = Pair(cci, newData.cci)

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.programme.repository
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.entity.ProgrammeData
+import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -18,7 +18,7 @@ class ProgrammeDataPersistenceTest : UnitTest() {
     companion object {
         private const val programmeDataId = 1L
 
-        private val programmeData = ProgrammeData(
+        private val programmeData = ProgrammeDataEntity(
             id = 1,
             cci = "cci",
             title = "title",
@@ -58,7 +58,7 @@ class ProgrammeDataPersistenceTest : UnitTest() {
     @Test
     fun updateDefaultUserRole() {
         every { repository.findById(programmeDataId) } returns Optional.of(programmeData)
-        val dataToSave = slot<ProgrammeData>()
+        val dataToSave = slot<ProgrammeDataEntity>()
         every { repository.save(capture(dataToSave)) } returnsArgument 0
 
         persistence.updateDefaultUserRole(2L)

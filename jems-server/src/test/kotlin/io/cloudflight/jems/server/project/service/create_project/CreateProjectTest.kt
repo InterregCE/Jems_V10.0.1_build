@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction.APPLICATION_VERSION_RECORDE
 import io.cloudflight.jems.api.audit.dto.AuditAction.CALL_ALREADY_ENDED
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallType
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
@@ -140,7 +140,7 @@ internal class CreateProjectTest : UnitTest() {
         )
 
         private fun getProgrammeData(projectIdProgrammeAbbreviation: String?, projectIdUseCallId: Boolean) =
-            OutputProgrammeData(
+            ProgrammeDataDTO(
                 "cci",
                 "title",
                 "version",

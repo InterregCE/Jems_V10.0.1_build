@@ -1,6 +1,6 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
-import {OutputProgrammeData} from '@cat/api';
+import {ProgrammeDataDTO} from '@cat/api';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {ProgrammeModule} from '../programme.module';
 import {TestModule} from '@common/test-module';
@@ -34,7 +34,7 @@ describe('ProgrammeBasicDataComponent', () => {
   });
 
   it('should update a programme', fakeAsync(() => {
-    const user = {cci: 'some cci'} as OutputProgrammeData;
+    const user = {cci: 'some cci'} as ProgrammeDataDTO;
 
     component.saveProgrammeData$.next(user);
     let success = false;
