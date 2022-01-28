@@ -44,7 +44,11 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   }>;
 
   versionSelectData$: Observable<{
-    versions: ProjectVersionDTO[];
+    versions: {
+      currentVersion: ProjectVersionDTO,
+      lastApprovedVersion: ProjectVersionDTO,
+      pastVersions: ProjectVersionDTO[]
+    },
     selectedVersion: ProjectVersionDTO | undefined;
   }>;
 
@@ -60,7 +64,7 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
     );
 
     this.versionSelectData$ = combineLatest([
-      this.pageStore.versions$,
+      this.versions(),
       this.pageStore.selectedVersion$
     ]).pipe(
       map(([versions, selectedVersion]) => ({versions, selectedVersion})),
@@ -71,5 +75,18 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
     this.pageStore.versions$.pipe(untilDestroyed(this)).subscribe(() =>
       this.projectSidenavService.versionSelectTemplate$.next(this.sidenavVersionSelect)
     );
+  }
+
+  versions(): Observable<any> {
+    return this.pageStore.versions$
+      .pipe(
+        map(versions => {
+          return {
+            currentVersion: versions.find(version => version.current),
+            lastApprovedVersion: versions.find(version => version.status === 'APPROVED'),
+            pastVersions: versions.filter(version => !version.current)
+          };
+        })
+      );
   }
 }
