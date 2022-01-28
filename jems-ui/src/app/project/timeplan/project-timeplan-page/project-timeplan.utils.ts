@@ -17,7 +17,7 @@ export const colors = [
   'bg-blue',
 ];
 
-const EMPTY_STRING = '&nbsp';
+const EMPTY_STRING = ' ';
 export const START_DATE = '2000-01-01';
 
 export const RESULT_GROUP_TITLE_ID = 9_950_000;
