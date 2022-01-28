@@ -218,7 +218,7 @@ class PartnerPersistenceProviderTest {
         val version = "1.0"
 
         every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
-        every { projectPartnerRepository.findTop30ByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns partnerDetailRows()
+        every { projectPartnerRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns partnerDetailRows()
 
         assertThat(persistence.findTop30ByProjectId(PROJECT_ID, version)).containsExactly(projectPartnerDetail(id = PARTNER_ID))
     }
