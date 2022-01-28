@@ -112,7 +112,7 @@ class PartnerPersistenceProvider(
                 projectPartnerRepository.findTop30ByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
             },
             previousVersionFetcher = { timestamp ->
-                projectPartnerRepository.findTop30ByProjectIdAsOfTimestamp(projectId, timestamp).toModel()
+                projectPartnerRepository.findByProjectIdAsOfTimestamp(projectId, timestamp).toModel()
             }
         ) ?: emptyList()
 
