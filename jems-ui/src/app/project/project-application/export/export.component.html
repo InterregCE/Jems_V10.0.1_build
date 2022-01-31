@@ -17,7 +17,7 @@
                     <mat-select formControlName="version">
                         <mat-option *ngFor="let projectVersion of data.versions" [value]="projectVersion.version" role="option">
                             <ng-container *ngIf="projectVersion.current">
-                                {{'project.versions.select.format.current' | translate : {version: projectVersion.version} }}
+                                {{'project.versions.select.format.current' | translate }} {{'project.versions.select.format' | translate : {version: projectVersion.version} }}
                             </ng-container>
                             <ng-container *ngIf="!projectVersion.current">
                                 {{'project.versions.select.format' | translate : {version: projectVersion.version} }}
