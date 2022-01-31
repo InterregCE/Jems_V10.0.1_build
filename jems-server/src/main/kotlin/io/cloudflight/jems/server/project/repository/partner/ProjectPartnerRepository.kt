@@ -377,11 +377,10 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              LEFT JOIN #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTranslation ON entity.id = motivationTranslation.partner_id
              WHERE entity.project_id = :projectId
              ORDER BY entity.sort_number ASC
-             LIMIT 30
              """,
         nativeQuery = true
     )
-    fun findTop30ByProjectIdAsOfTimestamp(projectId: Long, timestamp: Timestamp): List<PartnerDetailRow>
+    fun findByProjectIdAsOfTimestamp(projectId: Long, timestamp: Timestamp): List<PartnerDetailRow>
 
 
     @Query(
