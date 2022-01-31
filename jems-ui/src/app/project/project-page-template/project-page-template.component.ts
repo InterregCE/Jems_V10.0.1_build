@@ -80,13 +80,12 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   versions(): Observable<any> {
     return this.pageStore.versions$
       .pipe(
-        map(versions => {
-          return {
+        map(versions => ({
             currentVersion: versions.find(version => version.current),
             lastApprovedVersion: versions.find(version => version.status === 'APPROVED'),
-            pastVersions: versions.filter(version => !version.current)
-          };
-        })
+            pastVersions: versions.filter(version => !version.current && version !== versions.find((approvedVersion) => approvedVersion.status === 'APPROVED'))
+          }
+        ))
       );
   }
 }
