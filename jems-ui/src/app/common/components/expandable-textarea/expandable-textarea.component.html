@@ -10,7 +10,7 @@
     <jems-context-info *ngIf="contextInfoText"
                       [infoText]="contextInfoText">
     </jems-context-info>
-    <mat-hint *ngIf="!disabled" [jemsHintFor]="inputText" [hide]="errors != null">
+    <mat-hint *ngIf="!disabled" [jemsHintFor]="inputText" [hide]="errors !== null">
         <jems-text-hint [currentLength]="inputText.value.length" [maxLength]="characterLimit"></jems-text-hint>
     </mat-hint>
     <mat-error>

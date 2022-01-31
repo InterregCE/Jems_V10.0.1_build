@@ -7,7 +7,7 @@
             {{'common.edit.label' | translate}}
         </button>
         <button jemsText mat-stroked-button
-                *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length == 0"
+                *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length === 0"
                 (click)="addNewStateAidAndChangeFormState()">
             <mat-icon>add</mat-icon>&nbsp;{{ 'programme.state.aid.add' | translate }}
         </button>

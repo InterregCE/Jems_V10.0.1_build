@@ -6,7 +6,7 @@
 </mat-accordion>
 
 <ng-template let-item="item" let-level="level" let-index="index" #parent>
-    <mat-expansion-panel [class.alternative]="index%2==0">
+    <mat-expansion-panel [class.alternative]="index%2 === 0">
         <mat-expansion-panel-header [expandedHeight]="'48px'">
             <mat-panel-title [class.mat-body]="level>1" class="text-overflow-ellipsis"
                              [matTooltip]="item.message.i18nKey | translate: item.message.i18nArguments"
@@ -28,14 +28,14 @@
 </ng-template>
 
 <ng-template let-item="item" let-level="level" let-index="index" #leaf>
-    <div class="leaf" [class.alternative]="index%2==0">
+    <div class="leaf" [class.alternative]="index%2 === 0">
         <ng-container [ngTemplateOutlet]="icon" [ngTemplateOutletContext]="{type:item.messageType}"></ng-container>
         {{item.message.i18nKey | translate: item.message.i18nArguments}}
     </div>
 </ng-template>
 
 <ng-template let-type="type" #icon>
-    <mat-icon *ngIf="type==PluginMessageType.ERROR" class="error mr-2">error</mat-icon>
-    <mat-icon *ngIf="type==PluginMessageType.WARNING" class="warning mr-2">warning</mat-icon>
-    <mat-icon *ngIf="type==PluginMessageType.INFO" class="info mr-2">check_circle</mat-icon>
+    <mat-icon *ngIf="type===PluginMessageType.ERROR" class="error mr-2">error</mat-icon>
+    <mat-icon *ngIf="type===PluginMessageType.WARNING" class="warning mr-2">warning</mat-icon>
+    <mat-icon *ngIf="type===PluginMessageType.INFO" class="info mr-2">check_circle</mat-icon>
 </ng-template>
