@@ -93,7 +93,7 @@ export class ProjectApplicationFormSidenavService {
     this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorCollaboratorsRetrieve),
     this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorCollaboratorsUpdate),
     this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorCollaboratorsRetrieve),
-    this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorCollaboratorsUpdate),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorCollaboratorsUpdate)
   ]).pipe(
     map(perms => perms.some(perm => perm)),
   );
@@ -209,7 +209,7 @@ export class ProjectApplicationFormSidenavService {
                versionTemplate,
                canSeeProjectForm,
                canSeeModificationSection,
-               canSeePrivilegesSection,
+               canSeePrivilegesSection
              ]: any) => {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
