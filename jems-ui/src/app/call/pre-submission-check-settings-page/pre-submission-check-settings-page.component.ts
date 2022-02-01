@@ -4,7 +4,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {FormBuilder, FormControl, Validators} from '@angular/forms';
 import {PreSubmissionCheckSettingsPageStore} from './pre-submission-check-settings-page-store.service';
-import {PluginInfoDTO} from '@cat/api';
+import {CallDetailDTO, PluginInfoDTO} from '@cat/api';
 import {catchError, map, tap} from 'rxjs/operators';
 import {CallPageSidenavService} from '../services/call-page-sidenav.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
