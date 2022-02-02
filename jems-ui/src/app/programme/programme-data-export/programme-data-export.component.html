@@ -1,0 +1,40 @@
+<jems-main-page-template [needsCard]="true"
+                         titleKey="programme.data.export.title">
+    <div id="export-config" *ngIf="data$ | async as data">
+        <form jemsFormLayout [formGroup]="exportForm">
+            <mat-form-field>
+                <mat-label>{{'programme.data.export.label.plugins' | translate}}</mat-label>
+                <mat-select formControlName="pluginKey">
+                    <mat-option *ngFor="let plugin of data.plugins" [value]="plugin.key" role="option">
+                        {{plugin.name}} - {{plugin.version}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>{{'programme.data.export.label.export.language' | translate}}</mat-label>
+                <mat-select formControlName="exportLanguage">
+                    <mat-option *ngFor="let exportLanguage of data.exportLanguages" [value]="exportLanguage"
+                                role="option">
+                        <mat-label>{{'language.' + exportLanguage.toLowerCase() | translate}}</mat-label>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>{{'programme.data.export.label.input.language' | translate}}</mat-label>
+                <mat-select formControlName="inputLanguage">
+                    <mat-option *ngFor="let inputLanguage of data.inputLanguages" [value]="inputLanguage"
+                                role="option">
+                        <mat-label>{{'language.' + inputLanguage.toLowerCase() | translate}}</mat-label>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </form>
+        <jems-pending-button jemsText
+                             [disabled]="!pluginKey || !exportLanguage || !inputLanguage"
+                             (click)="exportData(pluginKey, exportLanguage, inputLanguage)"
+                             [pending]="isExportingInProgress$ | async">
+            {{'programme.data.export.label.export.button' | translate}}
+        </jems-pending-button>
+    </div>
+</jems-main-page-template>

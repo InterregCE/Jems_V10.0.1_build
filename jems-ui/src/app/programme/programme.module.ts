@@ -39,6 +39,7 @@ import { TranslationManagementPageComponent } from './translation-management-pag
 import {ProgrammeStateAidComponent} from './programme-page/containers/programme-state-aid/programme-state-aid.component';
 import {ProgrammeStateAidListComponent} from './programme-page/components/programme-state-aid-list/programme-state-aid-list.component';
 import { ProgrammeBasicDataComponent } from './programme-basic-data/programme-basic-data.component';
+import { ProgrammeDataExportComponent } from './programme-data-export/programme-data-export.component';
 
 @NgModule({
   declarations: [
@@ -74,7 +75,8 @@ import { ProgrammeBasicDataComponent } from './programme-basic-data/programme-ba
     ProgrammeStateAidComponent,
     ProgrammeStateAidListComponent,
     ProgrammeBasicDataComponent,
-    ProgrammeFundsComponent
+    ProgrammeFundsComponent,
+    ProgrammeDataExportComponent
   ],
   providers: [
     IndicatorsStore,

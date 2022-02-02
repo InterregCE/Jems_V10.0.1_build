@@ -25,6 +25,7 @@ export class Permission {
   public static readonly PROGRAMME_SETUP_MODULE_PERMISSIONS = [
     PermissionsEnum.ProgrammeSetupRetrieve,
     PermissionsEnum.ProgrammeSetupUpdate,
+    PermissionsEnum.ProgrammeDataExportRetrieve
   ];
 
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
@@ -262,11 +263,21 @@ export class Permission {
     },
     {
       name: 'topbar.main.programme',
-      mode: PermissionMode.HIDDEN_VIEW_EDIT,
-      viewPermissions: [PermissionsEnum.ProgrammeSetupRetrieve],
-      editPermissions: [PermissionsEnum.ProgrammeSetupUpdate],
       icon: 'business',
-      editTooltip: 'permission.top.bar.programme.data'
+      children: [
+        {
+          name: 'topbar.main.programme.setup',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProgrammeSetupRetrieve],
+          editPermissions: [PermissionsEnum.ProgrammeSetupUpdate],
+          editTooltip: 'permission.top.bar.programme.data',
+        },
+        {
+          name: 'topbar.main.programme.data.export',
+          mode: PermissionMode.HIDDEN_VIEW,
+          viewPermissions: [PermissionsEnum.ProjectsWithOwnershipRetrieve],
+        },
+      ]
     },
     {
       name: 'topbar.main.system',

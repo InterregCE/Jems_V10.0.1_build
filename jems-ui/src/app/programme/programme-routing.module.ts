@@ -15,6 +15,10 @@ import {TranslationManagementPageComponent} from './translation-management-page/
 import {ProgrammeStateAidComponent} from './programme-page/containers/programme-state-aid/programme-state-aid.component';
 import {ProgrammeBasicDataComponent} from './programme-basic-data/programme-basic-data.component';
 import {ProgrammeFundsComponent} from './programme-funds/programme-funds.component';
+import {ProgrammeDataExportComponent} from './programme-data-export/programme-data-export.component';
+import {PermissionGuard} from '../security/permission.guard';
+import {UserRoleDTO} from '@cat/api';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 export const routes: Routes = [
   {
@@ -25,160 +29,181 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        data: {breadcrumb: 'programme.breadcrumb.basic.data'},
-        component: ProgrammeBasicDataComponent,
-      },
-      {
-        path: 'funds',
-        data: {breadcrumb: 'programme.breadcrumb.funds'},
-        component: ProgrammeFundsComponent,
-      },
-      {
-        path: 'priorities',
-        data: {breadcrumb: 'programme.breadcrumb.priorities'},
-        children: [
+        canActivate: [PermissionGuard],
+        data: {
+          skipBreadcrumb: true,
+          permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate],
+        },
+        children:[
           {
             path: '',
-            component: ProgrammePriorityListPageComponent,
+            data: {
+              breadcrumb: 'programme.breadcrumb.basic.data',
+            },
+            component: ProgrammeBasicDataComponent,
+            canActivate: [PermissionGuard],
           },
           {
-            path: 'create',
-            component: ProgrammePriorityDetailPageComponent,
-            data: {breadcrumb: 'programme.breadcrumb.priority'},
+            path: 'funds',
+            data: {breadcrumb: 'programme.breadcrumb.funds'},
+            component: ProgrammeFundsComponent,
           },
           {
-            path: ':priorityId',
-            component: ProgrammePriorityDetailPageComponent,
-            data: {breadcrumb: 'programme.breadcrumb.priority'},
-          },
-        ],
-      },
-      {
-        path: 'areas',
-        component: ProgrammeAreaComponent,
-        data: {breadcrumb: 'programme.breadcrumb.areas'},
-      },
-      {
-        path: 'languages',
-        component: ProgrammeLanguagesPageComponent,
-        data: {breadcrumb: 'programme.breadcrumb.languages'},
-      },
-      {
-        path: 'translationManagement',
-        component: TranslationManagementPageComponent,
-        data: {breadcrumb: 'programme.breadcrumb.translation.management'},
-      },
-      {
-        path: 'indicators',
-        data: {breadcrumb: 'programme.breadcrumb.indicators'},
-        children: [
-          {
-            path: '',
-            component: ProgrammeIndicatorsOverviewPageComponent,
+            path: 'priorities',
+            data: {breadcrumb: 'programme.breadcrumb.priorities'},
+            children: [
+              {
+                path: '',
+                component: ProgrammePriorityListPageComponent,
+              },
+              {
+                path: 'create',
+                component: ProgrammePriorityDetailPageComponent,
+                data: {breadcrumb: 'programme.breadcrumb.priority'},
+              },
+              {
+                path: ':priorityId',
+                component: ProgrammePriorityDetailPageComponent,
+                data: {breadcrumb: 'programme.breadcrumb.priority'},
+              },
+            ],
           },
           {
-            path: 'outputIndicator',
+            path: 'areas',
+            component: ProgrammeAreaComponent,
+            data: {breadcrumb: 'programme.breadcrumb.areas'},
+          },
+          {
+            path: 'languages',
+            component: ProgrammeLanguagesPageComponent,
+            data: {breadcrumb: 'programme.breadcrumb.languages'},
+          },
+          {
+            path: 'translationManagement',
+            component: TranslationManagementPageComponent,
+            data: {breadcrumb: 'programme.breadcrumb.translation.management'},
+          },
+          {
+            path: 'indicators',
+            data: {breadcrumb: 'programme.breadcrumb.indicators'},
             children: [
               {
                 path: '',
                 component: ProgrammeIndicatorsOverviewPageComponent,
               },
               {
-                path: 'create',
-                component: ProgrammeOutputIndicatorSubmissionPageComponent,
-                data: {breadcrumb: 'programme.breadcrumb.outputIndicator.create'},
+                path: 'outputIndicator',
+                children: [
+                  {
+                    path: '',
+                    component: ProgrammeIndicatorsOverviewPageComponent,
+                  },
+                  {
+                    path: 'create',
+                    component: ProgrammeOutputIndicatorSubmissionPageComponent,
+                    data: {breadcrumb: 'programme.breadcrumb.outputIndicator.create'},
+                  },
+                  {
+                    path: 'detail/:indicatorId',
+                    data: {breadcrumb: 'programme.breadcrumb.outputIndicator.name'},
+                    component: ProgrammeOutputIndicatorSubmissionPageComponent,
+                  },
+                ]
               },
               {
-                path: 'detail/:indicatorId',
-                data: {breadcrumb: 'programme.breadcrumb.outputIndicator.name'},
-                component: ProgrammeOutputIndicatorSubmissionPageComponent,
+                path: 'resultIndicator',
+                children: [
+                  {
+                    path: '',
+                    component: ProgrammeIndicatorsOverviewPageComponent,
+                  },
+                  {
+                    path: 'create',
+                    component: ProgrammeResultIndicatorSubmissionPageComponent,
+                    data: {breadcrumb: 'programme.breadcrumb.resultIndicator.create'},
+                  },
+                  {
+                    path: 'detail/:indicatorId',
+                    component: ProgrammeResultIndicatorSubmissionPageComponent,
+                    data: {breadcrumb: 'programme.breadcrumb.resultIndicator.name'},
+                  },
+                ]
               },
-            ]
+            ],
           },
           {
-            path: 'resultIndicator',
-            children: [
-              {
-                path: '',
-                component: ProgrammeIndicatorsOverviewPageComponent,
-              },
-              {
-                path: 'create',
-                component: ProgrammeResultIndicatorSubmissionPageComponent,
-                data: {breadcrumb: 'programme.breadcrumb.resultIndicator.create'},
-              },
-              {
-                path: 'detail/:indicatorId',
-                component: ProgrammeResultIndicatorSubmissionPageComponent,
-                data: {breadcrumb: 'programme.breadcrumb.resultIndicator.name'},
-              },
-            ]
-          },
-        ],
-      },
-      {
-        path: 'strategies',
-        component: ProgrammeStrategiesPageComponent,
-        data: {breadcrumb: 'programme.breadcrumb.strategies'},
-      },
-      {
-        path: 'legalStatus',
-        component: ProgrammeLegalStatusComponent,
-        data: {breadcrumb: 'programme.breadcrumb.legal.status'},
-      },
-      {
-        path: 'costs',
-        data: {breadcrumb: 'programme.breadcrumb.costs'},
-        children: [
-          {
-            path: '',
-            component: ProgrammeSimplifiedCostOptionsComponent,
+            path: 'strategies',
+            component: ProgrammeStrategiesPageComponent,
+            data: {breadcrumb: 'programme.breadcrumb.strategies'},
           },
           {
-            path: 'lumpSum',
-            children: [
-              {
-                path: '',
-                component: ProgrammeSimplifiedCostOptionsComponent,
-              },
-              {
-                path: 'create',
-                component: ProgrammeLumpSumsSubmissionPageComponent,
-                data: {breadcrumb: 'programme.breadcrumb.lumpSum.create'},
-              },
-              {
-                path: 'detail/:lumpSumId',
-                data: {breadcrumb: 'programme.breadcrumb.lumpSum.name'},
-                component: ProgrammeLumpSumsSubmissionPageComponent,
-              },
-            ]
+            path: 'legalStatus',
+            component: ProgrammeLegalStatusComponent,
+            data: {breadcrumb: 'programme.breadcrumb.legal.status'},
           },
           {
-            path: 'unitCost',
+            path: 'costs',
+            data: {breadcrumb: 'programme.breadcrumb.costs'},
             children: [
               {
                 path: '',
                 component: ProgrammeSimplifiedCostOptionsComponent,
               },
               {
-                path: 'create',
-                component: ProgrammeUnitCostsSubmissionPageComponent,
-                data: {breadcrumb: 'programme.breadcrumb.unitCost.create'},
+                path: 'lumpSum',
+                children: [
+                  {
+                    path: '',
+                    component: ProgrammeSimplifiedCostOptionsComponent,
+                  },
+                  {
+                    path: 'create',
+                    component: ProgrammeLumpSumsSubmissionPageComponent,
+                    data: {breadcrumb: 'programme.breadcrumb.lumpSum.create'},
+                  },
+                  {
+                    path: 'detail/:lumpSumId',
+                    data: {breadcrumb: 'programme.breadcrumb.lumpSum.name'},
+                    component: ProgrammeLumpSumsSubmissionPageComponent,
+                  },
+                ]
               },
               {
-                path: 'detail/:unitCostId',
-                data: {breadcrumb: 'programme.breadcrumb.unitCost.name'},
-                component: ProgrammeUnitCostsSubmissionPageComponent,
+                path: 'unitCost',
+                children: [
+                  {
+                    path: '',
+                    component: ProgrammeSimplifiedCostOptionsComponent,
+                  },
+                  {
+                    path: 'create',
+                    component: ProgrammeUnitCostsSubmissionPageComponent,
+                    data: {breadcrumb: 'programme.breadcrumb.unitCost.create'},
+                  },
+                  {
+                    path: 'detail/:unitCostId',
+                    data: {breadcrumb: 'programme.breadcrumb.unitCost.name'},
+                    component: ProgrammeUnitCostsSubmissionPageComponent,
+                  },
+                ]
               },
-            ]
+            ],
           },
-        ],
+          {
+            path: 'stateAid',
+            component: ProgrammeStateAidComponent,
+            data: {breadcrumb: 'programme.breadcrumb.state.aid'},
+          },
+        ]
       },
       {
-        path: 'stateAid',
-        component: ProgrammeStateAidComponent,
-        data: {breadcrumb: 'programme.breadcrumb.state.aid'},
-      },
+        path: 'export',
+        component: ProgrammeDataExportComponent,
+        data: {
+          breadcrumb: 'programme.breadcrumb.data.export',
+          permissionsOnly: [PermissionsEnum.ProgrammeDataExportRetrieve],
+        },
+      }
     ]
   }
 ];

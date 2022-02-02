@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.repository
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
+import io.cloudflight.jems.server.programme.service.model.ProgrammeData
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -14,6 +15,11 @@ class ProgrammeDataPersistenceProvider(
     companion object {
         const val programmeDataId = 1L
     }
+
+    @Transactional(readOnly = true)
+    override fun getProgrammeData(): ProgrammeData =
+        getProgrammeDataOrThrow().toModel()
+
 
     @Transactional(readOnly = true)
     override fun getProgrammeName(): String? =
