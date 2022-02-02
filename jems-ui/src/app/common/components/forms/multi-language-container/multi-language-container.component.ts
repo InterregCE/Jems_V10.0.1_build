@@ -84,10 +84,10 @@ export class MultiLanguageContainerComponent implements OnInit, AfterContentInit
     if (fieldStates.find(fieldState => fieldState[language] === INPUT_STATE.INVALID)) {
       return INPUT_STATE.INVALID;
     }
-    if (fieldStates.find(fieldState => fieldState[language] === INPUT_STATE.EMPTY)) {
-      return INPUT_STATE.EMPTY;
+    if (fieldStates.find(fieldState => fieldState[language] === INPUT_STATE.VALID)) {
+      return INPUT_STATE.VALID;
     }
-    return INPUT_STATE.VALID;
+    return INPUT_STATE.EMPTY;
   }
 
   isMoreThanOneLanguageEnabled(languages: string[]): boolean {
