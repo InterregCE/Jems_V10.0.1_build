@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
@@ -28,7 +28,7 @@ class AssignUserCollaboratorToProject(
     @ExceptionWrapper(AssignUserCollaboratorToProjectException::class)
     override fun updateUserAssignmentsOnProject(
         projectId: Long,
-        emailsWithLevel: Set<Pair<String, CollaboratorLevel>>
+        emailsWithLevel: Set<Pair<String, ProjectCollaboratorLevel>>
     ): List<CollaboratorAssignedToProject> {
         val allowedRoleIds = getAvailableRoleIds()
         val emailToLevelMap = emailsWithLevel.associateBy({ it.first }, { it.second })
@@ -57,7 +57,7 @@ class AssignUserCollaboratorToProject(
             needsNotToHaveAnyOf = emptySet(),
         )
 
-    private fun validateAllUsersAreValid(requestedUsers: Set<Pair<String, CollaboratorLevel>>, availUsers: Map<UserSummary, CollaboratorLevel>) {
+    private fun validateAllUsersAreValid(requestedUsers: Set<Pair<String, ProjectCollaboratorLevel>>, availUsers: Map<UserSummary, ProjectCollaboratorLevel>) {
         val foundUserEmails = availUsers.mapTo(HashSet()) { it.key.email }
         val notFoundUserEmails = requestedUsers.mapTo(HashSet()) { it.first }
         notFoundUserEmails.removeAll(foundUserEmails)
@@ -66,8 +66,8 @@ class AssignUserCollaboratorToProject(
             throw UsersAreNotValid(emails = notFoundUserEmails)
     }
 
-    private fun validateAtLeastOneManagerInGroup(levels: Collection<CollaboratorLevel>) {
-        if (levels.all { it != CollaboratorLevel.MANAGE })
+    private fun validateAtLeastOneManagerInGroup(levels: Collection<ProjectCollaboratorLevel>) {
+        if (levels.all { it != ProjectCollaboratorLevel.MANAGE })
             throw MinOneManagingCollaboratorRequiredException()
     }
 

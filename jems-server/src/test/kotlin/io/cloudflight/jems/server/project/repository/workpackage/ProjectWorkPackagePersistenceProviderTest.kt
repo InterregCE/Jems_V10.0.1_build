@@ -30,6 +30,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageO
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityPartnerRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
@@ -327,7 +328,11 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
     lateinit var projectRepository: ProjectRepository
 
     @MockK
-    lateinit var collaboratorRepository: UserProjectCollaboratorRepository
+    lateinit var projectCollaboratorRepository: UserProjectCollaboratorRepository
+
+    @MockK
+    lateinit var partnerCollaboratorRepository: UserPartnerCollaboratorRepository
+
 
     private lateinit var projectVersionUtils: ProjectVersionUtils
 
@@ -346,7 +351,8 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
             outputIndicatorRepository,
             projectVersionUtils,
             projectRepository,
-            collaboratorRepository,
+            projectCollaboratorRepository,
+            partnerCollaboratorRepository
         )
     }
 

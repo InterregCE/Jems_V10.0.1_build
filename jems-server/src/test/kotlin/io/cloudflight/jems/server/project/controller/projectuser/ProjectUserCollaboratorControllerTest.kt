@@ -1,11 +1,10 @@
 package io.cloudflight.jems.server.project.controller.projectuser
 
-import io.cloudflight.jems.api.project.dto.assignment.CollaboratorLevelDTO
+import io.cloudflight.jems.api.project.dto.assignment.ProjectCollaboratorLevelDTO
 import io.cloudflight.jems.api.project.dto.assignment.ProjectUserCollaboratorDTO
 import io.cloudflight.jems.api.project.dto.assignment.UpdateProjectUserCollaboratorDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.controller.projectuser.ProjectUserCollaboratorController
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project.AssignUserCollaboratorToProjectInteractor
 import io.cloudflight.jems.server.project.service.projectuser.get_my_collaborator_level.GetMyCollaboratorLevelInteractor
@@ -44,21 +43,21 @@ class ProjectUserCollaboratorControllerTest : UnitTest() {
             CollaboratorAssignedToProject(
                 userId = 10L,
                 userEmail = "email",
-                level = CollaboratorLevel.VIEW,
+                level = ProjectCollaboratorLevel.VIEW,
             )
         )
         assertThat(controller.listAssignedUserCollaborators(14L)).containsExactly(
             ProjectUserCollaboratorDTO(
                 userId = 10L,
                 userEmail = "email",
-                level = CollaboratorLevelDTO.VIEW,
+                level = ProjectCollaboratorLevelDTO.VIEW,
             )
         )
     }
 
     @Test
     fun assignUserToProjectInteractor() {
-        val dataSlot = slot<Set<Pair<String, CollaboratorLevel>>>()
+        val dataSlot = slot<Set<Pair<String, ProjectCollaboratorLevel>>>()
         every { assignUserCollaboratorToProject.updateUserAssignmentsOnProject(60L, capture(dataSlot)) } returns emptyList()
 
         controller.updateAssignedUserCollaborators(
@@ -66,20 +65,20 @@ class ProjectUserCollaboratorControllerTest : UnitTest() {
             users = setOf(
                 UpdateProjectUserCollaboratorDTO(
                     userEmail = "email",
-                    level = CollaboratorLevelDTO.MANAGE,
+                    level = ProjectCollaboratorLevelDTO.MANAGE,
                 ),
             ),
         )
 
         assertThat(dataSlot.captured).containsExactly(
-            Pair("email", CollaboratorLevel.MANAGE)
+            Pair("email", ProjectCollaboratorLevel.MANAGE)
         )
     }
 
     @Test
     fun `checkUserPermissions - existing`() {
-        every { getMyCollaboratorLevel.getMyCollaboratorLevel(45L) } returns CollaboratorLevel.MANAGE
-        assertThat(controller.checkMyProjectLevel(45L)).isEqualTo(CollaboratorLevelDTO.MANAGE)
+        every { getMyCollaboratorLevel.getMyCollaboratorLevel(45L) } returns ProjectCollaboratorLevel.MANAGE
+        assertThat(controller.checkMyProjectLevel(45L)).isEqualTo(ProjectCollaboratorLevelDTO.MANAGE)
     }
 
     @Test

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.projectuser
 
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.entity.projectuser.UserProjectCollaboratorEntity
 import io.cloudflight.jems.server.project.entity.projectuser.UserProjectId
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
@@ -22,13 +22,13 @@ class UserProjectCollaboratorPersistenceProvider(
         collaboratorRepository.findAllByProjectId(projectId)
 
     @Transactional(readOnly = true)
-    override fun getLevelForProjectAndUser(projectId: Long, userId: Long): CollaboratorLevel? =
+    override fun getLevelForProjectAndUser(projectId: Long, userId: Long): ProjectCollaboratorLevel? =
         collaboratorRepository.findById(UserProjectId(userId = userId, projectId = projectId)).orElse(null)?.level
 
     @Transactional
     override fun changeUsersAssignedToProject(
         projectId: Long,
-        usersToPersist: Map<Long, CollaboratorLevel>
+        usersToPersist: Map<Long, ProjectCollaboratorLevel>
     ): List<CollaboratorAssignedToProject> {
         val alreadyAssignedUserIds = getUserIdsForProject(projectId).mapTo(HashSet()) { it.userId }
 

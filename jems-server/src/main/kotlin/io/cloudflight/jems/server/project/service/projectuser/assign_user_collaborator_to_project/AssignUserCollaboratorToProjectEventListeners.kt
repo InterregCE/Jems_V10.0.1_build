@@ -20,9 +20,9 @@ data class AssignUserCollaboratorToProjectEventListeners(
     fun publishJemsAuditEvent(event: AssignUserCollaboratorEvent) =
         eventPublisher.publishEvent(
             JemsAuditEvent(
-                auditCandidate = AuditBuilder(AuditAction.PROJECT_LEAD_APPLICANT_ASSIGNMENT)
+                auditCandidate = AuditBuilder(AuditAction.PROJECT_USER_ASSIGNMENT_PROGRAMME)
                     .project(event.project)
-                    .description("List of Lead applicants: ${collaboratorsWithLevels(event.collaborators)}")
+                    .description("[Applicant form users] List of users:: ${collaboratorsWithLevels(event.collaborators)}")
                     .build()
             )
         )

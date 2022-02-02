@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project
 
-import io.cloudflight.jems.api.project.dto.assignment.CollaboratorLevelDTO
+import io.cloudflight.jems.api.project.dto.assignment.ProjectCollaboratorLevelDTO
 import io.cloudflight.jems.api.project.dto.assignment.ProjectUserCollaboratorDTO
 import io.cloudflight.jems.api.project.dto.assignment.UpdateProjectUserCollaboratorDTO
 import io.swagger.annotations.Api
@@ -29,6 +29,6 @@ interface ProjectUserCollaboratorApi {
 
     @ApiOperation("Check my collaborator-related project permissions")
     @GetMapping("/checkMyLevel")
-    fun checkMyProjectLevel(@PathVariable projectId: Long): CollaboratorLevelDTO?
+    fun checkMyProjectLevel(@PathVariable projectId: Long): ProjectCollaboratorLevelDTO?
 
 }

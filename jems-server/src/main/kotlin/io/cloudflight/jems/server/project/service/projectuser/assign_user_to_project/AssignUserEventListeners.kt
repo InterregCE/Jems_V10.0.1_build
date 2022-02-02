@@ -21,13 +21,13 @@ data class AssignUserEventListeners(
     fun publishJemsAuditEvent(event: AssignUserEvent) =
         eventPublisher.publishEvent(
             JemsAuditEvent(
-                auditCandidate = AuditBuilder(AuditAction.PROJECT_USER_ASSIGNMENT)
+                auditCandidate = AuditBuilder(AuditAction.PROJECT_USER_ASSIGNMENT_PROGRAMME)
                     .project(event.project)
-                    .description("Project can be accessed by: ${emailAddresses(event.users)}")
+                    .description("Project can be accessed by: ${users(event.users)}")
                     .build()
             )
         )
 
-    private fun emailAddresses(users: List<UserSummary>): String =
-        users.map { it.email }.joinToString(", ")
+    private fun users(users: List<UserSummary>): String =
+        users.joinToString(", ") { "${it.email}: ${it.userRole.name}" }
 }
