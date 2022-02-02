@@ -1,0 +1,33 @@
+@import "../../../../theme/custom-styles/custom-buttons-styles";
+
+#collaborators-panel {
+  ::ng-deep {
+    .small-toggle-group {
+      overflow: visible;
+      @include customize-toggle-button-size('small');
+
+      mat-icon {
+        vertical-align: middle;
+        font-size: 1.375em;
+        height: 1.25rem;
+      }
+    }
+
+    #collaborators-table {
+      > * {
+        ::ng-deep .mat-form-field-wrapper{
+          margin-bottom: -.6em;
+        }
+
+        &:nth-child(even) {
+          background-color: var(--table-highlight-color);
+        }
+
+        &:hover {
+          background-color: var(--table-hover-color);
+        }
+      }
+    }
+
+  }
+}

@@ -116,6 +116,8 @@ import {ModificationConfirmationComponent} from './project-application/modificat
 import {PrivilegesPageComponent} from './project-application/privileges-page/privileges-page.component';
 import { ContractMonitoringComponent } from './project-application/contract-monitoring/contract-monitoring.component';
 import { LumpsumBudgetTableComponent } from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/lumpsum-budget-table/lumpsum-budget-table.component';
+import { ApplicationFormPrivilegesExpansionPanelComponent } from './project-application/privileges-page/application-form-privileges-expansion-panel/application-form-privileges-expansion-panel.component';
+import { PartnerTeamPrivilegesExpansionPanelComponent } from './project-application/privileges-page/partner-team-privileges-expansion-panel/partner-team-privileges-expansion-panel.component';
 
 @NgModule({
   declarations: [
@@ -218,7 +220,9 @@ import { LumpsumBudgetTableComponent } from './partner/project-partner-detail-pa
     ModificationConfirmationComponent,
     PrivilegesPageComponent,
     ContractMonitoringComponent,
-    LumpsumBudgetTableComponent
+    LumpsumBudgetTableComponent,
+    ApplicationFormPrivilegesExpansionPanelComponent,
+    PartnerTeamPrivilegesExpansionPanelComponent
   ],
   imports: [
     SharedModule,
