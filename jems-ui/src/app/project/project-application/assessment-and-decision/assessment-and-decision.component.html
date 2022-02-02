@@ -41,6 +41,16 @@
             </ng-container>
 
             <div *jemsHasPermission="PermissionsEnum.ProjectAssessmentView" jemsFormLayout id="project-detail-container">
+                <ng-container *ngIf="data.currentVersionOfProject.step2Active && data.currentVersionOfProjectStatus !== STATUS.DRAFT">
+                    <jems-project-application-decisions jemsNoWidthLimit step="2">
+                    </jems-project-application-decisions>
+                    <jems-project-application-assessments [decisions]="data.currentVersionOfProject.secondStepDecision"
+                                                          [currentVersionOfProjectStatus]="data.currentVersionOfProject.projectStatus"
+                                                          jemsNoWidthLimit
+                                                          step="2">
+                    </jems-project-application-assessments>
+                </ng-container>
+
                 <ng-container *ngIf="data.callHasTwoSteps">
                     <jems-project-application-decisions jemsNoWidthLimit step="1">
                     </jems-project-application-decisions>
@@ -48,16 +58,6 @@
                                                          [currentVersionOfProjectStatus]="data.currentVersionOfProject.projectStatus"
                                                          jemsNoWidthLimit
                                                          step="1">
-                    </jems-project-application-assessments>
-                </ng-container>
-
-                <ng-container *ngIf="data.currentVersionOfProject.step2Active && data.currentVersionOfProjectStatus !== STATUS.DRAFT">
-                    <jems-project-application-decisions jemsNoWidthLimit step="2">
-                    </jems-project-application-decisions>
-                    <jems-project-application-assessments [decisions]="data.currentVersionOfProject.secondStepDecision"
-                                                         [currentVersionOfProjectStatus]="data.currentVersionOfProject.projectStatus"
-                                                         jemsNoWidthLimit
-                                                         step="2">
                     </jems-project-application-assessments>
                 </ng-container>
             </div>
