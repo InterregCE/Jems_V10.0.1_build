@@ -5,6 +5,7 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     // Module PROGRAMME SETUP
     ProgrammeSetupRetrieve("ProgrammeSetupRetrieve"),
     ProgrammeSetupUpdate("ProgrammeSetupUpdate"),
+    ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 
     // Module CALL
     CallRetrieve("CallRetrieve"),

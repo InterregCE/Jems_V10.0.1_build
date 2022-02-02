@@ -4,6 +4,7 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProgrammeSetupRetrieve("ProgrammeSetupRetrieve"),
     ProgrammeSetupUpdate("ProgrammeSetupUpdate"),
+    ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 
     CallRetrieve("CallRetrieve"),
     CallPublishedRetrieve("CallPublishedRetrieve"),
