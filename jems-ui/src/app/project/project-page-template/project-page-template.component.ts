@@ -82,10 +82,19 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
       .pipe(
         map(versions => ({
             currentVersion: versions.find(version => version.current),
-            lastApprovedVersion: versions.find(version => version.status === 'APPROVED'),
-            pastVersions: versions.filter(version => !version.current && version !== versions.find((approvedVersion) => approvedVersion.status === 'APPROVED'))
+            lastApprovedVersion: versions.find(version => this.isStatusApprovedOrContracted(version)),
+            pastVersions: versions.filter(version => !version.current &&
+              (version !== versions.find((approvedVersion) => this.isStatusApprovedOrContracted(approvedVersion))))
           }
         ))
       );
+  }
+
+  isStatusApprovedOrContracted(currentVersion: ProjectVersionDTO): Boolean {
+    return currentVersion.status === 'APPROVED' || currentVersion.status === 'CONTRACTED'
+  }
+
+  noDecisionTaken(currentVersion: ProjectVersionDTO): Boolean {
+    return currentVersion.status !== ProjectStatusEnum.MODIFICATIONREJECTED && currentVersion.status !== ProjectStatusEnum.APPROVED && currentVersion.status !== ProjectStatusEnum.CONTRACTED
   }
 }
