@@ -3,9 +3,6 @@ import {PrivilegesPageStore} from '@project/project-application/privileges-page/
 import {FormService} from '@common/components/section/form/form.service';
 import {PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO, ProjectUserCollaboratorDTO} from '@cat/api';
 import {
-  PartnersCollaborationDataPerPartner
-} from '@project/project-application/privileges-page/partnersCollaborationDataPerPartner';
-import {
   ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormArray, FormBuilder, Validators} from '@angular/forms';
@@ -24,13 +21,9 @@ import { Alert } from '@common/components/forms/alert';
 })
 export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
   @Input()
-  partnerCollaboratorsData: PartnersCollaborationDataPerPartner | null;
-
+  partner: ProjectPartnerSummaryDTO;
   @Input()
-  managementLevel: ProjectUserCollaboratorDTO.LevelEnum;
-
-  @Input()
-  canCollaboratorSeeTeams: boolean;
+  collaborators: PartnerUserCollaboratorDTO[];
 
   PARTNER_LEVEL = PartnerUserCollaboratorDTO.LevelEnum;
   Alert = Alert;
@@ -52,14 +45,12 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.partnerCollaboratorsData) {
-      this.formService.init(this.partnerForm, this.pageStore.projectCollaboratorsEditable$);
-      this.resetPartnerForm(this.partnerCollaboratorsData.partnerCollaborators);
-      if (this.partnerCollaboratorsData.partnerCollaborators.length === 0) {
-        this.addPartnerCollaborator();
-      }
-      this.formService.resetEditable();
+    this.formService.init(this.partnerForm, this.pageStore.projectCollaboratorsEditable$);
+    this.resetPartnerForm(this.collaborators);
+    if (this.collaborators.length === 0) {
+      this.addPartnerCollaborator();
     }
+    this.formService.resetEditable();
   }
 
   savePartnerCollaborators(partnerId: number): void {

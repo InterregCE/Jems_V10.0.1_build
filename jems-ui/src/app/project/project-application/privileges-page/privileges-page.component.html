@@ -12,15 +12,15 @@
                 [projectTitle]="projectCollaborators.projectTitle"
                 [projectCollaboratorsData]="projectCollaborators.projectCollaborators">
         </jems-application-form-privileges-expansion-panel>
-</ng-container>
+    </ng-container>
 
-    <ng-container *ngIf="this.partnerStore.partnerSummaries$ | async as partnerList">
-        <ng-container *ngIf="partnerCollaborators$ | async as partnerCollaborators">
-            <ng-container *ngFor="let partner of partnerList">
+    <ng-container *ngIf="pageStore.partnerTeamsVisible$ | async">
+        <ng-container *ngIf="partnerCollaboratorTeams$ | async as teams">
+            <ng-container *ngFor="let partner of teams.keys()">
                 <jems-partner-team-privileges-expansion-panel
-                        [partnerCollaboratorsData]="getPartnerCollaboratorData(partner, partnerCollaborators.partnerCollaborators, partnerCollaborators.managementLevel)"
-                        [managementLevel]="partnerCollaborators.managementLevel"
-                        [canCollaboratorSeeTeams]="projectStore.areCollaboratorsAllowedToSeeTeams$ | async">
+                        *ngIf="teams.get(partner)"
+                        [partner]="partner"
+                        [collaborators]="teams.get(partner)">
                 </jems-partner-team-privileges-expansion-panel>
             </ng-container>
         </ng-container>

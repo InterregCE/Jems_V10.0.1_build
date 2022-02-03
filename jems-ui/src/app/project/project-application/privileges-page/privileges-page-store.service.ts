@@ -1,7 +1,7 @@
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
-  PartnerUserCollaboratorDTO, ProjectPartnerUserCollaboratorService,
+  PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO, ProjectPartnerUserCollaboratorService, ProjectStatusDTO,
   ProjectUserCollaboratorDTO,
   ProjectUserCollaboratorService, UserRoleDTO
 } from '@cat/api';
@@ -11,6 +11,11 @@ import {Log} from '@common/utils/log';
 import {Injectable} from '@angular/core';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import { ProjectVersionStore } from '@project/common/services/project-version-store.service';
+import {
+  ProjectPartnerStore
+} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import StatusEnum = ProjectStatusDTO.StatusEnum;
 
 @Injectable()
 export class PrivilegesPageStore {
@@ -19,6 +24,8 @@ export class PrivilegesPageStore {
   partnerCollaborators$: Observable<PartnerUserCollaboratorDTO[]>;
   projectTitle$: Observable<string>;
   projectCollaboratorsEditable$: Observable<boolean>;
+  partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerTeamsVisible$: Observable<boolean>;
 
   private savedProjectCollaborators = new Subject<ProjectUserCollaboratorDTO[]>();
   private savedPartnerProjectCollaborators = new Subject<PartnerUserCollaboratorDTO[]>();
@@ -27,11 +34,15 @@ export class PrivilegesPageStore {
   constructor(private projectStore: ProjectStore,
               private projectUserCollaboratorService: ProjectUserCollaboratorService,
               private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              private partnerStore: ProjectPartnerStore,
+              private projectVersionStore: ProjectVersionStore) {
     this.projectCollaborators$ = this.projectCollaborators();
     this.partnerCollaborators$ = this.partnerCollaborators();
     this.projectTitle$ = this.projectStore.projectTitle$;
     this.projectCollaboratorsEditable$ = this.projectCollaboratorsEditable();
+    this.partnerSummariesOfLastApprovedVersion$ = this.partnerSummariesOfLastApprovedVersion();
+    this.partnerTeamsVisible$ = this.partnerTeamsVisible();
   }
 
   saveProjectCollaborators(collaborators: ProjectUserCollaboratorDTO[]): Observable<ProjectUserCollaboratorDTO[]> {
@@ -71,7 +82,7 @@ export class PrivilegesPageStore {
     return merge(initialPartnerCollaborators$, this.savedPartnerProjectCollaborators);
   }
 
-  projectCollaboratorsEditable(): Observable<boolean> {
+  private projectCollaboratorsEditable(): Observable<boolean> {
     return combineLatest([
       this.projectStore.collaboratorLevel$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorCollaboratorsUpdate),
@@ -84,4 +95,26 @@ export class PrivilegesPageStore {
     );
   }
 
+  private partnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
+    return this.projectVersionStore.lastApprovedVersion$
+      .pipe(
+        map(lastApprovedVersion => lastApprovedVersion?.version),
+        filter(version => !!version),
+        switchMap(version => this.partnerStore.partnerSummariesFromVersion(version)),
+      );
+  }
+
+  private partnerTeamsVisible(): Observable<boolean> {
+    return this.projectStore.projectStatus$
+      .pipe(
+        map(status => [
+          StatusEnum.APPROVED,
+          StatusEnum.MODIFICATIONPRECONTRACTING,
+          StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED,
+          StatusEnum.INMODIFICATION,
+          StatusEnum.MODIFICATIONSUBMITTED,
+          StatusEnum.CONTRACTED
+        ].includes(status.status)),
+      );
+  }
 }

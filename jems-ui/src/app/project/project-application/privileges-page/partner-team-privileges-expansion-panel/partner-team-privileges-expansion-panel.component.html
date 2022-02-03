@@ -1,13 +1,13 @@
-<mat-expansion-panel class="mb-3 mt-3" *ngIf="partnerCollaboratorsData != null && canCollaboratorSeeTeams" [expanded]="true" id="partner-collaborators-panel">
+<mat-expansion-panel class="mb-3 mt-3" [expanded]="true" id="partner-collaborators-panel">
     <mat-expansion-panel-header>
         <mat-panel-title class="mt-2">
-            <mat-icon  *ngIf="!partnerCollaboratorsData.partner.active">person_off</mat-icon>
-            {{'common.label.project.partner.role.shortcut.' + partnerCollaboratorsData.partner.role | translate: {partner: getPartnerTranslationString(partnerCollaboratorsData.partner)} }}
+            <mat-icon  *ngIf="!partner.active">person_off</mat-icon>
+            {{'common.label.project.partner.role.shortcut.' + partner.role | translate: {partner: getPartnerTranslationString(partner)} }}
         </mat-panel-title>
     </mat-expansion-panel-header>
 
-    <jems-form (save)="savePartnerCollaborators(partnerCollaboratorsData.partner.id)"
-               (discard)="resetPartnerForm(partnerCollaboratorsData.partnerCollaborators)">
+    <jems-form (save)="savePartnerCollaborators(partner.id)"
+               (discard)="resetPartnerForm(collaborators)">
         <form jemsFormLayout [formGroup]="partnerForm">
             <div formArrayName="partnerCollaborators" id="partner-collaborators-table">
                 <div *ngFor="let collaborator of partnerCollaborators.controls;let i=index">
@@ -40,7 +40,7 @@
                             </mat-button-toggle>
                         </mat-button-toggle-group>
 
-                        <button *ngIf="partnerForm.enabled && managementLevel === 'MANAGE'" type="button" mat-icon-button color="accent"
+                        <button *ngIf="partnerForm.enabled" type="button" mat-icon-button color="accent"
                                 (click)="partnerCollaborators.removeAt(i); formService.setDirty(true)">
                             <mat-icon>delete</mat-icon>
                         </button>
@@ -53,7 +53,7 @@
                 </jems-form-field-errors>
             </mat-error>
         </form>
-        <button jemsText *ngIf="partnerForm.enabled && managementLevel === 'MANAGE'" mat-stroked-button class="mt-2"
+        <button jemsText *ngIf="partnerForm.enabled" mat-stroked-button class="mt-2"
                 (click)="addPartnerCollaborator(); formService.setDirty(true)">
             +
         </button>

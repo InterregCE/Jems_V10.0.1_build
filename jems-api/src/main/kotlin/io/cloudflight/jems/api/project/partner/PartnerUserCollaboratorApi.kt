@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Project Partner User Collaborator")
-@RequestMapping("/api/projectPartnerCollaborators/{projectId}/")
+@RequestMapping("/api/projectPartnerCollaborators/{projectId}")
 interface PartnerUserCollaboratorApi {
 
     @ApiOperation("Retrieves users that can collaborate on this project partner team")
@@ -20,7 +20,7 @@ interface PartnerUserCollaboratorApi {
     fun listAllPartnerCollaborators(@PathVariable projectId: Long): Set<PartnerUserCollaboratorDTO>
 
     @ApiOperation("Assigns a list of Users for monitoring to Partners")
-    @PutMapping("forPartner/{partnerId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("/forPartner/{partnerId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updatePartnerUserCollaborators(
         @PathVariable projectId: Long,
         @PathVariable partnerId: Long,
