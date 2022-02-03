@@ -1,6 +1,6 @@
 <jems-form *ngIf="data$ | async as data"
           (save)="onSubmit(controls, data.partners)"
-          (discard)="discard(data.partner)">
+          (discard)="discard(data.projectCallType, data.partner)">
     <form jemsFormLayout id="partner-form" [formGroup]="partnerForm">
         <h3>{{'project.partner.detail.title' | translate}}</h3>
 

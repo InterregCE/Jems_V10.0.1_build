@@ -19,7 +19,7 @@
 
     <ng-container *ngFor="let budget of budgets">
         <div>
-            <span >{{ 'common.label.project.partner.role.shortcut.' + budget.partner?.role | translate : {partner: budget.partner?.sortNumber} }}</span>
+            <span >{{ 'common.label.project.partner.role.shortcut.' + budget.partner?.role | specialCallTypeAppender | async | translate : {partner: budget.partner?.sortNumber} }}</span>
             <span *ngIf="displayedColumns.includes('country')">{{ budget.partner?.country }}</span>
             <span *ngIf="displayedColumns.includes('staffCosts')" class="justify-end">{{ budget.staffCosts | asMoney }}</span>
             <span *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" class="justify-end">{{ budget.officeAndAdministrationCosts | asMoney }}</span>

@@ -7,10 +7,11 @@ import {
   ProjectDetailFormDTO,
   WorkPackageActivityDTO,
   WorkPackageActivityService,
+  WorkPackageInvestmentDTO,
   WorkPackageInvestmentService,
   WorkPackageOutputDTO,
   WorkPackageOutputService,
-  WorkPackageService, WorkPackageInvestmentDTO,
+  WorkPackageService,
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, filter, map, mergeMap, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
@@ -34,6 +35,7 @@ export class WorkPackagePageStore {
   activities$: Observable<WorkPackageActivityDTO[]>;
   outputs$: Observable<WorkPackageOutputDTO[]>;
   outputIndicators$: Observable<OutputIndicatorSummaryDTO[]>;
+  projectCallType$ = this.projectStore.projectCallType$;
   investments$: Observable<WorkPackageInvestmentDTO[]>;
 
   investmentsChanged$ = new Subject<void>();

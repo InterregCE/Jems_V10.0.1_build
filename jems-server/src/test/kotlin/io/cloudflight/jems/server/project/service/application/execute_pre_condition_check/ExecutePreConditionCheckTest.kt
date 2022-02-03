@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.application.execute_pre_condition_check
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
@@ -114,6 +115,7 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     private fun buildCallSetting(
         callId: Long = 1L,
         callName: String = "call",
+        callType: CallType = CallType.STANDARD,
         startDate: ZonedDateTime = ZonedDateTime.now().minusDays(4),
         endDate: ZonedDateTime = ZonedDateTime.now().plusDays(4),
         endDateStep1: ZonedDateTime? = ZonedDateTime.now().plusDays(2),
@@ -126,7 +128,7 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
         preSubmissionCheckPluginKey: String? = null
     ) =
         ProjectCallSettings(
-            callId, callName, startDate, endDate, endDateStep1,
+            callId, callName, callType, startDate, endDate, endDateStep1,
             lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = preSubmissionCheckPluginKey

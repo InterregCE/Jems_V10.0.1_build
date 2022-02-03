@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  ProjectCallSettingsDTO,
   ProjectContactDTO,
   ProjectPartnerAddressDTO,
   ProjectPartnerDetailDTO,
@@ -17,6 +18,7 @@ import {ProjectPartnerRoleEnum, ProjectPartnerRoleEnumUtil} from '@project/model
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectPaths} from '@project/common/project-util';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +26,7 @@ import {ProjectPaths} from '@project/common/project-util';
 export class ProjectPartnerStore {
   public static PARTNER_DETAIL_PATH = '/applicationFormPartner/';
   isProjectEditable$: Observable<boolean>;
+  projectCallType$: Observable<CallTypeEnum>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   partners$: Observable<ProjectPartner[]>;
   leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
@@ -39,6 +42,7 @@ export class ProjectPartnerStore {
               private routingService: RoutingService,
               private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
+    this.projectCallType$ = this.projectStore.projectCallType$;
     this.partnerSummaries$ = this.partnerSummaries();
     this.latestPartnerSummaries$ = this.partnerSummariesFromVersion();
     this.partners$ = combineLatest([
@@ -160,5 +164,10 @@ export class ProjectPartnerStore {
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
       );
+  }
+
+  static getPartnerTranslationKey(role: ProjectPartnerDTO.RoleEnum, callType: CallTypeEnum) {
+    const prefix = (callType === CallTypeEnum.STANDARD) ? '' : callType.toLocaleLowerCase() + '.';
+    return `${prefix}common.label.project.partner.role.shortcut.${role}`;
   }
 }
