@@ -201,7 +201,7 @@ export class FileManagementStore {
   private fileCategories(section: CategoryInfo): Observable<CategoryNode> {
     return combineLatest([
       this.projectStore.projectTitle$,
-      this.canReadApplicationFile$.pipe(switchMap(canReadApplicationFile => this.shouldFetchApplicationCategories(section, canReadApplicationFile) ? this.projectPartnerStore.partnerSummariesForFiles$ : of([]))),
+      this.canReadApplicationFile$.pipe(switchMap(canReadApplicationFile => this.shouldFetchApplicationCategories(section, canReadApplicationFile) ? this.projectPartnerStore.latestPartnerSummaries$ : of([]))),
       this.canReadApplicationFile$.pipe(switchMap(canReadApplicationFile => this.shouldFetchApplicationCategories(section, canReadApplicationFile) ? this.projectStore.investmentSummariesForFiles$ : of([]))),
       this.canReadApplicationFile$,
       this.canReadAssessmentFile$
