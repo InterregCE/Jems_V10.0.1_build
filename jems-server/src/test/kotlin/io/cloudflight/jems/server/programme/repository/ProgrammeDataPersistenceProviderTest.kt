@@ -38,6 +38,7 @@ class ProgrammeDataPersistenceProviderTest : UnitTest() {
         )
 
         private val programmeData = ProgrammeData(
+            id = 1,
             cci = "cci",
             title = "title",
             version = "version",
@@ -51,7 +52,7 @@ class ProgrammeDataPersistenceProviderTest : UnitTest() {
             programmeAmendingDecisionDate = LocalDate.of(2020, 1, 1),
             projectIdProgrammeAbbreviation = "NL-DE_",
             projectIdUseCallId = true,
-            programmeNuts = emptyList()
+            defaultUserRoleId = 1L
         )
     }
 
