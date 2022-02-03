@@ -275,7 +275,7 @@ export class Permission {
         {
           name: 'topbar.main.programme.data.export',
           mode: PermissionMode.HIDDEN_VIEW,
-          viewPermissions: [PermissionsEnum.ProjectsWithOwnershipRetrieve],
+          viewPermissions: [PermissionsEnum.ProgrammeDataExportRetrieve],
         },
       ]
     },
