@@ -73,7 +73,6 @@ export class ProjectStore {
   activities$: Observable<WorkPackageActivitySummaryDTO[]>;
   projectPeriods$: Observable<ProjectPeriodDTO[]>;
   collaboratorLevel$: Observable<ProjectUserCollaboratorDTO.LevelEnum>;
-  areCollaboratorsAllowedToSeeTeams$: Observable<boolean>;
 
   // move to page store
   projectCall$: Observable<ProjectCallSettings>;
@@ -125,7 +124,6 @@ export class ProjectStore {
     this.projectPeriods$ = this.projectForm$.pipe(
       map(projectForm => projectForm.periods)
     );
-    this.areCollaboratorsAllowedToSeeTeams$ = this.areCollaboratorsAllowedToSeeTeams();
   }
 
   updateProjectData(data: InputProjectData): Observable<ProjectDetailFormDTO> {
@@ -372,14 +370,6 @@ export class ProjectStore {
           this.projectService.getProjectActivities(project.id, '')
         ),
         tap(activities => Log.info('Fetched project activities', activities))
-      );
-  }
-
-  private areCollaboratorsAllowedToSeeTeams(): Observable<boolean> {
-    return combineLatest([this.collaboratorLevel$, this.projectStatus$])
-      .pipe(
-        map(([managementLevel, projectStatus]) => (managementLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE || projectStatus.status === ProjectStatusDTO.StatusEnum.APPROVED)),
-        shareReplay(1)
       );
   }
 }

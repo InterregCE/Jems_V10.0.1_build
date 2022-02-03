@@ -10,15 +10,7 @@ import {
   ProjectPartnerSummaryDTO,
   ProjectUserCollaboratorDTO
 } from '@cat/api';
-import {
-  ProjectPartnerStore
-} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {
-  PartnersCollaborationDataPerPartner
-} from '@project/project-application/privileges-page/partnersCollaborationDataPerPartner';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-privileges-page',
@@ -29,19 +21,16 @@ import {
 })
 export class PrivilegesPageComponent {
   Alert = Alert;
+
   projectCollaborators$: Observable<{
     projectTitle: string;
     projectCollaborators: ProjectUserCollaboratorDTO[];
   }>;
 
-  partnerCollaborators$: Observable<{
-    partnerCollaborators: PartnerUserCollaboratorDTO[];
-    managementLevel: ProjectUserCollaboratorDTO.LevelEnum;
-  }>;
+  partnerCollaboratorTeams$: Observable<Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>>;
 
   constructor(public pageStore: PrivilegesPageStore,
               public formService: FormService,
-              public partnerStore: ProjectPartnerStore,
               public projectStore: ProjectStore,
               private projectSidenavService: ProjectApplicationFormSidenavService) {
     this.projectCollaborators$ = combineLatest([this.pageStore.projectTitle$, this.pageStore.projectCollaborators$])
@@ -52,23 +41,24 @@ export class PrivilegesPageComponent {
         }))
       );
 
-    this.partnerCollaborators$ = combineLatest([
+    this.partnerCollaboratorTeams$ = combineLatest([
+      this.pageStore.partnerSummariesOfLastApprovedVersion$,
       this.pageStore.partnerCollaborators$,
       this.projectStore.collaboratorLevel$
     ])
       .pipe(
-        map(([partnerCollaborators, managementLevel]) => ({
-          partnerCollaborators,
-          managementLevel
-        }))
+        map(([partners, partnerCollaborators, managementLevel]) =>
+          this.getPartnerTeams(partners, partnerCollaborators, managementLevel)
+        )
       );
   }
 
-  getPartnerCollaboratorData(partner: ProjectPartnerSummaryDTO, partnersCollaboratorData: PartnerUserCollaboratorDTO[], managementLevel: ProjectUserCollaboratorDTO.LevelEnum): PartnersCollaborationDataPerPartner | null {
-    const collaboratorsPerPartner = {
-      partner: partner,
-      partnerCollaborators: partnersCollaboratorData.filter(collaborator => collaborator.partnerId === partner.id)
-    } as PartnersCollaborationDataPerPartner;
-    return collaboratorsPerPartner.partnerCollaborators.length > 0 || managementLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE ? collaboratorsPerPartner : null;
-  }
+  private getPartnerTeams(partners: ProjectPartnerSummaryDTO[], partnersCollaboratorData: PartnerUserCollaboratorDTO[], managementLevel: ProjectUserCollaboratorDTO.LevelEnum): Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]> {
+    const teams = new Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>();
+    partners.forEach(partner => {
+      const partnerCollaborators = partnersCollaboratorData.filter(partnerCollaborator => partnerCollaborator.partnerId === partner.id);
+      teams.set(partner, partnerCollaborators.length || managementLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE ? partnerCollaborators : null as any);
+    });
+    return teams;
+}
 }

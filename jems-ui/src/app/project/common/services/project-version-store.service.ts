@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
-import {ProjectService, ProjectVersionDTO} from '@cat/api';
+import {ProjectService, ProjectStatusDTO, ProjectVersionDTO} from '@cat/api';
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {RoutingService} from '@common/services/routing.service';
@@ -16,6 +16,7 @@ export class ProjectVersionStore {
   selectedVersionParam$: Observable<string | undefined>;
   selectedVersion$: Observable<ProjectVersionDTO | undefined>;
   isSelectedVersionCurrent$: Observable<boolean>;
+  lastApprovedVersion$: Observable<ProjectVersionDTO | undefined>;
 
   private versionsChanged$ = new Subject<void>();
 
@@ -35,6 +36,7 @@ export class ProjectVersionStore {
       .pipe(
         tap(id => this.projectId$.next(id as number))
       ).subscribe();
+    this.lastApprovedVersion$ = this.lastApprovedVersion();
   }
 
   changeVersion(versionDTO: ProjectVersionDTO): void {
@@ -79,4 +81,12 @@ export class ProjectVersionStore {
       shareReplay(1)
     );
   }
+
+  private lastApprovedVersion(): Observable<ProjectVersionDTO | undefined> {
+    return this.versions$
+      .pipe(
+        map(versions => versions.find(version => version.status === ProjectVersionDTO.StatusEnum.APPROVED))
+      );
+  }
+
 }
