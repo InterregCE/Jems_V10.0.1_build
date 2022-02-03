@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.plugin.services
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -250,6 +251,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         private val callSettings = ProjectCallSettings(
             callId = 2L,
             callName = "call",
+            callType = CallType.STANDARD,
             startDate = startDate,
             endDate = endDate,
             lengthOfPeriod = 2,

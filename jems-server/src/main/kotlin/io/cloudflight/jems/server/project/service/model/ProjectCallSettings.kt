@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.model
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -10,6 +11,7 @@ import java.time.ZonedDateTime
 data class ProjectCallSettings(
     val callId: Long,
     val callName: String,
+    val callType: CallType,
     val startDate: ZonedDateTime,
     val endDate: ZonedDateTime,
     val endDateStep1: ZonedDateTime?,

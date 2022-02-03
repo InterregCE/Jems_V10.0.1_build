@@ -76,6 +76,7 @@ internal class CreateProjectTest : UnitTest() {
         val callSettings = ProjectCallSettings(
             callId = CALL_ID,
             callName = "call name",
+            callType = CallType.STANDARD,
             startDate = call.startDate,
             endDateStep1 = call.endDateStep1,
             endDate = call.endDate,

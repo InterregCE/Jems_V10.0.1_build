@@ -54,7 +54,7 @@ export class CallPageSidenavService {
       .pipe(
         take(1),
         tap(callIsReadable => {
-          if (callId && callIsReadable && call.type === CallDetailDTO.TypeEnum.STANDARD) { // TODO remove call type check after implementing MP2-2211
+          if (callId && callIsReadable) {
             bulletsArray.push(flatRates, applicationFormConfiguration, preSubmissionCheckSettings);
           }
           this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [

@@ -28,6 +28,8 @@ import {TranslateService} from '@ngx-translate/core';
 import {MatTable} from '@angular/material/table';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {ProjectCallSettingsDTO} from '@cat/api';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @UntilDestroy()
 @Component({
@@ -91,12 +93,12 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     return NumberService.minus(lumpSumCost, rowSum);
   }
 
-  private getColumnsToDisplay(partners: ProjectPartner[]): string[] {
+  private getColumnsToDisplay(partners: ProjectPartner[], callType: CallTypeEnum): string[] {
     return [
       'lumpSum',
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ? ['period'] : [],
       'isSplittingLumpSumAllowed', 'lumpSumCost',
-      ...partners?.map(partner => partner.toPartnerNumberString()),
+      ...partners?.map(partner => partner.toPartnerNumberString(callType)),
       'rowSum',
       'gap',
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION) ? ['description'] : [],
@@ -135,7 +137,11 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       map(() => this.items.controls.some(control => this.isPeriodMissingInRow(control))),
     );
 
-    this.columnsToDisplay$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => this.getColumnsToDisplay(partners)));
+    this.columnsToDisplay$ = combineLatest([this.pageStore.partners$, this.pageStore.projectCallType$])
+      .pipe(
+        map(([partners, callType]) => this.getColumnsToDisplay(partners, callType))
+      );
+
     this.withConfigs$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => this.getTableConfig(partners)));
     this.costIsNotSplittableError$ = this.items.valueChanges
       .pipe(startWith(null), map(() => this.items.controls.find(itemFormGroup => itemFormGroup.errors !== null)?.errors || null));

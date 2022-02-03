@@ -115,15 +115,15 @@ export class ProjectApplicationFormSidenavService {
   );
 
   private partners$: Observable<HeadlineRoute[]> =
-    combineLatest([this.canSeeProjectForm$, this.fileManagementStore.canReadApplicationFile$]).pipe(
-      switchMap(([canSeeProject, canSeeApplicationFiles]) => {
+    combineLatest([this.canSeeProjectForm$, this.fileManagementStore.canReadApplicationFile$, this.projectStore.projectCallType$]).pipe(
+      switchMap(([canSeeProject, canSeeApplicationFiles, callType]) => {
         return (canSeeProject || canSeeApplicationFiles) ?
           this.partnerStore.partnerSummaries$.pipe(
             withLatestFrom(this.projectStore.projectId$),
             map(([partners, projectId]) =>
               partners.map(partner => ({
                   headline: {
-                    i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
+                    i18nKey: ProjectPartnerStore.getPartnerTranslationKey(partner.role, callType),
                     i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
                   },
                   icon: partner.active ? '' : 'person_off',

@@ -82,7 +82,7 @@
                                         [selectable]="false"
                                         [removable]="true"
                                         (removed)="removePartner(i, partnerIndex)">
-                                    {{ getAbbreviationForPartnerId(data.partners, partner.id)}}
+                                    {{ getAbbreviationForPartnerId(data.partners, partner.id, data.projectCallType)}}
                                     <mat-icon *ngIf="data.isEditable" matChipRemove>cancel</mat-icon>
                                 </mat-chip>
                                 <input
@@ -97,7 +97,8 @@
                                 <mat-option
                                         *ngFor="let partner of getPartnersWithoutSelected(data.partners, i) | filterPartner: filterPartners.value"
                                         [value]="partner.id">
-                                    {{ partner.toPartnerNumberString()}} {{partner.abbreviation}}
+                                    {{ 'common.label.project.partner.role.shortcut.' + partner.role | specialCallTypeAppender | async
+                                        | translate: {partner: partner.sortNumber} }} {{partner.abbreviation}}
                                 </mat-option>
                             </mat-autocomplete>
                         </mat-form-field>

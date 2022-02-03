@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputTranslation,
-  ProgrammeLegalStatusService,
+  ProgrammeLegalStatusService, ProjectCallSettingsDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerDTO,
   ProjectPartnerSummaryDTO,
@@ -20,6 +20,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectApplicationFormPartnerEditConstants} from '@project/project-application/components/project-application-form/project-application-form-partner-edit/constants/project-application-form-partner-edit.constants';
 import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
 import {ProjectPartner} from '@project/model/ProjectPartner';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Component({
   selector: 'jems-project-application-form-partner-edit',
@@ -43,6 +44,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
   data$: Observable<{
     partner: ProjectPartnerDetailDTO;
     partners: ProjectPartner[];
+    projectCallType: CallTypeEnum;
   }>;
 
   partnerForm: FormGroup = this.formBuilder.group({
@@ -83,10 +85,10 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private programmeLegalStatusService: ProgrammeLegalStatusService) {
     this.formService.init(this.partnerForm, this.partnerStore.isProjectEditable$);
-    this.data$ = combineLatest([this.partnerStore.partners$, this.partnerStore.partner$])
+    this.data$ = combineLatest([this.partnerStore.partners$, this.partnerStore.partner$, this.partnerStore.projectCallType$])
       .pipe(
-        map(([partners, partner]) => ({partners, partner})),
-        tap((data: any) => this.resetForm(data.partner))
+        map(([partners, partner, callType]) => ({partners, partner, callType})),
+        tap((data: any) => this.resetForm(data.callType, data.partner))
       );
   }
 
@@ -186,11 +188,11 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
         }
   }
 
-  discard(partner?: ProjectPartnerDetailDTO): void {
+  discard(callType: CallTypeEnum, partner?: ProjectPartnerDetailDTO): void {
     if (!this.partnerId) {
       this.redirectToPartnerOverview();
     } else {
-      this.resetForm(partner);
+      this.resetForm(callType, partner);
     }
   }
 
@@ -198,13 +200,13 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     return nace ? nace.split('_').join('.') : '';
   }
 
-  private resetForm(partner?: ProjectPartnerDetailDTO): void {
+  private resetForm(callType: CallTypeEnum, partner?: ProjectPartnerDetailDTO): void {
     if (!this.partnerId) {
       this.formService.setCreation(true);
     }
     this.controls.id.setValue(partner?.id);
     this.controls.abbreviation.setValue(partner?.abbreviation);
-    this.controls.role.setValue(partner?.role);
+    this.controls.role.setValue(callType === CallTypeEnum.STANDARD ? partner?.role : ProjectPartnerDetailDTO.RoleEnum.LEADPARTNER);
     this.controls.nameInOriginalLanguage.setValue(partner?.nameInOriginalLanguage);
     this.controls.nameInEnglish.setValue([{
       language: this.LANGUAGE.EN,

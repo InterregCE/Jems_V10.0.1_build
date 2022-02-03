@@ -1,5 +1,10 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ProjectPeriodDTO, WorkPackageActivityDeliverableDTO, WorkPackageActivityDTO} from '@cat/api';
+import {
+  ProjectCallSettingsDTO,
+  ProjectPeriodDTO,
+  WorkPackageActivityDeliverableDTO,
+  WorkPackageActivityDTO
+} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {FormArray, FormBuilder} from '@angular/forms';
@@ -12,6 +17,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectPartner} from '@project/model/ProjectPartner';
 import {Alert} from '@common/components/forms/alert';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @UntilDestroy()
 @Component({
@@ -38,6 +44,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
     partners: ProjectPartner[];
     workPackageNumber: number;
     isEditable: boolean;
+    projectCallType: CallTypeEnum;
   }>;
 
   constructor(public formService: FormService,
@@ -64,13 +71,15 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
       this.workPackageStore.projectForm$,
       this.partnerStore.partners$,
       this.workPackageStore.isProjectEditable$,
+      this.workPackageStore.projectCallType$
     ]).pipe(
-      map(([activities, workPackage, projectForm, partners, isEditable]) => ({
+      map(([activities, workPackage, projectForm, partners, isEditable, projectCallType]) => ({
           activities,
           periods: projectForm.periods,
           workPackageNumber: workPackage.number,
           partners,
           isEditable,
+          projectCallType
         })
       ));
   }
@@ -145,9 +154,9 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
     this.formService.setDirty(true);
   }
 
-  getAbbreviationForPartnerId(partners: ProjectPartner[], partnerId: number): string {
+  getAbbreviationForPartnerId(partners: ProjectPartner[], partnerId: number, projectCallType: CallTypeEnum): string {
     const partner = partners.find(p => p.id === partnerId);
-    return `${partner?.toPartnerNumberString() || '-'} ${partner?.abbreviation || '-'}`;
+    return `${partner?.toPartnerNumberString(projectCallType) || '-'} ${partner?.abbreviation || '-'}`;
   }
 
   getPartnersWithoutSelected(partners: ProjectPartner[], activityIndex: number): ProjectPartner[] {

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.dto
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
@@ -10,6 +11,7 @@ import java.time.ZonedDateTime
 data class ProjectCallSettingsDTO(
     val callId: Long,
     val callName: String,
+    val callType: CallType,
     val startDate: ZonedDateTime,
     val endDate: ZonedDateTime,
     val endDateStep1: ZonedDateTime?,

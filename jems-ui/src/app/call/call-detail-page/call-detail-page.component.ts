@@ -184,11 +184,9 @@ export class CallDetailPageComponent {
 
   isPublishDisabled(call: CallDetailDTO): Observable<boolean> {
     return of(true).pipe(
-      withLatestFrom(this.formService.dirty$, this.formService.pending$, of(call.type)),
-      map(([, dirty, pending, callType]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0
-        || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0
-        // TODO remove after implementing MP2-2211 - temporarily disabled publish button for SPF calls
-        || callType === CallDetailDTO.TypeEnum.SPF)
+      withLatestFrom(this.formService.dirty$, this.formService.pending$),
+      map(([, dirty, pending]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0
+        || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0)
     );
   }
 

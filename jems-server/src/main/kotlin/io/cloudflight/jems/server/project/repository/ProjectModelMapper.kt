@@ -80,6 +80,7 @@ fun CallEntity.toSettingsModel(
 ) = ProjectCallSettings(
     callId = id,
     callName = name,
+    callType = type,
     startDate = startDate,
     endDate = endDate,
     endDateStep1 = endDateStep1,

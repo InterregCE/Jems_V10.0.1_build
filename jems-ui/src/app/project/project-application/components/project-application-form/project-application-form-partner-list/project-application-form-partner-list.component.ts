@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {PageProjectBudgetPartnerSummaryDTO, ProjectStatusDTO} from '@cat/api';
+import {PageProjectBudgetPartnerSummaryDTO, ProjectCallSettingsDTO, ProjectStatusDTO} from '@cat/api';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '@common/utils/forms';
 import {filter, map, take, tap} from 'rxjs/operators';
@@ -22,6 +22,8 @@ import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ProjectUtil} from '@project/common/project-util';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-project-application-form-partner-list',
@@ -69,13 +71,17 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   tableRows$: Observable<ProjectBudgetPartner[]>;
 
   totalElements = 0;
+  callType: CallTypeEnum;
 
 
   constructor(private dialog: MatDialog,
+              private projectStore: ProjectStore,
               private formVisibilityStatusService: FormVisibilityStatusService) {
+    this.projectStore.projectCallType$.subscribe(value => this.callType = value);
   }
 
   ngOnInit(): void {
+    const prefixCallType: string = this.callType === CallTypeEnum.STANDARD ? '' : 'spf.';
     this.tableRows$ = this.partnerPage$.pipe(
       tap(pageProjectBudgetPartnerSummaryDTO => this.totalElements = pageProjectBudgetPartnerSummaryDTO.totalElements),
       map(pageProjectBudgetPartnerSummaryDTO => this.getProjectPartnerSummary(pageProjectBudgetPartnerSummaryDTO))
@@ -108,7 +114,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
         {
           displayedColumn: 'project.application.form.partner.table.role',
           elementProperty: 'role',
-          elementTranslationKey: 'common.label.project.partner.role',
+          elementTranslationKey: `${prefixCallType}common.label.project.partner.role`,
           sortProperty: 'role',
         },
         {

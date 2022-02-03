@@ -41,6 +41,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories, AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 /**
  * Stores project related information.
@@ -59,6 +60,7 @@ export class ProjectStore {
 
   projectStatus$: Observable<ProjectStatusDTO>;
   project$: Observable<ProjectDetailDTO>;
+  projectCallType$: Observable<CallTypeEnum>;
   projectForm$: Observable<ProjectDetailFormDTO>;
   project: ProjectDetailDTO;
   projectEditable$: Observable<boolean>;
@@ -102,8 +104,9 @@ export class ProjectStore {
     this.projectForm$ = this.projectForm();
     this.collaboratorLevel$ = this.collaboratorLevel();
     this.projectEditable$ = this.projectEditable();
-    this.projectStatus$ = this.projectStatus(this.project$);
-    this.currentVersionOfProjectStatus$ = this.projectStatus(this.currentVersionOfProject$);
+    this.projectStatus$ = ProjectStore.projectStatus(this.project$);
+    this.projectCallType$ = ProjectStore.projectCallType(this.project$);
+    this.currentVersionOfProjectStatus$ = ProjectStore.projectStatus(this.currentVersionOfProject$);
     this.projectCall$ = this.projectCallSettings();
     this.currentVersionOfProjectTitle$ = this.currentVersionOfProject$
       .pipe(
@@ -151,11 +154,18 @@ export class ProjectStore {
       );
   }
 
-  private projectStatus(project: Observable<ProjectDetailDTO>): Observable<ProjectStatusDTO> {
+  private static projectStatus(project: Observable<ProjectDetailDTO>): Observable<ProjectStatusDTO> {
     return project
       .pipe(
         map(it => it.projectStatus),
         shareReplay(1)
+      );
+  }
+
+  private static projectCallType(project: Observable<ProjectDetailDTO>): Observable<CallTypeEnum> {
+    return project
+      .pipe(
+        map(proj => proj.callSettings.callType)
       );
   }
 
