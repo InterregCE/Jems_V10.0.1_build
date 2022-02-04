@@ -49,7 +49,10 @@ export class PrivilegesPageStore {
     return this.projectStore.projectId$
       .pipe(
         take(1),
-        switchMap(projectId => this.projectUserCollaboratorService.updateAssignedUserCollaborators(projectId, collaborators)),
+        switchMap(projectId => this.projectUserCollaboratorService.updateAssignedUserCollaborators(
+          projectId,
+          collaborators.map(collaborator => ({...collaborator, userEmail: collaborator.userEmail?.trim()}))
+        )),
         tap(saved => Log.info('Updated project collaborators', this, saved))
       );
   }
@@ -58,7 +61,11 @@ export class PrivilegesPageStore {
     return this.projectStore.projectId$
       .pipe(
         take(1),
-        switchMap(projectId => this.partnerUserCollaboratorService.updatePartnerUserCollaborators(partnerId, projectId, collaborators)),
+        switchMap(projectId => this.partnerUserCollaboratorService.updatePartnerUserCollaborators(
+          partnerId,
+          projectId,
+          collaborators.map(collaborator => ({...collaborator, userEmail: collaborator.userEmail?.trim()}))
+        )),
         tap(saved => Log.info('Updated project partner collaborators', this, saved))
       );
   }
@@ -66,7 +73,6 @@ export class PrivilegesPageStore {
   private projectCollaborators(): Observable<ProjectUserCollaboratorDTO[]> {
     const initialCollaborators$ = combineLatest([this.projectStore.projectId$, this.projectStore.collaboratorLevel$])
       .pipe(
-        filter(([projectId, level]) => level === ProjectUserCollaboratorDTO.LevelEnum.MANAGE),
         switchMap(([projectId, level]) => this.projectUserCollaboratorService.listAssignedUserCollaborators(projectId)),
         tap(collaborators => Log.info('Fetched project collaborators', this, collaborators))
       );
@@ -116,5 +122,9 @@ export class PrivilegesPageStore {
           StatusEnum.CONTRACTED
         ].includes(status.status)),
       );
+  }
+
+  private trimEmails(collaborators: any[]):void {
+    collaborators.forEach(collaborator => collaborator?.em);
   }
 }
