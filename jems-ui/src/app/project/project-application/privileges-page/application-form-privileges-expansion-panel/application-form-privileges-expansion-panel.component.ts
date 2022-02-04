@@ -26,7 +26,7 @@ const uniqueEmails = (): ValidatorFn => (formArray: FormArray) => {
   selector: 'jems-application-form-privileges-expansion-panel',
   templateUrl: './application-form-privileges-expansion-panel.component.html',
   styleUrls: ['./application-form-privileges-expansion-panel.component.scss'],
-  providers: [PrivilegesPageStore, FormService],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ApplicationFormPrivilegesExpansionPanelComponent implements OnInit {

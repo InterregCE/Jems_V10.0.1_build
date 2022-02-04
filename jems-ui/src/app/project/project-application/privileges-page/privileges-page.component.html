@@ -1,6 +1,7 @@
 <jems-project-page-template *ngIf="pageStore.projectTitle$ | async as title"
-                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: title} "
-                           subTitleKey="project.application.form.section.privileges">
+                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: title} "
+                            subTitleKey="project.application.form.section.privileges"
+                            [isVersionedData]="false">
     <jems-alert [show]="true"
                [closable]="false"
                [type]="Alert.WARNING">
