@@ -16,7 +16,7 @@ import { Alert } from '@common/components/forms/alert';
   selector: 'jems-partner-team-privileges-expansion-panel',
   templateUrl: './partner-team-privileges-expansion-panel.component.html',
   styleUrls: ['./partner-team-privileges-expansion-panel.component.scss'],
-  providers: [PrivilegesPageStore, FormService],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {

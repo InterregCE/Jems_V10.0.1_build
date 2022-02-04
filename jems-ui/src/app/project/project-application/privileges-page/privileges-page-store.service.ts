@@ -105,7 +105,7 @@ export class PrivilegesPageStore {
   }
 
   private partnerTeamsVisible(): Observable<boolean> {
-    return this.projectStore.projectStatus$
+    return this.projectStore.currentVersionOfProjectStatus$
       .pipe(
         map(status => [
           StatusEnum.APPROVED,
