@@ -37,9 +37,9 @@ class AssignUserCollaboratorToPartner(
         emailsWithLevel: Set<Pair<String, PartnerCollaboratorLevel>>
     ): Set<PartnerCollaborator> {
         val allowedRoleIds = getAvailableRoleIds()
-        val emailToLevelMap = emailsWithLevel.associateBy({ it.first }, { it.second })
+        val emailToLevelMap = emailsWithLevel.associateBy({ it.first.lowercase() }, { it.second })
         val usersToBePersistedThatCanBePersisted = userPersistence.findAllByEmails(emails = emailToLevelMap.keys)
-            .filter { allowedRoleIds.contains(it.userRole.id) }.associateWith { emailToLevelMap[it.email]!! }
+            .filter { allowedRoleIds.contains(it.userRole.id) }.associateWith { emailToLevelMap[it.email.lowercase()]!! }
 
         validateAllUsersAreValid(
             requestedUsers = emailsWithLevel,
@@ -63,8 +63,8 @@ class AssignUserCollaboratorToPartner(
 
     private fun validateAllUsersAreValid(requestedUsers: Set<Pair<String, PartnerCollaboratorLevel>>,
                                          availUsers: Map<UserSummary, PartnerCollaboratorLevel>) {
-        val foundUserEmails = availUsers.mapTo(HashSet()) { it.key.email }
-        val notFoundUserEmails = requestedUsers.mapTo(HashSet()) { it.first }
+        val foundUserEmails = availUsers.mapTo(HashSet()) { it.key.email.lowercase() }
+        val notFoundUserEmails = requestedUsers.mapTo(HashSet()) { it.first.lowercase() }
         notFoundUserEmails.removeAll(foundUserEmails)
 
         if (notFoundUserEmails.isNotEmpty())
