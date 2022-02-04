@@ -8,6 +8,8 @@ import {UserRoleDTO} from '@cat/api';
 import {UserPageRoleComponent} from './user-page-role/user-page-role.component';
 import {UserRoleDetailPageComponent} from './user-page-role/user-role-detail-page/user-role-detail-page.component';
 import {UserRoleNameResolver} from './user-page-role/user-role-detail-page/user-role-name.resolver';
+import {SystemPermissionGuard} from '../security/system.permission.guard';
+import {AppNotFoundComponent} from '../component/app-not-found/app-not-found.component';
 
 export const routes: Routes = [
   {
@@ -16,6 +18,11 @@ export const routes: Routes = [
       breadcrumb: 'system.page.title',
     },
     children: [
+      {
+        path: '',
+        canActivate: [SystemPermissionGuard],
+        component: AppNotFoundComponent
+      },
       {
         path: 'audit',
         component: AuditLogComponent,
