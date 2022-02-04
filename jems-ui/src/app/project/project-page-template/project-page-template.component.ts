@@ -45,10 +45,10 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
 
   versionSelectData$: Observable<{
     versions: {
-      currentVersion: ProjectVersionDTO,
-      lastApprovedVersion: ProjectVersionDTO,
-      pastVersions: ProjectVersionDTO[]
-    },
+      currentVersion: ProjectVersionDTO;
+      lastApprovedVersion: ProjectVersionDTO;
+      pastVersions: ProjectVersionDTO[];
+    };
     selectedVersion: ProjectVersionDTO | undefined;
   }>;
 
@@ -90,11 +90,11 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
       );
   }
 
-  isStatusApprovedOrContracted(currentVersion: ProjectVersionDTO): Boolean {
-    return currentVersion.status === 'APPROVED' || currentVersion.status === 'CONTRACTED'
+  isStatusApprovedOrContracted(currentVersion: ProjectVersionDTO): boolean {
+    return currentVersion.status === 'APPROVED' || currentVersion.status === 'CONTRACTED';
   }
 
-  noDecisionTaken(currentVersion: ProjectVersionDTO): Boolean {
-    return currentVersion.status !== ProjectStatusEnum.MODIFICATIONREJECTED && currentVersion.status !== ProjectStatusEnum.APPROVED && currentVersion.status !== ProjectStatusEnum.CONTRACTED
+  noDecisionTaken(currentVersion: ProjectVersionDTO): boolean {
+    return currentVersion.status !== ProjectStatusEnum.MODIFICATIONREJECTED && currentVersion.status !== ProjectStatusEnum.APPROVED && currentVersion.status !== ProjectStatusEnum.CONTRACTED;
   }
 }

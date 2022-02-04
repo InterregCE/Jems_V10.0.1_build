@@ -226,6 +226,7 @@ class ProjectServiceTest : UnitTest() {
         val callSettings = ProjectCallSettings(
             callId = 2,
             callName = "callName",
+            callType = CallType.STANDARD,
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),
             endDateStep1 = null,

@@ -1,6 +1,7 @@
 <jems-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
                            titleKey="project.application.form.tree.title"
-                           [subTitleText]="'project.application.form.acronym' | translate : {projectTitle: data.currentVersionOfProjectTitle}"
+                           [subTitleText]="'project.application.form.acronym' | specialCallTypeAppender | async
+                            | translate : {projectTitle: data.currentVersionOfProjectTitle}"
                            [isVersionedData]="false">
 
     <div jemsFormLayout jemsNoWidthLimit>

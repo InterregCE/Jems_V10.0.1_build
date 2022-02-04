@@ -1,7 +1,7 @@
 <ng-container *ngIf="data$ | async as data">
     <jems-form (save)="updateCoFinancingAndContributions()">
         <form [formGroup]="coFinancingForm" jemsFormLayout>
-            <h3>{{ 'partner.tab.coFinancing' | translate }}</h3>
+            <h3>{{ 'partner.partner.coFinancing.header' | specialCallTypeAppender | async | translate }}</h3>
             <p>{{ 'project.partner.coFinancing.intro' | translate }}</p>
             <div [jemsTableConfig]="[{minInRem:5},{maxInRem:10},{maxInRem:10}, {maxInRem: 2}]"
                  jemsNoWidthLimit>
@@ -79,7 +79,7 @@
                 </div>
             </div>
 
-            <h3>{{ 'project.partner.coFinancing.contribution.title' | translate }}</h3>
+            <h3>{{ 'project.partner.coFinancing.contribution.title' | specialCallTypeAppender | async | translate }}</h3>
 
             <jems-alert
                     [show]="data.showTotalContributionWarning"

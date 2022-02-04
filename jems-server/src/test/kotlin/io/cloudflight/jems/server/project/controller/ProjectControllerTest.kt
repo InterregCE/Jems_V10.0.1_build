@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.controller
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
@@ -82,6 +83,7 @@ class ProjectControllerTest {
         val callSettings = ProjectCallSettings(
             callId = 2L,
             callName = "call",
+            callType = CallType.STANDARD,
             startDate = startDate,
             endDate = endDate,
             lengthOfPeriod = 2,
@@ -218,6 +220,7 @@ class ProjectControllerTest {
         val callSettings = ProjectCallSettings(
             callId = 10,
             callName = "call for applications",
+            callType = CallType.STANDARD,
             startDate = startDate,
             endDate = endDate,
             endDateStep1 = null,
@@ -257,6 +260,7 @@ class ProjectControllerTest {
             ProjectCallSettingsDTO(
                 callId = 10,
                 callName = "call for applications",
+                callType = CallType.STANDARD,
                 startDate = startDate,
                 endDate = endDate,
                 endDateStep1 = null,
@@ -353,6 +357,7 @@ class ProjectControllerTest {
                 callSettings = ProjectCallSettingsDTO(
                     callSettings.callId,
                     callSettings.callName,
+                    callSettings.callType,
                     callSettings.startDate,
                     callSettings.endDate,
                     callSettings.endDateStep1,

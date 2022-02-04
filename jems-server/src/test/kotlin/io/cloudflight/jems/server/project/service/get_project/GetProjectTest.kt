@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.get_project
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
@@ -29,6 +30,7 @@ internal class GetProjectTest : UnitTest() {
         val callSettings = ProjectCallSettings(
             callId = 15,
             callName = "Call 15",
+            callType = CallType.STANDARD,
             startDate = startDate,
             endDate = endDate,
             endDateStep1 = null,

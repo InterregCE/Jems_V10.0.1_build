@@ -1,4 +1,6 @@
 import {ProjectPartnerRoleEnum} from './ProjectPartnerRoleEnum';
+import {ProjectCallSettingsDTO} from '@cat/api';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 export class ProjectPartner {
   id: number;
@@ -15,7 +17,10 @@ export class ProjectPartner {
     this.country = country;
   }
 
-  toPartnerNumberString(): string {
-    return this.role === ProjectPartnerRoleEnum.LEAD_PARTNER ? 'LP1' : 'PP'.concat(this.sortNumber.toString());
+  toPartnerNumberString(callType?: CallTypeEnum): string {
+    if (callType === undefined || callType === CallTypeEnum.STANDARD) {
+      return this.role === ProjectPartnerRoleEnum.LEAD_PARTNER ? 'LP1' : 'PP'.concat(this.sortNumber.toString());
+    }
+    return 'PP1 SPF';
   }
 }

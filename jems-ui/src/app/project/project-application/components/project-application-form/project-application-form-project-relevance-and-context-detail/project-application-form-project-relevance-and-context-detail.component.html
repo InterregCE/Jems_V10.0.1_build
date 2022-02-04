@@ -35,8 +35,8 @@
 
         <ng-container
                 *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.WHY_IS_COOPERATION_NEEDED">
-            <h4>{{'project.application.form.relevance.field.3' | translate}}</h4>
-            <p>{{'project.application.form.relevance.field.3.intro' | translate}}</p>
+            <h4>{{'project.application.form.relevance.field.3' | specialCallTypeAppender | async | translate}}</h4>
+            <p>{{'project.application.form.relevance.field.3.intro' | specialCallTypeAppender | async | translate}}</p>
             <jems-multi-language-container>
                 <jems-multi-language-form-field
                         type="textarea"

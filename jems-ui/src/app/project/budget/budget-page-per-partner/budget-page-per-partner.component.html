@@ -1,7 +1,7 @@
 <jems-project-page-template [needsCard]="true"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
                            subTitleKey="project.application.form.section.part.d">
-    <h3>{{'project.application.form.budgetPerPartner.title' | translate}}</h3>
+    <h3>{{'project.application.form.budgetPerPartner.title' | specialCallTypeAppender | async | translate}}</h3>
 
     <div jemsNoWidthLimit
          [jemsTableConfig]="tableConfig"
@@ -31,7 +31,7 @@
 
         <ng-container *ngFor="let budget of budgetColumns; let index = index;">
             <div *ngIf="index < budgetColumns.length - 1">
-                <span>{{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | translate : {partner: budget.partnerSortNumber} }}</span>
+                <span>{{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | specialCallTypeAppender | async | translate : {partner: budget.partnerSortNumber} }}</span>
                 <span>{{ budget.partnerCountry }}</span>
                 <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
                     <div class="justify-end" [ngClass]="getBudgetPercentageByFund(fund, budget.budgets) > 0 ? 'percentage-of-total-container' : ''">
