@@ -1,6 +1,6 @@
 <jems-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
-                        titleKey="{{getCallPageTitle(data.callType)}}"
-                        [subTitleKey]="data.callType === 'SPF' ? 'spf.call.type.subtitle': ''">
+                        titleKey="{{'call.detail.application.form.config.title' | adaptTranslationKeyByCallType | async}}"
+                        [subTitleKey]="'call.type.subtitle' | adaptTranslationKeyByCallType | async">
     <jems-form (save)="save()"
               (discard)="resetForm(data.fieldConfigurations)">
         <jems-alert [show]="data.callIsEditable"

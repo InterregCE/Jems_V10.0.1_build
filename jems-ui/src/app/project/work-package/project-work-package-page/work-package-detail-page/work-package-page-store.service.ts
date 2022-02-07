@@ -35,7 +35,6 @@ export class WorkPackagePageStore {
   activities$: Observable<WorkPackageActivityDTO[]>;
   outputs$: Observable<WorkPackageOutputDTO[]>;
   outputIndicators$: Observable<OutputIndicatorSummaryDTO[]>;
-  projectCallType$ = this.projectStore.projectCallType$;
   investments$: Observable<WorkPackageInvestmentDTO[]>;
 
   investmentsChanged$ = new Subject<void>();

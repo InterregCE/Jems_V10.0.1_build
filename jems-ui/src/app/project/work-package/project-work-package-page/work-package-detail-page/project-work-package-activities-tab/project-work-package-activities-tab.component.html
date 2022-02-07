@@ -82,7 +82,7 @@
                                         [selectable]="false"
                                         [removable]="true"
                                         (removed)="removePartner(i, partnerIndex)">
-                                    {{ getAbbreviationForPartnerId(data.partners, partner.id, data.projectCallType)}}
+                                    {{ getAbbreviationForPartnerId(data.partners, partner.id)}}
                                     <mat-icon *ngIf="data.isEditable" matChipRemove>cancel</mat-icon>
                                 </mat-chip>
                                 <input
