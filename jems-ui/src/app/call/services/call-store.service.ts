@@ -15,7 +15,9 @@ import {PermissionService} from '../../security/permissions/permission.service';
 import {RoutingService} from '@common/services/routing.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CallStore {
   public static CALL_DETAIL_PATH = '/app/call/detail';
   private callId: number;

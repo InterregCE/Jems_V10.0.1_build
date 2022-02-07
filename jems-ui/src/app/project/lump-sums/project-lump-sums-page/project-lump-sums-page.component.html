@@ -131,9 +131,9 @@
 
                                 <ng-container
                                         *ngFor="let partner of data.partners, let partnerAmountIndex=index"
-                                        [matColumnDef]="partner.toPartnerNumberString(this.pageStore.projectCallType$ | async)">
+                                        [matColumnDef]="partner.partnerNumber">
                                     <mat-header-cell *matHeaderCellDef class="justify-end">
-                                        <span jemsText maxLines="2">{{partner.toPartnerNumberString(this.pageStore.projectCallType$ | async)}}</span>
+                                        <span jemsText maxLines="2">{{partner.partnerNumber}}</span>
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i"
                                               [class.gap-exists]="isGapExistsInRow(control)">

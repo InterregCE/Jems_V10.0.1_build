@@ -58,9 +58,25 @@ export class ProjectPartnerStore {
       this.projectVersionStore.selectedVersionParam$,
       this.partnerUpdateEvent$
     ]).pipe(
-      switchMap(([project, version]) => this.partnerService.getProjectPartnersForDropdown(project.id, ['sortNumber'], version)),
-      map(projectPartners => projectPartners.map((projectPartner, index) =>
-        new ProjectPartner(projectPartner.id, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
+      switchMap(([project, version]) =>
+        this.partnerService.getProjectPartnersForDropdown(project.id, ['sortNumber'], version)
+            .pipe(map(projectPartners => {
+              return {
+                projectPartners,
+                projectCallType: project.callSettings.callType
+              };
+            }))
+      ),
+      map(data => data.projectPartners.map(projectPartner =>
+        new ProjectPartner(
+          projectPartner.id,
+          projectPartner.active,
+          projectPartner.abbreviation,
+          ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role),
+          projectPartner.sortNumber,
+          projectPartner.country,
+          ProjectPartnerStore.getPartnerNumber(data.projectCallType, projectPartner.role, projectPartner.sortNumber)
+        ))),
       shareReplay(1)
     );
     this.partner$ = this.partner();
@@ -200,5 +216,12 @@ export class ProjectPartnerStore {
   static getPartnerTranslationKey(role: ProjectPartnerDTO.RoleEnum, callType: CallTypeEnum) {
     const prefix = (callType === CallTypeEnum.STANDARD) ? '' : callType.toLocaleLowerCase() + '.';
     return `${prefix}common.label.project.partner.role.shortcut.${role}`;
+  }
+
+  static getPartnerNumber(callType: CallTypeEnum, role: ProjectPartnerSummaryDTO.RoleEnum, sortNumber: number): string {
+    if (callType === undefined || callType === CallTypeEnum.STANDARD) {
+      return role === ProjectPartnerRoleEnum.LEAD_PARTNER ? 'LP1' : 'PP'.concat(sortNumber.toString());
+    }
+    return 'PP1 SPF';
   }
 }
