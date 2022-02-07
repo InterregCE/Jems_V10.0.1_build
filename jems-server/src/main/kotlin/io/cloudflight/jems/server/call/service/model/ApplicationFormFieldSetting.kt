@@ -1,6 +1,12 @@
 package io.cloudflight.jems.server.call.service.model
 
-enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatusSet: Set<FieldVisibilityStatus>) {
+import io.cloudflight.jems.api.call.dto.CallType
+
+enum class ApplicationFormFieldSetting(
+    val id: String,
+    val validStandardVisibilityStatusSet: Set<FieldVisibilityStatus>,
+    val validSPFVisibilityStatusSet: Set<FieldVisibilityStatus> = emptySet()
+) {
 
     PROJECT_ID("application.config.project.id", setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO)),
     PROJECT_ACRONYM("application.config.project.acronym", setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO)),
@@ -27,7 +33,10 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         setOf(FieldVisibilityStatus.STEP_TWO_ONLY),
     ),
 
-    PARTNER_ROLE("application.config.project.partner.role", setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO)),
+    PARTNER_ROLE("application.config.project.partner.role",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO),
+        setOf(FieldVisibilityStatus.NONE)
+    ),
     PARTNER_ABBREVIATED_ORGANISATION_NAME(
         "application.config.project.partner.name",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO)
@@ -177,7 +186,7 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_LUMP_SUMS_DESCRIPTION(
-    "application.config.project.lump.sums.description",
+        "application.config.project.lump.sums.description",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PARTNER_BUDGET_STAFF_COST_STAFF_FUNCTION(
@@ -356,7 +365,8 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     ),
     PROJECT_PARTNERSHIP(
         "application.config.project.partnership",
-        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY),
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_WORK_PACKAGE_TITLE(
         "application.config.project.work.package.title",
@@ -512,7 +522,8 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     ),
     PROJECT_COMMUNICATION_APPROACH(
         "application.config.project.communication.approach",
-        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY),
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_FINANCIAL_MANAGEMENT_AND_REPORTING(
         "application.config.project.financial.management.and.reporting",
@@ -520,7 +531,8 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     ),
     PROJECT_COOPERATION_CRITERIA(
         "application.config.project.cooperation.criteria",
-        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY),
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_HORIZONTAL_PRINCIPLES(
         "application.config.project.horizontal.principles",
@@ -528,32 +540,42 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
     ),
     PROJECT_OWNERSHIP(
         "application.config.project.ownership",
-        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY),
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_DURABILITY(
         "application.config.project.durability",
-        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY),
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PROJECT_TRANSFERABILITY(
         "application.config.project.transferability",
-        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY),
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     );
 
     companion object {
-        fun getValidVisibilityStatusSetById(id: String): Set<FieldVisibilityStatus> =
-            values().find { it.id == id }?.validVisibilityStatusSet ?: emptySet()
+        fun getValidVisibilityStatusSetById(id: String, callType: CallType): Set<FieldVisibilityStatus> {
+            val fieldSetting = values().find { it.id == id }
+            return when {
+                (callType == CallType.SPF && fieldSetting != null &&
+                    fieldSetting.validSPFVisibilityStatusSet.isNotEmpty()) -> fieldSetting?.validSPFVisibilityStatusSet
+                else -> fieldSetting?.validStandardVisibilityStatusSet ?: emptySet()
+            }
+        }
 
-        fun getDefaultApplicationFormFieldConfigurations() =
-            values().map {
-
-                val defaultVisibilityStatus =
-                    when {
-                        it.validVisibilityStatusSet.contains(FieldVisibilityStatus.NONE) -> FieldVisibilityStatus.NONE
-                        it.validVisibilityStatusSet.contains(FieldVisibilityStatus.STEP_TWO_ONLY) -> FieldVisibilityStatus.STEP_TWO_ONLY
-                        else -> FieldVisibilityStatus.STEP_ONE_AND_TWO
-                    }
+        fun getDefaultApplicationFormFieldConfigurations(callType: CallType): MutableSet<ApplicationFormFieldConfiguration> {
+            var defaultFormFieldSettings = values()
+            if (callType == CallType.SPF) {
+                defaultFormFieldSettings = values().filter { applicationFormFieldSetting -> !getSpfExcludedFormFieldsSettings().contains(applicationFormFieldSetting.id)  }
+                    .toTypedArray()
+            }
+           return defaultFormFieldSettings.map {
+                val defaultVisibilityStatus = FieldVisibilityStatus.getDefaultFieldVisibilityStatus(callType, it)
                 ApplicationFormFieldConfiguration(it.id, defaultVisibilityStatus)
             }.toMutableSet()
+        }
+
 
         fun getFieldsThatDependsOnBudgetSetting(): Set<String> =
             setOf(
@@ -590,6 +612,41 @@ enum class ApplicationFormFieldSetting(val id: String, val validVisibilityStatus
                 PARTNER_BUDGET_UNIT_COSTS_DESCRIPTION.id,
                 PARTNER_BUDGET_UNIT_COSTS__UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
                 PARTNER_BUDGET_UNIT_COSTS_PRICE_PER_UNIT.id
+            )
+
+        fun getSpfFormFieldsVisibleByDefault(): Set<String> =
+            setOf(
+                PROJECT_COMMUNICATION_APPROACH.id,
+                PROJECT_OWNERSHIP.id,
+                PROJECT_DURABILITY.id,
+                PROJECT_TRANSFERABILITY.id
+            )
+
+        fun getSpfExcludedFormFieldsSettings(): Set<String> =
+            setOf(
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_DESCRIPTION.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_COMMENTS.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_AWARD_PROCEDURE.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_INVESTMENT.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_PRICE_PER_UNIT.id,
+                // investment settings
+                PROJECT_INVESTMENT_TITLE.id,
+                PROJECT_INVESTMENT_PERIOD.id,
+                PROJECT_INVESTMENT_CROSS_BORDER_TRANSNATIONAL_RELEVANCE_OF_INVESTMENT.id,
+                PROJECT_INVESTMENT_WHO_IS_BENEFITING.id,
+                PROJECT_INVESTMENT_PILOT_CLARIFICATION.id,
+                PROJECT_INVESTMENT_COUNTRY.id,
+                PROJECT_INVESTMENT_STREET.id,
+                PROJECT_INVESTMENT_HOUSE_NUMBER.id,
+                PROJECT_INVESTMENT_POSTAL_CODE.id,
+                PROJECT_INVESTMENT_CITY.id,
+                PROJECT_INVESTMENT_RISK.id,
+                PROJECT_INVESTMENT_DOCUMENTATION.id,
+                PROJECT_INVESTMENT_DOCUMENTATION_EXPECTED_IMPACTS.id,
+                PROJECT_INVESTMENT_WHO_OWNS_THE_INVESTMENT_SITE.id,
+                PROJECT_INVESTMENT_OWNERSHIP_AFTER_END_OF_PROJECT.id,
+                PROJECT_INVESTMENT_MAINTENANCE.id
             )
     }
 

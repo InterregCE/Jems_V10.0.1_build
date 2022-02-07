@@ -8,10 +8,13 @@ import {distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {CallDetailDTO} from '@cat/api';
+import {CallPageSideNavConstants} from './call-page-sidenav.constants';
 
 @UntilDestroy()
 @Injectable()
 export class CallPageSidenavService {
+
+  private sideNavConstants = CallPageSideNavConstants;
 
   constructor(private sideNavService: SideNavService,
               private callStore: CallStore,
@@ -37,25 +40,12 @@ export class CallPageSidenavService {
       route: `/app/call/detail/${callId}`,
       scrollToTop: true,
     }];
-    const flatRates = {
-      headline: {i18nKey: 'call.detail.budget.settings'},
-      route: `/app/call/detail/${callId}/budgetSettings`,
-    };
-    const applicationFormConfiguration = {
-      headline: {i18nKey: 'call.detail.application.form.config.title'},
-      route: `/app/call/detail/${callId}/applicationFormConfiguration`,
-    };
-    const preSubmissionCheckSettings = {
-      headline: {i18nKey: 'call.detail.pre.submission.check.config.title'},
-      route: `/app/call/detail/${callId}/preSubmissionCheckSettings`,
-    };
-
     this.callStore.callIsReadable$
       .pipe(
         take(1),
         tap(callIsReadable => {
           if (callId && callIsReadable) {
-            bulletsArray.push(flatRates, applicationFormConfiguration, preSubmissionCheckSettings);
+            bulletsArray.push(...this.getSideNavHeadlines(call.type, callId));
           }
           this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [
             {
@@ -74,4 +64,20 @@ export class CallPageSidenavService {
   redirectToCallDetail(callId: number, callType: CallDetailDTO.TypeEnum, successMessage?: I18nLabel): void {
     this.routingService.navigate(['/app/call/detail/' + callId], {state: {success: successMessage}});
   }
+
+  private getSideNavHeadlines(callType: CallDetailDTO.TypeEnum, callId: number): HeadlineRoute[] {
+    switch (callType) {
+      case CallDetailDTO.TypeEnum.STANDARD:
+        return [
+          this.sideNavConstants.FLAT_RATES(callId),
+          this.sideNavConstants.APPLICATION_FORM_CONFIGURATION(callId),
+          this.sideNavConstants.PRE_SUBMISSION_CHECK_SETTINGS(callId)
+        ];
+      case CallDetailDTO.TypeEnum.SPF:
+        return [this.sideNavConstants.APPLICATION_FORM_CONFIGURATION(callId)];
+      default:
+        return [];
+    }
+  }
+
 }

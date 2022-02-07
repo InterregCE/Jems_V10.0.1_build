@@ -53,7 +53,7 @@ import {FilterTextInputComponent} from '@common/components/filter/filter-text-in
 import {FilterListInputComponent} from '@common/components/filter/filter-list-input/filter-list-input.component';
 import {FilterDateInputComponent} from '@common/components/filter/filter-date-input/filter-date-input.component';
 import {TextDirective} from '@common/directives/text.directive';
-import {SpecialCallTypeAppenderPipe} from '@common/pipe/special-call-type-appender.pipe';
+import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-by-call-type.pipe';
 
 const modules = [
   CommonModule,
@@ -78,7 +78,7 @@ const declarations = [
   TranslateBySystemLanguagePipe,
   TranslateByInputLanguagePipe,
   TranslateContainerLessInputsBySystemLanguagePipe,
-  SpecialCallTypeAppenderPipe,
+  AdaptTranslationKeyByCallTypePipe,
   MoneyPipe,
   PercentagePipe,
   LocaleDatePipe,

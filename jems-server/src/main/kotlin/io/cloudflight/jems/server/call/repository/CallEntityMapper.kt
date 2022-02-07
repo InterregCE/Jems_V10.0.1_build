@@ -205,8 +205,6 @@ abstract class CallEntityMapper {
     abstract fun map(applicationFormFieldConfigurationEntity: ApplicationFormFieldConfigurationEntity): ApplicationFormFieldConfiguration
 
     abstract fun map(applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>): MutableSet<ApplicationFormFieldConfiguration>
-
-
     fun map(
         call: CallEntity,
         fieldConfiguration: ApplicationFormFieldConfiguration

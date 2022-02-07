@@ -2,12 +2,12 @@
           (discard)="resetForm()">
     <form jemsFormLayout [formGroup]="managementForm">
         <h3>{{'project.application.form.section.part.c.subsection.seven' | translate}}</h3>
-        <p>{{'project.application.form.management.intro' | specialCallTypeAppender | async | translate}}</p>
+        <p>{{'project.application.form.management.intro' | adaptTranslationKeyByCallType | async | translate}}</p>
 
         <ng-container
                 *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT.COORDINATION">
             <h4>{{'project.application.form.management.field.1' | translate}}</h4>
-            <p>{{'project.application.form.management.field.1.intro' | specialCallTypeAppender | async | translate}}</p>
+            <p>{{'project.application.form.management.field.1.intro' | adaptTranslationKeyByCallType | async | translate}}</p>
 
             <jems-multi-language-container>
                 <jems-multi-language-form-field
@@ -37,7 +37,7 @@
         <ng-container
                 *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT.COMMUNICATION_APPROACH">
             <h4>{{'project.application.form.management.field.3' | translate}}</h4>
-            <p>{{'project.application.form.management.field.3.intro' | specialCallTypeAppender | async | translate}}</p>
+            <p>{{'project.application.form.management.field.3.intro' | adaptTranslationKeyByCallType | async | translate}}</p>
             <jems-multi-language-container>
                 <jems-multi-language-form-field
                         type="textarea"

@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallFundRateDTO
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
@@ -11,6 +12,7 @@ import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.UpdateAppli
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
@@ -52,7 +54,7 @@ fun CallDetail.toDto() = CallDetailDTO(
     flatRates = flatRates.toDto(),
     lumpSums = lumpSums.toDto(),
     unitCosts = unitCosts.toDto(),
-    applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDTO(),
+    applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDto(type),
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
 )
 
@@ -72,9 +74,11 @@ fun CallUpdateRequestDTO.toModel() = Call(
     stateAidIds = stateAidIds,
 )
 
+fun CallApplicationFormFieldsConfiguration.toDto() =
+    callDTOMapper.map(this)
 
-fun MutableSet<ApplicationFormFieldConfiguration>.toDTO() =
-    map { callDTOMapper.map(it) }.toMutableSet()
+fun MutableSet<ApplicationFormFieldConfiguration>.toDto(callType: CallType) =
+    map { callDTOMapper.map(it, callType) }.toMutableSet()
 
 fun MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>.toModel() =
     callDTOMapper.mapUpdateRequest(this)
@@ -104,7 +108,6 @@ abstract class CallDTOMapper {
 
     abstract fun map(callFundRateDTO: CallFundRateDTO): CallFundRate
     abstract fun map(callFundRate: CallFundRate): CallFundRateDTO
-
     fun mapUpdateRequest(updateApplicationFormFieldConfigurationDTOs: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>): MutableSet<ApplicationFormFieldConfiguration> =
         updateApplicationFormFieldConfigurationDTOs.map {
             ApplicationFormFieldConfiguration(
@@ -113,15 +116,22 @@ abstract class CallDTOMapper {
             )
         }.toMutableSet()
 
-
-    fun map(applicationFormFieldConfiguration: ApplicationFormFieldConfiguration): ApplicationFormFieldConfigurationDTO =
+    fun map(applicationFormFieldConfiguration: ApplicationFormFieldConfiguration, callType: CallType): ApplicationFormFieldConfigurationDTO =
         ApplicationFormFieldConfigurationDTO(
             applicationFormFieldConfiguration.id,
             visible = applicationFormFieldConfiguration.visibilityStatus != FieldVisibilityStatus.NONE,
-            visibilityLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet()
+            visibilityLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet(callType)
                 .contains(FieldVisibilityStatus.NONE),
             availableInStep = applicationFormFieldConfiguration.visibilityStatus.toDTO(),
-            stepSelectionLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet()
+            stepSelectionLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet(callType)
                 .containsAll(listOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY))
         )
+
+    fun map(callApplicationFormFieldsConfiguration: CallApplicationFormFieldsConfiguration): MutableSet<ApplicationFormFieldConfigurationDTO> {
+        val callType = callApplicationFormFieldsConfiguration.callType
+        return callApplicationFormFieldsConfiguration.applicationFormFieldConfigurations.map { applicationFormFieldConfiguration ->
+            this.map(applicationFormFieldConfiguration, callType)
+        }.toMutableSet()
+    }
+
 }

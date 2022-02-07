@@ -19,6 +19,7 @@ export class ExportPageStore {
 
   exportCategories$: Observable<CategoryNode>;
   selectedCategory$ = new BehaviorSubject<CategoryInfo>({type: ExportCategoryTypeEnum.APPLICATION});
+  projectCallType$ = this.projectStore.projectCallType$;
 
   constructor(private projectStore: ProjectStore,
               private languageStore: LanguageStore,

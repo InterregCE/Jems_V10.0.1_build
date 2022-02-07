@@ -1,6 +1,6 @@
 <jems-project-page-template *ngIf="this.data$ | async as data" [needsCard]="true"
                             titleKey="project.application.partner.reports.title"
-                            [subTitleText]="'common.label.project.partner.role.shortcut.' + data.partner.role | specialCallTypeAppender | async | translate
+                            [subTitleText]="'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
             : {partner: getPartnerTranslationString(data.partner)}"
                             [isVersionedData]="false">
     <ng-container>

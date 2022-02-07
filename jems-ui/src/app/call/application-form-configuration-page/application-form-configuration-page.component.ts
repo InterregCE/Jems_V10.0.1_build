@@ -10,7 +10,7 @@ import {catchError, map, tap} from 'rxjs/operators';
 import {ApplicationFormFieldNode} from './application-form-field-node';
 import {CallPageSidenavService} from '../services/call-page-sidenav.service';
 import AvailableInStepEnum = ApplicationFormFieldConfigurationDTO.AvailableInStepEnum;
-import {ApplicationFormFieldConfigurationDTO} from '@cat/api';
+import {ApplicationFormFieldConfigurationDTO, CallDetailDTO} from '@cat/api';
 import {take} from 'rxjs/internal/operators';
 import {Alert} from '@common/components/forms/alert';
 
@@ -30,6 +30,7 @@ export class ApplicationFormConfigurationPageComponent {
     fieldConfigurations: ApplicationFormFieldNode[];
     callHasTwoSteps: boolean;
     callIsEditable: boolean;
+    callType: CallDetailDTO.TypeEnum;
   }>;
 
   form = this.formBuilder.group({
@@ -45,9 +46,13 @@ export class ApplicationFormConfigurationPageComponent {
               private callSidenavService: CallPageSidenavService) {
     this.formService.init(this.form);
     this.initializeDataSource();
-    this.data$ = combineLatest([this.pageStore.fieldConfigurations$, this.pageStore.callHasTwoSteps$, this.pageStore.callIsEditable$])
-      .pipe(
-        map(([fieldConfigurations, callHasTwoSteps, callIsEditable]) => ({fieldConfigurations, callHasTwoSteps, callIsEditable})),
+    this.data$ = combineLatest([
+      this.pageStore.fieldConfigurations$,
+      this.pageStore.callHasTwoSteps$,
+      this.pageStore.callIsEditable$,
+      this.pageStore.callType$
+    ]).pipe(
+        map(([fieldConfigurations, callHasTwoSteps, callIsEditable, callType]) => ({fieldConfigurations, callHasTwoSteps, callIsEditable, callType})),
         tap(data => this.displayedColumns = data.callHasTwoSteps ? ['name', 'show', 'step'] : ['name', 'show']),
         tap(data => this.resetForm(data.fieldConfigurations))
       );
@@ -133,5 +138,16 @@ export class ApplicationFormConfigurationPageComponent {
   }
   showVisibilitySwitch(group: FormGroup): FormControl {
     return group.get('showVisibilitySwitch') as FormControl;
+  }
+
+  getCallPageTitle(callType: CallDetailDTO.TypeEnum): string {
+    switch (callType) {
+      case CallDetailDTO.TypeEnum.STANDARD:
+        return 'call.detail.application.form.config.title';
+      case CallDetailDTO.TypeEnum.SPF:
+        return 'spf.call.detail.application.form.config.title';
+      default:
+        return '';
+    }
   }
 }

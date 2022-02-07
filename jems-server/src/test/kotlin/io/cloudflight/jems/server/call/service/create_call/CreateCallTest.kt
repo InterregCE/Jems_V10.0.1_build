@@ -82,7 +82,7 @@ class CreateCallTest : UnitTest() {
             ),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             funds = sortedSetOf(callFundRate(FUND_ID)),
-            applicationFormFieldConfigurations = ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(),
+            applicationFormFieldConfigurations = ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(CallType.STANDARD),
             preSubmissionCheckPluginKey = null
         )
     }
@@ -122,7 +122,7 @@ class CreateCallTest : UnitTest() {
         every {
             persistence.saveApplicationFormFieldConfigurations(
                 expectedCallDetail.id,
-                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(expectedCallDetail.type)
             )
         } returns expectedCallDetail
         every {
@@ -141,7 +141,7 @@ class CreateCallTest : UnitTest() {
         verify(exactly = 1) {
             persistence.saveApplicationFormFieldConfigurations(
                 expectedCallDetail.id,
-                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(expectedCallDetail.type)
             )
         }
         with(slotAudit.captured.auditCandidate) {
@@ -209,7 +209,7 @@ class CreateCallTest : UnitTest() {
         every {
             persistence.saveApplicationFormFieldConfigurations(
                 expectedCallDetail.id,
-                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(expectedCallDetail.type)
             )
         } returns expectedCallDetail
         every {
@@ -235,7 +235,7 @@ class CreateCallTest : UnitTest() {
         verify(exactly = 1) {
             persistence.saveApplicationFormFieldConfigurations(
                 expectedCallDetail.id,
-                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(expectedCallDetail.type)
             )
         }
     }

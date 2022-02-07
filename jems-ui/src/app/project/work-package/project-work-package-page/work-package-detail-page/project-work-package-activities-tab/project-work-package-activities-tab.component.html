@@ -97,7 +97,7 @@
                                 <mat-option
                                         *ngFor="let partner of getPartnersWithoutSelected(data.partners, i) | filterPartner: filterPartners.value"
                                         [value]="partner.id">
-                                    {{ 'common.label.project.partner.role.shortcut.' + partner.role | specialCallTypeAppender | async
+                                    {{ 'common.label.project.partner.role.shortcut.' + partner.role | adaptTranslationKeyByCallType | async
                                         | translate: {partner: partner.sortNumber} }} {{partner.abbreviation}}
                                 </mat-option>
                             </mat-autocomplete>
