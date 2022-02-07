@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.controller
 
+import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.plugin.dto.MessageTypeDTO
@@ -26,7 +28,10 @@ import io.cloudflight.jems.plugin.contract.pre_condition_check.models.MessageTyp
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckMessage
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.call.controller.CallDTOMapper
+import io.cloudflight.jems.server.call.controller.toDTO
 import io.cloudflight.jems.server.call.controller.toDto
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -155,8 +160,6 @@ abstract class ProjectMapper {
     @Mapping(source = "totalCosts", target = "totalSum")
     abstract fun map(partnerBudget: PartnerBudget): ProjectPartnerBudgetDTO
 
-    @Mapping(source = "additionalFundAllowed", target = "additionalFundAllowed")
-    abstract fun map(projectCallSettings: ProjectCallSettings): ProjectCallSettingsDTO
     abstract fun mapToLumpSumDTO(programmeLumpSum: List<ProgrammeLumpSum>): List<ProgrammeLumpSumDTO>
 
     @Mapping(source = "oneCostCategory", target = "oneCostCategory")
@@ -168,7 +171,6 @@ abstract class ProjectMapper {
 
     abstract fun map(fileCategoryTypDTO: ProjectFileCategoryTypeDTO): ProjectFileCategoryType
     abstract fun map(fileCategoryDTO: ProjectFileCategoryDTO): ProjectFileCategory
-
 
     fun map(fileMetadata: ProjectFileMetadata): ProjectFileMetadataDTO =
         ProjectFileMetadataDTO(
@@ -187,4 +189,34 @@ abstract class ProjectMapper {
 
     fun map(i18nMessageData: I18nMessageData): I18nMessage =
         I18nMessage(i18nMessageData.i18nKey, i18nMessageData.i18nArguments)
+
+    fun map(projectCallSettings: ProjectCallSettings): ProjectCallSettingsDTO {
+        return ProjectCallSettingsDTO(
+            callId = projectCallSettings.callId,
+            callName = projectCallSettings.callName,
+            callType = projectCallSettings.callType,
+            startDate = projectCallSettings.startDate,
+            endDate = projectCallSettings.endDate,
+            endDateStep1 = projectCallSettings.endDateStep1,
+            lengthOfPeriod = projectCallSettings.lengthOfPeriod,
+            additionalFundAllowed = projectCallSettings.isAdditionalFundAllowed,
+            flatRates = projectCallSettings.flatRates.toDto(),
+            lumpSums = this.mapToLumpSumDTO(projectCallSettings.lumpSums),
+            unitCosts = this.mapToUnitCostDTO(projectCallSettings.unitCosts),
+            stateAids = this.mapToStateAidsDTO(projectCallSettings.stateAids),
+            applicationFormFieldConfigurations = projectCallSettings.applicationFormFieldConfigurations.toDto(projectCallSettings.callType)
+
+        )
+    }
+
+    fun map(applicationFormFieldConfiguration: ApplicationFormFieldConfiguration, callType: CallType): ApplicationFormFieldConfigurationDTO =
+        ApplicationFormFieldConfigurationDTO(
+            applicationFormFieldConfiguration.id,
+            visible = applicationFormFieldConfiguration.visibilityStatus != FieldVisibilityStatus.NONE,
+            visibilityLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet(callType)
+                .contains(FieldVisibilityStatus.NONE),
+            availableInStep = applicationFormFieldConfiguration.visibilityStatus.toDTO(),
+            stepSelectionLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet(callType)
+                .containsAll(listOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY))
+        )
 }

@@ -6,7 +6,7 @@
         <ng-container
                 *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS.OWNERSHIP">
             <h4>{{'project.application.form.future.plans.field.1' | translate}}</h4>
-            <p>{{'project.application.form.future.plans.field.1.intro' | specialCallTypeAppender | async | translate}}</p>
+            <p>{{'project.application.form.future.plans.field.1.intro' | adaptTranslationKeyByCallType | async | translate}}</p>
             <jems-multi-language-container>
                 <jems-multi-language-form-field
                         type="textarea"

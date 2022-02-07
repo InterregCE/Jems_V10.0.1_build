@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.call.repository
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
@@ -14,6 +16,7 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrate
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.callFundRateEntity
+import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.createCallDetailModel
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
@@ -63,7 +66,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
-import java.util.Optional
+import java.util.*
 
 @ExtendWith(MockKExtension::class)
 internal class CallPersistenceProviderTest {
@@ -119,8 +122,8 @@ internal class CallPersistenceProviderTest {
             schemeNumber = ""
         )
 
-        private fun callEntity(id: Long): CallEntity {
-            val call = createTestCallEntity(id)
+        private fun callEntity(id: Long, callType: CallType = CallType.STANDARD): CallEntity {
+            val call = createTestCallEntity(id, type = callType)
             fund = callFundRateEntity(call, FUND_ID)
             call.preSubmissionCheckPluginKey = PLUGIN_KEY
             call.prioritySpecificObjectives.clear()
@@ -327,6 +330,22 @@ internal class CallPersistenceProviderTest {
             ApplicationFormFieldConfiguration("fieldId-1", FieldVisibilityStatus.STEP_ONE_AND_TWO),
             ApplicationFormFieldConfiguration("fieldId-2", FieldVisibilityStatus.STEP_ONE_AND_TWO)
         )
+        val expectedConfigs = mutableSetOf(
+            ApplicationFormFieldConfigurationDTO(
+                "fieldId-1",
+                true,
+                StepSelectionOptionDTO.STEP_ONE_AND_TWO,
+                visibilityLocked = true,
+                stepSelectionLocked = true
+            ),
+            ApplicationFormFieldConfigurationDTO(
+                "fieldId-2",
+                true,
+                StepSelectionOptionDTO.STEP_ONE_AND_TWO,
+                visibilityLocked = true,
+                stepSelectionLocked = true
+            )
+        )
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         every { applicationFormFieldConfigurationRepository.saveAll(any<MutableSet<ApplicationFormFieldConfigurationEntity>>()) } returns newConfigs.toEntities(
@@ -336,21 +355,30 @@ internal class CallPersistenceProviderTest {
             persistence.saveApplicationFormFieldConfigurations(
                 CALL_ID,
                 newConfigs
-            ).applicationFormFieldConfigurations
-        ).containsAll(newConfigs)
+            ).applicationFormFieldConfigurations.toDto(CallType.STANDARD)
+        ).containsAll(expectedConfigs)
     }
 
     @Test
     fun `should return set of application form field configurations for the call`() {
+        val callEntity = callEntity(CALL_ID)
         val fieldId = "id"
         val configEntity = ApplicationFormFieldConfigurationEntity(
             ApplicationFormFieldConfigurationId(
                 fieldId, callEntity(CALL_ID)
             ), FieldVisibilityStatus.STEP_ONE_AND_TWO
         )
-        val config = ApplicationFormFieldConfiguration(fieldId, FieldVisibilityStatus.STEP_ONE_AND_TWO)
+        val expectedConfig = ApplicationFormFieldConfigurationDTO(
+            fieldId,
+            true,
+            StepSelectionOptionDTO.STEP_ONE_AND_TWO,
+            visibilityLocked = true,
+            stepSelectionLocked = true
+        )
+        every { callRepo.findById(CALL_ID)} returns Optional.of(callEntity)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(configEntity)
-        assertThat(persistence.getApplicationFormFieldConfigurations(CALL_ID)).containsExactly(config)
+        assertThat(persistence.getApplicationFormFieldConfigurations(CALL_ID).applicationFormFieldConfigurations.toDto(CallType.STANDARD))
+            .containsExactly(expectedConfig)
     }
 
 
@@ -501,7 +529,7 @@ internal class CallPersistenceProviderTest {
 
     @Test
     fun createSPFCall(){
-        val expectedResultEntity = createTestCallEntity(0L, type = CallType.SPF)
+        val expectedResultEntity = callEntity(0L, callType = CallType.SPF)
         expectedResultEntity.translatedValues.clear()
         expectedResultEntity.translatedValues.add(
             CallTranslEntity(
@@ -530,7 +558,6 @@ internal class CallPersistenceProviderTest {
         every { projectCallStateAidRepository.findAllByIdCallId(expectedResultEntity.id) } returns stateAidEntities(
             expectedResultEntity
         )
-
         val slotCall = slot<CallEntity>()
         every { callRepo.save(capture(slotCall)) } returnsArgument 0
 

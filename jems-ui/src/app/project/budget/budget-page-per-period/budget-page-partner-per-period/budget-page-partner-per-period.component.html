@@ -18,7 +18,7 @@
 
         <ng-container *ngFor="let partnerBudgetPerPeriod of data.partnersBudgetPerPeriod">
             <div>
-                <span> {{ 'common.label.project.partner.role.shortcut.' + partnerBudgetPerPeriod.partner.role | specialCallTypeAppender | async | translate : {partner: partnerBudgetPerPeriod.partner.sortNumber} }}</span>
+                <span> {{ 'common.label.project.partner.role.shortcut.' + partnerBudgetPerPeriod.partner.role | adaptTranslationKeyByCallType | async | translate : {partner: partnerBudgetPerPeriod.partner.sortNumber} }}</span>
                 <span>{{partnerBudgetPerPeriod.partner.country | translate}}</span>
                 <span *ngFor="let periodBudget of partnerBudgetPerPeriod.periodBudgets">{{ periodBudget.totalBudgetPerPeriod | asMoney }}</span>
                 <span>{{partnerBudgetPerPeriod.totalPartnerBudget | asMoney}}</span>

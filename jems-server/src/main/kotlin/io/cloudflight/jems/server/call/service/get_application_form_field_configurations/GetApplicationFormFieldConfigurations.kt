@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.service.get_application_form_field_configurations
 
 import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +12,7 @@ class GetApplicationFormFieldConfigurations(private val persistence: CallPersist
 
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetApplicationFormConfigurationException::class)
-    override fun get(callId: Long): MutableSet<ApplicationFormFieldConfiguration> =
+    override fun get(callId: Long): CallApplicationFormFieldsConfiguration =
         persistence.getApplicationFormFieldConfigurations(callId)
 
 }

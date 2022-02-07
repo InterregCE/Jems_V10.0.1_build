@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.service.create_call
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -35,7 +36,8 @@ class CreateCall(
             userId = securityService.currentUser?.user?.id!!,
         ).also {
             persistence.updateProjectCallStateAids(it.id, call.stateAidIds)
-            persistence.saveApplicationFormFieldConfigurations(it.id, ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations())
+            persistence.saveApplicationFormFieldConfigurations(it.id, ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(it.type))
+            if (call.type == CallType.SPF)  persistence.updateProjectCallPreSubmissionCheckPlugin(it.id, "jems-pre-condition-check-blocked") // ToDo to be removed when implementing MP2-2210
             auditPublisher.publishEvent(callCreated(this, it))
         }
     }

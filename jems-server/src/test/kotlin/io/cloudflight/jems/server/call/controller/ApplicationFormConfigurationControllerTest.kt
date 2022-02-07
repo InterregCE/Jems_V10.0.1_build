@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.call.service.get_application_form_field_config
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
@@ -125,6 +126,11 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
                 visibilityStatus = FieldVisibilityStatus.NONE
             )
         )
+
+        private val callApplicationConfig = CallApplicationFormFieldsConfiguration(
+            callType = CallType.STANDARD,
+            applicationFormFieldConfigurations = configModel
+        )
     }
 
     @MockK
@@ -141,7 +147,7 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
 
     @Test
     fun `get applicationFormFieldConfigurations by id`() {
-        every { getApplicationFormFieldFieldConfigurations.get(ID) } returns configModel
+        every { getApplicationFormFieldFieldConfigurations.get(ID)} returns callApplicationConfig
         assertThat(controller.getByCallId(ID)).isEqualTo(configDTO)
     }
 

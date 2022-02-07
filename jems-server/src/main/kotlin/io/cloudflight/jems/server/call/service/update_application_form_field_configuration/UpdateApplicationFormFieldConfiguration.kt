@@ -31,15 +31,15 @@ class UpdateApplicationFormFieldConfiguration(private val persistence: CallPersi
         applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>,
         callId: Long
     ) {
-
+        val call = persistence.getCallById(callId)
         with(applicationFormFieldConfigurations.filter {
-            !ApplicationFormFieldSetting.getValidVisibilityStatusSetById(it.id).contains(it.visibilityStatus)
+            !ApplicationFormFieldSetting.getValidVisibilityStatusSetById(it.id, call.type).contains(it.visibilityStatus)
         }) {
             if (this.isNotEmpty())
-                throw InvalidFieldStatusException(this)
+                throw InvalidFieldStatusException(this, call.type)
         }
 
-        with(persistence.getCallById(callId)) {
+        with(call) {
             if (this.isPublished() &&
                 applicationFormFieldConfigurations.any {
                     fieldVisibilityHasChangedToNone(it, this) ||
