@@ -102,7 +102,7 @@ export class PrivilegesPageStore {
   }
 
   private partnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
-    return this.projectVersionStore.lastApprovedVersion$
+    return this.projectVersionStore.lastApprovedOrContractedVersion$
       .pipe(
         map(lastApprovedVersion => lastApprovedVersion?.version),
         filter(version => !!version),
@@ -122,9 +122,5 @@ export class PrivilegesPageStore {
           StatusEnum.CONTRACTED
         ].includes(status.status)),
       );
-  }
-
-  private trimEmails(collaborators: any[]):void {
-    collaborators.forEach(collaborator => collaborator?.em);
   }
 }
