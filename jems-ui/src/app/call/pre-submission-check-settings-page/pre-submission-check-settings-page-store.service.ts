@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {CallDetailDTO, PluginInfoDTO} from '@cat/api';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {CallStore} from '../services/call-store.service';
 import {map} from 'rxjs/operators';
 
@@ -16,7 +16,10 @@ export class PreSubmissionCheckSettingsPageStore {
 
   constructor(private pluginStore: PluginStore,
               private callStore: CallStore) {
-    this.preSubmissionCheckPlugins = this.pluginStore.getPluginListByType(TypeEnum.PRESUBMISSIONCHECK);
+    this.preSubmissionCheckPlugins = combineLatest([this.pluginStore.getPluginListByType(TypeEnum.PRESUBMISSIONCHECK), this.callStore.callType$]).pipe(
+      map(([plugins, callType]) => (callType === CallDetailDTO.TypeEnum.SPF) ?
+        plugins.filter(plugin =>  plugin.key === 'jems-pre-condition-check-blocked') : plugins)
+    );
     this.callIsEditable$ = this.callStore.callIsEditable$;
     this.callPreSubmissionCheckPluginKey$ = this.callStore.call$.pipe(
       map(it => it.preSubmissionCheckPluginKey)
@@ -26,5 +29,6 @@ export class PreSubmissionCheckSettingsPageStore {
   save(pluginKey: string): Observable<CallDetailDTO> {
     return this.callStore.savePreSubmissionCheckSettings(pluginKey);
   }
-
 }
+
+

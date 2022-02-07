@@ -44,7 +44,7 @@
                 <mat-label>{{'project.organization.partner' | translate}}</mat-label>
                 <mat-select name="partnerId" formControlName="partnerId" required>
                     <mat-option *ngFor="let partner of data.partners" [value]="partner.id">
-                        {{ 'common.label.project.partner.role.shortcut.' + partner.role | specialCallTypeAppender | async | translate : {partner: partner.sortNumber + ' ' + partner.abbreviation} }}
+                        {{ 'common.label.project.partner.role.shortcut.' + partner.role | adaptTranslationKeyByCallType | async | translate : {partner: partner.sortNumber + ' ' + partner.abbreviation} }}
                     </mat-option>
                 </mat-select>
                 <jems-context-info

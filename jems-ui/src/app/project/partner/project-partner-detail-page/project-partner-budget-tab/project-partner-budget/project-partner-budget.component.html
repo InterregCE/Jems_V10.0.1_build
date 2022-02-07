@@ -1,7 +1,7 @@
 <ng-container *ngIf="data">
     <jems-form (save)="updateBudgets()">
         <form [formGroup]="budgetsForm" jemsFormLayout>
-            <h3>{{'project.partner.budget.header' | specialCallTypeAppender | async | translate}}
+            <h3>{{'project.partner.budget.header' | adaptTranslationKeyByCallType | async | translate}}
                 <jems-context-info infoPosition="right"
                                   infoText="{{'project.partner.budget.info' | translate}}">
                 </jems-context-info>

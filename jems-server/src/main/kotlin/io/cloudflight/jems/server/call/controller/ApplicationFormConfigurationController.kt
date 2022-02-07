@@ -15,7 +15,8 @@ class ApplicationFormConfigurationController(
 ) : ApplicationFormConfigurationApi {
 
     override fun getByCallId(callId: Long): MutableSet<ApplicationFormFieldConfigurationDTO> =
-        getApplicationFormFieldConfigurations.get(callId).toDTO()
+        getApplicationFormFieldConfigurations.get(callId).toDto()
+
 
     override fun update(callId: Long, applicationFormFieldConfigurations: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>): CallDetailDTO =
         updateApplicationFormFieldConfigurations.update(callId, applicationFormFieldConfigurations.toModel()).toDto()

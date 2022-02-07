@@ -5,8 +5,8 @@ import {map} from 'rxjs/operators';
 import {ProjectCallSettingsDTO} from '@cat/api';
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
-@Pipe({name: 'specialCallTypeAppender'})
-export class SpecialCallTypeAppenderPipe implements PipeTransform {
+@Pipe({name: 'adaptTranslationKeyByCallType'})
+export class AdaptTranslationKeyByCallTypePipe implements PipeTransform {
   constructor(private readonly projectStore: ProjectStore) {
   }
 

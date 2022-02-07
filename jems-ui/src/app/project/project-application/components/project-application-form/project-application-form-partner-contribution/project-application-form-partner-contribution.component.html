@@ -27,7 +27,7 @@
         </ng-container>
 
         <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION.ROLE_EXPERIENCE">
-            <p>{{'project.partner.motivation.organization.experience' | specialCallTypeAppender | async | translate}}</p>
+            <p>{{'project.partner.motivation.organization.experience' | adaptTranslationKeyByCallType | async | translate}}</p>
             <jems-multi-language-container>
                 <jems-multi-language-form-field type="textarea"
                                                [label]="'common.textarea.enter.text'"

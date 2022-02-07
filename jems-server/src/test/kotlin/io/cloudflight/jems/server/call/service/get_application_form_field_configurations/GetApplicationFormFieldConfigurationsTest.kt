@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.call.service.get_application_form_field_configurations
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.repository.ApplicationFormConfigurationNotFound
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -24,6 +26,11 @@ class GetApplicationFormFieldConfigurationsTest: UnitTest() {
                 visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
             )
         )
+
+        private val callApplicationFormFieldConfiguration = CallApplicationFormFieldsConfiguration(
+            CallType.STANDARD,
+            applicationFormFieldConfigurations
+        )
     }
 
     @MockK
@@ -34,8 +41,9 @@ class GetApplicationFormFieldConfigurationsTest: UnitTest() {
 
     @Test
     fun `get application form field configurations`() {
-        every { persistence.getApplicationFormFieldConfigurations(CALL_ID) } returns applicationFormFieldConfigurations
-        assertThat(getApplicationFormFieldConfigurations.get(CALL_ID)).isEqualTo(applicationFormFieldConfigurations)
+        every { persistence.getApplicationFormFieldConfigurations(CALL_ID) } returns callApplicationFormFieldConfiguration
+        assertThat(getApplicationFormFieldConfigurations.get(CALL_ID).applicationFormFieldConfigurations)
+            .isEqualTo(applicationFormFieldConfigurations)
     }
 
     @Test

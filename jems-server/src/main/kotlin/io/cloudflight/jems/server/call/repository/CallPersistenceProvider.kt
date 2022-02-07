@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
@@ -233,8 +234,13 @@ class CallPersistenceProvider(
         callRepo.findAll().toIdNamePair()
 
     @Transactional(readOnly = true)
-    override fun getApplicationFormFieldConfigurations(callId: Long): MutableSet<ApplicationFormFieldConfiguration> =
-        applicationFormFieldConfigurationRepository.findAllByCallId(callId).toModel()
+    override fun getApplicationFormFieldConfigurations(callId: Long): CallApplicationFormFieldsConfiguration {
+        val callType = callRepo.findById(callId).orElseThrow { CallNotFound() }.type
+        return CallApplicationFormFieldsConfiguration(
+            callType = callType,
+            applicationFormFieldConfigurations = applicationFormFieldConfigurationRepository.findAllByCallId(callId).toModel()
+        )
+    }
 
     @Transactional
     override fun saveApplicationFormFieldConfigurations(

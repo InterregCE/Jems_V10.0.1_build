@@ -1,16 +1,14 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO, ProjectUserCollaboratorDTO} from '@cat/api';
-import {
-  ProjectApplicationFormSidenavService
-} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO} from '@cat/api';
+import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {catchError, tap} from 'rxjs/operators';
 import {APIError} from '@common/models/APIError';
 import {of} from 'rxjs';
-import { Alert } from '@common/components/forms/alert';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-partner-team-privileges-expansion-panel',

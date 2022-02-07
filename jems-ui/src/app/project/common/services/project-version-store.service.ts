@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
-import {ProjectService, ProjectStatusDTO, ProjectVersionDTO} from '@cat/api';
+import {ProjectService, ProjectVersionDTO} from '@cat/api';
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {RoutingService} from '@common/services/routing.service';

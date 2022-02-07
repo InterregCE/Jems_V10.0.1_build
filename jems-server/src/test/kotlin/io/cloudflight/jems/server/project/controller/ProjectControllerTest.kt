@@ -27,7 +27,7 @@ import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
-import io.cloudflight.jems.server.call.controller.toDTO
+import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -367,7 +367,7 @@ class ProjectControllerTest {
                     emptyList(),
                     emptyList(),
                     emptyList(),
-                    callSettings.applicationFormFieldConfigurations.toDTO()
+                    callSettings.applicationFormFieldConfigurations.toDto(callSettings.callType)
                 ),
                 acronym = project.acronym,
                 title = project.title,

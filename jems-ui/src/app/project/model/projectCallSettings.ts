@@ -1,11 +1,12 @@
 import {ProgrammeLumpSum} from './lump-sums/programmeLumpSum';
 import {ProgrammeUnitCost} from './programmeUnitCost';
 import {CallFlatRateSetting} from './call-flat-rate-setting';
-import {ApplicationFormFieldConfigurationDTO} from '@cat/api';
+import {ApplicationFormFieldConfigurationDTO, ProjectCallSettingsDTO} from '@cat/api';
 
 export class ProjectCallSettings {
   callId: number;
   callName: string;
+  callType: ProjectCallSettingsDTO.CallTypeEnum;
   startDate: Date;
   endDate: Date;
   endDateStep1: Date;
@@ -16,9 +17,10 @@ export class ProjectCallSettings {
   multipleFundsAllowed: boolean;
   applicationFormFieldConfigurations: ApplicationFormFieldConfigurationDTO[];
 
-  constructor(callId: number, callName: string, startDate: Date, endDate: Date, endDateStep1: Date, lengthOfPeriod: number, flatRates: CallFlatRateSetting, lumpSums: ProgrammeLumpSum[], unitCosts: ProgrammeUnitCost[], multipleFundsAllowed: boolean, applicationFormFieldConfigurations: ApplicationFormFieldConfigurationDTO[]) {
+  constructor(callId: number, callName: string, callType: ProjectCallSettingsDTO.CallTypeEnum, startDate: Date, endDate: Date, endDateStep1: Date, lengthOfPeriod: number, flatRates: CallFlatRateSetting, lumpSums: ProgrammeLumpSum[], unitCosts: ProgrammeUnitCost[], multipleFundsAllowed: boolean, applicationFormFieldConfigurations: ApplicationFormFieldConfigurationDTO[]) {
     this.callId = callId;
     this.callName = callName;
+    this.callType = callType;
     this.startDate = startDate;
     this.endDate = endDate;
     this.endDateStep1 = endDateStep1;

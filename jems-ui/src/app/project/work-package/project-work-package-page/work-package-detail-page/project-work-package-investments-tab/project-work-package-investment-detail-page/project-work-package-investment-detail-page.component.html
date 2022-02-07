@@ -41,7 +41,7 @@
 
                 <ng-container
                         *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.JUSTIFICATION.WHY_IS_INVESTMENT_NEEDED">
-                    <p>{{'project.application.form.workpackage.investment.justification.explanation' | specialCallTypeAppender | async | translate}}</p>
+                    <p>{{'project.application.form.workpackage.investment.justification.explanation' | adaptTranslationKeyByCallType | async | translate}}</p>
                     <jems-multi-language-container>
                         <jems-multi-language-form-field
                                 type="textarea"

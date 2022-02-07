@@ -4,7 +4,7 @@ import {finalize, map, tap} from 'rxjs/operators';
 import {ExportPageStore} from '@project/project-application/export/export-page-store';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
-import {ProjectVersionDTO} from '@cat/api';
+import {ProjectCallSettingsDTO, ProjectVersionDTO} from '@cat/api';
 import {DownloadService} from '@common/services/download.service';
 
 @Component({
@@ -27,6 +27,7 @@ export class ExportComponent {
     exportLanguages: string[];
     versions: ProjectVersionDTO[];
     categories: CategoryNode;
+    isSPFProjectCallType: boolean;
   }>;
 
   constructor(private exportPageStore: ExportPageStore, private formBuilder: FormBuilder, private downloadService: DownloadService) {
@@ -37,14 +38,17 @@ export class ExportComponent {
       this.exportPageStore.exportLanguages$,
       this.exportPageStore.projectVersions$,
       this.exportPageStore.exportCategories$,
+      this.exportPageStore.projectCallType$
     ]).pipe(
-      map(([projectId, projectTitle, inputLanguages, exportLanguages, projectVersions, categories]) => ({
+      map(([projectId, projectTitle, inputLanguages, exportLanguages, projectVersions, categories, projectCallType]:
+             [number, string, string[], string[], ProjectVersionDTO[],CategoryNode,ProjectCallSettingsDTO.CallTypeEnum]) => ({
         projectId,
         projectTitle,
         inputLanguages,
         exportLanguages,
         versions: projectVersions,
-        categories
+        categories,
+        isSPFProjectCallType: projectCallType === ProjectCallSettingsDTO.CallTypeEnum.SPF
       })),
       tap((data) => this.resetForm(data.versions))
     );

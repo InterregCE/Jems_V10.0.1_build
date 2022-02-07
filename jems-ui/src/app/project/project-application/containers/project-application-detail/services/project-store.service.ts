@@ -3,7 +3,8 @@ import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs
 import {
   CallService,
   InputProjectData,
-  InvestmentSummaryDTO, ProjectBudgetService,
+  InvestmentSummaryDTO,
+  ProjectBudgetService,
   ProjectCallSettingsDTO,
   ProjectDecisionDTO,
   ProjectDetailDTO,
@@ -17,15 +18,7 @@ import {
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
-import {
-  filter,
-  map,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-  withLatestFrom
-} from 'rxjs/operators';
+import {filter, map, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectCallSettings} from '@project/model/projectCallSettings';
@@ -127,6 +120,7 @@ export class ProjectStore {
     this.projectPeriods$ = this.projectForm$.pipe(
       map(projectForm => projectForm.periods)
     );
+    this.projectCallType$ = this.projectCall$.pipe(map(call => call.callType));
   }
 
   updateProjectData(data: InputProjectData): Observable<ProjectDetailFormDTO> {
@@ -263,6 +257,7 @@ export class ProjectStore {
         map((callSetting: ProjectCallSettingsDTO) => new ProjectCallSettings(
           callSetting.callId,
           callSetting.callName,
+          callSetting.callType,
           callSetting.startDate,
           callSetting.endDate,
           callSetting.endDateStep1,
@@ -382,4 +377,5 @@ export class ProjectStore {
         tap(activities => Log.info('Fetched project activities', activities))
       );
   }
+
 }

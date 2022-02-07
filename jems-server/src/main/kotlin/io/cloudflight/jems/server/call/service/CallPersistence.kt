@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.call.service
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
@@ -34,7 +35,7 @@ interface CallPersistence {
     fun hasAnyCallPublished(): Boolean
     fun isCallPublished(callId: Long): Boolean
 
-    fun getApplicationFormFieldConfigurations(callId: Long): MutableSet<ApplicationFormFieldConfiguration>
+    fun getApplicationFormFieldConfigurations(callId: Long): CallApplicationFormFieldsConfiguration
     fun saveApplicationFormFieldConfigurations(
         callId: Long, applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
     ): CallDetail
