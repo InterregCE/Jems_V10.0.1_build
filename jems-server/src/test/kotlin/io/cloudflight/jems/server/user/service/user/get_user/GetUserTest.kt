@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieveEditUserAssignments
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
@@ -138,7 +140,8 @@ internal class GetUserTest : UnitTest() {
         assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(
             ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView,
             ProjectStatusDecisionRevert, ProjectStatusReturnToApplicant, ProjectStartStepTwo, ProjectFileAssessmentRetrieve,
-            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve, ProjectContractingView, ProjectSetToContracted
+            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve,
+            ProjectContractingView, ProjectSetToContracted, ProjectReportingView, ProjectReportingEdit
         )
         assertThat(toNotHaveSlot.captured).containsExactly(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
 

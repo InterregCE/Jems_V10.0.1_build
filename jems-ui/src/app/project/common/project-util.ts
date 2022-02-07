@@ -25,8 +25,9 @@ export class ProjectUtil {
 
   static isInModifiableStatusAfterApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
     return this.getStatus(statusOrProject) === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING ||
-           this.getStatus(statusOrProject) === ProjectStatusDTO.StatusEnum.INMODIFICATION;
+      this.getStatus(statusOrProject) === ProjectStatusDTO.StatusEnum.INMODIFICATION;
   }
+
   static isInModifiableStatusBeforeApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
     const status = this.getStatus(statusOrProject);
     return status === ProjectStatusDTO.StatusEnum.STEP1DRAFT
@@ -42,6 +43,13 @@ export class ProjectUtil {
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED
       || status === ProjectStatusDTO.StatusEnum.CONTRACTED
+      || status === ProjectStatusDTO.StatusEnum.INMODIFICATION
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
+  }
+
+  static isContractedOrAnyStatusAfterContracted(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+    const status = this.getStatus(statusOrProject);
+    return status === ProjectStatusDTO.StatusEnum.CONTRACTED
       || status === ProjectStatusDTO.StatusEnum.INMODIFICATION
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
   }

@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.partner.create_project_partner
 import io.cloudflight.jems.server.project.service.partner.deactivate_project_partner.DeactivateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.delete_project_partner.DeleteProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.get_project_partner.GetProjectPartnerInteractor
+import io.cloudflight.jems.server.project.service.partner.get_project_partner_reporting.GetProjectPartnerReportingInteractor
 import io.cloudflight.jems.server.project.service.partner.state_aid.get_project_partner_state_aid.GetProjectPartnerStateAidInteractor
 import io.cloudflight.jems.server.project.service.partner.update_project_partner.UpdateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.state_aid.update_project_partner_state_aid.UpdateProjectPartnerStateAidInteractor
