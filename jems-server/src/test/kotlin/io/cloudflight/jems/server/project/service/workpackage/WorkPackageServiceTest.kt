@@ -27,6 +27,8 @@ import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -115,10 +117,10 @@ class WorkPackageServiceTest {
     @MockK
     lateinit var projectRepository: ProjectRepository
 
-    @MockK
+    @RelaxedMockK
     lateinit var projectCollaboratorRepository: UserProjectCollaboratorRepository
 
-    @MockK
+    @RelaxedMockK
     lateinit var partnerCollaboratorRepository: UserPartnerCollaboratorRepository
 
     lateinit var workPackageService: WorkPackageService
@@ -205,6 +207,17 @@ class WorkPackageServiceTest {
         every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
 
         assertDoesNotThrow { workPackageService.deleteWorkPackage(1L, 1) }
+    }
+
+    @Test
+    fun `getting project for work package should fetch collaborators`() {
+        every { workPackageRepository.findById(1) } returns Optional.of(mockWorkPackage)
+
+        workPackageService.getProjectForWorkPackageId(mockWorkPackage.id)
+
+        verify { projectRepository.findById(project.id) }
+        verify { partnerCollaboratorRepository.findAllByProjectId(project.id) }
+        verify { projectCollaboratorRepository.findAllByIdProjectId(project.id) }
     }
 
 }
