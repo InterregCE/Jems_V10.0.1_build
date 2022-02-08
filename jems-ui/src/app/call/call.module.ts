@@ -44,7 +44,6 @@ import { PreSubmissionCheckSettingsPageComponent } from './pre-submission-check-
     RouterModule.forChild(routes)
   ],
   providers: [
-    CallStore,
     ProgrammeEditableStateStore,
     CallNameResolver,
     CallPageSidenavService

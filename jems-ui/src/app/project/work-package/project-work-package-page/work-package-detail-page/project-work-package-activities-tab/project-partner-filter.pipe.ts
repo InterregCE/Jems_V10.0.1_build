@@ -11,7 +11,7 @@ export class ProjectPartnerFilterPipe implements PipeTransform {
 
     return partners.filter(partner =>
       partner.abbreviation.toUpperCase().startsWith(filterText.toUpperCase())
-      || partner.toPartnerNumberString().toUpperCase().startsWith(filterText.toUpperCase())
+      || partner.partnerNumber.toUpperCase().startsWith(filterText.toUpperCase())
     );
   }
 

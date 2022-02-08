@@ -1,5 +1,5 @@
 <jems-main-page-template *ngIf="data$ | async as data" subTitleKey="call.general.settings"
-                        titleKey="{{getCallPageTitle(data.callType)}}">
+                        titleKey="{{'call.detail.title' | adaptTranslationKeyByCallType | async }}">
     <jems-form (discard)="onCancel(data.call)"
               (save)="onSubmit(data.call, data.callType, data.priorityCheckboxes, data.strategies, data.stateAids)">
         <jems-alert [show]="published && data.callIsEditable"

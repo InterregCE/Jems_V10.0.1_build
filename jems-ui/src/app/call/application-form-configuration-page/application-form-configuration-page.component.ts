@@ -139,15 +139,4 @@ export class ApplicationFormConfigurationPageComponent {
   showVisibilitySwitch(group: FormGroup): FormControl {
     return group.get('showVisibilitySwitch') as FormControl;
   }
-
-  getCallPageTitle(callType: CallDetailDTO.TypeEnum): string {
-    switch (callType) {
-      case CallDetailDTO.TypeEnum.STANDARD:
-        return 'call.detail.application.form.config.title';
-      case CallDetailDTO.TypeEnum.SPF:
-        return 'spf.call.detail.application.form.config.title';
-      default:
-        return '';
-    }
-  }
 }

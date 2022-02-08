@@ -246,17 +246,6 @@ export class CallDetailPageComponent {
     return (data.numberOfSelectedStrategies > 0 && !data.callIsEditable) || (data.strategies.length > 0 && data.callIsEditable);
   }
 
-  getCallPageTitle(callType: CallDetailDTO.TypeEnum): string {
-    switch (callType) {
-      case CallDetailDTO.TypeEnum.STANDARD:
-        return 'call.detail.title';
-      case CallDetailDTO.TypeEnum.SPF:
-        return 'spf.call.detail.title';
-      default:
-        return '';
-    }
-  }
-
   private createCall(call: CallUpdateRequestDTO): void {
     this.pageStore.createCall(call)
       .pipe(

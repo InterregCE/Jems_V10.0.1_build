@@ -122,6 +122,10 @@ class PartnerPersistenceProvider(
     override fun countByProjectId(projectId: Long): Long =
         projectPartnerRepository.countByProjectId(projectId)
 
+    @Transactional(readOnly = true)
+    override fun countByProjectIdActive(projectId: Long): Long =
+        projectPartnerRepository.countByProjectIdAndActive(projectId, true)
+
     @Transactional
     override fun changeRoleOfLeadPartnerToPartnerIfItExists(projectId: Long) {
         projectPartnerRepository.findFirstByProjectIdAndRole(projectId, ProjectPartnerRole.LEAD_PARTNER).ifPresent {

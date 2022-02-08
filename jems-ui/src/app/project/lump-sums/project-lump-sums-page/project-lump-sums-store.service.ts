@@ -18,7 +18,6 @@ export class ProjectLumpSumsStore {
   isProjectEditable$ = this.projectStore.projectEditable$;
   partners$ = this.projectPartnerStore.partners$;
   projectPeriods$ = this.projectStore.projectForm$.pipe(map(project => project.periods.map(it => new ProjectPeriod(it.projectId, it.number, it.start, it.end))));
-  projectCallType$ = this.projectStore.projectCallType$;
 
   private updateProjectLumpSumsEvent$ = new BehaviorSubject(null);
 
