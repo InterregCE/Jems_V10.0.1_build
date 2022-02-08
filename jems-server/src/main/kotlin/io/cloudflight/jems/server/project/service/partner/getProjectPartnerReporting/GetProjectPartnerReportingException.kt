@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.partner.get_project_partner_reporting
+package io.cloudflight.jems.server.project.service.partner.getProjectPartnerReporting
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

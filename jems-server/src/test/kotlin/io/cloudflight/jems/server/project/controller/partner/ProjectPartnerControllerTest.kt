@@ -24,7 +24,6 @@ class ProjectPartnerControllerTest {
 
     companion object {
         private const val PARTNER_ID = 478L
-        private const val PROJECT_ID = 1L
 
         private val stateAid = ProjectPartnerStateAid(
             answer1 = true,
