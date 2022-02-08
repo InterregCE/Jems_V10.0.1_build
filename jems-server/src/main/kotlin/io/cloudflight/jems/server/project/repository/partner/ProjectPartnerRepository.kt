@@ -163,6 +163,8 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun countByProjectId(projectId: Long): Long
 
+    fun countByProjectIdAndActive(projectId: Long, active: Boolean): Long
+
     @Query("SELECT e.project.id FROM project_partner e WHERE e.id = :partnerId")
     fun getProjectIdForPartner(partnerId: Long): Long?
 

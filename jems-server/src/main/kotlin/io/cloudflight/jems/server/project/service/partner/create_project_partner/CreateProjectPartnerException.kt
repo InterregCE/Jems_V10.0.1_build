@@ -17,3 +17,8 @@ class MaximumNumberOfPartnersReached(maxAmount: Int) : ApplicationUnprocessableE
     code = "$CREATE_PROJECT_PARTNER_ERROR_CODE_PREFIX-005",
     i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_ERROR_KEY_PREFIX.max.allowed.count.reached", mapOf("maxAmount" to maxAmount.toString())),
 )
+
+class MaximumNumberOfActivePartnersReached(maxAmount: Int) : ApplicationUnprocessableException(
+    code = "$CREATE_PROJECT_PARTNER_ERROR_CODE_PREFIX-006",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_ERROR_KEY_PREFIX.max.allowed.active.count.reached", mapOf("maxAmount" to maxAmount.toString()))
+)
