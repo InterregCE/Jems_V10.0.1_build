@@ -37,8 +37,8 @@ class WorkPackageServiceImpl(
     @Transactional(readOnly = true)
     override fun getProjectForWorkPackageId(id: Long): ProjectApplicantAndStatus =
         getWorkPackageOrThrow(id).project.let {
-            val partnerCollaborators = partnerCollaboratorRepository.findAllByProjectId(id).map { collaborator -> collaborator.id.userId }
-            val collaboratorsByLevel = projectCollaboratorRepository.findAllByIdProjectId(id)
+            val partnerCollaborators = partnerCollaboratorRepository.findAllByProjectId(it.id).map { collaborator -> collaborator.id.userId }
+            val collaboratorsByLevel = projectCollaboratorRepository.findAllByIdProjectId(it.id)
                 .groupBy { collaborator -> collaborator.level }
                 .mapValues { entity -> entity.value.map { collaborator -> collaborator.id.userId }.toSet() }
             return it.toApplicantAndStatus(
