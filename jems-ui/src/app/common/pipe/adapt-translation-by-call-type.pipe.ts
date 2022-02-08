@@ -28,7 +28,6 @@ export class AdaptTranslationKeyByCallTypePipe implements PipeTransform {
   }
 
   private getCallType(): Observable<CallTypeEnum> {
-    // find out if coming from Call or Project
     return of(this.router.url.startsWith(ProjectPaths.PROJECT_DETAIL_PATH))
       .pipe(switchMap(isProjectRoute => {
         return isProjectRoute ? this.projectStore.project$

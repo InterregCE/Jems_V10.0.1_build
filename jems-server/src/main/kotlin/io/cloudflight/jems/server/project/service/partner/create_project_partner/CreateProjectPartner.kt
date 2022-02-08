@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.create_project_partner
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -25,6 +26,9 @@ class CreateProjectPartner(
     @ExceptionWrapper(CreateProjectPartnerException::class)
     override fun create(projectId: Long, projectPartner: ProjectPartner): ProjectPartnerDetail =
         ifProjectPartnerIsValid(projectPartner).run {
+
+            if (isProjectCallNonStandard(projectId) && persistence.countByProjectIdActive(projectId) >= 1)
+                throw MaximumNumberOfActivePartnersReached(1)
 
             if (persistence.countByProjectId(projectId) >= MAX_NUMBER_OF_PROJECT_PARTNERS)
                 throw MaximumNumberOfPartnersReached(MAX_NUMBER_OF_PROJECT_PARTNERS)
@@ -59,4 +63,7 @@ class CreateProjectPartner(
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             projectSummary.status.isModifiableStatusBeforeApproved()
         }
+
+    private fun isProjectCallNonStandard(projectId: Long) =
+        projectPersistence.getProjectCallSettings(projectId).callType != CallType.STANDARD
 }
