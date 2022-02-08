@@ -37,7 +37,10 @@ class CreateCall(
         ).also {
             persistence.updateProjectCallStateAids(it.id, call.stateAidIds)
             persistence.saveApplicationFormFieldConfigurations(it.id, ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(it.type))
-            if (call.type == CallType.SPF)  persistence.updateProjectCallPreSubmissionCheckPlugin(it.id, "jems-pre-condition-check-blocked") // ToDo to be removed when implementing MP2-2210
+            // ToDo to be removed when implementing MP2-2210
+            if (call.type == CallType.SPF) {
+                persistence.updateProjectCallPreSubmissionCheckPlugin(it.id, "jems-pre-condition-check-blocked")
+            }
             auditPublisher.publishEvent(callCreated(this, it))
         }
     }

@@ -27,7 +27,9 @@ annotation class CanRetrieveProjectPartnerSummaries
 
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectPartnerAuthorization.hasPermission('ProjectReportingView', #projectId) || @projectPartnerAuthorization.hasPermission('ProjectReportingEdit', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")
+@PreAuthorize("@projectPartnerAuthorization.hasPermission('ProjectReportingView', #projectId)" +
+    " || @projectPartnerAuthorization.hasPermission('ProjectReportingEdit', #projectId)" +
+    " || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")
 annotation class CanRetrieveProjectPartnerReports
 
 
