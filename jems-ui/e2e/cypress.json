@@ -1,0 +1,12 @@
+{
+  "baseUrl": "http://localhost:8080",
+  "projectId": "JEMS",
+  "watchForFileChanges": false,
+  "retries": {
+    "runMode": 0,
+    "openMode": 0
+  },
+  "env": {
+    "authenticationUrl": "/auth/login"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "admin": {
+    "username": "admin@jems.eu"
+  },
+  "applicationUser": {
+    "username": "application.user@jems.eu"
+  },
+  "programmeUser": {
+    "username": "programme.user@jems.eu"
+  }
+}
