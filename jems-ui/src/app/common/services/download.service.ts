@@ -17,7 +17,7 @@ export class DownloadService {
       take(1),
       tap(response => {
           const binaryData = [response?.body as Blob];
-          const objectUrl = window.URL.createObjectURL(new Blob(binaryData, {type: 'application/pdf'}));
+          const objectUrl = window.URL.createObjectURL(new Blob(binaryData));
           const link = document.createElement('a');
           const contentDispositionHeader = response?.headers.get('content-disposition');
           const indexOfFilenameLabel = contentDispositionHeader?.indexOf('filename=') || -1;
