@@ -21,12 +21,11 @@ class GetPartnerUserCollaborators(
     @ExceptionWrapper(GetPartnerUserCollaboratorsException::class)
     override fun getPartnerCollaborators(projectId: Long): Set<PartnerCollaborator> {
         if (userAuthorization.hasManageProjectPrivilegesPermission(projectId)) {
-            return partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(projectId, emptySet())
+            return partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(projectId)
         }
-        val partnerIds = partnerCollaboratorPersistence.findPartnerIdsByUserAndProject(
+        return partnerCollaboratorPersistence.findPartnersByUserAndProject(
             securityService.getUserIdOrThrow(), projectId
         )
-        return partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(projectId, partnerIds)
     }
 
 }

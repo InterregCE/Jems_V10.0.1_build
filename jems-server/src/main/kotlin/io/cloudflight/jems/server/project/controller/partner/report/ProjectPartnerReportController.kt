@@ -22,6 +22,6 @@ class ProjectPartnerReportController(private val getProjectPartnerReporting: Get
     }
 
     override fun getProjectPartnersForReporting(projectId: Long, sort: Sort, version: String?): List<ProjectPartnerSummaryDTO> =
-        getProjectPartnerReporting.findAllByProjectIdForReporting(projectId, sort, version).toDto()
+        getProjectPartnerReporting.findAllByProjectId(projectId, sort, version).toDto()
 
 }

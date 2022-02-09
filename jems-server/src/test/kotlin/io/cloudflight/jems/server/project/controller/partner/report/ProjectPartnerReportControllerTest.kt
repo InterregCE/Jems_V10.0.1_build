@@ -37,7 +37,7 @@ class ProjectPartnerReportControllerTest {
     @Test
     fun `should return list of project partners used in reporting`() {
         val projectPartnerReports = listOf(projectSummary)
-        every { getProjectPartnerReporting.findAllByProjectIdForReporting(PROJECT_ID, any()) } returns projectPartnerReports
+        every { getProjectPartnerReporting.findAllByProjectId(PROJECT_ID, any()) } returns projectPartnerReports
         assertThat(controller.getProjectPartnersForReporting(PROJECT_ID, Sort.unsorted()).get(0))
             .usingRecursiveComparison()
             .isEqualTo(projectPartnerReports.get(0))
