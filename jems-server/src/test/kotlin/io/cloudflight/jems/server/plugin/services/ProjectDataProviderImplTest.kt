@@ -445,26 +445,6 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             partnerContributions = emptyList(),
             partnerAbbreviation = projectPartner.abbreviation
         )
-        private val budgetCosts = BudgetCosts(
-            staffCosts = listOf(
-                BudgetStaffCostEntry(
-                    id = 3L,
-                    numberOfUnits = BigDecimal.ONE,
-                    rowSum = BigDecimal.TEN,
-                    budgetPeriods = mutableSetOf(BudgetPeriod(number = 1, amount = BigDecimal.ONE)),
-                    pricePerUnit = BigDecimal.TEN,
-                    description = setOf(),
-                    comments = setOf(InputTranslation(SystemLanguage.EN, "comments")),
-                    unitType = setOf(InputTranslation(SystemLanguage.EN, "unitType")),
-                    unitCostId = 4L
-                )
-            ),
-            travelCosts = emptyList(),
-            externalCosts = emptyList(),
-            equipmentCosts = emptyList(),
-            infrastructureCosts = emptyList(),
-            unitCosts = emptyList()
-        )
         private val associatedOrganization = OutputProjectAssociatedOrganizationDetail(
             id = 2L,
             active = true,

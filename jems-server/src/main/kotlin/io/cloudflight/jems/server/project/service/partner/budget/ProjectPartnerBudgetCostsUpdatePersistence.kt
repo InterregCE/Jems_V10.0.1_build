@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetSpfCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
@@ -51,4 +52,12 @@ interface ProjectPartnerBudgetCostsUpdatePersistence {
         partnerId: Long,
         unitCosts: List<BudgetUnitCostEntry>
     ): List<BudgetUnitCostEntry>
+
+    fun createOrUpdateBudgetSpfCosts(
+        projectId: Long,
+        partnerId: Long,
+        spfCosts: List<BudgetSpfCostEntry>
+    ): List<BudgetSpfCostEntry>
+
+    fun deleteAllBudgetSpfCostsExceptFor(partnerId: Long, idsToKeep: Set<Long>)
 }

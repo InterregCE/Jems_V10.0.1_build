@@ -4,9 +4,11 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetPeriodDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetSpfCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionInputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
@@ -21,6 +23,7 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCosts
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
+import io.cloudflight.jems.server.project.service.partner.budget.updateBudgetSpfCosts.UpdateBudgetSpfCosts
 import io.cloudflight.jems.server.project.service.partner.budget.update_budge_staff_costs.UpdateBudgetStaffCosts
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_equipment_costs.UpdateBudgetEquipmentCosts
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_external_expertise_and_services.UpdateBudgetExternalExpertiseAndServicesCosts
@@ -39,6 +42,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -176,6 +180,9 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     lateinit var updateBudgetUnitCosts: UpdateBudgetUnitCosts
 
     @MockK
+    lateinit var updateBudgetSpfCosts: UpdateBudgetSpfCosts
+
+    @MockK
     lateinit var getBudgetTotalCost: GetBudgetTotalCost
 
     @InjectMockKs
@@ -184,7 +191,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
 
     @Test
     fun getBudgetCosts() {
-        val budgetCosts = BudgetCosts(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
+        val budgetCosts = BudgetCosts(emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
         every { getBudgetCosts.getBudgetCosts(PARTNER_ID) } returns budgetCosts
         assertThat(controller.getBudgetCosts(PARTNER_ID)).isEqualTo(budgetCosts.toBudgetCostsDTO())
     }
@@ -297,6 +304,35 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
             )
         } returns unitCosts.toBudgetUnitCostEntryList()
         assertThat(controller.updateBudgetUnitCosts(PARTNER_ID, unitCosts)).isEqualTo(unitCosts)
+    }
+
+    @Test
+    fun updateBudgetSpfCost() {
+        val spfCosts = listOf(
+            BudgetSpfCostEntryDTO(
+                id = 1,
+                numberOfUnits = BigDecimal.ONE,
+                pricePerUnit = BigDecimal.TEN,
+                rowSum = BigDecimal.TEN,
+                budgetPeriods = emptySet(),
+                unitCostId = 1
+            )
+        )
+        every {
+            updateBudgetSpfCosts.updateBudgetSpfCosts(PARTNER_ID, any())
+        } returns spfCosts.toBudgetSpfCostEntryList()
+        assertThat(controller.updateBudgetSpf(PARTNER_ID, spfCosts)).isEqualTo(spfCosts)
+    }
+
+    @Test
+    fun updateBudgetOptions() {
+        val options = ProjectPartnerBudgetOptionsDto(
+            officeAndAdministrationOnStaffCostsFlatRate = 1,
+            travelAndAccommodationOnStaffCostsFlatRate = 1
+        )
+        every { updateBudgetOptions.updateBudgetOptions(PARTNER_ID, options.toProjectPartnerBudgetOptions(PARTNER_ID)) } answers {}
+        controller.updateBudgetOptions(PARTNER_ID, options)
+        verify(exactly = 1) { updateBudgetOptions.updateBudgetOptions(PARTNER_ID, options.toProjectPartnerBudgetOptions(PARTNER_ID)) }
     }
 
     @Test

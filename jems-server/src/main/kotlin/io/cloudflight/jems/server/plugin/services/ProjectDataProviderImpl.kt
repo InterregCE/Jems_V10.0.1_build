@@ -103,6 +103,7 @@ class ProjectDataProviderImpl(
                     version
                 ),
                 unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(partner.id, version),
+                spfCosts = getBudgetCostsPersistence.getBudgetSpfCosts(partner.id, version)
             ).toDataModel()
             val budgetCalculationResult = getBudgetTotalCosts(budgetOptions, partner.id, version).toDataModel()
             val budget = PartnerBudgetData(

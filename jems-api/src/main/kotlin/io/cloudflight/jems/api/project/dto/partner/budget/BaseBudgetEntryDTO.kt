@@ -5,7 +5,12 @@ import java.math.BigDecimal
 
 @ApiModel(
     value = "BaseBudgetEntryDTO",
-    subTypes = [BudgetGeneralCostEntryDTO::class, BudgetStaffCostEntryDTO::class, BudgetTravelAndAccommodationCostEntryDTO::class]
+    subTypes = [
+        BudgetGeneralCostEntryDTO::class,
+        BudgetStaffCostEntryDTO::class,
+        BudgetTravelAndAccommodationCostEntryDTO::class,
+        BudgetSpfCostEntryDTO::class
+    ]
 )
 interface BaseBudgetEntryDTO {
     val id: Long?
