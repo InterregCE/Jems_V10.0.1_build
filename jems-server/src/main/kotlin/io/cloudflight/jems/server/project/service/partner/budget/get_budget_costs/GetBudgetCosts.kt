@@ -18,6 +18,7 @@ class GetBudgetCosts(private val persistence: ProjectPartnerBudgetCostsPersisten
             externalCosts = persistence.getBudgetExternalExpertiseAndServicesCosts(partnerId, version),
             equipmentCosts = persistence.getBudgetEquipmentCosts(partnerId, version),
             infrastructureCosts = persistence.getBudgetInfrastructureAndWorksCosts(partnerId, version),
-            unitCosts = persistence.getBudgetUnitCosts(partnerId, version)
+            unitCosts = persistence.getBudgetUnitCosts(partnerId, version),
+            spfCosts = persistence.getBudgetSpfCosts(partnerId, version)
         )
 }
