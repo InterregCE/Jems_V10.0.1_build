@@ -1,17 +1,15 @@
 package io.cloudflight.jems.server.project.controller.partner.report
 
-import io.cloudflight.jems.server.project.service.partner.get_project_partner_reporting.GetProjectPartnerReportingInteractor
+import io.cloudflight.jems.server.project.service.partner.getProjectPartnerReporting.GetProjectPartnerReportingInteractor
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import org.assertj.core.api.Assertions.anyOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 
 @ExtendWith(MockKExtension::class)

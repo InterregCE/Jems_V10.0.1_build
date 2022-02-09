@@ -7,13 +7,12 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallPageSidenavService} from '../services/call-page-sidenav.service';
-import {catchError, finalize, map, take, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, filter, finalize, map, take, tap, withLatestFrom} from 'rxjs/operators';
 import moment from 'moment';
 import {Alert} from '@common/components/forms/alert';
 import {CallDetailPageStore} from './call-detail-page-store.service';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {filter} from 'rxjs/internal/operators';
 import {CallStateAidDTO} from './call-state-aids/CallStateAidDTO';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 

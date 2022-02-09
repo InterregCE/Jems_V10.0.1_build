@@ -567,7 +567,8 @@ enum class ApplicationFormFieldSetting(
         fun getDefaultApplicationFormFieldConfigurations(callType: CallType): MutableSet<ApplicationFormFieldConfiguration> {
             var defaultFormFieldSettings = values()
             if (callType == CallType.SPF) {
-                defaultFormFieldSettings = values().filter { applicationFormFieldSetting -> !getSpfExcludedFormFieldsSettings().contains(applicationFormFieldSetting.id)  }
+                defaultFormFieldSettings = values()
+                    .filter { applicationFormFieldSetting -> !getSpfExcludedFormFieldsSettings().contains(applicationFormFieldSetting.id)  }
                     .toTypedArray()
             }
            return defaultFormFieldSettings.map {

@@ -1,0 +1,721 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ComplexCondition:CallValidator.kt$CallValidator$call.is2StepProcedureEnabled() &amp;&amp; (call.endDateStep1 == null || call.endDateStep1!!.isBefore(call.startDate) || call.endDateStep1!!.isAfter(call.endDate))</ID>
+    <ID>ComplexCondition:DeleteProjectFile.kt$DeleteProjectFile$fileCategories.isNotEmpty() &amp;&amp; fileCategories.any { it == ProjectFileCategoryType.APPLICATION || it == ProjectFileCategoryType.PARTNER || it == ProjectFileCategoryType.INVESTMENT } &amp;&amp; fileMetadata.uploadedAt.isBefore(project.projectStatus.updated)</ID>
+    <ID>ComplexCondition:PartnerBudgetPerFundCalculator.kt$PartnerBudgetPerFundCalculator$toDivide == BigDecimal.ZERO || divisor == BigDecimal.ZERO || toDivide == BigDecimal(BigInteger("0"), 2) || divisor == BigDecimal(BigInteger("0"), 2)</ID>
+    <ID>ComplexCondition:ProgrammeUnitCostValidation.kt$costPerUnit == null || costPerUnit &lt;= BigDecimal.ZERO || costPerUnit &gt; MAX_COST || costPerUnit.scale() &gt; 2</ID>
+    <ID>ComplexCondition:ProjectAssessmentEntity.kt$ProjectAssessmentEntity$assessmentQuality == null &amp;&amp; assessmentEligibility == null &amp;&amp; eligibilityDecision == null &amp;&amp; preFundingDecision == null &amp;&amp; fundingDecision == null &amp;&amp; modificationDecision == null</ID>
+    <ID>ComplexCondition:ProjectCooperationCriteriaEntity.kt$ProjectCooperationCriteriaEntity$projectJointDevelopment || projectJointImplementation || projectJointStaffing || projectJointFinancing</ID>
+    <ID>ComplexCondition:ProjectFilePersistenceProvider.kt$ProjectFilePersistenceProvider$fileCategory.type == ProjectFileCategoryType.ALL &amp;&amp; projectFileCategoryRepository.existsByProjectFileProjectIdAndProjectFileName(projectId, fileName) || fileCategory.type != ProjectFileCategoryType.ALL &amp;&amp; projectFileCategoryRepository.fileNameExistsInCategory( projectId, fileName, fileCategory.getCategoryTypeString() )</ID>
+    <ID>ComplexCondition:UpdateCall.kt$UpdateCall$startDateChanged || lengthOfPeriodChanged || isAdditionalFundAllowedDisabled || specificObjectivesRemoved || strategiesRemoved || fundsRemoved || stateAidsRemoved</ID>
+    <ID>ComplexCondition:UpdateLumpSum.kt$UpdateLumpSum$existingLumpSum.cost?.compareTo(updatedLumpSum.cost) != 0 || existingLumpSum.splittingAllowed != updatedLumpSum.splittingAllowed || existingLumpSum.phase != updatedLumpSum.phase || existingLumpSum.categories != updatedLumpSum.categories</ID>
+    <ID>ComplexCondition:UploadProjectFile.kt$UploadProjectFile$fileTypeCategory.type == ProjectFileCategoryType.ALL || fileTypeCategory.type == ProjectFileCategoryType.PARTNER &amp;&amp; fileTypeCategory.id == null || fileTypeCategory.type == ProjectFileCategoryType.INVESTMENT &amp;&amp; fileTypeCategory.id == null</ID>
+    <ID>ComplexMethod:ApplicationStateFactory.kt$ApplicationStateFactory$fun getInstance(projectSummary: ProjectSummary)</ID>
+    <ID>ComplexMethod:ApplicationStatus.kt$ApplicationStatus$fun isInStep2()</ID>
+    <ID>ComplexMethod:CallDetail.kt$CallDetail$fun getDiff(old: CallDetail? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
+    <ID>ComplexMethod:ProjectDataModelMapper.kt$PluginDataMapper$fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData</ID>
+    <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, newFinancing: Collection&lt;UpdateProjectPartnerCoFinancing&gt;? = null ): ProjectPartnerEntity</ID>
+    <ID>EmptyClassBlock:ExceptionWrapper.kt$ExceptionWrapper${ }</ID>
+    <ID>EmptyClassBlock:UserProjectPersistenceProviderTest.kt$UserProjectPersistenceProviderTest.Companion${ }</ID>
+    <ID>EmptyDefaultConstructor:CreateLumpSumException.kt$IdHasToBeNull$()</ID>
+    <ID>EmptyDefaultConstructor:CreateLumpSumException.kt$MaxAllowedLumpSumsReached$()</ID>
+    <ID>EmptyDefaultConstructor:SpringConfigProperties.kt$SpringConfigProperties$()</ID>
+    <ID>EmptyDefaultConstructor:UpdateAllowedRealCostsExceptions.kt$CallNotEditableException$()</ID>
+    <ID>EmptyDefaultConstructor:UpdateCallUnitCostsExceptions.kt$UnitCostsRemovedAfterCallPublished$()</ID>
+    <ID>EmptyKtFile:ProjectFileAuthorizationTest.kt$.ProjectFileAuthorizationTest.kt</ID>
+    <ID>EmptyKtFile:ProjectPartnerBudgetMapper.kt$.ProjectPartnerBudgetMapper.kt</ID>
+    <ID>FunctionOnlyReturningConstant:MockedMethodSignature.kt$MockedMethodSignature$@ExceptionWrapper(SampleWrapperException::class) fun methodWithAspectWhichReturnsNormally(): String</ID>
+    <ID>FunctionOnlyReturningConstant:ProgrammeSetupAuthorization.kt$ProgrammeSetupAuthorization$ fun canReadProgrammeSetup()</ID>
+    <ID>LargeClass:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest : UnitTest</ID>
+    <ID>LongParameterList:BudgetCostsCalculator.kt$BudgetCostsCalculator$( officeAndAdministrationOnStaffCostsFlatRate: Int?, officeAndAdministrationOnDirectCostsFlatRate: Int?, finalStaffCosts: BigDecimal, finalTravelCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal )</ID>
+    <ID>LongParameterList:BudgetCostsCalculator.kt$BudgetCostsCalculator$( staffCostsFlatRate: Int, travelAndAccommodationOnStaffCostsFlatRate: Int?, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, travelCosts: BigDecimal )</ID>
+    <ID>LongParameterList:BudgetCostsCalculator.kt$BudgetCostsCalculator$( unitCosts: BigDecimal, lumpSumsCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, finalTravelCosts: BigDecimal, finalStaffCosts: BigDecimal, finalOfficeAndAdministrationCosts: BigDecimal, finalOtherCosts: BigDecimal )</ID>
+    <ID>LongParameterList:BudgetCostsCalculatorService.kt$BudgetCostsCalculatorService$( budgetOptions: ProjectPartnerBudgetOptions?, unitCosts: BigDecimal, lumpSumsCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, travelCosts: BigDecimal, staffCosts: BigDecimal )</ID>
+    <ID>LongParameterList:GetPartnerFundsPerPeriodInteractorTest.kt$GetPartnerFundsPerPeriodInteractorTest$( preparation: BigDecimal, total1: BigDecimal, total2: BigDecimal, total3: BigDecimal, total4: BigDecimal, total5: BigDecimal, total6: BigDecimal, total7: BigDecimal, total8: BigDecimal, total9: BigDecimal, closure: BigDecimal, )</ID>
+    <ID>LongParameterList:GetProjectBudget.kt$GetProjectBudget$( partner: ProjectPartnerSummary, unitCosts: BigDecimal, lumpSumCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal )</ID>
+    <ID>LongParameterList:PartnerBudgetPerPeriodCalculator.kt$PartnerBudgetPerPeriodCalculator$( partners: List&lt;ProjectPartnerSummary&gt;, budgetOptions: List&lt;ProjectPartnerBudgetOptions&gt;, budgetPerPartner: List&lt;ProjectPartnerBudget&gt;, lumpSums: List&lt;ProjectLumpSum&gt;, projectPeriods: List&lt;ProjectPeriod&gt;, partnerTotalBudget: Map&lt;Long, ProjectPartnerTotalBudget&gt; )</ID>
+    <ID>LongParameterList:PartnerBudgetPerPeriodCalculatorService.kt$PartnerBudgetPerPeriodCalculatorService$( partners: List&lt;ProjectPartnerSummary&gt;, budgetOptions: List&lt;ProjectPartnerBudgetOptions&gt;, budgetPerPartner: List&lt;ProjectPartnerBudget&gt;, lumpSums: List&lt;ProjectLumpSum&gt;, projectPeriods: List&lt;ProjectPeriod&gt;, partnerTotalBudget: Map&lt;Long, ProjectPartnerTotalBudget&gt; )</ID>
+    <ID>LongParameterList:ProjectDescriptionMapper.kt$( projectId: Long, projectCoordination: Set&lt;InputTranslation&gt;, projectQualityAssurance: Set&lt;InputTranslation&gt;, projectCommunication: Set&lt;InputTranslation&gt;, projectFinancialManagement: Set&lt;InputTranslation&gt;, projectJointDevelopmentDescription: Set&lt;InputTranslation&gt;, projectJointImplementationDescription: Set&lt;InputTranslation&gt;, projectJointStaffingDescription: Set&lt;InputTranslation&gt;, projectJointFinancingDescription: Set&lt;InputTranslation&gt;, sustainableDevelopmentDescription: Set&lt;InputTranslation&gt;, equalOpportunitiesDescription: Set&lt;InputTranslation&gt;, sexualEqualityDescription: Set&lt;InputTranslation&gt;, )</ID>
+    <ID>LongParameterList:ProjectModelMapper.kt$( project: ProjectEntity, periods: List&lt;ProjectPeriod&gt;, assessmentStep1: ProjectAssessmentEntity, assessmentStep2: ProjectAssessmentEntity, stateAidEntities: MutableSet&lt;ProjectCallStateAidEntity&gt;, applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;, priority: ProgrammePriorityEntity? )</ID>
+    <ID>MatchingDeclarationName:AllowRealCostsEntity.kt$AllowedRealCostsEntity : Serializable</ID>
+    <ID>MatchingDeclarationName:CustomFeignClientsConfiguration.kt$CustomFeignClientConfiguration : FeignClientsConfiguration</ID>
+    <ID>MatchingDeclarationName:DeleteProjecPartnerInteractorTest.kt$DeleteProjectPartnerInteractorTest : UnitTest</ID>
+    <ID>MatchingDeclarationName:GetBudgetTotalCostsInteractor.kt$GetBudgetTotalCostInteractor</ID>
+    <ID>MatchingDeclarationName:UpdatePreSubmissionCheckSettingTest.kt$UpdatePreSubmissionCheckSettingsTest : UnitTest</ID>
+    <ID>MatchingDeclarationName:UpdateProjectpartnerInteractorTest.kt$UpdateProjectPartnerInteractorTest : UnitTest</ID>
+    <ID>MaxLineLength:AddWorkPackageInvestmentTestWorkPackageInvestmentBase.kt$AddWorkPackageInvestmentTestWorkPackageInvestmentBase$fun</ID>
+    <ID>MaxLineLength:ApplicationState.kt$ApplicationState$protected</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$APPROVED_WITH_CONDITIONS -&gt; ApprovedApplicationWithConditionsState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$CONDITIONS_SUBMITTED -&gt; ConditionsSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$ELIGIBLE -&gt; EligibleApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAssessmentPersistence)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$MODIFICATION_PRECONTRACTING -&gt; ModificationPreContractingApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$MODIFICATION_PRECONTRACTING_SUBMITTED -&gt; ModificationPreContractingSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$MODIFICATION_REJECTED -&gt; ModificationRejectedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$MODIFICATION_SUBMITTED -&gt;ModificationSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$RETURNED_TO_APPLICANT -&gt; ReturnedToApplicantApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$RETURNED_TO_APPLICANT_FOR_CONDITIONS -&gt; ReturnedToApplicantForConditionsApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$STEP1_APPROVED_WITH_CONDITIONS -&gt; FirstStepApprovedApplicationWithConditionsState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$STEP1_ELIGIBLE -&gt; FirstStepEligibleApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence, projectAssessmentPersistence)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$STEP1_INELIGIBLE -&gt; FirstStepIneligibleApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)</ID>
+    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$STEP1_NOT_APPROVED -&gt; FirstStepNotApprovedApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)</ID>
+    <ID>MaxLineLength:ApprovedApplicationState.kt$ApprovedApplicationState$ApplicationStatus.APPROVED_WITH_CONDITIONS</ID>
+    <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, any()) } returns ApplicationStatus.APPROVED</ID>
+    <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, any()) } returns ApplicationStatus.NOT_APPROVED</ID>
+    <ID>MaxLineLength:AssignUserToProjectTest.kt$AssignUserToProjectTest$every { userPersistence.findAllByIds(setOf(USER_ADMIN_ID, USER_PROGRAMME_ID, USER_MONITOR_ID_1, USER_MONITOR_ID_2, USER_APPLICANT_ID)) } returns listOf(admin, programmeUser, monitorUser_1, monitorUser_2, applicantUser)</ID>
+    <ID>MaxLineLength:AuditBuilder.kt$AuditBuilder$fun project(project: ProjectDetail)</ID>
+    <ID>MaxLineLength:AuditBuilder.kt$AuditBuilder$fun project(project: ProjectSummary)</ID>
+    <ID>MaxLineLength:BudgetCostCalculatorTest.kt$BudgetCostCalculatorTest$fun</ID>
+    <ID>MaxLineLength:CallDTOMapper.kt$CallDTOMapper$fun</ID>
+    <ID>MaxLineLength:CallEntityMapper.kt$CallEntityMapper$abstract fun map(applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;): MutableSet&lt;ApplicationFormFieldConfiguration&gt;</ID>
+    <ID>MaxLineLength:CallPersistenceProviderTest.kt$CallPersistenceProviderTest$every { programmeSpecificObjectiveRepo.getOne(AdvancedTechnologies) } returns specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }</ID>
+    <ID>MaxLineLength:CommonModelMapper.kt$filter { (if (languageExtractor != null) languageExtractor(it) else it.language) != null }.toHashSet().map { InputTranslation((if (languageExtractor != null) languageExtractor(it) else it.language)!!, extractFunction.invoke(it)) }</ID>
+    <ID>MaxLineLength:CreateOutputIndicator.kt$CreateOutputIndicator$resultIndicatorPersistence.getResultIndicator(outputIndicator.resultIndicatorId).programmeObjectivePolicy != outputIndicator.programmeObjectivePolicy</ID>
+    <ID>MaxLineLength:CreateOutputIndicatorTest.kt$CreateOutputIndicatorTest$fun</ID>
+    <ID>MaxLineLength:ExceptionWrapperAspectTest.kt$ExceptionWrapperAspectTest$fun</ID>
+    <ID>MaxLineLength:GetBudgetTotalCostTest.kt$GetBudgetTotalCostTest$fun</ID>
+    <ID>MaxLineLength:GetPartnerFundsPerPeriod.kt$GetPartnerFundsPerPeriod$val periodFundsWithoutLastPeriod = projectPeriods.filter{ period -&gt; period.number != lastPeriodNumber }.map { getTotalFundPerPeriodForPartners(it.number, fund, partnersBudgetPerPeriod, partnersCoFinancing) }.toMutableList()</ID>
+    <ID>MaxLineLength:GetProjectPartner.kt$GetProjectPartner$return PageImpl(partnerBudgets.map { ProjectBudgetPartnerSummary(partnerSummary = ProjectPartnerSummary(it.partner.id, it.partner.abbreviation, it.partner.active, it.partner.role, it.partner.sortNumber, it.partner.country, it.partner.region), totalBudget = it.totalCosts) }, page, partnerBudgets.size.toLong())</ID>
+    <ID>MaxLineLength:InModificationApplicationStateTest.kt$InModificationApplicationStateTest$every { projectPersistence.getProjectCallSettings(InModificationApplicationStateTest.PROJECT_ID) } returns InModificationApplicationStateTest.projectCallSettings</ID>
+    <ID>MaxLineLength:MinioStorageTest.kt$MinioStorageTest$fun</ID>
+    <ID>MaxLineLength:NotApprovedApplicationState.kt$NotApprovedApplicationState$ApplicationStatus.APPROVED_WITH_CONDITIONS</ID>
+    <ID>MaxLineLength:OutputIndicatorControllerTest.kt$OutputIndicatorControllerTest$fun</ID>
+    <ID>MaxLineLength:OutputIndicatorRepository.kt$OutputIndicatorRepository$fun findAllByProgrammePriorityPolicyEntityProgrammeObjectivePolicyOrderById(programmeObjectivePolicy: ProgrammeObjectivePolicy): Iterable&lt;OutputIndicatorEntity&gt;</ID>
+    <ID>MaxLineLength:PartnerBudgetPerFundCalculator.kt$PartnerBudgetPerFundCalculator$if</ID>
+    <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 1L, name = "con1", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(600), isPartner = true)</ID>
+    <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 2L, name = "con2", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(3), isPartner = true)</ID>
+    <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 3L, name = "con3", status = ProjectPartnerContributionStatusDTO.Private, amount = BigDecimal(580), isPartner = true)</ID>
+    <ID>MaxLineLength:PartnerPersistenceProvider.kt$PartnerPersistenceProvider$)</ID>
+    <ID>MaxLineLength:PartnerPersistenceProviderTest.kt$PartnerPersistenceProviderTest$every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns listOf(projectPartnerEntity(id = 3), projectPartnerEntity(id = 2, role = ProjectPartnerRole.PARTNER))</ID>
+    <ID>MaxLineLength:ProgrammeAuditFactory.kt$.</ID>
+    <ID>MaxLineLength:ProgrammeIndicatorsEntityMapper.kt$name.filter { !it.translation.isNullOrBlank() }.plus(measurementUnit.filter { !it.translation.isNullOrBlank() }).plus(sourceOfData.filter { !it.translation.isNullOrBlank() })</ID>
+    <ID>MaxLineLength:ProjectAuditFactory.kt$ProjectFileCategoryType.INVESTMENT -&gt; "FAILED upload of document $fileName to project application $projectId for Investment ${projectFileCategory.id} by $userId"</ID>
+    <ID>MaxLineLength:ProjectAuditFactory.kt$ProjectFileCategoryType.INVESTMENT -&gt; "document ${projectFileMetaData.name} uploaded to project application ${projectFileMetaData.projectId} for Investment ${projectFileCategory.id} by ${projectFileMetaData.uploadedBy.id}"</ID>
+    <ID>MaxLineLength:ProjectAuditFactory.kt$ProjectFileCategoryType.PARTNER -&gt; "FAILED upload of document $fileName to project application $projectId for Partner ${projectFileCategory.id} by $userId"</ID>
+    <ID>MaxLineLength:ProjectAuditFactory.kt$ProjectFileCategoryType.PARTNER -&gt; "document ${projectFileMetaData.name} uploaded to project application ${projectFileMetaData.projectId} for Partner ${projectFileCategory.id} by ${projectFileMetaData.uploadedBy.id}"</ID>
+    <ID>MaxLineLength:ProjectAuditFactory.kt$description = "description of document ${projectFileMetadata.name} in project application ${projectFileMetadata.projectId} has changed from `$oldValue` to `${projectFileMetadata.description}` by ${projectFileMetadata.uploadedBy.id}"</ID>
+    <ID>MaxLineLength:ProjectAuditFactory.kt$description = "document ${projectFileMetadata.name} deleted from project application ${projectFileMetadata.projectId} by ${projectFileMetadata.uploadedBy.id}"</ID>
+    <ID>MaxLineLength:ProjectAuditFactory.kt$description = "document ${projectFileMetadata.name} downloaded from project application ${projectFileMetadata.projectId} by ${projectFileMetadata.uploadedBy.id}"</ID>
+    <ID>MaxLineLength:ProjectAuditFactory.kt$else -&gt; "document ${projectFileMetaData.name} uploaded to project application ${projectFileMetaData.projectId} by ${projectFileMetaData.uploadedBy.id}"</ID>
+    <ID>MaxLineLength:ProjectAuthorization.kt$CanRetrieveProject$@PreAuthorize("@projectAuthorization.hasPermission('ProjectRetrieve') || @projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")</ID>
+    <ID>MaxLineLength:ProjectAuthorization.kt$CanRetrieveProjectForm$@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")</ID>
+    <ID>MaxLineLength:ProjectAuthorization.kt$CanRetrieveProjectVersion$@PreAuthorize("@projectAuthorization.hasPermission('ProjectRetrieve') || @projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")</ID>
+    <ID>MaxLineLength:ProjectAuthorizationTest.kt$ProjectAuthorizationTest$val user = LocalCurrentUser(userApplicant.copy(assignedProjects = setOf(PROJECT_ID)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectFormUpdate.name)))</ID>
+    <ID>MaxLineLength:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest$partner = ProjectPartnerSummary(projectPartner.id, projectPartner.abbreviation, projectPartner.active, projectPartner.role, projectPartner.sortNumber, projectPartner.addresses.first{it.type == ProjectPartnerAddressType.Organization}.country, projectPartner.addresses.first{it.type == ProjectPartnerAddressType.Organization}.nutsRegion2)</ID>
+    <ID>MaxLineLength:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest$partner = ProjectPartnerSummaryData(projectPartner.id, projectPartner.active, projectPartner.abbreviation,ProjectPartnerRoleData.valueOf(projectPartner.role.name), projectPartner.sortNumber, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2)</ID>
+    <ID>MaxLineLength:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest$val budgetCostsCalculationResult = BudgetCostsCalculationResult(staffCosts = BigDecimal.TEN, totalCosts = BigDecimal.TEN, travelCosts = BigDecimal.ZERO, officeAndAdministrationCosts = BigDecimal.ZERO, otherCosts = BigDecimal.ZERO)</ID>
+    <ID>MaxLineLength:ProjectDescriptionControllerTest.kt$ProjectDescriptionControllerTest$every { updateProjectDescriptionInteractor.updateOverallObjective(1L, projectDescription.projectOverallObjective!!) } returns projectDescription.projectOverallObjective!!</ID>
+    <ID>MaxLineLength:ProjectDescriptionControllerTest.kt$ProjectDescriptionControllerTest$every { updateProjectDescriptionInteractor.updatePartnership(1L, projectDescription.projectPartnership!!) } returns projectDescription.projectPartnership!!</ID>
+    <ID>MaxLineLength:ProjectDescriptionControllerTest.kt$ProjectDescriptionControllerTest$every { updateProjectDescriptionInteractor.updateProjectLongTermPlans(1L, projectDescription.projectLongTermPlans!!) } returns projectDescription.projectLongTermPlans!!</ID>
+    <ID>MaxLineLength:ProjectDescriptionControllerTest.kt$ProjectDescriptionControllerTest$every { updateProjectDescriptionInteractor.updateProjectManagement(1L, projectDescription.projectManagement!!) } returns projectDescription.projectManagement!!</ID>
+    <ID>MaxLineLength:ProjectDescriptionControllerTest.kt$ProjectDescriptionControllerTest$every { updateProjectDescriptionInteractor.updateProjectRelevance(1L, projectDescription.projectRelevance!!) } returns projectDescription.projectRelevance!!</ID>
+    <ID>MaxLineLength:ProjectDescriptionMapper.kt$fun</ID>
+    <ID>MaxLineLength:ProjectDescriptionPersistenceTest.kt$ProjectDescriptionPersistenceTest$persistence = ProjectDescriptionPersistenceProvider(projectVersionUtils, projectOverallObjectiveRepository, projectRelevanceRepository, projectPartnershipRepository, projectManagementRepository, projectLongTermPlansRepository)</ID>
+    <ID>MaxLineLength:ProjectLumpSumPersistenceTest.kt$ProjectLumpSumPersistenceTest$persistence = ProjectLumpSumPersistenceProvider(projectVersionUtils, projectRepository, projectLumpSumRepository, programmeLumpSumRepository, projectPartnerRepository)</ID>
+    <ID>MaxLineLength:ProjectLumpSumRepository.kt$ProjectLumpSumRepository$ LEFT JOIN project_partner_lump_sum FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerLumpSum ON partnerLumpSum.project_id = entity.project_id AND partnerLumpSum.order_nr = entity.order_nr</ID>
+    <ID>MaxLineLength:ProjectPartnerAuthorization.kt$CanRetrieveProjectPartnerSummaries$@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")</ID>
+    <ID>MaxLineLength:ProjectPartnerAuthorizationTest.kt$ProjectPartnerAuthorizationTest$AuthorizationUtil.userApplicant.copy(assignedProjects = setOf(PROJECT_ID))</ID>
+    <ID>MaxLineLength:ProjectPartnerBaseBudgetRepository.kt$ProjectPartnerBaseBudgetRepository$@Query("SELECT new io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetView(e.baseProperties.partnerId, SUM(e.baseProperties.rowSum)) FROM #{#entityName} e WHERE e.baseProperties.partnerId IN :ids GROUP BY e.baseProperties.partnerId")</ID>
+    <ID>MaxLineLength:ProjectPartnerBudgetCostsPersistenceProviderTestBase.kt$ProjectPartnerBudgetCostsPersistenceProviderTestBase$protected</ID>
+    <ID>MaxLineLength:ProjectPartnerLumpSumRepository.kt$ProjectPartnerLumpSumRepository$@Query("SELECT new io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumEntity(e.id.projectPartner, SUM(e.amount)) FROM #{#entityName} e WHERE e.id.projectPartner.id IN :ids GROUP BY e.id.projectPartner")</ID>
+    <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTransl ON entity.id = motivationTransl.partner_id</ID>
+    <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTranslation ON entity.id = motivationTranslation.partner_id</ID>
+    <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN project_partner_budget_equipment FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS equipmentCosts ON equipmentCosts.id = equipmentCostsPeriod.budget_id</ID>
+    <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN project_partner_budget_external FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS externalCosts ON externalCosts.id = externalCostsPeriod.budget_id</ID>
+    <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN project_partner_budget_infrastructure FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS infrastructureCosts ON infrastructureCosts.id = infrastructureCostsPeriod.budget_id</ID>
+    <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN project_partner_budget_staff_cost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS staffCosts ON staffCosts.id = staffCostsPeriod.budget_id</ID>
+    <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN project_partner_budget_travel FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS travelCosts ON travelCosts.id = travelCostsPeriod.budget_id</ID>
+    <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN project_partner_budget_unit_cost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS unitCosts ON unitCosts.id = unitCostsPeriod.budget_id</ID>
+    <ID>MaxLineLength:ProjectPersistenceTest.kt$ProjectPersistenceTest$UserSummary(mockRow.userId, mockRow.email, mockRow.name, mockRow.surname, UserRoleSummary(mockRow.roleId, mockRow.roleName), mockRow.userStatus)</ID>
+    <ID>MaxLineLength:ProjectRepository.kt$ProjectRepository$ LEFT JOIN programme_priority_specific_objective AS programmePrioObj ON entity.programme_priority_policy_objective_policy = programmePrioObj.programme_objective_policy_code</ID>
+    <ID>MaxLineLength:ProjectResultModelMapper.kt$programmeResultMeasurementUnit = groupedRows.value.extractField({ it.programmeResultIndicatorLanguage }) { it.programmeResultIndicatorMeasurementUnit }</ID>
+    <ID>MaxLineLength:ProjectResultRepository.kt$ProjectResultRepository$ LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS projectResultTransl ON entity.project_id = projectResultTransl.project_id AND entity.result_number = projectResultTransl.result_number</ID>
+    <ID>MaxLineLength:ProjectResultRepository.kt$ProjectResultRepository$ LEFT JOIN programme_indicator_result_transl AS programmeResultIndicatorIdentifierTransl ON programmeResultIndicatorIdentifier.id = programmeResultIndicatorIdentifierTransl.source_entity_id</ID>
+    <ID>MaxLineLength:ProjectStatusAuthorizationTest.kt$ProjectStatusAuthorizationTest$val user = LocalCurrentUser(userApplicant.copy(assignedProjects = setOf(PROJECT_ID)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectCheckApplicationForm.name)))</ID>
+    <ID>MaxLineLength:ProjectWorkPackageAuthorization.kt$CanRetrieveProjectWorkPackageInvestmentSummaries$@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")</ID>
+    <ID>MaxLineLength:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest$val user = LocalCurrentUser(userApplicant.copy(assignedProjects = setOf(12L)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectFormRetrieve.name)))</ID>
+    <ID>MaxLineLength:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest$val user = LocalCurrentUser(userApplicant.copy(assignedProjects = setOf(PROJECT_ID)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectFormUpdate.name)))</ID>
+    <ID>MaxLineLength:ProjectWorkflowPersistenceProvider.kt$ProjectWorkflowPersistenceProvider$if</ID>
+    <ID>MaxLineLength:ProjectWorkflowPersistenceTest.kt$ProjectWorkflowPersistenceTest$val userSummary = UserSummary(ProjectPartnerTestUtil.user.id, ProjectPartnerTestUtil.user.email, ProjectPartnerTestUtil.user.name, ProjectPartnerTestUtil.user.surname, UserRoleSummary(1L, "ADMIN"), UserStatus.ACTIVE)</ID>
+    <ID>MaxLineLength:RefuseApplicationInteractorTest.kt$RefuseApplicationInteractorTest$assessmentStep2 = ProjectAssessment(assessmentQuality = ProjectAssessmentQuality(PROJECT_ID, 2, ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING))</ID>
+    <ID>MaxLineLength:RestoreProjectUtils.kt$RestoreProjectUtils$"INSERT INTO ${path.first().childTable} SELECT * FROM ${path.first().childTable} FOR SYSTEM_TIME AS OF '$timestamp' WHERE ${path.first().childColumn} = :$projectIdParam"</ID>
+    <ID>MaxLineLength:RestoreProjectUtils.kt$RestoreProjectUtils$"INSERT INTO ${path.first().childTable} SELECT * FROM ${path.first().childTable} FOR SYSTEM_TIME AS OF '$timestamp' WHERE (${path.first().childColumn}) IN ( "</ID>
+    <ID>MaxLineLength:ResultIndicatorControllerTest.kt$ResultIndicatorControllerTest$fun</ID>
+    <ID>MaxLineLength:ResultIndicatorRepository.kt$ResultIndicatorRepository$fun findAllByProgrammePriorityPolicyEntityProgrammeObjectivePolicyOrderById(programmeObjectivePolicy: ProgrammeObjectivePolicy): Iterable&lt;ResultIndicatorEntity&gt;</ID>
+    <ID>MaxLineLength:SetAssessmentEligibilityInteractorTest.kt$SetAssessmentEligibilityInteractorTest$@EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "RETURNED_TO_APPLICANT", "ELIGIBLE", "INELIGIBLE", "APPROVED", "APPROVED_WITH_CONDITIONS", "NOT_APPROVED"])</ID>
+    <ID>MaxLineLength:SetAssessmentEligibilityInteractorTest.kt$SetAssessmentEligibilityInteractorTest$@EnumSource(value = ApplicationStatus::class, names = ["STEP1_DRAFT", "STEP1_ELIGIBLE", "STEP1_INELIGIBLE", "STEP1_APPROVED", "STEP1_APPROVED_WITH_CONDITIONS", "STEP1_NOT_APPROVED"])</ID>
+    <ID>MaxLineLength:SetAssessmentQualityInteractorTest.kt$SetAssessmentQualityInteractorTest$@EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "RETURNED_TO_APPLICANT", "INELIGIBLE", "APPROVED", "APPROVED_WITH_CONDITIONS", "NOT_APPROVED"])</ID>
+    <ID>MaxLineLength:SetAssessmentQualityInteractorTest.kt$SetAssessmentQualityInteractorTest$@EnumSource(value = ApplicationStatus::class, names = ["STEP1_DRAFT", "STEP1_INELIGIBLE", "STEP1_APPROVED", "STEP1_APPROVED_WITH_CONDITIONS", "STEP1_NOT_APPROVED"])</ID>
+    <ID>MaxLineLength:SetProjectFileDescriptionTest.kt$SetProjectFileDescriptionTest$"description of document $FILE_NAME in project application $PROJECT_ID has changed from `${fileMetadata.description}` to `$newDescription` by $USER_ID"</ID>
+    <ID>MaxLineLength:TranslationFilePersistenceProvider.kt$TranslationFilePersistenceProvider$minioStorage.moveFile(TRANSLATION_FILE_BUCKET_NAME, fileType.getFileNameFor(language), TRANSLATION_FILE_ARCHIVE_BUCKET_NAME, fileType.getFileNameFor(language).plus("_").plus(Timestamp.from(ZonedDateTime.now().toInstant())))</ID>
+    <ID>MaxLineLength:TranslationFilePersistenceProviderTest.kt$TranslationFilePersistenceProviderTest$assertThat(translationFilePersistenceProvider.listTranslationFiles()).containsAll(listOf(fileMetaData.copy(lastModified = fileMetaDataEntity.lastModified)))</ID>
+    <ID>MaxLineLength:UpdateApplicationFormFieldConfigurationsTest.kt$UpdateApplicationFormFieldConfigurationsTest$fun</ID>
+    <ID>MaxLineLength:UpdateBaseBudgetPropertiesOptionsTest.kt$UpdateBaseBudgetPropertiesOptionsTest$fun</ID>
+    <ID>MaxLineLength:UpdateBudgetOptionsValidation.kt$options.officeAndAdministrationOnStaffCostsFlatRate != null || options.officeAndAdministrationOnDirectCostsFlatRate != null || options.travelAndAccommodationOnStaffCostsFlatRate != null || options.staffCostsFlatRate != null</ID>
+    <ID>MaxLineLength:UpdateBudgetTravelAndAccommodationCostsInteractor.kt$UpdateBudgetTravelAndAccommodationCostsInteractor$fun updateBudgetTravelAndAccommodationCosts(partnerId: Long, travelCosts: List&lt;BudgetTravelAndAccommodationCostEntry&gt;): List&lt;BudgetTravelAndAccommodationCostEntry&gt;</ID>
+    <ID>MaxLineLength:UpdateCallLumpSumsTest.kt$UpdateCallLumpSumsTest$every { persistence.updateProjectCallLumpSum(ID, setOf(2, 3)) } returns call.copy(lumpSums = listOf(ProgrammeLumpSum(id = 2, splittingAllowed = true), ProgrammeLumpSum(id = 3, splittingAllowed = true)))</ID>
+    <ID>MaxLineLength:UpdateOutputIndicatorTest.kt$UpdateOutputIndicatorTest$fun</ID>
+    <ID>MaxLineLength:UploadProjectFile.kt$UploadProjectFile$if</ID>
+    <ID>MaxLineLength:UploadTranslationFileTest.kt$UploadTranslationFileTest$fun</ID>
+    <ID>MaxLineLength:UserAuthorization.kt$UserAuthorization$(hasPermission(ProjectCreatorCollaboratorsRetrieve) &amp;&amp; isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithViewLevel()))</ID>
+    <ID>MaxLineLength:UserAuthorization.kt$UserAuthorization$(hasPermission(ProjectCreatorCollaboratorsUpdate) &amp;&amp; isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithManageLevel()))</ID>
+    <ID>MaxLineLength:WorkPackageInvestmentRepository.kt$WorkPackageInvestmentRepository$ LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageInvestmentTransl ON entity.id = workPackageInvestmentTransl.investment_id</ID>
+    <ID>MaxLineLength:WorkPackageMapper.kt$documentationExpectedImpacts = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.investmentDocumentationExpectedImpacts}</ID>
+    <ID>MaxLineLength:WorkPackageMapper.kt$justificationTransactionalRelevance = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.justificationTransactionalRelevance}</ID>
+    <ID>MaxLineLength:WorkPackageMapper.kt$programmeOutputIndicatorMeasurementUnit = groupedRows.value.extractField({ it.programmeOutputIndicatorLanguage }) { it.programmeOutputIndicatorMeasurementUnit }</ID>
+    <ID>MaxLineLength:WorkPackageOutputModelMapper.kt$programmeOutputIndicatorMeasurementUnit = it.programmeOutputIndicatorEntity?.translatedValues?.extractIndicatorField { it.measurementUnit } ?: emptySet()</ID>
+    <ID>MaxLineLength:WorkPackageOutputRepository.kt$WorkPackageOutputRepository$ LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageOutputTransl ON entity.work_package_id = workPackageOutputTransl.work_package_id AND entity.output_number = workPackageOutputTransl.output_number</ID>
+    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_activity_deliverable_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS deliverableTransl ON deliverable.id = deliverableTransl.source_entity_id</ID>
+    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_activity_partner FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS activityPartner ON activity.id = activityPartner.activity_id</ID>
+    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_activity_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS activityTransl ON activity.id = activityTransl.source_entity_id</ID>
+    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_investment_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS investmentTransl ON investment.id = investmentTransl.investment_id</ID>
+    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_output_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS outputTransl ON output.work_package_id = outputTransl.work_package_id AND output.output_number = outputTransl.output_number</ID>
+    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_output_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageOutputTransl ON entity.work_package_id = workPackageOutputTransl.work_package_id AND entity.output_number = workPackageOutputTransl.output_number</ID>
+    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN programme_indicator_output_transl AS programmeOutputIndicatorIdentifierTransl ON programmeOutputIndicatorIdentifier.id = programmeOutputIndicatorIdentifierTransl.source_entity_id</ID>
+    <ID>MayBeConst:ProgrammeFundPersistenceTest.kt$ProgrammeFundPersistenceTest.Companion$private val ID = 1L</ID>
+    <ID>MayBeConst:ProgrammeLegalStatusPersistenceTest.kt$ProgrammeLegalStatusPersistenceTest.Companion$private val ID = 1L</ID>
+    <ID>MayBeConst:ProgrammePriorityPersistenceTest.kt$ProgrammePriorityPersistenceTest.Companion$private val ID = 1L</ID>
+    <ID>MayBeConst:UpdatePriorityInteractorTest.kt$UpdatePriorityInteractorTest.Companion$private val ID = 3L</ID>
+    <ID>MemberNameEqualsClassName:SubmitApplication.kt$SubmitApplication$private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus</ID>
+    <ID>NestedBlockDepth:ExecutePreConditionCheck.kt$ExecutePreConditionCheck$@ExceptionWrapper(ExecutePreConditionCheckException::class) @Transactional(readOnly = true) @CanCheckApplicationForm override fun execute(projectId: Long): PreConditionCheckResult</ID>
+    <ID>PackageNaming:ActivateUser.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
+    <ID>PackageNaming:ActivateUserException.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
+    <ID>PackageNaming:ActivateUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
+    <ID>PackageNaming:AddWorkPackageInvestment.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.add_work_package_investment</ID>
+    <ID>PackageNaming:AddWorkPackageInvestmentInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.add_work_package_investment</ID>
+    <ID>PackageNaming:ApproveApplication.kt$package io.cloudflight.jems.server.project.service.application.approve_application</ID>
+    <ID>PackageNaming:ApproveApplicationExceptions.kt$package io.cloudflight.jems.server.project.service.application.approve_application</ID>
+    <ID>PackageNaming:ApproveApplicationInteractor.kt$package io.cloudflight.jems.server.project.service.application.approve_application</ID>
+    <ID>PackageNaming:ApproveApplicationWithConditions.kt$package io.cloudflight.jems.server.project.service.application.approve_application_with_conditions</ID>
+    <ID>PackageNaming:ApproveApplicationWithConditionsExceptions.kt$package io.cloudflight.jems.server.project.service.application.approve_application_with_conditions</ID>
+    <ID>PackageNaming:ApproveApplicationWithConditionsInteractor.kt$package io.cloudflight.jems.server.project.service.application.approve_application_with_conditions</ID>
+    <ID>PackageNaming:ApproveModification.kt$package io.cloudflight.jems.server.project.service.application.approve_modification</ID>
+    <ID>PackageNaming:ApproveModificationExceptions.kt$package io.cloudflight.jems.server.project.service.application.approve_modification</ID>
+    <ID>PackageNaming:ApproveModificationInteractor.kt$package io.cloudflight.jems.server.project.service.application.approve_modification</ID>
+    <ID>PackageNaming:AssignUserCollaboratorToPartner.kt$package io.cloudflight.jems.server.project.service.partner.assign_user_collaborator_to_partner</ID>
+    <ID>PackageNaming:AssignUserCollaboratorToPartnerEventListeners.kt$package io.cloudflight.jems.server.project.service.partner.assign_user_collaborator_to_partner</ID>
+    <ID>PackageNaming:AssignUserCollaboratorToPartnerException.kt$package io.cloudflight.jems.server.partner.service.partneruser.assign_user_collaborator_to_partner</ID>
+    <ID>PackageNaming:AssignUserCollaboratorToPartnerInteractor.kt$package io.cloudflight.jems.server.project.service.partner.assign_user_collaborator_to_partner</ID>
+    <ID>PackageNaming:AssignUserCollaboratorToProject.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project</ID>
+    <ID>PackageNaming:AssignUserCollaboratorToProjectEventListeners.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project</ID>
+    <ID>PackageNaming:AssignUserCollaboratorToProjectException.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project</ID>
+    <ID>PackageNaming:AssignUserCollaboratorToProjectInteractor.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project</ID>
+    <ID>PackageNaming:AssignUserEventListeners.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
+    <ID>PackageNaming:AssignUserToProject.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
+    <ID>PackageNaming:AssignUserToProjectException.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
+    <ID>PackageNaming:AssignUserToProjectInteractor.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
+    <ID>PackageNaming:AssociatedOrganizationPersistenceProvider.kt$package io.cloudflight.jems.server.project.repository.partner.associated_organization</ID>
+    <ID>PackageNaming:CheckIfProgrammeSetupIsLockedExceptions.kt$package io.cloudflight.jems.server.programme.service.is_programme_setup_locked</ID>
+    <ID>PackageNaming:CoFinancingOverviewCalculator.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview</ID>
+    <ID>PackageNaming:CreateCall.kt$package io.cloudflight.jems.server.call.service.create_call</ID>
+    <ID>PackageNaming:CreateCallExceptions.kt$package io.cloudflight.jems.server.call.service.create_call</ID>
+    <ID>PackageNaming:CreateCallInteractor.kt$package io.cloudflight.jems.server.call.service.create_call</ID>
+    <ID>PackageNaming:CreateLumpSum.kt$package io.cloudflight.jems.server.programme.service.costoption.create_lump_sum</ID>
+    <ID>PackageNaming:CreateLumpSumException.kt$package io.cloudflight.jems.server.programme.service.costoption.create_lump_sum</ID>
+    <ID>PackageNaming:CreateLumpSumInteractor.kt$package io.cloudflight.jems.server.programme.service.costoption.create_lump_sum</ID>
+    <ID>PackageNaming:CreateNewProjectVersion.kt$package io.cloudflight.jems.server.project.service.save_project_version</ID>
+    <ID>PackageNaming:CreateNewProjectVersionInteractor.kt$package io.cloudflight.jems.server.project.service.save_project_version</ID>
+    <ID>PackageNaming:CreateOutputIndicator.kt$package io.cloudflight.jems.server.programme.service.indicator.create_output_indicator</ID>
+    <ID>PackageNaming:CreateOutputIndicatorExceptions.kt$package io.cloudflight.jems.server.programme.service.indicator.create_output_indicator</ID>
+    <ID>PackageNaming:CreateOutputIndicatorInteractor.kt$package io.cloudflight.jems.server.programme.service.indicator.create_output_indicator</ID>
+    <ID>PackageNaming:CreatePriority.kt$package io.cloudflight.jems.server.programme.service.priority.create_priority</ID>
+    <ID>PackageNaming:CreatePriorityInteractor.kt$package io.cloudflight.jems.server.programme.service.priority.create_priority</ID>
+    <ID>PackageNaming:CreateProject.kt$package io.cloudflight.jems.server.project.service.create_project</ID>
+    <ID>PackageNaming:CreateProjectExceptions.kt$package io.cloudflight.jems.server.project.service.create_project</ID>
+    <ID>PackageNaming:CreateProjectInteractor.kt$package io.cloudflight.jems.server.project.service.create_project</ID>
+    <ID>PackageNaming:CreateProjectPartner.kt$package io.cloudflight.jems.server.project.service.partner.create_project_partner</ID>
+    <ID>PackageNaming:CreateProjectPartnerException.kt$package io.cloudflight.jems.server.project.service.partner.create_project_partner</ID>
+    <ID>PackageNaming:CreateProjectPartnerInteractor.kt$package io.cloudflight.jems.server.project.service.partner.create_project_partner</ID>
+    <ID>PackageNaming:CreateResultIndicator.kt$package io.cloudflight.jems.server.programme.service.indicator.create_result_indicator</ID>
+    <ID>PackageNaming:CreateResultIndicatorExceptions.kt$package io.cloudflight.jems.server.programme.service.indicator.create_result_indicator</ID>
+    <ID>PackageNaming:CreateResultIndicatorInteractor.kt$package io.cloudflight.jems.server.programme.service.indicator.create_result_indicator</ID>
+    <ID>PackageNaming:CreateUnitCost.kt$package io.cloudflight.jems.server.programme.service.costoption.create_unit_cost</ID>
+    <ID>PackageNaming:CreateUnitCostInteractor.kt$package io.cloudflight.jems.server.programme.service.costoption.create_unit_cost</ID>
+    <ID>PackageNaming:CreateUser.kt$package io.cloudflight.jems.server.user.service.user.create_user</ID>
+    <ID>PackageNaming:CreateUserExceptions.kt$package io.cloudflight.jems.server.user.service.user.create_user</ID>
+    <ID>PackageNaming:CreateUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.create_user</ID>
+    <ID>PackageNaming:CreateUserRole.kt$package io.cloudflight.jems.server.user.service.userrole.create_user_role</ID>
+    <ID>PackageNaming:CreateUserRoleExceptions.kt$package io.cloudflight.jems.server.user.service.userrole.create_user_role</ID>
+    <ID>PackageNaming:CreateUserRoleInteractor.kt$package io.cloudflight.jems.server.user.service.userrole.create_user_role</ID>
+    <ID>PackageNaming:DeactivateAssociatedOrganization.kt$package io.cloudflight.jems.server.project.service.associatedorganization.deactivate_associated_organization</ID>
+    <ID>PackageNaming:DeactivateAssociatedOrganizationException.kt$package io.cloudflight.jems.server.project.service.associatedorganization.deactivate_associated_organization</ID>
+    <ID>PackageNaming:DeactivateAssociatedOrganizationInteractor.kt$package io.cloudflight.jems.server.project.service.associatedorganization.deactivate_associated_organization</ID>
+    <ID>PackageNaming:DeactivateProjectPartner.kt$package io.cloudflight.jems.server.project.service.partner.deactivate_project_partner</ID>
+    <ID>PackageNaming:DeactivateProjectPartnerException.kt$package io.cloudflight.jems.server.project.service.partner.deactivate_project_partner</ID>
+    <ID>PackageNaming:DeactivateProjectPartnerInteractor.kt$package io.cloudflight.jems.server.project.service.partner.deactivate_project_partner</ID>
+    <ID>PackageNaming:DefaultMailBodyGenerator.kt$package io.cloudflight.jems.server.notification.mail.service.mail_body_generator_service</ID>
+    <ID>PackageNaming:DefaultMailSender.kt$package io.cloudflight.jems.server.notification.mail.service.mail_sender_service</ID>
+    <ID>PackageNaming:DeleteLumpSum.kt$package io.cloudflight.jems.server.programme.service.costoption.delete_lump_sum</ID>
+    <ID>PackageNaming:DeleteLumpSumInteractor.kt$package io.cloudflight.jems.server.programme.service.costoption.delete_lump_sum</ID>
+    <ID>PackageNaming:DeletePriority.kt$package io.cloudflight.jems.server.programme.service.priority.delete_priority</ID>
+    <ID>PackageNaming:DeletePriorityException.kt$package io.cloudflight.jems.server.programme.service.priority.delete_priority</ID>
+    <ID>PackageNaming:DeletePriorityInteractor.kt$package io.cloudflight.jems.server.programme.service.priority.delete_priority</ID>
+    <ID>PackageNaming:DeleteProjectFile.kt$package io.cloudflight.jems.server.project.service.file.delete_project_file</ID>
+    <ID>PackageNaming:DeleteProjectFileException.kt$package io.cloudflight.jems.server.project.service.file.delete_project_file</ID>
+    <ID>PackageNaming:DeleteProjectFileInteractor.kt$package io.cloudflight.jems.server.project.service.file.delete_project_file</ID>
+    <ID>PackageNaming:DeleteProjectPartner.kt$package io.cloudflight.jems.server.project.service.partner.delete_project_partner</ID>
+    <ID>PackageNaming:DeleteProjectPartnerException.kt$package io.cloudflight.jems.server.project.service.partner.delete_project_partner</ID>
+    <ID>PackageNaming:DeleteProjectPartnerInteractor.kt$package io.cloudflight.jems.server.project.service.partner.delete_project_partner</ID>
+    <ID>PackageNaming:DeleteUnitCost.kt$package io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost</ID>
+    <ID>PackageNaming:DeleteUnitCostInteractor.kt$package io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost</ID>
+    <ID>PackageNaming:DeleteWorkPackageInvestment.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.delete_work_package_investment</ID>
+    <ID>PackageNaming:DeleteWorkPackageInvestmentInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.delete_work_package_investment</ID>
+    <ID>PackageNaming:DownloadProjectFile.kt$package io.cloudflight.jems.server.project.service.file.download_project_file</ID>
+    <ID>PackageNaming:DownloadProjectFileExceptions.kt$package io.cloudflight.jems.server.project.service.file.download_project_file</ID>
+    <ID>PackageNaming:DownloadProjectFileInteractor.kt$package io.cloudflight.jems.server.project.service.file.download_project_file</ID>
+    <ID>PackageNaming:DownloadTranslationFile.kt$package io.cloudflight.jems.server.programme.service.translation.download_translation_file</ID>
+    <ID>PackageNaming:DownloadTranslationFileExceptions.kt$package io.cloudflight.jems.server.programme.service.translation.download_translation_file</ID>
+    <ID>PackageNaming:DownloadTranslationFileInteractor.kt$package io.cloudflight.jems.server.programme.service.translation.download_translation_file</ID>
+    <ID>PackageNaming:ExecutePreConditionCheck.kt$package io.cloudflight.jems.server.project.service.application.execute_pre_condition_check</ID>
+    <ID>PackageNaming:ExecutePreConditionCheckExceptions.kt$package io.cloudflight.jems.server.project.service.application.execute_pre_condition_check</ID>
+    <ID>PackageNaming:ExecutePreConditionCheckInteractor.kt$package io.cloudflight.jems.server.project.service.application.execute_pre_condition_check</ID>
+    <ID>PackageNaming:ExportApplicationForm.kt$package io.cloudflight.jems.server.project.service.export.export_application_form</ID>
+    <ID>PackageNaming:ExportApplicationFormExceptions.kt$package io.cloudflight.jems.server.project.service.export.export_application_form</ID>
+    <ID>PackageNaming:ExportApplicationFormInteractor.kt$package io.cloudflight.jems.server.project.service.export.export_application_form</ID>
+    <ID>PackageNaming:ExportBudget.kt$package io.cloudflight.jems.server.project.service.export.export_budget</ID>
+    <ID>PackageNaming:ExportBudgetExceptions.kt$package io.cloudflight.jems.server.project.service.export.export_budget</ID>
+    <ID>PackageNaming:ExportBudgetInteractor.kt$package io.cloudflight.jems.server.project.service.export.export_budget</ID>
+    <ID>PackageNaming:ExportProgrammeData.kt$package io.cloudflight.jems.server.programme.service.export_programme_data</ID>
+    <ID>PackageNaming:ExportProgrammeDataExceptions.kt$package io.cloudflight.jems.server.programme.service.export_programme_data</ID>
+    <ID>PackageNaming:ExportProgrammeDataInteractor.kt$package io.cloudflight.jems.server.programme.service.export_programme_data</ID>
+    <ID>PackageNaming:FirstStepApprovedApplicationState.kt$package io.cloudflight.jems.server.project.service.application.workflow.states.first_step</ID>
+    <ID>PackageNaming:FirstStepApprovedApplicationWithConditionsState.kt$package io.cloudflight.jems.server.project.service.application.workflow.states.first_step</ID>
+    <ID>PackageNaming:FirstStepDraftApplicationState.kt$package io.cloudflight.jems.server.project.service.application.workflow.states.first_step</ID>
+    <ID>PackageNaming:FirstStepEligibleApplicationState.kt$package io.cloudflight.jems.server.project.service.application.workflow.states.first_step</ID>
+    <ID>PackageNaming:FirstStepIneligibleApplicationState.kt$package io.cloudflight.jems.server.project.service.application.workflow.states.first_step</ID>
+    <ID>PackageNaming:FirstStepNotApprovedApplicationState.kt$package io.cloudflight.jems.server.project.service.application.workflow.states.first_step</ID>
+    <ID>PackageNaming:FirstStepSubmittedApplicationState.kt$package io.cloudflight.jems.server.project.service.application.workflow.states.first_step</ID>
+    <ID>PackageNaming:GetActivity.kt$package io.cloudflight.jems.server.project.service.workpackage.activity.get_activity</ID>
+    <ID>PackageNaming:GetActivityInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.activity.get_activity</ID>
+    <ID>PackageNaming:GetAllowedRealCosts.kt$package io.cloudflight.jems.server.call.service.get_allow_real_costs</ID>
+    <ID>PackageNaming:GetAllowedRealCostsExceptions.kt$package io.cloudflight.jems.server.call.service.get_allow_real_costs</ID>
+    <ID>PackageNaming:GetAllowedRealCostsInteractor.kt$package io.cloudflight.jems.server.call.service.get_allow_real_costs</ID>
+    <ID>PackageNaming:GetApplicationFormConfigurationExceptions.kt$package io.cloudflight.jems.server.call.service.get_application_form_field_configurations</ID>
+    <ID>PackageNaming:GetApplicationFormFieldConfigurations.kt$package io.cloudflight.jems.server.call.service.get_application_form_field_configurations</ID>
+    <ID>PackageNaming:GetApplicationFormFieldConfigurationsInteractor.kt$package io.cloudflight.jems.server.call.service.get_application_form_field_configurations</ID>
+    <ID>PackageNaming:GetAssociatedOrganization.kt$package io.cloudflight.jems.server.project.service.associatedorganization.get_associated_organization</ID>
+    <ID>PackageNaming:GetAssociatedOrganizationException.kt$package io.cloudflight.jems.server.project.service.associatedorganization.get_associated_organization</ID>
+    <ID>PackageNaming:GetAssociatedOrganizationInteractor.kt$package io.cloudflight.jems.server.project.service.associatedorganization.get_associated_organization</ID>
+    <ID>PackageNaming:GetAudit.kt$package io.cloudflight.jems.server.audit.service.get_audit</ID>
+    <ID>PackageNaming:GetAuditExceptions.kt$package io.cloudflight.jems.server.audit.service.get_audit</ID>
+    <ID>PackageNaming:GetAuditInteractor.kt$package io.cloudflight.jems.server.audit.service.get_audit</ID>
+    <ID>PackageNaming:GetBudgetCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs</ID>
+    <ID>PackageNaming:GetBudgetCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs</ID>
+    <ID>PackageNaming:GetBudgetOptions.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_options</ID>
+    <ID>PackageNaming:GetBudgetOptionsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_options</ID>
+    <ID>PackageNaming:GetBudgetTotalCost.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost</ID>
+    <ID>PackageNaming:GetBudgetTotalCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost</ID>
+    <ID>PackageNaming:GetCall.kt$package io.cloudflight.jems.server.call.service.get_call</ID>
+    <ID>PackageNaming:GetCallExceptions.kt$package io.cloudflight.jems.server.call.service.get_call</ID>
+    <ID>PackageNaming:GetCallInteractor.kt$package io.cloudflight.jems.server.call.service.get_call</ID>
+    <ID>PackageNaming:GetCoFinancing.kt$package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing</ID>
+    <ID>PackageNaming:GetCoFinancingException.kt$package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing</ID>
+    <ID>PackageNaming:GetCoFinancingInteractor.kt$package io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing</ID>
+    <ID>PackageNaming:GetDefaultUserRole.kt$package io.cloudflight.jems.server.programme.service.userrole.get_role</ID>
+    <ID>PackageNaming:GetDefaultUserRoleInteractor.kt$package io.cloudflight.jems.server.programme.service.userrole.get_role</ID>
+    <ID>PackageNaming:GetFund.kt$package io.cloudflight.jems.server.programme.service.fund.get_fund</ID>
+    <ID>PackageNaming:GetFundInteractor.kt$package io.cloudflight.jems.server.programme.service.fund.get_fund</ID>
+    <ID>PackageNaming:GetLanguages.kt$package io.cloudflight.jems.server.programme.service.language.get_languages</ID>
+    <ID>PackageNaming:GetLanguagesInteractor.kt$package io.cloudflight.jems.server.programme.service.language.get_languages</ID>
+    <ID>PackageNaming:GetLegalStatus.kt$package io.cloudflight.jems.server.programme.service.legalstatus.get_legal_statuses</ID>
+    <ID>PackageNaming:GetLegalStatusInteractor.kt$package io.cloudflight.jems.server.programme.service.legalstatus.get_legal_statuses</ID>
+    <ID>PackageNaming:GetLogoFailed.kt$package io.cloudflight.jems.server.resources.service.get_logos</ID>
+    <ID>PackageNaming:GetLogos.kt$package io.cloudflight.jems.server.resources.service.get_logos</ID>
+    <ID>PackageNaming:GetLogosInteractor.kt$package io.cloudflight.jems.server.resources.service.get_logos</ID>
+    <ID>PackageNaming:GetLumpSum.kt$package io.cloudflight.jems.server.programme.service.costoption.get_lump_sum</ID>
+    <ID>PackageNaming:GetLumpSumInteractor.kt$package io.cloudflight.jems.server.programme.service.costoption.get_lump_sum</ID>
+    <ID>PackageNaming:GetModificationDecision.kt$package io.cloudflight.jems.server.project.service.get_modification_decisions</ID>
+    <ID>PackageNaming:GetModificationDecisionExceptions.kt$package io.cloudflight.jems.server.project.service.get_modification_decisions</ID>
+    <ID>PackageNaming:GetModificationDecisionsInteractor.kt$package io.cloudflight.jems.server.project.service.get_modification_decisions</ID>
+    <ID>PackageNaming:GetMyCollaboratorLevel.kt$package io.cloudflight.jems.server.project.service.projectuser.get_my_collaborator_level</ID>
+    <ID>PackageNaming:GetMyCollaboratorLevelException.kt$package io.cloudflight.jems.server.project.service.projectuser.get_my_collaborator_level</ID>
+    <ID>PackageNaming:GetMyCollaboratorLevelInteractor.kt$package io.cloudflight.jems.server.project.service.projectuser.get_my_collaborator_level</ID>
+    <ID>PackageNaming:GetOutputIndicator.kt$package io.cloudflight.jems.server.programme.service.indicator.get_output_indicator</ID>
+    <ID>PackageNaming:GetOutputIndicatorExceptions.kt$package io.cloudflight.jems.server.programme.service.indicator.get_output_indicator</ID>
+    <ID>PackageNaming:GetOutputIndicatorInteractor.kt$package io.cloudflight.jems.server.programme.service.indicator.get_output_indicator</ID>
+    <ID>PackageNaming:GetPartnerBudgetPerFund.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds</ID>
+    <ID>PackageNaming:GetPartnerBudgetPerFundExceptions.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds</ID>
+    <ID>PackageNaming:GetPartnerBudgetPerFundInteractor.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds</ID>
+    <ID>PackageNaming:GetPartnerBudgetPerPeriod.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period</ID>
+    <ID>PackageNaming:GetPartnerBudgetPerPeriodExceptions.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period</ID>
+    <ID>PackageNaming:GetPartnerBudgetPerPeriodInteractor.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period</ID>
+    <ID>PackageNaming:GetPartnerFundsPerPeriod.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_funds_per_period</ID>
+    <ID>PackageNaming:GetPartnerFundsPerPeriodException.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_funds_per_period</ID>
+    <ID>PackageNaming:GetPartnerFundsPerPeriodInteractor.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_funds_per_period</ID>
+    <ID>PackageNaming:GetPartnerUserCollaborators.kt$package io.cloudflight.jems.server.project.service.partner.get_partner_user_collaborator</ID>
+    <ID>PackageNaming:GetPartnerUserCollaboratorsException.kt$package io.cloudflight.jems.server.project.service.partner.get_partner_user_collaborator</ID>
+    <ID>PackageNaming:GetPartnerUserCollaboratorsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.get_partner_user_collaborator</ID>
+    <ID>PackageNaming:GetPossibleStatusToRevertTo.kt$package io.cloudflight.jems.server.project.service.application.get_possible_status_to_revert_to</ID>
+    <ID>PackageNaming:GetPossibleStatusToRevertToExceptions.kt$package io.cloudflight.jems.server.project.service.application.get_possible_status_to_revert_to</ID>
+    <ID>PackageNaming:GetPossibleStatusToRevertToInteractor.kt$package io.cloudflight.jems.server.project.service.application.get_possible_status_to_revert_to</ID>
+    <ID>PackageNaming:GetPriority.kt$package io.cloudflight.jems.server.programme.service.priority.get_priority</ID>
+    <ID>PackageNaming:GetPriorityInteractor.kt$package io.cloudflight.jems.server.programme.service.priority.get_priority</ID>
+    <ID>PackageNaming:GetProject.kt$package io.cloudflight.jems.server.project.service.get_project</ID>
+    <ID>PackageNaming:GetProjectBudget.kt$package io.cloudflight.jems.server.project.service.budget.get_project_budget</ID>
+    <ID>PackageNaming:GetProjectBudgetCoFinancing.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing</ID>
+    <ID>PackageNaming:GetProjectBudgetCoFinancingInteractor.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing</ID>
+    <ID>PackageNaming:GetProjectBudgetInteractor.kt$package io.cloudflight.jems.server.project.service.budget.get_project_budget</ID>
+    <ID>PackageNaming:GetProjectCoFinancingOverview.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview</ID>
+    <ID>PackageNaming:GetProjectCoFinancingOverviewInteractor.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview</ID>
+    <ID>PackageNaming:GetProjectDescription.kt$package io.cloudflight.jems.server.project.service.get_project_description</ID>
+    <ID>PackageNaming:GetProjectDescriptionInteractor.kt$package io.cloudflight.jems.server.project.service.get_project_description</ID>
+    <ID>PackageNaming:GetProjectInteractor.kt$package io.cloudflight.jems.server.project.service.get_project</ID>
+    <ID>PackageNaming:GetProjectInvestmentSummaries.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries</ID>
+    <ID>PackageNaming:GetProjectInvestmentSummariesInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries</ID>
+    <ID>PackageNaming:GetProjectLumpSums.kt$package io.cloudflight.jems.server.project.service.lumpsum.get_project_lump_sums</ID>
+    <ID>PackageNaming:GetProjectLumpSumsExceptions.kt$package io.cloudflight.jems.server.project.service.lumpsum.get_project_lump_sums</ID>
+    <ID>PackageNaming:GetProjectLumpSumsInteractor.kt$package io.cloudflight.jems.server.project.service.lumpsum.get_project_lump_sums</ID>
+    <ID>PackageNaming:GetProjectLumpSumsPerPartnerExceptions.kt$package io.cloudflight.jems.server.project.service.lumpsum.get_project_lump_sums</ID>
+    <ID>PackageNaming:GetProjectPartner.kt$package io.cloudflight.jems.server.project.service.partner.get_project_partner</ID>
+    <ID>PackageNaming:GetProjectPartnerException.kt$package io.cloudflight.jems.server.project.service.partner.get_project_partner</ID>
+    <ID>PackageNaming:GetProjectPartnerInteractor.kt$package io.cloudflight.jems.server.project.service.partner.get_project_partner</ID>
+    <ID>PackageNaming:GetProjectPartnerStateAid.kt$package io.cloudflight.jems.server.project.service.partner.state_aid.get_project_partner_state_aid</ID>
+    <ID>PackageNaming:GetProjectPartnerStateAidException.kt$package io.cloudflight.jems.server.project.service.partner.state_aid.get_project_partner_state_aid</ID>
+    <ID>PackageNaming:GetProjectPartnerStateAidInteractor.kt$package io.cloudflight.jems.server.project.service.partner.state_aid.get_project_partner_state_aid</ID>
+    <ID>PackageNaming:GetProjectPreviousStatus.kt$package io.cloudflight.jems.server.project.service.get_project_previous_status</ID>
+    <ID>PackageNaming:GetProjectPreviousStatusExceptions.kt$package io.cloudflight.jems.server.project.service.get_project_previous_status</ID>
+    <ID>PackageNaming:GetProjectPreviousStatusInteractor.kt$package io.cloudflight.jems.server.project.service.get_project_previous_status</ID>
+    <ID>PackageNaming:GetProjectResult.kt$package io.cloudflight.jems.server.project.service.result.get_project_result</ID>
+    <ID>PackageNaming:GetProjectResultIndicatorsOverview.kt$package io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview</ID>
+    <ID>PackageNaming:GetProjectResultIndicatorsOverviewExceptions.kt$package io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview</ID>
+    <ID>PackageNaming:GetProjectResultIndicatorsOverviewInteractor.kt$package io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview</ID>
+    <ID>PackageNaming:GetProjectResultInteractor.kt$package io.cloudflight.jems.server.project.service.result.get_project_result</ID>
+    <ID>PackageNaming:GetProjectUnitCosts.kt$package io.cloudflight.jems.server.project.service.unitcost.get_project_unit_costs</ID>
+    <ID>PackageNaming:GetProjectUnitCostsExceptions.kt$package io.cloudflight.jems.server.project.service.unitcost.get_project_unit_costs</ID>
+    <ID>PackageNaming:GetProjectUnitCostsInteractor.kt$package io.cloudflight.jems.server.project.service.unitcost.get_project_unit_costs</ID>
+    <ID>PackageNaming:GetProjectVersions.kt$package io.cloudflight.jems.server.project.service.get_project_versions</ID>
+    <ID>PackageNaming:GetProjectVersionsExceptions.kt$package io.cloudflight.jems.server.project.service.get_project_versions</ID>
+    <ID>PackageNaming:GetProjectVersionsInteractor.kt$package io.cloudflight.jems.server.project.service.get_project_versions</ID>
+    <ID>PackageNaming:GetResultIndicator.kt$package io.cloudflight.jems.server.programme.service.indicator.get_result_indicator</ID>
+    <ID>PackageNaming:GetResultIndicatorExceptions.kt$package io.cloudflight.jems.server.programme.service.indicator.get_result_indicator</ID>
+    <ID>PackageNaming:GetResultIndicatorInteractor.kt$package io.cloudflight.jems.server.programme.service.indicator.get_result_indicator</ID>
+    <ID>PackageNaming:GetStateAid.kt$package io.cloudflight.jems.server.programme.service.stateaid.get_stateaid</ID>
+    <ID>PackageNaming:GetStateAidException.kt$package io.cloudflight.jems.server.programme.service.stateaid.get_stateaid</ID>
+    <ID>PackageNaming:GetStateAidInteractor.kt$package io.cloudflight.jems.server.programme.service.stateaid.get_stateaid</ID>
+    <ID>PackageNaming:GetUnitCost.kt$package io.cloudflight.jems.server.programme.service.costoption.get_unit_cost</ID>
+    <ID>PackageNaming:GetUnitCostInteractor.kt$package io.cloudflight.jems.server.programme.service.costoption.get_unit_cost</ID>
+    <ID>PackageNaming:GetUser.kt$package io.cloudflight.jems.server.user.service.user.get_user</ID>
+    <ID>PackageNaming:GetUserCollaboratorsAssignedToProjects.kt$package io.cloudflight.jems.server.project.service.projectuser.get_user_collaborators_assigned_to_projects</ID>
+    <ID>PackageNaming:GetUserCollaboratorsAssignedToProjectsException.kt$package io.cloudflight.jems.server.project.service.projectuser.get_user_collaborators_assigned_to_projects</ID>
+    <ID>PackageNaming:GetUserCollaboratorsAssignedToProjectsInteractor.kt$package io.cloudflight.jems.server.project.service.projectuser.get_user_collaborators_assigned_to_projects</ID>
+    <ID>PackageNaming:GetUserExceptions.kt$package io.cloudflight.jems.server.user.service.user.get_user</ID>
+    <ID>PackageNaming:GetUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.get_user</ID>
+    <ID>PackageNaming:GetUserRole.kt$package io.cloudflight.jems.server.user.service.userrole.get_user_role</ID>
+    <ID>PackageNaming:GetUserRoleExceptions.kt$package io.cloudflight.jems.server.user.service.userrole.get_user_role</ID>
+    <ID>PackageNaming:GetUserRoleInteractor.kt$package io.cloudflight.jems.server.user.service.userrole.get_user_role</ID>
+    <ID>PackageNaming:GetUsersAssignedToProjects.kt$package io.cloudflight.jems.server.project.service.projectuser.get_users_assigned_to_projects</ID>
+    <ID>PackageNaming:GetUsersAssignedToProjectsException.kt$package io.cloudflight.jems.server.project.service.projectuser.get_users_assigned_to_projects</ID>
+    <ID>PackageNaming:GetUsersAssignedToProjectsInteractor.kt$package io.cloudflight.jems.server.project.service.projectuser.get_users_assigned_to_projects</ID>
+    <ID>PackageNaming:GetWorkPackage.kt$package io.cloudflight.jems.server.project.service.workpackage.get_workpackage</ID>
+    <ID>PackageNaming:GetWorkPackageInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.get_workpackage</ID>
+    <ID>PackageNaming:GetWorkPackageInvestment.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.get_work_package_investment</ID>
+    <ID>PackageNaming:GetWorkPackageInvestmentInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.get_work_package_investment</ID>
+    <ID>PackageNaming:GetWorkPackageInvestments.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.get_work_package_investments</ID>
+    <ID>PackageNaming:GetWorkPackageInvestmentsInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.get_work_package_investments</ID>
+    <ID>PackageNaming:GetWorkPackageOutput.kt$package io.cloudflight.jems.server.project.service.workpackage.output.get_work_package_output</ID>
+    <ID>PackageNaming:GetWorkPackageOutputInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.output.get_work_package_output</ID>
+    <ID>PackageNaming:HandBackToApplicant.kt$package io.cloudflight.jems.server.project.service.application.hand_back_to_applicant</ID>
+    <ID>PackageNaming:HandBackToApplicantExceptions.kt$package io.cloudflight.jems.server.project.service.application.hand_back_to_applicant</ID>
+    <ID>PackageNaming:HandBackToApplicantInteractor.kt$package io.cloudflight.jems.server.project.service.application.hand_back_to_applicant</ID>
+    <ID>PackageNaming:IsProgrammeSetupLocked.kt$package io.cloudflight.jems.server.programme.service.is_programme_setup_locked</ID>
+    <ID>PackageNaming:IsProgrammeSetupLockedInteractor.kt$package io.cloudflight.jems.server.programme.service.is_programme_setup_locked</ID>
+    <ID>PackageNaming:ListCalls.kt$package io.cloudflight.jems.server.call.service.list_calls</ID>
+    <ID>PackageNaming:ListCallsExceptions.kt$package io.cloudflight.jems.server.call.service.list_calls</ID>
+    <ID>PackageNaming:ListCallsInteractor.kt$package io.cloudflight.jems.server.call.service.list_calls</ID>
+    <ID>PackageNaming:ListOutputIndicators.kt$package io.cloudflight.jems.server.programme.service.indicator.list_output_indicators</ID>
+    <ID>PackageNaming:ListOutputIndicatorsExceptions.kt$package io.cloudflight.jems.server.programme.service.indicator.list_output_indicators</ID>
+    <ID>PackageNaming:ListOutputIndicatorsInteractor.kt$package io.cloudflight.jems.server.programme.service.indicator.list_output_indicators</ID>
+    <ID>PackageNaming:ListProjectFileMetadata.kt$package io.cloudflight.jems.server.project.service.file.list_project_file_metadata</ID>
+    <ID>PackageNaming:ListProjectFileMetadataExceptions.kt$package io.cloudflight.jems.server.project.service.file.list_project_file_metadata</ID>
+    <ID>PackageNaming:ListProjectFileMetadataInteractor.kt$package io.cloudflight.jems.server.project.service.file.list_project_file_metadata</ID>
+    <ID>PackageNaming:ListResultIndicators.kt$package io.cloudflight.jems.server.programme.service.indicator.list_result_indicators</ID>
+    <ID>PackageNaming:ListResultIndicatorsExceptions.kt$package io.cloudflight.jems.server.programme.service.indicator.list_result_indicators</ID>
+    <ID>PackageNaming:ListResultIndicatorsInteractor.kt$package io.cloudflight.jems.server.programme.service.indicator.list_result_indicators</ID>
+    <ID>PackageNaming:ListTranslationFileExceptions.kt$package io.cloudflight.jems.server.programme.service.translation.list_translation_files</ID>
+    <ID>PackageNaming:ListTranslationFiles.kt$package io.cloudflight.jems.server.programme.service.translation.list_translation_files</ID>
+    <ID>PackageNaming:ListTranslationFilesInteractor.kt$package io.cloudflight.jems.server.programme.service.translation.list_translation_files</ID>
+    <ID>PackageNaming:MailBodyGeneratorService.kt$package io.cloudflight.jems.server.notification.mail.service.mail_body_generator_service</ID>
+    <ID>PackageNaming:MailNotSentEventListeners.kt$package io.cloudflight.jems.server.notification.mail.service.mail_sender_service</ID>
+    <ID>PackageNaming:MailSenderService.kt$package io.cloudflight.jems.server.notification.mail.service.mail_sender_service</ID>
+    <ID>PackageNaming:MailSentEventListeners.kt$package io.cloudflight.jems.server.notification.mail.service.mail_sender_service</ID>
+    <ID>PackageNaming:PartnerBudgetPerPeriodCalculator.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period</ID>
+    <ID>PackageNaming:PartnerBudgetPerPeriodCalculatorService.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period</ID>
+    <ID>PackageNaming:PartnerStateAidRow.kt$package io.cloudflight.jems.server.project.entity.partner.state_aid</ID>
+    <ID>PackageNaming:PreSubmissionCheckBlocked.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
+    <ID>PackageNaming:PreSubmissionCheckOff.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
+    <ID>PackageNaming:ProjectAssociatedOrganizationMapper.kt$package io.cloudflight.jems.server.project.repository.partner.associated_organization</ID>
+    <ID>PackageNaming:ProjectAssociatedOrganizationRepository.kt$package io.cloudflight.jems.server.project.repository.partner.associated_organization</ID>
+    <ID>PackageNaming:ProjectPartnerBudgetStaffCostEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost</ID>
+    <ID>PackageNaming:ProjectPartnerBudgetStaffCostPeriodEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost</ID>
+    <ID>PackageNaming:ProjectPartnerBudgetStaffCostRow.kt$package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost</ID>
+    <ID>PackageNaming:ProjectPartnerBudgetStaffCostTranslEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost</ID>
+    <ID>PackageNaming:ProjectPartnerBudgetUnitCostEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.unit_cost</ID>
+    <ID>PackageNaming:ProjectPartnerBudgetUnitCostPeriodEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.unit_cost</ID>
+    <ID>PackageNaming:ProjectPartnerBudgetUnitCostRow.kt$package io.cloudflight.jems.server.project.entity.partner.budget.unit_cost</ID>
+    <ID>PackageNaming:ProjectPartnerFundsPerPeriod.kt$package io.cloudflight.jems.server.project.service.model.project_funds_per_period</ID>
+    <ID>PackageNaming:ProjectPartnerStateAidActivityEntity.kt$package io.cloudflight.jems.server.project.entity.partner.state_aid</ID>
+    <ID>PackageNaming:ProjectPartnerStateAidActivityId.kt$package io.cloudflight.jems.server.project.entity.partner.state_aid</ID>
+    <ID>PackageNaming:ProjectPartnerStateAidEntity.kt$package io.cloudflight.jems.server.project.entity.partner.state_aid</ID>
+    <ID>PackageNaming:ProjectPartnerStateAidTranslEntity.kt$package io.cloudflight.jems.server.project.entity.partner.state_aid</ID>
+    <ID>PackageNaming:ProjectPeriodFund.kt$package io.cloudflight.jems.server.project.service.model.project_funds_per_period</ID>
+    <ID>PackageNaming:ProjectUnitCostRow.kt$package io.cloudflight.jems.server.project.entity.partner.budget.unit_cost</ID>
+    <ID>PackageNaming:PublishCall.kt$package io.cloudflight.jems.server.call.service.publish_call</ID>
+    <ID>PackageNaming:PublishCallExceptions.kt$package io.cloudflight.jems.server.call.service.publish_call</ID>
+    <ID>PackageNaming:PublishCallInteractor.kt$package io.cloudflight.jems.server.call.service.publish_call</ID>
+    <ID>PackageNaming:RefuseApplication.kt$package io.cloudflight.jems.server.project.service.application.refuse_application</ID>
+    <ID>PackageNaming:RefuseApplicationExceptions.kt$package io.cloudflight.jems.server.project.service.application.refuse_application</ID>
+    <ID>PackageNaming:RefuseApplicationInteractor.kt$package io.cloudflight.jems.server.project.service.application.refuse_application</ID>
+    <ID>PackageNaming:RegisterUser.kt$package io.cloudflight.jems.server.user.service.user.register_user</ID>
+    <ID>PackageNaming:RegisterUserExceptions.kt$package io.cloudflight.jems.server.user.service.user.register_user</ID>
+    <ID>PackageNaming:RegisterUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.register_user</ID>
+    <ID>PackageNaming:RejectModification.kt$package io.cloudflight.jems.server.project.service.application.reject_modification</ID>
+    <ID>PackageNaming:RejectModificationExceptions.kt$package io.cloudflight.jems.server.project.service.application.reject_modification</ID>
+    <ID>PackageNaming:RejectModificationInteractor.kt$package io.cloudflight.jems.server.project.service.application.reject_modification</ID>
+    <ID>PackageNaming:ResultOverviewCalculator.kt$package io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview</ID>
+    <ID>PackageNaming:ReturnApplicationToApplicant.kt$package io.cloudflight.jems.server.project.service.application.return_application_to_applicant</ID>
+    <ID>PackageNaming:ReturnApplicationToApplicantExceptions.kt$package io.cloudflight.jems.server.project.service.application.return_application_to_applicant</ID>
+    <ID>PackageNaming:ReturnApplicationToApplicantInteractor.kt$package io.cloudflight.jems.server.project.service.application.return_application_to_applicant</ID>
+    <ID>PackageNaming:RevertApplicationDecision.kt$package io.cloudflight.jems.server.project.service.application.revert_application_decision</ID>
+    <ID>PackageNaming:RevertApplicationDecisionExceptions.kt$package io.cloudflight.jems.server.project.service.application.revert_application_decision</ID>
+    <ID>PackageNaming:RevertApplicationDecisionInteractor.kt$package io.cloudflight.jems.server.project.service.application.revert_application_decision</ID>
+    <ID>PackageNaming:SendMailOnJemsMailEvent.kt$package io.cloudflight.jems.server.notification.mail.service.send_mail_on_jems_mail_event</ID>
+    <ID>PackageNaming:SendMailOnJemsMailEventExceptions.kt$package io.cloudflight.jems.server.notification.mail.service.send_mail_on_jems_mail_event</ID>
+    <ID>PackageNaming:SetApplicationAsEligible.kt$package io.cloudflight.jems.server.project.service.application.set_application_as_eligible</ID>
+    <ID>PackageNaming:SetApplicationAsEligibleExceptions.kt$package io.cloudflight.jems.server.project.service.application.set_application_as_eligible</ID>
+    <ID>PackageNaming:SetApplicationAsEligibleInteractor.kt$package io.cloudflight.jems.server.project.service.application.set_application_as_eligible</ID>
+    <ID>PackageNaming:SetApplicationAsIneligible.kt$package io.cloudflight.jems.server.project.service.application.set_application_as_ineligible</ID>
+    <ID>PackageNaming:SetApplicationAsIneligibleExceptions.kt$package io.cloudflight.jems.server.project.service.application.set_application_as_ineligible</ID>
+    <ID>PackageNaming:SetApplicationAsIneligibleInteractor.kt$package io.cloudflight.jems.server.project.service.application.set_application_as_ineligible</ID>
+    <ID>PackageNaming:SetApplicationToContracted.kt$package io.cloudflight.jems.server.project.service.application.set_application_to_contracted</ID>
+    <ID>PackageNaming:SetApplicationToContractedExceptions.kt$package io.cloudflight.jems.server.project.service.application.set_application_to_contracted</ID>
+    <ID>PackageNaming:SetApplicationToContractedInteractor.kt$package io.cloudflight.jems.server.project.service.application.set_application_to_contracted</ID>
+    <ID>PackageNaming:SetAssessmentEligibility.kt$package io.cloudflight.jems.server.project.service.application.set_assessment_eligibility</ID>
+    <ID>PackageNaming:SetAssessmentEligibilityExceptions.kt$package io.cloudflight.jems.server.project.service.application.set_assessment_eligibility</ID>
+    <ID>PackageNaming:SetAssessmentEligibilityInteractor.kt$package io.cloudflight.jems.server.project.service.application.set_assessment_eligibility</ID>
+    <ID>PackageNaming:SetAssessmentQuality.kt$package io.cloudflight.jems.server.project.service.application.set_assessment_quality</ID>
+    <ID>PackageNaming:SetAssessmentQualityExceptions.kt$package io.cloudflight.jems.server.project.service.application.set_assessment_quality</ID>
+    <ID>PackageNaming:SetAssessmentQualityInteractor.kt$package io.cloudflight.jems.server.project.service.application.set_assessment_quality</ID>
+    <ID>PackageNaming:SetProjectFileDescription.kt$package io.cloudflight.jems.server.project.service.file.set_project_file_description</ID>
+    <ID>PackageNaming:SetProjectFileDescriptionExceptions.kt$package io.cloudflight.jems.server.project.service.file.set_project_file_description</ID>
+    <ID>PackageNaming:SetProjectFileDescriptionInteractor.kt$package io.cloudflight.jems.server.project.service.file.set_project_file_description</ID>
+    <ID>PackageNaming:StartModification.kt$package io.cloudflight.jems.server.project.service.application.start_modification</ID>
+    <ID>PackageNaming:StartModificationExceptions.kt$package io.cloudflight.jems.server.project.service.application.start_modification</ID>
+    <ID>PackageNaming:StartModificationInteractor.kt$package io.cloudflight.jems.server.project.service.application.start_modification</ID>
+    <ID>PackageNaming:StartSecondStep.kt$package io.cloudflight.jems.server.project.service.application.start_second_step</ID>
+    <ID>PackageNaming:StartSecondStepExceptions.kt$package io.cloudflight.jems.server.project.service.application.start_second_step</ID>
+    <ID>PackageNaming:StartSecondStepInteractor.kt$package io.cloudflight.jems.server.project.service.application.start_second_step</ID>
+    <ID>PackageNaming:SubmitApplication.kt$package io.cloudflight.jems.server.project.service.application.submit_application</ID>
+    <ID>PackageNaming:SubmitApplicationExceptions.kt$package io.cloudflight.jems.server.project.service.application.submit_application</ID>
+    <ID>PackageNaming:SubmitApplicationInteractor.kt$package io.cloudflight.jems.server.project.service.application.submit_application</ID>
+    <ID>PackageNaming:UpdateActivity.kt$package io.cloudflight.jems.server.project.service.workpackage.activity.update_activity</ID>
+    <ID>PackageNaming:UpdateActivityException.kt$package io.cloudflight.jems.server.project.service.workpackage.activity.update_activity</ID>
+    <ID>PackageNaming:UpdateActivityInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.activity.update_activity</ID>
+    <ID>PackageNaming:UpdateAllowedRealCosts.kt$package io.cloudflight.jems.server.call.service.update_allow_real_costs</ID>
+    <ID>PackageNaming:UpdateAllowedRealCostsExceptions.kt$package io.cloudflight.jems.server.call.service.update_allow_real_costs</ID>
+    <ID>PackageNaming:UpdateAllowedRealCostsInteractor.kt$package io.cloudflight.jems.server.call.service.update_allow_real_costs</ID>
+    <ID>PackageNaming:UpdateApplicationFormConfigurationExceptions.kt$package io.cloudflight.jems.server.call.service.update_application_form_field_configuration</ID>
+    <ID>PackageNaming:UpdateApplicationFormFieldConfiguration.kt$package io.cloudflight.jems.server.call.service.update_application_form_field_configuration</ID>
+    <ID>PackageNaming:UpdateApplicationFormFieldConfigurationsInteractor.kt$package io.cloudflight.jems.server.call.service.update_application_form_field_configuration</ID>
+    <ID>PackageNaming:UpdateBudgetEquipmentCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_equipment_costs</ID>
+    <ID>PackageNaming:UpdateBudgetEquipmentCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_equipment_costs</ID>
+    <ID>PackageNaming:UpdateBudgetExternalExpertiseAndServicesCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_external_expertise_and_services</ID>
+    <ID>PackageNaming:UpdateBudgetExternalExpertiseAndServicesCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_external_expertise_and_services</ID>
+    <ID>PackageNaming:UpdateBudgetGeneralCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs</ID>
+    <ID>PackageNaming:UpdateBudgetGeneralCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs</ID>
+    <ID>PackageNaming:UpdateBudgetInfrastructureAndWorksCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_infrastructure_and_works_costs</ID>
+    <ID>PackageNaming:UpdateBudgetInfrastructureAndWorksCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_infrastructure_and_works_costs</ID>
+    <ID>PackageNaming:UpdateBudgetOptions.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_options</ID>
+    <ID>PackageNaming:UpdateBudgetOptionsException.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_options</ID>
+    <ID>PackageNaming:UpdateBudgetOptionsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_options</ID>
+    <ID>PackageNaming:UpdateBudgetOptionsValidation.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_options</ID>
+    <ID>PackageNaming:UpdateBudgetStaffCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budge_staff_costs</ID>
+    <ID>PackageNaming:UpdateBudgetStaffCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budge_staff_costs</ID>
+    <ID>PackageNaming:UpdateBudgetTravelAndAccommodationCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs</ID>
+    <ID>PackageNaming:UpdateBudgetTravelAndAccommodationCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs</ID>
+    <ID>PackageNaming:UpdateBudgetUnitCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs</ID>
+    <ID>PackageNaming:UpdateBudgetUnitCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs</ID>
+    <ID>PackageNaming:UpdateCall.kt$package io.cloudflight.jems.server.call.service.update_call</ID>
+    <ID>PackageNaming:UpdateCallExceptions.kt$package io.cloudflight.jems.server.call.service.update_call</ID>
+    <ID>PackageNaming:UpdateCallFlatRates.kt$package io.cloudflight.jems.server.call.service.update_call_flat_rates</ID>
+    <ID>PackageNaming:UpdateCallFlatRatesExceptions.kt$package io.cloudflight.jems.server.call.service.update_call_flat_rates</ID>
+    <ID>PackageNaming:UpdateCallFlatRatesInteractor.kt$package io.cloudflight.jems.server.call.service.update_call_flat_rates</ID>
+    <ID>PackageNaming:UpdateCallInteractor.kt$package io.cloudflight.jems.server.call.service.update_call</ID>
+    <ID>PackageNaming:UpdateCallLumpSums.kt$package io.cloudflight.jems.server.call.service.update_call_lump_sums</ID>
+    <ID>PackageNaming:UpdateCallLumpSumsExceptions.kt$package io.cloudflight.jems.server.call.service.update_call_lump_sums</ID>
+    <ID>PackageNaming:UpdateCallLumpSumsInteractor.kt$package io.cloudflight.jems.server.call.service.update_call_lump_sums</ID>
+    <ID>PackageNaming:UpdateCallUnitCosts.kt$package io.cloudflight.jems.server.call.service.update_call_unit_costs</ID>
+    <ID>PackageNaming:UpdateCallUnitCostsExceptions.kt$package io.cloudflight.jems.server.call.service.update_call_unit_costs</ID>
+    <ID>PackageNaming:UpdateCallUnitCostsInteractor.kt$package io.cloudflight.jems.server.call.service.update_call_unit_costs</ID>
+    <ID>PackageNaming:UpdateCoFinancing.kt$package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing</ID>
+    <ID>PackageNaming:UpdateCoFinancingInteractor.kt$package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing</ID>
+    <ID>PackageNaming:UpdateCoFinancingValidation.kt$package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing</ID>
+    <ID>PackageNaming:UpdateDefaultUserRole.kt$package io.cloudflight.jems.server.programme.service.userrole.update_role</ID>
+    <ID>PackageNaming:UpdateDefaultUserRoleInteractor.kt$package io.cloudflight.jems.server.programme.service.userrole.update_role</ID>
+    <ID>PackageNaming:UpdateFlatRateValidator.kt$package io.cloudflight.jems.server.call.service.update_call_flat_rates</ID>
+    <ID>PackageNaming:UpdateFundException.kt$package io.cloudflight.jems.server.programme.service.fund.update_funds</ID>
+    <ID>PackageNaming:UpdateFunds.kt$package io.cloudflight.jems.server.programme.service.fund.update_funds</ID>
+    <ID>PackageNaming:UpdateFundsInteractor.kt$package io.cloudflight.jems.server.programme.service.fund.update_funds</ID>
+    <ID>PackageNaming:UpdateLanguages.kt$package io.cloudflight.jems.server.programme.service.language.update_languages</ID>
+    <ID>PackageNaming:UpdateLanguagesException.kt$package io.cloudflight.jems.server.programme.service.language.update_languages</ID>
+    <ID>PackageNaming:UpdateLanguagesInteractor.kt$package io.cloudflight.jems.server.programme.service.language.update_languages</ID>
+    <ID>PackageNaming:UpdateLegalStatus.kt$package io.cloudflight.jems.server.programme.service.legalstatus.update_legal_statuses</ID>
+    <ID>PackageNaming:UpdateLegalStatusException.kt$package io.cloudflight.jems.server.programme.service.legalstatus.update_legal_statuses</ID>
+    <ID>PackageNaming:UpdateLegalStatusInteractor.kt$package io.cloudflight.jems.server.programme.service.legalstatus.update_legal_statuses</ID>
+    <ID>PackageNaming:UpdateLumpSum.kt$package io.cloudflight.jems.server.programme.service.costoption.update_lump_sum</ID>
+    <ID>PackageNaming:UpdateLumpSumException.kt$package io.cloudflight.jems.server.programme.service.costoption.update_lump_sum</ID>
+    <ID>PackageNaming:UpdateLumpSumInteractor.kt$package io.cloudflight.jems.server.programme.service.costoption.update_lump_sum</ID>
+    <ID>PackageNaming:UpdateOutputIndicator.kt$package io.cloudflight.jems.server.programme.service.indicator.update_output_indicator</ID>
+    <ID>PackageNaming:UpdateOutputIndicatorExceptions.kt$package io.cloudflight.jems.server.programme.service.indicator.update_output_indicator</ID>
+    <ID>PackageNaming:UpdateOutputIndicatorInteractor.kt$package io.cloudflight.jems.server.programme.service.indicator.update_output_indicator</ID>
+    <ID>PackageNaming:UpdatePluginStatus.kt$package io.cloudflight.jems.server.plugin.services.update_plugin_status</ID>
+    <ID>PackageNaming:UpdatePluginStatusInteractor.kt$package io.cloudflight.jems.server.plugin.services.update_plugin_status</ID>
+    <ID>PackageNaming:UpdatePreSubmissionCheckConfigurationExceptions.kt$package io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration</ID>
+    <ID>PackageNaming:UpdatePreSubmissionCheckSettings.kt$package io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration</ID>
+    <ID>PackageNaming:UpdatePreSubmissionCheckSettingsInteractor.kt$package io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration</ID>
+    <ID>PackageNaming:UpdatePriority.kt$package io.cloudflight.jems.server.programme.service.priority.update_priority</ID>
+    <ID>PackageNaming:UpdatePriorityException.kt$package io.cloudflight.jems.server.programme.service.priority.update_priority</ID>
+    <ID>PackageNaming:UpdatePriorityInteractor.kt$package io.cloudflight.jems.server.programme.service.priority.update_priority</ID>
+    <ID>PackageNaming:UpdateProgrammeDataException.kt$package io.cloudflight.jems.server.programme.service.userrole.update_role</ID>
+    <ID>PackageNaming:UpdateProjectDescription.kt$package io.cloudflight.jems.server.project.service.update_project_description</ID>
+    <ID>PackageNaming:UpdateProjectDescriptionInteractor.kt$package io.cloudflight.jems.server.project.service.update_project_description</ID>
+    <ID>PackageNaming:UpdateProjectLumpSums.kt$package io.cloudflight.jems.server.project.service.lumpsum.update_project_lump_sums</ID>
+    <ID>PackageNaming:UpdateProjectLumpSumsInteractor.kt$package io.cloudflight.jems.server.project.service.lumpsum.update_project_lump_sums</ID>
+    <ID>PackageNaming:UpdateProjectPartner.kt$package io.cloudflight.jems.server.project.service.partner.update_project_partner</ID>
+    <ID>PackageNaming:UpdateProjectPartnerException.kt$package io.cloudflight.jems.server.project.service.partner.update_project_partner</ID>
+    <ID>PackageNaming:UpdateProjectPartnerInteractor.kt$package io.cloudflight.jems.server.project.service.partner.update_project_partner</ID>
+    <ID>PackageNaming:UpdateProjectPartnerStateAid.kt$package io.cloudflight.jems.server.project.service.partner.state_aid.update_project_partner_state_aid</ID>
+    <ID>PackageNaming:UpdateProjectPartnerStateAidException.kt$package io.cloudflight.jems.server.project.service.partner.state_aid.update_project_partner_state_aid</ID>
+    <ID>PackageNaming:UpdateProjectPartnerStateAidInteractor.kt$package io.cloudflight.jems.server.project.service.partner.state_aid.update_project_partner_state_aid</ID>
+    <ID>PackageNaming:UpdateProjectResults.kt$package io.cloudflight.jems.server.project.service.result.update_project_results</ID>
+    <ID>PackageNaming:UpdateProjectResultsExceptions.kt$package io.cloudflight.jems.server.project.service.result.update_project_results</ID>
+    <ID>PackageNaming:UpdateProjectResultsInteractor.kt$package io.cloudflight.jems.server.project.service.result.update_project_results</ID>
+    <ID>PackageNaming:UpdateResultIndicator.kt$package io.cloudflight.jems.server.programme.service.indicator.update_result_indicator</ID>
+    <ID>PackageNaming:UpdateResultIndicatorExceptions.kt$package io.cloudflight.jems.server.programme.service.indicator.update_result_indicator</ID>
+    <ID>PackageNaming:UpdateResultIndicatorInteractor.kt$package io.cloudflight.jems.server.programme.service.indicator.update_result_indicator</ID>
+    <ID>PackageNaming:UpdateStateAid.kt$package io.cloudflight.jems.server.programme.service.stateaid.update_stateaid</ID>
+    <ID>PackageNaming:UpdateStateAidInteractor.kt$package io.cloudflight.jems.server.programme.service.stateaid.update_stateaid</ID>
+    <ID>PackageNaming:UpdateStateAidsException.kt$package io.cloudflight.jems.server.programme.service.stateaid.update_stateaid</ID>
+    <ID>PackageNaming:UpdateUnitCost.kt$package io.cloudflight.jems.server.programme.service.costoption.update_unit_cost</ID>
+    <ID>PackageNaming:UpdateUnitCostException.kt$package io.cloudflight.jems.server.programme.service.costoption.update_unit_cost</ID>
+    <ID>PackageNaming:UpdateUnitCostInteractor.kt$package io.cloudflight.jems.server.programme.service.costoption.update_unit_cost</ID>
+    <ID>PackageNaming:UpdateUser.kt$package io.cloudflight.jems.server.user.service.user.update_user</ID>
+    <ID>PackageNaming:UpdateUserExceptions.kt$package io.cloudflight.jems.server.user.service.user.update_user</ID>
+    <ID>PackageNaming:UpdateUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.update_user</ID>
+    <ID>PackageNaming:UpdateUserPassword.kt$package io.cloudflight.jems.server.user.service.user.update_user_password</ID>
+    <ID>PackageNaming:UpdateUserPasswordExceptions.kt$package io.cloudflight.jems.server.user.service.user.update_user_password</ID>
+    <ID>PackageNaming:UpdateUserPasswordInteractor.kt$package io.cloudflight.jems.server.user.service.user.update_user_password</ID>
+    <ID>PackageNaming:UpdateUserRole.kt$package io.cloudflight.jems.server.user.service.userrole.update_user_role</ID>
+    <ID>PackageNaming:UpdateUserRoleExceptions.kt$package io.cloudflight.jems.server.user.service.userrole.update_user_role</ID>
+    <ID>PackageNaming:UpdateUserRoleInteractor.kt$package io.cloudflight.jems.server.user.service.userrole.update_user_role</ID>
+    <ID>PackageNaming:UpdateWorkPackageInvestment.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.update_work_package_investment</ID>
+    <ID>PackageNaming:UpdateWorkPackageInvestmentInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.update_work_package_investment</ID>
+    <ID>PackageNaming:UpdateWorkPackageOutput.kt$package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output</ID>
+    <ID>PackageNaming:UpdateWorkPackageOutputInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output</ID>
+    <ID>PackageNaming:UploadProjectFile.kt$package io.cloudflight.jems.server.project.service.file.upload_project_file</ID>
+    <ID>PackageNaming:UploadProjectFileExceptions.kt$package io.cloudflight.jems.server.project.service.file.upload_project_file</ID>
+    <ID>PackageNaming:UploadProjectFileInteractor.kt$package io.cloudflight.jems.server.project.service.file.upload_project_file</ID>
+    <ID>PackageNaming:UploadTranslationFile.kt$package io.cloudflight.jems.server.programme.service.translation.upload_translation_file</ID>
+    <ID>PackageNaming:UploadTranslationFileExceptions.kt$package io.cloudflight.jems.server.programme.service.translation.upload_translation_file</ID>
+    <ID>PackageNaming:UploadTranslationFileInteractor.kt$package io.cloudflight.jems.server.programme.service.translation.upload_translation_file</ID>
+    <ID>PackageNaming:UserCreatedEventListeners.kt$package io.cloudflight.jems.server.user.service.user.create_user</ID>
+    <ID>PackageNaming:UserRegisteredEventListeners.kt$package io.cloudflight.jems.server.user.service.user.register_user</ID>
+    <ID>PackageNaming:UserUpdatedEventListeners.kt$package io.cloudflight.jems.server.user.service.user.update_user</ID>
+    <ID>ProtectedMemberInFinalClass:Authorization.kt$Authorization$protected fun isActiveUserIdEqualToOneOf(userIds: Set&lt;Long&gt;): Boolean</ID>
+    <ID>ReturnCount:GetPartnerFundsPerPeriod.kt$GetPartnerFundsPerPeriod$private fun getTotalFundPerPeriodForPartner( partnerBudgetPerPeriod: ProjectPeriodBudget?, partnerCoFinancing: List&lt;ProjectPartnerCoFinancing&gt;?, fund: ProgrammeFund ) : BigDecimal</ID>
+    <ID>ReturnCount:PartnerBudgetPerFundCalculator.kt$PartnerBudgetPerFundCalculator$private fun getPartnerContribution( partnerContributions: Collection&lt;ProjectPartnerContribution&gt;?, status: ProjectPartnerContributionStatusDTO? ): BigDecimal</ID>
+    <ID>ReturnCount:ProjectDescriptionMapper.kt$fun getMappedStrategy(strategy: ProgrammeStrategy?): ProgrammeStrategy?</ID>
+    <ID>ReturnCount:UserRoleAuditFactory.kt$private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: Set&lt;UserRolePermission&gt;): String</ID>
+    <ID>SerialVersionUIDInSerializableClass:AllowRealCostsEntity.kt$AllowedRealCostsEntity : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ApplicationFormFieldConfigurationId.kt$ApplicationFormFieldConfigurationId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:BudgetPeriodId.kt$BudgetPeriodId&lt;T : ProjectPartnerBudgetBase&gt; : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:FlatRateSetupId.kt$FlatRateSetupId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:FundSetupId.kt$FundSetupId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProgrammeFundTranslationId.kt$ProgrammeFundTranslationId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProgrammeLumpSumTranslId.kt$ProgrammeLumpSumTranslId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProgrammePriorityTranslId.kt$ProgrammePriorityTranslId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProgrammeUnitCostTranslId.kt$ProgrammeUnitCostTranslId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectAssessmentId.kt$ProjectAssessmentId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectAssociatedOrganizationContactId.kt$ProjectAssociatedOrganizationContactId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectFileCategoryId.kt$ProjectFileCategoryId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectLumpSumId.kt$ProjectLumpSumId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectPartnerAddressId.kt$ProjectPartnerAddressId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectPartnerCoFinancingFundId.kt$ProjectPartnerCoFinancingFundId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectPartnerContactId.kt$ProjectPartnerContactId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectPartnerLumpSumId.kt$ProjectPartnerLumpSumId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectPartnerStateAidActivityId.kt$ProjectPartnerStateAidActivityId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectPeriodId.kt$ProjectPeriodId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectResultId.kt$ProjectResultId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:ProjectVersionId.kt$ProjectVersionId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:StateAidSetupId.kt$StateAidSetupId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:TranslationFileId.kt$TranslationFileId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:TranslationId.kt$TranslationId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:TranslationId.kt$TranslationId&lt;T&gt; : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:TranslationOrganizationId.kt$TranslationOrganizationId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:TranslationPartnerId.kt$TranslationPartnerId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:TranslationResultId.kt$TranslationResultId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:TranslationUuId.kt$TranslationUuId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:UserPartnerId.kt$UserPartnerId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:UserProjectId.kt$UserProjectId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:UserRolePermissionId.kt$UserRolePermissionId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:WorkPackageActivityId.kt$WorkPackageActivityId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:WorkPackageActivityPartnerId.kt$WorkPackageActivityPartnerId : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:WorkPackageInvestmentTranslation.kt$WorkPackageInvestmentTranslation&lt;T&gt; : Serializable</ID>
+    <ID>SerialVersionUIDInSerializableClass:WorkPackageOutputId.kt$WorkPackageOutputId : Serializable</ID>
+    <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
+    <ID>ThrowsCount:CreateOutputIndicator.kt$CreateOutputIndicator$private fun validateOutputIndicatorDetail(outputIndicator: OutputIndicator)</ID>
+    <ID>ThrowsCount:CreateUser.kt$CreateUser$private fun validateUser(user: UserChange)</ID>
+    <ID>ThrowsCount:WorkPackageActivityValidation.kt$fun validateWorkPackageActivities(workPackageActivities: Collection&lt;WorkPackageActivity&gt;)</ID>
+    <ID>TooGenericExceptionThrown:MockedMethodSignature.kt$MockedMethodSignature$throw Exception("sample exception!")</ID>
+    <ID>TooManyFunctions:ApplicationState.kt$ApplicationState</ID>
+    <ID>TooManyFunctions:CallPersistence.kt$CallPersistence</ID>
+    <ID>TooManyFunctions:CallPersistenceProvider.kt$CallPersistenceProvider : CallPersistence</ID>
+    <ID>TooManyFunctions:GeneralValidatorDefaultImpl.kt$GeneralValidatorDefaultImpl : GeneralValidatorService</ID>
+    <ID>TooManyFunctions:GeneralValidatorService.kt$GeneralValidatorService</ID>
+    <ID>TooManyFunctions:PartnerPersistenceProvider.kt$PartnerPersistenceProvider : PartnerPersistence</ID>
+    <ID>TooManyFunctions:ProjectDataModelMapper.kt$PluginDataMapper</ID>
+    <ID>TooManyFunctions:ProjectDataModelMapper.kt$io.cloudflight.jems.server.plugin.services.ProjectDataModelMapper.kt</ID>
+    <ID>TooManyFunctions:ProjectDescriptionMapper.kt$io.cloudflight.jems.server.project.controller.ProjectDescriptionMapper.kt</ID>
+    <ID>TooManyFunctions:ProjectDescriptionMapper.kt$io.cloudflight.jems.server.project.service.ProjectDescriptionMapper.kt</ID>
+    <ID>TooManyFunctions:ProjectPartnerBudgetMapper.kt$io.cloudflight.jems.server.project.controller.partner.budget.ProjectPartnerBudgetMapper.kt</ID>
+    <ID>TooManyFunctions:ProjectPartnerEntityMapper.kt$io.cloudflight.jems.server.project.repository.partner.ProjectPartnerEntityMapper.kt</ID>
+    <ID>TooManyFunctions:ProjectPartnerRepository.kt$ProjectPartnerRepository : JpaRepository</ID>
+    <ID>TooManyFunctions:WorkPackagePersistenceProvider.kt$WorkPackagePersistenceProvider : WorkPackagePersistence</ID>
+    <ID>UnnecessaryAbstractClass:ApplicationState.kt$ApplicationState</ID>
+    <ID>UnnecessaryAbstractClass:CommonDTOMapper.kt$CommonDTOMapper</ID>
+    <ID>UnnecessaryAbstractClass:MailNotificationMapper.kt$MailNotificationMapper</ID>
+    <ID>UnnecessaryAbstractClass:ProgrammeDataModelMapper.kt$ProgrammeDataModelMapper</ID>
+    <ID>UnnecessaryAbstractClass:ProgrammeEntityModelMapper.kt$ProgrammeEntityModelMapper</ID>
+    <ID>UnnecessaryAbstractClass:ProjectPartnerCoFinancingMapper.kt$ProjectPartnerCoFinancingMapper</ID>
+    <ID>UnnecessaryAbstractClass:TranslationDTOMapper.kt$TranslationDTOMapper</ID>
+    <ID>UnnecessaryAbstractClass:TranslationEntityMapper.kt$TranslationEntityMapper</ID>
+    <ID>UnnecessaryAbstractClass:UnitTest.kt$UnitTest</ID>
+    <ID>UnnecessaryAbstractClass:UserConfirmationMapper.kt$UserConfirmationMapper</ID>
+    <ID>UnusedPrivateMember:ApplicationStateFactoryTest.kt$ApplicationStateFactoryTest$private fun provideSummaryWithExpectedInstance(): Stream&lt;Arguments&gt;</ID>
+    <ID>UnusedPrivateMember:AssignUserEventListeners.kt$AssignUserEventListeners$private val appProperties: AppProperties</ID>
+    <ID>UnusedPrivateMember:CallPersistenceProviderTest.kt$CallPersistenceProviderTest$@MockK private lateinit var programmeStateAidRepo: ProgrammeStateAidRepository</ID>
+    <ID>UnusedPrivateMember:CreateProjectTest.kt$CreateProjectTest.Companion$private fun projectVersion(status: ApplicationStatus): ProjectVersion</ID>
+    <ID>UnusedPrivateMember:MinioStorageTest.kt$MinioStorageTest$errorCode: ErrorResponse</ID>
+    <ID>UnusedPrivateMember:MinioStorageTest.kt$MinioStorageTest$private fun testSave(bucketExists: Boolean, errorCode: ErrorResponse)</ID>
+    <ID>UnusedPrivateMember:ProgrammeSetupAuthorizationTest.kt$ProgrammeSetupAuthorizationTest$private fun provideAllUsers(): Stream&lt;Arguments&gt;</ID>
+    <ID>UnusedPrivateMember:ProjectBudgetControllerTest.kt$ProjectBudgetControllerTest$@MockK private lateinit var getPartnerBudgetPerFundInteractor: GetPartnerBudgetPerFundInteractor</ID>
+    <ID>UnusedPrivateMember:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest.Companion$private val budgetCosts = BudgetCosts( staffCosts = listOf( BudgetStaffCostEntry( id = 3L, numberOfUnits = BigDecimal.ONE, rowSum = BigDecimal.TEN, budgetPeriods = mutableSetOf(BudgetPeriod(number = 1, amount = BigDecimal.ONE)), pricePerUnit = BigDecimal.TEN, description = setOf(), comments = setOf(InputTranslation(SystemLanguage.EN, "comments")), unitType = setOf(InputTranslation(SystemLanguage.EN, "unitType")), unitCostId = 4L ) ), travelCosts = emptyList(), externalCosts = emptyList(), equipmentCosts = emptyList(), infrastructureCosts = emptyList(), unitCosts = emptyList() )</ID>
+    <ID>UnusedPrivateMember:ProjectPartnerCoFinancingPersistenceProviderTest.kt$ProjectPartnerCoFinancingPersistenceProviderTest$private val previousFinances = setOf( ProjectPartnerCoFinancingEntity( coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 1), percentage = BigDecimal.valueOf(15.5), programmeFund = null ), ProjectPartnerCoFinancingEntity( coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 2), percentage = BigDecimal.valueOf(25.5), programmeFund = null ) )</ID>
+    <ID>UnusedPrivateMember:ProjectPartnerEntityMapper.kt$newFinancing: Collection&lt;UpdateProjectPartnerCoFinancing&gt;? = null</ID>
+    <ID>UnusedPrivateMember:ProjectPartnerFactory.kt$ProjectPartnerFactory$author: UserEntity</ID>
+    <ID>UnusedPrivateMember:ProjectVersionPersistenceProviderTest.kt$ProjectVersionPersistenceProviderTest$val entities = listOf(projectVersionEntity)</ID>
+    <ID>UnusedPrivateMember:ProjectWorkPackageAuthorization.kt$ProjectWorkPackageAuthorization$version: String? = null</ID>
+    <ID>UnusedPrivateMember:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest.Companion$private const val INVESTMENT_ID = 7L</ID>
+    <ID>UnusedPrivateMember:ReturnApplicationToApplicantInteractorTest.kt$ReturnApplicationToApplicantInteractorTest$@InjectMockKs private lateinit var handBackToApplicant: HandBackToApplicant</ID>
+    <ID>UnusedPrivateMember:ReturnApplicationToApplicantInteractorTest.kt$ReturnApplicationToApplicantInteractorTest.Companion$private val projectVersion = ProjectVersion( version = "1.0", projectId = PROJECT_ID, createdAt = ZonedDateTime.now(), user = UserEntity(1L, "some@applicant", "name", "surname", UserRoleEntity(1L, "applicant"), "", UserStatus.ACTIVE), status = ApplicationStatus.DRAFT, current = true )</ID>
+    <ID>UnusedPrivateMember:SaveProjectVersionTest.kt$SaveProjectVersionTest$private val newProjectVersion = ProjectVersion( "2.0", projectId, createdAt = ZonedDateTime.now(), user, ApplicationStatus.SUBMITTED, current = true )</ID>
+    <ID>UnusedPrivateMember:UpdateCallTest.kt$UpdateCallTest$private fun provideNotAllowedChangesToPublishedCall(): Stream&lt;Arguments&gt;</ID>
+    <ID>UnusedPrivateMember:UpdateFundsTest.kt$UpdateFundsTest$private fun providePreDefinedProgramFundTypes()</ID>
+    <ID>UnusedPrivateMember:UpdateLegalStatusInteractorTest.kt$UpdateLegalStatusInteractorTest$private fun providePreDefinedLegalStatusTypes()</ID>
+    <ID>UtilityClassWithPublicConstructor:AuthorizationUtil.kt$AuthorizationUtil</ID>
+    <ID>UtilityClassWithPublicConstructor:CoFinancingOverviewCalculator.kt$CoFinancingOverviewCalculator</ID>
+    <ID>UtilityClassWithPublicConstructor:ProjectPartnerTestUtil.kt$ProjectPartnerTestUtil</ID>
+    <ID>UtilityClassWithPublicConstructor:ProjectStatusTestUtil.kt$ProjectStatusTestUtil</ID>
+    <ID>UtilityClassWithPublicConstructor:ResultOverviewCalculator.kt$ResultOverviewCalculator</ID>
+  </CurrentIssues>
+</SmellBaseline>

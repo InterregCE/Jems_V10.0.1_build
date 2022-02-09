@@ -50,7 +50,7 @@
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
                                 <button mat-icon-button disabled></button>
-                                <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
+                                <div [class.mat-body-strong]="node.level === 0">{{ node.name | translate }}</div>
 
                                 <div class="controls">
                                     <div class="controls-wrapper">
@@ -107,7 +107,7 @@
                                         {{treeControlCreateAndCollaborate.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                                     </mat-icon>
                                 </button>
-                                <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
+                                <div [class.mat-body-strong]="node.level === 0">{{ node.name | translate }}</div>
                                 <div class="controls">
                                     <div class="controls-wrapper"></div>
                                 </div>
@@ -140,7 +140,7 @@
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
                                 <button mat-icon-button disabled></button>
-                                <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
+                                <div [class.mat-body-strong]="node.level === 0">{{ node.name | translate }}</div>
 
                                 <div class="controls">
                                     <div class="controls-wrapper">
@@ -207,7 +207,7 @@
                                         {{treeControlInspect.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                                     </mat-icon>
                                 </button>
-                                <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
+                                <div [class.mat-body-strong]="node.level === 0">{{ node.name | translate }}</div>
                                 <div class="controls">
                                     <div class="controls-wrapper"></div>
                                 </div>
@@ -235,7 +235,7 @@
                             <div class="permission-row-wrapper">
                                 <button mat-icon-button disabled></button>
                                 <mat-icon class="mr-1 mb-1">{{icon(node.form)?.value}}</mat-icon>
-                                <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
+                                <div [class.mat-body-strong]="node.level === 0">{{ node.name | translate }}</div>
 
                                 <div class="controls">
                                     <div class="controls-wrapper">
@@ -303,7 +303,7 @@
                                     </mat-icon>
                                 </button>
                                 <mat-icon class="mr-1 mb-1">{{icon(node.form)?.value}}</mat-icon>
-                                <div [class.mat-body-strong]="node.level == 0">{{ node.name | translate }}</div>
+                                <div [class.mat-body-strong]="node.level === 0">{{ node.name | translate }}</div>
                                 <div class="controls">
                                     <div class="controls-wrapper"></div>
                                 </div>

@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {CallDetailDTO, CallService} from '@cat/api';
 import {Observable} from 'rxjs';
-import {switchMap, tap} from 'rxjs/operators';
-import {filter} from 'rxjs/internal/operators';
+import {filter, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '../../../../common/services/routing.service';
 import {Log} from '../../../../common/utils/log';
 

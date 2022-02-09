@@ -4,8 +4,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerReportDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.partner.ProjectPartnerReportApi
 import io.cloudflight.jems.server.project.controller.partner.toDto
-import io.cloudflight.jems.server.project.service.partner.get_project_partner_reporting.GetProjectPartnerReportingInteractor
-import org.springframework.data.domain.Pageable
+import io.cloudflight.jems.server.project.service.partner.getProjectPartnerReporting.GetProjectPartnerReportingInteractor
 import org.springframework.data.domain.Sort
 import org.springframework.web.bind.annotation.RestController
 

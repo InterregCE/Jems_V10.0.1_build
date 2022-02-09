@@ -1,7 +1,7 @@
 <div id="main-page-container">
     <jems-breadcrumb></jems-breadcrumb>
     <div jemsFormLayout (scroll)="onScroll()" #container id="main-page-content">
-        <ng-container *ngIf="headerTemplate != null">
+        <ng-container *ngIf="headerTemplate !== null">
             <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
         </ng-container>
 
