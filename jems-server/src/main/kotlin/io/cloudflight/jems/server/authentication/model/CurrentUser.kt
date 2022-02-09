@@ -9,10 +9,6 @@ interface CurrentUser {
 
     fun getAuthorities(): Collection<GrantedAuthority>
 
-    fun hasRole(role: String): Boolean {
-        return getAuthorities().stream().anyMatch { r -> r.authority.equals("ROLE_$role", ignoreCase = true) }
-    }
-
     fun hasPermission(permission: UserRolePermission): Boolean {
         return getAuthorities().stream().anyMatch { r -> r.authority.equals(permission.name, ignoreCase = true) }
     }

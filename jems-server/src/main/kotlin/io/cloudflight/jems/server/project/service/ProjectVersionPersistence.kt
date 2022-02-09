@@ -10,4 +10,6 @@ interface ProjectVersionPersistence {
     fun getLatestVersionOrNull(projectId: Long): String?
 
     fun getAllVersionsByProjectId(projectId: Long): List<ProjectVersion>
+
+    fun getLatestApprovedOrCurrent(projectId: Long): String
 }

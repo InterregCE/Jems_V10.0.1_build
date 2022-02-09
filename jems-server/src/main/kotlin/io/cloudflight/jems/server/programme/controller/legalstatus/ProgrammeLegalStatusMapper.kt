@@ -5,13 +5,13 @@ import io.cloudflight.jems.api.programme.dto.legalstatus.ProgrammeLegalStatusTyp
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
 
-fun Iterable<ProgrammeLegalStatus>.toDto() = map {
-    ProgrammeLegalStatusDTO(
-        id = it.id,
-        description = it.description ,
-        type = ProgrammeLegalStatusTypeDTO.valueOf(it.type.name)
-    )
-}
+fun Iterable<ProgrammeLegalStatus>.toDto() = map { it.toDto() }
+
+fun ProgrammeLegalStatus.toDto() = ProgrammeLegalStatusDTO(
+    id = id,
+    description = description,
+    type = ProgrammeLegalStatusTypeDTO.valueOf(type.name)
+)
 
 fun Iterable<ProgrammeLegalStatusDTO>.toModel() = map {
     ProgrammeLegalStatus(

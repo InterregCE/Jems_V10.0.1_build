@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.controller.partner
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
+import io.cloudflight.jems.api.project.dto.assignment.PartnerCollaboratorLevelDTO
 import io.cloudflight.jems.api.project.dto.assignment.PartnerUserCollaboratorDTO
 import io.cloudflight.jems.api.project.dto.assignment.UpdatePartnerUserCollaboratorDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectBudgetPartnerSummaryDTO
@@ -46,6 +47,8 @@ fun Set<PartnerCollaborator>.toDto() = map { partnerDTOMapper.map(it)}.toSet()
 fun Set<UpdatePartnerUserCollaboratorDTO>.toModel() = mapTo(HashSet()) {
     Pair(it.userEmail, PartnerCollaboratorLevel.valueOf(it.level.name))
 }
+
+fun PartnerCollaboratorLevel.toDto() = PartnerCollaboratorLevelDTO.valueOf(name)
 
 private val partnerDTOMapper = Mappers.getMapper(ProjectPartnerDTOMapper::class.java)
 

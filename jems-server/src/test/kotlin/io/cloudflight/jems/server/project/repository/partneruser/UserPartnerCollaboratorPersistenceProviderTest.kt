@@ -1,11 +1,10 @@
-package io.cloudflight.jems.server.user.repository.partneruser
+package io.cloudflight.jems.server.project.repository.partneruser
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
+import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel.VIEW
 import io.cloudflight.jems.server.project.entity.partneruser.UserPartnerCollaboratorEntity
 import io.cloudflight.jems.server.project.entity.partneruser.UserPartnerId
-import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorPersistenceProvider
-import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -14,6 +13,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
 
@@ -85,6 +85,22 @@ internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
         assertThat(added.captured.map { it.id.userId }).containsExactlyInAnyOrder(USER_ID)
         verify { collaboratorRepository.findByPartnerId(PARTNER_ID) }
 
+    }
+
+    @Test
+    fun findByUserIdAndPartnerId() {
+        val id = UserPartnerId(userId = 45L, partnerId = 7896L)
+        every { collaboratorRepository.findById(id) } returns Optional
+            .of(UserPartnerCollaboratorEntity(id, 0L, VIEW))
+        assertThat(persistence.findByUserIdAndPartnerId(45L, 7896L).get()).isEqualTo(VIEW)
+    }
+
+    @Test
+    fun `findByUserIdAndPartnerId - not existing`() {
+        val notExistingId = UserPartnerId(userId = -1L, partnerId = -1L)
+
+        every { collaboratorRepository.findById(notExistingId) } returns Optional.empty()
+        assertThat(persistence.findByUserIdAndPartnerId(-1L, -1L)).isEmpty
     }
 
 }
