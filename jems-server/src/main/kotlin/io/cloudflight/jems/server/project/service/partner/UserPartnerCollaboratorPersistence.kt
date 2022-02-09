@@ -7,9 +7,9 @@ interface UserPartnerCollaboratorPersistence {
 
     fun getProjectIdsForUser(userId: Long): Set<Long>
 
-    fun findPartnerIdsByUserAndProject(userId: Long, projectId: Long): Set<Long>
+    fun findPartnersByUserAndProject(userId: Long, projectId: Long): Set<PartnerCollaborator>
 
-    fun findPartnerCollaboratorsByProjectId(projectId: Long, partnerIds: Set<Long>): Set<PartnerCollaborator>
+    fun findPartnerCollaboratorsByProjectId(projectId: Long): Set<PartnerCollaborator>
 
     fun changeUsersAssignedToPartner(
         projectId: Long,

@@ -318,8 +318,7 @@ export class ProjectApplicationFormSidenavService {
     return [
       {
         headline: {i18nKey: 'project.application.partner.reports.title'},
-        bullets: [...partners],
-        versionedSection: true
+        bullets: [...partners]
       }
     ];
   }

@@ -6,8 +6,11 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormUpdate
+import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -27,9 +30,7 @@ annotation class CanRetrieveProjectPartnerSummaries
 
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectPartnerAuthorization.hasPermission('ProjectReportingView', #projectId)" +
-    " || @projectPartnerAuthorization.hasPermission('ProjectReportingEdit', #projectId)" +
-    " || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")
+@PreAuthorize("@projectPartnerAuthorization.canRetrievePartnerReports(#projectId)")
 annotation class CanRetrieveProjectPartnerReports
 
 
@@ -41,7 +42,8 @@ annotation class CanUpdateProjectPartnerBase
 class ProjectPartnerAuthorization(
     override val securityService: SecurityService,
     val projectPersistence: ProjectPersistence,
-    val partnerPersistence: PartnerPersistence
+    val partnerPersistence: PartnerPersistence,
+    val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
 ) : Authorization(securityService) {
 
     fun canUpdatePartner(partnerId: Long): Boolean {
@@ -53,7 +55,7 @@ class ProjectPartnerAuthorization(
         throw ResourceNotFoundException("partner")
     }
 
-    fun canRetrievePartner(partnerId: Long, version: String? = null) : Boolean {
+    fun canRetrievePartner(partnerId: Long, version: String? = null): Boolean {
         val project = getProjectFromPartnerId(partnerId, version)
         val canRetrievePartner = hasPermissionForProject(ProjectFormRetrieve, projectId = project.projectId)
             || isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
@@ -62,10 +64,24 @@ class ProjectPartnerAuthorization(
         throw ResourceNotFoundException("partner")
     }
 
+    fun canRetrievePartnerReports(projectId: Long) =
+        hasViewOrEditReportingPermission(projectId) || findAllPartnerCollaboratorsOfCurrentUser(projectId).isNotEmpty()
+
+
     private fun getProjectFromPartnerId(partnerId: Long, version: String? = null): ProjectApplicantAndStatus {
         return projectPersistence.getApplicantAndStatusById(
             partnerPersistence.getProjectIdForPartnerId(partnerId, version)
         )
     }
 
+    private fun hasViewOrEditReportingPermission(projectId: Long): Boolean {
+        return hasPermissionForProject(UserRolePermission.ProjectReportingView, projectId) ||
+            hasPermissionForProject(UserRolePermission.ProjectReportingEdit, projectId)
+    }
+
+    private fun findAllPartnerCollaboratorsOfCurrentUser(projectId: Long): Set<PartnerCollaborator> {
+        return partnerCollaboratorPersistence.findPartnersByUserAndProject(
+            securityService.getUserIdOrThrow(), projectId
+        )
+    }
 }

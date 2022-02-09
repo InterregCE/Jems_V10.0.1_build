@@ -23,21 +23,24 @@ class GetProjectPartnerReporting(
     @CanRetrieveProjectPartnerReports
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerReportingException::class)
-    override fun findAllByProjectIdForReporting(
+    override fun findAllByProjectId(
         projectId: Long, sort: Sort, version: String?
     ): List<ProjectPartnerSummary> {
         val projectPartnerReports = persistence.findAllByProjectIdForDropdown(projectId, sort, version)
         if (canViewPartnerReporting(projectId) || canEditPartnerReporting(projectId)) {
             return projectPartnerReports;
         }
-        val partnerCollaboratorsIds =
-            partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(projectId,
-                partnerCollaboratorPersistence.findPartnerIdsByUserAndProject(securityService.getUserIdOrThrow(), projectId))
-                .map { it.partnerId }
+        val partnerCollaboratorsIds = findAllPartnerCollaboratorsIdsByProjectId(projectId);
 
         return projectPartnerReports.filter { projectPartnerSummary ->
             partnerCollaboratorsIds.contains(projectPartnerSummary.id)
         }
+    }
+
+    private fun findAllPartnerCollaboratorsIdsByProjectId(projectId: Long): List<Long> {
+        return partnerCollaboratorPersistence.findPartnersByUserAndProject(
+            securityService.getUserIdOrThrow(), projectId
+        ).map { it.partnerId }
     }
 
     private fun canViewPartnerReporting(projectId: Long) =

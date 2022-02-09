@@ -35,11 +35,11 @@ export class Permission {
         {
           name: 'project.application.reporting.title',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
-          viewPermissions: [PermissionsEnum.ProjectReportingView],
+          viewPermissions: [],
           editPermissions: [],
           disabled: true,
-          state: PermissionState.HIDDEN,
-          hideTooltip: 'permission.create.reporting'
+          state: PermissionState.EDIT,
+          editTooltip: 'permission.create.reporting'
         }
       ]
     },
