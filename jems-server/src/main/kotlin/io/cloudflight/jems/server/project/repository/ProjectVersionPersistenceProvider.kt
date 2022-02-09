@@ -16,7 +16,7 @@ class ProjectVersionPersistenceProvider(
 ) : ProjectVersionPersistence {
 
     @Transactional
-    override fun createNewVersion(projectId: Long, version: String, userId: Long) : ProjectVersionSummary {
+    override fun createNewVersion(projectId: Long, version: String, userId: Long): ProjectVersionSummary {
         projectVersionRepository.endCurrentVersion(projectId)
         return projectVersionRepository.save(
             ProjectVersionEntity(
@@ -33,5 +33,12 @@ class ProjectVersionPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getAllVersionsByProjectId(projectId: Long): List<ProjectVersion> =
         projectVersionRepository.findAllVersionsByProjectId(projectId).toProjectVersion()
+
+    @Transactional(readOnly = true)
+    override fun getLatestApprovedOrCurrent(projectId: Long): String {
+        val versionsSorted = getAllVersionsByProjectId(projectId)
+        return versionsSorted.firstOrNull { it.status.isApproved() }?.version
+            ?: versionsSorted.first().version
+    }
 
 }

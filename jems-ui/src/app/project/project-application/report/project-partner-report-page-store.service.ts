@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {
-  ProjectPartnerReportDTO, ProjectPartnerReportService
+  PageProjectPartnerReportSummaryDTO,
+  ProjectPartnerReportService, ProjectPartnerReportSummaryDTO
 } from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
@@ -13,7 +14,7 @@ import {Log} from '@common/utils/log';
 })
 export class ProjectPartnerReportPageStore {
 
-  partnerReports$: Observable<ProjectPartnerReportDTO[]>;
+  partnerReports$: Observable<ProjectPartnerReportSummaryDTO[]>;
   partnerReportSummary$: Observable<any>;
 
   constructor(private routingService: RoutingService,
@@ -23,15 +24,17 @@ export class ProjectPartnerReportPageStore {
     this.partnerReportSummary$ = this.partnerReportSummary();
   }
 
-  private partnerReports(): Observable<ProjectPartnerReportDTO[]> {
+  private partnerReports(): Observable<ProjectPartnerReportSummaryDTO[]> {
     return combineLatest([
       this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId'),
       this.partnerProjectStore.lastContractedVersionASObservable()
     ])
       .pipe(
         switchMap(([partnerId, lastContractedVersion]) =>
-          this.projectPartnerReportService.getProjectPartnerReports(Number(partnerId), lastContractedVersion)),
-        tap((data: ProjectPartnerReportDTO[]) => Log.info('Fetched partner reports for partner:', this, data))
+          // todo for Vlad MP2-2332
+          this.projectPartnerReportService.getProjectPartnerReports(Number(partnerId), 0, 25, `number,desc`)),
+        map((data: PageProjectPartnerReportSummaryDTO) => data.content),
+        tap((data: ProjectPartnerReportSummaryDTO[]) => Log.info('Fetched partner reports for partner:', this, data))
       );
   }
 

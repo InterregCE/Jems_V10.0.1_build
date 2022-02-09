@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.partner.getProjectPartnerReporting
+package io.cloudflight.jems.server.project.service.report.getProjectReportPartnerList
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
@@ -13,16 +13,16 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class GetProjectPartnerReporting(
+class GetProjectReportPartnerList(
     private val persistence: PartnerPersistence,
     private val userAuthorization: UserAuthorization,
     private val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
     private val securityService: SecurityService
-) : GetProjectPartnerReportingInteractor {
+) : GetProjectReportPartnerListInteractor {
 
     @CanRetrieveProjectPartnerReports
     @Transactional(readOnly = true)
-    @ExceptionWrapper(GetProjectPartnerReportingException::class)
+    @ExceptionWrapper(GetProjectReportPartnerListException::class)
     override fun findAllByProjectId(
         projectId: Long, sort: Sort, version: String?
     ): List<ProjectPartnerSummary> {

@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.project.service.report.getProjectReportPartnerList.GetProjectReportPartnerList
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
@@ -27,7 +28,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Sort
 
-internal class GetProjectPartnerReportingInteractorTest : UnitTest() {
+internal class GetProjectReportPartnerListInteractorTest : UnitTest() {
 
     private val UNSORTED = Sort.unsorted()
 
@@ -67,7 +68,7 @@ internal class GetProjectPartnerReportingInteractorTest : UnitTest() {
     lateinit var userAuthorization: UserAuthorization
 
     @InjectMockKs
-    lateinit var getInteractor: GetProjectPartnerReporting
+    lateinit var getInteractor: GetProjectReportPartnerList
 
     @Test
     fun findAllByProjectIdTestException() {

@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaborato
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.Optional
+import kotlin.collections.HashSet
 
 @Service
 class UserPartnerCollaboratorPersistenceProvider(
@@ -28,6 +30,10 @@ class UserPartnerCollaboratorPersistenceProvider(
     @Transactional(readOnly = true)
     override fun findPartnerCollaboratorsByProjectId(projectId: Long): Set<PartnerCollaborator> =
         collaboratorRepository.findByProjectId(projectId = projectId)
+
+    @Transactional(readOnly = true)
+    override fun findByUserIdAndPartnerId(userId: Long, partnerId: Long): Optional<PartnerCollaboratorLevel> =
+        collaboratorRepository.findById(UserPartnerId(userId = userId, partnerId = partnerId)).map { it.level }
 
     @Transactional
     override fun changeUsersAssignedToPartner(

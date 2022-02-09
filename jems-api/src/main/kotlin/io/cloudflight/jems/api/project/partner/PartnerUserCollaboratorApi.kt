@@ -1,6 +1,8 @@
 package io.cloudflight.jems.api.project.partner
 
+import io.cloudflight.jems.api.project.dto.assignment.PartnerCollaboratorLevelDTO
 import io.cloudflight.jems.api.project.dto.assignment.PartnerUserCollaboratorDTO
+import io.cloudflight.jems.api.project.dto.assignment.ProjectCollaboratorLevelDTO
 import io.cloudflight.jems.api.project.dto.assignment.UpdatePartnerUserCollaboratorDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -12,18 +14,23 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Project Partner User Collaborator")
-@RequestMapping("/api/projectPartnerCollaborators/{projectId}")
+@RequestMapping("/api/projectPartnerCollaborators")
 interface PartnerUserCollaboratorApi {
 
     @ApiOperation("Retrieves users that can collaborate on this project partner team")
-    @GetMapping
+    @GetMapping("/forProject/{projectId}")
     fun listAllPartnerCollaborators(@PathVariable projectId: Long): Set<PartnerUserCollaboratorDTO>
 
     @ApiOperation("Assigns a list of Users for monitoring to Partners")
-    @PutMapping("/forPartner/{partnerId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("/forProject/{projectId}/forPartner/{partnerId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updatePartnerUserCollaborators(
         @PathVariable projectId: Long,
         @PathVariable partnerId: Long,
         @RequestBody users: Set<UpdatePartnerUserCollaboratorDTO>
     ): Set<PartnerUserCollaboratorDTO>
+
+    @ApiOperation("Check my collaborator-related partner permissions")
+    @GetMapping("/forPartner/{partnerId}/checkMyLevel")
+    fun checkMyPartnerLevel(@PathVariable partnerId: Long): PartnerCollaboratorLevelDTO?
+
 }

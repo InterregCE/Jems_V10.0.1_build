@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.partner
 
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
+import java.util.Optional
 
 interface UserPartnerCollaboratorPersistence {
 
@@ -10,6 +11,8 @@ interface UserPartnerCollaboratorPersistence {
     fun findPartnersByUserAndProject(userId: Long, projectId: Long): Set<PartnerCollaborator>
 
     fun findPartnerCollaboratorsByProjectId(projectId: Long): Set<PartnerCollaborator>
+
+    fun findByUserIdAndPartnerId(userId: Long, partnerId: Long): Optional<PartnerCollaboratorLevel>
 
     fun changeUsersAssignedToPartner(
         projectId: Long,

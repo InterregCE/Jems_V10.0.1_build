@@ -578,7 +578,7 @@ enum class ApplicationFormFieldSetting(
             val fieldSetting = values().find { it.id == id }
             return when {
                 (callType == CallType.SPF && fieldSetting != null &&
-                    fieldSetting.validSPFVisibilityStatusSet.isNotEmpty()) -> fieldSetting?.validSPFVisibilityStatusSet
+                    fieldSetting.validSPFVisibilityStatusSet.isNotEmpty()) -> fieldSetting.validSPFVisibilityStatusSet
                 else -> fieldSetting?.validStandardVisibilityStatusSet ?: emptySet()
             }
         }
