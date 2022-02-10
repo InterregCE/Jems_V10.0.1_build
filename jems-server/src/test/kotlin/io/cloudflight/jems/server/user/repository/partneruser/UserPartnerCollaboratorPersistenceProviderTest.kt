@@ -9,13 +9,11 @@ import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerColl
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.util.*
 
 internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
 
@@ -33,7 +31,7 @@ internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
 
     @Test
     fun findPartnerCollaboratorsByProjectId() {
-        persistence.findPartnerCollaboratorsByProjectId(PROJECT_ID, setOf(PARTNER_ID))
+        persistence.findPartnerCollaboratorsByProjectId(PROJECT_ID)
         verify { collaboratorRepository.findByProjectId(PROJECT_ID) }
     }
 
@@ -51,7 +49,7 @@ internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
 
     @Test
     fun findPartnerIdsByUserAndProject() {
-        persistence.findPartnerIdsByUserAndProject(USER_ID, PROJECT_ID)
+        persistence.findPartnersByUserAndProject(USER_ID, PROJECT_ID)
         verify { collaboratorRepository.findAllByIdUserIdAndProjectId(USER_ID, PROJECT_ID) }
     }
 

@@ -14,8 +14,6 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
 
     fun findAllByIdUserId(userId: Long): Iterable<UserPartnerCollaboratorEntity>
 
-    fun findAllByIdUserIdAndProjectId(userId: Long, projectId: Long): Iterable<UserPartnerCollaboratorEntity>
-
     @Query("""
         SELECT new io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator(
             upc.id.userId,
@@ -29,6 +27,20 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
         ORDER BY a.email
     """)
     fun findByProjectId(projectId: Long): Set<PartnerCollaborator>
+
+    @Query("""
+        SELECT new io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator(
+            upc.id.userId,
+            upc.id.partnerId,
+            a.email,
+            upc.level)
+        FROM #{#entityName} AS upc
+        LEFT JOIN project_partner pp on pp.id = upc.id.partnerId
+        LEFT JOIN account a on a.id = upc.id.userId
+        WHERE pp.project.id = :projectId AND a.id = :userId
+        ORDER BY a.email
+    """)
+    fun findAllByIdUserIdAndProjectId(userId: Long, projectId: Long): Set<PartnerCollaborator>
 
 
     @Query("""

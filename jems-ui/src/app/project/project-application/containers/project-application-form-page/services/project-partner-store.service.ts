@@ -204,7 +204,10 @@ export class ProjectPartnerStore {
               : of([]);
           }
         ),
-        shareReplay(1)
+        shareReplay(1),
+        catchError(() => {
+          return of([]);
+        })
       );
   }
 

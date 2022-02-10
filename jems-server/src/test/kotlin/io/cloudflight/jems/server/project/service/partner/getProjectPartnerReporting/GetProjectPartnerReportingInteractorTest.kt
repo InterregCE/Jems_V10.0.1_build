@@ -70,47 +70,43 @@ internal class GetProjectPartnerReportingInteractorTest : UnitTest() {
     lateinit var getInteractor: GetProjectPartnerReporting
 
     @Test
-    fun findAllByProjectIdForReportingTestException() {
+    fun findAllByProjectIdTestException() {
         every { persistence.findAllByProjectIdForDropdown(-1, UNSORTED) } throws ResourceNotFoundException("partner")
-        assertThrows<ResourceNotFoundException> { getInteractor.findAllByProjectIdForReporting(-1, UNSORTED) }
+        assertThrows<ResourceNotFoundException> { getInteractor.findAllByProjectId(-1, UNSORTED) }
     }
 
     @Test
-    fun findAllByProjectIdForReportingTest() {
+    fun findAllByProjectIdTest() {
         every { persistence.findAllByProjectIdForDropdown(1, UNSORTED) } returns listOf(projectPartnerSummary)
         every { userAuthorization.hasPermissionForProject(UserRolePermission.ProjectReportingView, 1) } returns true
 
-        Assertions.assertThat(getInteractor.findAllByProjectIdForReporting(1, UNSORTED))
+        Assertions.assertThat(getInteractor.findAllByProjectId(1, UNSORTED))
             .isEqualTo(listOf(projectPartnerSummary))
     }
 
     @Test
-    fun findAllByProjectIdForReportingEmptyForCollaboratorPermissionTest() {
+    fun findAllByProjectIdEmptyForCollaboratorPermissionTest() {
         every { persistence.findAllByProjectIdForDropdown(1, UNSORTED) } returns listOf(projectPartnerSummary)
         every { userAuthorization.hasPermissionForProject(UserRolePermission.ProjectReportingView, 1) } returns false
         every { userAuthorization.hasPermissionForProject(UserRolePermission.ProjectReportingEdit, 1) } returns false
 
         every { securityService.getUserIdOrThrow() } returns 2
-        every { partnerCollaboratorPersistence.findPartnerIdsByUserAndProject(2, 1) } returns setOf(1)
-        every { partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(1, setOf(1)) } returns setOf()
+        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(2, 1) } returns emptySet()
 
         val emptyList: List<ProjectPartnerSummary> = emptyList()
-        Assertions.assertThat(getInteractor.findAllByProjectIdForReporting(1, UNSORTED)).isEqualTo(emptyList)
+        Assertions.assertThat(getInteractor.findAllByProjectId(1, UNSORTED)).isEqualTo(emptyList)
     }
 
     @Test
-    fun findAllByProjectIdForReportingForCollaboratorPermissionTest() {
+    fun findAllByProjectIdForCollaboratorPermissionTest() {
         every { persistence.findAllByProjectIdForDropdown(1, UNSORTED) } returns listOf(projectPartnerSummary)
         every { userAuthorization.hasPermissionForProject(UserRolePermission.ProjectReportingView, 1) } returns false
         every { userAuthorization.hasPermissionForProject(UserRolePermission.ProjectReportingEdit, 1) } returns false
 
         every { securityService.getUserIdOrThrow() } returns 2
-        every { partnerCollaboratorPersistence.findPartnerIdsByUserAndProject(2, 1) } returns setOf(1)
-        every { partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(1, setOf(1)) } returns setOf(
-            projectPartnerReportingCollaborator
-        )
+        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(2, 1) } returns setOf(projectPartnerReportingCollaborator)
 
-        Assertions.assertThat(getInteractor.findAllByProjectIdForReporting(1, UNSORTED))
+        Assertions.assertThat(getInteractor.findAllByProjectId(1, UNSORTED))
             .isEqualTo(listOf(projectPartnerSummary))
     }
 
