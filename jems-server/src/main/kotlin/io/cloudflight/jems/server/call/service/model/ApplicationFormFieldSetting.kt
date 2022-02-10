@@ -293,7 +293,6 @@ enum class ApplicationFormFieldSetting(
         "application.config.project.partner.budget.infrastructure.and.works.price.per.unit",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-
     PARTNER_BUDGET_UNIT_COSTS_PROGRAMME_UNIT_COSTS(
         "application.config.project.partner.budget.unit.costs.programme.unit.costs",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -308,6 +307,26 @@ enum class ApplicationFormFieldSetting(
     ),
     PARTNER_BUDGET_UNIT_COSTS_PRICE_PER_UNIT(
         "application.config.project.partner.budget.unit.costs.price.per.unit",
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_SPF_DESCRIPTION(
+        "application.config.project.partner.budget.spf.description",
+        setOf(FieldVisibilityStatus.NONE),
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_SPF_COMMENTS(
+        "application.config.project.partner.budget.spf.comments",
+        setOf(FieldVisibilityStatus.NONE),
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_SPF_UNIT_TYPE_AND_NUMBER_OF_UNITS(
+        "application.config.project.partner.budget.spf.unit.type.and.number.of.units",
+        setOf(FieldVisibilityStatus.NONE),
+        setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
+    PARTNER_BUDGET_SPF_PRICE_PER_UNIT(
+        "application.config.project.partner.budget.spf.price.per.unit",
+        setOf(FieldVisibilityStatus.NONE),
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
     PARTNER_STATE_AID_CRITERIA_SELF_CHECK(
@@ -612,7 +631,11 @@ enum class ApplicationFormFieldSetting(
                 PARTNER_BUDGET_UNIT_COSTS_PROGRAMME_UNIT_COSTS.id,
                 PARTNER_BUDGET_UNIT_COSTS_DESCRIPTION.id,
                 PARTNER_BUDGET_UNIT_COSTS__UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
-                PARTNER_BUDGET_UNIT_COSTS_PRICE_PER_UNIT.id
+                PARTNER_BUDGET_UNIT_COSTS_PRICE_PER_UNIT.id,
+                PARTNER_BUDGET_SPF_DESCRIPTION.id,
+                PARTNER_BUDGET_SPF_COMMENTS.id,
+                PARTNER_BUDGET_SPF_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                PARTNER_BUDGET_SPF_PRICE_PER_UNIT.id,
             )
 
         fun getSpfFormFieldsVisibleByDefault(): Set<String> =

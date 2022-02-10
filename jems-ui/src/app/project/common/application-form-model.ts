@@ -117,6 +117,12 @@ export const APPLICATION_FORM = {
         DESCRIPTION: 'application.config.project.partner.budget.unit.costs.description',
         UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.unit.costs.unit.type.and.number.of.units',
         PRICE_PER_UNIT: 'application.config.project.partner.budget.unit.costs.price.per.unit'
+      },
+      SPF_COST: {
+        DESCRIPTION: 'application.config.project.partner.budget.spf.description',
+        COMMENTS: 'application.config.project.partner.budget.spf.comments',
+        UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.spf.unit.type.and.number.of.units',
+        PRICE_PER_UNIT: 'application.config.project.partner.budget.spf.price.per.unit',
       }
     },
     STATE_AID: {

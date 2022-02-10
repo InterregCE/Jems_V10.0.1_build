@@ -86,11 +86,17 @@ export class ApplicationFormConfigurationPageStore {
     );
   }
 
-  private addConfigurableParentNode(id: string, rootIndex: number, callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[], children: ApplicationFormFieldNode[]): ApplicationFormFieldNode {
+  private addConfigurableParentNode(
+    id: string,
+    rootIndex: number,
+    callPublished: boolean,
+    configs: ApplicationFormFieldConfigurationDTO[],
+    children: ApplicationFormFieldNode[]
+  ): ApplicationFormFieldNode {
     return {...this.addLeafNode(id, rootIndex, callPublished, configs), children};
   }
 
-  private addParentNode(id: string, rootIndex: number, children: ApplicationFormFieldNode[], isHiddenInSpf = false): ApplicationFormFieldNode {
+  private static addParentNode(id: string, rootIndex: number, children: ApplicationFormFieldNode[], isHiddenInSpf = false): ApplicationFormFieldNode {
     return {
       id,
       rootIndex,
@@ -119,8 +125,8 @@ export class ApplicationFormConfigurationPageStore {
       id,
       visible: config?.visible || false,
       availableInStep: config?.availableInStep || AvailableInStepEnum.NONE,
-      visibilityLocked: this.isConfigVisibilityLocked(callPublished, config),
-      stepSelectionLocked: this.isConfigStepSelectionLocked(callPublished, config),
+      visibilityLocked: ApplicationFormConfigurationPageStore.isConfigVisibilityLocked(callPublished, config),
+      stepSelectionLocked: ApplicationFormConfigurationPageStore.isConfigStepSelectionLocked(callPublished, config),
       rootIndex,
       showStepToggle,
       showVisibilitySwitch,
@@ -133,12 +139,12 @@ export class ApplicationFormConfigurationPageStore {
     return Object.keys(applicationFormModel).flatMap(key => [this.addLeafNode(applicationFormModel[key], rootIndex, callPublished, configs, showStepToggle, showVisibilitySwitch, isHiddenInSpf)]);
   }
 
-  private isConfigVisibilityLocked(callPublished: boolean, config?: ApplicationFormFieldConfigurationDTO): boolean {
+  private static isConfigVisibilityLocked(callPublished: boolean, config?: ApplicationFormFieldConfigurationDTO): boolean {
     return config?.visibilityLocked
       || (callPublished && !!config?.visible);
   }
 
-  private isConfigStepSelectionLocked(callPublished: boolean, config?: ApplicationFormFieldConfigurationDTO): boolean {
+  private static isConfigStepSelectionLocked(callPublished: boolean, config?: ApplicationFormFieldConfigurationDTO): boolean {
     return config?.stepSelectionLocked
       || !config?.visible
       || (callPublished && config?.availableInStep === AvailableInStepEnum.STEPONEANDTWO);
@@ -152,7 +158,7 @@ export class ApplicationFormConfigurationPageStore {
   }
 
   private getSectionAFormFieldNodeList(callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode {
-    return this.addParentNode('application.config.project.section.a', 0, [
+    return ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.a', 0, [
       this.addSectionNodes('application.config.project.section.a.1', 0, APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION, callPublished, configs),
       this.addSectionNodes('application.config.project.section.a.2', 0, APPLICATION_FORM.SECTION_A.PROJECT_SUMMARY, callPublished, configs),
       this.addSectionNodes('application.config.project.section.overview.tables', 0, APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES, callPublished, configs),
@@ -160,8 +166,8 @@ export class ApplicationFormConfigurationPageStore {
   }
 
   private getSectionBFormFieldNodeList(callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode {
-    return this.addParentNode('application.config.project.section.b', 1, [
-        this.addParentNode('application.config.project.section.b.1.1', 1,[
+    return ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.b', 1, [
+        ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.b.1.1', 1,[
           this.addLeafNode('application.config.project.partner.role',1,callPublished, configs, true, true, true),
           this.addLeafNode('application.config.project.partner.name',1,callPublished, configs),
           this.addLeafNode('application.config.project.organization.original.name',1,callPublished, configs),
@@ -176,7 +182,7 @@ export class ApplicationFormConfigurationPageStore {
           this.addLeafNode('application.config.project.partner.vat',1,callPublished, configs),
           this.addLeafNode('application.config.project.partner.recoverVat',1,callPublished, configs),
         ]),
-        this.addParentNode('application.config.project.section.b.1.2', 1, [
+        ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.b.1.2', 1, [
           this.addSectionNodes('application.config.project.section.b.1.2.main.address', 1, APPLICATION_FORM.SECTION_B.ADDRESS.MAIN, callPublished, configs),
           this.addSectionNodes('application.config.project.section.b.1.2.secondary.address', 1, APPLICATION_FORM.SECTION_B.ADDRESS.SECONDARY, callPublished, configs),
         ]),
@@ -191,13 +197,13 @@ export class ApplicationFormConfigurationPageStore {
   }
 
   private getSectionCFormFieldNodeList(callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode {
-    return this.addParentNode('application.config.project.section.c', 2, [
+    return ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.c', 2, [
       this.addSectionNodes('application.config.project.section.c.1', 2, APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE, callPublished, configs),
       this.addSectionNodes('application.config.project.section.c.2', 2, APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT, callPublished, configs),
       this.addSectionNodes('application.config.project.section.c.3', 2, APPLICATION_FORM.SECTION_C.PROJECT_PARTNERSHIP, callPublished, configs),
-      this.addParentNode('application.config.project.section.c.4', 2, [
+      ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.c.4', 2, [
         this.addSectionNodes('application.config.project.section.c.4.objectives', 2, APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES, callPublished, configs),
-        this.addParentNode('application.config.project.section.c.4.investments', 2, [
+        ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.c.4.investments', 2, [
           this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE, 2, callPublished, configs, true, true, true),
           this.addLeafNode(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.EXPECTED_DELIVERY_PERIOD, 2, callPublished, configs, true, true, true),
           this.addLeafNode('application.config.project.investment.why.is.investment.needed',2, callPublished, configs),
@@ -224,12 +230,20 @@ export class ApplicationFormConfigurationPageStore {
       this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS, 1, callPublished, configs, false),
       this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN, 1, callPublished, configs, false),
       this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION, 1, callPublished, configs, false),
-      this.addSectionNodes('application.config.project.section.b.budget.staff.cost', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST, callPublished, configs, false),
-      this.addSectionNodes('application.config.project.section.b.budget.travel.and.accommodation', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION, callPublished, configs, false),
-      this.addSectionNodes('application.config.project.section.b.budget.external.expertise.and.services', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.EXTERNAL_EXPERTISE, callPublished, configs, false),
-      this.addSectionNodes('application.config.project.section.b.budget.equipment', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.EQUIPMENT, callPublished, configs, false),
-      this.addSectionNodes('application.config.project.section.b.budget.infrastructure.and.works', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.INFRASTRUCTURE_AND_WORKS, callPublished, configs, false, true, true),
-      this.addSectionNodes('application.config.project.section.b.budget.unit.costs', 1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS, callPublished, configs, false),
+      this.addSectionNodes('application.config.project.section.b.budget.staff.cost',
+        1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST, callPublished, configs, false),
+      this.addSectionNodes('application.config.project.section.b.budget.travel.and.accommodation',
+        1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION, callPublished, configs, false),
+      this.addSectionNodes('application.config.project.section.b.budget.external.expertise.and.services',
+        1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.EXTERNAL_EXPERTISE, callPublished, configs, false),
+      this.addSectionNodes('application.config.project.section.b.budget.equipment',
+        1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.EQUIPMENT, callPublished, configs, false),
+      this.addSectionNodes('application.config.project.section.b.budget.infrastructure.and.works',
+        1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.INFRASTRUCTURE_AND_WORKS, callPublished, configs, false, true, true),
+      this.addSectionNodes('application.config.project.section.b.budget.unit.costs',
+        1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS, callPublished, configs, false),
+      this.addSectionNodes('application.config.project.section.b.budget.spf.cost',
+        1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.SPF_COST, callPublished, configs, false)
     ]);
   }
 

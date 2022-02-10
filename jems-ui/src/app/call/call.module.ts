@@ -4,7 +4,6 @@ import {RouterModule} from '@angular/router';
 import {routes} from './call-routing.module';
 import {CallPageComponent} from './containers/call-page/call-page.component';
 import {SharedModule} from '@common/shared-module';
-import {CallStore} from './services/call-store.service';
 import {CallPriorityTreeComponent} from './components/call-priority-tree/call-priority-tree.component';
 import {CallNameResolver} from './services/call-name.resolver';
 import {CallStrategiesComponent} from './call-detail-page/call-strategies/call-strategies.component';
@@ -20,7 +19,7 @@ import {CallDetailPageComponent} from './call-detail-page/call-detail-page.compo
 import {ApplicationFormConfigurationPageComponent} from './application-form-configuration-page/application-form-configuration-page.component';
 import {CallStateAidsComponent} from './call-detail-page/call-state-aids/call-state-aids.component';
 import {CallAllowedRealCostsComponent} from './call-budget-settings-page/call-allow-real-costs/call-allow-real-costs.component';
-import { PreSubmissionCheckSettingsPageComponent } from './pre-submission-check-settings-page/pre-submission-check-settings-page.component';
+import {PreSubmissionCheckSettingsPageComponent} from './pre-submission-check-settings-page/pre-submission-check-settings-page.component';
 
 @NgModule({
   declarations: [
