@@ -56,6 +56,6 @@ class ProjectResultPersistenceProvider(
         projectRepository.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
 
     private fun getIndicatorOrThrow(indicatorId: Long?): ResultIndicatorEntity? =
-        indicatorId?.let { indicatorRepository.getOne(it) }
+        indicatorId?.let { indicatorRepository.getById(it) }
 
 }

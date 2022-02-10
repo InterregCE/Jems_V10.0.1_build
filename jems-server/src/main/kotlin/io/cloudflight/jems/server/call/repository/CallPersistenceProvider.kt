@@ -75,8 +75,8 @@ class CallPersistenceProvider(
 
         val created = callRepo.save(
             call.toEntity(
-                user = userRepo.getOne(userId),
-                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getOne(it) },
+                user = userRepo.getById(userId),
+                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getById(it) },
                 retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() }
             )
         )
@@ -111,7 +111,7 @@ class CallPersistenceProvider(
         return callRepo.save(
             call.toEntity(
                 user = existingCall.creator,
-                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getOne(it) },
+                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getById(it) },
                 retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() },
                 existingEntity = existingCall,
             )

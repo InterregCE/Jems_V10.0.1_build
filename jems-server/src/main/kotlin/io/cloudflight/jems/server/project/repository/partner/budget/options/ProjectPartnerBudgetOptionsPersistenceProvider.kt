@@ -97,6 +97,6 @@ class ProjectPartnerBudgetOptionsPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectCallFlatRateByPartnerId(partnerId: Long): Set<ProjectCallFlatRate> =
-        projectPartnerRepository.getOne(partnerId).project.call.flatRates.toModel()
+        projectPartnerRepository.getById(partnerId).project.call.flatRates.toModel()
 
 }

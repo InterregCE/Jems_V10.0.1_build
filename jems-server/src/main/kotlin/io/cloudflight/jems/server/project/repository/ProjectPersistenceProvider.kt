@@ -108,7 +108,7 @@ class ProjectPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getProjectSummary(projectId: Long): ProjectSummary =
-        projectRepository.getOne(projectId).toSummaryModel()
+        projectRepository.getById(projectId).toSummaryModel()
 
     @Transactional(readOnly = true)
     override fun getProjectCallSettings(projectId: Long): ProjectCallSettings =

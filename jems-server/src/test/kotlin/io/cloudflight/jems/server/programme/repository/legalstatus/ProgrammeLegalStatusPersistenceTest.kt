@@ -63,14 +63,7 @@ class ProgrammeLegalStatusPersistenceTest : UnitTest() {
 
     @Test
     fun `updateLegalStatuses - everything should be fine`() {
-        val toBeRemoved = listOf(
-            ProgrammeLegalStatusEntity(id = 14, ProgrammeLegalStatusType.OTHER),
-            ProgrammeLegalStatusEntity(id = 15, ProgrammeLegalStatusType.OTHER),
-        )
-
-        val slotToDelete = slot<Iterable<ProgrammeLegalStatusEntity>>()
-        every { repository.findAllById(setOf(14, 15)) } returns toBeRemoved
-        every { repository.deleteInBatch(capture(slotToDelete)) } answers { }
+        every { repository.deleteAllByIdInBatch(setOf(14, 15)) } answers { }
         every { repository.saveAll(any<List<ProgrammeLegalStatusEntity>>()) } returnsArgument 0
         every { repository.findTop20ByOrderById() } returns listOf(legalStatusEntity)
 
@@ -81,7 +74,7 @@ class ProgrammeLegalStatusPersistenceTest : UnitTest() {
             )
         ).containsExactly(legalStatus)
 
-        verify(exactly = 1) { repository.deleteInBatch(toBeRemoved) }
+        verify(exactly = 1) { repository.deleteAllByIdInBatch(setOf(14, 15)) }
     }
 
 }

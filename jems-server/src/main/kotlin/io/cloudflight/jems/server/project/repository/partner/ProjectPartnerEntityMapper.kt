@@ -102,7 +102,6 @@ fun ProjectPartnerEntity.copy(
     newContacts: Set<ProjectPartnerContact>? = null,
     newMotivation: ProjectPartnerMotivation? = null,
     newPartnerContributions: List<ProjectPartnerContribution>? = null,
-    newFinancing: Collection<UpdateProjectPartnerCoFinancing>? = null
 ): ProjectPartnerEntity = ProjectPartnerEntity(
     id = projectPartner?.id ?: id,
     active = active,

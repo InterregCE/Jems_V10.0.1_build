@@ -180,9 +180,9 @@ internal class ProjectPartnerBudgetOptionsPersistenceProviderTest : UnitTest() {
         every { projectEntityMock.call } returns callEntityMock
         every { callEntityMock.flatRates } returns mutableSetOf(flatRate)
 
-        every { partnerRepository.getOne(partnerId) } returns projectPartnerEntityMock
+        every { partnerRepository.getById(partnerId) } returns projectPartnerEntityMock
         assertThat(persistence.getProjectCallFlatRateByPartnerId(partnerId)).isEqualTo(mutableSetOf(flatRate).toModel())
-        verify { partnerRepository.getOne(partnerId) }
+        verify { partnerRepository.getById(partnerId) }
     }
 
     @TestFactory
