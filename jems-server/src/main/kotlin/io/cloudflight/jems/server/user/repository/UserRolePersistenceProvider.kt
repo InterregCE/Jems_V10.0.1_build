@@ -30,7 +30,7 @@ class UserRolePersistenceProvider(
     override fun getById(id: Long): UserRole {
         val defaultUserRoleId = programmeDataPersistence.getDefaultUserRole()
         val permissions = userRolePermissionRepo.findAllByIdUserRoleId(id).toModel()
-        return userRoleRepo.getOne(id).toModel(permissions, defaultUserRoleId)
+        return userRoleRepo.getById(id).toModel(permissions, defaultUserRoleId)
     }
 
     @Transactional(readOnly = true)

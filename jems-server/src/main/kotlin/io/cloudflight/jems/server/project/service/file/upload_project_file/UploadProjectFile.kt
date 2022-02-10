@@ -81,7 +81,7 @@ class UploadProjectFile(
 
     private fun throwIfFileTypeIsNotAllowed(fileName: String) {
         if (!arrayOf("csv","dat","db","dbf","log","mdb","xml","email","eml","emlx","msg","oft","ost","pst","vcf","bmp","gif","jpeg","jpg","png","psd","svg","tif","tiff","htm","html","key","odp","pps","ppt","pptx","ods","xls","xlsm","xlsx","doc","docx","odt","pdf","rtf","tex","txt","wpd","mov","avi","mp4","zip","rar","ace","7z","url")
-                .contains(FilenameUtils.getExtension(fileName).toLowerCase()))
+                .contains(FilenameUtils.getExtension(fileName).lowercase()))
             throw ProjectFileTypeNotSupported();
     }
 }

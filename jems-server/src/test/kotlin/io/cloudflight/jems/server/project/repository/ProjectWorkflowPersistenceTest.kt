@@ -272,8 +272,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
     fun `update Application first Submission`() {
         val user = ProjectPartnerTestUtil.user
         val project = dummyProject()
-        every { projectRepository.getOne(PROJECT_ID) } returns project
-        every { userRepository.getOne(user.id) } returns user
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { userRepository.getById(user.id) } returns user
         val status =
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.SUBMITTED, user = user, updated = startDate)
         // any because of auto set updated timestamp
@@ -287,8 +287,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
     fun `update Application last ReSubmission`() {
         val user = ProjectPartnerTestUtil.user
         val project = dummyProject()
-        every { projectRepository.getOne(PROJECT_ID) } returns project
-        every { userRepository.getOne(user.id) } returns user
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { userRepository.getById(user.id) } returns user
         val status =
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.APPROVED, user = user, updated = endDate)
         // any because of auto set updated timestamp
@@ -354,7 +354,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
     @Test
     fun `reset Project FundingDecision`() {
-        every { projectRepository.getOne(PROJECT_ID) } returns dummyProject()
+        every { projectRepository.getById(PROJECT_ID) } returns dummyProject()
         assertThat(persistence.resetProjectFundingDecisionToCurrentStatus(PROJECT_ID))
             .isEqualTo(ApplicationStatus.SUBMITTED)
     }
@@ -363,8 +363,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
     fun `update Project EligibilityDecision`() {
         val user = ProjectPartnerTestUtil.user
         val project = dummyProject()
-        every { projectRepository.getOne(PROJECT_ID) } returns project
-        every { userRepository.getOne(user.id) } returns user
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { userRepository.getById(user.id) } returns user
         val statusHistories = listOf(
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = user, updated = startDate),
             ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.APPROVED, user = user, updated = endDate)
@@ -387,8 +387,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
     fun `update Project FundingDecision`() {
         val user = ProjectPartnerTestUtil.user
         val project = dummyProject()
-        every { projectRepository.getOne(PROJECT_ID) } returns project
-        every { userRepository.getOne(user.id) } returns user
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { userRepository.getById(user.id) } returns user
         val statusHistories = listOf(
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = user, updated = startDate),
             ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.APPROVED, user = user, updated = endDate)

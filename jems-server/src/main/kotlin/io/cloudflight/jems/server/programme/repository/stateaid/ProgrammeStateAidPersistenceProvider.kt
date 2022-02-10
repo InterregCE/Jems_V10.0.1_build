@@ -18,7 +18,7 @@ class ProgrammeStateAidPersistenceProvider(
     override fun updateStateAids(
         toDeleteIds: Set<Long>, toPersist: Collection<ProgrammeStateAid>
     ): List<ProgrammeStateAid> {
-        repository.deleteInBatch(toDeleteIds.map { repository.getOne(it) })
+        repository.deleteAllByIdInBatch(toDeleteIds)
         repository.saveAll(toPersist.toEntity()).toModel()
         return repository.findAllByOrderById().toModel()
     }

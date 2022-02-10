@@ -66,13 +66,7 @@ class ProgrammeFundPersistenceTest : UnitTest() {
 
     @Test
     fun updateFunds() {
-        val toBeRemoved = listOf(
-            ProgrammeFundEntity(id = 14, selected = false),
-            ProgrammeFundEntity(id = 15, selected = false),
-        )
-
-        every { repository.findAllById(setOf(14, 15)) } returns toBeRemoved
-        every { repository.deleteInBatch(any()) } answers { }
+        every { repository.deleteAllByIdInBatch(setOf(14, 15)) } answers { }
         every { repository.saveAll(any<List<ProgrammeFundEntity>>()) } returnsArgument 0
 
         val funds = persistence.updateFunds(
@@ -84,7 +78,7 @@ class ProgrammeFundPersistenceTest : UnitTest() {
         assertThat(funds[0].description).isEqualTo(fund.description)
         assertThat(funds[0].abbreviation).isEqualTo(fund.abbreviation)
 
-        verify(exactly = 1) { repository.deleteInBatch(toBeRemoved) }
+        verify(exactly = 1) { repository.deleteAllByIdInBatch(setOf(14, 15)) }
     }
 
 }
