@@ -307,7 +307,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     }
 
     @Test
-    fun updateBudgetSpfCost() {
+    fun updateBudgetSpfCosts() {
         val spfCosts = listOf(
             BudgetSpfCostEntryDTO(
                 id = 1,
@@ -321,7 +321,7 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         every {
             updateBudgetSpfCosts.updateBudgetSpfCosts(PARTNER_ID, any())
         } returns spfCosts.toBudgetSpfCostEntryList()
-        assertThat(controller.updateBudgetSpf(PARTNER_ID, spfCosts)).isEqualTo(spfCosts)
+        assertThat(controller.updateBudgetSpfCosts(PARTNER_ID, spfCosts)).isEqualTo(spfCosts)
     }
 
     @Test

@@ -1,9 +1,11 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import org.springframework.http.HttpStatus
@@ -19,6 +21,7 @@ const val BUDGET_COST_INVALID_PERIOD_AMOUNT_SCALE_ERROR_KEY = "project.partner.b
 const val BUDGET_COST_INVALID_NUMBER_OF_UNITS_SCALE_ERROR_KEY = "project.partner.budget.number.of.units.invalid.scale"
 const val BUDGET_COST_INVALID_PRICE_PER_UNIT_SCALE_ERROR_KEY = "project.partner.budget.price.per.unit.invalid.scale"
 const val BUDGET_COST_REAL_COST_NOT_ALLOWED = "project.partner.budget.real.cost.not.allowed"
+const val BUDGET_COST_SPF_COST_NOT_ALLOWED = "project.partner.budget.spf.cost.not.allowed"
 val MAX_ALLOWED_BUDGET_VALUE: BigDecimal = BigDecimal.valueOf(999_999_999_99L, 2)
 
 @Service
@@ -94,6 +97,15 @@ class BudgetCostValidator(private val callPersistence: CallPersistence) {
                     i18nKey = BUDGET_COST_INVALID_PRICE_PER_UNIT_SCALE_ERROR_KEY
                 )
         }
+
+    fun validateAllowedSpfCosts(callSettings: ProjectCallSettings) {
+        if (callSettings.callType != CallType.SPF) {
+            throw I18nValidationException(
+                httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                i18nKey = BUDGET_COST_SPF_COST_NOT_ALLOWED
+            )
+        }
+    }
 
     fun validateAllowedRealCosts(callId: Long, budgetEntries: List<BaseBudgetEntry>, budgetCategory: BudgetCategory) {
         val allowedRealCosts = this.callPersistence.getAllowedRealCosts(callId)

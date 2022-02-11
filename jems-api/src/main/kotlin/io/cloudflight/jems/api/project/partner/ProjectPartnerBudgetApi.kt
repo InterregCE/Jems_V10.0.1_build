@@ -96,7 +96,7 @@ interface ProjectPartnerBudgetApi {
 
     @ApiOperation("Update project partner Budget: SPF Costs")
     @PutMapping("/spf", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateBudgetSpf(
+    fun updateBudgetSpfCosts(
         @PathVariable partnerId: Long,
         @RequestBody spfCosts: List<BudgetSpfCostEntryDTO>
     ): List<BudgetSpfCostEntryDTO>
