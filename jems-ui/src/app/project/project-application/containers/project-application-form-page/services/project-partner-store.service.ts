@@ -11,7 +11,7 @@ import {
   ProjectPartnerSummaryDTO, ProjectStatusDTO, ProjectVersionDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectPartner} from '@project/model/ProjectPartner';
@@ -197,6 +197,7 @@ export class ProjectPartnerStore {
   private partnerReportSummaries(): Observable<ProjectPartnerSummaryDTO[]> {
     return combineLatest([this.projectStore.projectId$, this.projectVersionStore.versions$])
       .pipe(
+        filter(([projectId, version]) => !!projectId),
         switchMap(([projectId, versions]) => {
             const contractedVersion = this.getLastContractedVersion(versions);
             this.lastContractedVersion$.next(contractedVersion);
