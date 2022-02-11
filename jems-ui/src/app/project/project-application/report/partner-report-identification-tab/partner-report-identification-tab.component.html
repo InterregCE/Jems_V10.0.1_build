@@ -1,0 +1,49 @@
+<jems-form *ngIf="this.projectPartnerReportPageStore.partnerReport$ | async as partnerReport">
+
+    <h2 class="mb-5" page-sub-title >{{'project.application.partner.report.sub.title' | translate}}</h2>
+
+    <div id="report-info">
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.detail.table.id.application' | translate}}</span>
+            <span class="p-1">{{projectStore.project.customIdentifier}} – {{projectStore.project.acronym}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.id' | translate}}</span>
+            <span class="p-1">R.{{partnerReport.reportNumber}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.status' | translate}}</span>
+            <span class="p-1">{{partnerReport.status}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.form.partner.table.number' | translate}}</span>
+            <span class="p-1">{{'common.label.project.partner.role.shortcut.' + partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partnerReport?.identification?.partnerNumber} }}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.organization.original.name.label' | translate}}</span>
+            <span class="p-1">{{partnerReport.identification?.nameInOriginalLanguage}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.organization.english.name.label' | translate}}</span>
+            <span class="p-1">{{partnerReport.identification?.nameInEnglish}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.partner.legal.status' | translate}}</span>
+            <span class="p-1">{{partnerReport.identification?.legalStatus.description | translateBySystemLanguage | async}}</span>
+            </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.partner.type' | translate}}</span>
+            <span class="p-1">{{'project.application.form.relevance.target.group.' + partnerReport.identification?.partnerType | translate}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.organisation.vat.recovery' | translate}}</span>
+            <span class="p-1">{{partnerReport.identification?.vatRecovery}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.co.financing.source.and.rate' | translate}}</span>
+            <ul class="fund-list">
+                <li *ngFor="let cofinancing of partnerReport.identification?.coFinancing" class="p-1">{{(cofinancing?.fund.abbreviation | translateBySystemLanguage | async) + ' ' + (cofinancing?.percentage | asMoney) + '%' }}</li>
+            </ul>
+        </div>
+    </div>
+</jems-form>

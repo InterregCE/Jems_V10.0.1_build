@@ -55,6 +55,13 @@ import {PrivilegesPageComponent} from './project-application/privileges-page/pri
 import {ContractMonitoringComponent} from '@project/project-application/contract-monitoring/contract-monitoring.component';
 import {PartnerReportComponent} from '@project/project-application/report/partner-report.component';
 import {PartnerReportBreadcrumbResolver} from '@project/project-application/report/service/partner-report-breadcrumb-resolver.service';
+import { PartnerReportDetailPageComponent } from './project-application/report/partner-report-detail-page/partner-report-detail-page.component';
+import {
+  PartnerReportIdentificationTabComponent
+} from '@project/project-application/report/partner-report-identification-tab/partner-report-identification-tab.component';
+import {
+  ReportBreadcrumbResolver
+} from '@project/project-application/containers/project-application-detail/services/report-breadcrumb.resolver';
 
 export const routes: Routes = [
   {
@@ -82,10 +89,36 @@ export const routes: Routes = [
             component: ProjectDetailPageComponent,
           },
           {
-            path: 'reporting/:partnerId',
-            component: PartnerReportComponent,
+            path: 'reporting/:partnerId/reports',
             data: {dynamicBreadcrumb: true},
             resolve: {breadcrumb$: PartnerReportBreadcrumbResolver},
+            children: [
+              {
+                path: '',
+                component: PartnerReportComponent,
+              },
+              {
+                path: ':reportId',
+                redirectTo: ':reportId/identification',
+              },
+              {
+                path: ':reportId',
+                data: {dynamicBreadcrumb: true},
+                resolve: {breadcrumb$: ReportBreadcrumbResolver},
+                children: [
+                  {
+                    path: '',
+                    component: PartnerReportDetailPageComponent,
+                    children: [
+                      {
+                        path: 'identification',
+                        component: PartnerReportIdentificationTabComponent,
+                      }
+                    ],
+                  }
+                ]
+              }
+            ]
           },
           {
             path: 'contractMonitoring',

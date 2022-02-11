@@ -166,7 +166,7 @@ export class ProjectApplicationFormSidenavService {
                     i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
                   },
                   icon: partner.active ? '' : 'person_off',
-                  route: `/app/project/detail/${projectId}/reporting/${partner.id}`
+                  route: `/app/project/detail/${projectId}/reporting/${partner.id}/reports`
                 }
               ))
             )
