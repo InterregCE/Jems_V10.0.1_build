@@ -225,7 +225,6 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         val result = persistence.createOrUpdateBudgetEquipmentCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allMatch { it.id == 1L }
-        //assertThat(result).allSatisfy { assertThat(it.id).isEqualTo(1) }
         assertThat(result[0]).isEqualTo(generalCostEntry)
     }
 

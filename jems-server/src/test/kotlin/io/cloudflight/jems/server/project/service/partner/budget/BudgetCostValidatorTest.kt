@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.mockk.impl.annotations.InjectMockKs
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 import java.util.stream.IntStream
 import kotlin.streams.toList
 
@@ -145,6 +148,18 @@ internal class BudgetCostValidatorTest : UnitTest() {
         assertEquals(BUDGET_COST_INVALID_PRICE_PER_UNIT_SCALE_ERROR_KEY, ex.i18nKey)
     }
 
+    @Test
+    fun `should not throw exception if spf costs are added for spf call`() {
+        assertEquals(budgetCostValidator.validateAllowedSpfCosts(createCallSettings(CallType.SPF)), Unit)
+    }
+
+    @Test
+    fun `should throw I18nValidationException when at spf costs are added for standard call`() {
+        val ex = assertThrows<I18nValidationException> {
+            budgetCostValidator.validateAllowedSpfCosts(createCallSettings(CallType.STANDARD))
+        }
+        assertEquals(BUDGET_COST_SPF_COST_NOT_ALLOWED, ex.i18nKey)
+    }
 
     @TestFactory
     fun `should throw I18nValidationException when at least one of number of units is more than allowed`() =
@@ -189,4 +204,23 @@ internal class BudgetCostValidatorTest : UnitTest() {
                 override val unitCostId = null
             }
         )
+
+    private fun createCallSettings(callType: CallType): ProjectCallSettings {
+        return ProjectCallSettings(
+            callId = 1,
+            callName = "callName",
+            callType = callType,
+            startDate = ZonedDateTime.now(),
+            endDate = ZonedDateTime.now(),
+            endDateStep1 = null,
+            lengthOfPeriod = 2,
+            isAdditionalFundAllowed = false,
+            flatRates = emptySet(),
+            lumpSums = emptyList(),
+            unitCosts = emptyList(),
+            stateAids = emptyList(),
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null
+        )
+    }
 }

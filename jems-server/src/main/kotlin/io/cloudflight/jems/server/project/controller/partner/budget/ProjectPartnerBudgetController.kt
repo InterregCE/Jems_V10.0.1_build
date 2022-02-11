@@ -95,7 +95,7 @@ class ProjectPartnerBudgetController(
         updateBudgetUnitCosts.updateBudgetUnitCosts(partnerId, unitCosts.toBudgetUnitCostEntryList())
             .toBudgetUnitCostEntryDTOList()
 
-    override fun updateBudgetSpf(partnerId: Long, spfCosts: List<BudgetSpfCostEntryDTO>) =
+    override fun updateBudgetSpfCosts(partnerId: Long, spfCosts: List<BudgetSpfCostEntryDTO>) =
         updateBudgeSpfCosts.updateBudgetSpfCosts(partnerId, spfCosts.toBudgetSpfCostEntryList()
         ).toBudgetSpfCostEntryDTOList()
 

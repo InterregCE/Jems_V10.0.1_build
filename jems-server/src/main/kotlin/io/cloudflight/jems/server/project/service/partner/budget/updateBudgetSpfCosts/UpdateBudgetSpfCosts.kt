@@ -28,10 +28,8 @@ class UpdateBudgetSpfCosts(
 
         budgetCostValidator.validateBaseEntries(spfCosts)
         budgetCostValidator.validatePricePerUnits(spfCosts.map { it.pricePerUnit })
-
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
-        // call has to be SPF
-        //budgetCostValidator.validateAllowedRealCosts(projectPersistence.getCallIdOfProject(projectId), spfCosts)
+        budgetCostValidator.validateAllowedSpfCosts(projectPersistence.getProjectCallSettings(projectId))
 
         budgetCostValidator.validateBudgetPeriods(
             spfCosts.map { it.budgetPeriods }.flatten().toSet(),

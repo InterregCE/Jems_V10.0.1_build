@@ -6,7 +6,7 @@ import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
 @Entity(name = "project_partner_budget_spfcost_transl")
-data class ProjectPartnerBudgetSpfCostTranslEntity(
+class ProjectPartnerBudgetSpfCostTranslEntity(
 
     @EmbeddedId
     override val translationId: TranslationId<ProjectPartnerBudgetSpfCostEntity>,
