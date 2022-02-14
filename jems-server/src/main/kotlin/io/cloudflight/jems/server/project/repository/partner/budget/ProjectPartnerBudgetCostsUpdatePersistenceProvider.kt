@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitC
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.repository.description.ProjectPeriodRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetSpfCostEntry
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetStaffCostEntry
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetUnitCostEntities
@@ -11,10 +12,12 @@ import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toMo
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetEquipmentEntity
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetExternalEntities
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetInfrastructureEntity
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetSpfCostEntities
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetStaffCostEntities
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetTravelEntities
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetSpfCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
@@ -29,6 +32,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
     private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
     private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
     private val budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository,
+    private val budgetSpfCostRepository: ProjectPartnerBudgetSpfCostRepository,
     private val programmeUnitCostRepository: ProgrammeUnitCostRepository,
     private val projectPeriodRepository: ProjectPeriodRepository,
 ) : ProjectPartnerBudgetCostsUpdatePersistence {
@@ -163,4 +167,23 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
             )
         }
 
+    @Transactional
+    override fun createOrUpdateBudgetSpfCosts(
+        projectId: Long,
+        partnerId: Long,
+        spfCosts: List<BudgetSpfCostEntry>
+    ) =
+        budgetSpfCostRepository.saveAll(
+            spfCosts.toProjectPartnerBudgetSpfCostEntities(
+                partnerId = partnerId,
+                projectPeriodEntityReferenceResolver = projectPeriodEntityReferenceResolver(projectId)
+            )
+        ).map { it.toBudgetSpfCostEntry() }
+
+    @Transactional
+    override fun deleteAllBudgetSpfCostsExceptFor(partnerId: Long, idsToKeep: Set<Long>) =
+        if (idsToKeep.isNotEmpty()) budgetSpfCostRepository.deleteAllByBasePropertiesPartnerIdAndIdNotIn(
+            partnerId,
+            idsToKeep
+        ) else budgetSpfCostRepository.deleteAllByBasePropertiesPartnerId(partnerId)
 }

@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.project.partner
 
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetCostsDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetSpfCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
@@ -91,6 +92,14 @@ interface ProjectPartnerBudgetApi {
         @PathVariable partnerId: Long,
         @RequestBody unitCosts: List<BudgetUnitCostEntryDTO>
     ): List<BudgetUnitCostEntryDTO>
+
+
+    @ApiOperation("Update project partner Budget: SPF Costs")
+    @PutMapping("/spf", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateBudgetSpfCosts(
+        @PathVariable partnerId: Long,
+        @RequestBody spfCosts: List<BudgetSpfCostEntryDTO>
+    ): List<BudgetSpfCostEntryDTO>
 
 
     @ApiOperation("Get project partner Budget: total")

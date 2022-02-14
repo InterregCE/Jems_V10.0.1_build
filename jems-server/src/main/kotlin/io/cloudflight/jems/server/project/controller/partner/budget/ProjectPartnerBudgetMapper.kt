@@ -87,6 +87,38 @@ fun BudgetTravelAndAccommodationCostEntryDTO.toBudgetTravelAndAccommodationCostE
         comments = comments
     )
 
+fun List<BudgetSpfCostEntry>.toBudgetSpfCostEntryDTOList() =
+    this.map { it.toBudgetSpfCostsEntryDTO() }
+
+fun BudgetSpfCostEntry.toBudgetSpfCostsEntryDTO() =
+    BudgetSpfCostEntryDTO(
+        id = id,
+        numberOfUnits = numberOfUnits,
+        pricePerUnit = pricePerUnit,
+        rowSum = rowSum,
+        budgetPeriods = budgetPeriods.toBudgetPeriodDTOs(),
+        unitCostId = unitCostId,
+        unitType = unitType,
+        description = description,
+        comments = comments
+    )
+
+fun List<BudgetSpfCostEntryDTO>.toBudgetSpfCostEntryList() =
+    this.map { it.toBudgetSpfCostEntry() }
+
+fun BudgetSpfCostEntryDTO.toBudgetSpfCostEntry() =
+    BudgetSpfCostEntry(
+        id = id,
+        numberOfUnits = numberOfUnits,
+        pricePerUnit = pricePerUnit,
+        rowSum = rowSum,
+        budgetPeriods = budgetPeriods.toBudgetPeriods(),
+        unitCostId = unitCostId,
+        unitType = unitType,
+        description = description,
+        comments = comments
+    )
+
 fun List<BudgetUnitCostEntry>.toBudgetUnitCostEntryDTOList() = this.map { it.toBudgetUnitCostEntryDTO() }
 
 fun BudgetUnitCostEntry.toBudgetUnitCostEntryDTO() = BudgetUnitCostEntryDTO(
@@ -145,5 +177,6 @@ fun BudgetCosts.toBudgetCostsDTO() = BudgetCostsDTO(
     externalCosts = externalCosts.toBudgetGeneralCostsEntryDTOList(),
     equipmentCosts = equipmentCosts.toBudgetGeneralCostsEntryDTOList(),
     infrastructureCosts = infrastructureCosts.toBudgetGeneralCostsEntryDTOList(),
-    unitCosts = unitCosts.toBudgetUnitCostEntryDTOList()
+    unitCosts = unitCosts.toBudgetUnitCostEntryDTOList(),
+    spfCosts = spfCosts.toBudgetSpfCostEntryDTOList()
 )

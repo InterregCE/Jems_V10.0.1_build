@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toPr
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetStaffCostEntity
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toProjectPartnerBudgetTravelEntity
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
@@ -26,63 +27,68 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.util.*
+import java.util.Optional
 
+class ProjectPartnerBudgetPersistenceTest: UnitTest() {
 
-class ProjectPartnerBudgetPersistenceTest : UnitTest() {
+    companion object {
+        private const val partnerId = 1L
+        private const val projectId = 2L
+        private val projectPeriodId = ProjectPeriodId(projectId, 3)
 
+        private val staffCostEntry = BudgetStaffCostEntry(
+            id = 1,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.TEN,
+            rowSum = BigDecimal.TEN,
+            budgetPeriods = mutableSetOf(),
+            unitCostId = 1
+        )
 
-    private val partnerId = 1L
-    private val projectId = 2L
-    private val projectPeriodId = ProjectPeriodId(projectId, 3)
+        private val projectPeriod = BudgetPeriod(
+            number = 3,
+            amount = BigDecimal.ONE
+        )
+        private val generalCostEntry = BudgetGeneralCostEntry(
+            id = 1,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.TEN,
+            budgetPeriods = mutableSetOf(projectPeriod),
+            rowSum = BigDecimal.TEN,
+            awardProcedures = setOf(InputTranslation(SystemLanguage.EN, "awardProcedures")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "description"))
+        )
 
-    private val staffCostEntry = BudgetStaffCostEntry(
-        id = 1,
-        numberOfUnits = BigDecimal.ONE,
-        pricePerUnit = BigDecimal.TEN,
-        rowSum = BigDecimal.TEN,
-        budgetPeriods = mutableSetOf(),
-        unitCostId = 1
-    )
+        private val travelCostEntry = BudgetTravelAndAccommodationCostEntry(
+            id = 1,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.TEN,
+            rowSum = BigDecimal.TEN,
+            budgetPeriods = mutableSetOf(),
+            unitType = emptySet()
+        )
 
-    private val generalCostEntry = BudgetGeneralCostEntry(
-        id = 1,
-        numberOfUnits = BigDecimal.ONE,
-        pricePerUnit = BigDecimal.TEN,
-        budgetPeriods = mutableSetOf(),
-        rowSum = BigDecimal.TEN
-    )
+        private val unitCostEntry = BudgetUnitCostEntry(
+            id = 1,
+            unitCostId = 1,
+            numberOfUnits = BigDecimal.ONE,
+            budgetPeriods = mutableSetOf(),
+            rowSum = BigDecimal.TEN
+        )
+        private val programmeUnitCostEntity = ProgrammeUnitCostEntity(
+            id = 1,
+            translatedValues = combineUnitCostTranslatedValues(
+                programmeUnitCostId = 1,
+                name = setOf(InputTranslation(SystemLanguage.EN, "test")),
+                description = emptySet(),
+                type = setOf(InputTranslation(SystemLanguage.EN, "test"))
+            ),
+            costPerUnit = BigDecimal.TEN,
+            isOneCostCategory = false
+        )
 
-    private val travelCostEntry = BudgetTravelAndAccommodationCostEntry(
-        id = 1,
-        numberOfUnits = BigDecimal.ONE,
-        pricePerUnit = BigDecimal.TEN,
-        rowSum = BigDecimal.TEN,
-        budgetPeriods = mutableSetOf(),
-        unitType = emptySet()
-    )
-
-    private val unitCostEntry = BudgetUnitCostEntry(
-        id = 1,
-        unitCostId = 1,
-        numberOfUnits = BigDecimal.ONE,
-        budgetPeriods = mutableSetOf(),
-        rowSum = BigDecimal.TEN
-    )
-    private val programmeUnitCostEntity = ProgrammeUnitCostEntity(
-        id = 1,
-        translatedValues = combineUnitCostTranslatedValues(
-            programmeUnitCostId = 1,
-            name = setOf(InputTranslation(SystemLanguage.EN, "test")),
-            description = emptySet(),
-            type = setOf(InputTranslation(SystemLanguage.EN, "test"))
-        ),
-        costPerUnit = BigDecimal.TEN,
-        isOneCostCategory = false
-    )
-
-    private val projectPeriodEntity = ProjectPeriodEntity(projectPeriodId, 1, 2)
-
+        private val projectPeriodEntity = ProjectPeriodEntity(projectPeriodId, 1, 2)
+    }
 
     @RelaxedMockK
     lateinit var budgetStaffCostRepository: ProjectPartnerBudgetStaffCostRepository
@@ -101,6 +107,9 @@ class ProjectPartnerBudgetPersistenceTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository
+
+    @RelaxedMockK
+    lateinit var budgetSpfCostRepository: ProjectPartnerBudgetSpfCostRepository
 
     @RelaxedMockK
     lateinit var programmeUnitCostRepository: ProgrammeUnitCostRepository
@@ -216,6 +225,7 @@ class ProjectPartnerBudgetPersistenceTest : UnitTest() {
         val result = persistence.createOrUpdateBudgetEquipmentCosts(projectId, partnerId, listOf(generalCostEntry))
         assertThat(1).isEqualTo(result.size)
         assertThat(result).allMatch { it.id == 1L }
+        assertThat(result[0]).isEqualTo(generalCostEntry)
     }
 
     @Test

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetSpfCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
@@ -25,6 +26,9 @@ interface ProjectPartnerBudgetCostsPersistence {
     ): List<BudgetTravelAndAccommodationCostEntry>
 
     fun getBudgetTravelAndAccommodationCostTotal(partnerId: Long, version: String? = null): BigDecimal
+
+    fun getBudgetSpfCosts(partnerId: Long, version: String? = null): List<BudgetSpfCostEntry>
+    fun getBudgetSpfCostTotal(partnerId: Long, version: String? = null): BigDecimal
 
     fun getBudgetUnitCosts(partnerId: Long, version: String? = null): List<BudgetUnitCostEntry>
     fun getBudgetUnitCostTotal(partnerId: Long, version: String? = null): BigDecimal
