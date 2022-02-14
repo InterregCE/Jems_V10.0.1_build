@@ -1,0 +1,51 @@
+<div jemsFormLayout [formGroup]="formGroup">
+    <jems-multi-language-container jemsNoWidthLimit *ngIf="recipientsForm.controls.length>0">
+        <div [jemsTableConfig]="[{},{}, {maxInRem:2}]">
+            <div>
+                <span class="mat-body-strong">{{ 'spf.project.application.form.relevance.recipient.group' | translate }}</span>
+                <span class="mat-body-strong">{{ 'project.application.form.relevance.specification' | translate }}</span>
+                <div class="mat-body-strong"></div>
+            </div>
+            <div *ngFor="let recipient of recipientsForm.controls;let i=index">
+                <ng-container formArrayName="spfRecipients">
+                    <ng-container [formGroupName]="i">
+
+                        <mat-form-field>
+                            <mat-label>{{'spf.project.application.form.relevance.recipient.group' | translate}}</mat-label>
+                            <mat-select [disabled]="!editable" formControlName="recipientGroup" required>
+                                <mat-option *ngFor="let recipientGroup of recipientEnum" [value]="recipientGroup">
+                                    {{'project.application.form.relevance.target.group.' + recipientGroup | translate}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error>
+                                <jems-form-field-errors [errors]="recipient.get('recipientGroup')?.errors"
+                                                        [messages]="recipientGroupErrors"></jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <div>
+                            <jems-multi-language-form-field
+                                    type="textarea"
+                                    formControlName="specification"
+                                    maxLength="2000"
+                                    minRows="1"
+                                    label="project.application.form.relevance.specification"
+                                    [disabled]="!editable">
+                            </jems-multi-language-form-field>
+                        </div>
+
+                        <div>
+                            <button *ngIf="editable" type="button" (click)="deleteEntry(i)" mat-icon-button color="accent">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </jems-multi-language-container>
+    <button jemsText *ngIf="editable && recipientsForm.controls?.length < 20" mat-stroked-button type="button"
+            (click)="addNewRecipient()">
+        <mat-icon>add</mat-icon>
+    </button>
+</div>

@@ -7,6 +7,7 @@ data class ProjectRelevance(
     val commonChallenge: Set<InputTranslation> = emptySet(),
     val transnationalCooperation: Set<InputTranslation> = emptySet(),
     val projectBenefits: List<ProjectRelevanceBenefit>?,
+    val projectSpfRecipients: List<ProjectRelevanceSpfRecipient>?,
     val projectStrategies: List<ProjectRelevanceStrategy>?,
     val projectSynergies: List<ProjectRelevanceSynergy>?,
     val availableKnowledge: Set<InputTranslation> = emptySet()

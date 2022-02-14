@@ -10,8 +10,9 @@ import {
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
+  CallDetailDTO,
   InputProjectRelevance,
-  InputProjectRelevanceBenefit,
+  InputProjectRelevanceBenefit, ProjectRelevanceSpfRecipientDTO,
   InputProjectRelevanceStrategy,
   InputProjectRelevanceSynergy
 } from '@cat/api';
@@ -50,8 +51,11 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
   deleteData = new EventEmitter<InputProjectRelevance>();
 
   benefits: InputProjectRelevanceBenefit[];
+  spfRecipients: ProjectRelevanceSpfRecipientDTO[];
   strategies: InputProjectRelevanceStrategy[];
   synergies: InputProjectRelevanceSynergy[];
+
+  callType$: Observable<CallDetailDTO.TypeEnum>;
 
   projectRelevanceForm: FormGroup = this.formBuilder.group({
     territorialChallenge: [[], Validators.maxLength(5000)],
@@ -59,6 +63,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     transnationalCooperation: [[], Validators.maxLength(5000)],
     availableKnowledge: [[], Validators.maxLength(5000)],
     benefits: this.formBuilder.array([]),
+    spfRecipients: this.formBuilder.array([]),
     strategies: this.formBuilder.array([]),
     synergies: this.formBuilder.array([]),
   });
@@ -67,6 +72,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
               private formService: FormService,
               public projectStore: ProjectStore) {
     super();
+    this.callType$ = projectStore.projectCallType$;
   }
 
   ngOnInit(): void {
@@ -96,6 +102,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     this.updateData.emit({
       ...this.projectRelevanceForm.value,
       projectBenefits: this.buildBenefitsToSave(),
+      projectSpfRecipients: this.buildSpfRecipientsToSave(),
       projectStrategies: this.buildStrategiesToSave(),
       projectSynergies: this.buildSynergiesToSave(),
     });
@@ -107,6 +114,7 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     this.projectRelevanceForm.get('transnationalCooperation')?.setValue(this.project?.transnationalCooperation || []);
     this.projectRelevanceForm.get('availableKnowledge')?.setValue(this.project?.availableKnowledge || []);
     this.benefits = this.project?.projectBenefits ? [...this.project.projectBenefits] : [];
+    this.spfRecipients = this.project?.projectSpfRecipients ? [...this.project.projectSpfRecipients] : [];
     this.strategies = this.project?.projectStrategies ? [...this.project.projectStrategies] : [];
     this.synergies = this.project?.projectSynergies ? [...this.project.projectSynergies] : [];
     this.formService.resetEditable();
@@ -116,6 +124,14 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
     return this.projectRelevanceForm.controls.benefits.value
       .map((element: any) => ({
         group: element.targetGroup,
+        specification: element.specification
+      }));
+  }
+
+  private buildSpfRecipientsToSave(): ProjectRelevanceSpfRecipientDTO[] {
+    return this.projectRelevanceForm.controls.spfRecipients.value
+      .map((element: any) => ({
+        recipientGroup: element.recipientGroup,
         specification: element.specification
       }));
   }
