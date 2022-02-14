@@ -23,6 +23,9 @@ import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceBen
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceBenefitTransl
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceEntity
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceRow
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSpfRecipientEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSpfRecipientRow
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSpfRecipientTransl
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStrategyEntity
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStrategyRow
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStrategyTransl
@@ -38,6 +41,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSpfRecipient
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
 import java.util.UUID
@@ -55,6 +59,7 @@ fun ProjectRelevance.toEntity(projectId: Long) =
             availableKnowledge
         ),
         projectBenefits = projectBenefits?.mapIndexedTo(HashSet()) { index, it -> it.toEntity(index + 1) } ?: emptySet(),
+        projectSpfRecipients = projectSpfRecipients?.mapIndexedTo(HashSet()) { index, it -> it.toEntity(index + 1) } ?: emptySet(),
         projectStrategies = projectStrategies?.mapIndexedTo(HashSet()) { index, it -> it.toEntity(index + 1) } ?: emptySet(),
         projectSynergies = projectSynergies?.mapIndexedTo(HashSet()) { index, it -> it.toEntity(index + 1) } ?: emptySet()
     )
@@ -89,6 +94,7 @@ fun combineTranslatedValuesRelevance(
 
 fun List<ProjectRelevanceRow>.toProjectRelevance(
     projectBenefits: List<ProjectRelevanceBenefit>,
+    projectSpfRecipients: List<ProjectRelevanceSpfRecipient>,
     projectStrategies: List<ProjectRelevanceStrategy>,
     projectSynergies: List<ProjectRelevanceSynergy>
 ) = ProjectRelevance(
@@ -96,6 +102,7 @@ fun List<ProjectRelevanceRow>.toProjectRelevance(
     commonChallenge = extractField { it.commonChallenge } ,
     transnationalCooperation = extractField { it.transnationalCooperation },
     projectBenefits = projectBenefits,
+    projectSpfRecipients = projectSpfRecipients,
     projectStrategies = projectStrategies,
     projectSynergies = projectSynergies,
     availableKnowledge = extractField { it.availableKnowledge }
@@ -108,6 +115,15 @@ fun List<ProjectRelevanceBenefitRow>.toRelevanceBenefits() =
             specification = groupedRows.value.extractField { it.specification }
         )
     }
+
+fun List<ProjectRelevanceSpfRecipientRow>.toRelevanceSpfRecipients() =
+    this.groupBy { it.id }.map { groupedRows ->
+        ProjectRelevanceSpfRecipient(
+            recipientGroup = groupedRows.value.first().recipientGroup,
+            specification = groupedRows.value.extractField { it.specification }
+        )
+    }
+
 fun List<ProjectRelevanceStrategyRow>.toRelevanceStrategies() =
     this.groupBy { it.id }.map { groupedRows ->
         ProjectRelevanceStrategy(
@@ -130,6 +146,7 @@ fun ProjectRelevanceEntity.toProjectRelevance() =
         transnationalCooperation = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.transnationalCooperation) },
         availableKnowledge = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.availableKnowledge) },
         projectBenefits = projectBenefits.sortedBy { it.sortNumber }.map { it.toProjectBenefit() },
+        projectSpfRecipients = projectSpfRecipients.sortedBy { it.sortNumber }.map { it.toProjectSpfRecipient() },
         projectStrategies = projectStrategies.sortedBy { it.sortNumber }.map { it.toProjectStrategy() },
         projectSynergies = projectSynergies.sortedBy { it.sortNumber }.map { it.toProjectSynergy() },
     )
@@ -138,13 +155,21 @@ fun ProjectRelevanceEntity.toProjectRelevance() =
 // region Project Relevance Benefit
 
 fun ProjectRelevanceBenefit.toEntity(sortNumber: Int): ProjectRelevanceBenefitEntity {
-    val id = UUID.randomUUID()
     return ProjectRelevanceBenefitEntity(
-        id = id,
+        id = UUID.randomUUID(),
         sortNumber = sortNumber,
         targetGroup = group,
     ).apply {
         translatedValues.addAll(combineTranslatedValuesBenefit(this, specification))
+    }
+}
+fun ProjectRelevanceSpfRecipient.toEntity(sortNumber: Int): ProjectRelevanceSpfRecipientEntity {
+    return ProjectRelevanceSpfRecipientEntity(
+        id = UUID.randomUUID(),
+        sortNumber = sortNumber,
+        recipientGroup = recipientGroup,
+    ).apply {
+        translatedValues.addAll(combineTranslatedValuesSpfRecipient(this, specification))
     }
 }
 
@@ -160,8 +185,25 @@ fun combineTranslatedValuesBenefit(relevanceBenefit: ProjectRelevanceBenefitEnti
     }
 }
 
+fun combineTranslatedValuesSpfRecipient(relevanceSpfRecipient: ProjectRelevanceSpfRecipientEntity, specification: Set<InputTranslation>): MutableSet<ProjectRelevanceSpfRecipientTransl> {
+    val specificationMap = specification.associateBy( { it.language }, { it.translation } )
+    val languages = specificationMap.keys.toMutableSet()
+
+    return languages.mapTo(HashSet()) {
+        ProjectRelevanceSpfRecipientTransl(
+            io.cloudflight.jems.server.common.entity.TranslationId(relevanceSpfRecipient, it),
+            specificationMap[it]
+        )
+    }
+}
+
 fun ProjectRelevanceBenefitEntity.toProjectBenefit() = ProjectRelevanceBenefit(
     group = targetGroup,
+    specification = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.specification) }
+)
+
+fun ProjectRelevanceSpfRecipientEntity.toProjectSpfRecipient() = ProjectRelevanceSpfRecipient(
+    recipientGroup = recipientGroup,
     specification = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.specification) }
 )
 // endregion Project Relevance Benefit
@@ -169,9 +211,8 @@ fun ProjectRelevanceBenefitEntity.toProjectBenefit() = ProjectRelevanceBenefit(
 // region Project Relevance Strategy
 
 fun ProjectRelevanceStrategy.toEntity(sortNumber: Int): ProjectRelevanceStrategyEntity {
-    val id = UUID.randomUUID()
     return ProjectRelevanceStrategyEntity(
-        id = id,
+        id = UUID.randomUUID(),
         sortNumber = sortNumber,
         strategy = getMappedStrategy(strategy),
     ).apply {
@@ -212,9 +253,8 @@ fun ProjectRelevanceStrategyEntity.toProjectStrategy() = ProjectRelevanceStrateg
 // region Project Relevance Synergy
 
 fun ProjectRelevanceSynergy.toEntity(sortNumber: Int): ProjectRelevanceSynergyEntity {
-    val id = UUID.randomUUID()
     return ProjectRelevanceSynergyEntity(
-        id = id,
+        id =  UUID.randomUUID(),
         sortNumber = sortNumber,
     ).apply {
         translatedValues.addAll(combineTranslatedValuesSynergy(this, synergy, specification))

@@ -2,7 +2,8 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputTranslation,
-  ProgrammeLegalStatusService, ProjectCallSettingsDTO,
+  ProgrammeLegalStatusService,
+  ProjectCallSettingsDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerDTO,
   ProjectPartnerSummaryDTO,
@@ -20,6 +21,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectApplicationFormPartnerEditConstants} from '@project/project-application/components/project-application-form/project-application-form-partner-edit/constants/project-application-form-partner-edit.constants';
 import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
 import {ProjectPartner} from '@project/model/ProjectPartner';
+import {TranslateService} from '@ngx-translate/core';
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Component({
@@ -45,6 +47,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     partner: ProjectPartnerDetailDTO;
     partners: ProjectPartner[];
     projectCallType: CallTypeEnum;
+    isSpf: boolean
   }>;
 
   partnerForm: FormGroup = this.formBuilder.group({
@@ -60,6 +63,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     nameInEnglish: [[], Validators.maxLength(100)],
     department: [],
     partnerType: [''],
+    spfBeneficiaryType: [''],
     partnerSubType: [],
     nace: [],
     otherIdentifierNumber: ['', Validators.maxLength(50)],
@@ -83,11 +87,17 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
               private partnerStore: ProjectPartnerStore,
               private router: RoutingService,
               private activatedRoute: ActivatedRoute,
-              private programmeLegalStatusService: ProgrammeLegalStatusService) {
+              private programmeLegalStatusService: ProgrammeLegalStatusService,
+              private translate: TranslateService) {
     this.formService.init(this.partnerForm, this.partnerStore.isProjectEditable$);
     this.data$ = combineLatest([this.partnerStore.partners$, this.partnerStore.partner$, this.partnerStore.projectCallType$])
       .pipe(
-        map(([partners, partner, callType]) => ({partners, partner, callType})),
+        map(([partners, partner, callType]) => ({
+          partners,
+          partner,
+          projectCallType: callType,
+          isSpf: callType === CallTypeEnum.SPF
+        })),
         tap((data: any) => this.resetForm(data.callType, data.partner))
       );
   }
@@ -223,6 +233,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     this.controls.otherIdentifierDescription.setValue(partner?.otherIdentifierDescription);
     this.controls.pic.setValue(partner?.pic);
     this.controls.sortNumber.setValue(partner?.sortNumber);
+    this.setSpfBeneficiaryTypeValue(partner?.partnerType ? partner.partnerType: '');
   }
 
   selectionUnfocused(event: FocusEvent): void {
@@ -259,6 +270,26 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
 
   private findByNace(value: string): string | undefined {
     return this.ProjectApplicationFormPartnerEditConstants.naceEnums.find(nace => value === nace);
+  }
+
+  setSpfBeneficiaryTypeValue(partnerType: string) {
+    const spfBeneficiaryTypeValue = this.getSpfBeneficiaryTypeTranslationKey(partnerType);
+    const value = (spfBeneficiaryTypeValue !== '') ? this.translate.instant(spfBeneficiaryTypeValue) : '';
+    this.controls.spfBeneficiaryType.setValue(value);
+  }
+
+
+  private getSpfBeneficiaryTypeTranslationKey(partnerType: string): string {
+    const partnerTypeTranslationPrefix = 'project.application.form.relevance.target.group.';
+    if (partnerType === ProjectPartnerDetailDTO.PartnerTypeEnum.Egtc) {
+      return  partnerTypeTranslationPrefix.concat(ProjectPartnerDetailDTO.PartnerTypeEnum.Egtc);
+    } else if (partnerType === ProjectPartnerDetailDTO.PartnerTypeEnum.CrossBorderLegalBody) {
+      return  partnerTypeTranslationPrefix.concat(ProjectPartnerDetailDTO.PartnerTypeEnum.CrossBorderLegalBody);
+    } else if (partnerType !== ProjectPartnerDetailDTO.PartnerTypeEnum.Egtc &&
+      partnerType !== ProjectPartnerDetailDTO.PartnerTypeEnum.CrossBorderLegalBody && partnerType !== '') {
+      return 'spf.beneficiary.type.input.option';
+    }
+    return '';
   }
 
 }

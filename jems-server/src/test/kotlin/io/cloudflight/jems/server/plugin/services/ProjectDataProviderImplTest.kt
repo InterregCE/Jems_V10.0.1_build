@@ -134,6 +134,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSpfRecipient
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
@@ -331,6 +332,12 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 projectBenefits = listOf(
                     ProjectRelevanceBenefit(
                         group = ProjectTargetGroupDTO.LocalPublicAuthority,
+                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                    )
+                ),
+                projectSpfRecipients = listOf(
+                    ProjectRelevanceSpfRecipient(
+                        recipientGroup = ProjectTargetGroupDTO.Egtc,
                         specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
                     )
                 ),
@@ -1322,6 +1329,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 commonChallenge = emptySet(),
                 transnationalCooperation = emptySet(),
                 projectBenefits = emptyList(),
+                projectSpfRecipients = emptyList(),
                 projectStrategies = emptyList(),
                 projectSynergies = emptyList(),
                 availableKnowledge = emptySet()

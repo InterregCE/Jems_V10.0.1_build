@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.project.service.toProjectOverallObjective
 import io.cloudflight.jems.server.project.service.toProjectPartnership
 import io.cloudflight.jems.server.project.service.toProjectRelevance
 import io.cloudflight.jems.server.project.service.toRelevanceBenefits
+import io.cloudflight.jems.server.project.service.toRelevanceSpfRecipients
 import io.cloudflight.jems.server.project.service.toRelevanceStrategies
 import io.cloudflight.jems.server.project.service.toRelevanceSynergies
 import org.springframework.stereotype.Repository
@@ -72,6 +73,7 @@ class ProjectDescriptionPersistenceProvider(
             projectRelevance = projectRelevanceRepository
                 .findByProjectIdAsOfTimestamp(projectId, timestamp).toProjectRelevance(
                     projectRelevanceRepository.findBenefitsByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceBenefits(),
+                    projectRelevanceRepository.findSpfRecipientsByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceSpfRecipients(),
                     projectRelevanceRepository.findStrategiesByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceStrategies(),
                     projectRelevanceRepository.findSynergiesByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceSynergies()
                 ),
