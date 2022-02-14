@@ -104,8 +104,8 @@ internal class ProjectFilePersistenceProviderTest : UnitTest() {
             val fileEntitySlot = slot<ProjectFileEntity>()
             val savedFileEntity = projectFileEntity(FILE_ID)
             val categoryEntitySlot = slot<List<ProjectFileCategoryEntity>>()
-            every { projectRepository.getOne(PROJECT_ID) } returns projectEntity
-            every { userRepository.getOne(USER_ID) } returns userEntity
+            every { projectRepository.getById(PROJECT_ID) } returns projectEntity
+            every { userRepository.getById(USER_ID) } returns userEntity
             every { projectFileRepository.save(capture(fileEntitySlot)) } returns savedFileEntity
             every { projectFileCategoryRepository.saveAll(capture(categoryEntitySlot)) } returnsArgument 0
             projectFilePersistenceProvider.saveFileMetadata(
@@ -147,8 +147,8 @@ internal class ProjectFilePersistenceProviderTest : UnitTest() {
                 ) {
                     val savedFileEntity = projectFileEntity(FILE_ID)
                     val categoryEntitySlot = slot<List<ProjectFileCategoryEntity>>()
-                    every { projectRepository.getOne(PROJECT_ID) } returns projectEntity
-                    every { userRepository.getOne(USER_ID) } returns userEntity
+                    every { projectRepository.getById(PROJECT_ID) } returns projectEntity
+                    every { userRepository.getById(USER_ID) } returns userEntity
                     every { projectFileRepository.save(any()) } returns savedFileEntity
                     every { projectFileCategoryRepository.saveAll(capture(categoryEntitySlot)) } returnsArgument 0
                     projectFilePersistenceProvider.saveFileMetadata(

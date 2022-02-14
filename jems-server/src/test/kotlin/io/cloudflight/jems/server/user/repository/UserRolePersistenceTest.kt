@@ -65,7 +65,7 @@ internal class UserRolePersistenceTest : UnitTest() {
     fun getById() {
         every { programmeDataPersistence.getDefaultUserRole() } returns defaultUserRoleId
         every { userRolePermissionRepo.findAllByIdUserRoleId(ROLE_ID) } returns listOf(permissionEntity)
-        every { userRoleRepo.getOne(ROLE_ID) } returns userRoleEntity
+        every { userRoleRepo.getById(ROLE_ID) } returns userRoleEntity
 
         assertThat(persistence.getById(ROLE_ID)).isEqualTo(
             UserRole(
@@ -81,7 +81,7 @@ internal class UserRolePersistenceTest : UnitTest() {
     fun `get by id including default role`() {
         every { programmeDataPersistence.getDefaultUserRole() } returns ROLE_ID
         every { userRolePermissionRepo.findAllByIdUserRoleId(ROLE_ID) } returns listOf(permissionEntity)
-        every { userRoleRepo.getOne(ROLE_ID) } returns userRoleEntity
+        every { userRoleRepo.getById(ROLE_ID) } returns userRoleEntity
 
         assertThat(persistence.getById(ROLE_ID)).isEqualTo(
             UserRole(

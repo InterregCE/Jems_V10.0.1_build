@@ -24,7 +24,7 @@ class ResultOverviewCalculator {
                 .groupBy({ it.programmeOutputId!! }, { it.outputTargetValue })
                 .mapValues { it.value.sumUp() }
 
-            val result = projectOutputs.mapIndexed { index, model ->
+            val result = projectOutputs.mapIndexed { _, model ->
                 val outputIndicator = programmeOutputIndicatorsById[model.programmeOutputId]
                 val outputIndicatorTargetValueSumUp = targetSumsPerOutputId[outputIndicator?.id] ?: BigDecimal.ZERO
                 val resultIndicator = programmeResultIndicatorsById[model.programmeResultId]

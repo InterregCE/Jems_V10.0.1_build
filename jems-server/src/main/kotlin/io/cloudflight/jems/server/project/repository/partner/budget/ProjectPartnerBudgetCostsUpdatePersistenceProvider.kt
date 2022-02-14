@@ -113,7 +113,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
         budgetUnitCostRepository.saveAll(unitCosts.toBudgetUnitCostEntities(
             partnerId = partnerId,
             projectPeriodEntityReferenceResolver = projectPeriodEntityReferenceResolver(projectId),
-            getProgrammeUnitCost = { programmeUnitCostRepository.getOne(it) }
+            getProgrammeUnitCost = { programmeUnitCostRepository.getById(it) }
         )).toModel()
 
 
@@ -159,7 +159,7 @@ class ProjectPartnerBudgetCostsUpdatePersistenceProvider(
 
     fun projectPeriodEntityReferenceResolver(projectId: Long) =
         { periodNumber: Int ->
-            projectPeriodRepository.getOne(
+            projectPeriodRepository.getById(
                 ProjectPeriodId(
                     projectId,
                     periodNumber

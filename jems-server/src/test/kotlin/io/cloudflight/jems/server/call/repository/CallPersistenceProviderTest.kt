@@ -486,9 +486,10 @@ internal class CallPersistenceProviderTest {
             )
         )
 
-        every { userRepo.getOne(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
-        every { programmeSpecificObjectiveRepo.getOne(Digitisation) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
-        every { programmeSpecificObjectiveRepo.getOne(AdvancedTechnologies) } returns specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
+        every { userRepo.getById(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
+        every { programmeSpecificObjectiveRepo.getById(Digitisation) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
+        every { programmeSpecificObjectiveRepo.getById(AdvancedTechnologies) } returns
+            specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
         every {
             programmeStrategyRepo.getAllByStrategyInAndActiveTrue(
                 setOf(
@@ -540,9 +541,11 @@ internal class CallPersistenceProviderTest {
             )
         )
 
-        every { userRepo.getOne(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
-        every { programmeSpecificObjectiveRepo.getOne(Digitisation) } returns specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
-        every { programmeSpecificObjectiveRepo.getOne(AdvancedTechnologies) } returns specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
+        every { userRepo.getById(expectedResultEntity.creator.id) } returns expectedResultEntity.creator
+        every { programmeSpecificObjectiveRepo.getById(Digitisation) } returns
+            specificObjectives.first { it.programmeObjectivePolicy == Digitisation }
+        every { programmeSpecificObjectiveRepo.getById(AdvancedTechnologies) } returns
+            specificObjectives.first { it.programmeObjectivePolicy == AdvancedTechnologies }
         every {
             programmeStrategyRepo.getAllByStrategyInAndActiveTrue(
                 setOf(

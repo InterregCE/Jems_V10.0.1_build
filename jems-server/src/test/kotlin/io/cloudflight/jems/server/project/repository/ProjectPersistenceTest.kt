@@ -305,7 +305,7 @@ internal class ProjectPersistenceTest : UnitTest() {
                 ),
             ),
         )
-        every { projectRepository.getOne(PROJECT_ID) } returns project
+        every { projectRepository.getById(PROJECT_ID) } returns project
         assertThat(persistence.getProjectSummary(PROJECT_ID)).isEqualTo(
             ProjectSummary(
                 id = PROJECT_ID,

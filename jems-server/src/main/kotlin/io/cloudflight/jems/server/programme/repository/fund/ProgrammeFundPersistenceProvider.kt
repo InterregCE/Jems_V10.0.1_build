@@ -16,7 +16,7 @@ class ProgrammeFundPersistenceProvider(
 
     @Transactional
     override fun updateFunds(toDeleteIds: Set<Long>, funds: Set<ProgrammeFund>): List<ProgrammeFund> {
-        repository.deleteInBatch(repository.findAllById(toDeleteIds))
+        repository.deleteAllByIdInBatch(toDeleteIds)
         return repository.saveAll(funds.toEntity()).toModel()
     }
 

@@ -35,10 +35,10 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun updateApplicationFirstSubmission(projectId: Long, userId: Long, status: ApplicationStatus) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = status, user = userRepository.getOne(userId)
+                    project = this, status = status, user = userRepository.getById(userId)
                 )
             )
             firstSubmission = newStatus
@@ -60,12 +60,12 @@ class ProjectWorkflowPersistenceProvider(
         decisionDate: LocalDate? = null,
         note: String? = null
     ) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
                     project = this,
                     status = status,
-                    user = userRepository.getOne(userId),
+                    user = userRepository.getById(userId),
                     decisionDate = decisionDate,
                     note = note,
                 )
@@ -97,10 +97,10 @@ class ProjectWorkflowPersistenceProvider(
         userId: Long,
         actionInfo: ApplicationActionInfo?
     ): ApplicationStatus =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             currentStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = ApplicationStatus.DRAFT, user = userRepository.getOne(userId),
+                    project = this, status = ApplicationStatus.DRAFT, user = userRepository.getById(userId),
                     decisionDate = actionInfo?.date,
                     note = actionInfo?.note
                 )
@@ -118,7 +118,7 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun resetProjectFundingDecisionToCurrentStatus(projectId: Long) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             if (this.currentStatus.status.isInStep2())
                 if (this.currentStatus.status == ApplicationStatus.APPROVED_WITH_CONDITIONS || this.currentStatus.status == ApplicationStatus.CONDITIONS_SUBMITTED)
                     this.decisionFundingStep2 = null
@@ -133,11 +133,11 @@ class ProjectWorkflowPersistenceProvider(
     override fun updateProjectEligibilityDecision(
         projectId: Long, userId: Long, status: ApplicationStatus, actionInfo: ApplicationActionInfo
     ) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
                     project = this, status = status, note = actionInfo.note,
-                    decisionDate = actionInfo.date, user = userRepository.getOne(userId)
+                    decisionDate = actionInfo.date, user = userRepository.getById(userId)
                 )
             )
             if (this.currentStatus.status.isInStep2())
@@ -149,7 +149,7 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun clearProjectEligibilityDecision(projectId: Long) {
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             if (this.currentStatus.status.isInStep2())
                 this.decisionEligibilityStep2 = null
             else
@@ -161,11 +161,11 @@ class ProjectWorkflowPersistenceProvider(
     override fun updateProjectFundingDecision(
         projectId: Long, userId: Long, status: ApplicationStatus, actionInfo: ApplicationActionInfo
     ) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
                     project = this, status = status, note = actionInfo.note,
-                    decisionDate = actionInfo.date, user = userRepository.getOne(userId)
+                    decisionDate = actionInfo.date, user = userRepository.getById(userId)
                 )
             )
             if (this.currentStatus.status.isInStep2())
@@ -191,7 +191,7 @@ class ProjectWorkflowPersistenceProvider(
                     note = actionInfo?.note,
                     decisionDate = actionInfo?.date,
                     entryIntoForceDate = actionInfo?.entryIntoForceDate,
-                    user = userRepository.getOne(userId)
+                    user = userRepository.getById(userId)
                 )
             )
 
