@@ -25,32 +25,58 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 declare global {
-    namespace Cypress {
-        interface Chainable {
-            login(username: string, password: string): void
-            loginByRequest(): void
-        }
+
+  interface User {
+    email: string,
+    name?: string,
+    surname?: string,
+    userRoleId?: number,
+    userStatus?: string
+  }
+
+  namespace Cypress {
+    interface Chainable {
+      loginByRequest(user: User): void
+
+      createUser(user: User): boolean
     }
+  }
 }
 
-Cypress.Commands.add('loginByRequest', () => {
-    cy.fixture('users.json').then((user) => {
-        cy.request({
-            method: 'POST',
-            url: Cypress.env('authenticationUrl'),
-            form: true,
-            body: {
-                username: user.basic.username,
-                password: user.basic.password
-            }
-        });
-    });
+Cypress.Commands.add('loginByRequest', (user: User) => {
+  cy.request({
+    method: 'POST',
+    url: Cypress.env('authenticationUrl'),
+    body: {
+      email: user.email,
+      password: Cypress.env('defaultPassword')
+    }
+  });
 });
 
-Cypress.Commands.add('login', (username, password) => {
-    cy.get('#username').type(username);
-    cy.get('#password').type(password);
-    cy.get('button[type=\'submit\'').click();
+Cypress.Commands.add('createUser', (user: User) => {
+  cy.request({
+    method: 'POST',
+    url: '/api/user',
+    body: user,
+    failOnStatusCode: false
+  }).then(response => {
+    if (response.status == 422) {
+      expect(response.body.details[0].i18nMessage.i18nKey).to.eq('use.case.create.user.email.already.in.use');
+    } else {
+      cy.request({
+        method: 'PUT',
+        url: `/api/user/changeMyPassword`,
+        headers: {
+          'Authorization': `basic ${btoa(`${user.email}:Jems@2020${user.email}`)}`
+        },
+        body: {
+          oldPassword: `Jems@2020${user.email}`,
+          password: Cypress.env('defaultPassword')
+        }
+      })
+    }
+  });
 });
 
 export {}

@@ -1,11 +1,19 @@
 {
   "admin": {
-    "username": "admin@jems.eu"
+    "email": "admin@jems.eu"
   },
-  "applicationUser": {
-    "username": "application.user@jems.eu"
+  "applicantUser": {
+    "email": "applicant.user@jems.eu",
+    "name": "Applicant",
+    "surname": "User",
+    "userRoleId": 1,
+    "userStatus": "ACTIVE"
   },
   "programmeUser": {
-    "username": "programme.user@jems.eu"
+    "email": "programme.user@jems.eu",
+    "name": "Programme",
+    "surname": "User",
+    "userRoleId": 2,
+    "userStatus": "ACTIVE"
   }
 }
