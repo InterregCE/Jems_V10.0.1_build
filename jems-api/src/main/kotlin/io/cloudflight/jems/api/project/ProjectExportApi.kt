@@ -7,15 +7,17 @@ import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Project")
-@RequestMapping("/api/project/{projectId}/export")
 interface ProjectExportApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROJECT_EXPORT = "/api/project/{projectId}/export"
+    }
+
     @ApiOperation("Export budget data to csv file")
-    @GetMapping("budget")
+    @GetMapping("$ENDPOINT_API_PROJECT_EXPORT/budget")
     fun exportBudget(
         @PathVariable projectId: Long,
         @RequestParam exportLanguage: SystemLanguage,
@@ -24,7 +26,7 @@ interface ProjectExportApi {
     ): ResponseEntity<ByteArrayResource>
 
     @ApiOperation("Export application form data to pdf file")
-    @GetMapping("application")
+    @GetMapping("$ENDPOINT_API_PROJECT_EXPORT/application")
     fun exportApplicationForm(
         @PathVariable projectId: Long,
         @RequestParam exportLanguage: SystemLanguage,

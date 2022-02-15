@@ -11,34 +11,36 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Programme Priority")
-@RequestMapping("/api/programmePriority")
 interface ProgrammePriorityApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROGRAMME_PRIORITY = "/api/programmePriority"
+    }
+
     @ApiOperation("Retrieve list of programme priorities")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_PROGRAMME_PRIORITY)
     fun get(): List<ProgrammePriorityDTO>
 
     @ApiOperation("Retrieve programme priority by ID")
-    @GetMapping("/{id}")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_PRIORITY/{id}")
     fun getById(@PathVariable id: Long): ProgrammePriorityDTO
 
     @ApiOperation("Creates new programme priority")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_PROGRAMME_PRIORITY, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun create(@RequestBody priority: ProgrammePriorityDTO): ProgrammePriorityDTO
 
     @ApiOperation("Updates existing programme priority")
-    @PutMapping("/{id}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROGRAMME_PRIORITY/{id}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun update(@PathVariable id: Long, @RequestBody priority: ProgrammePriorityDTO): ProgrammePriorityDTO
 
     @ApiOperation("Delete programme priority")
-    @DeleteMapping("/{id}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping("$ENDPOINT_API_PROGRAMME_PRIORITY/{id}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun delete(@PathVariable id: Long)
 
     @ApiOperation("Get free possibilities for priorities and objectives")
-    @GetMapping("/availableSetup")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_PRIORITY/availableSetup")
     fun getAvailableSetup(): ProgrammePriorityAvailableSetupDTO
 
 }

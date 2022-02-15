@@ -46,7 +46,7 @@ export class ProjectPartnerBudgetConstants {
     openForPeriods: 'openForPeriods',
     unitType: 'unitType',
     rowSum: 'rowSum',
-  }
+  };
 
   public static FORM_ERRORS = {
     total: {

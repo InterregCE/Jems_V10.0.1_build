@@ -69,7 +69,6 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `should return the list of all versions`() {
-        val entities = listOf(projectVersionEntity)
         val versionMock: ProjectVersionRow = mockk()
         every { versionMock.version } returns projectVersionEntity.id.version
         every { versionMock.projectId } returns projectVersionEntity.id.projectId

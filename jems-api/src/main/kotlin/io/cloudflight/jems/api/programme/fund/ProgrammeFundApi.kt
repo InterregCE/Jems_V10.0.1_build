@@ -7,18 +7,20 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Programme Fund")
-@RequestMapping("/api/programmeFund")
 interface ProgrammeFundApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROGRAMME_FUND = "/api/programmeFund"
+    }
+
     @ApiOperation("Retrieve all programme funds")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_PROGRAMME_FUND)
     fun getProgrammeFundList(): List<ProgrammeFundDTO>
 
     @ApiOperation("Specify available Funds for this programme")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_PROGRAMME_FUND, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProgrammeFundList(@RequestBody funds: Set<ProgrammeFundDTO>): List<ProgrammeFundDTO>
 
 }

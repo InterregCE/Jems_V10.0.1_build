@@ -8,18 +8,19 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import javax.validation.Valid
 
 @Api("Programme Strategy")
-@RequestMapping("/api/programmestrategy")
 interface ProgrammeStrategyApi {
 
+    companion object {
+        private const val ENDPOINT_API_CALL_FIELD_CONFIG = "/api/programmestrategy"
+    }
+
     @ApiOperation("Returns all strategies")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_CALL_FIELD_CONFIG)
     fun getProgrammeStrategies(): List<OutputProgrammeStrategy>
 
     @ApiOperation("Update selected strategies")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateProgrammeStrategies(@Valid @RequestBody strategies: List<InputProgrammeStrategy>): List<OutputProgrammeStrategy>
+    @PutMapping(ENDPOINT_API_CALL_FIELD_CONFIG, consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateProgrammeStrategies(@RequestBody strategies: List<InputProgrammeStrategy>): List<OutputProgrammeStrategy>
 }

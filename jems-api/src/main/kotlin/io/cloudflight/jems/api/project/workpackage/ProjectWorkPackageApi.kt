@@ -11,18 +11,20 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("WorkPackage")
-@RequestMapping("/api/project/{projectId}/workPackage")
 interface ProjectWorkPackageApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROJECT_WORK_PACKAGE = "/api/project/{projectId}/workPackage"
+    }
+
     @ApiOperation("Returns a work package by id")
-    @GetMapping("/{workPackageId}")
+    @GetMapping("$ENDPOINT_API_PROJECT_WORK_PACKAGE/{workPackageId}")
     fun getWorkPackageById(
         @PathVariable projectId: Long,
         @PathVariable workPackageId: Long,
@@ -30,35 +32,35 @@ interface ProjectWorkPackageApi {
     ): OutputWorkPackage
 
     @ApiOperation("Returns all work packages for a project")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_PROJECT_WORK_PACKAGE)
     fun getWorkPackagesByProjectId(
         @PathVariable projectId: Long,
         @RequestParam(required = false) version: String? = null
     ): List<OutputWorkPackageSimple>
 
     @ApiOperation("Returns all work packages for a project including outputs and activities")
-    @GetMapping("/withOutputsAndActivities")
+    @GetMapping("$ENDPOINT_API_PROJECT_WORK_PACKAGE/withOutputsAndActivities")
     fun getWorkPackagesForTimePlanByProjectId(
         @PathVariable projectId: Long,
         @RequestParam(required = false) version: String? = null
     ): List<ProjectWorkPackageDTO>
 
     @ApiOperation("Create work package")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_PROJECT_WORK_PACKAGE, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createWorkPackage(
         @PathVariable projectId: Long,
         @RequestBody inputWorkPackageCreate: InputWorkPackageCreate
     ): OutputWorkPackage
 
     @ApiOperation("Update work package")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_PROJECT_WORK_PACKAGE, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateWorkPackage(
         @PathVariable projectId: Long,
         @RequestBody inputWorkPackageUpdate: InputWorkPackageUpdate
     ): OutputWorkPackage
 
     @ApiOperation("Delete a work package")
-    @DeleteMapping("/{workPackageId}")
+    @DeleteMapping("$ENDPOINT_API_PROJECT_WORK_PACKAGE/{workPackageId}")
     fun deleteWorkPackage(@PathVariable projectId: Long, @PathVariable workPackageId: Long)
 
 }

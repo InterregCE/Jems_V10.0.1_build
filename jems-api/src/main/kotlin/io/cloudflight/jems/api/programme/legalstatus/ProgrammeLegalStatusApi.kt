@@ -8,18 +8,20 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Programme Legal Status")
-@RequestMapping("/api/programmeLegalStatus")
 interface ProgrammeLegalStatusApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROGRAMME_LEGAL_STATUS = "/api/programmeLegalStatus"
+    }
+
     @ApiOperation("Retrieve all programme legal statuses")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_PROGRAMME_LEGAL_STATUS)
     fun getProgrammeLegalStatusList(): List<ProgrammeLegalStatusDTO>
 
     @ApiOperation("Specify available legal statuses for this programme")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_PROGRAMME_LEGAL_STATUS, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProgrammeLegalStatuses(@RequestBody statusData: ProgrammeLegalStatusUpdateDTO): List<ProgrammeLegalStatusDTO>
 
 }

@@ -125,6 +125,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         )
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException, headers: HttpHeaders,
         status: HttpStatus, request: WebRequest

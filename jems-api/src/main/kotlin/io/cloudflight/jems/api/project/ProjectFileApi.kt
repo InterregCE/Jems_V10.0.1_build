@@ -17,16 +17,18 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
 
 @Api("Project File")
-@RequestMapping("/api/project/{projectId}/file")
 interface ProjectFileApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROJECT_FILE = "/api/project/{projectId}/file"
+    }
+
     @ApiOperation("Upload file to project")
-    @PostMapping("/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping("$ENDPOINT_API_PROJECT_FILE/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "type", dataType = "string"),
         ApiImplicitParam(paramType = "query", name = "id", dataType = "number"),
@@ -38,7 +40,7 @@ interface ProjectFileApi {
     ): ProjectFileMetadataDTO
 
     @ApiOperation("Download file from project")
-    @GetMapping("download/{fileId}", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
+    @GetMapping("$ENDPOINT_API_PROJECT_FILE/download/{fileId}", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
     fun downloadFile(
         @PathVariable projectId: Long,
         @PathVariable fileId: Long
@@ -52,7 +54,7 @@ interface ProjectFileApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer")
     )
-    @GetMapping("/list")
+    @GetMapping("$ENDPOINT_API_PROJECT_FILE/list")
     fun listProjectFiles(
         @PathVariable projectId: Long,
         fileCategory: ProjectFileCategoryDTO,
@@ -60,7 +62,7 @@ interface ProjectFileApi {
     ): Page<ProjectFileMetadataDTO>
 
     @ApiOperation("Specify description for project file")
-    @PutMapping("/{fileId}/description", consumes = [MediaType.TEXT_PLAIN_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_FILE/{fileId}/description", consumes = [MediaType.TEXT_PLAIN_VALUE])
     fun setProjectFileDescription(
         @PathVariable projectId: Long,
         @PathVariable fileId: Long,
@@ -68,7 +70,7 @@ interface ProjectFileApi {
     ): ProjectFileMetadataDTO
 
     @ApiOperation("Delete existing file")
-    @DeleteMapping("/{fileId}")
+    @DeleteMapping("$ENDPOINT_API_PROJECT_FILE/{fileId}")
     fun deleteProjectFile(
         @PathVariable projectId: Long,
         @PathVariable fileId: Long

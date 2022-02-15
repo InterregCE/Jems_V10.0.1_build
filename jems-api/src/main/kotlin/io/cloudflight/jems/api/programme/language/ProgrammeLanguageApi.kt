@@ -8,22 +8,24 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Programme Language")
-@RequestMapping("/api/programmeLanguage")
 interface ProgrammeLanguageApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROGRAMME_LANGUAGE = "/api/programmeLanguage"
+    }
+
     @ApiOperation("Retrieve programme languages")
-    @GetMapping("/available")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_LANGUAGE/available")
     fun getAvailableProgrammeLanguages(): AvailableProgrammeLanguagesDTO
 
     @ApiOperation("Retrieve programme languages")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_PROGRAMME_LANGUAGE)
     fun get(): List<ProgrammeLanguageDTO>
 
     @ApiOperation("Specify languages for this programme")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_PROGRAMME_LANGUAGE, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun update(@RequestBody programmeLanguages: Collection<ProgrammeLanguageDTO>): List<ProgrammeLanguageDTO>
 
 }

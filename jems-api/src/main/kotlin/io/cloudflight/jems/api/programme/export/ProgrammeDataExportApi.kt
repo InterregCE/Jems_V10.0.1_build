@@ -8,15 +8,17 @@ import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Programme data export")
-@RequestMapping("/api/programme/export")
 interface ProgrammeDataExportApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROGRAMME_EXPORT = "/api/programme/export"
+    }
+
     @ApiOperation("Trigger programme data exportation")
-    @PostMapping
+    @PostMapping(ENDPOINT_API_PROGRAMME_EXPORT)
     fun export(
         @RequestParam pluginKey: String?,
         @RequestParam exportLanguage: SystemLanguage,
@@ -24,11 +26,11 @@ interface ProgrammeDataExportApi {
     )
 
     @ApiOperation("Get list of programme data exported files metadata")
-    @GetMapping("list")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_EXPORT/list")
     fun list() : List<ProgrammeDataExportMetadataDTO>
 
     @ApiOperation("download programme data exported file")
-    @GetMapping("download")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_EXPORT/download")
     fun download(
         @RequestParam pluginKey: String?
     ): ResponseEntity<ByteArrayResource>

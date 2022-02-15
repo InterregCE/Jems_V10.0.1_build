@@ -11,11 +11,13 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Audit")
-@RequestMapping("/api/audit")
 interface AuditApi {
+
+    companion object {
+        private const val ENDPOINT_API_AUDIT = "/api/audit"
+    }
 
     @ApiOperation("Search for audit events")
     @ApiImplicitParams(
@@ -23,7 +25,7 @@ interface AuditApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_AUDIT, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun getAudits(pageable: Pageable, @RequestBody(required = false) searchRequest: AuditSearchRequestDTO? = null): Page<AuditDTO>
 
 }

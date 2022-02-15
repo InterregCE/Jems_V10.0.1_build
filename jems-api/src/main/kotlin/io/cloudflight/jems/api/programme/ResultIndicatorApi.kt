@@ -17,20 +17,25 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import javax.validation.Valid
 
-@Api("Programme Indicator")
-@RequestMapping("/api/programmeindicator/result")
+@Api("Programme Indicator Result")
 interface ResultIndicatorApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROGRAMME_INDICATOR_RESULT = "/api/programmeindicator/result"
+    }
+
     @ApiOperation("Creates new RESULT indicator")
-    @PostMapping("", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createResultIndicator(@Valid @RequestBody resultIndicatorCreateRequestDTO: ResultIndicatorCreateRequestDTO): ResultIndicatorDetailDTO
+    @PostMapping(ENDPOINT_API_PROGRAMME_INDICATOR_RESULT, consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun createResultIndicator(
+        @RequestBody resultIndicatorCreateRequestDTO: ResultIndicatorCreateRequestDTO
+    ): ResultIndicatorDetailDTO
 
     @ApiOperation("Updates existing RESULT indicator")
-    @PutMapping("", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateResultIndicator(@Valid @RequestBody resultIndicatorUpdateRequestDTO: ResultIndicatorUpdateRequestDTO): ResultIndicatorDetailDTO
+    @PutMapping(ENDPOINT_API_PROGRAMME_INDICATOR_RESULT, consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateResultIndicator(
+        @RequestBody resultIndicatorUpdateRequestDTO: ResultIndicatorUpdateRequestDTO
+    ): ResultIndicatorDetailDTO
 
 
     @ApiOperation("Returns all RESULT indicators")
@@ -39,17 +44,17 @@ interface ResultIndicatorApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("")
+    @GetMapping(ENDPOINT_API_PROGRAMME_INDICATOR_RESULT)
     fun getResultIndicatorDetails(pageable: Pageable): Page<ResultIndicatorDetailDTO>
 
     @ApiOperation("Returns RESULT indicator by id")
-    @GetMapping("/{id}")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_INDICATOR_RESULT/{id}")
     fun getResultIndicatorDetail(@PathVariable id: Long): ResultIndicatorDetailDTO
 
-    @GetMapping("/summary")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_INDICATOR_RESULT/summary")
     fun getResultIndicatorSummaries(): Set<ResultIndicatorSummaryDTO>
 
-    @GetMapping("/summary/{programmeObjectivePolicy}")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_INDICATOR_RESULT/summary/{programmeObjectivePolicy}")
     fun getResultIndicatorSummariesForSpecificObjective(@PathVariable programmeObjectivePolicy: ProgrammeObjectivePolicy): List<ResultIndicatorSummaryDTO>
 
 }
