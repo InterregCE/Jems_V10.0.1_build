@@ -10,29 +10,31 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Project Result")
-@RequestMapping("/api/project/{projectId}/result")
 interface ProjectResultApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROJECT_RESULT = "/api/project/{projectId}/result"
+    }
+
     @ApiOperation("Returns all project results")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_PROJECT_RESULT)
     fun getProjectResults(
         @PathVariable projectId: Long,
         @RequestParam(required = false) version: String? = null
     ): List<ProjectResultDTO>
 
     @ApiOperation("Creates or updates project results")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_PROJECT_RESULT, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectResults(
         @PathVariable projectId: Long,
         @RequestBody projectResultUpdateRequests: List<ProjectResultUpdateRequestDTO>
     ): List<ProjectResultDTO>
 
     @ApiOperation("Calculate and return all data needed for project indicators overview table A4")
-    @GetMapping("/indicatorsOverview")
+    @GetMapping("$ENDPOINT_API_PROJECT_RESULT/indicatorsOverview")
     fun getProjectResultIndicatorOverview(
         @PathVariable projectId: Long,
         @RequestParam(required = false) version: String? = null

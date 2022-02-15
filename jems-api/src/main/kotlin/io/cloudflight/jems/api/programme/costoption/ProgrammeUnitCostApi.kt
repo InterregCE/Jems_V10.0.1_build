@@ -11,30 +11,32 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Programme Cost Option")
-@RequestMapping("/api/costOption/unitCost")
 interface ProgrammeUnitCostApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROGRAMME_UNIT_COST = "/api/costOption/unitCost"
+    }
+
     @ApiOperation("Retrieve all programme unit costs")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_PROGRAMME_UNIT_COST)
     fun getProgrammeUnitCosts(): List<ProgrammeUnitCostListDTO>
 
     @ApiOperation("Retrieve programme unit cost by id")
-    @GetMapping("/{unitCostId}")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_UNIT_COST/{unitCostId}")
     fun getProgrammeUnitCost(@PathVariable unitCostId: Long): ProgrammeUnitCostDTO
 
     @ApiOperation("Create programme unit cost")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_PROGRAMME_UNIT_COST, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProgrammeUnitCost(@RequestBody unitCost: ProgrammeUnitCostDTO): ProgrammeUnitCostDTO
 
     @ApiOperation("Update existing programme unit cost")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_PROGRAMME_UNIT_COST, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProgrammeUnitCost(@RequestBody unitCost: ProgrammeUnitCostDTO): ProgrammeUnitCostDTO
 
     @ApiOperation("Delete programme unit cost")
-    @DeleteMapping("/{unitCostId}")
+    @DeleteMapping("$ENDPOINT_API_PROGRAMME_UNIT_COST/{unitCostId}")
     fun deleteProgrammeUnitCost(@PathVariable unitCostId: Long)
 
 }

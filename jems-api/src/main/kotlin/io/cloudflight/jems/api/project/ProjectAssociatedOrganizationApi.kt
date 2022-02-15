@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Project Associated Organization")
-@RequestMapping("/api/project/{projectId}/organization")
 interface ProjectAssociatedOrganizationApi {
+
+    companion object {
+        private const val ENDPOINT_API_PROJECT_ASSOCIATED_ORGANIZATION = "/api/project/{projectId}/organization"
+    }
 
     @ApiOperation("Returns all associated organization")
     @ApiImplicitParams(
@@ -29,13 +31,13 @@ interface ProjectAssociatedOrganizationApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
     )
-    @GetMapping
+    @GetMapping(ENDPOINT_API_PROJECT_ASSOCIATED_ORGANIZATION)
     fun getAssociatedOrganizations(
         @PathVariable projectId: Long, pageable: Pageable, @RequestParam(required = false) version: String? = null
     ): Page<OutputProjectAssociatedOrganization>
 
     @ApiOperation("Returns an associated organization by id")
-    @GetMapping("/{id}")
+    @GetMapping("$ENDPOINT_API_PROJECT_ASSOCIATED_ORGANIZATION/{id}")
     fun getAssociatedOrganizationById(
         @PathVariable projectId: Long,
         @PathVariable id: Long,
@@ -43,28 +45,28 @@ interface ProjectAssociatedOrganizationApi {
     ): OutputProjectAssociatedOrganizationDetail?
 
     @ApiOperation("Creates new associated organization")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_PROJECT_ASSOCIATED_ORGANIZATION, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createAssociatedOrganization(
         @PathVariable projectId: Long,
         @RequestBody associatedOrganization: InputProjectAssociatedOrganization
     ): OutputProjectAssociatedOrganizationDetail
 
     @ApiOperation("Update an associated organization")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_PROJECT_ASSOCIATED_ORGANIZATION, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateAssociatedOrganization(
         @PathVariable projectId: Long,
         @RequestBody associatedOrganization: InputProjectAssociatedOrganization
     ): OutputProjectAssociatedOrganizationDetail
 
     @ApiOperation("Delete an associated organization")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("$ENDPOINT_API_PROJECT_ASSOCIATED_ORGANIZATION/{id}")
     fun deleteAssociatedOrganization(
         @PathVariable projectId: Long,
         @PathVariable id: Long
     )
 
     @ApiOperation("Deactivate an associated organization")
-    @PutMapping("/{id}/deactivate")
+    @PutMapping("$ENDPOINT_API_PROJECT_ASSOCIATED_ORGANIZATION/{id}/deactivate")
     fun deactivateAssociatedOrganization(
         @PathVariable projectId: Long,
         @PathVariable id: Long

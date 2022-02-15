@@ -38,7 +38,7 @@ internal class UploadTranslationFileTest : UnitTest() {
     private val translationsFolder = "src/test/resources/translations"
     private val expectedAuditCandidate = AuditCandidate(
         action = AuditAction.PROGRAMME_TRANSLATION_FILE_UPLOADED,
-        description = "Translation file ".plus(fileType).plus("_").plus(language.name.toLowerCase()).plus(".properties uploaded"),
+        description = "Translation file ".plus(fileType).plus("_").plus(language.name.lowercase()).plus(".properties uploaded"),
     )
 
     @MockK

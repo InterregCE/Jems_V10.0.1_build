@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("User Role")
-@RequestMapping("/api/role")
 interface UserRoleApi {
+
+    companion object {
+        private const val ENDPOINT_API_USER_ROLE = "/api/role"
+    }
 
     @ApiOperation("Returns available user roles")
     @ApiImplicitParams(
@@ -27,26 +29,26 @@ interface UserRoleApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping
+    @GetMapping(ENDPOINT_API_USER_ROLE)
     fun list(pageable: Pageable): Page<UserRoleSummaryDTO>
 
     @ApiOperation("Creates new User Role")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_USER_ROLE, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createUserRole(@RequestBody role: UserRoleCreateDTO): UserRoleDTO
 
     @ApiOperation("Updates existing User Role")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_USER_ROLE, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateUserRole(@RequestBody role: UserRoleDTO): UserRoleDTO
 
     @ApiOperation("Returns a user role by id")
-    @GetMapping("/byId/{id}")
+    @GetMapping("$ENDPOINT_API_USER_ROLE/byId/{id}")
     fun getById(@PathVariable id: Long): UserRoleDTO
 
     @ApiOperation("Returns the default user role id")
-    @GetMapping("/default")
+    @GetMapping("$ENDPOINT_API_USER_ROLE/default")
     fun getDefault(): Long?
 
     @ApiOperation("Set user role default")
-    @PutMapping("/default", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_USER_ROLE/default", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun setDefault(@RequestBody userRoleId: Long)
 }

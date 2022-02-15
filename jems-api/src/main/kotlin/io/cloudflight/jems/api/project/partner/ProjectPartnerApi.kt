@@ -20,14 +20,16 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.DeleteMapping
 import javax.validation.Valid
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Project Partner")
-@RequestMapping("/api/project/partner")
 interface ProjectPartnerApi {
+
+    companion object {
+        private const val ENDPOINT_API_PROJECT_PARTNER = "/api/project/partner"
+    }
 
     @ApiOperation("Returns all project partners")
     @ApiImplicitParams(
@@ -35,7 +37,7 @@ interface ProjectPartnerApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
     )
-    @GetMapping("/byProjectId/{projectId}")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER/byProjectId/{projectId}")
     fun getProjectPartners(
         @PathVariable projectId: Long,
         pageable: Pageable,
@@ -46,72 +48,72 @@ interface ProjectPartnerApi {
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
     )
-    @GetMapping("/byProjectId/{projectId}/ids")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER/byProjectId/{projectId}/ids")
     fun getProjectPartnersForDropdown(@PathVariable projectId: Long,
                                       pageable: Pageable,
                                       @RequestParam(required = false) version: String? = null): List<ProjectPartnerSummaryDTO>
 
     @ApiOperation("Returns a project partner by id")
-    @GetMapping("/{partnerId}")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER/{partnerId}")
     fun getProjectPartnerById(
         @PathVariable partnerId: Long,
         @RequestParam(required = false) version: String? = null
     ): ProjectPartnerDetailDTO
 
     @ApiOperation("Creates new project partner")
-    @PostMapping("/toProjectId/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER/toProjectId/{projectId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProjectPartner(
         @PathVariable projectId: Long,
         @RequestBody projectPartner: ProjectPartnerDTO
     ): ProjectPartnerDetailDTO
 
     @ApiOperation("Update project partner")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_PROJECT_PARTNER, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartner(
         @RequestBody projectPartner: ProjectPartnerDTO
     ): ProjectPartnerDetailDTO
 
     @ApiOperation("Update project partner addresses")
-    @PutMapping("/{partnerId}/address", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER/{partnerId}/address", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerAddress(
         @PathVariable partnerId: Long,
         @Valid @RequestBody addresses: Set<ProjectPartnerAddressDTO>
     ): ProjectPartnerDetailDTO
 
     @ApiOperation("Update project partner contact")
-    @PutMapping("/{partnerId}/contact", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER/{partnerId}/contact", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerContact(
         @PathVariable partnerId: Long,
         @Valid @RequestBody contacts: Set<ProjectContactDTO>
     ): ProjectPartnerDetailDTO
 
     @ApiOperation("Update project partner motivation")
-    @PutMapping("/{partnerId}/motivation", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER/{partnerId}/motivation", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerMotivation(
         @PathVariable partnerId: Long,
-        @Valid @RequestBody motivation: ProjectPartnerMotivationDTO
+        @RequestBody motivation: ProjectPartnerMotivationDTO
     ): ProjectPartnerDetailDTO
 
     @ApiOperation("Get project partner state aid")
-    @GetMapping("/{partnerId}/stateAid")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER/{partnerId}/stateAid")
     fun getProjectPartnerStateAid(
         @PathVariable partnerId: Long,
         @RequestParam(required = false) version: String? = null
     ): ProjectPartnerStateAidDTO
 
     @ApiOperation("Update project partner state aid")
-    @PutMapping("/{partnerId}/stateAid", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER/{partnerId}/stateAid", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerStateAid(
         @PathVariable partnerId: Long,
         @RequestBody stateAid: ProjectPartnerStateAidDTO
     ): ProjectPartnerStateAidDTO
 
     @ApiOperation("Delete a project partner")
-    @DeleteMapping("/{partnerId}")
+    @DeleteMapping("$ENDPOINT_API_PROJECT_PARTNER/{partnerId}")
     fun deleteProjectPartner(@PathVariable partnerId: Long)
 
     @ApiOperation("Deactivate a project partner")
-    @PutMapping("/{partnerId}/deactivate")
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER/{partnerId}/deactivate")
     fun deactivate(@PathVariable partnerId: Long)
 
 }

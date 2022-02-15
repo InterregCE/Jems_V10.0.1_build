@@ -13,12 +13,14 @@ import org.springframework.data.domain.Sort
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Project Partner Report")
-@RequestMapping("/api/project/report")
 interface ProjectPartnerReportApi {
+
+    companion object {
+        private const val ENDPOINT_API_PROJECT_PARTNER_REPORT = "/api/project/report"
+    }
 
     @ApiOperation("Returns all project partner report summaries by partner id and version")
     @ApiImplicitParams(
@@ -26,27 +28,27 @@ interface ProjectPartnerReportApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("/partner/byPartnerId/{partnerId}")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/partner/byPartnerId/{partnerId}")
     fun getProjectPartnerReports(
         @PathVariable partnerId: Long,
         pageable: Pageable,
     ): Page<ProjectPartnerReportSummaryDTO>
 
     @ApiOperation("Returns project partner report detail")
-    @GetMapping("/partner/byPartnerId/{partnerId}/byReportId/{reportId}")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/partner/byPartnerId/{partnerId}/byReportId/{reportId}")
     fun getProjectPartnerReport(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
     ): ProjectPartnerReportDTO
 
     @ApiOperation("Creates new partner report")
-    @PostMapping("/partner/create/{partnerId}")
+    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/partner/create/{partnerId}")
     fun createProjectPartnerReport(
         @PathVariable partnerId: Long,
     ): ProjectPartnerReportSummaryDTO
 
     @ApiOperation("Submit and lock partner report")
-    @PostMapping("/partner/submit/{partnerId}/{reportId}")
+    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/partner/submit/{partnerId}/{reportId}")
     fun submitProjectPartnerReport(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
@@ -56,7 +58,7 @@ interface ProjectPartnerReportApi {
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
     )
-    @GetMapping("/listPartners/byProjectId/{projectId}")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/listPartners/byProjectId/{projectId}")
     fun getProjectPartnersForReporting(
         @PathVariable projectId: Long,
         sort: Sort,

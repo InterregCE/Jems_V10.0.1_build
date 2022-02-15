@@ -9,31 +9,32 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import javax.validation.Valid
 
 @Api("Programme Data")
-@RequestMapping("/api/programmedata")
 interface ProgrammeDataApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROGRAMME_DATA = "/api/programmedata"
+    }
+
     @ApiOperation("Retrieve programme setup")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_PROGRAMME_DATA)
     fun get(): ProgrammeDataDTO
 
     @ApiOperation("Specify base data for this programme")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun update(@Valid @RequestBody updateRequestDTO: ProgrammeDataUpdateRequestDTO): ProgrammeDataDTO
+    @PutMapping(ENDPOINT_API_PROGRAMME_DATA, consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun update(@RequestBody updateRequestDTO: ProgrammeDataUpdateRequestDTO): ProgrammeDataDTO
 
     @ApiOperation("Specify available NUTS regions for this programme")
-    @PutMapping("/nuts", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateNuts(@Valid @RequestBody regions: Collection<String>): ProgrammeDataDTO
+    @PutMapping("$ENDPOINT_API_PROGRAMME_DATA/nuts", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateNuts(@RequestBody regions: Collection<String>): ProgrammeDataDTO
 
     @ApiOperation("Retrieve NUTS available for this programme setup")
-    @GetMapping("/nuts")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_DATA/nuts")
     fun getNuts(): List<OutputNuts>
 
     @ApiOperation("Check if programme setup is still open for changes or not yet")
-    @GetMapping("/isLocked")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_DATA/isLocked")
     fun isProgrammeSetupLocked(): Boolean
 
 }
