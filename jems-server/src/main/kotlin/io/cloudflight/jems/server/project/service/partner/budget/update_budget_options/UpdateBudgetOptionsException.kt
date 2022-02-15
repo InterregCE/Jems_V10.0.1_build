@@ -25,3 +25,9 @@ class InvalidFlatRateException(formErrors: Map<String, I18nMessage>) : Applicati
     i18nMessage = I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.invalid.flatRate"),
     formErrors = formErrors, cause = null
 )
+
+class UpdateBudgetOptionsWhenProjectContracted : ApplicationBadRequestException(
+    code = "$UPDATE_BUDGET_OPTIONS_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$UPDATE_BUDGET_OPTIONS_ERROR_KEY_PREFIX.changes.not.allowed.when.project.is.contracted"),
+    message = "When project is contracted, budget options cannot be enabled or disabled!"
+)

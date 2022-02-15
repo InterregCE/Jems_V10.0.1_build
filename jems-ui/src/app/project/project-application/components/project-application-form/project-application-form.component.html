@@ -87,7 +87,10 @@
 
         <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.PRIORITY">
             <h4>{{'project.application.project.priority.title' | translate}}</h4>
-            <mat-form-field *ngIf="applicationForm.enabled">
+            <jems-alert [closable]="false" [show]="projectContracted" [type]="Alert.INFO">
+                <span>{{'project.application.form.section.part.a.restrict.contracted' | translate}}</span>
+            </jems-alert>
+            <mat-form-field *ngIf="applicationForm.enabled && !projectContracted">
                 <mat-label>{{'project.application.form.field.project.priority' | translate}}</mat-label>
                 <mat-select (selectionChange)="changeCurrentPriority($event.value)" [(value)]=currentPriority formControlName="programmePriority"
                             required>
@@ -104,7 +107,7 @@
             </mat-form-field>
         </ng-container>
         <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.OBJECTIVE">
-            <ng-container *ngIf="applicationForm.enabled && currentPriority">
+            <ng-container *ngIf="applicationForm.enabled && currentPriority && !projectContracted">
                 <p [ngClass]="{'empty': applicationForm?.controls?.specificObjective?.errors}"
                    class="mat-required-marker">
                     {{'programme.priority.objective.title' | translate}}:
@@ -122,7 +125,7 @@
             </ng-container>
         </ng-container>
 
-        <div *ngIf="!applicationForm.enabled">
+        <div *ngIf="!applicationForm.enabled || projectContracted">
             <div>{{'project.application.form.field.project.priority' | translate}}</div>
             <div *ngIf="previousObjective">
                 {{projectForm.programmePriority.code + ' - '}}
