@@ -1,6 +1,7 @@
 {
   "name": "jems-e2e",
   "version": "1.0.0",
+  "type": "module",
   "description": "Jems E2E Tests",
   "main": "index.js",
   "scripts": {
@@ -11,9 +12,10 @@
   "author": "Cloudflight GmbH",
   "license": "ISC",
   "devDependencies": {
+    "@faker-js/faker": "^5.5.3",
+    "cy2": "1.3.0",
     "cypress": "9.4.1",
     "cypress-multi-reporters": "1.5.0",
-    "cy2": "1.3.0",
     "mocha": "9.2.0",
     "mocha-teamcity-reporter": "4.2.0",
     "mochawesome": "7.0.1",
