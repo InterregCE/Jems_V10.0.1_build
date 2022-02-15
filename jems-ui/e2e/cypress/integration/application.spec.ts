@@ -1,27 +1,32 @@
-context('Project moderation tests', () => {
-    beforeEach(() => {
-        cy.viewport(1920, 1080);
-    });
+import user from '../fixtures/users.json';
+import faker from "@faker-js/faker";
 
-    it('Project can be created', () => {
-        cy.fixture('users.json').then((user) => {
-            cy.visit('/');
+context('Project management tests', () => {
 
-            cy.get('#email').type(user.applicationUser.username);
-            cy.get('#password').type(Cypress.env('defaultPassword') + '{enter}');
+  before(() => {
+    cy.loginByRequest(user.admin);
+    cy.createUser(user.applicantUser);
+  });
 
-            cy.get('app-call-list').should('exist');
+  beforeEach(() => {
+    cy.viewport(1920, 1080);
+    cy.loginByRequest(user.applicantUser);
+  });
 
-            cy.contains('Apply').click();
-            cy.contains('Apply').click();
+  it('Applicant can apply for a call', function () {
+    cy.visit('/');
 
-            const uuid = () => Cypress._.random(0, 1e6)
-            const id = `${uuid()}`;
-            cy.get('input[name="acronym"]').type(`Automation Project ${id}`);
+    cy.get('jems-call-list').should('exist');
 
-            cy.contains('Create project application').click();
 
-            cy.get('app-project-application-list').find('mat-cell').contains(`Automation Project ${id}`)
-        })
-    });
+    cy.contains('Apply').click();
+    cy.contains('Apply').click();
+
+    const random = faker.random.alpha(5);
+    cy.get('input[name="acronym"]').type(`Automation Project ${random}`);
+
+    cy.contains('Create project application').click();
+
+    cy.get('jems-project-application-list').find('mat-cell').contains(`Automation Project ${random}`)
+  });
 })

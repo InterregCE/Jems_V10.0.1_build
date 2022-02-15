@@ -7,6 +7,6 @@
     "openMode": 0
   },
   "env": {
-    "authenticationUrl": "/auth/login"
+    "authenticationUrl": "/api/auth/login"
   }
 }
