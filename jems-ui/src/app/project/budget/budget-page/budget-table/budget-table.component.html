@@ -14,7 +14,7 @@
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('otherCosts')" class="justify-end">{{ 'project.partner.budget.other' | translate }}</span>
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('lumpSums')" class="justify-end">{{ 'project.partner.budget.lumpSum' | translate }}</span>
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('unitCosts')" class="justify-end">{{ 'project.partner.budget.unitCosts' | translate }}</span>
-        <span jemsText maxLines="2" class="justify-end">{{ 'project.partner.budget.table.total' | translate }}</span>
+        <span jemsText maxLines="2" class="justify-end">{{ 'project.partner.budget.table.total' | adaptTranslationKeyByCallType | async | translate }}</span>
     </div>
 
     <ng-container *ngFor="let budget of budgets">
