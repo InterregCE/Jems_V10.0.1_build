@@ -30,6 +30,7 @@ import {ProjectPartnerStateAidsStore} from '@project/partner/services/project-pa
 import {PartnerLumpSum} from '@project/model/lump-sums/partnerLumpSum';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
+import {PartnerBudgetSpfTables} from '@project/model/budget/partner-budget-spf-tables';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -39,6 +40,7 @@ export class ProjectPartnerDetailPageStore {
   partnerLumpSums$: Observable<PartnerLumpSum[]>;
   partnerTotalLumpSum$: Observable<number>;
   budgets$: Observable<PartnerBudgetTables>;
+  spfBudgets$: Observable<PartnerBudgetSpfTables>;
   totalBudget$: Observable<number>;
   isProjectEditable$: Observable<boolean>;
   investmentSummaries$: Observable<InvestmentSummary[]>;
@@ -69,6 +71,7 @@ export class ProjectPartnerDetailPageStore {
       shareReplay(1)
     );
     this.budgets$ = this.projectPartnerBudgetStore.budgets$;
+    this.spfBudgets$ = this.projectPartnerBudgetStore.spfBudgets$;
     this.budgetOptions$ = this.projectPartnerBudgetStore.budgetOptions$;
     this.callFlatRatesSettings$ = this.callFlatRateSettings();
     this.totalBudget$ = this.projectPartnerBudgetStore.totalBudget$;
@@ -145,6 +148,10 @@ export class ProjectPartnerDetailPageStore {
 
   updateBudgets(budgets: PartnerBudgetTables): Observable<any> {
     return this.projectPartnerBudgetStore.updateBudgets(budgets);
+  }
+
+  updateSpfBudgets(budgets: PartnerBudgetSpfTables): Observable<any> {
+    return this.projectPartnerBudgetStore.updateSpfBudgets(budgets);
   }
 
   updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {

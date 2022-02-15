@@ -120,6 +120,13 @@ import {PartnerReportComponent} from './project-application/report/partner-repor
 import {PartnerReportBreadcrumbResolver} from './project-application/report/service/partner-report-breadcrumb-resolver.service';
 import { ApplicationFormPrivilegesExpansionPanelComponent } from './project-application/privileges-page/application-form-privileges-expansion-panel/application-form-privileges-expansion-panel.component';
 import { PartnerTeamPrivilegesExpansionPanelComponent } from './project-application/privileges-page/partner-team-privileges-expansion-panel/partner-team-privileges-expansion-panel.component';
+import {
+  SmallProjectFundTableComponent
+} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/small-project-fund-table/small-project-fund-table.component';
+import {
+  SmallProjectFundBudgetComponent
+} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/small-project-fund-budget/small-project-fund-budget.component';
+
 
 @NgModule({
   declarations: [
@@ -184,6 +191,8 @@ import { PartnerTeamPrivilegesExpansionPanelComponent } from './project-applicat
     BudgetFlatRateTableComponent,
     GeneralBudgetTableComponent,
     StaffCostsBudgetTableComponent,
+    SmallProjectFundTableComponent,
+    SmallProjectFundBudgetComponent,
     TravelAndAccommodationCostsBudgetTableComponent,
     UnitCostsBudgetTableComponent,
     ProjectWorkPackageInvestmentsTabComponent,

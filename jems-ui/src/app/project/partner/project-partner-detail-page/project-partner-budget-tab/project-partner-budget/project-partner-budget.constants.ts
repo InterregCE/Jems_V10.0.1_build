@@ -33,6 +33,21 @@ export class ProjectPartnerBudgetConstants {
     openForPeriods: 'openForPeriods'
   };
 
+  public static SPF_FORM_CONTROL_NAMES = {
+    spf: 'spf',
+    total: 'total',
+    comments: 'comments',
+    numberOfUnits: 'numberOfUnits',
+    pricePerUnit: 'pricePerUnit',
+    description: 'description',
+    budgetPeriods: 'budgetPeriods',
+    amount: 'amount',
+    items: 'items',
+    openForPeriods: 'openForPeriods',
+    unitType: 'unitType',
+    rowSum: 'rowSum',
+  }
+
   public static FORM_ERRORS = {
     total: {
       max: 'project.partner.budget.table.total.max.invalid'
