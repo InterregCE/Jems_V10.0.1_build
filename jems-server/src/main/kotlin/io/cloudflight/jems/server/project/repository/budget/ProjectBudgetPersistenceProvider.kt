@@ -131,7 +131,11 @@ class ProjectBudgetPersistenceProvider(
     override fun getPartnersForProjectId(projectId: Long, version: String?): List<ProjectPartnerSummary> =
         projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                projectPartnerRepository.findTop30ByProjectId(projectId, Sort.unsorted()).toProjectPartner()
+                projectPartnerRepository.findTop30ByProjectId(
+                    projectId, Sort.by(
+                        Sort.Order(Sort.Direction.ASC, "sortNumber"),
+                    )
+                ).toProjectPartner()
             },
             previousVersionFetcher = { timestamp ->
                 projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
