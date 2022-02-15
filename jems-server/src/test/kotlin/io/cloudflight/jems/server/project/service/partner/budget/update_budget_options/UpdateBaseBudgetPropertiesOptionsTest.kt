@@ -9,17 +9,24 @@ import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType.TRAVEL_AND_ACCOMMO
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.user
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.ZonedDateTime
 
 internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
@@ -27,6 +34,12 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
     @MockK
     lateinit var optionsPersistence: ProjectPartnerBudgetOptionsPersistence
+
+    @RelaxedMockK
+    lateinit var partnerPersistence: PartnerPersistence
+
+    @RelaxedMockK
+    lateinit var projectVersionPersistence: ProjectVersionPersistence
 
     @InjectMockKs
     lateinit var updateBudgetOptions: UpdateBudgetOptions
@@ -436,6 +449,39 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
 
 
         assertThat(slotOptions.captured).isEqualTo(options)
+    }
+
+    @Test
+    fun `update with restricted contracted fields`() {
+        every { optionsPersistence.getProjectCallFlatRateByPartnerId(partnerId) } returns
+            setOf(
+                notAdjustableRate(type = OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS, rate = 15),
+                notAdjustableRate(type = STAFF_COSTS, rate = 8)
+            )
+        every { optionsPersistence.getBudgetOptions(partnerId) } returns ProjectPartnerBudgetOptions(
+            partnerId = partnerId
+        )
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns 1
+        every { projectVersionPersistence.getAllVersionsByProjectId(1) } returns listOf(
+            ProjectVersion(
+                version = "1.0",
+                projectId = 1,
+                createdAt = ZonedDateTime.now(),
+                user = user,
+                status = ApplicationStatus.CONTRACTED,
+                current = true,
+            )
+        )
+
+        assertThrows<UpdateBudgetOptionsWhenProjectContracted> {
+            updateBudgetOptions.updateBudgetOptions(partnerId, ProjectPartnerBudgetOptions(
+                partnerId = partnerId,
+                officeAndAdministrationOnStaffCostsFlatRate = 15,
+                staffCostsFlatRate = 8,
+            ))
+        }
+
+        verify(atLeast = 1) { optionsPersistence.getBudgetOptions(partnerId) }
     }
 
     private fun notAdjustableRate(type: FlatRateType, rate: Int) = ProjectCallFlatRate(

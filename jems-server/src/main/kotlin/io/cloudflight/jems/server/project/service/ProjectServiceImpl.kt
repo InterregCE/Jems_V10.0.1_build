@@ -6,12 +6,14 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
+import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import org.springframework.stereotype.Service
@@ -23,6 +25,7 @@ class ProjectServiceImpl(
     private val projectRepo: ProjectRepository,
     private val workPackageRepository: WorkPackageRepository,
     private val getProjectInteractor: GetProjectInteractor,
+    private val projectVersionPersistence: ProjectVersionPersistence,
     private val generalValidator: GeneralValidatorService
 ) : ProjectService {
 
@@ -31,6 +34,7 @@ class ProjectServiceImpl(
     override fun update(projectId: Long, projectData: InputProjectData): ProjectForm {
         validateProjectData(projectData)
         val project = projectRepo.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
+        validateContractedChanges(projectData, project)
         val periods =
             if (project.projectData?.duration == projectData.duration) project.periods
             else calculatePeriods(projectId, project.call.lengthOfPeriod, projectData.duration)
@@ -93,6 +97,14 @@ class ProjectServiceImpl(
             generalValidator.numberBetween(inputProjectData.duration, 1, 999, "duration"),
             generalValidator.maxLength(inputProjectData.intro, 2000, "intro"),
         )
+
+    private fun validateContractedChanges(inputProjectData: InputProjectData, project: ProjectEntity) {
+        if (!projectVersionPersistence.getAllVersionsByProjectId(project.id)
+                .any { it.status == ApplicationStatus.CONTRACTED })
+            return
+        if (inputProjectData.specificObjective != project.priorityPolicy?.programmeObjectivePolicy)
+            throw UpdateRestrictedFieldsWhenProjectContracted()
+    }
 
     private fun removeNoLongerAvailablePeriods(projectId: Long, maxPeriod: Int) {
         workPackageRepository.findAllByProjectId(projectId).forEach {
