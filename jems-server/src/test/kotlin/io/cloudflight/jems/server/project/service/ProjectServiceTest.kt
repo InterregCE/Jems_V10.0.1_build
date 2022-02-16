@@ -10,8 +10,8 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -32,6 +32,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectForm
+import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.UserStatus
@@ -128,6 +129,9 @@ class ProjectServiceTest : UnitTest() {
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
 
+    @RelaxedMockK
+    lateinit var projectVersionPersistence: ProjectVersionPersistence
+
     @InjectMockKs
     lateinit var projectService: ProjectServiceImpl
 
@@ -194,6 +198,33 @@ class ProjectServiceTest : UnitTest() {
             projectService.update(1, projectData.copy(specificObjective = SocialInfrastructure, duration = null))
         }
         assertThat(ex.entity).isEqualTo("programmeSpecificObjective")
+    }
+
+    @Test
+    fun `update with restricted contracted fields`() {
+        val projectToReturn = ProjectEntity(
+            id = 1,
+            call = dummyCall,
+            acronym = "test acronym",
+            applicant = account,
+            currentStatus = statusSubmitted,
+            firstSubmission = statusSubmitted,
+        )
+        every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
+        every { projectVersionPersistence.getAllVersionsByProjectId(1) } returns listOf(
+            ProjectVersion(
+                version = "1.0",
+                projectId = 1,
+                createdAt = ZonedDateTime.now(),
+                user = account,
+                status = ApplicationStatus.CONTRACTED,
+                current = true,
+            )
+        )
+
+        assertThrows<UpdateRestrictedFieldsWhenProjectContracted> {
+            projectService.update(1, projectData.copy(specificObjective = SocialInfrastructure, duration = null))
+        }
     }
 
     @Test
