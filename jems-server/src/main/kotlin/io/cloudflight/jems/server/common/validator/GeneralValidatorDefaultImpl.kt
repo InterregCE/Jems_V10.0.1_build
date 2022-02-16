@@ -138,7 +138,7 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
         }
 
     override fun onlyDigits(input: String?, fieldName: String): Map<String, I18nMessage> =
-        if (input == null) emptyMap() else matches(input, ONLY_DIGITS_REGEX, fieldName, "common.error.only.digits")
+        if (input.isNullOrBlank()) emptyMap() else matches(input, ONLY_DIGITS_REGEX, fieldName, "common.error.only.digits")
 
     override fun startDateBeforeEndDate(
         start: ZonedDateTime?,

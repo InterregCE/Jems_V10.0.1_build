@@ -33,6 +33,20 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
             )
     }
 
+    @Test
+    fun `should return correct validation result when input is equal to given parameter`() {
+        val input = "input text"
+        val validationResult = generalValidator.notEqualTo(input, input, "input")
+
+        assertThat(validationResult["input"])
+            .isEqualTo(
+                I18nMessage(
+                    "common.error.key.invalid",
+                    mapOf("key" to input)
+                )
+            )
+    }
+
     @Nested
     inner class MaxLength {
         @Test
@@ -249,6 +263,13 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
         @Test
         fun `should return empty map as validation result when input is null`() {
             val validationResult = generalValidator.onlyDigits(null, "input")
+
+            assertThat(validationResult["input"]).isNull()
+        }
+
+        @Test
+        fun `should return empty map as validation result when input is blank`() {
+            val validationResult = generalValidator.onlyDigits("", "input")
 
             assertThat(validationResult["input"]).isNull()
         }
