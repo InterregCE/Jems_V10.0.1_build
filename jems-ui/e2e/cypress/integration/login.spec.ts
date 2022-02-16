@@ -40,7 +40,7 @@ context('Login tests', () => {
 
     cy.get('a').contains('Create a new account').click();
     const id = faker.random.alphaNumeric(5);
-    const email = `cypress.${id}@Applicant.eu`;
+    const email = `cypress1.${id}@Applicant.eu`;
 
     cy.get('input[name="name"]').type('Cypress');
     cy.get('input[name="surname"]').type(id);
