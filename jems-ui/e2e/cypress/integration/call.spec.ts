@@ -18,7 +18,7 @@ context('Call management tests', () => {
     cy.visit('/');
 
     cy.get('div#navbarSupportedContent a').contains('Calls').click();
-    cy.get('button').contains('Add new call').click();
+    cy.contains('Add new call').click();
 
     // Call identification
     this.callName = `Automated call ${faker.random.uuid()}`;
@@ -56,7 +56,6 @@ context('Call management tests', () => {
 
     // Strategies
     cy.get('jems-call-state-aids').contains('General de minimis').click();
-
 
     cy.intercept('api/call').as('callCreation');
     cy.get('jems-pending-button').contains('Create').click();
@@ -98,7 +97,7 @@ context('Call management tests', () => {
 
     // Lump Sums
     cy.intercept(/api\/call\/byId\/\d\/lumpSum/).as('lumpSum');
-    const lumpSum = 'DE Preparation Lump sum #7626112';
+    const lumpSum = 'DE Preparation Lump sum';
     cy.get('jems-call-lump-sums span').contains(lumpSum).parent().find('input[type="checkbox"]').check({force: true});
     cy.get('jems-call-lump-sums button').contains('Save changes').click();
     cy.wait('@lumpSum');
@@ -119,7 +118,7 @@ context('Call management tests', () => {
     // Publish call
     cy.intercept(/api\/call\/byId\/\d\/publish/).as('publish');
     cy.get('jems-side-nav span.title').contains('General call settings').click();
-    cy.get('button').contains('Publish call').click();
+    cy.contains('Publish call').click();
     cy.get('jems-confirm-dialog button').contains('Confirm').click();
     cy.wait('@publish');
 
