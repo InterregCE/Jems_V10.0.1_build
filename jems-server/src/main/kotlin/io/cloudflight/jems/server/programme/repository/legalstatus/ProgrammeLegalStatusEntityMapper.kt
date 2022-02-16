@@ -6,14 +6,13 @@ import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalSta
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusTranslationEntity
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 
-fun Iterable<ProgrammeLegalStatusEntity>.toModel() = map {
-    ProgrammeLegalStatus(
-        id = it.id,
-        description = it.translatedValues.extractField { it.description },
-        type = it.type
-    )
-}
+fun Iterable<ProgrammeLegalStatusEntity>.toModel() = map { it.toModel() }
 
+fun ProgrammeLegalStatusEntity.toModel() = ProgrammeLegalStatus(
+    id = id,
+    description = translatedValues.extractField { it.description },
+    type = type
+)
 
 fun Collection<ProgrammeLegalStatus>.toEntity() = map { model ->
     ProgrammeLegalStatusEntity(

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectPartnerReportDTO, ProjectPartnerSummaryDTO} from '@cat/api';
+import {ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {TranslateService} from '@ngx-translate/core';
@@ -19,7 +19,7 @@ import {map} from 'rxjs/operators';
 export class PartnerReportComponent implements OnInit {
   tableConfiguration: TableConfiguration;
   data$: Observable<{
-    partnerReports: ProjectPartnerReportDTO[];
+    partnerReports: ProjectPartnerReportSummaryDTO[];
     partner: ProjectPartnerSummaryDTO;
   }>;
 
