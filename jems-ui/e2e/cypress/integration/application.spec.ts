@@ -19,7 +19,9 @@ context('Project management tests', () => {
     cy.get('jems-call-list').should('exist');
 
 
+    cy.intercept(/api\/call\/byId\/\d/).as('apply');
     cy.contains('Apply').click();
+    cy.wait('@apply')
     cy.contains('Apply').click();
 
     const random = faker.random.alpha(5);
