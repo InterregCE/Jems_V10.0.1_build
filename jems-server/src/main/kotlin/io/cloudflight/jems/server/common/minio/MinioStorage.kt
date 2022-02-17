@@ -4,7 +4,7 @@ import java.io.InputStream
 
 interface MinioStorage {
 
-    fun saveFile(bucket: String, filePath: String, size: Long, stream: InputStream)
+    fun saveFile(bucket: String, filePath: String, size: Long, stream: InputStream, overwriteIfExists: Boolean = false)
 
     fun moveFile(sourceBucket: String, sourceFilePath: String, destinationBucket: String, destinationFilePath: String)
 

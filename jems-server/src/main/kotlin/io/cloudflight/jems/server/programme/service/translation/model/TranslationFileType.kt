@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.service.translation.model
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 
+@OptIn(ExperimentalStdlibApi::class)
 enum class TranslationFileType {
     System,
     Application;

@@ -1,6 +1,44 @@
 <jems-main-page-template [needsCard]="true"
-                         titleKey="programme.data.export.title">
-    <div id="export-config" *ngIf="data$ | async as data">
+                         *ngIf="data$ | async as data"
+                         titleKey="programme.data.export.title"
+                         descriptionKey="programme.data.export.info">
+    <div jemsFormLayout>
+        <h3>{{'programme.data.export.table.header' | translate}}</h3>
+        <div jemsNoWidthLimit class="mb-4"
+             [jemsTableConfig]="[{minInRem: 25}, {minInRem: 20}, {minInRem:3}, {minInRem:3}, {minInRem: 15}, {minInRem: 3, maxInRem: 3}]">
+            <div>
+                <span>{{ 'programme.data.export.table.plugin.name' | translate}}</span>
+                <span>{{ 'programme.data.export.table.filename' | translate}}</span>
+                <span>{{ 'programme.data.export.label.input.language' | translate}}</span>
+                <span>{{ 'programme.data.export.label.export.language' | translate}}</span>
+                <span>{{ 'programme.data.export.table.date' | translate}}</span>
+                <span class="justify-center">{{ 'programme.data.export.table.download' | translate}}</span>
+            </div>
+
+            <div *ngIf="!data.programmeDataExportMetadata.length">{{'programme.data.export.no.data.info' | translate}}</div>
+
+            <ng-container *ngFor="let exportedFileData of data.programmeDataExportMetadata">
+                <div>
+                    <span>{{exportedFileData.pluginKey}}</span>
+                    <span>{{exportedFileData.fileName}}</span>
+                    <span>{{exportedFileData.inputLanguage}}</span>
+                    <span>{{exportedFileData.exportLanguage}}</span>
+                    <span>{{exportedFileData.exportEndedAt | date:'dd/MM/yyyy hh:mm'}}</span>
+                    <span class="justify-center">
+                        <button *ngIf="!isExportInProgress(exportedFileData)"
+                                (click)="downloadData(exportedFileData.pluginKey)" color="accent"
+                                mat-icon-button>
+                            <mat-icon>download</mat-icon>
+                        </button>
+
+                        <mat-spinner *ngIf="isExportInProgress(exportedFileData)" [strokeWidth]="2"
+                                     [diameter]="24"></mat-spinner>
+                    </span>
+                </div>
+            </ng-container>
+        </div>
+
+        <h3>{{'programme.data.export.section.header' | translate}}</h3>
         <form jemsFormLayout [formGroup]="exportForm">
             <mat-form-field>
                 <mat-label>{{'programme.data.export.label.plugins' | translate}}</mat-label>
@@ -29,12 +67,12 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
+
+            <jems-pending-button jemsText
+                                 [disabled]="!pluginKey || !exportLanguage || !inputLanguage || data.isAnyExportRunning"
+                                 (click)="exportData(pluginKey, exportLanguage, inputLanguage)">
+                {{'programme.data.export.label.export.button' | translate}}
+            </jems-pending-button>
         </form>
-        <jems-pending-button jemsText
-                             [disabled]="!pluginKey || !exportLanguage || !inputLanguage"
-                             (click)="exportData(pluginKey, exportLanguage, inputLanguage)"
-                             [pending]="isExportingInProgress$ | async">
-            {{'programme.data.export.label.export.button' | translate}}
-        </jems-pending-button>
     </div>
 </jems-main-page-template>

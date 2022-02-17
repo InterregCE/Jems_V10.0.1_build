@@ -41,4 +41,8 @@ class ProjectVersionPersistenceProvider(
             ?: versionsSorted.first().version
     }
 
+    @Transactional(readOnly = true)
+    override fun getAllVersions(): List<ProjectVersion> =
+        projectVersionRepository.findAllVersions().toProjectVersion()
+
 }
