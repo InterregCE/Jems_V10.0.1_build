@@ -20,7 +20,7 @@
         <ng-container *ngIf="partnerForm.enabled">
             <div *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ROLE">
                 <div jemsLabel class="mat-required-marker"
-                [ngClass]="{'empty': !togglePartner.checked && !toggleLeadpartner.checked}">
+                [ngClass]="{'empty': !togglePartner.checked && !toggleLeadPartner.checked}">
                     {{'project.partner.role.label' | translate}}
                 </div>
 
@@ -28,7 +28,7 @@
                     <mat-button-toggle #togglePartner [value]="RoleEnum.PARTNER">
                         <span jemsText maxWidth="230">{{'common.label.project.partner.role.PARTNER' | translate}}</span>
                     </mat-button-toggle>
-                    <mat-button-toggle #toggleLeadpartner [value]="RoleEnum.LEADPARTNER">
+                    <mat-button-toggle #toggleLeadPartner [value]="RoleEnum.LEADPARTNER">
                         <span jemsText maxWidth="230">{{'common.label.project.partner.role.LEAD_PARTNER' | translate}}</span>
                     </mat-button-toggle>
                 </mat-button-toggle-group>
@@ -90,12 +90,17 @@
 
         <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.TYPE">
             <mat-label>{{'project.partner.type' | translate}}</mat-label>
-            <mat-select name="partnerType" formControlName="partnerType">
+            <mat-select name="partnerType" formControlName="partnerType" (selectionChange)="setSpfBeneficiaryTypeValue($event.value)">
                 <mat-option *ngFor="let type of ProjectApplicationFormPartnerEditConstants.partnerTypeEnums"
                             [value]="type">
                     {{'project.application.form.relevance.target.group.' + type | translate}}
                 </mat-option>
             </mat-select>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="data.isSpf">
+            <mat-label>{{'spf.beneficiary.type' | translate}}</mat-label>
+            <input [readonly]="true" name="spfBeneficiaryType" formControlName="spfBeneficiaryType" matInput>
         </mat-form-field>
 
         <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.SUB_TYPE">

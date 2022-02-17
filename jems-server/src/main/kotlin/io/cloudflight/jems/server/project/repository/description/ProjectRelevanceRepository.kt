@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.description
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceBenefitRow
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceEntity
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceRow
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSpfRecipientRow
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStrategyRow
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSynergyRow
 import org.springframework.data.jpa.repository.Query
@@ -49,6 +50,23 @@ interface ProjectRelevanceRepository : PagingAndSortingRepository<ProjectRelevan
         nativeQuery = true
     )
     fun findBenefitsByProjectIdAsOfTimestamp(projectId: Long, timestamp: Timestamp): List<ProjectRelevanceBenefitRow>
+
+    @Query(
+        """
+            SELECT
+             entity.id AS id,
+             entity.project_relevance_id AS projectId,
+             entity.recipient_group AS recipientGroup,
+             translation.language AS language,
+             translation.specification AS specification
+             FROM #{#entityName}_spf_recipient FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+             LEFT JOIN #{#entityName}_spf_recipient_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation ON entity.id = translation.source_entity_id
+             WHERE entity.project_relevance_id = :projectId
+             ORDER BY entity.sort_number
+        """,
+        nativeQuery = true
+    )
+    fun findSpfRecipientsByProjectIdAsOfTimestamp(projectId: Long, timestamp: Timestamp): List<ProjectRelevanceSpfRecipientRow>
 
     @Query(
         """

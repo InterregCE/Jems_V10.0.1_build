@@ -1,5 +1,6 @@
 <jems-form (save)="onSubmit()"
-          (discard)="resetForm()">
+           (discard)="resetForm()"
+           *ngIf="callType$ | async as callType">
     <form jemsFormLayout [formGroup]="projectRelevanceForm">
         <h3>{{'project.application.form.section.part.c.subsection.two' | translate}}</h3>
 
@@ -52,11 +53,22 @@
             <h4>{{'project.application.form.relevance.field.4' | translate}}</h4>
             <p>{{'project.application.form.relevance.field.4.intro' | translate}}</p>
             <jems-benefits-table jemsNoWidthLimit
-                                [formGroup]="projectRelevanceForm"
-                                [benefits]="benefits"
-                                [editable]="editable"
-                                (changed)="tableChanged()">
+                                 [formGroup]="projectRelevanceForm"
+                                 [benefits]="benefits"
+                                 [editable]="editable"
+                                 (changed)="tableChanged()">
             </jems-benefits-table>
+        </ng-container>
+
+        <ng-container *ngIf="callType === 'SPF'">
+            <h4>{{'spf.project.application.form.relevance.field.4a' | translate}}</h4>
+            <p>{{'spf.project.application.form.relevance.field.4a.intro' | translate}}</p>
+           <jems-spf-recipients-table jemsNoWidthLimit
+                                      [formGroup]="projectRelevanceForm"
+                                      [spfRecipients]="spfRecipients"
+                                      [editable]="editable"
+                                      (changed)="tableChanged()">
+           </jems-spf-recipients-table>
         </ng-container>
 
         <ng-container
