@@ -41,7 +41,6 @@ import {LanguageStore} from '@common/services/language-store.service';
 })
 export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAccessor, Validator {
 
-  disabled = false;
   constants = MultiLanguageFormFieldConstants;
 
   @Input()
@@ -60,6 +59,8 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   useFallBackLanguage = false;
   @Input()
   isFallBackLanguageReadonly = false;
+  @Input()
+  disabled = false;
 
   multiLanguageFormGroup: FormGroup;
   currentLanguage$: Observable<string>;

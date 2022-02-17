@@ -191,4 +191,8 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
       this.managementForm.get(key)?.disable();
     }
   }
+
+  disabled(input: string): boolean {
+    return !this.editable || !this.selection.isSelected(input);
+  }
 }
