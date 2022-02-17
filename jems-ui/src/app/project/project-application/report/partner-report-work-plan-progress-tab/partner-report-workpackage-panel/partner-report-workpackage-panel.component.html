@@ -1,0 +1,155 @@
+<mat-expansion-panel class="mb-3 mt-3" [expanded]="true" id="partner-collaborators-panel">
+    <ng-container *ngIf="data$ | async as data">
+    <mat-expansion-panel-header>
+        <mat-panel-title class="mt-2">
+            {{'project.application.form.workpackage.form.header' | translate}}
+<!--            {{workPackage.number}}-->
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <form jemsFormLayout>
+        {{'project.application.partner.report.workplan.period.contribution.description' | translate}}
+<!--        <jems-multi-language-form-field-->
+<!--                [formControlName]="constants.FORM_CONTROL_NAMES.periodContributionDescription">-->
+<!--        </jems-multi-language-form-field>-->
+
+        <jems-multi-language-container>
+            <jems-multi-language-form-field
+                    type="textarea"
+                    minRows="1"
+                    [formControlName]="constants.FORM_CONTROL_NAMES.periodContributionDescription"
+                    [maxLength]="200">
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
+
+        <span>{{'project.application.partner.report.workplan.contribution.description.subtitle' | translate}}</span>
+
+
+
+
+
+
+        <div appNoWidthLimit id="activities-table"
+             [jemsTableConfig]="[{maxInRem:5},{},{maxInRem:10}]"
+             *ngIf="data.activities as activities">
+
+            <div class="header-center">
+                <span jemsText maxLines="2">{{ 'project.application.partner.report.workplan.activity.table.nr' | translate }}</span>
+                <span jemsText maxLines="2">{{ 'project.application.partner.report.workplan.activity.table.title' | translate }}</span>
+                <span jemsText maxLines="2" class="justify-end">{{ 'project.application.partner.report.workplan.activity.table.progress' | translate }}</span>
+            </div>
+
+            <ng-container *ngFor="let activity of activities">
+                <div>
+                    <span>{{ 'project.application.partner.report.workplan.activity.table.nr.entry' | translate: {workPackageNr: workPackage, activityNr: activity.activityNumber} }}</span>
+                    <span>{{ activity.title | translateByInputLanguage }}</span>
+
+                    <span class="justify-end">
+                               <jems-multi-language-form-field
+                                       [disabled]="true"
+                                       [formControlName]="constants.FORM_CONTROL_NAMES.activityTitle">
+                               </jems-multi-language-form-field>
+                    </span>
+
+                    <span class="justify-end">
+                               <jems-multi-language-form-field
+                                       [formControlName]="constants.FORM_CONTROL_NAMES.progress">
+                               </jems-multi-language-form-field>
+                    </span>
+                </div>
+
+
+<!--                ///////////////////////////////////// DELIVERABLE TABLE -->
+
+
+                <ng-container>
+                    <div class="header-center">
+                        <span jemsText maxLines="2">{{ 'project.application.partner.report.workplan.deliverable.table.nr' | translate }}</span>
+                        <span jemsText maxLines="2">{{ 'project.application.partner.report.workplan.deliverable.table.title' | translate }}</span>
+                        <span jemsText maxLines="2" class="justify-end">{{ 'project.application.partner.report.workplan.output.table.contribution' | translate }}</span>
+                        <span jemsText maxLines="2" class="justify-end">{{ 'project.application.partner.report.workplan.output.table.evidence' | translate }}</span>
+                    </div>
+
+
+                    <div *ngFor="let deliverable of activity.deliverables">
+                        <span>{{ 'project.application.partner.report.workplan.deliverable.table.nr.entry' | translate: {workPackageNr: workPackage, activityNr: activity.activityNumber, deliverableNr: deliverable.deliverableNumber} }}</span>
+                        <span>{{ deliverable.title | translateByInputLanguage }}</span>
+
+                        <span class="justify-end">
+                            <mat-checkbox
+                                    formControlName="constants.FORM_CONTROL_NAMES.deliverableContribution">
+                             {{'call.allow.real.costs.external' | translate}}
+                            </mat-checkbox>
+                        </span>
+
+                        <span class="justify-end">
+                            <mat-checkbox
+                                    formControlName='constants.FORM_CONTROL_NAMES.deliverableAttachedEvidence'>
+                             {{'call.allow.real.costs.external' | translate}}
+                            </mat-checkbox>
+                        </span>
+                    </div>
+                </ng-container>
+
+<!--                ////////////////////////// END OF DELIVERABLE TABLE-->
+            </ng-container>
+
+
+
+
+
+
+        </div>
+
+
+
+
+
+
+<!--        ///////////////////////////////////////////////////////////////////////////////////////////////////-->
+
+
+
+        <div appNoWidthLimit id="outputs-table"
+             [jemsTableConfig]="[{maxInRem:3},{},{maxInRem:5},{maxInRem:10}]"
+             *ngIf="data.outputs as outputs">
+
+            <div class="header-center">
+                <span jemsText maxLines="2">{{ 'project.application.partner.report.workplan.output.table.nr' | translate }}</span>
+                <span jemsText maxLines="2">{{ 'project.application.partner.report.workplan.output.table.title' | translate }}</span>
+                <span jemsText maxLines="2" class="justify-end">{{ 'project.application.partner.report.workplan.output.table.contribution' | translate }}</span>
+                <span jemsText maxLines="2" class="justify-end">{{ 'project.application.partner.report.workplan.output.table.evidence' | translate }}</span>
+            </div>
+
+            <ng-container *ngFor="let output of outputs">
+                <div>
+                    <span>{{ 'project.application.partner.report.workplan.output.table.nr.entry' | translate: {workPackageNr: workPackage, outputNr: output.outputNumber} }}</span>
+                    <span>{{ output.title | translateByInputLanguage }}</span>
+
+                    <span class="justify-end">
+                        <mat-checkbox
+                                formControlName="constants.FORM_CONTROL_NAMES.outputContribution">
+                         {{'call.allow.real.costs.external' | translate}}
+                        </mat-checkbox>
+                    </span>
+
+                    <span class="justify-end">
+                        <mat-checkbox
+                            formControlName='constants.FORM_CONTROL_NAMES.outputAttachedEvidence'>
+                         {{'call.allow.real.costs.external' | translate}}
+                        </mat-checkbox>
+                    </span>
+                </div>
+            </ng-container>
+
+
+        </div>
+
+
+        <!--        ///////////////////////////////////////////////////////////////////////////////////////////////////-->
+    </form>
+
+
+
+    </ng-container>
+</mat-expansion-panel>

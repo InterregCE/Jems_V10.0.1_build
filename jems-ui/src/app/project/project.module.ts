@@ -129,6 +129,12 @@ import {
 
 import { PartnerReportDetailPageComponent } from './project-application/report/partner-report-detail-page/partner-report-detail-page.component';
 import { PartnerReportIdentificationTabComponent } from './project-application/report/partner-report-detail-page/partner-report-identification-tab/partner-report-identification-tab.component';
+import { PartnerReportIdentificationTabComponent } from './project-application/report/partner-report-identification-tab/partner-report-identification-tab.component';
+import {
+  ReportBreadcrumbResolver
+} from '@project/project-application/containers/project-application-detail/services/report-breadcrumb.resolver';
+import { PartnerReportWorkPlanProgressTabComponent } from './project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-progress-tab.component';
+import { PartnerReportWorkpackagePanelComponent } from './project-application/report/partner-report-work-plan-progress-tab/partner-report-workpackage-panel/partner-report-workpackage-panel.component';
 
 @NgModule({
   declarations: [
@@ -239,6 +245,8 @@ import { PartnerReportIdentificationTabComponent } from './project-application/r
     PartnerTeamPrivilegesExpansionPanelComponent,
     PartnerReportDetailPageComponent,
     PartnerReportIdentificationTabComponent,
+    PartnerReportWorkPlanProgressTabComponent,
+    PartnerReportWorkpackagePanelComponent,
     SpfRecipientsTableComponent
   ],
   imports: [
