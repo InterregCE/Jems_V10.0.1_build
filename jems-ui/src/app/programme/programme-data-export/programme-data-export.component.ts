@@ -1,12 +1,13 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {ProgrammePageSidenavService} from '../programme-page/services/programme-page-sidenav.service';
 import {ProgrammeDataExportStore} from './programme-data-export-store';
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
-import {PluginInfoDTO} from '@cat/api';
+import {combineLatest, Observable} from 'rxjs';
+import {PluginInfoDTO, ProgrammeDataExportMetadataDTO} from '@cat/api';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {DownloadService} from '@common/services/download.service';
-import {finalize, map, tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'jems-programme-data-export',
   templateUrl: './programme-data-export.component.html',
@@ -15,27 +16,36 @@ import {finalize, map, tap} from 'rxjs/operators';
   providers: [ProgrammeDataExportStore]
 
 })
-export class ProgrammeDataExportComponent {
+export class ProgrammeDataExportComponent implements OnDestroy {
 
+  refreshInterval;
   exportForm: FormGroup;
-  isExportingInProgress$ = new BehaviorSubject(false);
-
   data$: Observable<{
     inputLanguages: string[];
     exportLanguages: string[];
     plugins: PluginInfoDTO[];
+    programmeDataExportMetadata: ProgrammeDataExportMetadataDTO[];
+    isAnyExportRunning: boolean;
   }>;
 
-  constructor(private programmePageSidenavService: ProgrammePageSidenavService, private pageStore: ProgrammeDataExportStore, private formBuilder: FormBuilder, private downloadService: DownloadService) {
+  constructor(private programmePageSidenavService: ProgrammePageSidenavService, private pageStore: ProgrammeDataExportStore, private formBuilder: FormBuilder) {
+
+    this.refreshInterval = setInterval(() => {
+      this.pageStore.refreshExportMetaData();
+    }, 30000);
+
     this.data$ = combineLatest([
       this.pageStore.inputLanguages$,
       this.pageStore.exportLanguages$,
       this.pageStore.programmeDataExportPlugins$,
+      this.pageStore.programmeDataExportMetadata$,
     ]).pipe(
-      map(([inputLanguages, exportLanguages, plugins]) => ({
+      map(([inputLanguages, exportLanguages, plugins, programmeDataExportMetadata]) => ({
         inputLanguages,
         exportLanguages,
-        plugins
+        plugins,
+        programmeDataExportMetadata,
+        isAnyExportRunning: this.isAnyExportInProgress(programmeDataExportMetadata)
       })),
       tap((data) => this.resetForm(data.plugins))
     );
@@ -49,10 +59,28 @@ export class ProgrammeDataExportComponent {
     });
   }
 
+  downloadData(pluginKey: string): void {
+    this.pageStore.download(pluginKey).subscribe();
+  }
+
   exportData(pluginKey: string, exportLanguage: string, inputLanguage: string): void {
-    this.downloadService.download(`/api/programme/export/?pluginKey=${pluginKey}&exportLanguage=${exportLanguage}&inputLanguage=${inputLanguage}`, 'programme-data-export.xlsx').pipe(
-      finalize(() => this.isExportingInProgress$.next(false)),
+    this.pageStore.exportData(pluginKey, exportLanguage, inputLanguage).pipe(
+      untilDestroyed(this)
     ).subscribe();
+  }
+
+  isExportInProgress(programmeDataExportMetadata: ProgrammeDataExportMetadataDTO): boolean {
+    return programmeDataExportMetadata.exportEndedAt === null;
+  }
+
+  isAnyExportInProgress(programmeDataExportMetadata: ProgrammeDataExportMetadataDTO[]): boolean {
+    let isExportRunning = false;
+    programmeDataExportMetadata.forEach((val) => {
+      if (this.isExportInProgress(val)) {
+        isExportRunning = true;
+      }
+    });
+    return isExportRunning;
   }
 
   get inputLanguage(): string {
@@ -62,7 +90,12 @@ export class ProgrammeDataExportComponent {
   get exportLanguage(): string {
     return this.exportForm.get('exportLanguage')?.value || this.pageStore.fallBackLanguage;
   }
+
   get pluginKey(): string {
     return this.exportForm.get('pluginKey')?.value;
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.refreshInterval);
   }
 }

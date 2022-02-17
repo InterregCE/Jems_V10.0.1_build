@@ -24,10 +24,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyOrder
-import java.io.InputStream
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertLinesMatch
@@ -36,6 +33,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.LoggerFactory
+import java.io.BufferedInputStream
+import java.io.InputStream
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class MinioStorageTest {
 
@@ -70,7 +72,7 @@ class MinioStorageTest {
 //    }
 
     @Test
-    fun saveFile_duplicate() {
+    fun `should throw DuplicateFileException if it already exists and overwrite is not provided`() {
         every { minioClient.bucketExists(bucketExistsArgs("bucket")) } returns true
 
         val contents = mockk<Contents>()
@@ -90,6 +92,33 @@ class MinioStorageTest {
             assertEquals("file", name)
             assertEquals(DuplicateFileException.Origin.FILE_STORAGE, origin)
         }
+    }
+
+    @Test
+    fun `should overwrite file if it already exists and overwrite is set to true`() {
+        val content ="test"
+        val bucketName = "bucket-name"
+        val filePath = "filePath"
+
+        val streamToSave = BufferedInputStream(content.toByteArray().inputStream())
+        val contents = mockk<Contents>()
+        val fileMetadata = Result<Item>(contents)
+        val putObjectArgsSlot = slot<PutObjectArgs>()
+
+        every { minioClient.bucketExists(bucketExistsArgs(bucketName)) } returns true
+        every { contents.lastModified() } returns ZonedDateTime.of(LocalDateTime.of(2020, 6, 15, 7, 30), zone)
+        every { contents.objectName() } returns filePath
+        every { minioClient.listObjects(any()) } returns mutableListOf(fileMetadata)
+        every {
+            minioClient.putObject(capture(putObjectArgsSlot))
+        } answers { ObjectWriteResponse(null, bucketName, null, filePath, null, null) }
+
+        minioStorage.saveFile(bucketName, filePath, bucketName.length.toLong(), streamToSave, true)
+
+        assertThat(bucketName).isEqualTo(putObjectArgsSlot.captured.bucket())
+        assertThat(filePath).isEqualTo(putObjectArgsSlot.captured.`object`())
+        assertThat(streamToSave).isEqualTo(putObjectArgsSlot.captured.stream())
+        assertThat(content.toByteArray().size).isEqualTo(putObjectArgsSlot.captured.stream().readAllBytes().size)
     }
 
     private fun testSave(bucketExists: Boolean, errorCode: ErrorResponse) {

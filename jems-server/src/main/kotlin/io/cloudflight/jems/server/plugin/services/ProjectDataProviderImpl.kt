@@ -7,6 +7,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectDataSectionD
+import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
@@ -69,6 +70,10 @@ class ProjectDataProviderImpl(
     companion object {
         private val logger = LoggerFactory.getLogger(ProjectDataProviderImpl::class.java)
     }
+
+    @Transactional(readOnly = true)
+    override fun getAllProjectVersions(): List<ProjectVersionData> =
+        projectVersionPersistence.getAllVersions().toDataModel()
 
     @Transactional(readOnly = true)
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
@@ -170,7 +175,14 @@ class ProjectDataProviderImpl(
 
         return ProjectData(
             sectionA, sectionB, sectionC, sectionD, sectionE,
-            lifecycleData = ProjectLifecycleData(status = project.projectStatus.status.toDataModel()),
+            lifecycleData = ProjectLifecycleData(
+                status = project.projectStatus.status.toDataModel(),
+                submissionDateStepOne = null, // todo should be set in MP2-2306
+                firstSubmissionDate = project.firstSubmission?.updated,
+                lastResubmissionDate = project.lastResubmission?.updated,
+                assessmentStep1 = project.assessmentStep1?.toDataModel(),
+                assessmentStep2 = project.assessmentStep2?.toDataModel()
+            ),
             versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel()
         )
     }
