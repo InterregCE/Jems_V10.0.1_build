@@ -5,4 +5,7 @@
                                 *ngIf="projectStore.allowedBudgetCategories$ | async as allowedBudgetCategories"
                                 [allowedBudgetCategories]="allowedBudgetCategories">
     </jems-project-partner-budget>
+    <ng-container *ngIf="isCallSpf$ | async">
+        <jems-small-project-fund-budget class="mb-3"></jems-small-project-fund-budget>
+    </ng-container>
 </ng-container>

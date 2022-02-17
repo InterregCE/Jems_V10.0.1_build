@@ -1,0 +1,15 @@
+<ng-container *ngIf="data">
+    <jems-form (save)="updateBudgets()">
+        <form [formGroup]="spfBudgetsForm" jemsFormLayout>
+            <h3>{{'project.partner.budget.header' |  translate}} - {{'project.partner.budget.header.spf' |  translate}}</h3>
+                <h4>{{'project.partner.budget.header.spf' |  translate}}</h4>
+                <jems-small-project-fund-table
+                        *ngIf="spfCost"
+                        [editable]="spfBudgetsForm.enabled"
+                        [projectPeriods]="data.periods"
+                        [spfCostTable]="data.spfBudgetTables.spfCosts"
+                        jemsNoWidthLimit>
+                </jems-small-project-fund-table>
+        </form>
+    </jems-form>
+</ng-container>

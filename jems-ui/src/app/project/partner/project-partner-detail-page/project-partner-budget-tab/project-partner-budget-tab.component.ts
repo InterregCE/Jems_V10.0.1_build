@@ -6,8 +6,11 @@ import {RoutingService} from '@common/services/routing.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ActivatedRoute} from '@angular/router';
-import {filter, tap} from 'rxjs/operators';
+import {filter, map, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Observable} from 'rxjs';
+import {ProjectCallSettingsDTO} from '@cat/api';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @UntilDestroy()
 @Component({
@@ -19,12 +22,13 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 })
 export class ProjectPartnerBudgetTabComponent {
 
+  isCallSpf$: Observable<boolean>;
   constructor(public projectStore: ProjectStore, private activatedRoute: ActivatedRoute, private router: RoutingService, private visibilityStatusService: FormVisibilityStatusService) {
+    this.isCallSpf$ = projectStore.projectCallType$.pipe(map((type) => type === CallTypeEnum.SPF));
     visibilityStatusService.isVisible$((APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING)).pipe(
       untilDestroyed(this),
       filter(isVisible => !isVisible),
       tap(() => this.router.navigate(['../identity'], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
     ).subscribe();
   }
-
 }

@@ -1,11 +1,17 @@
 import {Injectable} from '@angular/core';
-import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectPartnerStore
+} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {
   BaseBudgetEntryDTO,
   BudgetGeneralCostEntryDTO,
-  BudgetStaffCostEntryDTO, BudgetTravelAndAccommodationCostEntryDTO, BudgetUnitCostEntryDTO,
+  BudgetSpfCostEntryDTO,
+  BudgetStaffCostEntryDTO,
+  BudgetTravelAndAccommodationCostEntryDTO,
+  BudgetUnitCostEntryDTO,
   ProjectPartnerBudgetOptionsDto,
-  ProjectPartnerBudgetService, ProjectPartnerDetailDTO,
+  ProjectPartnerBudgetService,
+  ProjectPartnerDetailDTO,
 } from '@cat/api';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {filter, map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
@@ -13,8 +19,12 @@ import {combineLatest, forkJoin, Observable, of, Subject} from 'rxjs';
 import {PartnerBudgetTables} from '@project/model/budget/partner-budget-tables';
 import {StaffCostsBudgetTable} from '@project/model/budget/staff-costs-budget-table';
 import {StaffCostsBudgetTableEntry} from '@project/model/budget/staff-costs-budget-table-entry';
-import {TravelAndAccommodationCostsBudgetTable} from '@project/model/budget/travel-and-accommodation-costs-budget-table';
-import {TravelAndAccommodationCostsBudgetTableEntry} from '@project/model/budget/travel-and-accommodation-costs-budget-table-entry';
+import {
+  TravelAndAccommodationCostsBudgetTable
+} from '@project/model/budget/travel-and-accommodation-costs-budget-table';
+import {
+  TravelAndAccommodationCostsBudgetTableEntry
+} from '@project/model/budget/travel-and-accommodation-costs-budget-table-entry';
 import {UnitCostsBudgetTable} from '@project/model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '@project/model/budget/unit-costs-budget-table-entry';
 import {GeneralBudgetTable} from '@project/model/budget/general-budget-table';
@@ -22,10 +32,14 @@ import {GeneralBudgetTableEntry} from '@project/model/budget/general-budget-tabl
 import {NumberService} from '@common/services/number.service';
 import {BudgetOptions} from '@project/model/budget/budget-options';
 import {Log} from '@common/utils/log';
+import {SpfPartnerBudgetTableEntry} from '@project/model/budget/spf-partner-budget-table-entry';
+import {SpfPartnerBudgetTable} from '@project/model/budget/spf-partner-budget-table';
+import {PartnerBudgetSpfTables} from '@project/model/budget/partner-budget-spf-tables';
 
 @Injectable()
 export class ProjectPartnerBudgetStore {
   budgets$: Observable<PartnerBudgetTables>;
+  spfBudgets$: Observable<PartnerBudgetSpfTables>;
   budgetOptions$: Observable<BudgetOptions>;
   totalBudget$: Observable<number>;
 
@@ -36,6 +50,7 @@ export class ProjectPartnerBudgetStore {
               private projectPartnerBudgetService: ProjectPartnerBudgetService,
               private projectVersionStore: ProjectVersionStore) {
     this.budgets$ = this.budgets();
+    this.spfBudgets$ = this.spfBudgets();
     this.budgetOptions$ = this.budgetOptions();
     this.totalBudget$ = this.totalBudget();
   }
@@ -63,6 +78,15 @@ export class ProjectPartnerBudgetStore {
     );
   }
 
+  updateSpfBudgets(budgets: PartnerBudgetSpfTables): Observable<any> {
+    return of(budgets).pipe(withLatestFrom(this.partnerStore.partner$, this.budgetOptions$)).pipe(
+      switchMap(([newBudgets, partner, options]: any) =>
+        forkJoin(this.getSpfBudgetsToSave(partner, newBudgets, options))),
+      tap(() => this.updateBudgetEvent$.next(true)),
+      share()
+    );
+  }
+
   private budgets(): Observable<PartnerBudgetTables> {
     return combineLatest([
       this.partnerStore.partner$,
@@ -80,6 +104,24 @@ export class ProjectPartnerBudgetStore {
           this.toBudgetTable(data.equipmentCosts),
           this.toBudgetTable(data.infrastructureCosts),
           this.toUnitCostsTable(data.unitCosts)
+        )),
+        tap(fetched => Log.info('Fetched budget data:', this, fetched)),
+        shareReplay(1)
+      );
+  }
+
+  private spfBudgets(): Observable<PartnerBudgetSpfTables> {
+    return combineLatest([
+      this.partnerStore.partner$,
+      this.projectVersionStore.selectedVersionParam$,
+      this.updateBudgetEvent$.pipe(startWith(null)),
+      this.updateBudgetOptionsEvent$.pipe(startWith(null))
+    ])
+      .pipe(
+        filter(([partner]) => !!partner.id),
+        switchMap(([partner, version]) => this.projectPartnerBudgetService.getBudgetCosts(partner.id, version)),
+        map(data => new PartnerBudgetSpfTables(
+          this.toSpfCostsTable(data.spfCosts)
         )),
         tap(fetched => Log.info('Fetched budget data:', this, fetched)),
         shareReplay(1)
@@ -126,6 +168,12 @@ export class ProjectPartnerBudgetStore {
     }
   }
 
+  private getSpfBudgetsToSave(partner: ProjectPartnerDetailDTO, newBudgets: PartnerBudgetSpfTables, options: BudgetOptions): { [key: string]: Observable<any> } {
+    return {
+        spf: this.projectPartnerBudgetService.updateBudgetSpfCosts(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.spfCosts)),
+      };
+  }
+
   private totalBudget(): Observable<number> {
     return combineLatest([
       this.partnerStore.partner$,
@@ -160,6 +208,11 @@ export class ProjectPartnerBudgetStore {
   private toBudgetTable(rawEntries: BudgetGeneralCostEntryDTO[]): GeneralBudgetTable {
     const entries = rawEntries.map(entry => new GeneralBudgetTableEntry({...entry}));
     return new GeneralBudgetTable(this.calculateTableTotal(rawEntries), entries);
+  }
+
+  private toSpfCostsTable(rawEntries: BudgetSpfCostEntryDTO[]): SpfPartnerBudgetTable {
+    const entries = rawEntries.map(entry => new SpfPartnerBudgetTableEntry({...entry}));
+    return new SpfPartnerBudgetTable(this.calculateTableTotal(rawEntries), entries);
   }
 
   private calculateTableTotal(rawEntries: BaseBudgetEntryDTO[]): number {
