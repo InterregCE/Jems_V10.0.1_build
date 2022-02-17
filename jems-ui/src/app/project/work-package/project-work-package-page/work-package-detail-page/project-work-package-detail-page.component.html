@@ -2,7 +2,7 @@
                            titleKey="project.application.form.section.part.c"
                            subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
     <nav mat-tab-nav-bar
-         *ngIf="workPackageId">
+         *ngIf="workPackageId"> AUREEEEEEEEEEEEEEEL
         <a [active]="activeTab('objectives')" mat-tab-link
            (click)="routeTo('objectives')">
             <span jemsText maxWidth="230">{{'workpackage.tab.objectives' | translate}}</span>
@@ -23,5 +23,6 @@
             <span jemsText maxWidth="230">{{'workpackage.tab.outputs' | translate}}</span>
         </a>
     </nav>
+
     <router-outlet></router-outlet>
 </jems-project-page-template>

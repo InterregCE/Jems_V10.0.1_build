@@ -1,0 +1,16 @@
+<jems-form *ngIf="this.projectPartnerReportPageStore.partnerReport$ | async as partnerReport">
+
+    <h2 class="mb-5" page-sub-title >{{'project.application.partner.report.sub.title.workplan' | translate}}</h2>
+
+<!--    <ng-container *nfIf="data$ | async as data" >-->
+<!--        <jems-partner-report-workpackage-panel *ngFor="let workPackage of data.workPackages "-->
+<!--        [workPackage]="workPackage">-->
+<!--        </jems-partner-report-workpackage-panel>-->
+    <ng-container>
+
+        <jems-partner-report-workpackage-panel>
+        </jems-partner-report-workpackage-panel>
+        <jems-partner-report-workpackage-panel>
+        </jems-partner-report-workpackage-panel>
+    </ng-container>
+</jems-form>
