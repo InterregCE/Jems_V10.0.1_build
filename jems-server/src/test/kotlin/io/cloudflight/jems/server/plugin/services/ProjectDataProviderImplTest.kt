@@ -26,7 +26,13 @@ import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLum
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityResultData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentQualityData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentQualityResultData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectDecisionData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectStatusData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectPeriodData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverview
@@ -83,6 +89,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectPeriod
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
+import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -290,6 +297,21 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 ProjectAssessmentEligibility(
                     projectId = 1L,
                     step = 1,
+                    ProjectAssessmentEligibilityResult.FAILED,
+                    updated = startDate
+                ),
+                projectStatus
+            ),
+            assessmentStep2 = ProjectAssessment(
+                ProjectAssessmentQuality(
+                    projectId = 1L,
+                    step = 2,
+                    ProjectAssessmentQualityResult.NOT_RECOMMENDED,
+                    updated = startDate
+                ),
+                ProjectAssessmentEligibility(
+                    projectId = 1L,
+                    step = 2,
                     ProjectAssessmentEligibilityResult.FAILED,
                     updated = startDate
                 ),
@@ -636,6 +658,16 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             periodNumber = 1,
             description = setOf(InputTranslation(SystemLanguage.EN, "description2")),
         ))
+    }
+
+    @Test
+    fun `should return list of all project versions`(){
+        every { projectVersionPersistence.getAllVersions() } returns projectVersions
+        assertThat(projectDataProvider.getAllProjectVersions()).containsExactly(
+            ProjectVersionData(
+                projectVersions[0].version, projectVersions[0].projectId,
+                projectVersions[0].createdAt, ApplicationStatusData.valueOf(projectVersions[0].status.name))
+        )
     }
 
     @Test
@@ -1216,7 +1248,52 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
         assertThat(projectData.lifecycleData).isEqualTo(
             ProjectLifecycleData(
-                status = ApplicationStatusData.APPROVED
+                status = ApplicationStatusData.APPROVED,
+                submissionDateStepOne = null,
+                firstSubmissionDate = project.firstSubmission?.updated,
+                lastResubmissionDate = project.lastResubmission?.updated,
+                assessmentStep1 = ProjectDecisionData(
+                    assessmentQuality = ProjectAssessmentQualityData(
+                        projectId = project.assessmentStep1?.assessmentQuality?.projectId!!,
+                        step = project.assessmentStep1?.assessmentQuality?.step!!,
+                        result = ProjectAssessmentQualityResultData.valueOf(project.assessmentStep1?.assessmentQuality?.result?.name!!),
+                        updated = project.assessmentStep1?.assessmentQuality?.updated,
+                        note = project.assessmentStep1?.assessmentQuality?.note
+
+                    ),
+                    assessmentEligibility = ProjectAssessmentEligibilityData(
+                        projectId = project.id!!,
+                        step = project.assessmentStep1?.assessmentEligibility?.step!!,
+                        result = ProjectAssessmentEligibilityResultData.valueOf(project.assessmentStep1?.assessmentEligibility?.result?.name!!),
+                        updated = project.assessmentStep1?.assessmentEligibility?.updated,
+                        note = project.assessmentStep1?.assessmentEligibility?.note
+                    ),
+                    eligibilityDecision = project.assessmentStep1?.eligibilityDecision?.toData(),
+                    preFundingDecision = project.assessmentStep1?.preFundingDecision?.toData(),
+                    fundingDecision = project.assessmentStep1?.fundingDecision?.toData(),
+                    modificationDecision = project.assessmentStep1?.modificationDecision?.toData()
+                    ),
+                assessmentStep2 = ProjectDecisionData(
+                    assessmentQuality = ProjectAssessmentQualityData(
+                        projectId = project.assessmentStep2?.assessmentQuality?.projectId!!,
+                        step = project.assessmentStep2?.assessmentQuality?.step!!,
+                        result = ProjectAssessmentQualityResultData.valueOf(project.assessmentStep2?.assessmentQuality?.result?.name!!),
+                        updated = project.assessmentStep2?.assessmentQuality?.updated,
+                        note = project.assessmentStep2?.assessmentQuality?.note
+
+                    ),
+                    assessmentEligibility = ProjectAssessmentEligibilityData(
+                        projectId = project.id!!,
+                        step = project.assessmentStep2?.assessmentEligibility?.step!!,
+                        result = ProjectAssessmentEligibilityResultData.valueOf(project.assessmentStep2?.assessmentEligibility?.result?.name!!),
+                        updated = project.assessmentStep2?.assessmentEligibility?.updated,
+                        note = project.assessmentStep2?.assessmentEligibility?.note
+                    ),
+                    eligibilityDecision = project.assessmentStep2?.eligibilityDecision?.toData(),
+                    preFundingDecision = project.assessmentStep2?.preFundingDecision?.toData(),
+                    fundingDecision = project.assessmentStep2?.fundingDecision?.toData(),
+                    modificationDecision = project.assessmentStep2?.modificationDecision?.toData()
+                )
             )
         )
     }
@@ -1389,4 +1466,33 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
         assertThrows<ResourceNotFoundException> { projectDataProvider.getProjectDataForProjectId(id) }
     }
+
+    @Test
+    fun `should return list of project versions`(){
+        val account = UserEntity(
+            id = 1,
+            email = "admin@admin.dev",
+            name = "Name",
+            surname = "Surname",
+            userRole = UserRoleEntity(id = 1, name = "ADMIN"),
+            password = "hash_pass",
+            userStatus = UserStatus.ACTIVE
+        )
+
+        val createdAt =  ZonedDateTime.now()
+
+        val versions = listOf(
+            ProjectVersion("1.0", 1L, createdAt, account, ApplicationStatus.DRAFT, true)
+        )
+        val versionsData = listOf(
+            ProjectVersionData("1.0", 1L, createdAt, ApplicationStatusData.DRAFT)
+        )
+        every { projectVersionPersistence.getAllVersions() } returns versions
+
+        assertThat(projectDataProvider.getAllProjectVersions()).isEqualTo(versionsData)
+    }
+
+    private fun ProjectStatus.toData()=
+        ProjectStatusData(id, ApplicationStatusData.valueOf(status.name), updated, decisionDate, entryIntoForceDate, note)
+
 }

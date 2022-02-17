@@ -9,6 +9,8 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
+import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationAddress
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect
@@ -29,6 +31,12 @@ import io.cloudflight.jems.plugin.contract.models.programme.stateaid.ProgrammeSt
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityResultData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentQualityData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentQualityResultData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectDecisionData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectStatusData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
@@ -95,6 +103,7 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFin
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
+import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectContactType
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
@@ -110,8 +119,11 @@ import io.cloudflight.jems.server.project.service.model.ProjectRelevance
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
+import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
@@ -256,6 +268,9 @@ fun SystemLanguage.toDataModel() =
 fun ApplicationStatus.toDataModel() =
     ApplicationStatusData.valueOf(this.name)
 
+fun ProjectAssessment.toDataModel() =
+    pluginDataMapper.map(this)
+
 private val pluginDataMapper = Mappers.getMapper(PluginDataMapper::class.java)
 
 @Mapper
@@ -263,6 +278,12 @@ abstract class PluginDataMapper {
     abstract fun map(partnerSubType: PartnerSubType): PartnerSubTypeData
     abstract fun map(naceGroupLevel: NaceGroupLevel): NaceGroupLevelData
     abstract fun map(applicationStatus: ApplicationStatus): ApplicationStatusData
+    abstract fun map(projectAssessment: ProjectAssessment): ProjectDecisionData
+    abstract fun map(projectAssessmentQuality: ProjectAssessmentQuality): ProjectAssessmentQualityData
+    abstract fun map(projectAssessmentQualityResult: ProjectAssessmentQualityResult): ProjectAssessmentQualityResultData
+    abstract fun map(projectAssessmentEligibility: ProjectAssessmentEligibility): ProjectAssessmentEligibilityData
+    abstract fun map(projectAssessmentEligibilityResult: ProjectAssessmentEligibilityResult): ProjectAssessmentEligibilityResultData
+    abstract fun map(projectStatus: ProjectStatus): ProjectStatusData
     abstract fun map(systemLanguage: SystemLanguage): SystemLanguageData
     abstract fun map(inputTranslation: InputTranslation): InputTranslationData
     abstract fun map(projectPartnerLumpSum: ProjectPartnerLumpSum): ProjectPartnerLumpSumData
