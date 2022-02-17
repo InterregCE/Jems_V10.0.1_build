@@ -3,17 +3,31 @@
                             [subTitleText]="'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
             : {partner: getPartnerTranslationString(data.partner)}"
                             [isVersionedData]="false">
-    <ng-container>
-        <button jemsText disabled
-                mat-stroked-button class="mb-3">
+    <ng-container *ngIf="this.projectPartnerReportPageStore.partnerReportLevel$ | async as level">
+        <button [disabled]="level === 'VIEW'"
+                jemsText
+                mat-stroked-button class="mb-3"
+                (click)="createPartnerReport()">
             + {{'project.application.partner.reports.add' | translate}}
         </button>
     </ng-container>
 
-    <jems-table *ngIf="data.partnerReports as partnerReports"
-                [configuration]="tableConfiguration"
-                [rows]="partnerReports"
-                [totalElements]="partnerReports.length">
-    </jems-table>
+    <ng-container *ngIf="data.partnerReports as partnerReports">
+        <jems-table *ngIf="partnerReports.length > 0"
+                    [configuration]="tableConfiguration"
+                    [rows]="partnerReports"
+                    [totalElements]="partnerReports.length"
+                    [pageIndex]="pageIndex"
+                    (newPageIndex)="this.projectPartnerReportPageStore.newPageIndex$.next($event)"
+                    (newPageSize)="this.projectPartnerReportPageStore.newPageSize$.next($event)">
+        </jems-table>
+        <p *ngIf="partnerReports.length === 0">{{'project.application.form.workpackage.list.empty' | translate}}</p>
+    </ng-container>
+
 
 </jems-project-page-template>
+
+<ng-template #numberingCell let-partnerReport>
+    <span *ngIf="partnerReport.reportNumber">
+        R.{{partnerReport.reportNumber}}</span>
+</ng-template>

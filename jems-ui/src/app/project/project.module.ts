@@ -128,6 +128,11 @@ import {
   SmallProjectFundBudgetComponent
 } from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/small-project-fund-budget/small-project-fund-budget.component';
 
+import { PartnerReportDetailPageComponent } from './project-application/report/partner-report-detail-page/partner-report-detail-page.component';
+import { PartnerReportIdentificationTabComponent } from './project-application/report/partner-report-identification-tab/partner-report-identification-tab.component';
+import {
+  ReportBreadcrumbResolver
+} from '@project/project-application/containers/project-application-detail/services/report-breadcrumb.resolver';
 
 @NgModule({
   declarations: [
@@ -236,6 +241,8 @@ import {
     PartnerReportComponent,
     ApplicationFormPrivilegesExpansionPanelComponent,
     PartnerTeamPrivilegesExpansionPanelComponent,
+    PartnerReportDetailPageComponent,
+    PartnerReportIdentificationTabComponent,
     SpfRecipientsTableComponent
   ],
   imports: [
@@ -263,7 +270,8 @@ import {
     ProjectPartnerBudgetStore,
     ProjectPartnerCoFinancingStore,
     ProjectPartnerStateAidsStore,
-    PartnerReportBreadcrumbResolver
+    PartnerReportBreadcrumbResolver,
+    ReportBreadcrumbResolver
   ]
 })
 export class ProjectModule {
