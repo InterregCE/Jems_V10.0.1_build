@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report
 
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
@@ -10,11 +11,20 @@ import io.cloudflight.jems.server.project.entity.report.PartnerReportIdentificat
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
+import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
+import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageEntity
+import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
+import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivity
+import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageOutput
 
 fun ProjectPartnerReportEntity.toModelSummary() = ProjectPartnerReportSummary(
     id = id,
@@ -23,6 +33,19 @@ fun ProjectPartnerReportEntity.toModelSummary() = ProjectPartnerReportSummary(
     version = applicationFormVersion,
     firstSubmission = firstSubmission,
     createdAt = createdAt,
+)
+
+fun ProjectPartnerReportEntity.toSubmissionSummary() = ProjectPartnerReportSubmissionSummary(
+    id = id,
+    reportNumber = number,
+    status = status,
+    version = applicationFormVersion,
+    firstSubmission = firstSubmission,
+    createdAt = createdAt,
+    projectIdentifier = identification.projectIdentifier,
+    projectAcronym = identification.projectAcronym,
+    partnerNumber = identification.partnerNumber,
+    partnerRole = identification.partnerRole,
 )
 
 fun ProjectPartnerReportEntity.toModel(coFinancing: List<ProjectPartnerReportCoFinancingEntity>) = ProjectPartnerReport(
@@ -89,4 +112,50 @@ fun List<ProjectPartnerCoFinancing>.toEntity(
             percentage = coFinancing.percentage,
         )
     }
+}
+
+fun List<ProjectPartnerReportWorkPackageEntity>.toModel(
+    retrieveActivities: (ProjectPartnerReportWorkPackageEntity) -> List<ProjectPartnerReportWorkPackageActivityEntity>,
+    retrieveDeliverables: (ProjectPartnerReportWorkPackageActivityEntity) -> List<ProjectPartnerReportWorkPackageActivityDeliverableEntity>,
+    retrieveOutputs: (ProjectPartnerReportWorkPackageEntity) -> List<ProjectPartnerReportWorkPackageOutputEntity>,
+) = map {
+    ProjectPartnerReportWorkPackage(
+        id = it.id,
+        number = it.number,
+        description = it.translatedValues.extractField { it.description },
+        activities = retrieveActivities.invoke(it).toActivitiesModel(retrieveDeliverables),
+        outputs = retrieveOutputs.invoke(it).toOutputsModel(),
+    )
+}
+
+fun List<ProjectPartnerReportWorkPackageActivityEntity>.toActivitiesModel(
+    retrieveDeliverables: (ProjectPartnerReportWorkPackageActivityEntity) -> List<ProjectPartnerReportWorkPackageActivityDeliverableEntity>,
+) = map {
+    ProjectPartnerReportWorkPackageActivity(
+        id = it.id,
+        number = it.number,
+        title = it.translatedValues.extractField { it.title },
+        progress = it.translatedValues.extractField { it.description },
+        deliverables = retrieveDeliverables.invoke(it).toDeliverablesModel(),
+    )
+}
+
+fun List<ProjectPartnerReportWorkPackageActivityDeliverableEntity>.toDeliverablesModel() = map {
+    ProjectPartnerReportWorkPackageActivityDeliverable(
+        id = it.id,
+        number = it.number,
+        title = it.translatedValues.extractField { it.title },
+        contribution = it.contribution,
+        evidence = it.evidence,
+    )
+}
+
+fun List<ProjectPartnerReportWorkPackageOutputEntity>.toOutputsModel() = map {
+    ProjectPartnerReportWorkPackageOutput(
+        id = it.id,
+        number = it.number,
+        title = it.translatedValues.extractField { it.title },
+        contribution = it.contribution,
+        evidence = it.evidence,
+    )
 }

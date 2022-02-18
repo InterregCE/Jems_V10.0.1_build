@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model
 
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
+
 data class ProjectPartnerReportCreate(
     val partnerId: Long,
     val reportNumber: Int,
@@ -7,4 +9,5 @@ data class ProjectPartnerReportCreate(
     val version: String,
 
     val identification: PartnerReportIdentificationCreate,
+    val workPackages: List<CreateProjectPartnerReportWorkPackage>,
 )

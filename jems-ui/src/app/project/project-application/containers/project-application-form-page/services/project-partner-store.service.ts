@@ -7,7 +7,7 @@ import {
   ProjectPartnerDTO,
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
-  ProjectPartnerReportService,
+  ProjectReportService,
   ProjectPartnerSummaryDTO, ProjectStatusDTO, ProjectVersionDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
@@ -47,7 +47,7 @@ export class ProjectPartnerStore {
               private projectStore: ProjectStore,
               private routingService: RoutingService,
               private projectVersionStore: ProjectVersionStore,
-              private projectPartnerReportService: ProjectPartnerReportService) {
+              private projectReportService: ProjectReportService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.projectCallType$ = this.projectStore.projectCallType$;
     this.partnerSummaries$ = this.partnerSummaries();
@@ -201,7 +201,7 @@ export class ProjectPartnerStore {
         switchMap(([projectId, versions]) => {
             const contractedVersion = this.getLastContractedVersion(versions);
             this.lastContractedVersion$.next(contractedVersion);
-            return contractedVersion ? this.projectPartnerReportService.getProjectPartnersForReporting(projectId, ['sortNumber'], contractedVersion)
+            return contractedVersion ? this.projectReportService.getProjectPartnersForReporting(projectId, ['sortNumber'], contractedVersion)
               : of([]);
           }
         ),

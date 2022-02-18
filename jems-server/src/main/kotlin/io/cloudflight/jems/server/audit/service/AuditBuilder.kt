@@ -41,6 +41,14 @@ class AuditBuilder(action: AuditAction) {
         )
     }
 
+    fun project(projectId: Long, customIdentifier: String, acronym: String) = apply {
+        this.project = AuditProject(
+            id = projectId.toString(),
+            customIdentifier = customIdentifier,
+            name = acronym,
+        )
+    }
+
     fun entityRelatedId(entityRelatedId: Long) = apply { this.entityRelatedId = entityRelatedId }
     fun description(description: String) = apply { this.description = description }
 
