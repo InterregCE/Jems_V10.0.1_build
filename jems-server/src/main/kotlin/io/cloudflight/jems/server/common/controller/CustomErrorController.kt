@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
 
 @RestController
-@RequestMapping("/error")
 class CustomErrorController(errorAttributes: ErrorAttributes) : AbstractErrorController(errorAttributes) {
 
-    @RequestMapping
+    @RequestMapping("/error")
     fun error(request: HttpServletRequest?): ResponseEntity<Map<String, Any>>? {
         val body = this.getErrorAttributes(request, ErrorAttributeOptions.defaults())
         val status = getStatus(request)

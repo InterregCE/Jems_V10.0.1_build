@@ -50,8 +50,10 @@ import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.user.controller.toDto
+import org.mapstruct.IterableMapping
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
+import org.mapstruct.Named
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 
@@ -154,7 +156,11 @@ abstract class ProjectMapper {
 
     @Mapping(source = "submissionAllowed", target = "submissionAllowed")
     abstract fun map(preConditionCheckResult: PreConditionCheckResult): PreConditionCheckResultDTO
+    @IterableMapping(qualifiedByName = ["mapWithoutIssueCount"])
     abstract fun map(preConditionCheckMessageList: List<PreConditionCheckMessage>): List<PreConditionCheckMessageDTO>
+    @Named("mapWithoutIssueCount")
+    @Mapping(target = "issueCount", ignore = true)
+    abstract fun mapWithoutIssueCount(message: PreConditionCheckMessage): PreConditionCheckMessageDTO
     abstract fun map(messageType: MessageType): MessageTypeDTO
 
     @Mapping(source = "totalCosts", target = "totalSum")

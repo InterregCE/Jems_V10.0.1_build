@@ -10,19 +10,21 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("ApplicationFormFieldConfigurations")
-@RequestMapping("/api/call/{callId}/applicationFormFieldConfigurations")
 interface ApplicationFormConfigurationApi {
 
+    companion object {
+        private const val ENDPOINT_API_CALL_FIELD_CONFIG = "/api/call/{callId}/applicationFormFieldConfigurations"
+    }
+
     @ApiOperation("Returns set of application form field configurations by call id")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_CALL_FIELD_CONFIG)
     fun getByCallId(@PathVariable callId: Long): MutableSet<ApplicationFormFieldConfigurationDTO>
 
 
     @ApiOperation("Update application form field configurations")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_CALL_FIELD_CONFIG, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun update(
         @PathVariable callId: Long,
         @RequestBody applicationFormFieldConfigurations: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>

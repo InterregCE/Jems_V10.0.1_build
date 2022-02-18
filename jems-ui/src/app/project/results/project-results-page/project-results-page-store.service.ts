@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {
   ProjectPeriodDTO,
-  ProgrammeIndicatorService,
+  ProgrammeIndicatorResultService,
   ProjectResultDTO,
   ProjectResultService, ResultIndicatorSummaryDTO
 } from '@cat/api';
@@ -25,7 +25,7 @@ export class ProjectResultsPageStore {
 
   constructor(private projectResultService: ProjectResultService,
               private projectStore: ProjectStore,
-              private programmeIndicatorService: ProgrammeIndicatorService,
+              private programmeIndicatorService: ProgrammeIndicatorResultService,
               private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.results$ = this.results();

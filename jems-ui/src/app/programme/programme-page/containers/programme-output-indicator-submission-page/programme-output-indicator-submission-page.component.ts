@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {
   OutputIndicatorCreateRequestDTO, OutputIndicatorUpdateRequestDTO,
-  ProgrammeIndicatorService,
+  ProgrammeIndicatorOutputService,
   ProgrammePriorityService
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
@@ -37,7 +37,7 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
       tap(page => Log.info('Fetched the priorities:', this, page)),
     );
 
-  constructor(private programmeIndicatorService: ProgrammeIndicatorService,
+  constructor(private programmeIndicatorService: ProgrammeIndicatorOutputService,
               private activatedRoute: ActivatedRoute,
               private programmePriorityService: ProgrammePriorityService,
               private programmePageSidenavService: ProgrammePageSidenavService) {

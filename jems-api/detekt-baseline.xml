@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>PackageNaming:ApplicationFormConfigurationDTO.kt$package io.cloudflight.jems.api.call.dto.applicationFormConfiguration</ID>
+    <ID>PackageNaming:ApplicationFormFieldConfigurationDTO.kt$package io.cloudflight.jems.api.call.dto.applicationFormConfiguration</ID>
+    <ID>PackageNaming:StepSelectionOptionDTO.kt$package io.cloudflight.jems.api.call.dto.applicationFormConfiguration</ID>
+    <ID>PackageNaming:UpdateApplicationFormFieldConfigurationRequestDTO.kt$package io.cloudflight.jems.api.call.dto.applicationFormConfiguration</ID>
+  </CurrentIssues>
+</SmellBaseline>

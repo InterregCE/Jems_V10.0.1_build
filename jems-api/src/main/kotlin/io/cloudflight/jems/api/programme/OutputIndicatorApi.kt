@@ -17,20 +17,25 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import javax.validation.Valid
 
-@Api("Programme Indicator")
-@RequestMapping("/api/programmeindicator/output")
+@Api("Programme Indicator Output")
 interface OutputIndicatorApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROGRAMME_INDICATOR_OUTPUT = "/api/programmeindicator/output"
+    }
+
     @ApiOperation("Creates new OUTPUT indicator")
-    @PostMapping("", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createOutputIndicator(@Valid @RequestBody outputIndicatorCreateRequestDTO: OutputIndicatorCreateRequestDTO): OutputIndicatorDetailDTO
+    @PostMapping(ENDPOINT_API_PROGRAMME_INDICATOR_OUTPUT, consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun createOutputIndicator(
+        @RequestBody outputIndicatorCreateRequestDTO: OutputIndicatorCreateRequestDTO
+    ): OutputIndicatorDetailDTO
 
     @ApiOperation("Updates existing OUTPUT indicator")
-    @PutMapping("", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateOutputIndicator(@Valid @RequestBody outputIndicatorUpdateRequestDTO: OutputIndicatorUpdateRequestDTO): OutputIndicatorDetailDTO
+    @PutMapping(ENDPOINT_API_PROGRAMME_INDICATOR_OUTPUT, consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateOutputIndicator(
+        @RequestBody outputIndicatorUpdateRequestDTO: OutputIndicatorUpdateRequestDTO
+    ): OutputIndicatorDetailDTO
 
     @ApiOperation("Returns all OUTPUT indicators")
     @ApiImplicitParams(
@@ -38,17 +43,19 @@ interface OutputIndicatorApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("")
+    @GetMapping(ENDPOINT_API_PROGRAMME_INDICATOR_OUTPUT)
     fun getOutputIndicatorDetails(pageable: Pageable): Page<OutputIndicatorDetailDTO>
 
     @ApiOperation("Returns OUTPUT indicator by id")
-    @GetMapping("/{id}")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_INDICATOR_OUTPUT/{id}")
     fun getOutputIndicatorDetail(@PathVariable id: Long): OutputIndicatorDetailDTO
 
-    @GetMapping("/summary")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_INDICATOR_OUTPUT/summary")
     fun getOutputIndicatorSummaries(): Set<OutputIndicatorSummaryDTO>
 
-    @GetMapping("/summary/{programmeObjectivePolicy}")
-    fun getOutputIndicatorSummariesForSpecificObjective(@PathVariable programmeObjectivePolicy: ProgrammeObjectivePolicy): List<OutputIndicatorSummaryDTO>
+    @GetMapping("$ENDPOINT_API_PROGRAMME_INDICATOR_OUTPUT/summary/{programmeObjectivePolicy}")
+    fun getOutputIndicatorSummariesForSpecificObjective(
+        @PathVariable programmeObjectivePolicy: ProgrammeObjectivePolicy
+    ): List<OutputIndicatorSummaryDTO>
 
 }

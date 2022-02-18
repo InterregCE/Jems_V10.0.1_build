@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("User")
-@RequestMapping("/api/user")
 interface UserApi {
+
+    companion object {
+        private const val ENDPOINT_API_USER = "/api/user"
+    }
 
     @ApiOperation("Returns the users")
     @ApiImplicitParams(
@@ -29,35 +31,35 @@ interface UserApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @PostMapping("list",consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("$ENDPOINT_API_USER/list",consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun list(pageable: Pageable, @RequestBody(required = false) searchRequest: UserSearchRequestDTO?): Page<UserSummaryDTO>
 
     @ApiOperation("Creates new User")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_USER, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createUser(@RequestBody user: UserChangeDTO): UserDTO
 
     @ApiOperation("Updates a User")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_USER, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateUser(@RequestBody user: UserChangeDTO): UserDTO
 
     @ApiOperation("Returns a user by id")
-    @GetMapping("/byId/{id}")
+    @GetMapping("$ENDPOINT_API_USER/byId/{id}")
     fun getById(@PathVariable id: Long): UserDTO
 
     @ApiOperation("Changes password of any user (admin only)")
-    @PutMapping("/byId/{userId}/password", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_USER/byId/{userId}/password", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun resetPassword(@PathVariable userId: Long, @RequestBody newPassword: String)
 
     @ApiOperation("Changes my password")
-    @PutMapping("/changeMyPassword", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_USER/changeMyPassword", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun changeMyPassword(@RequestBody passwordData: PasswordDTO)
 
     @ApiOperation("Returns list of Users, which do have or do NOT have requested permissions")
-    @PostMapping("/withProjectRetrievePermission")
+    @PostMapping("$ENDPOINT_API_USER/withProjectRetrievePermission")
     fun getUsersWithProjectRetrievePermissions(): List<UserSummaryDTO>
 
     @ApiOperation("Returns list of Users, which do have or do NOT have requested permissions")
-    @PostMapping("/withoutProjectRetrievePermissionAndWithMonitor")
+    @PostMapping("$ENDPOINT_API_USER/withoutProjectRetrievePermissionAndWithMonitor")
     fun getMonitorUsers(): List<UserSummaryDTO>
 
 }

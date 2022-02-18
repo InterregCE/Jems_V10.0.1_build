@@ -3,7 +3,7 @@ import {
   InputWorkPackageUpdate,
   OutputIndicatorSummaryDTO,
   OutputWorkPackage,
-  ProgrammeIndicatorService,
+  ProgrammeIndicatorOutputService,
   ProjectDetailFormDTO,
   WorkPackageActivityDTO,
   WorkPackageActivityService,
@@ -45,7 +45,7 @@ export class WorkPackagePageStore {
 
   constructor(private workPackageService: WorkPackageService,
               private projectStore: ProjectStore,
-              private programmeIndicatorService: ProgrammeIndicatorService,
+              private programmeIndicatorService: ProgrammeIndicatorOutputService,
               private workPackageActivityService: WorkPackageActivityService,
               private workPackageInvestmentService: WorkPackageInvestmentService,
               private workPackageOutputService: WorkPackageOutputService,

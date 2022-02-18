@@ -136,6 +136,7 @@ class NutsServiceImpl(
             }
         }
 
+    @Suppress("UNCHECKED_CAST")
     private fun extractNutsFromGiscoDatasets(url: String): LinkedHashMap<String, String> {
         val datasets = (JSONParser(
             restTemplate.getForObject(
@@ -148,6 +149,7 @@ class NutsServiceImpl(
         return datasets[lastNutsKey] as LinkedHashMap<String, String>
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun getCsvFileName(nutsFile: String): String {
         val nutFile = (JSONParser(
             restTemplate.getForObject(

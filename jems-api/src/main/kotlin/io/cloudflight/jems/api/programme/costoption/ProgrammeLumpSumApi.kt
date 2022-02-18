@@ -11,30 +11,32 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Programme Cost Option")
-@RequestMapping("/api/costOption/lumpSum")
 interface ProgrammeLumpSumApi {
 
+    companion object {
+        private const val ENDPOINT_API_LUMP_SUM = "/api/costOption/lumpSum"
+    }
+
     @ApiOperation("Retrieve all programme lump sums")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_LUMP_SUM)
     fun getProgrammeLumpSums(): List<ProgrammeLumpSumListDTO>
 
     @ApiOperation("Retrieve programme lump sum by id")
-    @GetMapping("/{lumpSumId}")
+    @GetMapping("$ENDPOINT_API_LUMP_SUM/{lumpSumId}")
     fun getProgrammeLumpSum(@PathVariable lumpSumId: Long): ProgrammeLumpSumDTO
 
     @ApiOperation("Create programme lump sum")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_LUMP_SUM, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProgrammeLumpSum(@RequestBody lumpSum: ProgrammeLumpSumDTO): ProgrammeLumpSumDTO
 
     @ApiOperation("Update existing programme lump sum")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_LUMP_SUM, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProgrammeLumpSum(@RequestBody lumpSum: ProgrammeLumpSumDTO): ProgrammeLumpSumDTO
 
     @ApiOperation("Delete programme lump sum")
-    @DeleteMapping("/{lumpSumId}")
+    @DeleteMapping("$ENDPOINT_API_LUMP_SUM/{lumpSumId}")
     fun deleteProgrammeLumpSum(@PathVariable lumpSumId: Long)
 
 }

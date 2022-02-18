@@ -509,7 +509,6 @@ class ProjectBudgetPersistenceTest {
                 )
             )
         )
-        val partnerIds = partners.map { it.id }.toSet()
 
         every { projectVersionRepo.findTimestampByVersion(any(), version) } returns timestamp
         every { projectPartnerRepository.findTop30ByProjectId(1L) } returns partners

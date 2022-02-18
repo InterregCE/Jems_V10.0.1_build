@@ -47,7 +47,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     partner: ProjectPartnerDetailDTO;
     partners: ProjectPartner[];
     projectCallType: CallTypeEnum;
-    isSpf: boolean
+    isSpf: boolean;
   }>;
 
   partnerForm: FormGroup = this.formBuilder.group({

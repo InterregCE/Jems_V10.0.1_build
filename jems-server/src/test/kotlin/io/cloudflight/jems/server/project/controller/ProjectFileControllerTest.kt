@@ -78,7 +78,7 @@ internal class ProjectFileControllerTest : UnitTest() {
                 .isEqualTo(fileMetadata.toDTO())
             assertThat(categorySlot.captured.type).isEqualTo(ProjectFileCategoryType.PARTNER)
             assertThat(categorySlot.captured.id).isEqualTo(PARTNER_ID)
-            assertThat(projectFileSlot.captured.name).isEqualTo(file.originalFilename ?: file.name)
+            assertThat(projectFileSlot.captured.name).isEqualTo(file.originalFilename)
             assertThat(projectFileSlot.captured.size).isEqualTo(file.size)
         }
 

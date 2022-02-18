@@ -13,7 +13,7 @@ import {
   OutputIndicatorCreateRequestDTO,
   OutputIndicatorDetailDTO,
   OutputIndicatorUpdateRequestDTO,
-  ProgrammeIndicatorService,
+  ProgrammeIndicatorResultService,
   ProgrammePriorityDTO,
   ResultIndicatorDetailDTO,
 } from '@cat/api';
@@ -87,7 +87,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
               private languageStore: LanguageStore,
-              private programmeIndicatorService: ProgrammeIndicatorService,
+              private programmeIndicatorService: ProgrammeIndicatorResultService,
               public programmeEditableStateStore: ProgrammeEditableStateStore,
   ) {
     super(changeDetectorRef, translationService);

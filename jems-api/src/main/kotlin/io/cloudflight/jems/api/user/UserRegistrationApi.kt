@@ -8,19 +8,21 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import java.util.UUID
 
 @Api("User Registration")
-@RequestMapping("/api/registration")
 interface UserRegistrationApi {
 
+    companion object {
+        private const val ENDPOINT_API_USER_REGISTRATION = "/api/registration"
+    }
+
     @ApiOperation("Creates new User with default user role")
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_USER_REGISTRATION, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun registerApplicant(@RequestBody user: UserRegistrationDTO): UserDTO
 
     @ApiOperation("Confirm user registration")
-    @GetMapping
+    @GetMapping(ENDPOINT_API_USER_REGISTRATION)
     fun confirmUserRegistration(@RequestParam(required = true) token: UUID): Boolean
 }
