@@ -8,15 +8,15 @@
         <p>{{'project.application.form.section.privileges.warning' | translate}}</p>
     </jems-alert>
 
-    <ng-container *ngIf="projectCollaborators$ | async as projectCollaborators">
+    <ng-container *ngIf="pageStore.projectCollaborators$ | async as projectCollaborators">
         <jems-application-form-privileges-expansion-panel
-                [projectTitle]="projectCollaborators.projectTitle"
-                [projectCollaboratorsData]="projectCollaborators.projectCollaborators">
+                [projectTitle]="title"
+                [projectCollaboratorsData]="projectCollaborators">
         </jems-application-form-privileges-expansion-panel>
     </ng-container>
 
     <ng-container *ngIf="pageStore.partnerTeamsVisible$ | async">
-        <ng-container *ngIf="partnerCollaboratorTeams$ | async as teams">
+        <ng-container *ngIf="pageStore.partnerCollaborators$ | async as teams">
             <ng-container *ngFor="let partner of teams.keys()">
                 <jems-partner-team-privileges-expansion-panel
                         *ngIf="teams.get(partner)"

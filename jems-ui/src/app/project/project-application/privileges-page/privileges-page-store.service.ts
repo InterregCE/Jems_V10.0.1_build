@@ -5,7 +5,7 @@ import {
   ProjectUserCollaboratorDTO,
   ProjectUserCollaboratorService, UserRoleDTO
 } from '@cat/api';
-import {filter, map, switchMap, take, tap} from 'rxjs/operators';
+import {filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 
 import {Injectable} from '@angular/core';
@@ -21,14 +21,14 @@ import StatusEnum = ProjectStatusDTO.StatusEnum;
 export class PrivilegesPageStore {
 
   projectCollaborators$: Observable<ProjectUserCollaboratorDTO[]>;
-  partnerCollaborators$: Observable<PartnerUserCollaboratorDTO[]>;
+  partnerCollaborators$: Observable<Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>>;
   projectTitle$: Observable<string>;
   projectCollaboratorsEditable$: Observable<boolean>;
-  partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerTeamsVisible$: Observable<boolean>;
 
-  private savedProjectCollaborators = new Subject<ProjectUserCollaboratorDTO[]>();
-  private savedPartnerProjectCollaborators = new Subject<PartnerUserCollaboratorDTO[]>();
+  private partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]>;
+  private savedProjectCollaborators$ = new Subject<ProjectUserCollaboratorDTO[]>();
+  private savedPartnerProjectCollaborators$ = new Subject<[number, PartnerUserCollaboratorDTO[]]>();
 
 
   constructor(private projectStore: ProjectStore,
@@ -37,11 +37,11 @@ export class PrivilegesPageStore {
               private permissionService: PermissionService,
               private partnerStore: ProjectPartnerStore,
               private projectVersionStore: ProjectVersionStore) {
+    this.partnerSummariesOfLastApprovedVersion$ = this.partnerSummariesOfLastApprovedVersion();
     this.projectCollaborators$ = this.projectCollaborators();
     this.partnerCollaborators$ = this.partnerCollaborators();
     this.projectTitle$ = this.projectStore.projectTitle$;
     this.projectCollaboratorsEditable$ = this.projectCollaboratorsEditable();
-    this.partnerSummariesOfLastApprovedVersion$ = this.partnerSummariesOfLastApprovedVersion();
     this.partnerTeamsVisible$ = this.partnerTeamsVisible();
   }
 
@@ -53,6 +53,7 @@ export class PrivilegesPageStore {
           projectId,
           collaborators.map(collaborator => ({...collaborator, userEmail: collaborator.userEmail?.trim()}))
         )),
+        tap(saved => this.savedProjectCollaborators$.next(saved)),
         tap(saved => Log.info('Updated project collaborators', this, saved))
       );
   }
@@ -66,6 +67,7 @@ export class PrivilegesPageStore {
           projectId,
           collaborators.map(collaborator => ({...collaborator, userEmail: collaborator.userEmail?.trim()}))
         )),
+        tap(saved => this.savedPartnerProjectCollaborators$.next([partnerId, saved])),
         tap(saved => Log.info('Updated project partner collaborators', this, saved))
       );
   }
@@ -76,16 +78,42 @@ export class PrivilegesPageStore {
         switchMap(([projectId, level]) => this.projectUserCollaboratorService.listAssignedUserCollaborators(projectId)),
         tap(collaborators => Log.info('Fetched project collaborators', this, collaborators))
       );
-    return merge(initialCollaborators$, this.savedProjectCollaborators);
+    return merge(initialCollaborators$, this.savedProjectCollaborators$);
   }
 
-  private partnerCollaborators(): Observable<PartnerUserCollaboratorDTO[]> {
-    const initialPartnerCollaborators$ = this.projectStore.projectId$
+  private partnerCollaborators(): Observable<Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>> {
+    const allPartnerCollaborators$ = this.projectStore.projectId$
       .pipe(
         switchMap(projectId => this.partnerUserCollaboratorService.listAllPartnerCollaborators(projectId)),
         tap(collaborators => Log.info('Fetched project partner collaborators', this, collaborators))
       );
-    return merge(initialPartnerCollaborators$, this.savedPartnerProjectCollaborators);
+
+    return combineLatest([
+      this.partnerSummariesOfLastApprovedVersion$,
+      allPartnerCollaborators$,
+      this.savedPartnerProjectCollaborators$.pipe(startWith([])),
+      this.projectStore.collaboratorLevel$,
+    ])
+      .pipe(
+        map(([partners, allCollaborators, savedCollaborators, level]) =>
+          this.getPartnerTeams(partners, allCollaborators, savedCollaborators, level)
+        ),
+      );
+  }
+
+  private getPartnerTeams(partners: ProjectPartnerSummaryDTO[],
+                          allCollaborators: PartnerUserCollaboratorDTO[],
+                          savedCollaborators: [number, PartnerUserCollaboratorDTO[]] | any,
+                          level: ProjectUserCollaboratorDTO.LevelEnum): Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]> {
+    const teams = new Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>();
+    partners.forEach(partner => {
+      const collaborators = savedCollaborators.length && savedCollaborators[0] === partner.id
+        ? savedCollaborators[1]
+        : allCollaborators.filter(partnerCollaborator => partnerCollaborator.partnerId === partner.id);
+      teams.set(partner, collaborators.length || level === ProjectUserCollaboratorDTO.LevelEnum.MANAGE
+        ? collaborators : null as any);
+    });
+    return teams;
   }
 
   private projectCollaboratorsEditable(): Observable<boolean> {
