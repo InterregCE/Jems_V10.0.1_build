@@ -1,22 +1,14 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
-import {
-  ProjectPartnerStore
-} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {TranslateService} from '@ngx-translate/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {
-  ProjectPartnerReportPageStore
-} from '@project/project-application/report/project-partner-report-page-store.service';
-import {map, take, tap} from 'rxjs/operators';
-import {
-  ProjectApplicationFormSidenavService
-} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {distinctUntilChanged, filter, map, take, tap} from 'rxjs/operators';
+import {ProjectApplicationFormSidenavService} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Component({
   selector: 'jems-contract-monitoring',
@@ -24,33 +16,27 @@ import {ColumnType} from '@common/components/table/model/column-type.enum';
   styleUrls: ['./partner-report.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PartnerReportComponent implements OnInit {
+@UntilDestroy()
+export class PartnerReportComponent implements AfterViewInit {
 
   @ViewChild('numberingCell', {static: true})
   numberingCell: TemplateRef<any>;
 
-  @Input()
-  pageIndex: number;
-
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
-
   tableConfiguration: TableConfiguration;
+
   data$: Observable<{
     partnerReports: ProjectPartnerReportSummaryDTO[];
     partner: ProjectPartnerSummaryDTO;
   }>;
 
-  constructor(public projectPartnerStore: ProjectPartnerStore,
-              public projectPartnerReportPageStore: ProjectPartnerReportPageStore,
-              private translateService: TranslateService,
-              private projectVersionStore: ProjectVersionStore,
+  constructor(public pageStore: PartnerReportPageStore,
               private activatedRoute: ActivatedRoute,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private router: RoutingService) {
     this.data$ = combineLatest([
-      this.projectPartnerReportPageStore.partnerReports$,
-      this.projectPartnerReportPageStore.partnerReportSummary$,
+      this.pageStore.partnerReports$,
+      this.pageStore.partnerSummary$,
     ]).pipe(
       map(([partnerReports, partner]) => ({
         partnerReports,
@@ -59,9 +45,8 @@ export class PartnerReportComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.tableConfiguration = new TableConfiguration({
-      routerLink: `/app/project/detail/${this.projectId}/reporting/${this.partnerId}/reports/`,
       isTableClickable: true,
       sortable: true,
       columns: [
@@ -95,6 +80,14 @@ export class PartnerReportComponent implements OnInit {
         }
       ]
     });
+
+    this.pageStore.partnerId$
+      .pipe(
+        distinctUntilChanged(),
+        filter(partnerId => !!partnerId),
+        tap(partnerId => this.initializeTableConfiguration(partnerId as any)),
+        untilDestroyed(this)
+      ).subscribe();
   }
 
   getPartnerTranslationString(partner: ProjectPartnerSummaryDTO): string {
@@ -102,10 +95,14 @@ export class PartnerReportComponent implements OnInit {
   }
 
   createPartnerReport(): void {
-    this.projectPartnerReportPageStore.createPartnerReport(this.partnerId)
+    this.pageStore.createPartnerReport()
       .pipe(
         take(1),
         tap((report) => this.router.navigate([`../${report.id}/identification`], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
       ).subscribe();
+  }
+
+  private initializeTableConfiguration(partnerId: number): void {
+    this.tableConfiguration.routerLink = `/app/project/detail/${this.projectId}/reporting/${partnerId}/reports/`;
   }
 }
