@@ -57,6 +57,11 @@ enum class ApplicationFormFieldSetting(
         "application.config.project.partner.type",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
+    SPF_BENEFICIARY_TYPE(
+        "application.config.spf.beneficiary.type",
+        setOf(FieldVisibilityStatus.NONE),
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PARTNER_SUB_TYPE(
         "application.config.project.partner.sub.type",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -365,7 +370,11 @@ enum class ApplicationFormFieldSetting(
         "application.config.project.target.group",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-
+    PROJECT_RECIPIENT_GROUP(
+        "application.config.project.spf.recipient.group",
+        setOf(FieldVisibilityStatus.NONE),
+        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
+    ),
     PROJECT_STRATEGY_CONTRIBUTION(
         "application.config.project.strategy.contribution",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -584,10 +593,12 @@ enum class ApplicationFormFieldSetting(
         }
 
         fun getDefaultApplicationFormFieldConfigurations(callType: CallType): MutableSet<ApplicationFormFieldConfiguration> {
-            var defaultFormFieldSettings = values()
-            if (callType == CallType.SPF) {
-                defaultFormFieldSettings = values()
-                    .filter { applicationFormFieldSetting -> !getSpfExcludedFormFieldsSettings().contains(applicationFormFieldSetting.id)  }
+            val defaultFormFieldSettings = when (callType) {
+                CallType.STANDARD -> values()
+                    .filter {applicationFormFieldSetting -> applicationFormFieldSetting.id !in getStandardCallExcludedFormFieldsSettings()}
+                    .toTypedArray()
+                CallType.SPF -> values()
+                    .filter { applicationFormFieldSetting -> applicationFormFieldSetting.id !in getSpfCallExcludedFormFieldsSettings()}
                     .toTypedArray()
             }
            return defaultFormFieldSettings.map {
@@ -646,7 +657,7 @@ enum class ApplicationFormFieldSetting(
                 PROJECT_TRANSFERABILITY.id
             )
 
-        fun getSpfExcludedFormFieldsSettings(): Set<String> =
+       private fun getSpfCallExcludedFormFieldsSettings(): Set<String> =
             setOf(
                 PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_DESCRIPTION.id,
                 PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_COMMENTS.id,
@@ -671,6 +682,12 @@ enum class ApplicationFormFieldSetting(
                 PROJECT_INVESTMENT_WHO_OWNS_THE_INVESTMENT_SITE.id,
                 PROJECT_INVESTMENT_OWNERSHIP_AFTER_END_OF_PROJECT.id,
                 PROJECT_INVESTMENT_MAINTENANCE.id
+            )
+
+         private fun getStandardCallExcludedFormFieldsSettings(): Set<String> =
+            setOf(
+                SPF_BENEFICIARY_TYPE.id,
+                PROJECT_RECIPIENT_GROUP.id
             )
     }
 
